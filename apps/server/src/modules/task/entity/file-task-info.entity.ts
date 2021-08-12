@@ -5,16 +5,23 @@ import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
 
+interface FileTaskInfoProperties {
+	name: string;
+	creator: UserTaskInfo;
+}
+
 @Entity({ tableName: 'files' })
 export class FileTaskInfo extends BaseEntityWithTimestamps {
-	constructor(partial: Partial<FileTaskInfo>) {
-		super();
-		Object.assign(this, partial);
-	}
-
 	@Property()
 	name: string;
 
 	@Property()
 	creator: UserTaskInfo;
+
+	constructor(props: FileTaskInfoProperties) {
+		super();
+		this.name = props.name;
+		this.creator = props.creator;
+		Object.assign(this, {});
+	}
 }

@@ -24,22 +24,14 @@ import {
 	TeamInfo,
 } from './modules/news/entity';
 
-import {
-	Task,
-	LessonTaskInfo,
-	CourseTaskInfo,
-	Submission,
-	FileTaskInfo,
-	UserTaskInfo,
-	CourseGroupInfo,
-} from './modules/task/entity';
+import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo } from './modules/task/entity';
 
 import { User, Role, Account } from './modules/user/entity';
 
 import { Course, Coursegroup } from './modules/learnroom/entity';
 
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
-const taskEntities = [Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
+const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
 const learnroomEntities = [Course, Coursegroup];
 

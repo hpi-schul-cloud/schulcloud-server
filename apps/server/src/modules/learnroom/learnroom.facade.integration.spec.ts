@@ -65,7 +65,7 @@ describe('course repo', () => {
 				coursegroup1ForCourse3,
 			]);
 
-			const [coursesWithGroups, count] = await facade.findCoursesWithGroupsByUserId(helper.userId);
+			const [coursesWithGroups, count] = await facade.findCoursesWithGroupsByUserId(helper.getFirstUser());
 
 			expect(count).toEqual(4);
 			expect(coursesWithGroups).toHaveLength(4);

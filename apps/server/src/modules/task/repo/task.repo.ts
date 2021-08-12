@@ -2,48 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { Counted } from '@shared/domain/types';
-import { Task, CourseTaskInfo, LessonTaskInfo } from '../entity';
+import { Task, LessonTaskInfo } from '../entity';
 
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	// TODO: move to seperate repo
-	async getCourseOfUser(userId: EntityId): Promise<CourseTaskInfo[]> {
-		const coursesOfUser = await this.em.find(CourseTaskInfo, {
-			$or: [
-				{
-					students: userId,
-				},
-				{
-					teachers: userId,
-				},
-				{
-					substitutionTeachers: userId,
-				},
-			],
-		});
-		return coursesOfUser;
-	}
-
-	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
-	// DO NOT DO THIS AT HOME!!
 	async findAllByStudent(
-		userId: EntityId,
+		courseIds: EntityId[],
 		{ limit, skip }: IPagination = {},
 		ignoredTasks: EntityId[] = []
 	): Promise<Counted<Task[]>> {
-		// TODO move BL to UC
-		// we have following logical groups:
-		// filter for all news a user might read
-		// filter by tasks not yet done
-		// order by duedate
-		// pagination
-
-		const coursesOfUser = await this.getCourseOfUser(userId);
-
 		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
-			course: { $in: coursesOfUser },
+			courseId: { $in: courseIds },
 			hidden: false,
 		});
 
@@ -57,26 +28,21 @@ export class TaskRepo {
 					// TODO move into a logic group / director
 					{ id: { $nin: ignoredTasks } },
 					{ private: { $ne: true } },
-					{ course: { $in: coursesOfUser } },
+					{ courseId: { $in: courseIds } },
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
 					{ $or: [{ dueDate: { $gte: oneWeekAgo } }, { dueDate: null }] },
 				],
 			},
-			// TODO Populate in separate step
 			// TODO extract pagination, oderby
-			{ populate: ['course'], limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
+			{ limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
 		);
 
 		return [usersTasks, total];
 	}
 
-	async findAllAssignedByTeacher(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
-		// TODO: merge overlaps with findAllOpenByStudent
-		// TODO: use Query Builder
-		const coursesOfUser = await this.getCourseOfUser(userId);
-
+	async findAllAssignedByTeacher(courseIds: EntityId[], { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
 		const publishedLessons = await this.em.find(LessonTaskInfo, {
-			course: { $in: coursesOfUser },
+			courseId: { $in: courseIds },
 			hidden: false,
 		});
 
@@ -84,12 +50,12 @@ export class TaskRepo {
 			Task,
 			{
 				$and: [
-					{ course: { $in: coursesOfUser } },
+					{ course: { $in: courseIds } },
 					{ private: { $ne: true } },
 					{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
 				],
 			},
-			{ populate: ['course'], limit, offset: skip, orderBy: { createdAt: QueryOrder.DESC } }
+			{ limit, offset: skip, orderBy: { createdAt: QueryOrder.DESC } }
 		);
 		return [usersTasks, count];
 	}

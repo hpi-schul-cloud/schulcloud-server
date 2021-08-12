@@ -247,7 +247,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.isMember(helper.otherUserId);
+			const result = course.isMember(helper.otherUser);
 
 			expect(result).toEqual(false);
 		});
@@ -256,7 +256,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.isMember(helper.userId);
+			const result = course.isMember(helper.getFirstUser());
 
 			expect(result).toEqual(true);
 		});
@@ -265,7 +265,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createTeacherCourse();
 
-			const result = course.isMember(helper.userId);
+			const result = course.isMember(helper.getFirstUser());
 
 			expect(result).toEqual(true);
 		});
@@ -274,7 +274,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createSubstitutionCourse();
 
-			const result = course.isMember(helper.userId);
+			const result = course.isMember(helper.getFirstUser());
 
 			expect(result).toEqual(true);
 		});
@@ -285,7 +285,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(helper.otherUserId);
+			const result = course.hasWritePermission(helper.otherUser);
 
 			expect(result).toEqual(false);
 		});
@@ -294,7 +294,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(helper.userId);
+			const result = course.hasWritePermission(helper.getFirstUser());
 
 			expect(result).toEqual(false);
 		});
@@ -303,7 +303,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createTeacherCourse();
 
-			const result = course.hasWritePermission(helper.userId);
+			const result = course.hasWritePermission(helper.getFirstUser());
 
 			expect(result).toEqual(true);
 		});
@@ -312,7 +312,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createSubstitutionCourse();
 
-			const result = course.hasWritePermission(helper.userId);
+			const result = course.hasWritePermission(helper.getFirstUser());
 
 			expect(result).toEqual(true);
 		});

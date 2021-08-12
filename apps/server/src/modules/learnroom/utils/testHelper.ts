@@ -1,6 +1,4 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-
-import { EntityId } from '@shared/domain';
+import { EntityId, TestHelper } from '@shared/domain';
 
 import { Course, Coursegroup } from '../entity';
 
@@ -10,27 +8,17 @@ enum CourseTyps {
 	subsitutionTeacher = 'substitutionTeacherIds',
 }
 
-export class LearnroomTestHelper {
-	userId: EntityId;
-
-	otherUserId: EntityId;
-
-	schoolId: EntityId;
-
-	constructor() {
-		this.userId = new ObjectId().toHexString();
-		this.otherUserId = new ObjectId().toHexString();
-		this.schoolId = new ObjectId().toHexString();
+export class LearnroomTestHelper extends TestHelper<EntityId, EntityId> {
+	createUser(): EntityId {
+		return this.createEntityId();
 	}
 
-	private addId(entity: Course | Coursegroup) {
-		const id = new ObjectId();
-		entity.id = id.toHexString();
-		entity._id = id;
+	createSchool(): EntityId {
+		return this.createEntityId();
 	}
 
 	private createCourse(type: CourseTyps): Course {
-		const course = new Course({ [type]: [this.userId], schoolId: this.schoolId, name: '' });
+		const course = new Course({ [type]: this.users, schoolId: this.getSchool(), name: '' });
 		this.addId(course);
 		return course;
 	}
@@ -48,7 +36,7 @@ export class LearnroomTestHelper {
 	}
 
 	createCoursegroup(course: Course): Coursegroup {
-		const coursegroup = new Coursegroup({ studentIds: [this.userId], courseId: course.id });
+		const coursegroup = new Coursegroup({ studentIds: this.getUsers(), courseId: course.id });
 		this.addId(coursegroup);
 		return coursegroup;
 	}

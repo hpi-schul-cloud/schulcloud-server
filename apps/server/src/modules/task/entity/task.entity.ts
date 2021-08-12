@@ -1,15 +1,17 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
-import { CourseTaskInfo } from './course-task-info.entity';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { LessonTaskInfo } from './lesson-task-info.entity';
+
+interface ITaskProperties {
+	name: string;
+	dueDate?: Date;
+	private?: boolean;
+	courseId: EntityId;
+	lesson?: LessonTaskInfo;
+}
 
 @Entity({ tableName: 'homeworks' })
 export class Task extends BaseEntityWithTimestamps {
-	constructor(partial: Partial<Task>) {
-		super();
-		Object.assign(this, partial);
-	}
-
 	@Property()
 	name: string;
 
@@ -19,9 +21,18 @@ export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	private?: boolean;
 
-	@ManyToOne({ fieldName: 'courseId' })
-	course: CourseTaskInfo;
+	@Property()
+	courseId: EntityId;
 
 	@ManyToOne({ fieldName: 'lessonId' })
-	lesson?: LessonTaskInfo;
+	lesson?: LessonTaskInfo | null;
+
+	constructor(props: ITaskProperties) {
+		super();
+		this.name = props.name;
+		this.dueDate = props.dueDate;
+		this.private = props.private;
+		this.courseId = props.courseId;
+		Object.assign(this, { lesson: props.lesson });
+	}
 }
