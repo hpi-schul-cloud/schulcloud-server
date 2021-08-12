@@ -1,55 +1,48 @@
-import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
-import { CourseGroupInfo } from '../entity/course-group-info.entity';
+
+import { MongoMemoryDatabaseModule } from '../../database';
+import { TaskTestHelper } from '../utils/TestHelper';
+import { FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo } from '../entity';
+
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
 	let module: TestingModule;
-	let mongodb: MongoMemoryServer;
 	let repo: SubmissionRepo;
-	let orm: MikroORM;
 	let em: EntityManager;
 
 	beforeAll(async () => {
-		mongodb = new MongoMemoryServer();
-		const dbUrl = await mongodb.getUri();
 		module = await Test.createTestingModule({
 			imports: [
-				MikroOrmModule.forRoot({
-					type: 'mongo',
-					clientUrl: dbUrl,
-					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
 				}),
 			],
 			providers: [SubmissionRepo],
 		}).compile();
-		repo = module.get<SubmissionRepo>(SubmissionRepo);
-		orm = module.get<MikroORM>(MikroORM);
-		em = module.get<EntityManager>(EntityManager);
+		repo = module.get(SubmissionRepo);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
-		await mongodb.stop();
+	});
+
+	afterEach(async () => {
+		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(UserTaskInfo, {}), em.nativeDelete(Submission, {})]);
 	});
 
 	describe('getSubmissionsByTask', () => {
 		it('should return the amount of submissions', async () => {
-			const students = [
-				em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' }),
-				em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' }),
-			];
-			const course = em.create(CourseTaskInfo, { name: 'testCourse', students });
-			const task = em.create(Task, { name: 'find me', course });
-			const submissions = students.map((student) => {
-				return em.create(Submission, { task, student });
-			});
-			await em.persistAndFlush([course, task, ...submissions, ...students]);
+			const helper = new TaskTestHelper();
+			helper.createAndAddUser();
+			const students = helper.getUsers();
+
+			const task = helper.createTask();
+			const submissions = helper.createSubmissionsForEachStudent(task);
+
+			await em.persistAndFlush([...students, task, ...submissions]);
 
 			const [result, count] = await repo.getSubmissionsByTask(task);
 			expect(count).toEqual(students.length);
@@ -58,22 +51,18 @@ describe('submission repo', () => {
 
 	describe('getSubmissionsByTasksList', () => {
 		it('should return only the requested submissions of homeworks', async () => {
-			const students = [em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' })];
+			const helper = new TaskTestHelper();
+			const students = helper.getUsers();
 
-			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students });
-			const tasks = [
-				em.create(Task, { name: 'find me11', course }),
-				em.create(Task, { name: 'find me12', course }),
-				em.create(Task, { name: 'find me12', course }),
-			];
+			const tasks = [helper.createTask(), helper.createTask(), helper.createTask()];
 
 			const submissions = [
-				em.create(Submission, { task: tasks[0], student: students[0] }),
-				em.create(Submission, { task: tasks[1], student: students[0] }),
-				em.create(Submission, { task: tasks[2], student: students[0] }),
+				helper.createSubmission(tasks[0]),
+				helper.createSubmission(tasks[1]),
+				helper.createSubmission(tasks[2]),
 			];
 
-			await em.persistAndFlush([...students, ...tasks, ...submissions, course]);
+			await em.persistAndFlush([...students, ...tasks, ...submissions]);
 
 			const requestedTasks = [tasks[0], tasks[1]];
 			const [result, count] = await repo.getSubmissionsByTasksList(requestedTasks);
@@ -83,12 +72,13 @@ describe('submission repo', () => {
 
 	describe('getAllSubmissionsByUser', () => {
 		it('should return submissions that have the user as userId', async () => {
-			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
-			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students: [student] });
-			const task = em.create(Task, { name: 'find me11', course });
-			const submission = em.create(Submission, { task, student });
+			const helper = new TaskTestHelper();
+			const student = helper.getFirstUser();
 
-			await em.persistAndFlush([student, task, submission, course]);
+			const task = helper.createTask();
+			const submission = helper.createSubmission(task);
+
+			await em.persistAndFlush([student, task, submission]);
 
 			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
 
@@ -98,40 +88,36 @@ describe('submission repo', () => {
 		});
 
 		it('should return submissions where the user is a team member', async () => {
-			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
-			const student2 = em.create(UserTaskInfo, { firstName: 'First name', lastName: 'lastname' });
-			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students: [student] });
-			const task = em.create(Task, { name: 'find me11', course });
-			await em.persistAndFlush([student, student2, task, course]);
-			const submission = em.create(Submission, {
-				task,
-				student: student2,
-				teamMembers: [student.id, student2.id],
-			});
-			await em.persistAndFlush([submission]);
+			const helper = new TaskTestHelper();
+			helper.createAndAddUser();
+			const students = helper.getUsers();
+			const task = helper.createTask();
 
-			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+			const submission = helper.createTeamMemberSubmission(task, students);
+
+			await em.persistAndFlush([...students, task, submission]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(students[0].id);
 			expect(count).toEqual(1);
-			expect(result[0].teamMembers[0].firstName).toEqual(student.firstName);
+			expect(result[0].teamMembers[0].firstName).toEqual(students[0].firstName);
 		});
 
 		it('should return submissions where the user is in the course group', async () => {
-			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
-			const student2 = em.create(UserTaskInfo, { firstName: 'First name', lastName: 'lastname' });
-			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students: [student] });
-			const courseGroup = em.create(CourseGroupInfo, { course, students: [student, student2] });
-			const task = em.create(Task, { name: 'find me11', course });
-			const submission = em.create(Submission, {
-				task,
-				student: student2,
-				courseGroup,
-			});
-			await em.persistAndFlush([student, student2, task, submission, course, courseGroup]);
+			const helper = new TaskTestHelper();
+			helper.createAndAddUser();
+			const students = helper.getUsers();
+			const task = helper.createTask();
 
-			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+			const courseGroup = em.create(CourseGroupInfo, { courseId: task.courseId, students });
+			const submission = helper.createSubmission(task, students[1]);
+			submission.courseGroup = courseGroup;
+
+			await em.persistAndFlush([...students, task, submission, courseGroup]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(students[0].id);
 
 			expect(count).toEqual(1);
-			expect(result[0].courseGroup.students[0].firstName).toEqual(student.firstName);
+			expect(result[0].courseGroup.students[0].firstName).toEqual(students[0].firstName);
 		});
 	});
 });

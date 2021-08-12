@@ -1,10 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { Course } from '../entity';
-import { CourseRepo } from './course.repo';
 
+import { MongoMemoryDatabaseModule } from '../../database';
 import { LearnroomTestHelper } from '../utils/testHelper';
+import { Course } from '../entity';
+
+import { CourseRepo } from './course.repo';
 
 describe('course repo', () => {
 	let module: TestingModule;
@@ -43,7 +44,7 @@ describe('course repo', () => {
 			const course = helper.createStudentCourse();
 
 			await em.persistAndFlush([course]);
-			const [result] = await repo.findAllByUserId(helper.userId);
+			const [result] = await repo.findAllByUserId(helper.getFirstUser());
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = [
@@ -69,7 +70,7 @@ describe('course repo', () => {
 			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.userId);
+			const result = await repo.findAllByUserId(helper.getFirstUser());
 
 			const expectedResult = [courses, 2];
 			expect(result).toEqual(expectedResult);
@@ -80,7 +81,7 @@ describe('course repo', () => {
 			const courses = [helper.createStudentCourse(), helper.createStudentCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.userId);
+			const result = await repo.findAllByUserId(helper.getFirstUser());
 
 			const expectedResult = [courses, 2];
 			expect(result).toEqual(expectedResult);
@@ -91,7 +92,7 @@ describe('course repo', () => {
 			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.userId);
+			const result = await repo.findAllByUserId(helper.getFirstUser());
 
 			const expectedResult = [courses, 2];
 			expect(result).toEqual(expectedResult);
@@ -102,7 +103,7 @@ describe('course repo', () => {
 			const courses = [helper.createStudentCourse(), helper.createTeacherCourse(), helper.createSubstitutionCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.userId);
+			const result = await repo.findAllByUserId(helper.getFirstUser());
 
 			const expectedResult = [courses, 3];
 			expect(result).toEqual(expectedResult);
@@ -120,7 +121,7 @@ describe('course repo', () => {
 			];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
-			const result = await repo.findAllByUserId(helper.userId);
+			const result = await repo.findAllByUserId(helper.getFirstUser());
 
 			const expectedResult = [courses, 3];
 			expect(result).toEqual(expectedResult);
