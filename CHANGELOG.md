@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
+- SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 
 ## 26.8.0
 
@@ -77,7 +78,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 - SC-9190 - publish news target names
 - SC-8887 - allow public access to consentVersion service
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug

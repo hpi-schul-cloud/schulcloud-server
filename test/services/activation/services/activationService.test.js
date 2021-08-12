@@ -74,7 +74,7 @@ describe('activation/services activationService', () => {
 		app.services['nest-mail'] = nestMailService;
 
 		const res = await activationService.update(entry.activationCode, {}, { account: { userId: user._id } });
-		expect(nestMailService.send.calledOnce).to.eql(true);
+		expect(nestMailService.send.calledOnce).to.equal(true);
 		expect(res.success).to.be.true;
 
 		const changedUser = await util.getUser(app, user._id);

@@ -18,7 +18,6 @@ async function bootstrap() {
 
 	// load the legacy feathers/express server
 	const feathersExpress = await legacyAppPromise;
-	// const adapter = new ExpressAdapter(legacyExpress);
 	feathersExpress.setup();
 
 	// create the NestJS application on a seperate express instance

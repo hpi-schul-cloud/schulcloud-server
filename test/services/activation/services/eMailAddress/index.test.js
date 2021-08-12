@@ -54,7 +54,7 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 		app.services['nest-mail'] = nestMailService;
 
 		const res = await activationService.create(data, { account: { userId: user._id } });
-		expect(nestMailService.send.calledOnce).to.eql(true);
+		expect(nestMailService.send.calledOnce).to.equal(true);
 		expect(res.success).to.be.true;
 
 		const entries = await util.getEntriesByUserId(app, user._id);
