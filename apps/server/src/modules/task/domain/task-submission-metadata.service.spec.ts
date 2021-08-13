@@ -1,13 +1,16 @@
 import { Test } from '@nestjs/testing';
 import { Collection } from '@mikro-orm/core';
 
-import { UserTaskInfo, FileTaskInfo } from '../entity';
+import { UserTaskInfo, FileTaskInfo, Submission } from '../entity';
 import { TaskSubmissionMetadataService } from './task-submission-metadata.service';
 
 import { TaskTestHelper } from '../utils/TestHelper';
 
-const createFileCollectionWithFile = (creator: UserTaskInfo): Collection<FileTaskInfo> => {
-	return new Collection<FileTaskInfo>([new FileTaskInfo({ name: '', creator })]);
+const addFileCollectionWithFileToSubmission = (submission: Submission, creator: UserTaskInfo): FileTaskInfo => {
+	const file = new FileTaskInfo({ name: '', creator });
+	const collection = new Collection<FileTaskInfo>(submission, [file]);
+	submission.gradeFiles = collection;
+	return file;
 };
 
 describe('taskSubmissionMetadataService', () => {
@@ -79,7 +82,7 @@ describe('taskSubmissionMetadataService', () => {
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			submissions[0].gradeFile = createFileCollectionWithFile(helper.getFirstUser());
+			addFileCollectionWithFileToSubmission(submissions[0], helper.getFirstUser());
 			// submissions[1] has no grade
 
 			const result = service.submissionStatusForTask(submissions, task, 2);
@@ -96,7 +99,7 @@ describe('taskSubmissionMetadataService', () => {
 
 			submissions[0].grade = 50;
 			submissions[1].gradeComment = 'well done';
-			submissions[2].gradeFile = createFileCollectionWithFile(helper.getUsers()[2]);
+			addFileCollectionWithFileToSubmission(submissions[2], helper.getFirstUser());
 			// submissions[3] has no grade
 
 			const result = service.submissionStatusForTask(submissions, task, 4);

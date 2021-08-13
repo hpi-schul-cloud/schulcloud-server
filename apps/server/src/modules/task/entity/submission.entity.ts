@@ -14,7 +14,7 @@ interface ISubmissionProperties {
 	studentFiles?: FileTaskInfo[];
 	grade?: number;
 	gradeComment?: string;
-	gradeFile?: FileTaskInfo[];
+	gradeFiles?: FileTaskInfo[];
 }
 
 @Entity({ tableName: 'submissions' })
@@ -46,7 +46,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	gradeComment: string | null;
 
 	@ManyToMany({ fieldName: 'gradeFileIds', type: FileTaskInfo })
-	gradeFile = new Collection<FileTaskInfo>(this);
+	gradeFiles = new Collection<FileTaskInfo>(this);
 
 	constructor(props: ISubmissionProperties) {
 		super();
@@ -57,7 +57,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		this.grade = props.grade || null;
 		this.gradeComment = props.gradeComment || null;
 
-		const { courseGroup, teamMembers, studentFiles, gradeFile } = props;
-		Object.assign(this, { courseGroup, teamMembers, studentFiles, gradeFile });
+		const { courseGroup, teamMembers, studentFiles, gradeFiles } = props;
+		Object.assign(this, { courseGroup, teamMembers, studentFiles, gradeFiles });
 	}
 }
