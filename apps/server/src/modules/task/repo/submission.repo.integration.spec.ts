@@ -45,7 +45,8 @@ describe('submission repo', () => {
 			await em.persistAndFlush([...students, task, ...submissions]);
 
 			const [result, count] = await repo.getSubmissionsByTask(task);
-			expect(count).toEqual(students.length);
+			expect(count).toEqual(2);
+			expect(result).toHaveLength(2);
 		});
 	});
 
@@ -67,6 +68,7 @@ describe('submission repo', () => {
 			const requestedTasks = [tasks[0], tasks[1]];
 			const [result, count] = await repo.getSubmissionsByTasksList(requestedTasks);
 			expect(count).toEqual(2);
+			expect(result).toHaveLength(2);
 		});
 	});
 
