@@ -25,7 +25,7 @@ describe('Mail Service', async () => {
 			// assert that notification service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
-			expect(payload.recipients).to.equal([params.email]);
+			expect(payload.recipients).to.have.members([params.email]);
 			expect(payload.mail.plainTextContent).to.equal(params.content.text);
 		});
 		it('should send an valid html email to the notification service', async () => {
@@ -38,7 +38,7 @@ describe('Mail Service', async () => {
 			// assert that notification service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
-			expect(payload.recipients).to.equal([params.email]);
+			expect(payload.recipients).to.have.members([params.email]);
 			expect(payload.mail.htmlContent).to.equal(params.content.html);
 		});
 		it('files should be base64 encoded', async () => {
@@ -58,7 +58,7 @@ describe('Mail Service', async () => {
 			// assert that notification service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
-			expect(payload.recipients).to.equal([params.email]);
+			expect(payload.recipients).to.have.members([params.email]);
 			expect(payload.mail.htmlContent).to.equal(params.content.html);
 			expect(payload.mail.attachments[0].name).to.equal(params.attachments[0].filename);
 			expect(payload.mail.attachments[0].base64Content).to.equal(base64Content);
