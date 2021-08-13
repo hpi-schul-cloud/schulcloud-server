@@ -78,7 +78,7 @@ describe('TaskService', () => {
 			expect(total).toEqual(1);
 		});
 
-		it('should not return task in a hidden lesson', async () => {
+		it.only('should not return task in a hidden lesson', async () => {
 			const helper = new TaskTestHelper();
 			const task = helper.createTask();
 			const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: true });
@@ -101,6 +101,7 @@ describe('TaskService', () => {
 		it('should return task if lesson is null', async () => {
 			const helper = new TaskTestHelper();
 			const task = helper.createTask();
+			// @ts-expect-error: Test case - in database null exist
 			task.lesson = null;
 
 			await em.persistAndFlush([task]);
@@ -258,6 +259,7 @@ describe('TaskService', () => {
 			it('should not return task in a lesson when hidden is null', async () => {
 				const helper = new TaskTestHelper();
 				const task = helper.createTask();
+				// @ts-expect-error: Test case - in database null exist
 				task.lesson = null;
 
 				await em.persistAndFlush([task]);
@@ -267,6 +269,7 @@ describe('TaskService', () => {
 
 			it.skip('should not return task in a lesson of a different task', async () => {
 				/*
+				I think it can not solved on this place after changes
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const lesson = em.create(LessonTaskInfo, { course });

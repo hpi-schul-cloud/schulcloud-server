@@ -25,7 +25,7 @@ export class Task extends BaseEntityWithTimestamps {
 	courseId: EntityId;
 
 	@ManyToOne({ fieldName: 'lessonId' })
-	lesson?: LessonTaskInfo | null;
+	lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
 
 	constructor(props: ITaskProperties) {
 		super();

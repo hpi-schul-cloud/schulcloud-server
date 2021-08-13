@@ -3,7 +3,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 
 interface LessonTaskInfoProperties {
-	hidden: boolean;
+	hidden?: boolean;
 	courseId: EntityId;
 }
 
@@ -17,7 +17,7 @@ export class LessonTaskInfo extends BaseEntityWithTimestamps {
 
 	constructor(props: LessonTaskInfoProperties) {
 		super();
-		this.hidden = props.hidden;
+		this.hidden = props.hidden || true;
 		this.courseId = props.courseId;
 		Object.assign(this, {});
 	}
