@@ -50,7 +50,7 @@ export class TaskRepo {
 			Task,
 			{
 				$and: [
-					{ course: { $in: courseIds } },
+					{ courseId: { $in: courseIds } },
 					{ private: { $ne: true } },
 					{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
 				],
