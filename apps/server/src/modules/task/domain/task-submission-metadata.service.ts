@@ -11,7 +11,7 @@ export class TaskSubmissionMetadataService {
 		const isGraded =
 			(typeof submission.grade === 'number' && submission.grade >= 0) ||
 			(typeof submission.gradeComment === 'string' && submission.gradeComment.length > 0) ||
-			(submission.gradeFile && submission.gradeFile.length > 0);
+			(submission.gradeFiles !== undefined && submission.gradeFiles.length > 0);
 		return isGraded;
 	}
 
@@ -29,6 +29,7 @@ export class TaskSubmissionMetadataService {
 		const submittedUsers = new Set();
 		const gradedUsers = new Set();
 
+		// important to only count the newest graded
 		const sortedSubmissions = this.sort(submissions);
 
 		sortedSubmissions.forEach((submission) => {
