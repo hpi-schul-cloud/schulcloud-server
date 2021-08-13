@@ -30,14 +30,14 @@ const DEFAULT = {
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.name })
-	name!: string;
+	private name!: string;
 
 	@Property({ default: DEFAULT.description })
-	description!: string;
+	private description!: string;
 
 	@Index()
 	@Property()
-	schoolId: EntityId;
+	private schoolId: EntityId;
 
 	// @Index()
 	// @Property()
@@ -45,19 +45,19 @@ export class Course extends BaseEntityWithTimestamps {
 
 	@Index()
 	@Property({ fieldName: 'userIds' })
-	studentIds: EntityId[];
+	private studentIds: EntityId[];
 
 	@Index()
 	@Property()
-	teacherIds: EntityId[];
+	private teacherIds: EntityId[];
 
 	@Index()
 	@Property({ fieldName: 'substitutionIds' })
-	substitutionTeacherIds: EntityId[];
+	private substitutionTeacherIds: EntityId[];
 
 	// TODO: string color format
 	@Property({ default: DEFAULT.color })
-	color!: string;
+	private color!: string;
 
 	@Property({ persist: false, default: DEFAULT.groups, hidden: true })
 	// private groups: Coursegroup[];
@@ -80,6 +80,10 @@ export class Course extends BaseEntityWithTimestamps {
 		// this.features = props.features || [];
 
 		Object.assign(this, {});
+	}
+
+	getStudentsNumber(): number {
+		return this.studentIds.length;
 	}
 
 	getDescription(): string {

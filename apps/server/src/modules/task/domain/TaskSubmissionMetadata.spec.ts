@@ -1,37 +1,53 @@
-import { Test } from '@nestjs/testing';
 import { Collection } from '@mikro-orm/core';
 
-import { UserTaskInfo, FileTaskInfo, Submission } from '../entity';
-import { TaskSubmissionMetadataService } from './task-submission-metadata.service';
-
 import { TaskTestHelper } from '../utils/TestHelper';
+import { UserTaskInfo, FileTaskInfo, Submission } from '../entity';
 
-const addFileCollectionWithFileToSubmission = (submission: Submission, creator: UserTaskInfo): FileTaskInfo => {
+import { TaskSubmissionMetadata } from './TaskSubmissionMetadata';
+
+const addGradedFileCollectionWithFileToSubmission = (submission: Submission, creator: UserTaskInfo): FileTaskInfo => {
 	const file = new FileTaskInfo({ name: '', creator });
 	const collection = new Collection<FileTaskInfo>(submission, [file]);
 	submission.gradeFiles = collection;
 	return file;
 };
 
-describe('taskSubmissionMetadataService', () => {
-	let service: TaskSubmissionMetadataService;
-	beforeEach(async () => {
-		const module = await Test.createTestingModule({
-			providers: [TaskSubmissionMetadataService],
-		}).compile();
-
-		service = module.get<TaskSubmissionMetadataService>(TaskSubmissionMetadataService);
-	});
-
+describe('TaskSubmissionMetadata', () => {
 	describe('submissionStatusForTeacher', () => {
+		it('should return task and status', () => {
+			const helper = new TaskTestHelper();
+			helper.createAndAddUser();
+			const task = helper.createTask();
+			const submissions = helper.createSubmissionsForEachStudent(task);
+
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 2);
+			expect(result.task).toEqual(task);
+			expect(result.status).toBeDefined();
+		});
+
+		it('should include graded, submitted and maxSubmissions in status', () => {
+			const helper = new TaskTestHelper();
+			helper.createAndAddUser();
+			const task = helper.createTask();
+			const submissions = helper.createSubmissionsForEachStudent(task);
+
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 2);
+			expect(result.status.graded).toBeDefined();
+			expect(result.status.submitted).toBeDefined();
+			expect(result.status.maxSubmissions).toBeDefined();
+		});
+
 		it('should return the number of students that submitted', () => {
 			const helper = new TaskTestHelper();
 			helper.createAndAddUser();
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			const result = service.submissionStatusForTask(submissions, task, 2);
-			expect(result.submitted).toEqual(2);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 2);
+			expect(result.status.submitted).toEqual(2);
 		});
 
 		it('should count submissions by the same student only once', () => {
@@ -39,15 +55,18 @@ describe('taskSubmissionMetadataService', () => {
 			const task = helper.createTask();
 			const submissions = [helper.createSubmission(task), helper.createSubmission(task)];
 
-			const result = service.submissionStatusForTask(submissions, task, 1);
-			expect(result.submitted).toEqual(1);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 1);
+			expect(result.status.submitted).toEqual(1);
 		});
 
 		it('should return the maximum number of students that could submit', () => {
 			const helper = new TaskTestHelper();
 			const task = helper.createTask();
-			const result = service.submissionStatusForTask([], task, 3);
-			expect(result.maxSubmissions).toEqual(3);
+
+			const metadata = new TaskSubmissionMetadata([]);
+			const result = metadata.addStatusToTask(task, 3);
+			expect(result.status.maxSubmissions).toEqual(3);
 		});
 
 		it('should count graded number.', () => {
@@ -59,8 +78,9 @@ describe('taskSubmissionMetadataService', () => {
 			submissions[0].grade = 50;
 			// submissions[1] has no grade
 
-			const result = service.submissionStatusForTask(submissions, task, 2);
-			expect(result.graded).toEqual(1);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 2);
+			expect(result.status.graded).toEqual(1);
 		});
 
 		it('should count graded comment.', () => {
@@ -72,8 +92,9 @@ describe('taskSubmissionMetadataService', () => {
 			submissions[0].gradeComment = 'well done';
 			// submissions[1] has no grade
 
-			const result = service.submissionStatusForTask(submissions, task, 2);
-			expect(result.graded).toEqual(1);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 2);
+			expect(result.status.graded).toEqual(1);
 		});
 
 		it('should count graded files.', () => {
@@ -82,11 +103,12 @@ describe('taskSubmissionMetadataService', () => {
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			addFileCollectionWithFileToSubmission(submissions[0], helper.getFirstUser());
+			addGradedFileCollectionWithFileToSubmission(submissions[0], helper.getFirstUser());
 			// submissions[1] has no grade
 
-			const result = service.submissionStatusForTask(submissions, task, 2);
-			expect(result.graded).toEqual(1);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 2);
+			expect(result.status.graded).toEqual(1);
 		});
 
 		it('should return the number of submissions that have been graded', () => {
@@ -99,11 +121,12 @@ describe('taskSubmissionMetadataService', () => {
 
 			submissions[0].grade = 50;
 			submissions[1].gradeComment = 'well done';
-			addFileCollectionWithFileToSubmission(submissions[2], helper.getFirstUser());
+			addGradedFileCollectionWithFileToSubmission(submissions[2], helper.getFirstUser());
 			// submissions[3] has no grade
 
-			const result = service.submissionStatusForTask(submissions, task, 4);
-			expect(result.graded).toEqual(3);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 4);
+			expect(result.status.graded).toEqual(3);
 		});
 
 		it('should consider only the newest submission per user for grading', () => {
@@ -121,8 +144,9 @@ describe('taskSubmissionMetadataService', () => {
 
 			const submissions = [submission1, submission2, submission3];
 
-			const result = service.submissionStatusForTask(submissions, task, 1);
-			expect(result.graded).toEqual(0);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 1);
+			expect(result.status.graded).toEqual(0);
 		});
 
 		it('should only consider submissions of the actual task', () => {
@@ -135,8 +159,9 @@ describe('taskSubmissionMetadataService', () => {
 
 			const submissions = [submission, otherSubmission];
 
-			const result = service.submissionStatusForTask(submissions, task, 1);
-			expect(result.submitted).toEqual(1);
+			const metadata = new TaskSubmissionMetadata(submissions);
+			const result = metadata.addStatusToTask(task, 1);
+			expect(result.status.submitted).toEqual(1);
 		});
 	});
 });

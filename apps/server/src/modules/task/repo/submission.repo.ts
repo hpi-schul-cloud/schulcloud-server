@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '../../../shared/domain';
 import { CourseGroupInfo, Submission, Task } from '../entity';
 
+// TODO: add scope helper
+
 @Injectable()
 export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
