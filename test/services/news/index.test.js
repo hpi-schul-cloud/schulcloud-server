@@ -5,7 +5,7 @@ const sleep = require('util').promisify(setTimeout);
 const appPromise = require('../../../src/app');
 const { newsModel: News } = require('../../../src/services/news/model');
 
-describe.only('news service', () => {
+describe('news service', () => {
 	let app;
 	let newsService;
 

@@ -10,12 +10,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9231 - add permissions to SuperHero to edit admin role 
+- SC-9269 - let eslint ensure no tests with .only exist anymore
 
 ## 26.8.0
 
 ## [26.7.1] - 2021-08-03
-
-- SC-9231 - add permissions to SuperHero to edit admin role 
+ 
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
 ## [26.7.0] - 2021-07-28
