@@ -56,6 +56,7 @@ describe('TaskService', () => {
 			await em.persistAndFlush([task, otherTask]);
 			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
 			expect(total).toEqual(1);
+			expect(result).toHaveLength(1);
 		});
 
 		it('should not return private task of course', async () => {
@@ -66,36 +67,41 @@ describe('TaskService', () => {
 			await em.persistAndFlush([task]);
 			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
 			expect(total).toEqual(0);
+			expect(result).toHaveLength(0);
 		});
 
 		it('should return task in a visible lesson of the users course', async () => {
 			const helper = new TaskTestHelper();
-			const task = helper.createTask();
-			const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: false });
+			const { task, lesson, courseId } = helper.createLessonWithTask();
+			lesson.hidden = false;
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await service.findAllAssignedByTeacher([courseId]);
 			expect(total).toEqual(1);
+			expect(result).toHaveLength(1);
 		});
 
-		it.only('should not return task in a hidden lesson', async () => {
+		it('should not return task from a hidden lesson', async () => {
 			const helper = new TaskTestHelper();
-			const task = helper.createTask();
-			const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: true });
+			const { task, lesson, courseId } = helper.createLessonWithTask();
+			lesson.hidden = true;
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await service.findAllAssignedByTeacher([courseId]);
 			expect(total).toEqual(0);
+			expect(result).toHaveLength(0);
 		});
 
 		it('should not return task in a lesson when hidden is null', async () => {
 			const helper = new TaskTestHelper();
-			const task = helper.createTask();
-			const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: null });
+			const { task, lesson, courseId } = helper.createLessonWithTask();
+			// @ts-expect-error: Test case
+			lesson.hidden = null;
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await service.findAllAssignedByTeacher([courseId]);
 			expect(total).toEqual(0);
+			expect(result).toHaveLength(0);
 		});
 
 		it('should return task if lesson is null', async () => {
@@ -107,6 +113,7 @@ describe('TaskService', () => {
 			await em.persistAndFlush([task]);
 			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
 			expect(total).toEqual(1);
+			expect(result).toHaveLength(1);
 		});
 
 		it.skip('should not return task in a lesson of a different course', async () => {
@@ -139,10 +146,11 @@ describe('TaskService', () => {
 
 			it('should return a paginated result', async () => {
 				const helper = new TaskTestHelper();
-				const task1 = helper.createTask();
-				const task2 = helper.createTask();
-				const task3 = helper.createTask();
-				const task4 = helper.createTask();
+				const courseId = helper.createEntityId();
+				const task1 = helper.createTask(courseId);
+				const task2 = helper.createTask(courseId);
+				const task3 = helper.createTask(courseId);
+				const task4 = helper.createTask(courseId);
 				const tasks = [task1, task2, task3, task4];
 
 				await em.persistAndFlush(tasks);
@@ -156,13 +164,14 @@ describe('TaskService', () => {
 
 			it('should be sorted with earlier duedates first', async () => {
 				const helper = new TaskTestHelper();
-				const task1 = helper.createTask();
+				const courseId = helper.createEntityId();
+				const task1 = helper.createTask(courseId);
 				task1.dueDate = new Date(Date.now() + 500);
-				const task2 = helper.createTask();
+				const task2 = helper.createTask(courseId);
 				task1.dueDate = new Date(Date.now() - 500);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await service.findAllByStudent([task1.courseId]);
+				const [result, total] = await service.findAllByStudent([courseId]);
 				expect(total).toEqual(2);
 				expect(result[0].id).toEqual(task2.id);
 				expect(result[1].id).toEqual(task1.id);
@@ -177,6 +186,7 @@ describe('TaskService', () => {
 				await em.persistAndFlush([task]);
 				const [result, total] = await service.findAllByStudent([task.courseId]);
 				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
 			});
 
 			it('should not return other tasks', async () => {
@@ -187,6 +197,7 @@ describe('TaskService', () => {
 				await em.persistAndFlush([task, otherTask]);
 				const [result, total] = await service.findAllByStudent([task.courseId]);
 				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
 			});
 
 			it('should not return private task of course', async () => {
@@ -197,74 +208,81 @@ describe('TaskService', () => {
 				await em.persistAndFlush([task]);
 				const [result, total] = await service.findAllByStudent([task.courseId]);
 				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
 
 			it('should not return task that is on the ignore list', async () => {
 				const helper = new TaskTestHelper();
-				const task1 = helper.createTask();
-				const task2 = helper.createTask();
+				const courseId = helper.createEntityId();
+				const task1 = helper.createTask(courseId);
+				const task2 = helper.createTask(courseId);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await service.findAllByStudent([task1.courseId], {}, [task2.id]);
-				expect(total).toEqual(0);
+				const [result, total] = await service.findAllByStudent([courseId], {}, [task2.id]);
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
 			});
 
 			it('should filter tasks that are more than one week overdue', async () => {
 				const helper = new TaskTestHelper();
+				const courseId = helper.createEntityId();
 				const threeWeeksinMilliseconds = 1.814e9;
-				const task1 = helper.createTask();
+				const task1 = helper.createTask(courseId);
 				task1.dueDate = new Date(Date.now() - threeWeeksinMilliseconds);
-				const task2 = helper.createTask();
+				const task2 = helper.createTask(courseId);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await service.findAllByStudent([task1.courseId]);
+				const [result, total] = await service.findAllByStudent([courseId]);
 				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
 			});
 		});
 
 		describe('open tasks in lessons', () => {
 			it('should return task in a visible lesson of the users course', async () => {
 				const helper = new TaskTestHelper();
-				const task = helper.createTask();
-				const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: false });
-				task.lesson = lesson;
+				const { task, lesson, courseId } = helper.createLessonWithTask();
+				lesson.hidden = false;
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await service.findAllByStudent([courseId]);
 				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
 			});
 
 			it('should not return task in a hidden lesson', async () => {
 				const helper = new TaskTestHelper();
-				const task = helper.createTask();
-				const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: true });
-				task.lesson = lesson;
+				const { task, lesson, courseId } = helper.createLessonWithTask();
+				lesson.hidden = true;
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await service.findAllByStudent([courseId]);
 				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
 
 			it('should not return task in a hidden lesson', async () => {
 				const helper = new TaskTestHelper();
-				const task = helper.createTask();
-				const lesson = em.create(LessonTaskInfo, { courseId: task.courseId, hidden: true });
-				task.lesson = lesson;
+				const { task, lesson, courseId } = helper.createLessonWithTask();
+				// @ts-expect-error: Test case
+				lesson.hidden = null;
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await service.findAllByStudent([courseId]);
 				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
 
 			it('should not return task in a lesson when hidden is null', async () => {
 				const helper = new TaskTestHelper();
-				const task = helper.createTask();
+				const { task, lesson, courseId } = helper.createLessonWithTask();
 				// @ts-expect-error: Test case - in database null exist
-				task.lesson = null;
+				lesson.hidden = null;
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await service.findAllByStudent([courseId]);
 				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
 
 			it.skip('should not return task in a lesson of a different task', async () => {

@@ -1,6 +1,6 @@
 import { EntityId, TestHelper } from '@shared/domain';
 
-import { Submission, Task, UserTaskInfo } from '../entity';
+import { Submission, Task, UserTaskInfo, LessonTaskInfo } from '../entity';
 
 export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 	createSchool(): EntityId {
@@ -8,7 +8,7 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 	}
 
 	createUser(): UserTaskInfo {
-		const user = new UserTaskInfo({ lastName: '', firstName: ''});
+		const user = new UserTaskInfo({ lastName: '', firstName: '' });
 		this.addId(user);
 		return user;
 	}
@@ -18,6 +18,15 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 		const task = new Task({ name: '', courseId: id });
 		this.addId(task);
 		return task;
+	}
+
+	createLessonWithTask(): { task: Task; lesson: LessonTaskInfo; courseId: EntityId } {
+		const courseId = this.createEntityId();
+		const lesson = new LessonTaskInfo({ courseId });
+		this.addId(lesson);
+		const task = new Task({ name: '', courseId, lesson });
+		this.addId(task);
+		return { task, lesson, courseId };
 	}
 
 	createSubmission(task: Task, student?: UserTaskInfo): Submission {
