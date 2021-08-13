@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { ISubmissionStatus, Submission, Task } from '../entity';
+import { Submission, Task } from '../entity';
 
-/**
- * Sounds more like a TaskMetadata class that can instances over new TaskMetadata(maxSubmissions, submissions);
- * to iterate stuff for Task -> TaskMetadata.generateStatus(task): ISubmissionStatus;
- * */
-@Injectable()
-export class TaskSubmissionMetadataService {
+export class TaskSubmissionMetadata {
+	submissions: Submission[];
+
+	constructor(submissions: Submission[]) {
+		this.submissions = submissions;
+	}
+
 	private isGraded(submission: Submission): boolean {
 		const isGraded =
 			(typeof submission.grade === 'number' && submission.grade >= 0) ||
@@ -25,12 +25,16 @@ export class TaskSubmissionMetadataService {
 		return sortedSubmissions;
 	}
 
-	submissionStatusForTask = (submissions: Submission[], task: Task, maxSubmissions: number): ISubmissionStatus => {
+	// Bad name it generate or map a new type
+	addStatusToTask(
+		task: Task,
+		maxSubmissions: number
+	): { task: Task; status: { submitted: number; maxSubmissions: number; graded: number } } {
 		const submittedUsers = new Set();
 		const gradedUsers = new Set();
 
 		// important to only count the newest graded
-		const sortedSubmissions = this.sort(submissions);
+		const sortedSubmissions = this.sort(this.submissions);
 
 		sortedSubmissions.forEach((submission) => {
 			if (submission.task.id === task.id) {
@@ -42,9 +46,12 @@ export class TaskSubmissionMetadataService {
 		});
 
 		return {
-			submitted: submittedUsers.size,
-			maxSubmissions,
-			graded: gradedUsers.size,
+			task,
+			status: {
+				submitted: submittedUsers.size,
+				maxSubmissions,
+				graded: gradedUsers.size,
+			},
 		};
-	};
+	}
 }

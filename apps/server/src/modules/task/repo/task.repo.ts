@@ -4,10 +4,12 @@ import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { Counted } from '@shared/domain/types';
 import { Task, LessonTaskInfo } from '../entity';
 
+// TODO: add scope helper and export to use it in uc
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	// TODO: rename
 	async findAllByStudent(
 		courseIds: EntityId[],
 		{ limit, skip }: IPagination = {},
@@ -18,14 +20,14 @@ export class TaskRepo {
 			hidden: false,
 		});
 
+		// TODO: date sounds like domain logic if this go out, after it student and teacher has only different order logic
+		// that also sound like it should manage over scope helper in uc.
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 		const [usersTasks, total] = await this.em.findAndCount(
 			Task,
 			{
-				// TODO task query builder, see NewsScope
 				$and: [
-					// TODO move into a logic group / director
 					{ id: { $nin: ignoredTasks } },
 					{ private: { $ne: true } },
 					{ courseId: { $in: courseIds } },
@@ -40,6 +42,7 @@ export class TaskRepo {
 		return [usersTasks, total];
 	}
 
+	// TODO: rename
 	async findAllAssignedByTeacher(courseIds: EntityId[], { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
 		const publishedLessons = await this.em.find(LessonTaskInfo, {
 			courseId: { $in: courseIds },
@@ -54,7 +57,7 @@ export class TaskRepo {
 					{ private: { $ne: true } },
 					{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
 				],
-			},
+			}, // TODO: { createdAt: QueryOrder.DESC } vs orderBy: { dueDate: QueryOrder.ASC } teacher vs student
 			{ limit, offset: skip, orderBy: { createdAt: QueryOrder.DESC } }
 		);
 		return [usersTasks, count];
