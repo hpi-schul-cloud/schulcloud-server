@@ -147,6 +147,7 @@
 		}
 	],
 	"permissions": [
+		"ADMIN_EDIT",
 		"CLASS_LIST",
 		"CREATE_SUPPORT_JWT",
 		"DATASOURCES_CREATE",

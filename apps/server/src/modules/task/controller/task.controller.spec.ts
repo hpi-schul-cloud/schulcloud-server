@@ -3,6 +3,7 @@ import { TaskRepo } from '../repo/task.repo';
 import { SubmissionRepo } from '../repo/submission.repo';
 import { TaskUC } from '../uc/task.uc';
 import { TaskController } from './task.controller';
+import { TaskSubmissionMetadataService } from '../domain/task-submission-metadata.service';
 
 describe('TaskController', () => {
 	let controller: TaskController;
@@ -19,6 +20,10 @@ describe('TaskController', () => {
 				SubmissionRepo,
 				{
 					provide: SubmissionRepo,
+					useValue: {},
+				},
+				{
+					provide: TaskSubmissionMetadataService,
 					useValue: {},
 				},
 			],

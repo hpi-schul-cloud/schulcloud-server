@@ -9,15 +9,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9231 - add permissions to SuperHero to edit admin role
+- SC-9269 - let eslint ensure no tests with .only exist anymore
 - New task relevant seed data.
 
-## [26.7.0] - 2021-07-28
+## 26.8.0
+
+
+### 26.7.1
+
+- SC-9233 - fix Lern-Store on THR to load also WLO content
+
+## 26.7.0 
 
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
 - SC-9150 - add script to change school year
 - SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
+- SC-9177 - allow superheros to delete admins
 
 ### Changed
 

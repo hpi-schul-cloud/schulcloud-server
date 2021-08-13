@@ -1,7 +1,7 @@
 # Description
 <!--
   This is a template to add as many information as possible to the pull request, to help reviewer and as a checklist for you. Points to remember are set in the comments, please read and keep them in mind:
-  
+
     - Code should be self-explanatory and share your knowledge with others
     - Document code that is not self-explanatory
     - Think about bugs and keep security in mind
@@ -55,6 +55,8 @@ Base links to copy
 -->
 
 ## Approval for review
+
+- [ ] QA: In addition to review, the code has been manually tested (if manual testing is possible)
 - [ ] All points were discussed with the ticket creator, support-team or product owner. The code upholds all quality guidelines from the PR-template.
 
 > Notice: Please remove the WIP label if the PR is ready to review, otherwise nobody will review it.
