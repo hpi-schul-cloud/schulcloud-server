@@ -17,11 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Echo head_ref
-        run: echo $github.head_ref	
-      - name: Echo ref
-        run: echo $github.ref
-      - name: Echo github obj
-        run: echo ${{ toJson(github) }}
+        run: echo ${{ github.head_ref }}
       - name: run git change
         run: |
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
