@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.9.1
+
+- SC-9192 - enable cors for nestjs app routes
+
 ## 26.9.0
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
