@@ -41,7 +41,7 @@ spec:
             name: api-secret
         readinessProbe:
           httpGet:
-            path: /version
+            path: /api/v1/version
             port: 3030
           timeoutSeconds: 4
           failureThreshold: 3
@@ -49,14 +49,14 @@ spec:
         # liveless if unsatisfactory reply
         livenessProbe:
           httpGet:
-            path: /version
+            path: /api/v1/version
             port: 3030
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
-            path: /version
+            path: /api/v1/version
             port: 3030
           timeoutSeconds: 4
           failureThreshold:  36

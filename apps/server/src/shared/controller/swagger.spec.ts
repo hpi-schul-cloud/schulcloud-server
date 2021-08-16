@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as request from 'supertest';
-import { API_DOCS_PATH, ROUTE_PRAEFIX } from '../../constants';
 import { ServerModule } from '../../server.module';
 import { enableOpenApiDocs } from './swagger';
 
@@ -11,10 +10,7 @@ describe('swagger setup', () => {
 
 		beforeAll(async () => {
 			app = await NestFactory.create(ServerModule);
-
-			const apiDocsPath = `${ROUTE_PRAEFIX}/${API_DOCS_PATH}`;
-			enableOpenApiDocs(app, apiDocsPath);
-
+			enableOpenApiDocs(app, 'docs');
 			await app.init();
 		});
 
@@ -23,17 +19,17 @@ describe('swagger setup', () => {
 		});
 
 		it('should redirect', async () => {
-			const response = await request(app.getHttpServer()).get('/v3/docs').redirects(1);
+			const response = await request(app.getHttpServer()).get('/docs').redirects(1);
 			expect(response.text).toContain('Swagger UI');
 		});
 
 		it('should serve open api documentation at given path', async () => {
-			const response = await request(app.getHttpServer()).get('/v3/docs/');
+			const response = await request(app.getHttpServer()).get('/docs/');
 			expect(response.text).toContain('Swagger UI');
 		});
 
 		it('should serve a json api version', async () => {
-			const response = await request(app.getHttpServer()).get('/v3/docs-json').expect(200);
+			const response = await request(app.getHttpServer()).get('/docs-json').expect(200);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.body.info).toEqual({
 				contact: {},
