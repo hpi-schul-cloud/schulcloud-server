@@ -17,7 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Echo head_ref
-        run: echo ${{ github.head_ref }}
+        run: |
+          echo ${{ github.head_ref }}
+          echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
       - name: run git change
         run: |
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
