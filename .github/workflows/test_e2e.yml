@@ -16,9 +16,8 @@ jobs:
     if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
     steps:
       - uses: actions/checkout@v2
-      - name: show env
-        run: | 
-          echo $env
+      - name: Echo github obj
+        run: echo ${{ toJson(github) }}
       - name: run git change
         run: |
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
