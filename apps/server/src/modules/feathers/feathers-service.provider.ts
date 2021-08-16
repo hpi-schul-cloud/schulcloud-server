@@ -1,4 +1,4 @@
-import { Injectable, Scope, Inject } from '@nestjs/common';
+import { Injectable, Scope, Inject, ImATeapotException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { Application } from '@feathersjs/express';
@@ -35,7 +35,14 @@ export class FeathersServiceProvider {
 	constructor(@Inject(REQUEST) private request: Request) {}
 
 	getService(path: string): FeathersService {
-		const service = (this.request.app as Application).service(path) as FeathersService;
+		const feathersApp = this.request.app.get('feathersApp') as Application;
+		if (feathersApp == null) {
+			// missing a feathers instance defined in module definition
+			// see main.ts how it might work
+			// sample: nestExpress.set('feathersApp', feathersExpress);
+			throw new ImATeapotException('this action requires a feathers instance available');
+		}
+		const service = feathersApp.service(path) as FeathersService;
 		return service;
 	}
 }
