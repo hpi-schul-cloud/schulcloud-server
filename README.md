@@ -1,6 +1,6 @@
 # HPI Schul-Cloud Server
 
-Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server) 
+Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 Master: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 
 Develop: [![codecov](https://codecov.io/gh/hpi-schul-cloud/schulcloud-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/hpi-schul-cloud/schulcloud-server/branch/develop)
@@ -10,7 +10,7 @@ Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d043
 
 [![Version](https://img.shields.io/github/release/hpi-schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/hpi-schul-cloud/releases)
 
-# NestJS application 
+## NestJS application
 
 > Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html) of this repository at GitHub pages. It contains information about
 
@@ -22,11 +22,34 @@ Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d043
 
 Based on [NestJS](https://docs.nestjs.com/)
 
-# Feathers application
+## Feathers application
 
 This is legacy part of the application!
 
 Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
+
+## Application seperation
+
+In order to seperate NestJS and Feathers each application runs in its own express instance. These express instances are then mounted on seperate paths under a common root express instance.
+
+```
+Root-Express-App 
+├─ api/v1/       --> Feathers-App
+├─ api/v3/       --> NestJS-App
+```
+
+This ensures that each application can run its own middleware stack for authentication, error handling, logging etc.
+
+The mount paths don't have any impact on the routes inside of the applications, e.g. the path `/api/v3/news` will translate to the inner path `/news`. That means that in terms of route matching each child application doesn't have to take any measures regarding the path prefix. It simply works as it was mounted to `/`.
+
+**However note** that when URLs are generated inside a child application the path prefix has to be prepended. Only then the generated URLs match the appropriate child application, e.g. the path `/news` has to be provided as the external path `/api/v3/news`.
+
+It is possible (not very likely) that the server api is called with URLs that use the old schema without a path prefix. As a safety net for that we additionally mount the Feathers application as before under the paths:
+
+- `/` - for internal calls
+- `/api` - for external calls
+
+When these paths are accessed an error with context `[DEPRECATED-PATH]` is logged.
 
 ## Setup
 

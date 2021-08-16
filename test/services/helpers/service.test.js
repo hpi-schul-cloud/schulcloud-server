@@ -1,93 +1,71 @@
 const { expect } = require('chai');
-const nock = require('nock');
+const sinon = require('sinon');
 
 const appPromise = require('../../../src/app');
-const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
-
-// eslint-disable-next-line import/no-dynamic-require
-const config = require(`../../../config/${NODE_ENV}.json`); // TODO cleanup
-
-const isMailbodyValid = ({ platform, platformId, to, subject, text, html, attachments }) => {
-	// file content must be base64 encoded ant therefore of type string
-	const attachmentsAreValid = attachments.every((attachment) =>
-		Boolean(typeof attachment.filename === 'string' && typeof attachment.content === 'string')
-	);
-	const hasRequiredAttributes = Boolean(platform && platformId && to && subject && (text || html));
-	return Boolean(hasRequiredAttributes && attachmentsAreValid);
-};
-
-const getNotificationMock = (expectedData = {}) =>
-	new Promise((resolve) => {
-		nock(config.NOTIFICATION_URI)
-			.post('/mails')
-			.reply(200, (uri, requestBody) => {
-				Object.entries(expectedData).forEach(([key, value]) => {
-					expect(requestBody[key]).to.eql(value);
-				});
-				expect(isMailbodyValid(requestBody)).to.equal(true);
-				resolve(true);
-				return 'Message queued';
-			});
-	});
+const { SMTP_SENDER } = require('../../../config/globals');
 
 describe('Mail Service', async () => {
 	const app = await appPromise;
 	const mailService = app.service('/mails');
+	let nestMailService;
 
-	afterEach(() => {
-		nock.cleanAll();
+	beforeEach(() => {
+		nestMailService = { send: sinon.spy() };
+		app.services['nest-mail'] = nestMailService;
 	});
 
 	describe('valid emails', () => {
 		it('should send an valid text email to the notification service', async () => {
-			const cb = getNotificationMock();
-			await mailService.create({
+			const params = {
 				email: 'test@test.test',
 				subject: 'test',
 				content: { text: 'Testing Purposes' },
-			});
+			};
+			await mailService.create(params);
 			// assert that notification service was actually called
-			expect(await cb).to.equal(true);
+			expect(nestMailService.send.calledOnce).to.equal(true);
+			const payload = nestMailService.send.firstCall.args[0];
+			expect(payload.recipients).to.have.members([params.email]);
+			expect(payload.mail.plainTextContent).to.equal(params.content.text);
 		});
 		it('should send an valid html email to the notification service', async () => {
-			const cb = getNotificationMock();
-			await mailService.create({
+			const params = {
 				email: 'test@test.test',
 				subject: 'test',
 				content: { html: '<h1>Testing Purposes</h1>' },
-			});
+			};
+			await mailService.create(params);
 			// assert that notification service was actually called
-			expect(await cb).to.equal(true);
+			expect(nestMailService.send.calledOnce).to.equal(true);
+			const payload = nestMailService.send.firstCall.args[0];
+			expect(payload.recipients).to.have.members([params.email]);
+			expect(payload.mail.htmlContent).to.equal(params.content.html);
 		});
 		it('files should be base64 encoded', async () => {
-			const cb = getNotificationMock({
-				attachments: [
-					{
-						filename: 'test.gif',
-						content: 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-					},
-				],
-			});
-			await mailService.create({
+			const base64Content = 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+			const params = {
 				email: 'test@test.test',
 				subject: 'test',
 				content: { html: '<h1>Testing Purposes</h1>' },
 				attachments: [
 					{
 						filename: 'test.gif',
-						content: Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'),
+						content: Buffer.from(base64Content, 'base64'),
 					},
 				],
-			});
+			};
+			await mailService.create(params);
 			// assert that notification service was actually called
-			expect(await cb).to.equal(true);
+			expect(nestMailService.send.calledOnce).to.equal(true);
+			const payload = nestMailService.send.firstCall.args[0];
+			expect(payload.recipients).to.have.members([params.email]);
+			expect(payload.mail.htmlContent).to.equal(params.content.html);
+			expect(payload.mail.attachments[0].name).to.equal(params.attachments[0].filename);
+			expect(payload.mail.attachments[0].base64Content).to.equal(base64Content);
+			expect(payload.mail.attachments[0].contentDisposition).to.equal('ATTACHMENT');
 		});
 
 		it('From address should not be changed by the caller', async () => {
-			const notifcationMock = getNotificationMock({
-				from: SMTP_SENDER,
-			});
-
 			await mailService.create({
 				from: 'customFromAddress@test.com',
 				email: 'test@test.test',
@@ -96,14 +74,22 @@ describe('Mail Service', async () => {
 			});
 
 			// assert that notification service was actually called
-			expect(await notifcationMock).to.equal(true);
+			expect(nestMailService.send.calledOnce).to.equal(true);
+			const payload = nestMailService.send.firstCall.args[0];
+			expect(payload.from).to.equal(SMTP_SENDER);
 		});
 	});
 
-	describe('invalid emails', () => {
+	describe('invalid emails', async () => {
 		beforeEach(() => {
-			nock(config.NOTIFICATION_URI).post('/mails').replyWithError('invalid data send');
+			nestMailService = {
+				send: () => {
+					throw new Error('Invalid data provided');
+				},
+			};
+			app.services['nest-mail'] = nestMailService;
 		});
+
 		it('should throw if notification server returns error', async () => {
 			try {
 				await mailService.create({
@@ -111,7 +97,7 @@ describe('Mail Service', async () => {
 				});
 				throw new Error('The previous call should have failed.');
 			} catch (error) {
-				expect(error.message).to.equal('Error: invalid data send');
+				expect(error.message).to.equal('Invalid data provided');
 			}
 		});
 	});
