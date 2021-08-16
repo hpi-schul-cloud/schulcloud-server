@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NewsTargetModel } from '@src/modules/news/entity';
 import { EntityId } from '@shared/domain';
 import { UnauthorizedException } from '@nestjs/common';
-import { FeathersModule } from '../feathers/feathers.module';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
@@ -18,7 +17,6 @@ describe('AuthorizationService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [FeathersModule],
 			providers: [
 				AuthorizationService,
 				{

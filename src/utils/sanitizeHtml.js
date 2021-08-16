@@ -4,7 +4,7 @@ const sanitizeHtml = require('sanitize-html');
 const maxDeep = 12;
 // enable html for all current editors
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
-const paths = ['lessons', 'homework', 'submissions', 'topics'];
+const paths = ['lessons', 'news', 'homework', 'submissions', 'topics'];
 const saveKeys = ['password', 'secret'];
 const allowedTags = [
 	'h1',

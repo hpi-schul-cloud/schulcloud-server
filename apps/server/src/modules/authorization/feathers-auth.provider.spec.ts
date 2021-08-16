@@ -4,7 +4,6 @@ import { FeathersServiceProvider } from '@src/modules/feathers/feathers-service.
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { FeathersAuthProvider } from './feathers-auth.provider';
-import { FeathersModule } from '../feathers/feathers.module';
 
 describe('FeathersAuthProvider', () => {
 	let authProvider: FeathersAuthProvider;
@@ -23,7 +22,6 @@ describe('FeathersAuthProvider', () => {
 	};
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [FeathersModule],
 			providers: [
 				FeathersAuthProvider,
 				{
