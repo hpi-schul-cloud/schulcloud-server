@@ -2,20 +2,18 @@
 // TODO add tests to improve coverage
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
-import { Counted } from '@shared/domain/types';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
-import { TaskRepo } from '../repo/task.repo';
-import { SubmissionRepo } from '../repo/submission.repo';
+// import { LearnroomFacade } from '@modules/learnroom';
+import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
+import { TaskRepo, SubmissionRepo } from '../repo';
 import { TaskSubmissionMetadataService } from '../domain/task-submission-metadata.service';
 import { ISubmissionStatus, Task } from '../entity';
+import { LearnroomFacade } from '../../learnroom';
 
 export type TaskWithSubmissionStatus = {
 	task: Task;
 	status: ISubmissionStatus;
 };
 
-// TODO: add time filter filter in uc
 @Injectable()
 export class TaskUC {
 	permissions = {
@@ -24,9 +22,10 @@ export class TaskUC {
 	};
 
 	constructor(
-		private taskRepo: TaskRepo,
-		private submissionRepo: SubmissionRepo,
-		private taskSubmissionMetadata: TaskSubmissionMetadataService
+		private readonly taskRepo: TaskRepo,
+		private readonly submissionRepo: SubmissionRepo,
+		private readonly taskSubmissionMetadata: TaskSubmissionMetadataService,
+		private readonly learnroomFacade: LearnroomFacade
 	) {}
 
 	// TODO: Combine student and teacher logic if it is possible in next iterations
@@ -37,7 +36,7 @@ export class TaskUC {
 		// TODO get permitted tasks...
 		// TODO have BL from repo here
 
-		const [submissionsOfStudent, submissionCount] = await this.submissionRepo.getAllSubmissionsByUser(userId);
+		const [submissionsOfStudent] = await this.submissionRepo.getAllSubmissionsByUser(userId);
 		const tasksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
 		const [tasks, total] = await this.taskRepo.findAllByStudent(userId, pagination, tasksWithSubmissions);

@@ -16,6 +16,7 @@ describe('API Validation Error', () => {
 				type: 'API_VALIDATION_ERROR',
 			});
 		});
+
 		it('should have validationErrors to be defined', () => {
 			const validationErrors: ValidationError[] = [];
 			const error = new ApiValidationError(validationErrors);
