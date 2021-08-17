@@ -63,6 +63,7 @@ async function bootstrap() {
 	// safety net for deprecated paths not beginning with version prefix
 	// TODO remove when all calls to the server are migrated
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
+	rootExpress.use('/v1', logDeprecatedPaths, feathersExpress);
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	rootExpress.listen(3030);
