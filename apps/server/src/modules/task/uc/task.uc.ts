@@ -11,6 +11,8 @@ import { TaskRepo, SubmissionRepo } from '../repo';
 import { EntityCollection } from '../utils';
 import { TaskPreparations, TaskWithSubmissionStatus } from '../domain/TaskPreparations';
 
+// define interface for task and submission repo
+
 @Injectable()
 export class TaskUC {
 	// It should remove later
