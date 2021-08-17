@@ -4,18 +4,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 // import { LearnroomFacade } from '@modules/learnroom';
 import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
-import { TaskRepo, SubmissionRepo } from '../repo';
-import { ISubmissionStatus, Task } from '../entity';
-import { LearnroomFacade } from '../../learnroom';
-import { TaskSubmissionMetadata } from '../domain/TaskSubmissionMetadata';
 
-export type TaskWithSubmissionStatus = {
-	task: Task;
-	status: ISubmissionStatus;
-};
+import { LearnroomFacade } from '../../learnroom';
+
+import { TaskRepo, SubmissionRepo } from '../repo';
+import { EntityCollection } from '../utils';
+import { TaskPreparations, TaskWithSubmissionStatus } from '../domain/TaskPreparations';
 
 @Injectable()
 export class TaskUC {
+	// It should remove later
 	permissions = {
 		teacherDashboard: 'TASK_DASHBOARD_TEACHER_VIEW_V3',
 		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
@@ -28,60 +26,47 @@ export class TaskUC {
 	) {}
 
 	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		// Add Authorization service or logic until it is avaible for learnroom
-		/**
-		 * Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
-		 */
+		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
 		const [coursesWithGroups] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
-		const courseIds = coursesWithGroups.map((course) => course.id);
+		const courseCollection = new EntityCollection(coursesWithGroups);
 
 		const [submissionsOfStudent] = await this.submissionRepo.getAllSubmissionsByUser(userId);
-		const tasksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
+		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
-		const [tasks, total] = await this.taskRepo.findAllByStudent(courseIds, pagination, tasksWithSubmissions);
+		const [tasks, total] = await this.taskRepo.findAllByStudent(
+			courseCollection.getIds(),
+			pagination,
+			taskIdsThatHaveSubmissions
+		);
 
-		// need also work for coursegroups
-		const metadata = new TaskSubmissionMetadata(submissionsOfStudent);
-		const computedTasks = tasks.map((task) => metadata.addStatusToTask(task, 1));
+		const prepareTasks = new TaskPreparations(courseCollection, tasks);
+		prepareTasks.addParentToTasks();
+		const computedTasks = prepareTasks.computeStatusForStudents(submissionsOfStudent);
 
-		// add course color and course name
 		return [computedTasks, total];
 	}
 
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		// Add Authorization service or logic until it is avaible for learnroom
-		/**
-		 * Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
-		 */
+		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
 		const [coursesWithGroups] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
-		const courseIds = coursesWithGroups.map((course) => course.id);
 
-		// procede only with course that has write permissions best first way add additional call to learnroom facade as temporary solution
-
-		const getStudentNumberOfCourseByCourseId = (courseId: EntityId): number => {
-			let studentNumber = 0;
-			const findCourse = coursesWithGroups.find((course) => course.id === courseId);
-
-			if (findCourse !== undefined) {
-				studentNumber = findCourse.getStudentsNumber();
-			}
-			return studentNumber;
-		};
-
-		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courseIds, pagination);
-		const [submissions] = await this.submissionRepo.getSubmissionsByTasksList(tasks);
-
-		// need also work for coursegroups
-		const metadata = new TaskSubmissionMetadata(submissions);
-		const computedTasks = tasks.map((task) =>
-			metadata.addStatusToTask(task, getStudentNumberOfCourseByCourseId(task.courseId))
+		// Add Authorization service or logic until it is avaible for learnroom
+		const courseWithGroupsWithWritePermissions = coursesWithGroups.filter((course) =>
+			course.hasWritePermission(userId)
 		);
+		const courseCollection = new EntityCollection(courseWithGroupsWithWritePermissions);
 
-		// add course color and course name
+		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courseCollection.getIds(), pagination);
+		const [submissionsOfTeacher] = await this.submissionRepo.getSubmissionsByTasksList(tasks);
+
+		const prepareTasks = new TaskPreparations(courseCollection, tasks);
+		prepareTasks.addParentToTasks();
+		const computedTasks = prepareTasks.computeStatusForTeachers(submissionsOfTeacher);
+
 		return [computedTasks, total];
 	}
 
-	// should remove in future permissions not needed
+	// should remove in future, permissions are not needed
 	// maybe add different endpoints and if student ask teacher endpoint they get nothing
 	async findAllOpen(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
 		const {

@@ -1,4 +1,4 @@
-import { Submission, Task } from '../entity';
+import { Submission, Task, IParentProperties } from '../entity';
 
 export class TaskSubmissionMetadata {
 	submissions: Submission[];
