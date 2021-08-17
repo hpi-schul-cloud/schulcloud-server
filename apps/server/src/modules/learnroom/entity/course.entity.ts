@@ -30,10 +30,10 @@ const DEFAULT = {
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.name })
-	private name!: string;
+	name: string;
 
 	@Property({ default: DEFAULT.description })
-	private description!: string;
+	description: string;
 
 	@Index()
 	@Property()
@@ -44,7 +44,7 @@ export class Course extends BaseEntityWithTimestamps {
 	// classIds: EntityId[];
 
 	@Index()
-	@Property({ fieldName: 'userIds' })
+	@Property({ fieldName: 'userIds', default: [] })
 	private studentIds: EntityId[];
 
 	@Index()
@@ -86,28 +86,13 @@ export class Course extends BaseEntityWithTimestamps {
 		return this.studentIds.length;
 	}
 
-	getDescription(): string {
-		return this.description || DEFAULT.description;
-	}
-
-	changeDescription(description: string): void {
-		this.description = description;
-	}
-
-	getName(): string {
-		return this.name || DEFAULT.name;
-	}
-
-	changeName(name: string): void {
-		this.name = name;
-	}
-
-	getColor(): string {
-		return this.color || DEFAULT.color;
-	}
-
-	changeColor(color: string): void {
-		this.color = color;
+	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {
+		return {
+			id: this.id,
+			name: this.name || DEFAULT.name,
+			description: this.description || DEFAULT.description,
+			color: this.color || DEFAULT.color,
+		};
 	}
 
 	/**

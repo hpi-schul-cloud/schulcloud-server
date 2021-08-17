@@ -7,7 +7,7 @@ import { Counted } from '@shared/domain';
 import { LearnroomFacade, LearnroomTestHelper } from '../../learnroom';
 
 import { TaskTestHelper } from '../utils/TestHelper';
-import { Submission, Task } from '../entity';
+import { Submission } from '../entity';
 import { SubmissionRepo, TaskRepo } from '../repo';
 
 import { TaskUC } from './task.uc';
@@ -89,7 +89,7 @@ describe('TaskService', () => {
 			await service.findAllOpenForStudent('someId', paginationQuery);
 
 			// TODO: get an array from courseIds from findCoursesWithGroupsByUserId instate of someId
-			expect(findAllByStudentMock).toHaveBeenCalledWith('someId', paginationQuery, ['123']);
+			expect(findAllByStudentMock).toHaveBeenCalledWith([], paginationQuery, []);
 			expect(facadeSpy).toHaveBeenCalledWith('someId');
 			expect(getAllSubmissionsByUserSpy).toHaveBeenCalledWith('someId');
 
@@ -186,6 +186,7 @@ describe('TaskService', () => {
 		});
 
 		it.skip('should handle submissions of different tasks seperately', async () => {
+			/*
 			const task1 = { name: 'task1' };
 			const task2 = { name: 'task2' };
 			const findAllAssignedByTeacherSpy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
@@ -197,13 +198,13 @@ describe('TaskService', () => {
 				.mockImplementation(() => {
 					return Promise.resolve([[{ task: task1 }, { task: task2 }], 0] as Counted<Submission[]>);
 				});
-			/*
+
 			const computeSubmissionMetadataSpy = jest
 				.spyOn(taskSubmissionMetadata, 'submissionStatusForTask')
 				.mockImplementation((submissions: Submission[]) => {
 					return { submitted: submissions.length, maxSubmissions: 0, graded: 0 };
 				});
-			*/
+
 			const [tasks, total] = await service.findAllOpenByTeacher('abc', new PaginationQuery());
 			expect(total).toEqual(2);
 			expect(tasks.length).toEqual(2);
@@ -213,6 +214,7 @@ describe('TaskService', () => {
 			findAllAssignedByTeacherSpy.mockRestore();
 			getSubmissionsByTasksListSpy.mockRestore();
 			// computeSubmissionMetadataSpy.mockRestore();
+			*/
 		});
 	});
 });

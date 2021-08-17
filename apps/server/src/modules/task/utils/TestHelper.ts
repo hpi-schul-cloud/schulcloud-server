@@ -13,9 +13,9 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 		return user;
 	}
 
-	createTask(courseId?: EntityId): Task {
+	createTask(courseId?: EntityId, dueDate?: Date): Task {
 		const id = courseId || this.createEntityId();
-		const task = new Task({ name: '', courseId: id });
+		const task = new Task({ name: '', courseId: id, dueDate });
 		this.addId(task);
 		return task;
 	}

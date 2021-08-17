@@ -3,13 +3,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '../../database';
 
-import { TaskRepo } from './task.repo';
 import { TaskTestHelper } from '../utils/TestHelper';
 import { LessonTaskInfo, Task, UserTaskInfo } from '../entity';
 
+import { TaskRepo } from './task.repo';
+
 describe('TaskService', () => {
 	let module: TestingModule;
-	let service: TaskRepo;
+	let repo: TaskRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
@@ -21,7 +22,7 @@ describe('TaskService', () => {
 			],
 			providers: [TaskRepo],
 		}).compile();
-		service = module.get(TaskRepo);
+		repo = module.get(TaskRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -43,9 +44,9 @@ describe('TaskService', () => {
 			const task = helper.createTask();
 
 			await em.persistAndFlush([task]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
 			expect(total).toEqual(1);
-			expect(result[0].name).toEqual(task.name);
+			expect(result[0].getName()).toEqual(task.getName());
 		});
 
 		it('should not return task that are not requested', async () => {
@@ -54,7 +55,7 @@ describe('TaskService', () => {
 			const otherTask = helper.createTask();
 
 			await em.persistAndFlush([task, otherTask]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
 			expect(total).toEqual(1);
 			expect(result).toHaveLength(1);
 		});
@@ -62,10 +63,10 @@ describe('TaskService', () => {
 		it('should not return private task of course', async () => {
 			const helper = new TaskTestHelper();
 			const task = helper.createTask();
-			task.private = true;
+			task.changePrivate(true);
 
 			await em.persistAndFlush([task]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
 			expect(total).toEqual(0);
 			expect(result).toHaveLength(0);
 		});
@@ -76,7 +77,7 @@ describe('TaskService', () => {
 			lesson.hidden = false;
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher([courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([courseId]);
 			expect(total).toEqual(1);
 			expect(result).toHaveLength(1);
 		});
@@ -87,7 +88,7 @@ describe('TaskService', () => {
 			lesson.hidden = true;
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher([courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([courseId]);
 			expect(total).toEqual(0);
 			expect(result).toHaveLength(0);
 		});
@@ -99,7 +100,7 @@ describe('TaskService', () => {
 			lesson.hidden = null;
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher([courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([courseId]);
 			expect(total).toEqual(0);
 			expect(result).toHaveLength(0);
 		});
@@ -111,7 +112,7 @@ describe('TaskService', () => {
 			task.lesson = null;
 
 			await em.persistAndFlush([task]);
-			const [result, total] = await service.findAllAssignedByTeacher([task.courseId]);
+			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
 			expect(total).toEqual(1);
 			expect(result).toHaveLength(1);
 		});
@@ -123,7 +124,7 @@ describe('TaskService', () => {
 			const lesson = em.create(LessonTaskInfo, { course });
 			const task = em.create(Task, { name: 'roll some dice', lesson, course });
 			await em.persistAndFlush([user, course, lesson, task]);
-			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			const [result, total] = await repo.findAllAssignedByTeacher(user.id);
 			expect(total).toEqual(0);
 			*/
 		});
@@ -136,7 +137,7 @@ describe('TaskService', () => {
 				const task = helper.createTask();
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
 
 				expect(total).toEqual(1);
 				expect(result[0]).toHaveProperty('name');
@@ -154,7 +155,7 @@ describe('TaskService', () => {
 				const tasks = [task1, task2, task3, task4];
 
 				await em.persistAndFlush(tasks);
-				const [result, total] = await service.findAllByStudent([task1.courseId], {
+				const [result, total] = await repo.findAllByStudent([task1.getParentId()], {
 					limit: 2,
 					skip: 0,
 				});
@@ -165,13 +166,13 @@ describe('TaskService', () => {
 			it('should be sorted with earlier duedates first', async () => {
 				const helper = new TaskTestHelper();
 				const courseId = helper.createEntityId();
-				const task1 = helper.createTask(courseId);
-				task1.dueDate = new Date(Date.now() + 500);
-				const task2 = helper.createTask(courseId);
-				task1.dueDate = new Date(Date.now() - 500);
+				const dueDate1 = new Date(Date.now() + 500);
+				const dueDate2 = new Date(Date.now() - 500);
+				const task1 = helper.createTask(courseId, dueDate1);
+				const task2 = helper.createTask(courseId, dueDate2);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await service.findAllByStudent([courseId]);
+				const [result, total] = await repo.findAllByStudent([courseId]);
 				expect(total).toEqual(2);
 				expect(result[0].id).toEqual(task2.id);
 				expect(result[1].id).toEqual(task1.id);
@@ -184,7 +185,7 @@ describe('TaskService', () => {
 				const task = helper.createTask();
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -195,7 +196,7 @@ describe('TaskService', () => {
 				const otherTask = helper.createTask();
 
 				await em.persistAndFlush([task, otherTask]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -203,10 +204,10 @@ describe('TaskService', () => {
 			it('should not return private task of course', async () => {
 				const helper = new TaskTestHelper();
 				const task = helper.createTask();
-				task.private = true;
+				task.changePrivate(true);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await service.findAllByStudent([task.courseId]);
+				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -218,7 +219,7 @@ describe('TaskService', () => {
 				const task2 = helper.createTask(courseId);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await service.findAllByStudent([courseId], {}, [task2.id]);
+				const [result, total] = await repo.findAllByStudent([courseId], {}, [task2.id]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -226,13 +227,15 @@ describe('TaskService', () => {
 			it('should filter tasks that are more than one week overdue', async () => {
 				const helper = new TaskTestHelper();
 				const courseId = helper.createEntityId();
+
 				const threeWeeksinMilliseconds = 1.814e9;
-				const task1 = helper.createTask(courseId);
-				task1.dueDate = new Date(Date.now() - threeWeeksinMilliseconds);
+				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+
+				const task1 = helper.createTask(courseId, dueDate1);
 				const task2 = helper.createTask(courseId);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await service.findAllByStudent([courseId]);
+				const [result, total] = await repo.findAllByStudent([courseId]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -245,7 +248,7 @@ describe('TaskService', () => {
 				lesson.hidden = false;
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await service.findAllByStudent([courseId]);
+				const [result, total] = await repo.findAllByStudent([courseId]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -256,7 +259,7 @@ describe('TaskService', () => {
 				lesson.hidden = true;
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await service.findAllByStudent([courseId]);
+				const [result, total] = await repo.findAllByStudent([courseId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -268,7 +271,7 @@ describe('TaskService', () => {
 				lesson.hidden = null;
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await service.findAllByStudent([courseId]);
+				const [result, total] = await repo.findAllByStudent([courseId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -280,7 +283,7 @@ describe('TaskService', () => {
 				lesson.hidden = null;
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await service.findAllByStudent([courseId]);
+				const [result, total] = await repo.findAllByStudent([courseId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -293,7 +296,7 @@ describe('TaskService', () => {
 				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
-				const [result, total] = await service.findAllByStudent(user.id);
+				const [result, total] = await repo.findAllByStudent(user.id);
 				expect(total).toEqual(0);
 				*/
 			});
