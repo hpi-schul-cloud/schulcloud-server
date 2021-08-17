@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9130 - use whiltelisted filenames at the s3 file storage backend
 
 ## 26.9.0
 
