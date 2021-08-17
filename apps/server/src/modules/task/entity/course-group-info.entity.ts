@@ -1,3 +1,5 @@
+// file must deleted and use data from learnroom
+
 import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';

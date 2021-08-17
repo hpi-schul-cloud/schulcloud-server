@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 // TODO add tests to improve coverage
+// must deleted
 
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';

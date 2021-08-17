@@ -1,3 +1,4 @@
+// use shared entity until it is avaible and delete this file
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain';
 
