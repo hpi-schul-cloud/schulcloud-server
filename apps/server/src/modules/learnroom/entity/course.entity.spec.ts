@@ -18,13 +18,21 @@ describe('CourseEntity', () => {
 		});
 	});
 
+	describe('getDescriptions', () => {
+		it.todo('write tests...');
+	});
+
+	describe('getStudents', () => {
+		it.todo('write tests...');
+	});
+
+	/*
 	describe('getDescription', () => {
 		const DEFAULT_VALUE = '';
 
 		it('should work with empty value', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
-
 			const result = course.getDescription();
 
 			expect(result).toEqual(DEFAULT_VALUE);
@@ -145,6 +153,7 @@ describe('CourseEntity', () => {
 			expect(course.name).toEqual(newValue);
 		});
 	});
+	*/
 	/*
 	describe('isStudent', () => {
 		it('should return false for user is not member of course', () => {

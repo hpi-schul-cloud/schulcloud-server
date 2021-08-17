@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
+
+import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
+
+// lessonTaskInfo must deleted
 import { Task, LessonTaskInfo } from '../entity';
 
 // TODO: add scope helper and export to use it in uc

@@ -1,3 +1,4 @@
+// must deleted
 import { Entity, Property } from '@mikro-orm/core';
 
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';

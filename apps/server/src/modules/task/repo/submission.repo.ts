@@ -1,6 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId } from '../../../shared/domain';
+
+import { Counted, EntityId } from '@shared/domain';
+
+// CourseGroupInfo must use from learnroom
 import { CourseGroupInfo, Submission, Task } from '../entity';
 
 // TODO: add scope helper
