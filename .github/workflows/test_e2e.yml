@@ -22,7 +22,7 @@ jobs:
       - name: Set BRANCH_NAME to main
         # if: github.ref == 'refs/heads/main'
         run: |
-          echo ${{ github }}
+          echo ${{ toJSON(github) }}
           echo "BRANCH_NAME=main" >> $GITHUB_ENV
       - name: Set custom BRANCH_NAME
         if: "!github.ref == 'refs/heads/main'"
