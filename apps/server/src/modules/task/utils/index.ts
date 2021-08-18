@@ -1,2 +1,2 @@
-export * from './EntityCollection';
+export * from './EntityArray';
 export * from './TestHelper';

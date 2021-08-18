@@ -20,6 +20,8 @@ interface ICourseProperties {
 	// features?: CourseFeatures[];
 }
 
+// that is really really shit default handling :D constructor, getter, js default, em default...what the hell
+// i hope it can cleanup with adding schema instant of I...Properties.
 const DEFAULT = {
 	color: '#ACACAC',
 	name: 'Kurse',
@@ -30,10 +32,10 @@ const DEFAULT = {
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.name })
-	name: string;
+	private name: string;
 
 	@Property({ default: DEFAULT.description })
-	description: string;
+	private description: string;
 
 	@Index()
 	@Property()

@@ -5,11 +5,11 @@ import { BaseEntity } from '../entity/base.entity';
 
 // TODO: write tests..
 export abstract class TestHelper<UserType, SchoolType> {
-	users: UserType[] = [];
+	private users: UserType[] = [];
 
-	otherUser: UserType;
+	private otherUser: UserType;
 
-	school: SchoolType;
+	private school: SchoolType;
 
 	constructor() {
 		this.init();

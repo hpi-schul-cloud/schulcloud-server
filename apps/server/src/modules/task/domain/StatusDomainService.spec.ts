@@ -3,7 +3,7 @@ import { Collection } from '@mikro-orm/core';
 import { TaskTestHelper } from '../utils/TestHelper';
 import { UserTaskInfo, FileTaskInfo, Submission } from '../entity';
 
-import { TaskSubmissionMetadata } from './TaskSubmissionMetadata';
+import { StatusDomainService } from './StatusDomainService';
 
 const addGradedFileCollectionWithFileToSubmission = (submission: Submission, creator: UserTaskInfo): FileTaskInfo => {
 	const file = new FileTaskInfo({ name: '', creator });
@@ -12,7 +12,7 @@ const addGradedFileCollectionWithFileToSubmission = (submission: Submission, cre
 	return file;
 };
 
-describe('TaskSubmissionMetadata', () => {
+describe('StatusDomainService', () => {
 	describe('submissionStatusForTeacher', () => {
 		it('should return task and status', () => {
 			const helper = new TaskTestHelper();
@@ -20,8 +20,8 @@ describe('TaskSubmissionMetadata', () => {
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 2);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 2);
 			expect(result.task).toEqual(task);
 			expect(result.status).toBeDefined();
 		});
@@ -32,8 +32,8 @@ describe('TaskSubmissionMetadata', () => {
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 2);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 2);
 			expect(result.status.graded).toBeDefined();
 			expect(result.status.submitted).toBeDefined();
 			expect(result.status.maxSubmissions).toBeDefined();
@@ -45,8 +45,8 @@ describe('TaskSubmissionMetadata', () => {
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 2);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 2);
 			expect(result.status.submitted).toEqual(2);
 		});
 
@@ -55,8 +55,8 @@ describe('TaskSubmissionMetadata', () => {
 			const task = helper.createTask();
 			const submissions = [helper.createSubmission(task), helper.createSubmission(task)];
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 1);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 1);
 			expect(result.status.submitted).toEqual(1);
 		});
 
@@ -64,8 +64,8 @@ describe('TaskSubmissionMetadata', () => {
 			const helper = new TaskTestHelper();
 			const task = helper.createTask();
 
-			const metadata = new TaskSubmissionMetadata([]);
-			const result = metadata.addStatusToTask(task, 3);
+			const domain = new StatusDomainService([]);
+			const result = domain.addStatusToTask(task, 3);
 			expect(result.status.maxSubmissions).toEqual(3);
 		});
 
@@ -78,8 +78,8 @@ describe('TaskSubmissionMetadata', () => {
 			submissions[0].grade = 50;
 			// submissions[1] has no grade
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 2);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 2);
 			expect(result.status.graded).toEqual(1);
 		});
 
@@ -92,8 +92,8 @@ describe('TaskSubmissionMetadata', () => {
 			submissions[0].gradeComment = 'well done';
 			// submissions[1] has no grade
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 2);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 2);
 			expect(result.status.graded).toEqual(1);
 		});
 
@@ -106,8 +106,8 @@ describe('TaskSubmissionMetadata', () => {
 			addGradedFileCollectionWithFileToSubmission(submissions[0], helper.getFirstUser());
 			// submissions[1] has no grade
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 2);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 2);
 			expect(result.status.graded).toEqual(1);
 		});
 
@@ -124,8 +124,8 @@ describe('TaskSubmissionMetadata', () => {
 			addGradedFileCollectionWithFileToSubmission(submissions[2], helper.getFirstUser());
 			// submissions[3] has no grade
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 4);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 4);
 			expect(result.status.graded).toEqual(3);
 		});
 
@@ -144,8 +144,8 @@ describe('TaskSubmissionMetadata', () => {
 
 			const submissions = [submission1, submission2, submission3];
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 1);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 1);
 			expect(result.status.graded).toEqual(0);
 		});
 
@@ -159,8 +159,8 @@ describe('TaskSubmissionMetadata', () => {
 
 			const submissions = [submission, otherSubmission];
 
-			const metadata = new TaskSubmissionMetadata(submissions);
-			const result = metadata.addStatusToTask(task, 1);
+			const domain = new StatusDomainService(submissions);
+			const result = domain.addStatusToTask(task, 1);
 			expect(result.status.submitted).toEqual(1);
 		});
 	});

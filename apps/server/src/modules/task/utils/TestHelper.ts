@@ -1,6 +1,30 @@
-import { EntityId, TestHelper } from '@shared/domain';
+import { EntityId, TestHelper, BaseEntity } from '@shared/domain';
 
-import { Submission, Task, UserTaskInfo, LessonTaskInfo } from '../entity';
+import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
+
+class TaskParent extends BaseEntity implements ITaskParent {
+	id: EntityId;
+
+	studentNumber: number;
+
+	constructor(id: EntityId, studentNumber?: number) {
+		super();
+		this.id = id;
+		this.studentNumber = studentNumber || 10;
+	}
+
+	getDescriptions(): IParentDescriptionsProperties {
+		return {
+			id: this.id,
+			color: 'FFFFFF',
+			name: 'Parent',
+		};
+	}
+
+	getStudentsNumber(): number {
+		return this.studentNumber;
+	}
+}
 
 export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 	createSchool(): EntityId {
@@ -13,20 +37,26 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 		return user;
 	}
 
-	createTask(courseId?: EntityId, dueDate?: Date): Task {
-		const id = courseId || this.createEntityId();
-		const task = new Task({ name: '', courseId: id, dueDate });
+	createTaskParent(parentId?: EntityId, studentNumber?: number): ITaskParent {
+		const id = parentId || this.createEntityId();
+		const parent = new TaskParent(id, studentNumber);
+		return parent;
+	}
+
+	createTask(parentId?: EntityId, dueDate?: Date): Task {
+		const id = parentId || this.createEntityId();
+		const task = new Task({ name: '', parentId: id, dueDate });
 		this.addId(task);
 		return task;
 	}
 
-	createLessonWithTask(): { task: Task; lesson: LessonTaskInfo; courseId: EntityId } {
-		const courseId = this.createEntityId();
-		const lesson = new LessonTaskInfo({ courseId });
+	createLessonWithTask(): { task: Task; lesson: LessonTaskInfo; parentId: EntityId } {
+		const parentId = this.createEntityId();
+		const lesson = new LessonTaskInfo({ courseId: parentId });
 		this.addId(lesson);
-		const task = new Task({ name: '', courseId, lesson });
+		const task = new Task({ name: '', parentId, lesson });
 		this.addId(task);
-		return { task, lesson, courseId };
+		return { task, lesson, parentId };
 	}
 
 	createSubmission(task: Task, student?: UserTaskInfo): Submission {

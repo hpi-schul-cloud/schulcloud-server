@@ -6,11 +6,11 @@ interface ITaskProperties {
 	name: string;
 	dueDate?: Date;
 	private?: boolean;
-	courseId: EntityId;
+	parentId: EntityId;
 	lesson?: LessonTaskInfo;
 }
 
-interface IParentDescriptionsProperties {
+export interface IParentDescriptionsProperties {
 	id: EntityId;
 	name: string;
 	color: string;
@@ -33,8 +33,8 @@ export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	private private: boolean;
 
-	@Property()
-	private courseId: EntityId;
+	@Property({ fieldName: 'courseId' })
+	private parentId: EntityId;
 
 	@ManyToOne({ fieldName: 'lessonId' })
 	private lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
@@ -47,14 +47,14 @@ export class Task extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.dueDate = props.dueDate;
 		this.private = props.private || true;
-		this.courseId = props.courseId;
+		this.parentId = props.parentId;
 
 		const lesson = props.lesson || null;
 		Object.assign(this, { lesson });
 	}
 
 	getParentId(): EntityId {
-		return this.courseId;
+		return this.parentId;
 	}
 
 	// | null do not work but is set in database
