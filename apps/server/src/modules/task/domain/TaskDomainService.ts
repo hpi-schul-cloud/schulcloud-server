@@ -1,9 +1,9 @@
 import { EntityId } from '@shared/domain';
 
 import { Task, Submission, ITaskParent } from '../entity';
-import { EntityCollection } from '../utils';
+import { EntityArray } from '../utils';
 
-import { TaskSubmissionMetadata } from './TaskSubmissionMetadata';
+import { StatusDomainService } from './StatusDomainService';
 
 // That is bad with this two type i think...
 type ISubmissionStatus = {
@@ -27,27 +27,27 @@ enum MaxSubmissionsOperations {
 	student = 'getMaxSubmissionsForStudentsByCourseId',
 }
 
-export class TaskPreparations {
+export class TaskDomainService {
 	tasks: Task[];
 
-	parentsCollection: EntityCollection<ITaskParent>;
+	parents: EntityArray<ITaskParent>;
 
-	constructor(parentsCollection: EntityCollection<ITaskParent>, tasks: Task[]) {
-		this.parentsCollection = parentsCollection;
+	constructor(parentsCollection: EntityArray<ITaskParent>, tasks: Task[]) {
+		this.parents = parentsCollection;
 		this.tasks = tasks;
 	}
 
 	addParentToTasks(): void {
 		this.tasks.forEach((task) => {
 			const parentId = task.getParentId();
-			const parent = this.parentsCollection.getById(parentId);
+			const parent = this.parents.getById(parentId);
 			task.setParent(parent);
 		});
 	}
 
 	private prepareStatus(submissions: Submission[], fnName: MaxSubmissionsOperations): TaskWithSubmissionStatus[] {
-		const metadata = new TaskSubmissionMetadata(submissions);
-		const computedTasks = this.tasks.map((task) => metadata.addStatusToTask(task, this[fnName](task.getParentId())));
+		const domain = new StatusDomainService(submissions);
+		const computedTasks = this.tasks.map((task) => domain.addStatusToTask(task, this[fnName](task.getParentId())));
 		return computedTasks;
 	}
 
@@ -59,7 +59,7 @@ export class TaskPreparations {
 	}
 
 	private getMaxSubmissionsForTeachersByCourseId(parentId: EntityId): number {
-		const parent = this.parentsCollection.getById(parentId);
+		const parent = this.parents.getById(parentId);
 		const studentNumber = parent.getStudentsNumber();
 		return studentNumber;
 	}

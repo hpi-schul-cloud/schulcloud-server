@@ -1,13 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginationQuery } from '@shared/controller';
-import { Counted } from '@shared/domain';
-// import { LearnroomFacade } from '@modules/learnroom'; do not work atm
 
-import { LearnroomFacade, LearnroomTestHelper } from '../../learnroom';
+import { LearnroomFacade } from '../../learnroom';
 
 import { TaskTestHelper } from '../utils/TestHelper';
-import { Submission } from '../entity';
 import { SubmissionRepo, TaskRepo } from '../repo';
 
 import { TaskUC } from './task.uc';
@@ -99,15 +96,15 @@ describe('TaskService', () => {
 		});
 
 		it('should ignore tasks with submissions', async () => {
-			const helperL = new LearnroomTestHelper();
-			const course1 = helperL.createStudentCourse();
-			const course2 = helperL.createStudentCourse();
-			const courses = [course1, course2];
-
 			const helper = new TaskTestHelper();
-			const task1 = helper.createTask(course1.id);
-			const task2 = helper.createTask(course2.id);
-			const task3 = helper.createTask(course2.id); // two task in one course
+
+			const parent1 = helper.createTaskParent();
+			const parent2 = helper.createTaskParent();
+			const courses = [parent1, parent2];
+
+			const task1 = helper.createTask(parent1.id);
+			const task2 = helper.createTask(parent2.id);
+			const task3 = helper.createTask(parent2.id); // two task in one course
 
 			const submissionTask1 = helper.createSubmission(task1);
 			const submissionTask2 = helper.createSubmission(task2);
@@ -148,15 +145,15 @@ describe('TaskService', () => {
 
 	// TODO: muss check and rewrite
 	describe.skip('findAllOpenByTeacher', () => {
-		it('should return task with statistics', async () => {
-			const helperL = new LearnroomTestHelper();
-			const course1 = helperL.createTeacherCourse();
-			const course2 = helperL.createSubstitutionCourse();
-			const courses = [course1, course2];
+		it.skip('should return task with statistics', async () => {
+	/*		const helper = new TaskTestHelper();
 
-			const helper = new TaskTestHelper();
-			const task1 = helper.createTask(course1.id);
-			const task2 = helper.createTask(course2.id);
+			const parent1 = helper.createTaskParent() as Course;
+			const parent2 = helper.createTaskParent() as Course;
+			const courses = [parent1, parent2];
+
+			const task1 = helper.createTask(parent1.id);
+			const task2 = helper.createTask(parent2.id);
 			const tasks = [task1, task2];
 
 			const findAllAssignedByTeacherSpy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
@@ -169,7 +166,7 @@ describe('TaskService', () => {
 					return Promise.resolve([[], 0] as Counted<Submission[]>);
 				});
 
-			const facadeSpy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation(() => {
+			const facadeSpy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation((userId: EntityId) => {
 				return Promise.resolve([courses, 2]);
 			});
 
@@ -184,6 +181,7 @@ describe('TaskService', () => {
 			getSubmissionsByTasksListSpy.mockRestore();
 			facadeSpy.mockRestore();
 		});
+	*/
 
 		it.skip('should handle submissions of different tasks seperately', async () => {
 			/*

@@ -1,6 +1,6 @@
-import { Submission, Task, IParentProperties } from '../entity';
+import { Submission, Task } from '../entity';
 
-export class TaskSubmissionMetadata {
+export class StatusDomainService {
 	submissions: Submission[];
 
 	constructor(submissions: Submission[]) {

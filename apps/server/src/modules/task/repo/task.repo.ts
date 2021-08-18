@@ -14,12 +14,12 @@ export class TaskRepo {
 
 	// TODO: rename
 	async findAllByStudent(
-		courseIds: EntityId[],
+		parentIds: EntityId[],
 		{ limit, skip }: IPagination = {},
 		ignoredTasks: EntityId[] = []
 	): Promise<Counted<Task[]>> {
 		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
-			courseId: { $in: courseIds },
+			courseId: { $in: parentIds },
 			hidden: false,
 		});
 
@@ -33,7 +33,7 @@ export class TaskRepo {
 				$and: [
 					{ id: { $nin: ignoredTasks } },
 					{ private: { $ne: true } },
-					{ courseId: { $in: courseIds } },
+					{ courseId: { $in: parentIds } },
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
 					{ $or: [{ dueDate: { $gte: oneWeekAgo } }, { dueDate: null }] },
 				],
@@ -46,9 +46,9 @@ export class TaskRepo {
 	}
 
 	// TODO: rename
-	async findAllAssignedByTeacher(courseIds: EntityId[], { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
+	async findAllAssignedByTeacher(parentIds: EntityId[], { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
 		const publishedLessons = await this.em.find(LessonTaskInfo, {
-			courseId: { $in: courseIds },
+			courseId: { $in: parentIds },
 			hidden: false,
 		});
 
@@ -56,7 +56,7 @@ export class TaskRepo {
 			Task,
 			{
 				$and: [
-					{ courseId: { $in: courseIds } },
+					{ courseId: { $in: parentIds } },
 					{ private: { $ne: true } },
 					{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
 				],

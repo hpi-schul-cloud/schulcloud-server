@@ -8,8 +8,8 @@ import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
 import { LearnroomFacade } from '../../learnroom';
 
 import { TaskRepo, SubmissionRepo } from '../repo';
-import { EntityCollection } from '../utils';
-import { TaskPreparations, TaskWithSubmissionStatus } from '../domain/TaskPreparations';
+import { EntityArray } from '../utils';
+import { TaskDomainService, TaskWithSubmissionStatus } from '../domain';
 
 // define interface for task and submission repo
 
@@ -21,6 +21,11 @@ export class TaskUC {
 		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
 	};
 
+	// TODO: IMPORTANT steps for this PULL REQUEST
+	// delete all learnroom stuff, move repo of course and coursegroups to a new top level repo layer
+	// do the same for course and coursgroup entity
+	// delete coursegroup info entity and replace it with final entity
+	// remove coursegroup entity from repo and pass it from uc
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionRepo: SubmissionRepo,
@@ -30,20 +35,22 @@ export class TaskUC {
 	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
 		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
 		const [coursesWithGroups] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
-		const courseCollection = new EntityCollection(coursesWithGroups);
+		const courses = new EntityArray(coursesWithGroups);
 
 		const [submissionsOfStudent] = await this.submissionRepo.getAllSubmissionsByUser(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
 		const [tasks, total] = await this.taskRepo.findAllByStudent(
-			courseCollection.getIds(),
+			courses.getIds(),
 			pagination,
 			taskIdsThatHaveSubmissions
 		);
 
-		const prepareTasks = new TaskPreparations(courseCollection, tasks);
-		prepareTasks.addParentToTasks();
-		const computedTasks = prepareTasks.computeStatusForStudents(submissionsOfStudent);
+		const domain = new TaskDomainService(courses, tasks);
+		domain.addParentToTasks();
+		// after add status to task it is not nessasray to return it directly
+		// we can do the step and in the end use prepareTasks.getResult();
+		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
 
 		return [computedTasks, total];
 	}
@@ -56,14 +63,16 @@ export class TaskUC {
 		const courseWithGroupsWithWritePermissions = coursesWithGroups.filter((course) =>
 			course.hasWritePermission(userId)
 		);
-		const courseCollection = new EntityCollection(courseWithGroupsWithWritePermissions);
+		const courses = new EntityArray(courseWithGroupsWithWritePermissions);
 
-		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courseCollection.getIds(), pagination);
+		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courses.getIds(), pagination);
 		const [submissionsOfTeacher] = await this.submissionRepo.getSubmissionsByTasksList(tasks);
 
-		const prepareTasks = new TaskPreparations(courseCollection, tasks);
-		prepareTasks.addParentToTasks();
-		const computedTasks = prepareTasks.computeStatusForTeachers(submissionsOfTeacher);
+		const domain = new TaskDomainService(courses, tasks);
+		domain.addParentToTasks();
+		// after add status to task it is not nessasray to return it directly
+		// we can do the step and in the end use prepareTasks.getResult();
+		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
 
 		return [computedTasks, total];
 	}
