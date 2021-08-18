@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- BC-64 - enable e2e test execution for push event on main branch
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 
 ## 26.9.0
