@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.9.1
+
+- SC-9192 - enable cors for nestjs app routes
+- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+
 ## 26.9.0
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
@@ -21,17 +26,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## 26.8.0
 
-
-### 26.7.1
-
+## [26.7.1] - 2021-08-03
+ 
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
-## 26.7.0 
+## [26.7.0] - 2021-07-28
 
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
-- SC-9150 - add script to change school year 
+- SC-9150 - add script to change school year
 - SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
 - SC-9177 - allow superheros to delete admins
 

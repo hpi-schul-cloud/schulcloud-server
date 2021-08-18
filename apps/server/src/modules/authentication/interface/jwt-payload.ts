@@ -1,18 +1,5 @@
 // TODO: should not get from this place over path
-import { ResolvedUser } from '../../user/controller/dto';
-
-export interface ICurrentUser {
-	/** authenticated users id */
-	userId: string;
-	/** users role ids as string[] */
-	roles: string[];
-	/** users schoolId as string */
-	schoolId: string;
-	/** account id as string */
-	accountId: string;
-
-	user: ResolvedUser;
-}
+import { ICurrentUser } from '@shared/domain';
 
 export interface JwtPayload extends ICurrentUser {
 	/** audience */

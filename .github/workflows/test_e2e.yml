@@ -16,6 +16,11 @@ jobs:
     if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
     steps:
       - uses: actions/checkout@v2
+      - name: Echo head_ref
+        run: |
+          echo ${{ github.head_ref }}
+          branch_name=${{ github.head_ref }}
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
       - name: run git change
         run: |
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
@@ -32,3 +37,4 @@ jobs:
         with:
           name: report
           path: end-to-end-tests/reports
+          
