@@ -20,6 +20,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 
+### Changed
+
+- OPS-2491 - Change the hydra service url
+
 ## 26.8.0
 
 ## [26.7.1] - 2021-08-03
