@@ -1,8 +1,4 @@
-/* istanbul ignore file */
-// TODO add tests to improve coverage
-
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-// import { LearnroomFacade } from '@modules/learnroom';
 import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
 
 import { LearnroomFacade } from '../../learnroom';
@@ -10,8 +6,6 @@ import { LearnroomFacade } from '../../learnroom';
 import { TaskRepo, SubmissionRepo } from '../repo';
 import { EntityArray } from '../utils';
 import { TaskDomainService, TaskWithSubmissionStatus } from '../domain';
-
-// define interface for task and submission repo
 
 @Injectable()
 export class TaskUC {
@@ -26,6 +20,15 @@ export class TaskUC {
 	// do the same for course and coursgroup entity
 	// delete coursegroup info entity and replace it with final entity
 	// remove coursegroup entity from repo and pass it from uc
+	// move submissions and task with repos to new area
+	// cleanup and refactor task and submissions entitys > props and methodes
+	// write tests for uc
+	// -------------optional----------
+	// add short cut imports for entitys and for repos
+	// think about if status can move to task entity, than we can move logic also to it.
+	// ------------------
+	// next steps remove lesson info and replace with lesson
+	// add lesson repo to this uc and pass data over uc
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionRepo: SubmissionRepo,
