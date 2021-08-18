@@ -4,33 +4,15 @@ on:
   push:
     # branches: 
     #   - main
-  pull_request:
-    branches:
-      - main
-    types: [labeled, synchronize]
-  workflow_dispatch:
-    label:
-      name: 'run tests'
 
 jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
-    # run the action, when label 'run tests' has been set or is present at the commit time or push on main
-    # if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' ) || github.ref == 'refs/heads/main'"
     steps:
       - uses: actions/checkout@v2
-      # - name: test
-      #   run: echo ${{ toJSON(github) }}
       - name: Set BRANCH_NAME on push
-        if: github.event_name == 'push'
         run: |
           branch_name=${GITHUB_REF#refs/*/}
-          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-      - name: Set BRANCH_NAME on pull_request
-        if: "github.event_name == 'pull_request'"
-        run: |
-          echo ${{ github.head_ref }}
-          branch_name=${{ github.head_ref }}
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
       - name: run git change
         run: |
