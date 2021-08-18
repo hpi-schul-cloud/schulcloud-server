@@ -19,8 +19,8 @@ jobs:
     # if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' ) || github.ref == 'refs/heads/main'"
     steps:
       - uses: actions/checkout@v2
-      - name: test
-        run: echo toJSON(github)
+      # - name: test
+      #   run: echo ${{ toJSON(github) }}
       - name: Set BRANCH_NAME on push
         if: github.event_name == 'push'
         run: |
