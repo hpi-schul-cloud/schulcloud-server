@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
 
 ## 26.9.0
 
