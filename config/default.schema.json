@@ -319,7 +319,7 @@
 		},
 		"FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT": {
 			"type": "boolean",
-			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expire_ after 7 days",
+			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expiring_ after 7 days",
 			"default": false
 		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
