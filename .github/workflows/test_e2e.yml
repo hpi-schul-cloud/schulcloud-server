@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: test
-        run: echo ${{ toJSON(github) }}
+        run: toJSON(github)
       - name: Set BRANCH_NAME on push
         if: github.event_name == 'push'
         run: |
