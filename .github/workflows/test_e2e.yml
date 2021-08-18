@@ -15,8 +15,8 @@ on:
 jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
-    # run the action, when label 'run tests' has been set or is present at the commit time 
-    if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
+    # run the action, when label 'run tests' has been set or is present at the commit time or push on main
+    #if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
     steps:
       - uses: actions/checkout@v2
       - name: Set BRANCH_NAME
