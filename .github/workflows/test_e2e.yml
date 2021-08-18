@@ -2,7 +2,7 @@ name: Test e2e
 
 on:
   push:
-    # branches: # TODO enable for main only
+    # branches: 
     #   - main
   pull_request:
     branches:
@@ -16,12 +16,17 @@ jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
     # run the action, when label 'run tests' has been set or is present at the commit time or push on main
-    #if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
+    # if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' ) || github.ref == 'refs/heads/main'"
     steps:
       - uses: actions/checkout@v2
-      - name: Set BRANCH_NAME
+      - name: Set BRANCH_NAME to main
+        # if: github.ref == 'refs/heads/main'
         run: |
-          echo ${{ github.ref }}
+          echo ${{ github }}
+          echo "BRANCH_NAME=main" >> $GITHUB_ENV
+      - name: Set custom BRANCH_NAME
+        if: "!github.ref == 'refs/heads/main'"
+        run: |
           echo ${{ github.head_ref }}
           branch_name=${{ github.head_ref }}
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
