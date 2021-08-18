@@ -9,6 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.9.1
+
+- SC-9192 - enable cors for nestjs app routes
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 
 ## 26.9.0
