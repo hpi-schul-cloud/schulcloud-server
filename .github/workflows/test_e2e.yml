@@ -1,6 +1,9 @@
 name: Test e2e
 
 on:
+  push:
+    # branches: # TODO enable for main only
+    #   - main
   pull_request:
     branches:
       - main
@@ -16,8 +19,9 @@ jobs:
     if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
     steps:
       - uses: actions/checkout@v2
-      - name: Echo head_ref
+      - name: Set BRANCH_NAME
         run: |
+          echo ${{ github.ref }}
           echo ${{ github.head_ref }}
           branch_name=${{ github.head_ref }}
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
