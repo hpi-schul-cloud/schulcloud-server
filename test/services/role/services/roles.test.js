@@ -97,6 +97,23 @@ describe.only('roles service', () => {
 			}
 		});
 
+		it('should allow for roles to be passed as single string', async () => {
+			const superuser = await testObjects.createTestUser({ roles: ['superhero'] });
+			const roleToChange = await testObjects.createTestRole({
+				name: 'roletochange',
+			});
+			const subRole = await testObjects.createTestRole({
+				name: 'subrole',
+			});
+			const params = await testObjects.generateRequestParamsFromUser(superuser);
+			const updateData = {
+				roles: subRole._id.toString(),
+			};
+			const result = await rolesService.patch(roleToChange.id, updateData, params);
+			expect(result).to.not.be.undefined;
+			expect(result.id).to.not.be.undefined;
+		});
+
 		it('should should allow for subrole to be added', async () => {
 			const superuser = await testObjects.createTestUser({ roles: ['superhero'] });
 			const roleToChange = await testObjects.createTestRole({

@@ -14,7 +14,13 @@ const detectCycle = async (currentRole, originalRoleId, app) => {
 };
 
 const preventCycle = async (context) => {
-	if (context.data.roles && context.data.roles.length > 0) {
+	if (!context.data.roles) {
+		return context;
+	}
+	if (typeof context.data.roles === 'string') {
+		context.data.roles = [context.data.roles];
+	}
+	if (context.data.roles.length > 0) {
 		const subroles = await Promise.all(context.data.roles.map((roleId) => context.app.service('/roles').get(roleId)));
 		const recursiveResults = await Promise.all(subroles.map((role) => detectCycle(role, context.id, context.app)));
 		const cycleDetected = recursiveResults.some((r) => r);
