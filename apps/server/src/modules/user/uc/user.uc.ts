@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
+import { ICurrentUser } from '@shared/domain';
 import { ResolvedUserMapper } from '../mapper';
 import { ResolvedUser } from '../controller/dto/ResolvedUser.dto';
 import { RoleUC } from './role.uc';

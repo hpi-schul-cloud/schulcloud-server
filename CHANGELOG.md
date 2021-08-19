@@ -9,6 +9,74 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- BC-64 - enable e2e test execution for push event on main branch
+
+## 26.9.1
+
+- SC-9192 - enable cors for nestjs app routes
+- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9130 - use whiltelisted filenames at the s3 file storage backend
+
+## 26.9.0
+
+- SC-9231 - add permissions to SuperHero to edit admin role 
+- SC-9269 - let eslint ensure no tests with .only exist anymore
+- SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
+
+### Changed
+
+- OPS-2491 - Change the hydra service url
+
+## 26.8.0
+
+## [26.7.1] - 2021-08-03
+ 
+- SC-9233 - fix Lern-Store on THR to load also WLO content
+
+## [26.7.0] - 2021-07-28
+
+### Added
+
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
+- SC-9150 - add script to change school year
+- SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
+- SC-9177 - allow superheros to delete admins
+
+### Changed
+
+- SC-9219 - limited jest workers for not taking all workers within of a single github action
+
+### Fixed
+
+- SC-9212 - fix changing classes via CSV import
+- SC-9053 - fix sending registration link via checkbox for student/teacher creation
+
+## [26.6.4] - 2021-07-23
+
+### Changed
+
+- move S3 expiration migration to the end
+
+## [26.6.3] - 2021-07-21
+
+### Fixed
+
+- SC-9092 - add missing S3 key decryption in migration
+
+## [26.6.2] - 2021-07-21
+
+### Changed
+
+- use edusharing lernstore mode on production
+
+## [26.6.1] - 2021-07-21
+
+### Changed
+
+- change default lernstore mode to edusharing
+
+## [26.6.0] - 2021-07-20
+
 ### Added
 
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
@@ -17,17 +85,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8959 - Add messenger to deletion concept
 - SC-9157 - Add RabbitMQ connection to new mail service
 - SC-9157 - Improve config handling for RabbitMQ
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
 - OPS-2574 - Removeing autodeployed branches for developers if branch deleted
+- OPS-2579 - Add Ansible task and templates for adding storage
 
 ### Changed
 
+- SC-9190 - publish news target names
+- SC-8887 - allow public access to consentVersion service
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 - execute unit tests via github action instead of using travis
 
 ### Fixed
- - SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
+
+- SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
+- SC-9202 - fix sending of registration link mails
 
 ## [26.5.0] - 2021-06-28
 

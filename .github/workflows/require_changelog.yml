@@ -4,8 +4,7 @@ on:
   pull_request:
     branches:
       # filter target branch of pr
-      - develop
-      - master
+      - main
 
 jobs:
   FeatureOrHotfix:

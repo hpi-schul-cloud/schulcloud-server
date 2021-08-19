@@ -1,7 +1,7 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { CourseInfo } from './course-info.entity';
-import { NewsTargetModel } from './news.types';
+import { NewsTargetInfo, NewsTargetModel } from './news.types';
 import { SchoolInfo } from './school-info.entity';
 import { TeamInfo } from './team-info.entity';
 import { UserInfo } from './user-info.entity';
@@ -46,12 +46,11 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Property()
 	sourceDescription?: string;
 
-	/** id reference to a collection */
-	@ManyToOne()
-	target!: BaseEntity;
+	/** id reference to a collection populated later with name */
+	target!: NewsTargetInfo;
 
 	/** name of a collection which is referenced in target */
-	@Property()
+	@Enum()
 	targetModel: NewsTargetModel;
 
 	@ManyToOne({ fieldName: 'schoolId' })

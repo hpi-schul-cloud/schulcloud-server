@@ -48,8 +48,9 @@ module.exports = {
 		],
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed'],
+		'no-only-tests/no-only-tests': 'error',
 	},
-	plugins: ['import', 'prettier', 'promise'],
+	plugins: ['import', 'prettier', 'promise', 'no-only-tests'],
 	env: {
 		node: true,
 		mocha: true,

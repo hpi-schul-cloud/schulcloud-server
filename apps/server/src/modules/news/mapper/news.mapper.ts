@@ -1,6 +1,7 @@
 import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from '../controller/dto';
-import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetModel } from '../entity';
+import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetInfo, NewsTargetModel } from '../entity';
 import { SchoolInfoMapper } from './school-info.mapper';
+import { TargetInfoMapper } from './target-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';
 
 export class NewsMapper {
@@ -12,8 +13,9 @@ export class NewsMapper {
 		dto.displayAt = news.displayAt;
 		dto.source = news.source;
 		dto.sourceDescription = news.sourceDescription;
-		dto.targetId = news.target?.id;
+		dto.targetId = news.target.id;
 		dto.targetModel = news.targetModel;
+		dto.target = TargetInfoMapper.mapToResponse(news.target);
 		dto.school = SchoolInfoMapper.mapToResponse(news.school);
 		dto.creator = UserInfoMapper.mapToResponse(news.creator);
 		if (news.updater) {

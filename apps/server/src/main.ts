@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
+import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { Logger } from '@nestjs/common';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { API_DOCS_PATH, PORT, ROUTE_PRAEFIX } from './constants';
 import { enableOpenApiDocs } from './shared/controller/swagger';
 import { Mail } from './modules/mail/mail.interface';
 import { MailService } from './modules/mail/mail.service';
@@ -16,30 +17,54 @@ async function bootstrap() {
 	sourceMapInstall();
 
 	// load the legacy feathers/express server
-	const legacyApp = await legacyAppPromise;
-	const adapter = new ExpressAdapter(legacyApp);
-	legacyApp.setup();
+	const feathersExpress = await legacyAppPromise;
+	feathersExpress.setup();
 
-	// create the NestJS application adapting the legacy  server
-	const app = await NestFactory.create(ServerModule, adapter, {});
+	// create the NestJS application on a seperate express instance
+	const nestExpress = express();
 
-	// TODO cleanup /api prefix
-	// for all NestJS controller routes, prepend ROUTE_PREFIX
-	app.setGlobalPrefix(ROUTE_PRAEFIX);
+	// set reference to legacy app as an express setting so we can
+	// access it over the current request within FeathersServiceProvider
+	// TODO remove if not needed anymore
+	nestExpress.set('feathersApp', feathersExpress);
 
-	const apiDocsPath = `${ROUTE_PRAEFIX}/${API_DOCS_PATH}`;
-	enableOpenApiDocs(app, apiDocsPath);
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
-	await app.init();
+	// customize nest app settings
+	nestApp.enableCors();
+	enableOpenApiDocs(nestApp, 'docs');
 
+	await nestApp.init();
+
+	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	legacyApp.services['nest-mail'] = {
+	feathersExpress.services['nest-mail'] = {
 		async send(data: Mail): Promise<void> {
-			const mailService = app.get(MailService);
+			const mailService = nestApp.get(MailService);
 			await mailService.send(data);
 		},
 	};
 
-	adapter.listen(PORT);
+	// mount instances
+	const rootExpress = express();
+
+	// exposed alias mounts
+	rootExpress.use('/api/v1', feathersExpress);
+	rootExpress.use('/api/v3', nestExpress);
+
+	// logger middleware for deprecated paths
+	// TODO remove when all calls to the server are migrated
+	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+		Logger.error(req.path, undefined, 'DEPRECATED-PATH');
+		next();
+	};
+
+	// safety net for deprecated paths not beginning with version prefix
+	// TODO remove when all calls to the server are migrated
+	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
+	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
+
+	rootExpress.listen(3030);
 }
 void bootstrap();

@@ -17,7 +17,6 @@ export class CourseTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = COURSE_DEFAULT_COLOR;
 
-	// TODO: @Property() ?
 	@ManyToMany({ fieldName: 'userIds', type: UserTaskInfo })
 	students = new Collection<UserTaskInfo>(this);
 

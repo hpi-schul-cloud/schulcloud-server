@@ -1018,17 +1018,6 @@
 },
 {
 	"_id": {
-		"$oid": "60c9fab1c63192781322de94"
-	},
-	"state": "up",
-	"name": "add_S3_expiration",
-	"createdAt": {
-		"$date": "2021-05-28T13:49:55.28Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "60d1b9e80fb54b3e342e9b08"
 	},
 	"state": "up",
@@ -1057,6 +1046,28 @@
 	"name": "start_new_school_year_brb",
 	"createdAt": {
 		"$date": "2021-06-22T11:17:36.497Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60fa652ccd6f463cfc047978"
+	},
+	"state": "up",
+	"name": "add_S3_expiration",
+	"createdAt": {
+		"$date": "2021-07-23T06:43:56.538Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "610d5f167e894e69bd474574"
+	},
+	"state": "up",
+	"name": "addAdminEditToSuperheroRole",
+	"createdAt": {
+		"$date": "2021-08-06T16:01:16.996Z"
 	},
 	"__v": 0
 }]
