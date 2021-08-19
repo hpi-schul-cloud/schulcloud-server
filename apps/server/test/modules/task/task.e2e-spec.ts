@@ -7,43 +7,84 @@ import { ServerModule } from '../../../src/server.module';
 import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '../../../src/modules/user/utils';
 
+import { TaskTestHelper } from '../../../src/modules/task/utils';
+import { CourseRepo } from '@src/modules/learnroom/repo';
+
+// teacherDashboard: 'TASK_DASHBOARD_TEACHER_VIEW_V3',
+// 		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
+
 describe('Task Controller (e2e)', () => {
-	let app: INestApplication;
-	let orm: MikroORM;
+	describe('without permissions', () => {
+		let app: INestApplication;
+		let orm: MikroORM;
 
-	beforeAll(async () => {
-		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [ServerModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					const { currentUser } = createCurrentTestUser();
-					req.user = currentUser;
-					return true;
-				},
+		beforeAll(async () => {
+			const moduleFixture: TestingModule = await Test.createTestingModule({
+				imports: [ServerModule],
 			})
-			.compile();
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						const { currentUser } = createCurrentTestUser([]);
+						req.user = currentUser;
+						return true;
+					},
+				})
+				.compile();
 
-		app = moduleFixture.createNestApplication();
-		await app.init();
-		orm = app.get<MikroORM>(MikroORM);
+			app = moduleFixture.createNestApplication();
+			await app.init();
+			orm = app.get(MikroORM);
+		});
+
+		afterAll(async () => {
+			await orm.close();
+			await app.close();
+		});
+
+		it('[FIND] /task/dashboard', async () => {
+			const response = await request(app.getHttpServer()).get('/task/dashboard');
+			expect(response.status).toEqual(401);
+		});
 	});
 
-	beforeEach(async () => {
-		// TODO await em.nativeDelete(CollectionName, {});
+	describe('as user with write permissions in parents', () => {
+		let app: INestApplication;
+		let orm: MikroORM;
+
+		beforeAll(async () => {
+			const moduleFixture: TestingModule = await Test.createTestingModule({
+				imports: [ServerModule],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						const { currentUser } = createCurrentTestUser(['TASK_DASHBOARD_TEACHER_VIEW_V3']);
+						req.user = currentUser;
+						return true;
+					},
+				})
+				.compile();
+
+			app = moduleFixture.createNestApplication();
+			await app.init();
+			orm = app.get<MikroORM>(MikroORM);
+		});
+
+		afterAll(async () => {
+			await orm.close();
+			await app.close();
+		});
+
+		it('[FIND] /task/dashboard can open it', async () => {
+			const response = await request(app.getHttpServer()).get('/task/dashboard');
+			expect(response.status).toEqual(200);
+		});
+
+		// response with values
 	});
 
-	afterAll(async () => {
-		await orm.close();
-		await app.close();
-	});
-
-	it('[FIND] /task/dashboard', async () => {
-		const response = await request(app.getHttpServer()).get('/task/dashboard');
-		expect(response.status === 200);
-	});
-
-	it.todo('more /task/dashboard test missing');
+	describe('as user with read permissions in parents', () => {});
 });

@@ -33,23 +33,6 @@ describe('submission repo', () => {
 		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(UserTaskInfo, {}), em.nativeDelete(Submission, {})]);
 	});
 
-	describe('getSubmissionsByTask', () => {
-		it('should return the amount of submissions', async () => {
-			const helper = new TaskTestHelper();
-			helper.createAndAddUser();
-			const students = helper.getUsers();
-
-			const task = helper.createTask();
-			const submissions = helper.createSubmissionsForEachStudent(task);
-
-			await em.persistAndFlush([...students, task, ...submissions]);
-
-			const [result, count] = await repo.getSubmissionsByTask(task);
-			expect(count).toEqual(2);
-			expect(result).toHaveLength(2);
-		});
-	});
-
 	describe('getSubmissionsByTasksList', () => {
 		it('should return only the requested submissions of homeworks', async () => {
 			const helper = new TaskTestHelper();
@@ -66,7 +49,7 @@ describe('submission repo', () => {
 			await em.persistAndFlush([...students, ...tasks, ...submissions]);
 
 			const requestedTasks = [tasks[0], tasks[1]];
-			const [result, count] = await repo.getSubmissionsByTasksList(requestedTasks);
+			const [result, count] = await repo.findByTasks(requestedTasks);
 			expect(count).toEqual(2);
 			expect(result).toHaveLength(2);
 		});
@@ -82,7 +65,7 @@ describe('submission repo', () => {
 
 			await em.persistAndFlush([student, task, submission]);
 
-			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+			const [result, count] = await repo.findByUserId(student.id);
 
 			expect(count).toEqual(1);
 			expect(result.length).toEqual(1);
@@ -99,7 +82,7 @@ describe('submission repo', () => {
 
 			await em.persistAndFlush([...students, task, submission]);
 
-			const [result, count] = await repo.getAllSubmissionsByUser(students[0].id);
+			const [result, count] = await repo.findByUserId(students[0].id);
 			expect(count).toEqual(1);
 			expect(result[0].teamMembers[0].firstName).toEqual(students[0].firstName);
 		});
@@ -110,13 +93,13 @@ describe('submission repo', () => {
 			const students = helper.getUsers();
 			const task = helper.createTask();
 
-			const courseGroup = em.create(CourseGroupInfo, { courseId: task.courseId, students });
+			const courseGroup = em.create(CourseGroupInfo, { courseId: task.getParentId(), students });
 			const submission = helper.createSubmission(task, students[1]);
 			submission.courseGroup = courseGroup;
 
 			await em.persistAndFlush([...students, task, submission, courseGroup]);
 
-			const [result, count] = await repo.getAllSubmissionsByUser(students[0].id);
+			const [result, count] = await repo.findByUserId(students[0].id);
 
 			expect(count).toEqual(1);
 			expect(result[0].courseGroup.students[0].firstName).toEqual(students[0].firstName);
