@@ -18,7 +18,7 @@ export class LearnroomTestHelper extends TestHelper<EntityId, EntityId> {
 	}
 
 	private createCourse(type: CourseTyps): Course {
-		const course = new Course({ [type]: this.users, schoolId: this.getSchool(), name: '' });
+		const course = new Course({ [type]: this.getUsers(), schoolId: this.getSchool(), name: '' });
 		this.addId(course);
 		return course;
 	}

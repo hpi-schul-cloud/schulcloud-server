@@ -25,9 +25,9 @@ export class TaskController {
 		@Query() paginationQuery: PaginationQuery
 	): Promise<PaginationResponse<TaskResponse[]>> {
 		// const [tasks, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
-		const [tasks, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
-		const taskresponses = tasks.map(({ task, status }) => {
-			return TaskMapper.mapToResponse(task, status);
+		const [tasksWithStatus, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
+		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
+			return TaskMapper.mapToResponse(taskWithStatus);
 		});
 		const { skip, limit } = paginationQuery;
 		const result = new PaginationResponse(taskresponses, total, skip, limit);

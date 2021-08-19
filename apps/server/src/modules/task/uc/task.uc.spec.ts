@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationQuery } from '@shared/controller';
 
 import { LearnroomFacade } from '../../learnroom';
+import { Course } from '../../learnroom/entity';
 
 import { TaskTestHelper } from '../utils/TestHelper';
 import { SubmissionRepo, TaskRepo } from '../repo';
@@ -44,11 +45,11 @@ describe('TaskService', () => {
 				{
 					provide: SubmissionRepo,
 					useValue: {
-						getSubmissionsByTasksList() {
-							throw new Error('Please write a mock for SubmissionRepo.getSubmissionsByTasksList');
+						findByTasks() {
+							throw new Error('Please write a mock for SubmissionRepo.findByTasks');
 						},
-						getAllSubmissionsByUser() {
-							throw new Error('Please write a mock for SubmissionRepo.getAllSubmissionsByUser');
+						findByUserId() {
+							throw new Error('Please write a mock for SubmissionRepo.findByUserId');
 						},
 					},
 				},
@@ -68,11 +69,10 @@ describe('TaskService', () => {
 	// TODO: make it sense to write test for it if we want combine student, teacher and open?
 	describe('findAllOpenForStudent', () => {
 		it('should called all external methodes', async () => {
-			const getAllSubmissionsByUserSpy = jest
-				.spyOn(submissionRepo, 'getAllSubmissionsByUser')
-				.mockImplementation(() => {
-					return Promise.resolve([[], 0]);
-				});
+			const helper = new TaskTestHelper();
+			const findByUserIdSpy = jest.spyOn(submissionRepo, 'findByUserId').mockImplementation(() => {
+				return Promise.resolve([[], 0]);
+			});
 
 			const findAllByStudentMock = jest.spyOn(taskRepo, 'findAllByStudent').mockImplementation(() => {
 				return Promise.resolve([[], 0]);
@@ -83,24 +83,25 @@ describe('TaskService', () => {
 			});
 
 			const paginationQuery = new PaginationQuery();
-			await service.findAllOpenForStudent('someId', paginationQuery);
+			await service.findAllOpenForStudent(helper.getFirstUser().id, paginationQuery);
 
-			// TODO: get an array from courseIds from findCoursesWithGroupsByUserId instate of someId
 			expect(findAllByStudentMock).toHaveBeenCalledWith([], paginationQuery, []);
-			expect(facadeSpy).toHaveBeenCalledWith('someId');
-			expect(getAllSubmissionsByUserSpy).toHaveBeenCalledWith('someId');
+			expect(facadeSpy).toHaveBeenCalledWith(helper.getFirstUser().id);
+			expect(findByUserIdSpy).toHaveBeenCalledWith(helper.getFirstUser().id);
 
-			getAllSubmissionsByUserSpy.mockRestore();
+			findByUserIdSpy.mockRestore();
 			findAllByStudentMock.mockRestore();
 			facadeSpy.mockRestore();
 		});
 
-		it('should ignore tasks with submissions', async () => {
+		// test formating
+
+		it('should find only not submitted tasks', async () => {
 			const helper = new TaskTestHelper();
 
 			const parent1 = helper.createTaskParent();
 			const parent2 = helper.createTaskParent();
-			const courses = [parent1, parent2];
+			const parents = [parent1, parent2] as Course[];
 
 			const task1 = helper.createTask(parent1.id);
 			const task2 = helper.createTask(parent2.id);
@@ -113,24 +114,23 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const submissions = [submissionTask1, submissionTask2];
 
-			const getAllSubmissionsByUserSpy = jest
-				.spyOn(submissionRepo, 'getAllSubmissionsByUser')
-				.mockImplementation(() => {
-					return Promise.resolve([submissions, 3]);
-				});
+			const getAllSubmissionsByUserSpy = jest.spyOn(submissionRepo, 'findByUserId').mockImplementation(() => {
+				return Promise.resolve([submissions, 3]);
+			});
 
 			const findAllByStudentMock = jest.spyOn(taskRepo, 'findAllByStudent').mockImplementation(() => {
 				return Promise.resolve([tasks, 2]);
 			});
 
 			const facadeSpy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation(() => {
-				return Promise.resolve([courses, 2]);
+				return Promise.resolve([parents, 2]);
 			});
 
 			const paginationQuery = new PaginationQuery();
-			const [computedTasks, count] = await service.findAllOpenForStudent('someId', paginationQuery);
+			const [computedTasks, count] = await service.findAllOpenForStudent(helper.getFirstUser().id, paginationQuery);
 
-			// TODO: should do test resultat counts
+			expect(count).toEqual(1);
+
 			getAllSubmissionsByUserSpy.mockRestore();
 			findAllByStudentMock.mockRestore();
 			facadeSpy.mockRestore();
@@ -146,7 +146,8 @@ describe('TaskService', () => {
 	// TODO: muss check and rewrite
 	describe.skip('findAllOpenByTeacher', () => {
 		it.skip('should return task with statistics', async () => {
-	/*		const helper = new TaskTestHelper();
+			/*
+			const helper = new TaskTestHelper();
 
 			const parent1 = helper.createTaskParent() as Course;
 			const parent2 = helper.createTaskParent() as Course;
@@ -180,8 +181,8 @@ describe('TaskService', () => {
 			findAllAssignedByTeacherSpy.mockRestore();
 			getSubmissionsByTasksListSpy.mockRestore();
 			facadeSpy.mockRestore();
+			*/
 		});
-	*/
 
 		it.skip('should handle submissions of different tasks seperately', async () => {
 			/*

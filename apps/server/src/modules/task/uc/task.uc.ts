@@ -40,7 +40,7 @@ export class TaskUC {
 		const [coursesWithGroups] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
 		const courses = new EntityArray(coursesWithGroups);
 
-		const [submissionsOfStudent] = await this.submissionRepo.getAllSubmissionsByUser(userId);
+		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
 		const [tasks, total] = await this.taskRepo.findAllByStudent(
@@ -69,7 +69,7 @@ export class TaskUC {
 		const courses = new EntityArray(courseWithGroupsWithWritePermissions);
 
 		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courses.getIds(), pagination);
-		const [submissionsOfTeacher] = await this.submissionRepo.getSubmissionsByTasksList(tasks);
+		const [submissionsOfTeacher] = await this.submissionRepo.findByTasks(tasks);
 
 		const domain = new TaskDomainService(courses, tasks);
 		domain.addParentToTasks();

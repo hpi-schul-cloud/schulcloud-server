@@ -12,14 +12,7 @@ import { CourseGroupInfo, Submission, Task } from '../entity';
 export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async getSubmissionsByTask(task: Task): Promise<Counted<Submission[]>> {
-		const [submissions, count] = await this.em.findAndCount(Submission, {
-			task,
-		});
-		return [submissions, count];
-	}
-
-	async getSubmissionsByTasksList(tasks: Task[]): Promise<Counted<Submission[]>> {
+	async findByTasks(tasks: Task[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this.em.findAndCount(Submission, {
 			task: { $in: tasks },
 		});
@@ -27,7 +20,7 @@ export class SubmissionRepo {
 		return [submissions, count];
 	}
 
-	async getAllSubmissionsByUser(userId: EntityId): Promise<Counted<Submission[]>> {
+	async findByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
 		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
 		const result = await this.em.findAndCount(Submission, {
 			$or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }],
