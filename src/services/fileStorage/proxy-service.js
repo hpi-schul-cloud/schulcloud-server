@@ -14,7 +14,7 @@ const {
 	canCreate,
 	canDelete,
 	returnFileType,
-	generateFlatFileName,
+	generateFileNameSuffix,
 	copyFile,
 	createCorrectStrategy,
 	createDefaultPermissions,
@@ -378,7 +378,7 @@ const signedUrlService = {
 			payload: { userId },
 		} = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
-		const flatFileName = _flatFileName || generateFlatFileName(filename);
+		const flatFileName = _flatFileName || generateFileNameSuffix(filename);
 
 		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
 
@@ -765,7 +765,7 @@ const newFileService = {
 		const { name, owner, parent, studentCanEdit } = data;
 		const fType = name.split('.').pop();
 		const buffer = fs.readFileSync(`src/services/fileStorage/resources/fake.${fType}`);
-		const flatFileName = generateFlatFileName(name);
+		const flatFileName = generateFileNameSuffix(name);
 
 		return signedUrlService
 			.create(
