@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- BC-64 - enable e2e test execution for push event on main branch
+
 ## 26.9.1
 
 - SC-9192 - enable cors for nestjs app routes
