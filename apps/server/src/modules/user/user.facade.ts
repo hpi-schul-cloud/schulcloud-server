@@ -2,8 +2,9 @@
 // TODO add tests to improve coverage
 
 import { Injectable } from '@nestjs/common';
+import { ICurrentUser } from '@shared/domain';
+
 import { UserUC } from './uc/user.uc';
-import { ICurrentUser } from '../authentication/interface/jwt-payload';
 import { ResolvedUser } from './controller/dto';
 
 @Injectable()

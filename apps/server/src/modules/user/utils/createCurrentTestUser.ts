@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
+import { ICurrentUser } from '@shared/domain';
 import { ResolvedUserMapper } from '../mapper';
 import { User, Role } from '../entity';
 

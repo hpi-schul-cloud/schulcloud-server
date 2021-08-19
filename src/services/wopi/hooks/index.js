@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-spaces */
 
 const { authenticate } = require('@feathersjs/authentication');
-const { NotFound, BadRequest } = require('../../../errors');
+const { NotFound, BadRequest, Conflict } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
 const { mapPayload } = require('../../../hooks');
 
