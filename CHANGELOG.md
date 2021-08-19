@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - BC-64 - enable e2e test execution for push event on main branch
+- BC-37 - BC-54 - reduce resource consumption for deployed server
 
 ## 26.9.1
 
