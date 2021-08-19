@@ -9,6 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.9.1
+
+- SC-9192 - enable cors for nestjs app routes
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 - BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
 
@@ -17,6 +20,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9231 - add permissions to SuperHero to edit admin role 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
+
+### Changed
+
+- OPS-2491 - Change the hydra service url
 
 ## 26.8.0
 
