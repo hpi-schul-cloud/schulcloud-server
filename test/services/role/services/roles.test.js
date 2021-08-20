@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const { BadRequest } = require('../../../../src/errors');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
@@ -39,7 +38,7 @@ describe('roles service', () => {
 				roles: [parentsParentRole._id],
 			};
 			try {
-				const result = await rolesService.update(roleToChange.id, updateData, params);
+				await rolesService.update(roleToChange.id, updateData, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -52,7 +51,7 @@ describe('roles service', () => {
 			const roleToChange = await testObjects.createTestRole({
 				name: 'roletochange',
 			});
-			const parentRole = await testObjects.createTestRole({
+			await testObjects.createTestRole({
 				name: 'parentrole',
 				roles: [roleToChange._id],
 			});
@@ -89,7 +88,7 @@ describe('roles service', () => {
 				roles: [parentsParentRole._id],
 			};
 			try {
-				const result = await rolesService.patch(roleToChange.id, updateData, params);
+				await rolesService.patch(roleToChange.id, updateData, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -119,7 +118,7 @@ describe('roles service', () => {
 			const roleToChange = await testObjects.createTestRole({
 				name: 'roletochange',
 			});
-			const parentRole = await testObjects.createTestRole({
+			await testObjects.createTestRole({
 				name: 'parentrole',
 				roles: [roleToChange._id],
 			});
@@ -140,7 +139,7 @@ describe('roles service', () => {
 			const roleToChange = await testObjects.createTestRole({
 				name: 'roletochange',
 			});
-			const parentRole = await testObjects.createTestRole({
+			await testObjects.createTestRole({
 				name: 'parentrole',
 				roles: [roleToChange._id],
 			});
