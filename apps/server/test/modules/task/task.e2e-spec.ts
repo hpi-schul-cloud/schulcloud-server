@@ -15,8 +15,6 @@ import { TaskResponse } from '@src/modules/task/controller/dto';
 import { Course } from '@src/modules/learnroom/entity';
 import { Task, Submission, UserTaskInfo } from '@src/modules/task/entity';
 
-// 		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
-
 const modifiedCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
 	currentUser.user.id = user.id;
 	currentUser.userId = user.id;
@@ -58,7 +56,7 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
-	describe('as user with write permissions in parents', () => {
+	describe('As user with write permissions in parents', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
@@ -251,5 +249,85 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
-	describe('as user with read permissions in parents', () => {});
+	describe('As user with read permissions in parents', () => {
+		let app: INestApplication;
+		let orm: MikroORM;
+		let em: EntityManager;
+
+		const { currentUser } = createCurrentTestUser(['TASK_DASHBOARD_VIEW_V3']);
+
+		beforeAll(async () => {
+			const module: TestingModule = await Test.createTestingModule({
+				imports: [ServerModule],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						req.user = currentUser;
+						return true;
+					},
+				})
+				.compile();
+
+			app = module.createNestApplication();
+			await app.init();
+			orm = app.get(MikroORM);
+			em = module.get(EntityManager);
+		});
+
+		afterAll(async () => {
+			await orm.close();
+			await app.close();
+		});
+
+		beforeEach(async () => {
+			await Promise.all([
+				em.nativeDelete(Course, {}),
+				em.nativeDelete(Task, {}),
+				em.nativeDelete(Submission, {}),
+				em.nativeDelete(UserTaskInfo, {}),
+			]);
+		});
+
+		it('[FIND] /task/dashboard can open it', async () => {
+			const response = await request(app.getHttpServer()).get('/task/dashboard');
+			expect(response.status).toEqual(200);
+		});
+
+		it('[FIND] /task/dashboard can open it', async () => {
+			const response = await request(app.getHttpServer()).get('/task/dashboard');
+
+			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+
+			expect(paginatedResult).toEqual({
+				total: 0,
+				data: [],
+				limit: 10,
+				skip: 0,
+			});
+		});
+
+		it('[FIND] /task/dashboard return tasks that include the appropriate information.', async () => {
+			const helperL = new LearnroomTestHelper();
+			const helper = new TaskTestHelper();
+			const user = helper.getFirstUser() as UserTaskInfo;
+			modifiedCurrentUserId(currentUser, user);
+			helperL.createAndAddUser(user);
+
+			const parent = helperL.createStudentCourse();
+			const task = helper.createTask(parent.id);
+			task.changePrivate(false);
+
+			await em.persistAndFlush([task, parent, user]);
+
+			const response = await request(app.getHttpServer()).get('/task/dashboard');
+			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+
+			expect(paginatedResult.data[0]).toBeDefined();
+			expect(paginatedResult.data[0]).toHaveProperty('status');
+			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
+			expect(paginatedResult.data[0]).toHaveProperty('name');
+		});
+	});
 });
