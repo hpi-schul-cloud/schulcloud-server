@@ -4,7 +4,7 @@ const { BadRequest } = require('../../../../src/errors');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe.only('roles service', () => {
+describe('roles service', () => {
 	let app;
 	let rolesService;
 	let server;
