@@ -5,4 +5,4 @@
  */
 
 export * from './query';
-export * from './scope';
+export { Scope } from './scope';

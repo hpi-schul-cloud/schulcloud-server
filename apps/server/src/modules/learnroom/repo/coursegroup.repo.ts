@@ -8,9 +8,8 @@ import { Coursegroup, Course } from '../entity';
 import { ICoursegroupRepo } from '../uc';
 
 class CoursegroupScope extends Scope<Coursegroup> {
-	findByCourses(courses: Course[]): CoursegroupScope {
-		this.addQrQuery(courses, 'id', 'courseId');
-
+	byCourses(courses: Course[]): CoursegroupScope {
+		this.buildAndAddOrQuery(courses, 'id', 'courseId');
 		return this;
 	}
 }
@@ -21,7 +20,7 @@ export class CoursegroupRepo implements ICoursegroupRepo {
 
 	async findByCourses(courses: Course[]): Promise<Counted<Coursegroup[]>> {
 		const scope = new CoursegroupScope();
-		scope.findByCourses(courses);
+		scope.byCourses(courses);
 		const [coursegroups, count] = await this.em.findAndCount(Coursegroup, scope.query);
 		return [coursegroups, count];
 	}

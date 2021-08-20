@@ -59,6 +59,7 @@ const learnroomEntities = [Course, Coursegroup];
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},
+			debug: true,
 		}),
 		CoreModule,
 	],

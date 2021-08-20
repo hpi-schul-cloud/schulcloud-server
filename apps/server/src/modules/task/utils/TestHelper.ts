@@ -3,14 +3,13 @@ import { EntityId, TestHelper, BaseEntity } from '@shared/domain';
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
 
 class TaskParent extends BaseEntity implements ITaskParent {
-	id: EntityId;
+	public studentNumber = 10;
 
-	studentNumber: number;
+	public userIdWithWritePermissions: EntityId | undefined;
 
-	constructor(id: EntityId, studentNumber?: number) {
-		super();
-		this.id = id;
-		this.studentNumber = studentNumber || 10;
+	hasWritePermission(userId: EntityId): boolean {
+		const hasWritePermission = this.userIdWithWritePermissions === userId;
+		return hasWritePermission;
 	}
 
 	getDescriptions(): IParentDescriptionsProperties {
@@ -37,9 +36,10 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 		return user;
 	}
 
-	createTaskParent(parentId?: EntityId, studentNumber?: number): ITaskParent {
-		const id = parentId || this.createEntityId();
-		const parent = new TaskParent(id, studentNumber);
+	createTaskParent(parentId?: EntityId, studentNumber = 10): TaskParent {
+		const parent = new TaskParent();
+		parent.id = parentId || this.createEntityId();
+		parent.studentNumber = studentNumber;
 		return parent;
 	}
 

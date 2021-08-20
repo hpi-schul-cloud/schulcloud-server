@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-// TODO add spec, see news.mapper.spec
 import { TaskResponse } from '../controller/dto';
 import { TaskWithSubmissionStatus } from '../domain';
 

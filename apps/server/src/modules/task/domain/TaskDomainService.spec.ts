@@ -1,4 +1,4 @@
-import { EntityArray, TaskTestHelper } from '../utils';
+import { TaskTestHelper } from '../utils';
 
 import { TaskDomainService } from './TaskDomainService';
 
@@ -11,7 +11,7 @@ const prepareBaseData = (studentNumber?: number) => {
 	const task2e1 = helper.createTask(parent2.id);
 	const task2e2 = helper.createTask(parent2.id);
 
-	const parents = new EntityArray([parent1, parent2]);
+	const parents = [parent1, parent2];
 	const tasks = [task1e1, task1e2, task2e1, task2e2];
 	return {
 		parents,
@@ -23,29 +23,25 @@ const prepareBaseData = (studentNumber?: number) => {
 describe('TaskDomainService', () => {
 	describe('constructor', () => {
 		it('should work with emptry array inputs', () => {
-			const parents = new EntityArray([]);
+			const parents = [];
 			const tasks = [];
 
-			const domain = new TaskDomainService(parents, tasks);
+			const domain = new TaskDomainService(tasks, parents);
 
 			expect(domain).toBeDefined();
 		});
 
 		it('should work with filled array inputs', () => {
-			const { parents, tasks } = prepareBaseData();
+			const { tasks, parents } = prepareBaseData();
 
-			const domain = new TaskDomainService(parents, tasks);
+			const domain = new TaskDomainService(tasks, parents);
 
 			expect(domain).toBeDefined();
 		});
-	});
 
-	describe('addParentToTasks', () => {
 		it('should work with existing parent', () => {
-			const { parents, tasks } = prepareBaseData();
-			const domain = new TaskDomainService(parents, tasks);
-
-			domain.addParentToTasks();
+			const { tasks, parents } = prepareBaseData();
+			const domain = new TaskDomainService(tasks, parents);
 
 			expect(domain.tasks[0].getParent()).toEqual(parents[0]);
 			expect(domain.tasks[1].getParent()).toEqual(parents[0]);
@@ -55,22 +51,20 @@ describe('TaskDomainService', () => {
 
 		it('should work with not existing parent', () => {
 			const { tasks } = prepareBaseData();
-			const parents = new EntityArray([]);
-			const domain = new TaskDomainService(parents, tasks);
+			const parents = [];
+			const domain = new TaskDomainService(tasks, parents);
 
-			domain.addParentToTasks();
-
-			expect(domain.tasks[0].getParent()).toEqual({});
-			expect(domain.tasks[1].getParent()).toEqual({});
-			expect(domain.tasks[2].getParent()).toEqual({});
-			expect(domain.tasks[3].getParent()).toEqual({});
+			expect(domain.tasks[0].getParent()).toBeUndefined();
+			expect(domain.tasks[1].getParent()).toBeUndefined();
+			expect(domain.tasks[2].getParent()).toBeUndefined();
+			expect(domain.tasks[3].getParent()).toBeUndefined();
 		});
 	});
 
 	describe('computeStatusForStudents', () => {
 		it('should compute status for each task', () => {
-			const { parents, tasks, helper } = prepareBaseData();
-			const domain = new TaskDomainService(parents, tasks);
+			const { tasks, parents, helper } = prepareBaseData();
+			const domain = new TaskDomainService(tasks, parents);
 
 			const submission1 = helper.createSubmission(tasks[0]);
 			const submission2 = helper.createSubmission(tasks[1]);
@@ -97,8 +91,8 @@ describe('TaskDomainService', () => {
 
 		// should we handle wrong data inputs, or bind the userId to make it saver?
 		it('should always set maxSubmissions to one', () => {
-			const { parents, tasks, helper } = prepareBaseData();
-			const domain = new TaskDomainService(parents, tasks);
+			const { tasks, parents, helper } = prepareBaseData();
+			const domain = new TaskDomainService(tasks, parents);
 			helper.createAndAddUser();
 
 			const submissions = helper.createSubmissionsForEachStudent(tasks[0]);
@@ -119,8 +113,8 @@ describe('TaskDomainService', () => {
 		it('should compute status for each task', () => {
 			const maxSubmissions = 30;
 
-			const { parents, tasks, helper } = prepareBaseData(maxSubmissions);
-			const domain = new TaskDomainService(parents, tasks);
+			const { tasks, parents, helper } = prepareBaseData(maxSubmissions);
+			const domain = new TaskDomainService(tasks, parents);
 			helper.createAndAddUser();
 			helper.createAndAddUser();
 
