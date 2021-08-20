@@ -4,10 +4,10 @@ import { EntityId } from '../types/entity-id';
 import { BaseEntity } from '../entity/base.entity';
 
 // TODO: write tests..
-export abstract class TestHelper<UserType, SchoolType> {
-	private users: UserType[] = [];
+export abstract class TestHelper<SchoolType> {
+	private users: (EntityId | BaseEntity)[] = [];
 
-	private otherUser: UserType;
+	private otherUser: EntityId | BaseEntity;
 
 	private school: SchoolType;
 
@@ -17,7 +17,7 @@ export abstract class TestHelper<UserType, SchoolType> {
 
 	// That any helper must implement this is a temporary solution until
 	// user and school entity is avaible in global or shared scope.
-	abstract createUser(): UserType;
+	abstract createUser(): EntityId | BaseEntity;
 
 	abstract createSchool(): SchoolType;
 
@@ -31,21 +31,32 @@ export abstract class TestHelper<UserType, SchoolType> {
 		return entityId;
 	}
 
-	createAndAddUser(): void {
-		const newUser = this.createUser();
+	createAndAddUser(user?: EntityId | BaseEntity): void {
+		let newUser = this.createUser();
+
+		if (newUser instanceof BaseEntity && user instanceof BaseEntity && user.id) {
+			newUser.id = user.id;
+		} else if (newUser instanceof BaseEntity && typeof user === 'string') {
+			newUser.id = user;
+		} else if (typeof newUser === 'string' && user instanceof BaseEntity && user.id) {
+			newUser = user.id;
+		} else if (typeof newUser === 'string' && typeof user === 'string') {
+			newUser = user;
+		}
+
 		this.users.push(newUser);
 	}
 
-	getFirstUser(): UserType {
+	getFirstUser(): EntityId | BaseEntity {
 		return this.users[0];
 	}
 
 	// TODO: find better name for existing user that is not part of the ressources
-	getOtherUser(): UserType {
+	getOtherUser(): EntityId | BaseEntity {
 		return this.otherUser;
 	}
 
-	getUsers(): UserType[] {
+	getUsers(): (EntityId | BaseEntity)[] {
 		return this.users;
 	}
 

@@ -25,7 +25,7 @@ class TaskParent extends BaseEntity implements ITaskParent {
 	}
 }
 
-export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
+export class TaskTestHelper extends TestHelper<EntityId> {
 	createSchool(): EntityId {
 		return this.createEntityId();
 	}
@@ -60,7 +60,7 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 	}
 
 	createSubmission(task: Task, student?: UserTaskInfo): Submission {
-		const user = student || this.getFirstUser();
+		const user = (student || this.getFirstUser()) as UserTaskInfo;
 		const submission = new Submission({ student: user, comment: '', task });
 		this.addId(submission);
 		return submission;
@@ -74,7 +74,7 @@ export class TaskTestHelper extends TestHelper<UserTaskInfo, EntityId> {
 
 	createSubmissionsForEachStudent(task: Task): Submission[] {
 		const submissions = this.getUsers().map((student) => {
-			const submission = this.createSubmission(task, student);
+			const submission = this.createSubmission(task, student as UserTaskInfo);
 			return submission;
 		});
 		return submissions;
