@@ -1,7 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course } from './course.entity';
+
+import { EntityId } from '@shared/domain';
 
 import { LearnroomTestHelper } from '../utils/testHelper';
+
+import { Course } from './course.entity';
 
 describe('CourseEntity', () => {
 	describe('constructor', () => {
@@ -256,7 +259,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.isMember(helper.otherUser);
+			const result = course.isMember(helper.getOtherUser() as EntityId);
 
 			expect(result).toEqual(false);
 		});
@@ -265,7 +268,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.isMember(helper.getFirstUser());
+			const result = course.isMember(helper.getFirstUser() as EntityId);
 
 			expect(result).toEqual(true);
 		});
@@ -274,7 +277,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createTeacherCourse();
 
-			const result = course.isMember(helper.getFirstUser());
+			const result = course.isMember(helper.getFirstUser() as EntityId);
 
 			expect(result).toEqual(true);
 		});
@@ -283,7 +286,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createSubstitutionCourse();
 
-			const result = course.isMember(helper.getFirstUser());
+			const result = course.isMember(helper.getFirstUser() as EntityId);
 
 			expect(result).toEqual(true);
 		});
@@ -294,7 +297,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(helper.otherUser);
+			const result = course.hasWritePermission(helper.getOtherUser() as EntityId);
 
 			expect(result).toEqual(false);
 		});
@@ -303,7 +306,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(helper.getFirstUser());
+			const result = course.hasWritePermission(helper.getFirstUser() as EntityId);
 
 			expect(result).toEqual(false);
 		});
@@ -312,7 +315,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createTeacherCourse();
 
-			const result = course.hasWritePermission(helper.getFirstUser());
+			const result = course.hasWritePermission(helper.getFirstUser() as EntityId);
 
 			expect(result).toEqual(true);
 		});
@@ -321,7 +324,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createSubstitutionCourse();
 
-			const result = course.hasWritePermission(helper.getFirstUser());
+			const result = course.hasWritePermission(helper.getFirstUser() as EntityId);
 
 			expect(result).toEqual(true);
 		});

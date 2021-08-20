@@ -58,7 +58,7 @@ describe('submission repo', () => {
 	describe('getAllSubmissionsByUser', () => {
 		it('should return submissions that have the user as userId', async () => {
 			const helper = new TaskTestHelper();
-			const student = helper.getFirstUser();
+			const student = helper.getFirstUser() as UserTaskInfo;
 
 			const task = helper.createTask();
 			const submission = helper.createSubmission(task);
@@ -75,7 +75,7 @@ describe('submission repo', () => {
 		it('should return submissions where the user is a team member', async () => {
 			const helper = new TaskTestHelper();
 			helper.createAndAddUser();
-			const students = helper.getUsers();
+			const students = helper.getUsers() as UserTaskInfo[];
 			const task = helper.createTask();
 
 			const submission = helper.createTeamMemberSubmission(task, students);
@@ -90,7 +90,7 @@ describe('submission repo', () => {
 		it('should return submissions where the user is in the course group', async () => {
 			const helper = new TaskTestHelper();
 			helper.createAndAddUser();
-			const students = helper.getUsers();
+			const students = helper.getUsers() as UserTaskInfo[];
 			const task = helper.createTask();
 
 			const courseGroup = em.create(CourseGroupInfo, { courseId: task.getParentId(), students });

@@ -8,7 +8,7 @@ enum CourseTyps {
 	subsitutionTeacher = 'substitutionTeacherIds',
 }
 
-export class LearnroomTestHelper extends TestHelper<EntityId, EntityId> {
+export class LearnroomTestHelper extends TestHelper<EntityId> {
 	createUser(): EntityId {
 		return this.createEntityId();
 	}
@@ -36,7 +36,8 @@ export class LearnroomTestHelper extends TestHelper<EntityId, EntityId> {
 	}
 
 	createCoursegroup(course: Course): Coursegroup {
-		const coursegroup = new Coursegroup({ studentIds: this.getUsers(), courseId: course.id });
+		const studentIds = this.getUsers() as EntityId[];
+		const coursegroup = new Coursegroup({ studentIds, courseId: course.id });
 		this.addId(coursegroup);
 		return coursegroup;
 	}
