@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-64 - enable e2e test execution for push event on main branch
 - BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
+- BC-37 - BC-54 - reduce resource consumption for deployed server
 
 ## 26.9.1
 
