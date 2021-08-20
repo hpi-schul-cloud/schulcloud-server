@@ -1,7 +1,4 @@
-import { EntityId } from '@shared/domain';
-
 import { Task, Submission, ITaskParent } from '../entity';
-import { EntityArray } from '../utils';
 
 import { StatusDomainService } from './StatusDomainService';
 
@@ -30,24 +27,22 @@ enum MaxSubmissionsOperations {
 export class TaskDomainService {
 	tasks: Task[];
 
-	parents: EntityArray<ITaskParent>;
-
-	constructor(parentsCollection: EntityArray<ITaskParent>, tasks: Task[]) {
-		this.parents = parentsCollection;
-		this.tasks = tasks;
+	constructor(tasks: Task[], parents: ITaskParent[]) {
+		this.tasks = this.addParentToTasks(tasks, parents);
 	}
 
-	addParentToTasks(): void {
-		this.tasks.forEach((task) => {
+	private addParentToTasks(tasks: Task[], parents: ITaskParent[]): Task[] {
+		tasks.forEach((task) => {
 			const parentId = task.getParentId();
-			const parent = this.parents.getById(parentId);
+			const parent = parents.find((p) => p.id === parentId);
 			task.setParent(parent);
 		});
+		return tasks;
 	}
 
 	private prepareStatus(submissions: Submission[], fnName: MaxSubmissionsOperations): TaskWithSubmissionStatus[] {
 		const domain = new StatusDomainService(submissions);
-		const computedTasks = this.tasks.map((task) => domain.addStatusToTask(task, this[fnName](task.getParentId())));
+		const computedTasks = this.tasks.map((task) => domain.addStatusToTask(task, this[fnName](task)));
 		return computedTasks;
 	}
 
@@ -58,9 +53,9 @@ export class TaskDomainService {
 		return computedTask;
 	}
 
-	private getMaxSubmissionsForTeachersByCourseId(parentId: EntityId): number {
-		const parent = this.parents.getById(parentId);
-		const studentNumber = parent.getStudentsNumber();
+	private getMaxSubmissionsForTeachersByCourseId(task: Task): number {
+		const parent = task.getParent();
+		const studentNumber = parent !== undefined ? parent.getStudentsNumber() : 0;
 		return studentNumber;
 	}
 

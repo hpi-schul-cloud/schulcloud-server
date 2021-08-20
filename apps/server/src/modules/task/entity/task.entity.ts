@@ -84,7 +84,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return this.private;
 	}
 
-	setParent(parent: ITaskParent): void {
+	setParent(parent: ITaskParent | undefined): void {
 		this.parent = parent;
 	}
 

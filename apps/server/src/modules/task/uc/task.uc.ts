@@ -4,7 +4,6 @@ import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
 import { LearnroomFacade } from '../../learnroom';
 
 import { TaskRepo, SubmissionRepo } from '../repo';
-import { EntityArray } from '../utils';
 import { TaskDomainService, TaskWithSubmissionStatus } from '../domain';
 
 @Injectable()
@@ -36,21 +35,17 @@ export class TaskUC {
 	) {}
 
 	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
-		const [coursesWithGroups] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
-		const courses = new EntityArray(coursesWithGroups);
+		// Important the facade strategy is only a temporary solution until we established a better way for resolving the dependency graph
+		const [courses] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
 
 		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
-		const [tasks, total] = await this.taskRepo.findAllByStudent(
-			courses.getIds(),
-			pagination,
-			taskIdsThatHaveSubmissions
-		);
+		const courseIds = courses.map((course) => course.id);
 
-		const domain = new TaskDomainService(courses, tasks);
-		domain.addParentToTasks();
+		const [tasks, total] = await this.taskRepo.findAllByStudent(courseIds, pagination, taskIdsThatHaveSubmissions);
+
+		const domain = new TaskDomainService(tasks, courses);
 		// after add status to task it is not nessasray to return it directly
 		// we can do the step and in the end use prepareTasks.getResult();
 		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
@@ -60,19 +55,17 @@ export class TaskUC {
 
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
 		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
-		const [coursesWithGroups] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
+		const [courses] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
 
-		// Add Authorization service or logic until it is avaible for learnroom
-		const courseWithGroupsWithWritePermissions = coursesWithGroups.filter((course) =>
-			course.hasWritePermission(userId)
-		);
-		const courses = new EntityArray(courseWithGroupsWithWritePermissions);
+		// !!! Add Authorization service or logic until it is avaible !!!
+		const coursesWithWritePermissions = courses.filter((c) => c.hasWritePermission(userId));
 
-		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courses.getIds(), pagination);
+		const courseIds = coursesWithWritePermissions.map((course) => course.id);
+
+		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courseIds, pagination);
 		const [submissionsOfTeacher] = await this.submissionRepo.findByTasks(tasks);
 
-		const domain = new TaskDomainService(courses, tasks);
-		domain.addParentToTasks();
+		const domain = new TaskDomainService(tasks, coursesWithWritePermissions);
 		// after add status to task it is not nessasray to return it directly
 		// we can do the step and in the end use prepareTasks.getResult();
 		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
