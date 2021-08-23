@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId, BaseEntity } from '@shared/domain';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { LessonTaskInfo } from './lesson-task-info.entity';
 
 interface ITaskProperties {
@@ -17,7 +17,9 @@ export interface IParentDescriptionsProperties {
 	description?: string;
 }
 
-export interface ITaskParent extends BaseEntity {
+export interface ITaskParent {
+	id: EntityId;
+
 	getDescriptions(): IParentDescriptionsProperties;
 	getStudentsNumber(): number;
 }

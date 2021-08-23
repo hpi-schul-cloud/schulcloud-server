@@ -1,11 +1,13 @@
-import { EntityId, TestHelper, BaseEntity } from '@shared/domain';
+import { EntityId, TestHelper } from '@shared/domain';
 
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
 
-class TaskParent extends BaseEntity implements ITaskParent {
-	public studentNumber = 10;
+class TaskParent implements ITaskParent {
+	id: EntityId;
 
-	public userIdWithWritePermissions: EntityId | undefined;
+	studentNumber = 10;
+
+	userIdWithWritePermissions: EntityId | undefined;
 
 	hasWritePermission(userId: EntityId): boolean {
 		const hasWritePermission = this.userIdWithWritePermissions === userId;

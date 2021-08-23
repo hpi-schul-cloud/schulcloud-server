@@ -38,14 +38,17 @@ export class TaskUC {
 		// Important the facade strategy is only a temporary solution until we established a better way for resolving the dependency graph
 		const [courses] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
 
+		// !!! Add Authorization service or logic until it is avaible !!!
+		const coursesWithReadPermissions = courses.filter((c) => !c.hasWritePermission(userId));
+
 		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
-		const courseIds = courses.map((course) => course.id);
+		const courseIds = coursesWithReadPermissions.map((course) => course.id);
 
 		const [tasks, total] = await this.taskRepo.findAllByStudent(courseIds, pagination, taskIdsThatHaveSubmissions);
 
-		const domain = new TaskDomainService(tasks, courses);
+		const domain = new TaskDomainService(tasks, coursesWithReadPermissions);
 		// after add status to task it is not nessasray to return it directly
 		// we can do the step and in the end use prepareTasks.getResult();
 		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
@@ -53,6 +56,7 @@ export class TaskUC {
 		return [computedTasks, total];
 	}
 
+	// TODO: rename teacher and student
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
 		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
 		const [courses] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
