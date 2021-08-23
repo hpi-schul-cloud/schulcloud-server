@@ -6,8 +6,8 @@ const { hasPermission, hasSchoolPermission } = require('../../../hooks');
 const { NotFound } = require('../../../errors');
 
 const isEdusharing = (context) => {
-	if (Configuration.get('LERNSTORE_MODE') !== 'EDUSHARING') {
-		throw new NotFound('This API is activated only for the lernstore mode Edusharing');
+	if (Configuration.get('FEATURE_LERNSTORE_ENABLED') !== true) {
+		throw new NotFound('This feature is disabled.');
 	}
 	context.safeAttributes = ['url'];
 	return Promise.resolve(context);
