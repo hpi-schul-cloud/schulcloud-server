@@ -2,7 +2,7 @@ import { EntityId, TestHelper } from '@shared/domain';
 
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
 
-class TaskParent implements ITaskParent {
+export class TaskParentTestEntity implements ITaskParent {
 	id: EntityId;
 
 	studentNumber = 10;
@@ -38,8 +38,8 @@ export class TaskTestHelper extends TestHelper<EntityId> {
 		return user;
 	}
 
-	createTaskParent(parentId?: EntityId, studentNumber = 10): TaskParent {
-		const parent = new TaskParent();
+	createTaskParent(parentId?: EntityId, studentNumber = 10): TaskParentTestEntity {
+		const parent = new TaskParentTestEntity();
 		parent.id = parentId || this.createEntityId();
 		parent.studentNumber = studentNumber;
 		return parent;
