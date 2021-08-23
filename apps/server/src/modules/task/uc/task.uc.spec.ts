@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginationQuery } from '@shared/controller';
+import { EntityId } from '@shared/domain';
 
 import { LearnroomFacade } from '../../learnroom';
 import { Course } from '../../learnroom/entity';
 
-import { TaskTestHelper } from '../utils/TestHelper';
+import { Submission, Task } from '../entity';
+import { TaskParentTestEntity, TaskTestHelper } from '../utils/TestHelper';
 import { SubmissionRepo, TaskRepo } from '../repo';
 
 import { TaskUC } from './task.uc';
@@ -62,81 +64,367 @@ describe('TaskService', () => {
 		facade = module.get(LearnroomFacade);
 	});
 
+	const setSubmissionRepoMock = {
+		findByUserId: (data: Submission[] = []) => {
+			const spy = jest.spyOn(submissionRepo, 'findByUserId').mockImplementation((userId: EntityId) => {
+				return Promise.resolve([data, data.length]);
+			});
+			return spy;
+		},
+		findByTasks: (data: Submission[] = []) => {
+			const spy = jest.spyOn(submissionRepo, 'findByTasks').mockImplementation((tasks: Task[]) => {
+				return Promise.resolve([data, data.length]);
+			});
+			return spy;
+		},
+	};
+
+	const setTaskRepoMock = {
+		findAllByStudent: (data: Task[] = []) => {
+			const spy = jest.spyOn(taskRepo, 'findAllByStudent').mockImplementation(() => {
+				return Promise.resolve([data, data.length]);
+			});
+			return spy;
+		},
+		findAllAssignedByTeacher: (data: Task[] = []) => {
+			const spy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
+				return Promise.resolve([data, data.length]);
+			});
+			return spy;
+		},
+	};
+
+	const setParentRepoMock = {
+		findCoursesWithGroupsByUserId: (data: TaskParentTestEntity[] = []) => {
+			const spy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation(() => {
+				const mapped = data as unknown[];
+				return Promise.resolve([mapped as Course[], mapped.length]);
+			});
+			return spy;
+		},
+	};
+
 	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
 
 	// TODO: make it sense to write test for it if we want combine student, teacher and open?
 	describe('findAllOpenForStudent', () => {
-		it('should called all external methodes', async () => {
+		const findAllOpenForStudentMocks = (
+			parents: TaskParentTestEntity[],
+			tasks: Task[],
+			submissions: Submission[] = []
+		) => {
+			const spy1 = setParentRepoMock.findCoursesWithGroupsByUserId(parents);
+			const spy2 = setSubmissionRepoMock.findByUserId(submissions);
+			const spy3 = setTaskRepoMock.findAllByStudent(tasks);
+
+			const mockRestore = () => {
+				spy1.mockRestore();
+				spy2.mockRestore();
+				spy3.mockRestore();
+			};
+			return mockRestore;
+		};
+
+		// TODO: coursegroups test completly missing
+		// TODO: how work this stuff with lessons
+		// TODO: how work this stuff with ignoredTask
+
+		it('should return pagination promise', async () => {
 			const helper = new TaskTestHelper();
-			const findByUserIdSpy = jest.spyOn(submissionRepo, 'findByUserId').mockImplementation(() => {
-				return Promise.resolve([[], 0]);
-			});
 
-			const findAllByStudentMock = jest.spyOn(taskRepo, 'findAllByStudent').mockImplementation(() => {
-				return Promise.resolve([[], 0]);
-			});
+			const tasks = [];
+			const parents = [];
 
-			const facadeSpy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation(() => {
-				return Promise.resolve([[], 0]);
-			});
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			await service.findAllOpenForStudent(helper.getFirstUser().id, paginationQuery);
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
 
-			expect(findAllByStudentMock).toHaveBeenCalledWith([], paginationQuery, []);
-			expect(facadeSpy).toHaveBeenCalledWith(helper.getFirstUser().id);
-			expect(findByUserIdSpy).toHaveBeenCalledWith(helper.getFirstUser().id);
+			expect(Array.isArray(result)).toBeTruthy();
+			expect(count).toEqual(0);
 
-			findByUserIdSpy.mockRestore();
-			findAllByStudentMock.mockRestore();
-			facadeSpy.mockRestore();
+			mockRestore();
 		});
 
-		// test formating
-
-		it('should find only not submitted tasks', async () => {
+		it('should find a open task', async () => {
 			const helper = new TaskTestHelper();
-
 			const parent1 = helper.createTaskParent();
-			const parent2 = helper.createTaskParent();
-			const parents = [parent1, parent2] as Course[];
-
 			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			const task3 = helper.createTask(parent2.id); // two task in one course
+			task1.changePrivate(false);
 
-			const submissionTask1 = helper.createSubmission(task1);
-			const submissionTask2 = helper.createSubmission(task2);
-			// task3 has no submission
+			const tasks = [task1];
+			const parents = [parent1];
 
-			const tasks = [task1, task2, task3];
-			const submissions = [submissionTask1, submissionTask2];
-
-			const getAllSubmissionsByUserSpy = jest.spyOn(submissionRepo, 'findByUserId').mockImplementation(() => {
-				return Promise.resolve([submissions, 3]);
-			});
-
-			const findAllByStudentMock = jest.spyOn(taskRepo, 'findAllByStudent').mockImplementation(() => {
-				return Promise.resolve([tasks, 2]);
-			});
-
-			const facadeSpy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation(() => {
-				return Promise.resolve([parents, 2]);
-			});
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [computedTasks, count] = await service.findAllOpenForStudent(helper.getFirstUser().id, paginationQuery);
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
 
 			expect(count).toEqual(1);
 
-			getAllSubmissionsByUserSpy.mockRestore();
-			findAllByStudentMock.mockRestore();
-			facadeSpy.mockRestore();
+			mockRestore();
 		});
 
-		it.todo('should ignore tasks with submissions');
+		it('should return well formed task with parent and stauts', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			task1.changePrivate(false);
+
+			const tasks = [task1];
+			const parents = [parent1];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
+			expect(result[0].task.getParent()).toBeDefined();
+
+			mockRestore();
+		});
+
+		it('should not find a private task', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			task1.changePrivate(true);
+
+			const tasks = [task1];
+			const parents = [parent1];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(0);
+
+			mockRestore();
+		});
+
+		it('should work for parent without tasks', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+
+			const tasks = [];
+			const parents = [parent1];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(0);
+
+			mockRestore();
+		});
+
+		it('should not find task from parents where the user has write permissions', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			parent1.userIdWithWritePermissions = helper.getFirstUser() as EntityId;
+			const task1 = helper.createTask(parent1.id);
+			task1.changePrivate(false);
+
+			const tasks = [task1];
+			const parents = [parent1];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(0);
+
+			mockRestore();
+		});
+
+		it('should find a list of open task', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			const task2 = helper.createTask(parent1.id);
+			const task3 = helper.createTask(parent1.id);
+			task1.changePrivate(false);
+			task2.changePrivate(false);
+			task3.changePrivate(false);
+
+			const tasks = [task1, task2, task3];
+			const parents = [parent1];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(3);
+
+			mockRestore();
+		});
+
+		it('should find open task from different parents', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const parent2 = helper.createTaskParent();
+			const parent3 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			const task2 = helper.createTask(parent2.id);
+			const task3 = helper.createTask(parent3.id);
+			task1.changePrivate(false);
+			task2.changePrivate(false);
+			task3.changePrivate(false);
+
+			const tasks = [task1, task2, task3];
+			const parents = [parent1, parent2, parent3];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(3);
+
+			mockRestore();
+		});
+
+		it('should work if no parent is matched', async () => {
+			const helper = new TaskTestHelper();
+
+			const tasks = [];
+			const parents = [];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(0);
+
+			mockRestore();
+		});
+
+		it('should pass pagination', async () => {
+			const helper = new TaskTestHelper();
+
+			const tasks = [];
+			const parents = [];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const spy = setTaskRepoMock.findAllByStudent([]);
+
+			const paginationQuery = new PaginationQuery();
+			paginationQuery.skip = 0;
+			paginationQuery.limit = 10;
+			await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(spy).toHaveBeenCalledWith([], paginationQuery);
+
+			mockRestore();
+			spy.mockRestore();
+		});
+
+		it('should compute status for task', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			const submission1 = helper.createSubmission(task1);
+			task1.changePrivate(false);
+
+			const tasks = [task1];
+			const parents = [parent1];
+			const submissions = [submission1];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(result[0].status).toEqual({
+				graded: 0,
+				submitted: 1,
+				maxSubmissions: 1,
+			});
+
+			mockRestore();
+		});
+
+		it('should compute status for multiple tasks', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const parent2 = helper.createTaskParent();
+			const parent3 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			const task2 = helper.createTask(parent1.id);
+			const task3 = helper.createTask(parent2.id);
+			// parent 3 has no task
+			const submission1 = helper.createSubmission(task1);
+			// task2 has no submission
+			const submission3 = helper.createSubmission(task3);
+
+			task1.changePrivate(false);
+
+			const tasks = [task1, task2, task3];
+			const parents = [parent1, parent2, parent3];
+			const submissions = [submission1, submission3];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(result[0].status).toEqual({
+				graded: 0,
+				submitted: 1,
+				maxSubmissions: 1,
+			});
+
+			expect(result[1].status).toEqual({
+				graded: 0,
+				submitted: 0,
+				maxSubmissions: 1,
+			});
+
+			expect(result[2].status).toEqual({
+				graded: 0,
+				submitted: 1,
+				maxSubmissions: 1,
+			});
+
+			mockRestore();
+		});
+
+		it('should compute status for multiple tasks', async () => {
+			const helper = new TaskTestHelper();
+			const parent1 = helper.createTaskParent();
+			const task1 = helper.createTask(parent1.id);
+			task1.changePrivate(false);
+
+			const submission1 = helper.createSubmission(task1);
+			const submission2 = helper.createSubmission(task1);
+			const submission3 = helper.createSubmission(task1);
+
+			const tasks = [task1];
+			const parents = [parent1];
+			const submissions = [submission1, submission2, submission3];
+
+			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
+
+			const paginationQuery = new PaginationQuery();
+			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+
+			expect(count).toEqual(1);
+			expect(result[0].status).toEqual({
+				graded: 0,
+				submitted: 1,
+				maxSubmissions: 1,
+			});
+
+			mockRestore();
+		});
 	});
 
 	describe('findAllOpen', () => {
