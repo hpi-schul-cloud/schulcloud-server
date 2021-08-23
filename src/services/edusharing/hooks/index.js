@@ -7,7 +7,7 @@ const { NotFound } = require('../../../errors');
 
 const isEdusharing = (context) => {
 	if (Configuration.get('FEATURE_LERNSTORE_ENABLED') !== true) {
-		throw new NotFound('This feature is enabled.');
+		throw new NotFound('This feature is disabled.');
 	}
 	context.safeAttributes = ['url'];
 	return Promise.resolve(context);
