@@ -12,7 +12,11 @@ export class TaskMapper {
 		dto.duedate = task.getDueDate();
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;
-		dto.status = status;
+		dto.status = {
+			submitted: status.submitted,
+			maxSubmissions: status.maxSubmissions,
+			graded: status.graded,
+		};
 
 		const parent = task.getParent();
 		if (parent !== undefined) {
