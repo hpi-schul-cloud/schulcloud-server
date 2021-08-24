@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder } from '@shared/domain';
 
 import { LearnroomFacade } from '../../learnroom';
 
@@ -46,7 +46,10 @@ export class TaskUC {
 
 		const courseIds = coursesWithReadPermissions.map((course) => course.id);
 
-		const [tasks, total] = await this.taskRepo.findAllByStudent(courseIds, pagination, taskIdsThatHaveSubmissions);
+		const [tasks, total] = await this.taskRepo.findAllCurrent(courseIds, taskIdsThatHaveSubmissions, {
+			pagination,
+			order: { dueDate: SortOrder.asc },
+		});
 
 		const domain = new TaskDomainService(tasks, coursesWithReadPermissions);
 		// after add status to task it is not nessasray to return it directly
@@ -66,7 +69,7 @@ export class TaskUC {
 
 		const courseIds = coursesWithWritePermissions.map((course) => course.id);
 
-		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(courseIds, pagination);
+		const [tasks, total] = await this.taskRepo.findAll(courseIds, { pagination, order: { createdAt: SortOrder.desc } });
 		const [submissionsOfTeacher] = await this.submissionRepo.findByTasks(tasks);
 
 		const domain = new TaskDomainService(tasks, coursesWithWritePermissions);

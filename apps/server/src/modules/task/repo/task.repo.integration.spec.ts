@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '../../database';
 
 import { TaskTestHelper } from '../utils/TestHelper';
@@ -38,14 +39,14 @@ describe('TaskService', () => {
 		]);
 	});
 
-	describe('findAllAssignedByTeacher', () => {
+	describe('findAll', () => {
 		it('should return task of teachers course', async () => {
 			const helper = new TaskTestHelper();
 			const task = helper.createTask();
 			task.changePrivate(false);
 
 			await em.persistAndFlush([task]);
-			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
+			const [result, total] = await repo.findAll([task.getParentId()]);
 			expect(total).toEqual(1);
 			expect(result[0].getName()).toEqual(task.getName());
 		});
@@ -57,7 +58,7 @@ describe('TaskService', () => {
 			task.changePrivate(false);
 
 			await em.persistAndFlush([task, otherTask]);
-			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
+			const [result, total] = await repo.findAll([task.getParentId()]);
 			expect(total).toEqual(1);
 			expect(result).toHaveLength(1);
 		});
@@ -68,7 +69,7 @@ describe('TaskService', () => {
 			task.changePrivate(true);
 
 			await em.persistAndFlush([task]);
-			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
+			const [result, total] = await repo.findAll([task.getParentId()]);
 			expect(total).toEqual(0);
 			expect(result).toHaveLength(0);
 		});
@@ -80,7 +81,7 @@ describe('TaskService', () => {
 			task.changePrivate(false);
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await repo.findAllAssignedByTeacher([parentId]);
+			const [result, total] = await repo.findAll([parentId]);
 			expect(total).toEqual(1);
 			expect(result).toHaveLength(1);
 		});
@@ -92,7 +93,7 @@ describe('TaskService', () => {
 			task.changePrivate(false);
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await repo.findAllAssignedByTeacher([parentId]);
+			const [result, total] = await repo.findAll([parentId]);
 			expect(total).toEqual(0);
 			expect(result).toHaveLength(0);
 		});
@@ -105,7 +106,7 @@ describe('TaskService', () => {
 			task.changePrivate(false);
 
 			await em.persistAndFlush([lesson, task]);
-			const [result, total] = await repo.findAllAssignedByTeacher([parentId]);
+			const [result, total] = await repo.findAll([parentId]);
 			expect(total).toEqual(0);
 			expect(result).toHaveLength(0);
 		});
@@ -118,7 +119,7 @@ describe('TaskService', () => {
 			task.changePrivate(false);
 
 			await em.persistAndFlush([task]);
-			const [result, total] = await repo.findAllAssignedByTeacher([task.getParentId()]);
+			const [result, total] = await repo.findAll([task.getParentId()]);
 			expect(total).toEqual(1);
 			expect(result).toHaveLength(1);
 		});
@@ -130,13 +131,13 @@ describe('TaskService', () => {
 			const lesson = em.create(LessonTaskInfo, { course });
 			const task = em.create(Task, { name: 'roll some dice', lesson, course });
 			await em.persistAndFlush([user, course, lesson, task]);
-			const [result, total] = await repo.findAllAssignedByTeacher(user.id);
+			const [result, total] = await repo.findAll(user.id);
 			expect(total).toEqual(0);
 			*/
 		});
 	});
 
-	describe('findAllByStudent', () => {
+	describe('findAllCurrent', () => {
 		describe('return value', () => {
 			it('should return the expected properties', async () => {
 				const helper = new TaskTestHelper();
@@ -144,7 +145,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
 
 				expect(total).toEqual(1);
 				expect(result[0]).toHaveProperty('name');
@@ -166,9 +167,8 @@ describe('TaskService', () => {
 				const tasks = [task1, task2, task3, task4];
 
 				await em.persistAndFlush(tasks);
-				const [result, total] = await repo.findAllByStudent([task1.getParentId()], {
-					limit: 2,
-					skip: 0,
+				const [result, total] = await repo.findAllCurrent([task1.getParentId()], [], {
+					pagination: { limit: 2, skip: 0 },
 				});
 				expect(result.length).toEqual(2);
 				expect(total).toEqual(4);
@@ -185,10 +185,21 @@ describe('TaskService', () => {
 				task2.changePrivate(false);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await repo.findAllByStudent([parentId]);
+				const [result, total] = await repo.findAllCurrent([parentId], [], { order: { dueDate: SortOrder.asc } });
 				expect(total).toEqual(2);
 				expect(result[0].id).toEqual(task2.id);
 				expect(result[1].id).toEqual(task1.id);
+			});
+
+			it('should not return private tasks', async () => {
+				const helper = new TaskTestHelper();
+				const parentId = helper.createEntityId();
+				const task1 = helper.createTask(parentId);
+				task1.changePrivate(true);
+				await em.persistAndFlush([task1]);
+				const [result, total] = await repo.findAllCurrent([parentId]);
+				expect(total).toEqual(0);
+				expect(result.length).toEqual(0);
 			});
 		});
 
@@ -199,7 +210,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -212,7 +223,7 @@ describe('TaskService', () => {
 				otherTask.changePrivate(false);
 
 				await em.persistAndFlush([task, otherTask]);
-				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -223,7 +234,7 @@ describe('TaskService', () => {
 				task.changePrivate(true);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllByStudent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -237,7 +248,7 @@ describe('TaskService', () => {
 				task2.changePrivate(false);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await repo.findAllByStudent([parentId], {}, [task2.id]);
+				const [result, total] = await repo.findAllCurrent([parentId], [task2.id]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -255,7 +266,7 @@ describe('TaskService', () => {
 				task2.changePrivate(false);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await repo.findAllByStudent([parentId]);
+				const [result, total] = await repo.findAllCurrent([parentId]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -269,7 +280,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await repo.findAllByStudent([parentId]);
+				const [result, total] = await repo.findAllCurrent([parentId]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -281,7 +292,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await repo.findAllByStudent([parentId]);
+				const [result, total] = await repo.findAllCurrent([parentId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -294,7 +305,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await repo.findAllByStudent([parentId]);
+				const [result, total] = await repo.findAllCurrent([parentId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -307,7 +318,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllByStudent([parentId]);
+				const [result, total] = await repo.findAllCurrent([parentId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -320,7 +331,7 @@ describe('TaskService', () => {
 				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
-				const [result, total] = await repo.findAllByStudent(user.id);
+				const [result, total] = await repo.findAllCurrent(user.id);
 				expect(total).toEqual(0);
 				*/
 			});
