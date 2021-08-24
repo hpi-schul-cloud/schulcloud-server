@@ -27,22 +27,22 @@ export interface ITaskParent {
 @Entity({ tableName: 'homeworks' })
 export class Task extends BaseEntityWithTimestamps {
 	@Property()
-	private name: string;
+	name: string;
 
 	@Property()
-	private dueDate?: Date;
+	dueDate?: Date;
 
 	@Property()
-	private private: boolean;
+	private: boolean;
 
 	@Property({ fieldName: 'courseId' })
-	private parentId: EntityId;
+	parentId: EntityId;
 
 	@ManyToOne({ fieldName: 'lessonId' })
-	private lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
+	lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
 
 	@Property({ persist: false })
-	private parent?: ITaskParent;
+	parent?: ITaskParent;
 
 	constructor(props: ITaskProperties) {
 		super();
