@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store 
+- BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 
 ## 26.9.1
 
