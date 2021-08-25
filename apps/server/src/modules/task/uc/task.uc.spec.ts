@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginationQuery } from '@shared/controller';
 import { EntityId, IFindOptions, SortOrder } from '@shared/domain';
-
-import { LearnroomFacade } from '../../learnroom';
-import { Course } from '../../learnroom/entity';
+import { Course } from '@src/entities';
+import { CourseRepo } from '@src/repositories';
 
 import { Submission, Task } from '../entity';
 import { TaskParentTestEntity, TaskTestHelper } from '../utils/TestHelper';
@@ -16,17 +15,17 @@ describe('TaskService', () => {
 	let service: TaskUC;
 	let taskRepo: TaskRepo;
 	let submissionRepo: SubmissionRepo;
-	let facade: LearnroomFacade;
+	let courseRepo: CourseRepo;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				TaskUC,
-				LearnroomFacade,
+				CourseRepo,
 				{
-					provide: LearnroomFacade,
+					provide: CourseRepo,
 					useValue: {
-						findCoursesWithGroupsByUserId() {
+						findAllByUserId() {
 							throw new Error('Please write a mock for LearnroomFacade.findCoursesWithGroupsByUserId.');
 						},
 					},
@@ -61,7 +60,7 @@ describe('TaskService', () => {
 		service = module.get(TaskUC);
 		submissionRepo = module.get(SubmissionRepo);
 		taskRepo = module.get(TaskRepo);
-		facade = module.get(LearnroomFacade);
+		courseRepo = module.get(CourseRepo);
 	});
 
 	const setSubmissionRepoMock = {
@@ -95,8 +94,8 @@ describe('TaskService', () => {
 	};
 
 	const setParentRepoMock = {
-		findCoursesWithGroupsByUserId: (data: TaskParentTestEntity[] = []) => {
-			const spy = jest.spyOn(facade, 'findCoursesWithGroupsByUserId').mockImplementation(() => {
+		findAllByUserId: (data: TaskParentTestEntity[] = []) => {
+			const spy = jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => {
 				const mapped = data as unknown[];
 				return Promise.resolve([mapped as Course[], mapped.length]);
 			});
@@ -115,7 +114,7 @@ describe('TaskService', () => {
 			tasks: Task[],
 			submissions: Submission[] = []
 		) => {
-			const spy1 = setParentRepoMock.findCoursesWithGroupsByUserId(parents);
+			const spy1 = setParentRepoMock.findAllByUserId(parents);
 			const spy2 = setSubmissionRepoMock.findByUserId(submissions);
 			const spy3 = setTaskRepoMock.findAllCurrent(tasks);
 

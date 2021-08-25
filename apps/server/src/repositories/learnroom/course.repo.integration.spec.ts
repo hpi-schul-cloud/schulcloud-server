@@ -2,10 +2,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { EntityId } from '@shared/domain';
-
-import { MongoMemoryDatabaseModule } from '../../database';
-import { LearnroomTestHelper } from '../utils/testHelper';
-import { Course } from '../entity';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { Course, LearnroomTestHelper } from '@src/entities';
 
 import { CourseRepo } from './course.repo';
 
@@ -51,12 +49,9 @@ describe('course repo', () => {
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = [
 				'_id',
-				// 'classIds',
 				'color',
 				'createdAt',
 				'description',
-				'groups', // TODO: i can not validate from test if groups are persistet to db or not
-				// 'features',
 				'name',
 				'schoolId',
 				'substitutionTeacherIds',

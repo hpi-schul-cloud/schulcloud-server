@@ -1,11 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
+import { Course } from '@src/entities';
 import { EntityId, Counted } from '@shared/domain';
 import { Scope } from '@shared/repo';
-
-import { Course } from '../entity';
-import { ICourseRepo } from '../uc';
 
 class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
@@ -22,7 +20,7 @@ class CourseScope extends Scope<Course> {
 }
 
 @Injectable()
-export class CourseRepo implements ICourseRepo {
+export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findAllByUserId(userId: EntityId): Promise<Counted<Course[]>> {

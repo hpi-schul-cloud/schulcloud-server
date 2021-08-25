@@ -1,10 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination, Counted, ICurrentUser, SortOrder } from '@shared/domain';
-
-import { LearnroomFacade } from '../../learnroom';
+import { CourseRepo } from '@src/repositories';
+import { Course } from '@src/entities';
 
 import { TaskRepo, SubmissionRepo } from '../repo';
 import { TaskDomainService, TaskWithSubmissionStatus } from '../domain';
+
+enum Permission {
+	read,
+	write,
+}
 
 @Injectable()
 export class TaskUC {
@@ -31,29 +36,40 @@ export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionRepo: SubmissionRepo,
-		private readonly learnroomFacade: LearnroomFacade
+		private readonly courseRepo: CourseRepo
 	) {}
 
-	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		// Important the facade strategy is only a temporary solution until we established a better way for resolving the dependency graph
-		const [courses] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
+	// coursegroups are missing
+	// lessons are missing -> only search for hidden: false,
+	private async findPermittedTaskParents(userId: EntityId, permission: Permission): Promise<{ courses: Course[] }> {
+		const [allCourses] = await this.courseRepo.findAllByUserId(userId);
 
 		// !!! Add Authorization service or logic until it is avaible !!!
-		const coursesWithReadPermissions = courses.filter((c) => !c.hasWritePermission(userId));
+		const courses = allCourses.filter((c) =>
+			permission === Permission.write ? c.hasWritePermission(userId) : !c.hasWritePermission(userId)
+		);
+
+		const parents = {
+			courses,
+		};
+
+		return parents;
+	}
+
+	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
+		const { courses } = await this.findPermittedTaskParents(userId, Permission.read);
 
 		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
-		const courseIds = coursesWithReadPermissions.map((course) => course.id);
+		const parentIds = courses.map((course) => course.id);
 
-		const [tasks, total] = await this.taskRepo.findAllCurrent(courseIds, taskIdsThatHaveSubmissions, {
+		const [tasks, total] = await this.taskRepo.findAllCurrent(parentIds, taskIdsThatHaveSubmissions, {
 			pagination,
 			order: { dueDate: SortOrder.asc },
 		});
 
-		const domain = new TaskDomainService(tasks, coursesWithReadPermissions);
-		// after add status to task it is not nessasray to return it directly
-		// we can do the step and in the end use prepareTasks.getResult();
+		const domain = new TaskDomainService(tasks, courses);
 		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
 
 		return [computedTasks, total];
@@ -61,20 +77,14 @@ export class TaskUC {
 
 	// TODO: rename teacher and student
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		// Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
-		const [courses] = await this.learnroomFacade.findCoursesWithGroupsByUserId(userId);
+		const { courses } = await this.findPermittedTaskParents(userId, Permission.write);
 
-		// !!! Add Authorization service or logic until it is avaible !!!
-		const coursesWithWritePermissions = courses.filter((c) => c.hasWritePermission(userId));
+		const parentIds = courses.map((course) => course.id);
 
-		const courseIds = coursesWithWritePermissions.map((course) => course.id);
-
-		const [tasks, total] = await this.taskRepo.findAll(courseIds, { pagination, order: { createdAt: SortOrder.desc } });
+		const [tasks, total] = await this.taskRepo.findAll(parentIds, { pagination, order: { createdAt: SortOrder.desc } });
 		const [submissionsOfTeacher] = await this.submissionRepo.findByTasks(tasks);
 
-		const domain = new TaskDomainService(tasks, coursesWithWritePermissions);
-		// after add status to task it is not nessasray to return it directly
-		// we can do the step and in the end use prepareTasks.getResult();
+		const domain = new TaskDomainService(tasks, courses);
 		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
 
 		return [computedTasks, total];
