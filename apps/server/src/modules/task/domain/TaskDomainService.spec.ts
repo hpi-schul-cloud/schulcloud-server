@@ -89,7 +89,6 @@ describe('TaskDomainService', () => {
 			});
 		});
 
-		// should we handle wrong data inputs, or bind the userId to make it saver?
 		it('should always set maxSubmissions to one', () => {
 			const { tasks, parents, helper } = prepareBaseData();
 			const domain = new TaskDomainService(tasks, parents);
@@ -110,6 +109,26 @@ describe('TaskDomainService', () => {
 	});
 
 	describe('computeStatusForTeachers', () => {
+		it('should set maxSubmissions to 0 if no parent is passed.', () => {
+			const maxSubmissions = 30;
+
+			const { tasks, helper } = prepareBaseData(maxSubmissions);
+			const domain = new TaskDomainService(tasks, []);
+			helper.createAndAddUser();
+
+			const submissions = helper.createSubmissionsForEachStudent(tasks[0]);
+
+			const result = domain.computeStatusForTeachers(submissions);
+
+			const expected = {
+				graded: 0,
+				maxSubmissions: 0,
+				submitted: 2,
+			};
+
+			expect(result[0].status).toEqual(expected);
+		});
+
 		it('should compute status for each task', () => {
 			const maxSubmissions = 30;
 
