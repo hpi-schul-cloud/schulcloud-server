@@ -112,6 +112,7 @@ data:
   ALERT_STATUS_API_URL: "{{ ALERT_STATUS_URL|default("https://status.hpi-schul-cloud.de", true) }}/api/v1"
   FEATURE_MORGAN_LOG_ENABLED: "false"
   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: "{{ FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED|default("false", true) }}"
+  FEATURE_S3_BUCKET_CORS: "{{ FEATURE_S3_BUCKET_CORS|default("false", true) }}"
   FEATURE_TSP_AUTO_CONSENT_ENABLED: "{{ FEATURE_TSP_AUTO_CONSENT_ENABLED|default("false", true) }}"
 {% if FEATURE_API_VALIDATION_ENABLED is defined %}
   FEATURE_API_VALIDATION_ENABLED: "{{ FEATURE_API_VALIDATION_ENABLED|default("false", true) }}"

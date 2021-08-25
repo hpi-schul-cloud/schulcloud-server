@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store 
 - BC-119 - remove malfunction S3 lifecycle migration
+- BC-120 - add feature flag for S3 CORS
 
 ## 26.9.1
 
