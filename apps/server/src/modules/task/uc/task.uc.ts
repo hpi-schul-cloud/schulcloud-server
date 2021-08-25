@@ -53,19 +53,19 @@ export class TaskUC {
 	}
 
 	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const courses = await this.findPermittedTaskParents(userId, Permission.read);
+		const parents = await this.findPermittedTaskParents(userId, Permission.read);
 
 		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
-		const parentIds = courses.map((course) => course.id);
+		const parentIds = parents.map((parent) => parent.id);
 
 		const [tasks, total] = await this.taskRepo.findAllCurrent(parentIds, taskIdsThatHaveSubmissions, {
 			pagination,
 			order: { dueDate: SortOrder.asc },
 		});
 
-		const domain = new TaskDomainService(tasks, courses);
+		const domain = new TaskDomainService(tasks, parents);
 		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
 
 		return [computedTasks, total];
@@ -73,14 +73,14 @@ export class TaskUC {
 
 	// TODO: rename teacher and student
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const courses = await this.findPermittedTaskParents(userId, Permission.write);
+		const parents = await this.findPermittedTaskParents(userId, Permission.write);
 
-		const parentIds = courses.map((course) => course.id);
+		const parentIds = parents.map((parent) => parent.id);
 
 		const [tasks, total] = await this.taskRepo.findAll(parentIds, { pagination, order: { createdAt: SortOrder.desc } });
 		const [submissionsOfTeacher] = await this.submissionRepo.findByTasks(tasks);
 
-		const domain = new TaskDomainService(tasks, courses);
+		const domain = new TaskDomainService(tasks, parents);
 		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
 
 		return [computedTasks, total];
