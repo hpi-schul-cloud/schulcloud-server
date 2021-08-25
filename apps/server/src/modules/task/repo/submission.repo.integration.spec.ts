@@ -33,7 +33,7 @@ describe('submission repo', () => {
 		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(UserTaskInfo, {}), em.nativeDelete(Submission, {})]);
 	});
 
-	describe('getSubmissionsByTasksList', () => {
+	describe('findAllByTasks', () => {
 		it('should return only the requested submissions of homeworks', async () => {
 			const helper = new TaskTestHelper();
 			const students = helper.getUsers();
@@ -48,8 +48,8 @@ describe('submission repo', () => {
 
 			await em.persistAndFlush([...students, ...tasks, ...submissions]);
 
-			const requestedTasks = [tasks[0], tasks[1]];
-			const [result, count] = await repo.findByTasks(requestedTasks);
+			const requestedTaskIds = [tasks[0].id, tasks[1].id];
+			const [result, count] = await repo.findAllByTaskIds(requestedTaskIds);
 			expect(count).toEqual(2);
 			expect(result).toHaveLength(2);
 		});
@@ -65,7 +65,7 @@ describe('submission repo', () => {
 
 			await em.persistAndFlush([student, task, submission]);
 
-			const [result, count] = await repo.findByUserId(student.id);
+			const [result, count] = await repo.findAllByUserId(student.id);
 
 			expect(count).toEqual(1);
 			expect(result.length).toEqual(1);
@@ -82,7 +82,7 @@ describe('submission repo', () => {
 
 			await em.persistAndFlush([...students, task, submission]);
 
-			const [result, count] = await repo.findByUserId(students[0].id);
+			const [result, count] = await repo.findAllByUserId(students[0].id);
 			expect(count).toEqual(1);
 			expect(result[0].teamMembers[0].firstName).toEqual(students[0].firstName);
 		});
@@ -99,7 +99,7 @@ describe('submission repo', () => {
 
 			await em.persistAndFlush([...students, task, submission, courseGroup]);
 
-			const [result, count] = await repo.findByUserId(students[0].id);
+			const [result, count] = await repo.findAllByUserId(students[0].id);
 
 			expect(count).toEqual(1);
 			expect(result[0].courseGroup.students[0].firstName).toEqual(students[0].firstName);

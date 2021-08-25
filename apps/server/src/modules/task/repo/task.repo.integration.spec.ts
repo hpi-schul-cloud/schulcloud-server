@@ -145,7 +145,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([task.getParentId()]);
 
 				expect(total).toEqual(1);
 				expect(result[0]).toHaveProperty('name');
@@ -167,7 +167,7 @@ describe('TaskService', () => {
 				const tasks = [task1, task2, task3, task4];
 
 				await em.persistAndFlush(tasks);
-				const [result, total] = await repo.findAllCurrent([task1.getParentId()], [], {
+				const [result, total] = await repo.findAllCurrentIgnoreIds([task1.getParentId()], [], {
 					pagination: { limit: 2, skip: 0 },
 				});
 				expect(result.length).toEqual(2);
@@ -185,7 +185,9 @@ describe('TaskService', () => {
 				task2.changePrivate(false);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await repo.findAllCurrent([parentId], [], { order: { dueDate: SortOrder.asc } });
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId], [], {
+					order: { dueDate: SortOrder.asc },
+				});
 				expect(total).toEqual(2);
 				expect(result[0].id).toEqual(task2.id);
 				expect(result[1].id).toEqual(task1.id);
@@ -197,7 +199,7 @@ describe('TaskService', () => {
 				const task1 = helper.createTask(parentId);
 				task1.changePrivate(true);
 				await em.persistAndFlush([task1]);
-				const [result, total] = await repo.findAllCurrent([parentId]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId]);
 				expect(total).toEqual(0);
 				expect(result.length).toEqual(0);
 			});
@@ -210,7 +212,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([task.getParentId()]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -223,7 +225,7 @@ describe('TaskService', () => {
 				otherTask.changePrivate(false);
 
 				await em.persistAndFlush([task, otherTask]);
-				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([task.getParentId()]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -234,7 +236,7 @@ describe('TaskService', () => {
 				task.changePrivate(true);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllCurrent([task.getParentId()]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([task.getParentId()]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -248,7 +250,7 @@ describe('TaskService', () => {
 				task2.changePrivate(false);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await repo.findAllCurrent([parentId], [task2.id]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId], [task2.id]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -266,7 +268,7 @@ describe('TaskService', () => {
 				task2.changePrivate(false);
 
 				await em.persistAndFlush([task1, task2]);
-				const [result, total] = await repo.findAllCurrent([parentId]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -280,7 +282,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await repo.findAllCurrent([parentId]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId]);
 				expect(total).toEqual(1);
 				expect(result).toHaveLength(1);
 			});
@@ -292,7 +294,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await repo.findAllCurrent([parentId]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -305,7 +307,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([lesson, task]);
-				const [result, total] = await repo.findAllCurrent([parentId]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
@@ -318,7 +320,7 @@ describe('TaskService', () => {
 				task.changePrivate(false);
 
 				await em.persistAndFlush([task]);
-				const [result, total] = await repo.findAllCurrent([parentId]);
+				const [result, total] = await repo.findAllCurrentIgnoreIds([parentId]);
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});

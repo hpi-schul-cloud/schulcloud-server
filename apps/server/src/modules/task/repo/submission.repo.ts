@@ -1,3 +1,4 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
@@ -12,19 +13,29 @@ import { CourseGroupInfo, Submission, Task } from '../entity';
 export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findByTasks(tasks: Task[]): Promise<Counted<Submission[]>> {
+	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this.em.findAndCount(Submission, {
-			task: { $in: tasks },
+			task: { $in: taskIds },
 		});
 
 		return [submissions, count];
 	}
 
-	async findByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
-		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
+	async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
+		const result = await this.em.findAndCount(Submission, await this.byUserIdQuery(userId));
+		return result;
+	}
+
+	async findGradedByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
 		const result = await this.em.findAndCount(Submission, {
-			$or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }],
+			$and: [{ grade: { $ne: null } }, await this.byUserIdQuery(userId)],
 		});
 		return result;
+	}
+
+	private async byUserIdQuery(userId: EntityId): Promise<FilterQuery<Submission>> {
+		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
+		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
+		return query;
 	}
 }

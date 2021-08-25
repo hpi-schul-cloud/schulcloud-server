@@ -32,16 +32,16 @@ export class TaskRepo {
 	}
 
 	/**
-	 * Find all currently active tasks by their parents.
+	 * Find all currently active tasks by their parent ids and a list of task ids.
 	 *
 	 * @param parentIds ids of parent entities
-	 * @param ignoreTaskIds task ids to exclude from the query
+	 * @param ids task ids to include
 	 * @param options pagination, sorting
 	 * @returns
 	 */
-	async findAllCurrent(
+	async findAllCurrentByIds(
 		parentIds: EntityId[],
-		ignoreTaskIds: EntityId[] = [],
+		ids: EntityId[],
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const lessons = await this.findLessons(parentIds);
@@ -51,8 +51,37 @@ export class TaskRepo {
 		scope.byParents(parentIds);
 		scope.byPublic();
 		scope.byLessonsOrNone(lessons.map((o) => o.id));
-		scope.ignoreTasks(ignoreTaskIds);
 		scope.afterDueDateOrNone(dueDate);
+
+		scope.byIds(ids);
+
+		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+		return countedTaskList;
+	}
+
+	/**
+	 * Find all currently active tasks by their parent ids ignoring a list of task ids.
+	 *
+	 * @param parentIds ids of parent entities
+	 * @param ignoreIds task ids to ignore
+	 * @param options pagination, sorting
+	 * @returns
+	 */
+	async findAllCurrentIgnoreIds(
+		parentIds: EntityId[],
+		ignoreIds: EntityId[] = [],
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		const lessons = await this.findLessons(parentIds);
+		const dueDate = this.getDefaultMaxDueDate();
+
+		const scope = new TaskScope();
+		scope.byParents(parentIds);
+		scope.byPublic();
+		scope.byLessonsOrNone(lessons.map((o) => o.id));
+		scope.afterDueDateOrNone(dueDate);
+
+		scope.ignoreIds(ignoreIds);
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
 		return countedTaskList;

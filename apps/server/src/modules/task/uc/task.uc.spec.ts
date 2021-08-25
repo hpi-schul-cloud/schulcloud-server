@@ -42,8 +42,8 @@ describe('TaskService', () => {
 						findAll() {
 							throw new Error('Please write a mock for TaskRepo.findAll.');
 						},
-						findAllCurrent() {
-							throw new Error('Please write a mock for TaskRepo.findAllCurrent.');
+						findAllCurrentIgnoreIds() {
+							throw new Error('Please write a mock for TaskRepo.findAllCurrentIgnoreIds.');
 						},
 					},
 				},
@@ -51,11 +51,11 @@ describe('TaskService', () => {
 				{
 					provide: SubmissionRepo,
 					useValue: {
-						findByTasks() {
-							throw new Error('Please write a mock for SubmissionRepo.findByTasks');
+						findAllByTaskIds() {
+							throw new Error('Please write a mock for SubmissionRepo.findAllByTaskIds');
 						},
-						findByUserId() {
-							throw new Error('Please write a mock for SubmissionRepo.findByUserId');
+						findAllByUserId() {
+							throw new Error('Please write a mock for SubmissionRepo.findAllByUserId');
 						},
 					},
 				},
@@ -69,14 +69,14 @@ describe('TaskService', () => {
 	});
 
 	const setSubmissionRepoMock = {
-		findByUserId: (data: Submission[] = []) => {
-			const spy = jest.spyOn(submissionRepo, 'findByUserId').mockImplementation(() => {
+		findAllByUserId: (data: Submission[] = []) => {
+			const spy = jest.spyOn(submissionRepo, 'findAllByUserId').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
 			});
 			return spy;
 		},
-		findByTasks: (data: Submission[] = []) => {
-			const spy = jest.spyOn(submissionRepo, 'findByTasks').mockImplementation(() => {
+		findAllByTaskIds: (data: Submission[] = []) => {
+			const spy = jest.spyOn(submissionRepo, 'findAllByTaskIds').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
 			});
 			return spy;
@@ -84,8 +84,8 @@ describe('TaskService', () => {
 	};
 
 	const setTaskRepoMock = {
-		findAllCurrent: (data: Task[] = []) => {
-			const spy = jest.spyOn(taskRepo, 'findAllCurrent').mockImplementation(() => {
+		findAllCurrentIgnoreIds: (data: Task[] = []) => {
+			const spy = jest.spyOn(taskRepo, 'findAllCurrentIgnoreIds').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
 			});
 			return spy;
@@ -200,8 +200,8 @@ describe('TaskService', () => {
 			submissions: Submission[] = []
 		) => {
 			const spy1 = setParentRepoMock.findAllByUserId(parents);
-			const spy2 = setSubmissionRepoMock.findByUserId(submissions);
-			const spy3 = setTaskRepoMock.findAllCurrent(tasks);
+			const spy2 = setSubmissionRepoMock.findAllByUserId(submissions);
+			const spy3 = setTaskRepoMock.findAllCurrentIgnoreIds(tasks);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -248,7 +248,7 @@ describe('TaskService', () => {
 			mockRestore();
 		});
 
-		it('should return well formed task with parent and stauts', async () => {
+		it('should return well formed task with parent and status', async () => {
 			const helper = new TaskTestHelper();
 			const parent1 = helper.createTaskParent();
 			const task1 = helper.createTask(parent1.id);
@@ -354,7 +354,7 @@ describe('TaskService', () => {
 			const parents = [];
 
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
-			const spy = setTaskRepoMock.findAllCurrent([]);
+			const spy = setTaskRepoMock.findAllCurrentIgnoreIds([]);
 
 			const skip = 0;
 			const limit = 10;
