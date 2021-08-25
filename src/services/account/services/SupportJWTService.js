@@ -10,7 +10,12 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const { getRedisClient, redisSetAsync, extractRedisDataFromJwt, getRedisData } = require('../../../utils/redis');
+const { getRedisClient, redisSetAsync } = require('../../../utils/redis');
+const {
+	createRedisIdentifierFromJwtData,
+	extractRedisDataFromJwt,
+	getRedisData,
+} = require('../../authentication/logic/whitelist');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
 const DEFAULT_AUDIENCE = 'https://hpi-schul-cloud.de'; // The organisation that create this jwt.
@@ -133,7 +138,8 @@ class SupportJWTService {
 
 	async addToWhitelist(jwt) {
 		if (getRedisClient()) {
-			const { redisIdentifier, privateDevice } = extractRedisDataFromJwt(jwt);
+			const { accountId, jti, privateDevice } = extractRedisDataFromJwt(jwt);
+			const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 			const redisData = getRedisData({ privateDevice });
 			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset);
 		}

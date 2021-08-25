@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
 const redisMock = require('./utils/redis/redisMock');
+const whitelist = require('../src/services/authentication/logic/whitelist');
 
 const { Configuration } = commons; // separated from require, mocked in tests
 
@@ -55,7 +56,7 @@ describe('handleAutoLogout hook', () => {
 	it('whitelisted JWT is accepted and extended', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractRedisDataFromJwt(params.authentication.accessToken);
+		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 		const result = await fut({ params });
 		expect(result).to.not.equal(undefined);
@@ -66,7 +67,7 @@ describe('handleAutoLogout hook', () => {
 	it('not whitelisted JWT is rejected', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractRedisDataFromJwt(params.authentication.accessToken);
+		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		try {
 			await fut({ params });
@@ -83,7 +84,7 @@ describe('handleAutoLogout hook', () => {
 		Configuration.set('JWT_WHITELIST_ACCEPT_ALL', true);
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractRedisDataFromJwt(params.authentication.accessToken);
+		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		const result = await fut({ params });
 		expect(result).to.have.property('params');
