@@ -38,6 +38,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
+
+### Added
+
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 
 ## Added
