@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginationQuery } from '@shared/controller';
-import { EntityId, IFindOptions, SortOrder } from '@shared/domain';
+import { EntityId, IFindOptions, SortOrder, BaseEntity } from '@shared/domain';
 import { Course } from '@src/entities';
 import { CourseRepo } from '@src/repositories';
 
@@ -139,7 +139,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(count).toEqual(0);
@@ -158,7 +159,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 
@@ -176,28 +178,11 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
 			expect(result[0].task.getParent()).toBeDefined();
-
-			mockRestore();
-		});
-
-		it.skip('should not find a private task', async () => {
-			const helper = new TaskTestHelper();
-			const parent1 = helper.createTaskParent();
-			const task1 = new Task({ name: 'Test task #1', parentId: parent1.id, private: true });
-
-			const tasks = [task1];
-			const parents = [parent1];
-
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
-
-			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
-
-			expect(count).toEqual(0);
 
 			mockRestore();
 		});
@@ -212,26 +197,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
-
-			expect(count).toEqual(0);
-
-			mockRestore();
-		});
-
-		it.skip('should not find task from parents where the user has write permissions', async () => {
-			const helper = new TaskTestHelper();
-			const parent1 = helper.createTaskParent();
-			parent1.userIdWithWritePermissions = helper.getFirstUser() as EntityId;
-			const task1 = helper.createTask(parent1.id);
-
-			const tasks = [task1];
-			const parents = [parent1];
-
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
-
-			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -251,7 +218,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -273,7 +241,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -289,7 +258,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -313,7 +283,8 @@ describe('TaskService', () => {
 				order: { dueDate: SortOrder.asc },
 			};
 
-			await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, { skip, limit });
+			const user = helper.getFirstUser() as BaseEntity;
+			await service.findAllOpenForStudent(user.id, { skip, limit });
 
 			expect(spy).toHaveBeenCalledWith([], [], expectedOptions);
 
@@ -334,7 +305,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -365,7 +337,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -404,7 +377,8 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForStudent(helper.getFirstUser() as EntityId, paginationQuery);
+			const user = helper.getFirstUser() as BaseEntity;
+			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 			expect(result[0].status).toEqual({

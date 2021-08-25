@@ -41,23 +41,19 @@ export class TaskUC {
 
 	// coursegroups are missing
 	// lessons are missing -> only search for hidden: false,
-	private async findPermittedTaskParents(userId: EntityId, permission: Permission): Promise<{ courses: Course[] }> {
+	private async findPermittedTaskParents(userId: EntityId, permission: Permission): Promise<Course[]> {
 		const [allCourses] = await this.courseRepo.findAllByUserId(userId);
 
 		// !!! Add Authorization service or logic until it is avaible !!!
-		const courses = allCourses.filter((c) =>
+		const parents = allCourses.filter((c) =>
 			permission === Permission.write ? c.hasWritePermission(userId) : !c.hasWritePermission(userId)
 		);
-
-		const parents = {
-			courses,
-		};
 
 		return parents;
 	}
 
 	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const { courses } = await this.findPermittedTaskParents(userId, Permission.read);
+		const courses = await this.findPermittedTaskParents(userId, Permission.read);
 
 		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
 		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
@@ -77,7 +73,7 @@ export class TaskUC {
 
 	// TODO: rename teacher and student
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const { courses } = await this.findPermittedTaskParents(userId, Permission.write);
+		const courses = await this.findPermittedTaskParents(userId, Permission.write);
 
 		const parentIds = courses.map((course) => course.id);
 
