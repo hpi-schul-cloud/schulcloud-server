@@ -10,10 +10,6 @@ const schema = new Schema(
 			required: true,
 			index: true,
 		},
-		createdAt: {
-			type: Date,
-			expires: 604800,
-		},
 		data: [
 			{
 				scope: { type: String },
