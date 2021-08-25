@@ -8,7 +8,13 @@ const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
-const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
+const {
+	getRedisClient,
+	redisGetAsync,
+	redisSetAsync,
+	extractRedisDataFromJwt,
+	getRedisData,
+} = require('./utils/redis');
 const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
@@ -76,7 +82,7 @@ const handleAutoLogout = async (context) => {
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.params.authentication.accessToken);
+		const { redisIdentifier, privateDevice } = extractRedisDataFromJwt(context.params.authentication.accessToken);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;

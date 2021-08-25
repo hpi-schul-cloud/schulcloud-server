@@ -55,7 +55,7 @@ describe('handleAutoLogout hook', () => {
 	it('whitelisted JWT is accepted and extended', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractRedisDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 		const result = await fut({ params });
 		expect(result).to.not.equal(undefined);
@@ -66,7 +66,7 @@ describe('handleAutoLogout hook', () => {
 	it('not whitelisted JWT is rejected', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractRedisDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		try {
 			await fut({ params });
@@ -83,7 +83,7 @@ describe('handleAutoLogout hook', () => {
 		Configuration.set('JWT_WHITELIST_ACCEPT_ALL', true);
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractRedisDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		const result = await fut({ params });
 		expect(result).to.have.property('params');

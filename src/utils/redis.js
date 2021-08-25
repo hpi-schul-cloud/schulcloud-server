@@ -40,7 +40,11 @@ const redisTtlAsync = (...args) => {
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 
-function extractDataFromJwt(token) {
+function createRedisItdentifierFromJwtData(accountId, jti) {
+	return `jwt:${accountId}:${jti}`;
+}
+
+function extractRedisDataFromJwt(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
 	if (decodedToken === null) {
 		throw new BadRequest('Invalid authentication data');
@@ -53,7 +57,7 @@ function extractDataFromJwt(token) {
 		jti,
 		privateDevice = false,
 	} = decodedToken;
-	const redisIdentifier = `jwt:${accountId}:${jti}`;
+	const redisIdentifier = createRedisItdentifierFromJwtData(accountId, jti);
 	return { redisIdentifier, privateDevice };
 }
 
@@ -78,12 +82,13 @@ function getRedisData({ IP = 'NONE', Browser = 'NONE', Device = 'NONE', privateD
 }
 
 module.exports = {
+	createRedisItdentifierFromJwtData,
 	initializeRedisClient,
 	getRedisClient,
 	redisGetAsync,
 	redisSetAsync,
 	redisDelAsync,
 	redisTtlAsync,
-	extractDataFromJwt,
+	extractRedisDataFromJwt,
 	getRedisData,
 };

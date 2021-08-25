@@ -8,7 +8,7 @@ const {
 	getRedisClient,
 	redisSetAsync,
 	redisTtlAsync,
-	extractDataFromJwt,
+	extractRedisDataFromJwt,
 	getRedisData,
 } = require('../../../utils/redis');
 
@@ -24,7 +24,7 @@ class JwtTimerService {
 	 */
 	async find(params) {
 		if (getRedisClient()) {
-			const { redisIdentifier } = extractDataFromJwt(params.authentication.accessToken);
+			const { redisIdentifier } = extractRedisDataFromJwt(params.authentication.accessToken);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			return Promise.resolve({ ttl: redisResponse });
 		}
@@ -38,7 +38,7 @@ class JwtTimerService {
 	 */
 	async create(data, params) {
 		if (getRedisClient()) {
-			const { redisIdentifier, privateDevice } = extractDataFromJwt(params.authentication.accessToken);
+			const { redisIdentifier, privateDevice } = extractRedisDataFromJwt(params.authentication.accessToken);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			if (redisResponse < 0) throw new AutoLogout('Session was expired due to inactivity - autologout.');
 			const redisData = getRedisData({ privateDevice });
