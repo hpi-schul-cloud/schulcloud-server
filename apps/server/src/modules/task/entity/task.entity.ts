@@ -59,22 +59,12 @@ export class Task extends BaseEntityWithTimestamps {
 		return this.parentId;
 	}
 
-	// | null do not work but is set in database
-	getLesson(): LessonTaskInfo | undefined {
-		return this.lesson;
-	}
-
 	getName(): string {
 		return this.name;
 	}
 
-	// undefined?
 	getDueDate(): Date | undefined {
 		return this.dueDate;
-	}
-
-	isPrivate(): boolean {
-		return this.private;
 	}
 
 	changePrivate(toValue?: boolean): boolean {

@@ -3,14 +3,21 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '../types/entity-id';
 import { BaseEntity } from '../entity/base.entity';
 
-// TODO: write tests..
 export abstract class TestHelper<SchoolType> {
-	private users: (EntityId | BaseEntity)[] = [];
+	users: (EntityId | BaseEntity)[] = [];
 
-	private otherUser: EntityId | BaseEntity;
+	otherUser: EntityId | BaseEntity;
 
-	private school: SchoolType;
+	school: SchoolType;
 
+	/**
+	 * Create two user one that are used for create operations.
+	 * The other is created for all is not part of created element operations.
+	 * It also create a school that is used for this two user and all new added users.
+	 *
+	 * You get the the user over helper.getFirstUser(), or helper.getUsers(); and helper.getOtherUser();
+	 * By executing helper.createAndAddUser() the getUsers() list is increased and all create operations will use it.
+	 */
 	constructor() {
 		this.init();
 	}
@@ -31,6 +38,7 @@ export abstract class TestHelper<SchoolType> {
 		return entityId;
 	}
 
+	// If else mapping can removed after the abstract createUser() is replaced by createUser from global user entity.
 	createAndAddUser(user?: EntityId | BaseEntity): void {
 		let newUser = this.createUser();
 
