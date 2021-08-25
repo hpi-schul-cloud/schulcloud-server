@@ -62,6 +62,22 @@ describe('course repo', () => {
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
 
+		it('should return nothing by undefined value for user', async () => {
+			// @ts-expect-error test-case
+			const result = await repo.findAllByUserId(undefined);
+
+			const expectedResult = [[], 0];
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should return nothing by null value for user', async () => {
+			// @ts-expect-error test-case
+			const result = await repo.findAllByUserId(null);
+
+			const expectedResult = [[], 0];
+			expect(result).toEqual(expectedResult);
+		});
+
 		it('should return course of teachers', async () => {
 			const helper = new LearnroomTestHelper();
 			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
