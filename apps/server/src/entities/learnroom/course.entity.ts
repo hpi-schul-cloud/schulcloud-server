@@ -14,11 +14,10 @@ interface ICourseProperties {
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
 // i hope it can cleanup with adding schema instant of I...Properties.
-export const DEFAULT = {
+const DEFAULT = {
 	color: '#ACACAC',
 	name: 'Kurse',
 	description: '',
-	groups: [],
 };
 
 @Entity({ tableName: 'courses' })

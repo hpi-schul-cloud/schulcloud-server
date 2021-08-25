@@ -20,6 +20,7 @@ export interface IParentDescriptionsProperties {
 export interface ITaskParent {
 	id: EntityId;
 
+	hasWritePermission(userId: EntityId): boolean;
 	getDescriptions(): IParentDescriptionsProperties;
 	getStudentsNumber(): number;
 }
