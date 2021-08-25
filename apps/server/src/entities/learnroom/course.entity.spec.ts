@@ -13,7 +13,7 @@ describe('CourseEntity', () => {
 			expect(test).toThrow();
 		});
 
-		it('should create a course by passing right properties', () => {
+		it('should create a course by passing required properties', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId });
 			expect(course instanceof Course).toEqual(true);

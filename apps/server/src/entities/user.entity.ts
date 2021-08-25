@@ -3,8 +3,8 @@ import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 
 export interface IUserProperties {
 	email: string;
-	firstName?: string;
-	lastName?: string;
+	firstName: string;
+	lastName: string;
 	school: EntityId;
 }
 
@@ -16,10 +16,10 @@ export class User extends BaseEntityWithTimestamps {
 	email: string;
 
 	@Property()
-	firstName?: string;
+	firstName: string;
 
 	@Property()
-	lastName?: string;
+	lastName: string;
 
 	@Index({ name: 'searchUserForSchool' })
 	@Property({ fieldName: 'schoolId' })
