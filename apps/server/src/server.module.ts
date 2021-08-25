@@ -11,7 +11,8 @@ import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
-import { LearnroomModule } from './modules/learnroom/learnroom.module';
+
+import { Course, Coursegroup } from './entities';
 
 import {
 	CourseNews,
@@ -28,12 +29,10 @@ import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGro
 
 import { User, Role, Account } from './modules/user/entity';
 
-import { Course, Coursegroup } from './modules/learnroom/entity';
-
+const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
 const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
-const learnroomEntities = [Course, Coursegroup];
 
 @Module({
 	imports: [
@@ -46,7 +45,6 @@ const learnroomEntities = [Course, Coursegroup];
 			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
-		LearnroomModule,
 
 		MikroOrmModule.forRoot({
 			type: 'mongo',
@@ -54,12 +52,12 @@ const learnroomEntities = [Course, Coursegroup];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...courseEntities, ...taskEntities, ...userEntities, ...learnroomEntities],
+			entities: [...entities, ...courseEntities, ...taskEntities, ...userEntities],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},
-			debug: true,
+			// debug: true, // use it for locally debugging of querys
 		}),
 		CoreModule,
 	],

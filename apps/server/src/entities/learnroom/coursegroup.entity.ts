@@ -11,9 +11,6 @@ export class Coursegroup extends BaseEntityWithTimestamps {
 	@Property({ fieldName: 'userIds' })
 	studentIds: EntityId[];
 
-	// TODO: only id is needed at the moment
-	// @ManyToOne({ fieldName: 'courseId' })
-	// course: Course;
 	@Property()
 	courseId: EntityId;
 

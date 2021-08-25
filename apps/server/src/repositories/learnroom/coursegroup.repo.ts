@@ -3,9 +3,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Counted } from '@shared/domain';
 import { Scope } from '@shared/repo';
-
-import { Coursegroup, Course } from '../entity';
-import { ICoursegroupRepo } from '../uc';
+import { Coursegroup, Course } from '@src/entities';
 
 class CoursegroupScope extends Scope<Coursegroup> {
 	byCourses(courses: Course[]): CoursegroupScope {
@@ -15,7 +13,7 @@ class CoursegroupScope extends Scope<Coursegroup> {
 }
 
 @Injectable()
-export class CoursegroupRepo implements ICoursegroupRepo {
+export class CoursegroupRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findByCourses(courses: Course[]): Promise<Counted<Coursegroup[]>> {

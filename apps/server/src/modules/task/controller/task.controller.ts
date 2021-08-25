@@ -12,7 +12,6 @@ import { TaskUC } from '../uc/task.uc';
 import { TaskResponse } from './dto';
 import { TaskMapper } from '../mapper/task.mapper';
 
-// TODO: swagger doku do not read from combined query object only from passed single parameter in Query(), but this do not allowed optional querys only required querys
 @ApiTags('Task')
 @Authenticate('jwt')
 @Controller('task')
@@ -24,7 +23,6 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<PaginationResponse<TaskResponse[]>> {
-		// const [tasks, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
 		const [tasksWithStatus, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
 		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
 			return TaskMapper.mapToResponse(taskWithStatus);

@@ -1,6 +1,7 @@
 import { EntityId, TestHelper } from '@shared/domain';
 
-import { Course, Coursegroup } from '../entity';
+import { Course } from './course.entity';
+import { Coursegroup } from './coursegroup.entity';
 
 enum CourseTyps {
 	teacher = 'teacherIds',

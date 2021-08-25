@@ -103,7 +103,7 @@ describe('StatusDomainService', () => {
 			const task = helper.createTask();
 			const submissions = helper.createSubmissionsForEachStudent(task);
 
-			addGradedFileCollectionWithFileToSubmission(submissions[0], helper.getFirstUser());
+			addGradedFileCollectionWithFileToSubmission(submissions[0], helper.getFirstUser() as UserTaskInfo);
 			// submissions[1] has no grade
 
 			const domain = new StatusDomainService(submissions);
@@ -121,7 +121,7 @@ describe('StatusDomainService', () => {
 
 			submissions[0].grade = 50;
 			submissions[1].gradeComment = 'well done';
-			addGradedFileCollectionWithFileToSubmission(submissions[2], helper.getFirstUser());
+			addGradedFileCollectionWithFileToSubmission(submissions[2], helper.getFirstUser() as UserTaskInfo);
 			// submissions[3] has no grade
 
 			const domain = new StatusDomainService(submissions);

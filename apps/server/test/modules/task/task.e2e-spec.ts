@@ -10,9 +10,8 @@ import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { TaskTestHelper } from '@src/modules/task/utils';
-import { LearnroomTestHelper } from '@src/modules/learnroom/utils/testHelper';
+import { LearnroomTestHelper, Course } from '@src/entities';
 import { TaskResponse } from '@src/modules/task/controller/dto';
-import { Course } from '@src/modules/learnroom/entity';
 import { Task, Submission, UserTaskInfo } from '@src/modules/task/entity';
 
 const modifiedCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
