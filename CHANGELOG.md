@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store 
 - BC-119 - remove malfunction S3 lifecycle migration
+- Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
 
 ## 26.9.1
 
@@ -25,9 +26,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## 26.9.0
 
-- SC-9231 - add permissions to SuperHero to edit admin role 
+- SC-9231 - add permissions to SuperHero to edit admin role
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
+- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 
 ### Changed
 
@@ -36,7 +38,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## 26.8.0
 
 ## [26.7.1] - 2021-08-03
- 
+
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
 ## [26.7.0] - 2021-07-28
