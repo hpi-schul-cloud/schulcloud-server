@@ -82,11 +82,6 @@ const mockAws = {
 				}
 				return promisify(response);
 			},
-			putBucketLifecycleConfiguration() {
-				return {
-					promise: () => true,
-				};
-			},
 		};
 	},
 	// eslint-disable-next-line object-shorthand
