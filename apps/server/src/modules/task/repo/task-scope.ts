@@ -18,7 +18,12 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	ignoreTasks(taskIds: EntityId[]): TaskScope {
+	byIds(taskIds: EntityId[]): TaskScope {
+		this.addQuery({ id: { $in: taskIds } });
+		return this;
+	}
+
+	ignoreIds(taskIds: EntityId[]): TaskScope {
 		this.addQuery({ id: { $nin: taskIds } });
 		return this;
 	}

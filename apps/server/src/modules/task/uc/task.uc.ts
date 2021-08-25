@@ -55,12 +55,56 @@ export class TaskUC {
 	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
 		const parents = await this.findPermittedTaskParents(userId, Permission.read);
 
-		const [submissionsOfStudent] = await this.submissionRepo.findByUserId(userId);
-		const taskIdsThatHaveSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
+		const [submissionsOfStudent] = await this.submissionRepo.findAllByUserId(userId);
+		const taskIdsWithSubmissions = [...new Set(submissionsOfStudent.map((submission) => submission.task.id))];
 
 		const parentIds = parents.map((parent) => parent.id);
 
-		const [tasks, total] = await this.taskRepo.findAllCurrent(parentIds, taskIdsThatHaveSubmissions, {
+		const [tasks, total] = await this.taskRepo.findAllCurrentIgnoreIds(parentIds, taskIdsWithSubmissions, {
+			pagination,
+			order: { dueDate: SortOrder.asc },
+		});
+
+		const domain = new TaskDomainService(tasks, parents);
+		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
+
+		return [computedTasks, total];
+	}
+
+	async findAllSubmittedForStudent(
+		userId: EntityId,
+		pagination: IPagination
+	): Promise<Counted<TaskWithSubmissionStatus[]>> {
+		const parents = await this.findPermittedTaskParents(userId, Permission.read);
+
+		const [submissionsOfStudent] = await this.submissionRepo.findAllByUserId(userId);
+		const taskIdsWithSubmissions = [...new Set(submissionsOfStudent.map((submission) => submission.task.id))];
+
+		const parentIds = parents.map((course) => course.id);
+
+		const [tasks, total] = await this.taskRepo.findAllCurrentByIds(parentIds, taskIdsWithSubmissions, {
+			pagination,
+			order: { dueDate: SortOrder.asc },
+		});
+
+		const domain = new TaskDomainService(tasks, parents);
+		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
+
+		return [computedTasks, total];
+	}
+
+	async findAllGradedForStudent(
+		userId: EntityId,
+		pagination: IPagination
+	): Promise<Counted<TaskWithSubmissionStatus[]>> {
+		const parents = await this.findPermittedTaskParents(userId, Permission.read);
+
+		const [submissionsOfStudent] = await this.submissionRepo.findGradedByUserId(userId);
+		const taskIdsWithGradedSubmissions = [...new Set(submissionsOfStudent.map((submission) => submission.task.id))];
+
+		const parentIds = parents.map((course) => course.id);
+
+		const [tasks, total] = await this.taskRepo.findAllCurrentByIds(parentIds, taskIdsWithGradedSubmissions, {
 			pagination,
 			order: { dueDate: SortOrder.asc },
 		});
@@ -72,13 +116,13 @@ export class TaskUC {
 	}
 
 	// TODO: rename teacher and student
-	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
+	async findAllOpenForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
 		const parents = await this.findPermittedTaskParents(userId, Permission.write);
 
 		const parentIds = parents.map((parent) => parent.id);
 
 		const [tasks, total] = await this.taskRepo.findAll(parentIds, { pagination, order: { createdAt: SortOrder.desc } });
-		const [submissionsOfTeacher] = await this.submissionRepo.findByTasks(tasks);
+		const [submissionsOfTeacher] = await this.submissionRepo.findAllByTaskIds(tasks.map((o) => o.id));
 
 		const domain = new TaskDomainService(tasks, parents);
 		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
@@ -95,7 +139,7 @@ export class TaskUC {
 
 		let response: Counted<TaskWithSubmissionStatus[]>;
 		if (permissions.includes(this.permissions.teacherDashboard)) {
-			response = await this.findAllOpenByTeacher(id, pagination);
+			response = await this.findAllOpenForTeacher(id, pagination);
 		} else if (permissions.includes(this.permissions.studentDashboard)) {
 			response = await this.findAllOpenForStudent(id, pagination);
 		} else {
