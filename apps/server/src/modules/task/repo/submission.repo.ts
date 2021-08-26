@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
 
 // CourseGroupInfo must use from learnroom
-import { CourseGroupInfo, Submission, Task } from '../entity';
+import { CourseGroupInfo, Submission } from '../entity';
 
 // TODO: add scope helper
 
@@ -23,13 +23,6 @@ export class SubmissionRepo {
 
 	async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
 		const result = await this.em.findAndCount(Submission, await this.byUserIdQuery(userId));
-		return result;
-	}
-
-	async findGradedByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
-		const result = await this.em.findAndCount(Submission, {
-			$and: [{ grade: { $ne: null } }, await this.byUserIdQuery(userId)],
-		});
 		return result;
 	}
 

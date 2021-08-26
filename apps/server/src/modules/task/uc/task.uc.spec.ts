@@ -60,9 +60,6 @@ describe('TaskService', () => {
 						findAllByUserId() {
 							throw new Error('Please write a mock for SubmissionRepo.findAllByUserId');
 						},
-						findGradedByUserId() {
-							throw new Error('Please write a mock for SubmissionRepo.findGradedByUserId');
-						},
 					},
 				},
 			],
@@ -83,12 +80,6 @@ describe('TaskService', () => {
 		},
 		findAllByTaskIds: (data: Submission[] = []) => {
 			const spy = jest.spyOn(submissionRepo, 'findAllByTaskIds').mockImplementation(() => {
-				return Promise.resolve([data, data.length]);
-			});
-			return spy;
-		},
-		findGradedByUserId: (data: Submission[] = []) => {
-			const spy = jest.spyOn(submissionRepo, 'findGradedByUserId').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
 			});
 			return spy;
