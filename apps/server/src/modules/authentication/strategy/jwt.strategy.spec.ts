@@ -40,9 +40,9 @@ describe('jwt strategy', () => {
 			],
 		}).compile();
 
-		strategy = module.get<JwtStrategy>(JwtStrategy);
-		facade = module.get<UserFacade>(UserFacade);
-		adapter = module.get<JwtValidationAdapter>(JwtValidationAdapter);
+		strategy = module.get(JwtStrategy);
+		facade = module.get(UserFacade);
+		adapter = module.get(JwtValidationAdapter);
 	});
 
 	afterAll(async () => {
