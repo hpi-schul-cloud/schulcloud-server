@@ -77,10 +77,18 @@ const isTokenAvailable = (token) => !!token;
  */
 const mustCheckTokenIsWhitelisted = (path) => !isRouteWhitelisted(path) && redisClientExists();
 
+const addTokenToWhitelist = async (redisIdentifier, privateDevice = false) => {
+	const redisData = getRedisData({ privateDevice });
+	const { expirationInSeconds } = redisData;
+	await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
+	return { ttl: expirationInSeconds };
+};
+
 const isTokenWhitelisted = async (redisIdentifier) => {
 	const redisResponse = await redisGetAsync(redisIdentifier);
 	return !!redisResponse;
 };
+
 /**
  * ensures jwt is whitelisted, when path is not blacklisted.
  * requires accountId and jti from jwt token to be given.
@@ -115,6 +123,7 @@ module.exports = {
 	createRedisIdentifierFromJwtData,
 	extractRedisDataFromJwt,
 	createRedisIdentifierFromJwtToken,
+	addTokenToWhitelist,
 	ensureTokenIsWhitelisted,
 	isTokenAvailable,
 	getRedisData,

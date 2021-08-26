@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import jwtWhitelist = require('../../../../../../src/services/authentication/logic/whitelist');
 
-const { ensureTokenIsWhitelisted } = jwtWhitelist;
+const { ensureTokenIsWhitelisted, addTokenToWhitelist, createRedisIdentifierFromJwtData } = jwtWhitelist;
 
 @Injectable()
 export class JwtValidationAdapter {
@@ -13,8 +13,13 @@ export class JwtValidationAdapter {
 	 * @param jti jwt id (here required to make jwt identifiers identical in redis)
 	 */
 	async isWhitelisted(accountId: string, jti: string): Promise<void> {
-		// TODO remove next line
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		await ensureTokenIsWhitelisted(false, { accountId, jti, privateDevice: false });
+	}
+
+	async addToWhitelist(accountId: string, jti: string): Promise<void> {
+		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+		await addTokenToWhitelist(redisIdentifier);
 	}
 }

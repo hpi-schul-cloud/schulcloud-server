@@ -22,6 +22,10 @@ function getRedisClient() {
 	return redisClient;
 }
 
+function setRedisClient(client) {
+	redisClient = client;
+}
+
 const redisGetAsync = (...args) => {
 	if (redisClient) return promisify(redisClient.get).apply(redisClient, args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
@@ -41,6 +45,7 @@ const redisTtlAsync = (...args) => {
 
 module.exports = {
 	initializeRedisClient,
+	setRedisClient,
 	getRedisClient,
 	redisGetAsync,
 	redisSetAsync,
