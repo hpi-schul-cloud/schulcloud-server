@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- BC-44 - integrate jwt whitelist check in nestjs jwt authentication
+
 ## 26.9.0
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
