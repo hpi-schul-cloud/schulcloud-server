@@ -7,8 +7,6 @@ import { UserFacade } from '../../user';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 import { JwtPayload } from '../interface/jwt-payload';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { Role, User } from '../../user/entity';
 import { ICurrentUser } from '../../../shared/domain';
 import { ResolvedUser } from '../../user/controller/dto';
 
@@ -20,13 +18,7 @@ describe('jwt strategy', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				PassportModule,
-				JwtModule.register(jwtConstants),
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [User, Role],
-				}),
-			],
+			imports: [PassportModule, JwtModule.register(jwtConstants)],
 			providers: [
 				JwtStrategy,
 				{
