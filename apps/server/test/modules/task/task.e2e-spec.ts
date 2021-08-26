@@ -50,7 +50,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /task/dashboard', async () => {
-			const response = await request(app.getHttpServer()).get('/task/dashboard');
+			const response = await request(app.getHttpServer()).get('/task/dashboard').set('Accept', 'application/json');
 			expect(response.status).toEqual(401);
 		});
 	});
@@ -97,7 +97,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /task/dashboard can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/task/dashboard');
+			const response = await request(app.getHttpServer()).get('/task/dashboard').set('Accept', 'application/json');
 			expect(response.status).toEqual(200);
 		});
 
