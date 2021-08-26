@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { preventCycle } = require('./preventCycle');
 const globalHooks = require('../../../hooks');
 
 exports.before = () => ({
@@ -6,8 +7,8 @@ exports.before = () => ({
 	find: [],
 	get: [],
 	create: [globalHooks.hasPermission('ROLE_CREATE'), globalHooks.resolveToIds('/roles', 'data.roles', 'name')],
-	update: [globalHooks.hasPermission('ROLE_EDIT')],
-	patch: [globalHooks.hasPermission('ROLE_EDIT'), globalHooks.permitGroupOperation],
+	update: [globalHooks.hasPermission('ROLE_EDIT'), preventCycle],
+	patch: [globalHooks.hasPermission('ROLE_EDIT'), globalHooks.permitGroupOperation, preventCycle],
 	remove: [globalHooks.hasPermission('ROLE_CREATE'), globalHooks.permitGroupOperation],
 });
 

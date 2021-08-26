@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.9.0",
+	"version": "26.9.1",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -90,8 +90,9 @@
 		"amqp-connection-manager": "^3.2.2",
 		"amqplib": "^0.8.0",
 		"arg": "^5.0.0",
+		"args": "^5.0.1",
 		"async": "^2.6.0",
-		"aws-sdk": "^2.306.0",
+		"aws-sdk": "^2.970.0",
 		"axios": "^0.21.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
@@ -162,8 +163,7 @@
 		"uuid": "^8.3.0",
 		"wait-on": "^5.0.1",
 		"winston": "^3.2.0",
-		"xml2js-es6-promise": "^1.1.1",
-		"args": "^5.0.1"
+		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
 		"@compodoc/compodoc": "^1.1.11",
