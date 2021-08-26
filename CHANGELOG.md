@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-81 - remove old Lern-Store
 - BC-119 - remove malfunction S3 lifecycle migration
 - Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
+- BC-5 - Show completed tasks for students
 
 ### Changed
 
