@@ -18,15 +18,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(payload: JwtPayload): Promise<JwtPayload> {
-		// check jwt is whitelisted, extend whitelist entry
+		// check jwt is whitelisted and extend whitelist entry
 		const { accountId, jti } = payload;
 		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
-		// TODO: throw not authentication error if user not exist or is not activated
+		// check user exists
 		const resolvedUser = await this.userFacade.resolveUser(payload);
 		payload.user = resolvedUser; // todo decide request.user or request.user.user to be used everywhere
-		// TODO: check user is active
-		// user.authenticate(); // ==> account.isActive() // todo active and not expired
-		// todo check jwt is whitelisted
+		// TODO: check user/account is active and has one role
 		return payload;
 	}
 }
