@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import appHooks = require('../../../../../../src/app.hooks.js');
+import jwtWhitelist = require('../../../../../../src/services/authentication/logic/whitelist');
 
-const { ensureTokenIsWhitelisted } = appHooks;
+const { ensureTokenIsWhitelisted } = jwtWhitelist;
 
 @Injectable()
 export class JwtValidationAdapter {
