@@ -100,7 +100,8 @@ const ensureTokenIsWhitelisted = async (path, { accountId, jti, privateDevice })
 			return;
 		}
 		// ------------------------------------------------------------------------
-		if (isTokenWhitelisted(redisIdentifier)) {
+		const tokenIsWhitelisted = await isTokenWhitelisted(redisIdentifier);
+		if (tokenIsWhitelisted) {
 			// extend token expiration if token is already whitelisted
 			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 			return;
