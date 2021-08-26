@@ -1,21 +1,19 @@
 name: Test e2e
 
 on:
-  pull_request:
-    branches:
+  push:
+    branches: 
       - main
-    types: [labeled, synchronize]
-  workflow_dispatch:
-    label:
-      name: 'run tests'
 
 jobs:
-  end-to-end-tests:
+  end-to-end-tests-push-main:
     runs-on: ubuntu-latest
-    # run the action, when label 'run tests' has been set or is present at the commit time 
-    if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
     steps:
       - uses: actions/checkout@v2
+      - name: Set BRANCH_NAME on push
+        run: |
+          branch_name=${GITHUB_REF#refs/*/}
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
       - name: run git change
         run: |
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
@@ -32,3 +30,4 @@ jobs:
         with:
           name: report
           path: end-to-end-tests/reports
+          

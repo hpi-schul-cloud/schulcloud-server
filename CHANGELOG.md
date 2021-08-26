@@ -10,6 +10,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - BC-44 - integrate jwt whitelist check in nestjs jwt authentication
+- BC-42 - cycle detection in role inheritance
+- BC-64 - enable e2e test execution for push event on main branch
+- BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
+- BC-37 - BC-54 - reduce resource consumption for deployed server
+- BC-81 - remove old Lern-Store 
+- BC-119 - remove malfunction S3 lifecycle migration
+
+## 26.9.1
+
+- SC-9192 - enable cors for nestjs app routes
+- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9130 - use whiltelisted filenames at the s3 file storage backend
 
 ## 26.9.0
 
@@ -17,19 +29,22 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 
+### Changed
+
+- OPS-2491 - Change the hydra service url
+
 ## 26.8.0
 
-
-### 26.7.1
-
+## [26.7.1] - 2021-08-03
+ 
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
-## 26.7.0 
+## [26.7.0] - 2021-07-28
 
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
-- SC-9150 - add script to change school year 
+- SC-9150 - add script to change school year
 - SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
 - SC-9177 - allow superheros to delete admins
 

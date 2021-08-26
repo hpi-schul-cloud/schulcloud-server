@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IResolvedUser, IRole } from '@shared/domain';
 
-export type RoleInfo = { name: string; id: string };
-/**
- * DTO for returning a task document via api.
- */
-export class ResolvedUser {
+export type Role = IRole;
+
+export class ResolvedUser implements IResolvedUser {
 	@ApiProperty()
 	firstName: string;
 
@@ -21,7 +20,7 @@ export class ResolvedUser {
 	updatedAt: Date;
 
 	@ApiProperty()
-	roles: RoleInfo[];
+	roles: Role[];
 
 	@ApiProperty()
 	permissions: string[];

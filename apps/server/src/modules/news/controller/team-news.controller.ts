@@ -1,8 +1,10 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationQuery, PaginationResponse, ParseObjectIdPipe } from '../../../shared/controller';
+import { ICurrentUser } from '@shared/domain';
+
+import { PaginationQuery, PaginationResponse, ParseObjectIdPipe } from '@shared/controller';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
+
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc';
 import { NewsFilterQuery, NewsResponse } from './dto';

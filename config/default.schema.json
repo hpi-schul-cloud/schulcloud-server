@@ -317,6 +317,11 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT": {
+			"type": "boolean",
+			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expiring_ after 7 days",
+			"default": false
+		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
 			"type": "integer",
 			"default": 100,
@@ -449,11 +454,10 @@
 			"default": null,
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		},
-		"LERNSTORE_MODE": {
-			"type": "string",
-			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
-			"default": "EDUSHARING",
-			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		"FEATURE_LERNSTORE_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Defines if backend for the Lern-Store Edu-Sharing is enabled."
 		},
 		"ES_DOMAIN": {
 			"type": "string",
@@ -660,8 +664,7 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE"
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
 	],
 	"allOf": [
 		{
@@ -697,6 +700,21 @@
 					"FILE_SECURITY_SERVICE_USERNAME",
 					"FILE_SECURITY_SERVICE_PASSWORD",
 					"API_HOST"
+				]
+			}
+		},
+		"LERNSTORE_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_LERNSTORE_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"ES_USER",
+					"ES_PASSWORD"
 				]
 			}
 		},

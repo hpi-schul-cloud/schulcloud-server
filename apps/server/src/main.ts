@@ -31,6 +31,8 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
+	// customize nest app settings
+	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
