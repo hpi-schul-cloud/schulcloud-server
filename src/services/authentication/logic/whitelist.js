@@ -65,7 +65,7 @@ const redisClientExists = () => !!getRedisClient();
 
 /**
  * check for token to be a truthy value
- * @param {string|object} token
+ * @param {string} token
  * @returns
  */
 const isTokenAvailable = (token) => !!token;
@@ -82,9 +82,10 @@ const isTokenWhitelisted = async (redisIdentifier) => {
 	return !!redisResponse;
 };
 /**
- *
+ * ensures jwt is whitelisted, when path is not blacklisted.
+ * requires accountId and jti from jwt token to be given.
  * @param {string|boolean} path
- * @param {string|object} accessToken
+ * @param {*} param1
  * @returns
  */
 const ensureTokenIsWhitelisted = async (path, { accountId, jti, privateDevice }) => {
