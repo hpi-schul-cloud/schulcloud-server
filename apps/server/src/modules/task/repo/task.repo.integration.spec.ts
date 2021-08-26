@@ -137,7 +137,7 @@ describe('TaskService', () => {
 		});
 	});
 
-	describe('findAllCurrent', () => {
+	describe('findAllCurrentIgnoreIds', () => {
 		describe('return value', () => {
 			it('should return the expected properties', async () => {
 				const helper = new TaskTestHelper();
@@ -336,6 +336,199 @@ describe('TaskService', () => {
 				const [result, total] = await repo.findAllCurrent(user.id);
 				expect(total).toEqual(0);
 				*/
+			});
+		});
+	});
+
+	describe('findAllCurrentByIds', () => {
+		describe('return value', () => {
+			it('should return the expected properties', async () => {
+				const helper = new TaskTestHelper();
+				const task = helper.createTask();
+				task.changePrivate(false);
+
+				await em.persistAndFlush([task]);
+				const [result, total] = await repo.findAllCurrentByIds([task.getParentId()], [task.id]);
+
+				expect(total).toEqual(1);
+				expect(result[0]).toHaveProperty('name');
+				expect(result[0]).toHaveProperty('dueDate');
+				expect(result[0]).toHaveProperty('parentId');
+			});
+
+			it('should return a paginated result', async () => {
+				const helper = new TaskTestHelper();
+				const parentId = helper.createEntityId();
+				const task1 = helper.createTask(parentId);
+				const task2 = helper.createTask(parentId);
+				const task3 = helper.createTask(parentId);
+				const task4 = helper.createTask(parentId);
+				const tasks = [task1, task2, task3, task4];
+				tasks.forEach((o) => o.changePrivate(false));
+
+				await em.persistAndFlush(tasks);
+				const [result, total] = await repo.findAllCurrentByIds(
+					[task1.getParentId()],
+					tasks.map((o) => o.id),
+					{
+						pagination: { limit: 2, skip: 0 },
+					}
+				);
+				expect(result.length).toEqual(2);
+				expect(total).toEqual(4);
+			});
+
+			it('should be sorted with earlier duedates first', async () => {
+				const helper = new TaskTestHelper();
+				const parentId = helper.createEntityId();
+				const dueDate1 = new Date(Date.now() + 500);
+				const dueDate2 = new Date(Date.now() - 500);
+				const task1 = helper.createTask(parentId, dueDate1);
+				task1.changePrivate(false);
+				const task2 = helper.createTask(parentId, dueDate2);
+				task2.changePrivate(false);
+
+				await em.persistAndFlush([task1, task2]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task1.id, task2.id], {
+					order: { dueDate: SortOrder.asc },
+				});
+				expect(total).toEqual(2);
+				expect(result[0].id).toEqual(task2.id);
+				expect(result[1].id).toEqual(task1.id);
+			});
+
+			it('should not return private tasks', async () => {
+				const helper = new TaskTestHelper();
+				const parentId = helper.createEntityId();
+				const task = helper.createTask(parentId);
+				task.changePrivate(true);
+				await em.persistAndFlush([task]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task.id]);
+				expect(total).toEqual(0);
+				expect(result.length).toEqual(0);
+			});
+		});
+
+		describe('open tasks in courses', () => {
+			it('should return task of students course', async () => {
+				const helper = new TaskTestHelper();
+				const task = helper.createTask();
+				task.changePrivate(false);
+
+				await em.persistAndFlush([task]);
+				const [result, total] = await repo.findAllCurrentByIds([task.getParentId()], [task.id]);
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
+			});
+
+			it('should not return other tasks', async () => {
+				const helper = new TaskTestHelper();
+				const task = helper.createTask();
+				task.changePrivate(false);
+				const otherTask = helper.createTask();
+				otherTask.changePrivate(false);
+
+				await em.persistAndFlush([task, otherTask]);
+				const [result, total] = await repo.findAllCurrentByIds([task.getParentId()], [task.id]);
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
+			});
+
+			it('should not return private task of course', async () => {
+				const helper = new TaskTestHelper();
+				const task = helper.createTask();
+				task.changePrivate(true);
+
+				await em.persistAndFlush([task]);
+				const [result, total] = await repo.findAllCurrentByIds([task.getParentId()], [task.id]);
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+
+			it('should only return task that is on the id list', async () => {
+				const helper = new TaskTestHelper();
+				const parentId = helper.createEntityId();
+				const task1 = helper.createTask(parentId);
+				task1.changePrivate(false);
+				const task2 = helper.createTask(parentId);
+				task2.changePrivate(false);
+
+				await em.persistAndFlush([task1, task2]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task2.id]);
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
+				expect(result[0].id).toEqual(task2.id);
+			});
+
+			it('should filter tasks that are more than one week overdue', async () => {
+				const helper = new TaskTestHelper();
+				const parentId = helper.createEntityId();
+
+				const threeWeeksinMilliseconds = 1.814e9;
+				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+
+				const task1 = helper.createTask(parentId, dueDate1);
+				task1.changePrivate(false);
+				const task2 = helper.createTask(parentId);
+				task2.changePrivate(false);
+
+				await em.persistAndFlush([task1, task2]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task1.id, task2.id]);
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
+				expect(result[0].id).toEqual(task2.id);
+			});
+		});
+
+		describe('open tasks in lessons', () => {
+			it('should return task in a visible lesson of the users course', async () => {
+				const helper = new TaskTestHelper();
+				const { task, lesson, parentId } = helper.createLessonWithTask();
+				lesson.hidden = false;
+				task.changePrivate(false);
+
+				await em.persistAndFlush([lesson, task]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task.id]);
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
+			});
+
+			it('should not return task in a hidden lesson', async () => {
+				const helper = new TaskTestHelper();
+				const { task, lesson, parentId } = helper.createLessonWithTask();
+				lesson.hidden = true;
+				task.changePrivate(false);
+
+				await em.persistAndFlush([lesson, task]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task.id]);
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+
+			it('should not return task in a hidden lesson', async () => {
+				const helper = new TaskTestHelper();
+				const { task, lesson, parentId } = helper.createLessonWithTask();
+				// @ts-expect-error: Test case
+				lesson.hidden = null;
+				task.changePrivate(false);
+
+				await em.persistAndFlush([lesson, task]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task.id]);
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+
+			it('should not return task in a lesson when hidden is null', async () => {
+				const helper = new TaskTestHelper();
+				const { task, lesson, parentId } = helper.createLessonWithTask();
+				// @ts-expect-error: Test case - in database null exist
+				lesson.hidden = null;
+				task.changePrivate(false);
+
+				await em.persistAndFlush([task]);
+				const [result, total] = await repo.findAllCurrentByIds([parentId], [task.id]);
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

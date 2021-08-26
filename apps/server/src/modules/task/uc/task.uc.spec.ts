@@ -42,6 +42,9 @@ describe('TaskService', () => {
 						findAll() {
 							throw new Error('Please write a mock for TaskRepo.findAll.');
 						},
+						findAllCurrentByIds() {
+							throw new Error('Please write a mock for TaskRepo.findAllCurrentByIds.');
+						},
 						findAllCurrentIgnoreIds() {
 							throw new Error('Please write a mock for TaskRepo.findAllCurrentIgnoreIds.');
 						},
@@ -56,6 +59,9 @@ describe('TaskService', () => {
 						},
 						findAllByUserId() {
 							throw new Error('Please write a mock for SubmissionRepo.findAllByUserId');
+						},
+						findGradedByUserId() {
+							throw new Error('Please write a mock for SubmissionRepo.findGradedByUserId');
 						},
 					},
 				},
@@ -81,9 +87,21 @@ describe('TaskService', () => {
 			});
 			return spy;
 		},
+		findGradedByUserId: (data: Submission[] = []) => {
+			const spy = jest.spyOn(submissionRepo, 'findGradedByUserId').mockImplementation(() => {
+				return Promise.resolve([data, data.length]);
+			});
+			return spy;
+		},
 	};
 
 	const setTaskRepoMock = {
+		findAllCurrentByIds: (data: Task[] = []) => {
+			const spy = jest.spyOn(taskRepo, 'findAllCurrentByIds').mockImplementation(() => {
+				return Promise.resolve([data, data.length]);
+			});
+			return spy;
+		},
 		findAllCurrentIgnoreIds: (data: Task[] = []) => {
 			const spy = jest.spyOn(taskRepo, 'findAllCurrentIgnoreIds').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
