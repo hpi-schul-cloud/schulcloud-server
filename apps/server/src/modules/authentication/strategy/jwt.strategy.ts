@@ -4,14 +4,11 @@ import { Injectable } from '@nestjs/common';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 import { UserFacade } from '../../user';
-import { LegacyJwtAuthenticationAdapter } from './legacy-jwt-authentication.adapter';
+import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(
-		private readonly userFacade: UserFacade,
-		private readonly legacyAuthenticationAdapter: LegacyJwtAuthenticationAdapter
-	) {
+	constructor(private readonly userFacade: UserFacade, private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
@@ -23,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	async validate(payload: JwtPayload): Promise<JwtPayload> {
 		// check jwt is whitelisted, extend whitelist entry
 		const { accountId, jti } = payload;
-		await this.legacyAuthenticationAdapter.jwtIsWhitelisted(accountId, jti);
+		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
 		// TODO: throw not authentication error if user not exist or is not activated
 		const resolvedUser = await this.userFacade.resolveUser(payload);
 		payload.user = resolvedUser; // todo decide request.user or request.user.user to be used everywhere

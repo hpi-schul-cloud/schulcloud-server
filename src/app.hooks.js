@@ -175,7 +175,6 @@ function setupAppHooks(app) {
 }
 
 module.exports = {
-	ensureTokenIsWhitelisted,
 	handleAutoLogout,
 	sanitizeDataHook,
 	setupAppHooks,
