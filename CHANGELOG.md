@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.9.2
+
+- BC-106 - exit maintenance & change school year for LDAP schools on Boss and NBC
+
 ## 26.9.1
 
 - SC-9192 - enable cors for nestjs app routes
