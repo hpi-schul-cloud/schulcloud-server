@@ -11,28 +11,13 @@ enum Permission {
 	write,
 }
 
+enum TaskDashBoardPermission {
+	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
+	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
+}
+
 @Injectable()
 export class TaskUC {
-	// It should remove later
-	permissions = {
-		teacherDashboard: 'TASK_DASHBOARD_TEACHER_VIEW_V3',
-		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
-	};
-
-	// TODO: IMPORTANT steps for this PULL REQUEST
-	// delete all learnroom stuff, move repo of course and coursegroups to a new top level repo layer
-	// do the same for course and coursgroup entity
-	// delete coursegroup info entity and replace it with final entity
-	// remove coursegroup entity from repo and pass it from uc
-	// move submissions and task with repos to new area
-	// cleanup and refactor task and submissions entitys > props and methodes
-	// write tests for uc
-	// -------------optional----------
-	// add short cut imports for entitys and for repos
-	// think about if status can move to task entity, than we can move logic also to it.
-	// ------------------
-	// next steps remove lesson info and replace with lesson
-	// add lesson repo to this uc and pass data over uc
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionRepo: SubmissionRepo,
@@ -71,7 +56,7 @@ export class TaskUC {
 		return [computedTasks, total];
 	}
 
-	async findAllSubmittedForStudent(
+	async findAllCompletedForStudent(
 		userId: EntityId,
 		pagination: IPagination
 	): Promise<Counted<TaskWithSubmissionStatus[]>> {
@@ -83,28 +68,6 @@ export class TaskUC {
 		const parentIds = parents.map((course) => course.id);
 
 		const [tasks, total] = await this.taskRepo.findAllCurrentByIds(parentIds, taskIdsWithSubmissions, {
-			pagination,
-			order: { dueDate: SortOrder.asc },
-		});
-
-		const domain = new TaskDomainService(tasks, parents);
-		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
-
-		return [computedTasks, total];
-	}
-
-	async findAllGradedForStudent(
-		userId: EntityId,
-		pagination: IPagination
-	): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const parents = await this.findPermittedTaskParents(userId, Permission.read);
-
-		const [submissionsOfStudent] = await this.submissionRepo.findGradedByUserId(userId);
-		const taskIdsWithGradedSubmissions = [...new Set(submissionsOfStudent.map((submission) => submission.task.id))];
-
-		const parentIds = parents.map((course) => course.id);
-
-		const [tasks, total] = await this.taskRepo.findAllCurrentByIds(parentIds, taskIdsWithGradedSubmissions, {
 			pagination,
 			order: { dueDate: SortOrder.asc },
 		});
@@ -130,22 +93,37 @@ export class TaskUC {
 		return [computedTasks, total];
 	}
 
-	// should remove in future, permissions are not needed
-	// maybe add different endpoints and if student ask teacher endpoint they get nothing
 	async findAllOpen(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const {
-			user: { id, permissions },
-		} = currentUser;
-
 		let response: Counted<TaskWithSubmissionStatus[]>;
-		if (permissions.includes(this.permissions.teacherDashboard)) {
-			response = await this.findAllOpenForTeacher(id, pagination);
-		} else if (permissions.includes(this.permissions.studentDashboard)) {
-			response = await this.findAllOpenForStudent(id, pagination);
+
+		if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.teacherDashboard)) {
+			response = await this.findAllOpenForTeacher(currentUser.userId, pagination);
+		} else if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)) {
+			response = await this.findAllOpenForStudent(currentUser.userId, pagination);
 		} else {
 			throw new UnauthorizedException();
 		}
 
 		return response;
+	}
+
+	async findAllCompleted(
+		currentUser: ICurrentUser,
+		pagination: IPagination
+	): Promise<Counted<TaskWithSubmissionStatus[]>> {
+		let response: Counted<TaskWithSubmissionStatus[]>;
+
+		if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)) {
+			response = await this.findAllCompletedForStudent(currentUser.userId, pagination);
+		} else {
+			throw new UnauthorizedException();
+		}
+
+		return response;
+	}
+
+	private hasTaskDashboardPermission(currentUser: ICurrentUser, permission: TaskDashBoardPermission): boolean {
+		const hasPermission = currentUser.user.permissions.includes(permission);
+		return hasPermission;
 	}
 }
