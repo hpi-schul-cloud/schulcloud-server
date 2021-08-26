@@ -1,6 +1,3 @@
-/* istanbul ignore file */
-// TODO add tests to improve coverage
-
 import { ApiTags } from '@nestjs/swagger';
 
 import { ICurrentUser } from '@shared/domain';
@@ -14,16 +11,30 @@ import { TaskMapper } from '../mapper/task.mapper';
 
 @ApiTags('Task')
 @Authenticate('jwt')
-@Controller('task')
+@Controller('tasks')
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC) {}
 
-	@Get('dashboard')
-	async findAll(
+	@Get('open')
+	async findAllOpen(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<PaginationResponse<TaskResponse[]>> {
 		const [tasksWithStatus, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
+		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
+			return TaskMapper.mapToResponse(taskWithStatus);
+		});
+		const { skip, limit } = paginationQuery;
+		const result = new PaginationResponse(taskresponses, total, skip, limit);
+		return result;
+	}
+
+	@Get('completed')
+	async findAllCompleted(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() paginationQuery: PaginationQuery
+	): Promise<PaginationResponse<TaskResponse[]>> {
+		const [tasksWithStatus, total] = await this.taskUc.findAllCompleted(currentUser, paginationQuery);
 		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
 			return TaskMapper.mapToResponse(taskWithStatus);
 		});
