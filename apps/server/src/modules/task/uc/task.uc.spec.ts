@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
-import { EntityId, IFindOptions, SortOrder, BaseEntity } from '@shared/domain';
+import { IFindOptions, SortOrder, BaseEntity } from '@shared/domain';
 import { Course } from '@src/entities';
 import { CourseRepo } from '@src/repositories';
+
 
 import { Submission, Task } from '../entity';
 import { TaskParentTestEntity, TaskTestHelper } from '../utils/TestHelper';
@@ -103,8 +105,90 @@ describe('TaskService', () => {
 		},
 	};
 
+	const setTaskUCMock = {
+		findAllOpenByTeacher: () => {
+			const spy = jest.spyOn(service, 'findAllOpenByTeacher').mockImplementation(() => {
+				return Promise.resolve([[], 0]);
+			});
+			return spy;
+		},
+		findAllOpenForStudent: () => {
+			const spy = jest.spyOn(service, 'findAllOpenForStudent').mockImplementation(() => {
+				return Promise.resolve([[], 0]);
+			});
+			return spy;
+		},
+	};
+
 	it('should be defined', () => {
 		expect(service).toBeDefined();
+	});
+
+	describe('findAllOpen', () => {
+		enum TaskPermissionFlags { 
+			read = 'TASK_DASHBOARD_VIEW_V3',
+			write = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
+
+		}
+
+		const findAllOpenMock = () => {
+			const spy1 = setTaskUCMock.findAllOpenByTeacher();
+			const spy2 = setTaskUCMock.findAllOpenForStudent();
+
+			const mockRestore = () => {
+				spy1.mockRestore();
+				spy2.mockRestore();
+			}
+
+			return mockRestore;
+		}
+
+		it('should throw if no permission exist', async () => {
+			const permissions = [];
+			const { currentUser } = createCurrentTestUser(permissions);
+
+			const mockRestore = findAllOpenMock();
+
+			const paginationQuery = new PaginationQuery();
+			expect(service.findAllOpen(currentUser, paginationQuery)).rejects.toThrow();
+
+			mockRestore();
+		});
+
+		it('should pass if '+TaskPermissionFlags.read+' flag exist and call findAllOpenForStudent.', async () => {
+			const permissions = [TaskPermissionFlags.read];
+			const { currentUser } = createCurrentTestUser(permissions);
+
+			const mockRestore = findAllOpenMock();
+			const spy = setTaskUCMock.findAllOpenForStudent();
+
+			const paginationQuery = new PaginationQuery();
+			const result = await service.findAllOpen(currentUser, paginationQuery);
+
+			expect(result).toEqual([[], 0]);
+			expect(spy).toBeCalledTimes(1);
+
+			spy.mockRestore();
+			mockRestore();
+		});
+
+
+		it('should pass if '+TaskPermissionFlags.write+' flag exist and call findAllOpenByTeacher.', async () => {
+			const permissions = [TaskPermissionFlags.write];
+			const { currentUser } = createCurrentTestUser(permissions);
+
+			const mockRestore = findAllOpenMock();
+			const spy = setTaskUCMock.findAllOpenByTeacher();
+
+			const paginationQuery = new PaginationQuery();
+			const result = await service.findAllOpen(currentUser, paginationQuery);
+
+			expect(result).toEqual([[], 0]);
+			expect(spy).toBeCalledTimes(1);
+
+			spy.mockRestore();
+			mockRestore();
+		});
 	});
 
 	// TODO: make it sense to write test for it if we want combine student, teacher and open?
@@ -389,10 +473,6 @@ describe('TaskService', () => {
 
 			mockRestore();
 		});
-	});
-
-	describe('findAllOpen', () => {
-		it.todo('write tests...');
 	});
 
 	// TODO: muss check and rewrite
