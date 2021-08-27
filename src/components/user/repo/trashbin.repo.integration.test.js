@@ -24,6 +24,10 @@ describe('user repository', () => {
 		await server.close();
 	});
 
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
 	describe('createUserTrashbin', () => {
 		it('when creating a new trashbin with any data, then it returns the new trashbin object', async () => {
 			const user = await testObjects.createTestUser();
@@ -97,7 +101,7 @@ describe('user repository', () => {
 		});
 	});
 
-	describe.only('deleteExpiredData', () => {
+	describe('deleteExpiredData', () => {
 		it('should delete data older than the backupPeriodThreshold', async () => {
 			const oldData = await testObjects.createTestTrashbinData();
 			const backupPeriodThreshold = new Date();
