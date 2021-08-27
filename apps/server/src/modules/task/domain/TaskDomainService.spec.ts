@@ -127,7 +127,7 @@ describe('TaskDomainService', () => {
 			expect(result[0].status).toEqual(expected);
 		});
 
-		it('should compute status for each task', () => {		
+		it('should compute status for each task', () => {
 			const { tasks, parents, helper } = prepareBaseData();
 			const domain = new TaskDomainService(tasks, parents);
 			helper.createAndAddUser();
