@@ -2,10 +2,10 @@ import { TaskTestHelper } from '../utils';
 
 import { TaskDomainService } from './TaskDomainService';
 
-const prepareBaseData = (studentNumber?: number) => {
+const prepareBaseData = () => {
 	const helper = new TaskTestHelper();
-	const parent1 = helper.createTaskParent(undefined, studentNumber);
-	const parent2 = helper.createTaskParent(undefined, studentNumber);
+	const parent1 = helper.createTaskParent();
+	const parent2 = helper.createTaskParent();
 	const task1e1 = helper.createTask(parent1.id);
 	const task1e2 = helper.createTask(parent1.id);
 	const task2e1 = helper.createTask(parent2.id);
@@ -110,9 +110,7 @@ describe('TaskDomainService', () => {
 
 	describe('computeStatusForTeachers', () => {
 		it('should set maxSubmissions to 0 if no parent is passed.', () => {
-			const maxSubmissions = 30;
-
-			const { tasks, helper } = prepareBaseData(maxSubmissions);
+			const { tasks, helper } = prepareBaseData();
 			const domain = new TaskDomainService(tasks, []);
 			helper.createAndAddUser();
 
@@ -129,10 +127,8 @@ describe('TaskDomainService', () => {
 			expect(result[0].status).toEqual(expected);
 		});
 
-		it('should compute status for each task', () => {
-			const maxSubmissions = 30;
-
-			const { tasks, parents, helper } = prepareBaseData(maxSubmissions);
+		it('should compute status for each task', () => {		
+			const { tasks, parents, helper } = prepareBaseData();
 			const domain = new TaskDomainService(tasks, parents);
 			helper.createAndAddUser();
 			helper.createAndAddUser();
@@ -146,22 +142,22 @@ describe('TaskDomainService', () => {
 
 			expect(result[0].status).toEqual({
 				graded: 0,
-				maxSubmissions,
+				maxSubmissions: 10,
 				submitted: 3,
 			});
 			expect(result[1].status).toEqual({
 				graded: 0,
-				maxSubmissions,
+				maxSubmissions: 10,
 				submitted: 3,
 			});
 			expect(result[2].status).toEqual({
 				graded: 0,
-				maxSubmissions,
+				maxSubmissions: 10,
 				submitted: 1,
 			});
 			expect(result[3].status).toEqual({
 				graded: 0,
-				maxSubmissions,
+				maxSubmissions: 10,
 				submitted: 0,
 			});
 		});
