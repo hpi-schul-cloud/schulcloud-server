@@ -5,13 +5,15 @@ import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDes
 export class TaskParentTestEntity implements ITaskParent {
 	id: EntityId;
 
-	studentNumber = 10;
-
-	userIdWithWritePermissions: EntityId | undefined;
+	constructor(userIdWithWritePermissions?: EntityId) {
+		this.hasWritePermission = (userId: EntityId): boolean => {
+			const hasWritePermission = userIdWithWritePermissions === userId;
+			return hasWritePermission;
+		}
+	}
 
 	hasWritePermission(userId: EntityId): boolean {
-		const hasWritePermission = this.userIdWithWritePermissions === userId;
-		return hasWritePermission;
+		return false;
 	}
 
 	getDescriptions(): IParentDescriptionsProperties {
@@ -23,7 +25,7 @@ export class TaskParentTestEntity implements ITaskParent {
 	}
 
 	getStudentsNumber(): number {
-		return this.studentNumber;
+		return 10;
 	}
 }
 
@@ -38,10 +40,9 @@ export class TaskTestHelper extends TestHelper<EntityId> {
 		return user;
 	}
 
-	createTaskParent(parentId?: EntityId, studentNumber = 10): TaskParentTestEntity {
-		const parent = new TaskParentTestEntity();
-		parent.id = parentId || this.createEntityId();
-		parent.studentNumber = studentNumber;
+	createTaskParent(userIdWithWritePermissions?: EntityId): TaskParentTestEntity {
+		const parent = new TaskParentTestEntity(userIdWithWritePermissions);
+		parent.id = this.createEntityId();
 		return parent;
 	}
 
