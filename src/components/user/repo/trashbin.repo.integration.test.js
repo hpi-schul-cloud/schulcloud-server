@@ -3,6 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const trashbinModel = require('./db/trashbin.schema');
 const trashbinRepo = require('./trashbin.repo');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -95,4 +96,26 @@ describe('user repository', () => {
 			expect(result.data.length).to.equal(2);
 		});
 	});
+
+	describe.only('deleteExpiredData', () => {
+		it('should delete data older than the backupPeriodThreshold', async () => {
+			const oldData = await testObjects.createTestTrashbinData();
+			const backupPeriodThreshold = new Date();
+
+			await trashbinRepo.deleteExpiredData(backupPeriodThreshold);
+
+			const result = await trashbinModel.findById(oldData._id).lean().exec();
+			expect(result).to.be.null;
+		});
+
+		it('should not delete data newer than the backupPeriodThreshold', async () => {
+			const backupPeriodThreshold = new Date();
+			const newData = await testObjects.createTestTrashbinData();
+
+			await trashbinRepo.deleteExpiredData(backupPeriodThreshold);
+
+			const result = await trashbinModel.findById(newData._id).lean().exec();
+			expect(result).to.not.be.null;
+		});
+	})
 });

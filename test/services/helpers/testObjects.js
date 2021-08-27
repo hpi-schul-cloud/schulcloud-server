@@ -44,6 +44,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		teams,
 		testSystem,
 		users,
+		trashbinData,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () =>
@@ -73,6 +74,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 				homeworks,
 				storageProviders,
 				files,
+				trashbinData,
 			]
 				.reverse()
 				.map((factory) => factory.cleanup())
@@ -163,6 +165,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		createTestSubmission: submissions.create,
 		createTestSystem: testSystem.create,
 		createTestUser: users.create,
+		createTestTrashbinData: trashbinData.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,

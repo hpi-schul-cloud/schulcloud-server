@@ -23,6 +23,7 @@ const teams = require('./teams');
 const testSystem = require('./testSystem');
 const users = require('./users');
 const years = require('./years');
+const trashbinData = require('./trashbinData');
 
 module.exports = (app, opt) => ({
 	accounts: accounts(app, opt),
@@ -50,4 +51,5 @@ module.exports = (app, opt) => ({
 	teams: teams(app, opt),
 	testSystem: testSystem(app, opt),
 	users: users(app, opt),
+	trashbinData: trashbinData(app, opt),
 });

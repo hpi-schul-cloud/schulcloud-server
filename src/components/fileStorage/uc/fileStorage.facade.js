@@ -2,7 +2,7 @@ const deleteUserDataUc = require('./deleteUserData.uc');
 
 const facade = {
 	deleteUserData: deleteUserDataUc.deleteUserData,
-	deleteExpiredData: deleteUserDatauc.deleteExpiredData,
+	deleteExpiredData: deleteUserDataUc.deleteExpiredData,
 };
 
 module.exports = (app) => {

@@ -7,7 +7,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 
 const fileStorageProviderRepo = rewire('./fileStorageProvider.repo');
 
-describe('fileStorageProvider.repo.integration.test', () => {
+describe.only('fileStorageProvider.repo.integration.test', () => {
 	let server;
 	let app;
 	let configBefore;
@@ -204,6 +204,38 @@ describe('fileStorageProvider.repo.integration.test', () => {
 			]);
 
 			resetSpy();
+		});
+	});
+
+	describe('deleteFile', () => {
+		beforeEach(function beforeEach() {
+			if (skipMinioTests) {
+				this.currentTest.fn = function skipFunction() {
+					this.skip();
+				};
+			}
+		});
+
+		it('should delete the given file', async () => {
+			const bucketName = `bucket-${testObjects.generateObjectId()}`;
+			const fileId = testObjects.generateObjectId().toString();
+			const storageProvider = fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo);
+			await storageProvider.createBucket({ Bucket: bucketName }).promise();
+			await storageProvider
+				.upload({
+					Bucket: bucketName,
+					Key: fileId,
+					Body: 'test',
+				})
+				.promise();
+
+			const fileStorageContentBefore = await storageProvider.listObjectsV2({ Bucket: bucketName }).promise();
+			expect(fileStorageContentBefore.Contents).to.be.an('array').of.length(1);
+
+			await fileStorageProviderRepo.deleteFile(storageProvider, bucketName, fileId);
+
+			const fileStorageContentAfter = await storageProvider.listObjectsV2({ Bucket: bucketName }).promise();
+			expect(fileStorageContentAfter.Contents).to.be.an('array').of.length(0);
 		});
 	});
 });
