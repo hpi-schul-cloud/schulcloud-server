@@ -10,7 +10,7 @@ import { Submission, Task } from '../entity';
 import { TaskParentTestEntity, TaskTestHelper } from '../utils/TestHelper';
 import { SubmissionRepo, TaskRepo } from '../repo';
 
-import { TaskUC } from './task.uc';
+import { TaskUC, TaskDashBoardPermission } from './task.uc';
 
 // TODO: coursegroups test completly missing
 // TODO: how work this stuff with lessons
@@ -130,6 +130,12 @@ describe('TaskService', () => {
 			});
 			return spy;
 		},
+		findAllCompletedForStudent: () => {
+			const spy = jest.spyOn(service, 'findAllCompletedForStudent').mockImplementation(() => {
+				return Promise.resolve([[], 0]);
+			});
+			return spy;
+		},
 	};
 
 	it('should be defined', () => {
@@ -137,11 +143,6 @@ describe('TaskService', () => {
 	});
 
 	describe('findAllOpen', () => {
-		enum TaskPermissionFlags {
-			read = 'TASK_DASHBOARD_VIEW_V3',
-			write = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
-		}
-
 		const findAllOpenMock = () => {
 			const spy1 = setTaskUCMock.findAllOpenForTeacher();
 			const spy2 = setTaskUCMock.findAllOpenForStudent();
@@ -167,8 +168,8 @@ describe('TaskService', () => {
 			mockRestore();
 		});
 
-		it(`should pass if ${TaskPermissionFlags.read} flag exist and call findAllOpenForStudent.`, async () => {
-			const permissions = [TaskPermissionFlags.read];
+		it(`should pass if ${TaskDashBoardPermission.studentDashboard} flag exist and call findAllOpenForStudent.`, async () => {
+			const permissions = [TaskDashBoardPermission.studentDashboard];
 			const { currentUser } = createCurrentTestUser(permissions);
 
 			const mockRestore = findAllOpenMock();
@@ -184,8 +185,8 @@ describe('TaskService', () => {
 			mockRestore();
 		});
 
-		it(`should pass if ${TaskPermissionFlags.write} flag exist and call findAllOpenForTeacher.`, async () => {
-			const permissions = [TaskPermissionFlags.write];
+		it(`should pass if ${TaskDashBoardPermission.teacherDashboard} flag exist and call findAllOpenForTeacher.`, async () => {
+			const permissions = [TaskDashBoardPermission.teacherDashboard];
 			const { currentUser } = createCurrentTestUser(permissions);
 
 			const mockRestore = findAllOpenMock();
@@ -198,6 +199,61 @@ describe('TaskService', () => {
 			expect(spy).toBeCalledTimes(1);
 
 			spy.mockRestore();
+			mockRestore();
+		});
+	});
+
+	describe('findAllCompleted', () => {
+		const findAllCompletedMock = () => {
+			const spy1 = setTaskUCMock.findAllCompletedForStudent();
+
+			const mockRestore = () => {
+				spy1.mockRestore();
+			};
+
+			return mockRestore;
+		};
+
+		it('should throw if no permission exist', async () => {
+			const permissions = [];
+			const { currentUser } = createCurrentTestUser(permissions);
+
+			const mockRestore = findAllCompletedMock();
+
+			const paginationQuery = new PaginationQuery();
+			const action = async () => service.findAllCompleted(currentUser, paginationQuery);
+			await expect(action()).rejects.toThrow();
+
+			mockRestore();
+		});
+
+		it(`should pass if ${TaskDashBoardPermission.studentDashboard} flag exist and call findAllCompletedForStudent.`, async () => {
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions);
+
+			const mockRestore = findAllCompletedMock();
+			const spy = setTaskUCMock.findAllCompletedForStudent();
+
+			const paginationQuery = new PaginationQuery();
+			const result = await service.findAllCompleted(currentUser, paginationQuery);
+
+			expect(result).toEqual([[], 0]);
+			expect(spy).toBeCalledTimes(1);
+
+			spy.mockRestore();
+			mockRestore();
+		});
+
+		it(`should throw by ${TaskDashBoardPermission.teacherDashboard} perission flag.`, async () => {
+			const permissions = [TaskDashBoardPermission.teacherDashboard];
+			const { currentUser } = createCurrentTestUser(permissions);
+
+			const mockRestore = findAllCompletedMock();
+
+			const paginationQuery = new PaginationQuery();
+			const action = async () => service.findAllCompleted(currentUser, paginationQuery);
+			await expect(action()).rejects.toThrow();
+
 			mockRestore();
 		});
 	});
