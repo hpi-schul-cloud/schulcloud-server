@@ -89,6 +89,17 @@ const moveFilesToTrashBatch = async (storageProvider, bucket, fileIds) => {
 	return true;
 };
 
+/**
+ * This function deletes the given file permanently from the file storage.
+ * If the possibility of recovery should exist, see {@link moveFilesToTrashBatch}.
+ * @param {*} storageProvider storage provider for the file that should be deleted
+ * @param {*} bucket bucket name of the file that should be deleted
+ * @param {*} fileName file name of the file that should be deleted
+ */
+const deleteFile = async (storageProvider, bucket, fileName) => {
+	await storageProvider.deleteObject({ Bucket: bucket, Key: fileName }).promise();
+}
+
 module.exports = {
 	private: {
 		createStorageProviderInstance,
@@ -96,4 +107,5 @@ module.exports = {
 	getStorageProviderMetaInformation,
 	moveFilesToTrash,
 	moveFilesToTrashBatch,
+	deleteFile,
 };

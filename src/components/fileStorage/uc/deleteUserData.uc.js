@@ -75,6 +75,39 @@ const removePersonalFiles = async (userId) => {
 	return { trashBinData, complete };
 };
 
+const deleteExpiredData = async () => {
+	const userFacade = facadeLocator.facade('users/v2');
+	const filesToBeDeleted = userFacade.getExpiredTrashbinDataByScope('files');
+	for await (const file of filesToBeDeleted) {
+		try {
+			const fileData = file.data.data;
+			info('file to be deleted: ' + fileData.storageFileName);
+
+			const userId = file.refOwnerModel === 'user' && file.owner;
+			if (!userId) {
+
+			}
+			const schoolId = await userFacade.getSchoolIdOfDeletedUser(fileData);
+			if (!schoolId) {
+				// ToDo: Error handling
+				continue;
+			}
+			const schoolFacade = facadeLocator.facade('school/v2');
+			const storageProviderId = await schoolFacade.getStorageProviderIdForSchool(schoolId);
+			const storageProvider = await getStorageProvider(storageProviderId);
+
+			const bucketName = storageBucketName(schoolId);
+
+			const fileName = `expiring_${fileData.storageFileName}`;
+			info(`going to delete file #{fileName} in bucket #{bucketName}`);
+
+			await fileStorageProviderRepo.deleteFile(storageProvider, bucketName, fileName);
+		} catch (error) {
+
+		}
+	}
+};
+
 const deleteUserData = [removePermissionsThatUserCanAccess, removePersonalFiles];
 
 module.exports = {
@@ -83,4 +116,5 @@ module.exports = {
 		removePersonalFiles,
 	},
 	deleteUserData,
+	deleteExpiredData,
 };

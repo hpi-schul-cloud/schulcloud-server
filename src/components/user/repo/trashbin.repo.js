@@ -32,7 +32,56 @@ const updateTrashbinByUserId = async (userId, data = {}) => {
 	return trashbin;
 };
 
+const deleteExpiredData = async (backupPeriodThreshold) => {
+	return trashbinModel.deleteMany({ createdAt: { $lt: backupPeriodThreshold } });
+};
+
+const getTrashbinObjectsByUserId = async (userId) => {
+	return trashbinModel.find({ userId: userId });
+};
+
+const getExpiredTrashbinDataByScope = async (scope) => {
+	const trashbinData = await trashbinModel.aggregate([
+		// filter by data older then the defined backup period
+		{
+			$match: {
+				createdAt: {
+					$lt: backupPeriodThreshold,
+				},
+			},
+		},
+		// unwind the trashbin data of all users
+		{
+			$unwind: {
+				path: '$data',
+			},
+		},
+		// discard unneeded data
+		{
+			$project: {
+				data: 1,
+			},
+		},
+		// filter by trashbin data regarding file deletion
+		{
+			$match: {
+				'data.scope': scope,
+			},
+		},
+		// unwind files
+		{
+			$unwind: {
+				path: '$data.data',
+			},
+		},
+	]);
+	return trashbinData.map((d) => d.data.data);
+};
+
 module.exports = {
 	createUserTrashbin,
 	updateTrashbinByUserId,
+	deleteExpiredData,
+	getTrashbinObjectsByUserId,
+	getExpiredTrashbinDataByScope,
 };

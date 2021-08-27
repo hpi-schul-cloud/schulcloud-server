@@ -18,6 +18,14 @@ class UserFacade {
 	async userHasRole(userId, roleName) {
 		return userRolesUc.hasRole(userId, roleName);
 	}
+
+	async getSchoolIdOfDeletedUser(userId) {
+		return userUc.getSchoolIdOfDeletedUser(userId);
+	}
+
+	async getExpiredTrashbinDataByScope(scope) {
+		return userUc.getExpiredTrashbinDataByScope(scope);
+	}
 }
 
 module.exports = function setupUsersFacade(app) {
