@@ -102,7 +102,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks/open can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open').set('Accept', 'application/json');;
+			const response = await request(app.getHttpServer()).get('/tasks/open').set('Accept', 'application/json');
 
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
 

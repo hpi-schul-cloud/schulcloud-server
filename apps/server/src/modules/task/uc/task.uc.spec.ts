@@ -493,7 +493,7 @@ describe('TaskService', () => {
 			const submissions = [];
 
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
-			const spy = setTaskRepoMock.findAllCurrentByIds();
+			const spy = setTaskRepoMock.findAllCurrentIgnoreIds();
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAllOpenForStudent(user.id, paginationQuery);
@@ -997,7 +997,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -1029,7 +1029,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
