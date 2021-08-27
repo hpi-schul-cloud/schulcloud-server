@@ -260,7 +260,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser() as BaseEntity;
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
 			expect(result[0].task.getParent()).toBeDefined();
