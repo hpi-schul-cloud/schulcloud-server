@@ -11,7 +11,7 @@ enum Permission {
 	write,
 }
 
-enum TaskDashBoardPermission {
+export enum TaskDashBoardPermission {
 	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
 	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
 }
