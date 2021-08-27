@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## Fixed
+
 - BC-44 - integrate jwt whitelist check in nestjs jwt authentication
 - BC-42 - cycle detection in role inheritance
 - BC-64 - enable e2e test execution for push event on main branch
@@ -16,28 +18,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store 
 - BC-119 - remove malfunction S3 lifecycle migration
-- Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
 
-## 26.9.1
-
-- SC-9192 - enable cors for nestjs app routes
-- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
-- SC-9130 - use whiltelisted filenames at the s3 file storage backend
-
-## 26.9.0
 ### Changed
 
 - Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
 
-## [26.9.0] - 2021-08-18
+## [26.9.1] - 2021-08-18
 
-- SC-9231 - add permissions to SuperHero to edit admin role
+## changed 
+
+- SC-9192 - enable cors for nestjs app routes
+- SC-9130 - use whiltelisted filenames at the s3 file storage backend
+
+
+## [26.9.0] - 2021-08-14
+
+## changed 
+
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 
 ## Added
 
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9231 - add permissions to SuperHero to edit admin role
 
 ### Changed
 
