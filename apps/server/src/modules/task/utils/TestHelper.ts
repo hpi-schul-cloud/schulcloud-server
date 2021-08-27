@@ -9,9 +9,10 @@ export class TaskParentTestEntity implements ITaskParent {
 		this.hasWritePermission = (userId: EntityId): boolean => {
 			const hasWritePermission = userIdWithWritePermissions === userId;
 			return hasWritePermission;
-		}
+		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	hasWritePermission(userId: EntityId): boolean {
 		return false;
 	}
