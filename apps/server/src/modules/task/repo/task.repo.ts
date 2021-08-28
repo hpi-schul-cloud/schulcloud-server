@@ -5,6 +5,7 @@ import { EntityId, IFindOptions } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 
 // TODO lessonTaskInfo must deleted
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Task, LessonTaskInfo } from '../entity';
 import { TaskScope } from './task-scope';
 
@@ -96,9 +97,9 @@ export class TaskRepo {
 		return [taskEntities, count];
 	}
 
-	private async findLessons(parentIds: EntityId[]) {
+	private async findLessons(parentIds: EntityId[]): Promise<LessonTaskInfo[]> {
 		const lessons = await this.em.find(LessonTaskInfo, {
-			courseId: { $in: parentIds },
+			courseId: { $in: parentIds.map((id) => new ObjectId(id)) },
 			hidden: false,
 		});
 		return lessons;

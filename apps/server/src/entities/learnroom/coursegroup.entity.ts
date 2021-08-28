@@ -1,18 +1,19 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 
 export interface ICoursegroupProperties {
-	courseId: EntityId;
-	studentIds?: EntityId[];
+	courseId: ObjectId;
+	studentIds?: ObjectId[];
 }
 
 @Entity({ tableName: 'coursegroups' })
 export class Coursegroup extends BaseEntityWithTimestamps {
 	@Property({ fieldName: 'userIds' })
-	studentIds: EntityId[];
+	studentIds: ObjectId[];
 
 	@Property()
-	courseId: EntityId;
+	courseId: ObjectId;
 
 	constructor(props: ICoursegroupProperties) {
 		super();
@@ -22,12 +23,12 @@ export class Coursegroup extends BaseEntityWithTimestamps {
 	}
 
 	// TODO: isMember vs isStudent
-	isMember(userId: EntityId): boolean {
+	isMember(userId: ObjectId): boolean {
 		const isStudent = this.studentIds.includes(userId);
 		return isStudent;
 	}
 
-	getParentId(): EntityId {
+	getParentId(): ObjectId {
 		return this.courseId;
 	}
 }

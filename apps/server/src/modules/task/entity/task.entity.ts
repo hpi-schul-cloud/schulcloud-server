@@ -1,4 +1,5 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { LessonTaskInfo } from './lesson-task-info.entity';
 
@@ -6,7 +7,7 @@ interface ITaskProperties {
 	name: string;
 	dueDate?: Date;
 	private?: boolean;
-	parentId: EntityId;
+	parentId: ObjectId;
 	lesson?: LessonTaskInfo;
 }
 
@@ -37,7 +38,7 @@ export class Task extends BaseEntityWithTimestamps {
 	private: boolean;
 
 	@Property({ fieldName: 'courseId' })
-	parentId: EntityId;
+	parentId?: ObjectId;
 
 	@ManyToOne({ fieldName: 'lessonId' })
 	lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
@@ -56,8 +57,8 @@ export class Task extends BaseEntityWithTimestamps {
 		Object.assign(this, { lesson });
 	}
 
-	getParentId(): EntityId {
-		return this.parentId;
+	getParentId(): EntityId | undefined {
+		return this.parentId?.toHexString();
 	}
 
 	getName(): string {
@@ -79,6 +80,7 @@ export class Task extends BaseEntityWithTimestamps {
 
 	setParent(parent: ITaskParent | undefined): void {
 		this.parent = parent;
+		this.parentId = parent ? new ObjectId(parent.id) : undefined;
 	}
 
 	getParent(): ITaskParent | undefined {
