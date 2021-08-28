@@ -4,9 +4,9 @@ import { EntityId } from '../types/entity-id';
 import { BaseEntity } from '../entity/base.entity';
 
 export abstract class TestHelper<SchoolType> {
-	users: (EntityId | BaseEntity)[] = [];
+	users: BaseEntity[] = [];
 
-	otherUser: EntityId | BaseEntity;
+	otherUser: BaseEntity;
 
 	school: SchoolType;
 
@@ -24,7 +24,7 @@ export abstract class TestHelper<SchoolType> {
 
 	// That any helper must implement this is a temporary solution until
 	// user and school entity is avaible in global or shared scope.
-	abstract createUser(): EntityId | BaseEntity;
+	abstract createUser(): BaseEntity;
 
 	abstract createSchool(): SchoolType;
 
@@ -39,32 +39,39 @@ export abstract class TestHelper<SchoolType> {
 	}
 
 	// If else mapping can removed after the abstract createUser() is replaced by createUser from global user entity.
-	createAndAddUser(user?: EntityId | BaseEntity): void {
-		let newUser = this.createUser();
-
-		if (newUser instanceof BaseEntity && user instanceof BaseEntity && user.id) {
+	createAndAddUser(user?: BaseEntity | EntityId): void {
+		const newUser = this.createUser();
+		if (user instanceof BaseEntity) {
+			newUser._id = user._id;
 			newUser.id = user.id;
-		} else if (newUser instanceof BaseEntity && typeof user === 'string') {
+		} else if (typeof user === 'string') {
 			newUser.id = user;
-		} else if (typeof newUser === 'string' && user instanceof BaseEntity && user.id) {
-			newUser = user.id;
-		} else if (typeof newUser === 'string' && typeof user === 'string') {
-			newUser = user;
 		}
+
+		// TODO try to understand why we need that (uidp)
+		// if (newUser instanceof BaseEntity && user instanceof BaseEntity && user.id) {
+		// 	newUser.id = user.id;
+		// } else if (newUser instanceof BaseEntity && typeof user === 'string') {
+		// 	newUser.id = user;
+		// } else if (typeof newUser === 'string' && user instanceof BaseEntity && user.id) {
+		// 	newUser = user.id;
+		// } else if (typeof newUser === 'string' && typeof user === 'string') {
+		// 	newUser = user;
+		// }
 
 		this.users.push(newUser);
 	}
 
-	getFirstUser(): EntityId | BaseEntity {
+	getFirstUser(): BaseEntity {
 		return this.users[0];
 	}
 
 	// TODO: find better name for existing user that is not part of the ressources
-	getOtherUser(): EntityId | BaseEntity {
+	getOtherUser(): BaseEntity {
 		return this.otherUser;
 	}
 
-	getUsers(): (EntityId | BaseEntity)[] {
+	getUsers(): BaseEntity[] {
 		return this.users;
 	}
 

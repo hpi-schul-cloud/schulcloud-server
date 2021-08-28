@@ -1,13 +1,14 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 
 interface ICourseProperties {
 	name: string;
 	description?: string;
-	schoolId: EntityId;
-	teacherIds?: EntityId[];
-	substitutionTeacherIds?: EntityId[];
-	studentIds?: EntityId[];
+	schoolId: ObjectId;
+	teacherIds?: ObjectId[];
+	substitutionTeacherIds?: ObjectId[];
+	studentIds?: ObjectId[];
 	// TODO: color format
 	color?: string;
 }
@@ -23,30 +24,30 @@ const DEFAULT = {
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.name })
-	private name: string;
+	name: string;
 
 	@Property({ default: DEFAULT.description })
-	private description: string;
+	description: string;
 
 	@Index()
 	@Property()
-	private schoolId: EntityId;
+	schoolId: ObjectId;
 
 	@Index()
-	@Property({ fieldName: 'userIds', default: [] })
-	private studentIds: EntityId[];
+	@Property({ fieldName: 'userIds' })
+	studentIds: ObjectId[] = [];
 
 	@Index()
 	@Property()
-	private teacherIds: EntityId[];
+	teacherIds: ObjectId[] = [];
 
 	@Index()
 	@Property({ fieldName: 'substitutionIds' })
-	private substitutionTeacherIds: EntityId[];
+	substitutionTeacherIds: ObjectId[] = [];
 
 	// TODO: string color format
 	@Property({ default: DEFAULT.color })
-	private color!: string;
+	color!: string;
 
 	constructor(props: ICourseProperties) {
 		super();
@@ -62,7 +63,8 @@ export class Course extends BaseEntityWithTimestamps {
 	}
 
 	getStudentsNumber(): number {
-		return this.studentIds.length;
+		// TODO remove "|| []" when we can rely on db schema integrity
+		return (this.studentIds || []).length;
 	}
 
 	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {
@@ -78,12 +80,14 @@ export class Course extends BaseEntityWithTimestamps {
 	 * Important user group operations are only a temporary solution until we have established groups
 	 */
 	private isTeacher(userId: EntityId): boolean {
-		const isTeacher = this.teacherIds.includes(userId);
+		// TODO remove "|| []" when we can rely on db schema integrity
+		const isTeacher = (this.teacherIds || []).map((id) => id.toHexString()).includes(userId);
 		return isTeacher;
 	}
 
 	private isSubstitutionTeacher(userId: EntityId): boolean {
-		const isSubstitutionTeacher = this.substitutionTeacherIds.includes(userId);
+		// TODO remove "|| []" when we can rely on db schema integrity
+		const isSubstitutionTeacher = (this.substitutionTeacherIds || []).map((id) => id.toHexString()).includes(userId);
 		return isSubstitutionTeacher;
 	}
 

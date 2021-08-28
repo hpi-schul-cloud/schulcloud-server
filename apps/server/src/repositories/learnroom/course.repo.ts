@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { Course } from '@src/entities';
@@ -7,9 +7,9 @@ import { Scope } from '@shared/repo';
 
 class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
-		const isStudent = { studentIds: userId };
-		const isTeacher = { teacherIds: userId };
-		const isSubstitutionTeacher = { substitutionTeacherIds: userId };
+		const isStudent = { studentIds: new ObjectId(userId) };
+		const isTeacher = { teacherIds: new ObjectId(userId) };
+		const isSubstitutionTeacher = { substitutionTeacherIds: new ObjectId(userId) };
 
 		if (userId) {
 			this.addQuery({ $or: [isStudent, isTeacher, isSubstitutionTeacher] });

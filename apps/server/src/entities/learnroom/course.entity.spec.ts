@@ -20,7 +20,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should create a course by passing required properties', () => {
-			const schoolId = new ObjectId().toHexString();
+			const schoolId = new ObjectId();
 			const course = new Course({ name: '', schoolId });
 			expect(course instanceof Course).toEqual(true);
 		});
@@ -55,7 +55,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return values if they are set', () => {
-			const schoolId = new ObjectId().toHexString();
+			const schoolId = new ObjectId();
 			const name = 'A1';
 			const color = 'FFFFFF';
 			const description = 'Happy hour.';
@@ -97,7 +97,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(helper.getOtherUser() as EntityId);
+			const result = course.hasWritePermission(helper.getOtherUser().id);
 
 			expect(result).toEqual(false);
 		});
@@ -106,7 +106,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(helper.getFirstUser() as EntityId);
+			const result = course.hasWritePermission(helper.getFirstUser().id);
 
 			expect(result).toEqual(false);
 		});
@@ -115,7 +115,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createTeacherCourse();
 
-			const result = course.hasWritePermission(helper.getFirstUser() as EntityId);
+			const result = course.hasWritePermission(helper.getFirstUser().id);
 
 			expect(result).toEqual(true);
 		});
@@ -124,7 +124,7 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createSubstitutionCourse();
 
-			const result = course.hasWritePermission(helper.getFirstUser() as EntityId);
+			const result = course.hasWritePermission(helper.getFirstUser().id);
 
 			expect(result).toEqual(true);
 		});

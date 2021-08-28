@@ -26,7 +26,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	student: UserTaskInfo; // <-- User
 
 	@ManyToOne({ fieldName: 'courseGroupId' })
-	courseGroup: CourseGroupInfo;
+	courseGroup?: CourseGroupInfo;
 
 	@ManyToMany({ fieldName: 'teamMembers', type: UserTaskInfo })
 	teamMembers = new Collection<UserTaskInfo>(this);

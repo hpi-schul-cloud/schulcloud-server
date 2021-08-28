@@ -1,12 +1,13 @@
 // file must deleted and use data from learnroom
 
 import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
 
 interface CoursegroupInfoProperties {
 	students?: UserTaskInfo[];
-	courseId: EntityId;
+	courseId: ObjectId;
 }
 
 @Entity({ tableName: 'coursegroups' })
@@ -15,7 +16,7 @@ export class CourseGroupInfo extends BaseEntityWithTimestamps {
 	students = new Collection<UserTaskInfo>(this);
 
 	@Property()
-	courseId: EntityId;
+	courseId: ObjectId;
 
 	constructor(props: CoursegroupInfoProperties) {
 		super();

@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '../../database';
@@ -93,7 +93,7 @@ describe('submission repo', () => {
 			const students = helper.getUsers() as UserTaskInfo[];
 			const task = helper.createTask();
 
-			const courseGroup = em.create(CourseGroupInfo, { courseId: task.getParentId(), students });
+			const courseGroup = em.create(CourseGroupInfo, { courseId: new ObjectId(task.getParentId()), students });
 			const submission = helper.createSubmission(task, students[1]);
 			submission.courseGroup = courseGroup;
 
@@ -102,7 +102,7 @@ describe('submission repo', () => {
 			const [result, count] = await repo.findAllByUserId(students[0].id);
 
 			expect(count).toEqual(1);
-			expect(result[0].courseGroup.students[0].firstName).toEqual(students[0].firstName);
+			expect(result[0]?.courseGroup?.students[0]?.firstName).toEqual(students[0].firstName);
 		});
 	});
 });

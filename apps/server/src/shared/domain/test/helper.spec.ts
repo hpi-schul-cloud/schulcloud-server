@@ -4,14 +4,17 @@ import { BaseEntity } from '../entity';
 
 import { TestHelper } from './helper';
 
-function createTestHelper(outputUser?: BaseEntity | EntityId, outputSchool?: EntityId): TestHelper<EntityId> {
+function createTestHelper(outputUser?: EntityId, outputSchool?: EntityId): TestHelper<EntityId> {
 	class NewHelper extends TestHelper<EntityId> {
 		createSchool(): EntityId {
 			return outputSchool || 'school';
 		}
 
-		createUser(): BaseEntity | EntityId {
-			return outputUser || 'user';
+		createUser(): BaseEntity {
+			const userId = outputUser || 'user';
+			const user = new BaseEntity();
+			user.id = userId;
+			return user;
 		}
 	}
 	return new NewHelper();
@@ -73,7 +76,7 @@ describe('TestHelper', () => {
 
 				const result = helper.getFirstUser();
 
-				expect(result).toEqual(user);
+				expect(result.id).toEqual(user);
 			});
 		});
 
@@ -84,7 +87,7 @@ describe('TestHelper', () => {
 
 				const result = helper.getOtherUser();
 
-				expect(result).toEqual(user);
+				expect(result.id).toEqual(user);
 			});
 		});
 
@@ -120,7 +123,7 @@ describe('TestHelper', () => {
 
 				helper.createAndAddUser(user);
 
-				expect(helper.users[1]).toEqual(user.id);
+				expect(helper.users[1].id).toEqual(user.id);
 			});
 
 			it('should solve passing parameter EntityId to target EntityId', () => {
@@ -129,27 +132,27 @@ describe('TestHelper', () => {
 
 				helper.createAndAddUser(user);
 
-				expect(helper.users[1]).toEqual(user);
+				expect(helper.users[1].id).toEqual(user);
 			});
 
 			it('should solve passing parameter EntityId to target Entity', () => {
-				const helper = createTestHelper(new TestEntity());
+				const helper = createTestHelper();
 				const user = 'superuser';
 
 				helper.createAndAddUser(user);
 
-				const foundUser = helper.users[1] as BaseEntity;
+				const foundUser = helper.users[1];
 				expect(foundUser.id).toEqual(user);
 			});
 
 			it('should solve passing parameter Entity to target Entity', () => {
-				const helper = createTestHelper(new TestEntity());
+				const helper = createTestHelper();
 				const user = new TestEntity();
 				user.id = 'superuser';
 
 				helper.createAndAddUser(user);
 
-				const foundUser = helper.users[1] as BaseEntity;
+				const foundUser = helper.users[1];
 				expect(foundUser.id).toEqual(user.id);
 			});
 		});
@@ -162,7 +165,7 @@ describe('TestHelper', () => {
 				const result = helper.getUsers();
 
 				expect(result.length).toEqual(1);
-				expect(result[0]).toEqual(user);
+				expect(result[0].id).toEqual(user);
 			});
 
 			it('should also includes additional generated users', () => {
@@ -174,7 +177,7 @@ describe('TestHelper', () => {
 				const result = helper.getUsers();
 
 				expect(result.length).toEqual(2);
-				expect(result[1]).toEqual(additionalUser);
+				expect(result[1].id).toEqual(additionalUser);
 			});
 		});
 	});

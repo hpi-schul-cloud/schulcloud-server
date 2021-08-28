@@ -1,10 +1,11 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
 import { Scope } from '@shared/repo';
 import { Task } from '../entity';
 
 export class TaskScope extends Scope<Task> {
 	byParents(parentIds: EntityId[]): TaskScope {
-		this.addQuery({ parentId: { $in: parentIds } });
+		this.addQuery({ parentId: { $in: parentIds.map((id) => new ObjectId(id)) } });
 		return this;
 	}
 

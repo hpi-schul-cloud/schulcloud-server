@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId, TestHelper } from '@shared/domain';
 
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
@@ -48,7 +49,7 @@ export class TaskTestHelper extends TestHelper<EntityId> {
 	}
 
 	createTask(parentId?: EntityId, dueDate?: Date): Task {
-		const id = parentId || this.createEntityId();
+		const id = new ObjectId(parentId);
 		const task = new Task({ name: '', parentId: id, dueDate });
 		this.addId(task);
 		return task;
@@ -56,9 +57,9 @@ export class TaskTestHelper extends TestHelper<EntityId> {
 
 	createLessonWithTask(): { task: Task; lesson: LessonTaskInfo; parentId: EntityId } {
 		const parentId = this.createEntityId();
-		const lesson = new LessonTaskInfo({ courseId: parentId });
+		const lesson = new LessonTaskInfo({ courseId: new ObjectId(parentId) });
 		this.addId(lesson);
-		const task = new Task({ name: '', parentId, lesson });
+		const task = new Task({ name: '', parentId: new ObjectId(parentId), lesson });
 		this.addId(task);
 		return { task, lesson, parentId };
 	}

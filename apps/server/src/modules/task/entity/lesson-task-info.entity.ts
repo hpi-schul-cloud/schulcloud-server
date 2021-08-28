@@ -1,11 +1,12 @@
 // must deleted
 import { Entity, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 
 interface LessonTaskInfoProperties {
 	hidden?: boolean;
-	courseId: EntityId;
+	courseId: ObjectId;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -14,7 +15,7 @@ export class LessonTaskInfo extends BaseEntityWithTimestamps {
 	hidden: boolean;
 
 	@Property()
-	courseId: EntityId;
+	courseId: ObjectId;
 
 	constructor(props: LessonTaskInfoProperties) {
 		super();
