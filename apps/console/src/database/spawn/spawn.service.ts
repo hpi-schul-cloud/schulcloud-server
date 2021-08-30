@@ -14,27 +14,28 @@ export class SpawnService {
 		this.logger = new Logger(SpawnService.name);
 	}
 
-	exec(spanCommand: SpawnCommand, callback: (stdout: string, code: number | null) => any): void {
+	exec(spanCommand: SpawnCommand, callback: (allOut: string, code: number | null) => any): void {
 		this.logger.log('start process execution...');
 		const child = spawn(spanCommand.command, spanCommand.args, spanCommand.options);
-		const output: string[] = [];
+		const allOut: string[] = [];
 
 		child.stdout.setEncoding(this.encoding);
 		child.stdout.on('data', (data: string) => {
 			this.logger.log(data);
-			output.push(data);
+			allOut.push(data);
 		});
 
 		child.stderr.setEncoding(this.encoding);
 		child.stderr.on('data', (data: string) => {
 			this.logger.error(data);
+			allOut.push(data);
 		});
 
 		child.on('close', (code) => {
 			if (code === 0) this.logger.log(`finished execution with code ${code}`);
 			else this.logger.error(`finished execution with code ${code || 'NO_EXIT_CODE_PROVIDED'}`);
 
-			callback(output.join(EOL), code);
+			callback(allOut.join(EOL), code);
 		});
 	}
 }
