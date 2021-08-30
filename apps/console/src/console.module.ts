@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConsoleController } from './console.controller';
-import { ConsoleService } from './console.service';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-	imports: [],
-	controllers: [ConsoleController],
-	providers: [ConsoleService],
+	imports: [DatabaseModule],
+	controllers: [],
+	providers: [],
 })
 export class ConsoleModule {}
