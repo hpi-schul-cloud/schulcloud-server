@@ -8,7 +8,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { Logger } from '@nestjs/common';
 import { ServerModule } from './server.module';
-import legacyAppPromise = require('../../../src/app');
+import legacyAppPromise from '../../../src/app.js';
 import { enableOpenApiDocs } from './shared/controller/swagger';
 import { Mail } from './modules/mail/mail.interface';
 import { MailService } from './modules/mail/mail.service';

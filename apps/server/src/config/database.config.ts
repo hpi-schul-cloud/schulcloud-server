@@ -1,4 +1,4 @@
-import globals = require('../../../../config/globals');
+import globals from '../../../../config/globals.js';
 
 interface GlobalConstants {
 	DB_URL: string;
