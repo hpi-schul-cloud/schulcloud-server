@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"allowJs": false,
 		"declaration": true,
-		"outDir": "../../dist/apps/server",
+		"outDir": "../../dist/apps/server"
 	},
 	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+	"exclude": ["**/node_modules", "**/dist", "**/test", "**/*spec.ts"]
 }

@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- BC-172 - add globs to tsconfig file paths
 - BC-44 - integrate jwt whitelist check in nestjs jwt authentication
 - BC-42 - cycle detection in role inheritance
 - BC-64 - enable e2e test execution for push event on main branch
