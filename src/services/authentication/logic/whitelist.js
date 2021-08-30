@@ -101,14 +101,6 @@ const ensureTokenIsWhitelisted = async (path, { accountId, jti, privateDevice })
 		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
-		// ------------------------------------------------------------------------
-		// TODO REMOVE JWT_WHITELIST_ACCEPT_ALL?
-		// this is so we can ensure a fluid release without booting out all users.
-		if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
-			return;
-		}
-		// ------------------------------------------------------------------------
 		const tokenIsWhitelisted = await isTokenWhitelisted(redisIdentifier);
 		if (tokenIsWhitelisted) {
 			// extend token expiration if token is already whitelisted
