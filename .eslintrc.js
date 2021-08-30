@@ -75,7 +75,7 @@ module.exports = {
 				'plugin:promise/recommended',
 			],
 			parserOptions: {
-				project: 'apps/server/tsconfig.lint.json',
+				project: ['apps/server/tsconfig.lint.json', 'apps/console/tsconfig.lint.json'],
 			},
 			env: {
 				node: true,
@@ -88,7 +88,13 @@ module.exports = {
 				'import/resolver': {
 					typescript: {
 						alwaysTryTypes: true,
-						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json', 'apps/server/tsconfig.app.json'],
+						project: [
+							'tsconfig.json',
+							'apps/server/tsconfig.lint.json',
+							'apps/server/tsconfig.app.json',
+							'apps/console/tsconfig.lint.json',
+							'apps/console/tsconfig.app.json',
+						],
 					},
 				},
 			},
