@@ -40,7 +40,7 @@ const getTrashbinObjectsByUserId = async (userId) => {
 	return trashbinModel.find({ userId: userId });
 };
 
-const getExpiredTrashbinDataByScope = async (scope) => {
+const getExpiredTrashbinDataByScope = async (scope, backupPeriodThreshold) => {
 	const trashbinData = await trashbinModel.aggregate([
 		// filter by data older then the defined backup period
 		{

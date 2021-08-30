@@ -19,7 +19,7 @@ const cleanup = () => {
 	const ids = createdTrashbinObjects;
 	createdTrashbinObjects = [];
 	return trashbinModel
-		.deleteMany({ id: { $in: ids } })
+		.deleteMany({ _id: { $in: ids } })
 		.lean()
 		.exec();
 };

@@ -10,7 +10,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe('user repository', () => {
+describe('trashbin repository', () => {
 	let app;
 	let server;
 
@@ -121,5 +121,94 @@ describe('user repository', () => {
 			const result = await trashbinModel.findById(newData._id).lean().exec();
 			expect(result).to.not.be.null;
 		});
-	})
+	});
+
+	describe('getTrashbinObjectsByUserId', () => {
+		it('should return trashbin objects for the given userId', async () => {
+			const userId = testObjects.generateObjectId();
+			const otherUserId = testObjects.generateObjectId();
+			const trashbinObjects = await Promise.all(
+				Array(3)
+					.fill()
+					.map(() => testObjects.createTestTrashbinData({ userId }))
+			);
+			const otherTrashbinObjects = await Promise.all(
+				Array(3)
+					.fill()
+					.map(() => testObjects.createTestTrashbinData({ userId: otherUserId }))
+			);
+
+			const result = await trashbinRepo.getTrashbinObjectsByUserId(userId);
+
+			expect(result.map((t) => t._id.toString())).to.eql(trashbinObjects.map((t) => t._id.toString()));
+		});
+	});
+
+	describe('getExpiredTrashbinDataByScope', () => {
+		const scope = 'testScope';
+
+		afterEach(async () => {
+			await testObjects.cleanup();
+		});
+
+		it('should return data older than the backupPeriodThreshold and with the given scope', async () => {
+			const data1 = [
+				{
+					scope,
+					data: 'data1',
+				},
+			];
+			await testObjects.createTestTrashbinData({data: data1});
+
+			const data2 = [
+				{
+					scope,
+					data: 'data2',
+				},
+				{
+					scope: 'otherScope',
+					data: 'otherData',
+				},
+			];
+			await testObjects.createTestTrashbinData({data: data2});
+
+			const backupPeriodThreshold = new Date();
+
+			const result = await trashbinRepo.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
+
+			expect(result).to.have.lengthOf(2);
+			expect(result).to.include('data1');
+			expect(result).to.include('data2');
+		})
+
+		it('should not return data newer than the backupPeriodThreshold', async () => {
+			const data = [
+				{
+					scope,
+					data: 'data',
+				},
+			];
+			const backupPeriodThreshold = new Date();
+			await testObjects.createTestTrashbinData({data});
+
+			const result = await trashbinRepo.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
+
+			expect(result).to.have.lengthOf(0);
+		});
+
+		it('should not return data with other scope', async () => {
+			const data = [
+				{
+					scope: 'otherScope',
+					data: 'data',
+				},
+			];
+			await testObjects.createTestTrashbinData({data});
+			const backupPeriodThreshold = new Date();
+
+			const result = await trashbinRepo.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
+
+			expect(result).to.have.lengthOf(0);
+		});
+	});
 });
