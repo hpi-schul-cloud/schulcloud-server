@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9083 - expose env variables for school administration
 - BC-64 - enable e2e test execution for push event on main branch
 
 ## 26.9.1
