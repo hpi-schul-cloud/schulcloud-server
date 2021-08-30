@@ -4,13 +4,12 @@ const { disallow } = require('feathers-hooks-common');
 const { MethodNotAllowed, AutoLogout } = require('../../../errors');
 const docs = require('./jwtTimerDocs');
 
+const { getRedisClient, redisSetAsync, redisTtlAsync } = require('../../../utils/redis');
 const {
-	getRedisClient,
-	redisSetAsync,
-	redisTtlAsync,
-	extractDataFromJwt,
+	extractRedisDataFromJwt,
+	createRedisIdentifierFromJwtData,
 	getRedisData,
-} = require('../../../utils/redis');
+} = require('../../authentication/logic/whitelist');
 
 class JwtTimerService {
 	constructor(options) {
@@ -24,7 +23,8 @@ class JwtTimerService {
 	 */
 	async find(params) {
 		if (getRedisClient()) {
-			const { redisIdentifier } = extractDataFromJwt(params.authentication.accessToken);
+			const { accountId, jti } = extractRedisDataFromJwt(params.authentication.accessToken);
+			const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			return Promise.resolve({ ttl: redisResponse });
 		}
@@ -38,11 +38,13 @@ class JwtTimerService {
 	 */
 	async create(data, params) {
 		if (getRedisClient()) {
-			const { redisIdentifier, privateDevice } = extractDataFromJwt(params.authentication.accessToken);
+			const { accountId, jti, privateDevice } = extractRedisDataFromJwt(params.authentication.accessToken);
+			const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			if (redisResponse < 0) throw new AutoLogout('Session was expired due to inactivity - autologout.');
 			const redisData = getRedisData({ privateDevice });
 			const { expirationInSeconds } = redisData;
+			// TODO this should happen via autologout hook in background
 			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 			return Promise.resolve({ ttl: expirationInSeconds });
 		}

@@ -111,11 +111,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
 		},
-		"JWT_WHITELIST_ACCEPT_ALL": {
-			"type": "boolean",
-			"default": false,
-			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
-		},
 		"TSP_API_BASE_URL": {
 			"type": "string",
 			"default": "https://www.schulportal-thueringen.de",
@@ -737,10 +732,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"ES_USER",
-					"ES_PASSWORD"
-				]
+				"required": ["ES_USER", "ES_PASSWORD"]
 			}
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
