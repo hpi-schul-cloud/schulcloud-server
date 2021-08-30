@@ -19,12 +19,24 @@ class UserFacade {
 		return userRolesUc.hasRole(userId, roleName);
 	}
 
+	async cleanupTrashbin() {
+		return userUC.cleanupTrashbin();
+	}
+
 	async getSchoolIdOfDeletedUser(userId) {
 		return userUc.getSchoolIdOfDeletedUser(userId);
 	}
 
 	async getExpiredTrashbinDataByScope(scope) {
 		return userUc.getExpiredTrashbinDataByScope(scope);
+	}
+
+	async skipDeletionForTrashbinData(trashbinId) {
+		return userUc.skipDeletionForTrashbinData(trashbinId);
+	}
+
+	async removeTrashbinDeletionFlags() {
+		return userUc.removeTrashbinDeletionFlags();
 	}
 }
 

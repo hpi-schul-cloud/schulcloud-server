@@ -193,7 +193,7 @@ const cleanupTrashbin = async () => {
 	const facades = ['/fileStorage/v2'];
 	for (const facadePath of facades) {
 		const facade = facadeLocator.facade(facadePath);
-		await facade.cleanupTrashbin();
+		await facade.cleanupTrashbin(backupPeriodThreshold);
 	}
 
 	return trashbinRepo.deleteExpiredData();
@@ -201,12 +201,18 @@ const cleanupTrashbin = async () => {
 
 const getExpiredTrashbinDataByScope = trashbinRepo.getExpiredTrashbinDataByScope;
 
+const skipDeletionForTrashbinData = trashbinRepo.setDeletionSkipFlag;
+
+const removeTrashbinDeletionFlags = trashbinRepo.removeTrashinDeletionFlags;
+
 module.exports = {
 	getSchoolIdOfUser,
 	deleteUser,
 	cleanupTrashbin,
 	getSchoolIdOfDeletedUser,
 	getExpiredTrashbinDataByScope,
+	skipDeletionForTrashbinData,
+	removeTrashbinDeletionFlags,
 	// following not to exported by facade
 	checkPermissions,
 	createUserTrashbin,

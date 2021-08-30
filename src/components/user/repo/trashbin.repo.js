@@ -33,7 +33,7 @@ const updateTrashbinByUserId = async (userId, data = {}) => {
 };
 
 const deleteExpiredData = async (backupPeriodThreshold) => {
-	return trashbinModel.deleteMany({ createdAt: { $lt: backupPeriodThreshold } });
+	return trashbinModel.deleteMany({ createdAt: { $lt: backupPeriodThreshold }, skipDeletion: {$ne: true} });
 };
 
 const getTrashbinObjectsByUserId = async (userId) => {
@@ -75,7 +75,19 @@ const getExpiredTrashbinDataByScope = async (scope, backupPeriodThreshold) => {
 			},
 		},
 	]);
-	return trashbinData.map((d) => d.data.data);
+	return trashbinData.map((d) => {
+		const data = d.data.data;
+		data.trashbinId = d._id;
+		return data;
+	});
+};
+
+const setDeletionSkipFlag = async (id) => {
+	return trashbinModel.findByIdAndUpdate(id, { skipDeletion: true });
+};
+
+const removeTrashbinDeletionFlags = async () => {
+	return trashbinModel.updateMany({}, { skipDeletion: false });
 };
 
 module.exports = {
@@ -84,4 +96,6 @@ module.exports = {
 	deleteExpiredData,
 	getTrashbinObjectsByUserId,
 	getExpiredTrashbinDataByScope,
+	setDeletionSkipFlag,
+	removeTrashbinDeletionFlags,
 };

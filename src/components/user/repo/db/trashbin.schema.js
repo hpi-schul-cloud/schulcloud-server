@@ -16,6 +16,7 @@ const schema = new Schema(
 				data: { type: Object },
 			},
 		],
+		skipDeletion: { type: Boolean, default: false},
 	},
 	{
 		timestamps: true,

@@ -10,7 +10,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe('trashbin repository', () => {
+describe.only('trashbin repository', () => {
 	let app;
 	let server;
 
@@ -158,7 +158,7 @@ describe('trashbin repository', () => {
 					data: 'data1',
 				},
 			];
-			await testObjects.createTestTrashbinData({data: data1});
+			await testObjects.createTestTrashbinData({ data: data1 });
 
 			const data2 = [
 				{
@@ -170,7 +170,7 @@ describe('trashbin repository', () => {
 					data: 'otherData',
 				},
 			];
-			await testObjects.createTestTrashbinData({data: data2});
+			await testObjects.createTestTrashbinData({ data: data2 });
 
 			const backupPeriodThreshold = new Date();
 
@@ -179,7 +179,7 @@ describe('trashbin repository', () => {
 			expect(result).to.have.lengthOf(2);
 			expect(result).to.include('data1');
 			expect(result).to.include('data2');
-		})
+		});
 
 		it('should not return data newer than the backupPeriodThreshold', async () => {
 			const data = [
@@ -189,7 +189,7 @@ describe('trashbin repository', () => {
 				},
 			];
 			const backupPeriodThreshold = new Date();
-			await testObjects.createTestTrashbinData({data});
+			await testObjects.createTestTrashbinData({ data });
 
 			const result = await trashbinRepo.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
 
@@ -203,12 +203,51 @@ describe('trashbin repository', () => {
 					data: 'data',
 				},
 			];
-			await testObjects.createTestTrashbinData({data});
+			await testObjects.createTestTrashbinData({ data });
 			const backupPeriodThreshold = new Date();
 
 			const result = await trashbinRepo.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
 
 			expect(result).to.have.lengthOf(0);
+		});
+
+		it('should not return data with skip deletion marker', async () => {
+			await testObjects.createTestTrashbinData({ skipDeletion: true });
+			const backupPeriodThreshold = new Date();
+
+			const result = await trashbinRepo.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
+
+			expect(result).to.have.lengthOf(0);
+		});
+	});
+
+	describe('setDeletionSkipFlag', () => {
+		it('should set deletion skip flag', async () => {
+			const trashbinObject = await testObjects.createTestTrashbinData();
+			expect(trashbinObject.skipDeletion).to.eql(false);
+
+			await trashbinRepo.setDeletionSkipFlag(trashbinObject._id);
+
+			const result = await trashbinModel.findById(trashbinObject._id);
+			expect(result.skipDeletion).to.eql(true);
+		});
+	});
+
+	describe('removeTrashbinDeletionFlags', () => {
+		it('should remove all trashbin deletion flags', async () => {
+			await Promise.all([
+				testObjects.createTestTrashbinData({ skipDeletion: false }),
+				testObjects.createTestTrashbinData({ skipDeletion: false }),
+				testObjects.createTestTrashbinData({ skipDeletion: true }),
+			]);
+
+			await trashbinRepo.removeTrashbinDeletionFlags();
+
+			const trashbinData = await trashbinModel.find({}).lean().exec();
+
+			trashbinData.forEach((data) => {
+				expect(data.skipDeletion).to.be.false;
+			});
 		});
 	});
 });

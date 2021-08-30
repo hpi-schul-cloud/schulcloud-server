@@ -80,17 +80,13 @@ const deleteExpiredData = async () => {
 	const filesToBeDeleted = userFacade.getExpiredTrashbinDataByScope('files');
 	for await (const file of filesToBeDeleted) {
 		try {
-			const fileData = file.data.data;
-			info('file to be deleted: ' + fileData.storageFileName);
-
 			const userId = file.refOwnerModel === 'user' && file.owner;
 			if (!userId) {
-
+				throw new AssertionError(`The file #{file._id.toString()} cannot be deleted, because the owner cannot be determined`);
 			}
-			const schoolId = await userFacade.getSchoolIdOfDeletedUser(fileData);
+			const schoolId = await userFacade.getSchoolIdOfDeletedUser(userId);
 			if (!schoolId) {
-				// ToDo: Error handling
-				continue;
+				throw new AssertionError(`The file #{file._id.toString()} cannot be deleted, because the school ID cannot be determined`);
 			}
 			const schoolFacade = facadeLocator.facade('school/v2');
 			const storageProviderId = await schoolFacade.getStorageProviderIdForSchool(schoolId);
@@ -98,12 +94,12 @@ const deleteExpiredData = async () => {
 
 			const bucketName = storageBucketName(schoolId);
 
-			const fileName = `expiring_${fileData.storageFileName}`;
+			const fileName = `expiring_${file.storageFileName}`;
 			info(`going to delete file #{fileName} in bucket #{bucketName}`);
 
 			await fileStorageProviderRepo.deleteFile(storageProvider, bucketName, fileName);
 		} catch (error) {
-
+			await userFacade.skipDeletionForTrashbinData(file.trashbinId);
 		}
 	}
 };
