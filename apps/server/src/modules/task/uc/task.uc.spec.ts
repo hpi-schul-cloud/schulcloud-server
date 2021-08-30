@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
-import { IFindOptions, SortOrder, BaseEntity } from '@shared/domain';
+import { IFindOptions, SortOrder } from '@shared/domain';
 import { Course } from '@src/entities';
 import { CourseRepo } from '@src/repositories';
 
@@ -285,7 +285,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(Array.isArray(result)).toBeTruthy();
@@ -305,7 +305,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
@@ -324,7 +324,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
@@ -343,7 +343,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
@@ -364,7 +364,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
@@ -387,7 +387,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
@@ -404,7 +404,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
@@ -429,7 +429,7 @@ describe('TaskService', () => {
 				order: { dueDate: SortOrder.asc },
 			};
 
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			await service.findAllOpenForStudent(user.id, { skip, limit });
 
 			expect(spy).toHaveBeenCalledWith([], [], expectedOptions);
@@ -451,7 +451,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
@@ -483,7 +483,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
@@ -523,7 +523,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
@@ -541,7 +541,7 @@ describe('TaskService', () => {
 		 */
 		it('should only pass parents where the user has no write permissions', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id); // with write permissions
 
 			const tasks = [];
@@ -585,7 +585,7 @@ describe('TaskService', () => {
 
 		it('should return pagination promise', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const tasks = [];
 			const parents = [];
 
@@ -602,7 +602,7 @@ describe('TaskService', () => {
 
 		it('should find a open task', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const task1 = helper.createTask(parent1.id);
 
@@ -621,7 +621,7 @@ describe('TaskService', () => {
 
 		it('should return well formed task with parent and status', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const task1 = helper.createTask(parent1.id);
 
@@ -642,7 +642,7 @@ describe('TaskService', () => {
 
 		it('should work for parent without tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 
 			const tasks = [];
@@ -660,7 +660,7 @@ describe('TaskService', () => {
 
 		it('should find a list of open task', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const task1 = helper.createTask(parent1.id);
 			const task2 = helper.createTask(parent1.id);
@@ -681,7 +681,7 @@ describe('TaskService', () => {
 
 		it('should find open task from different parents', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const parent2 = helper.createTaskParent(user.id);
 			const parent3 = helper.createTaskParent(user.id);
@@ -711,7 +711,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
@@ -736,7 +736,7 @@ describe('TaskService', () => {
 				order: { createdAt: SortOrder.desc },
 			};
 
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			await service.findAllOpenForTeacher(user.id, { skip, limit });
 
 			expect(spy).toHaveBeenCalledWith([], expectedOptions);
@@ -747,7 +747,7 @@ describe('TaskService', () => {
 
 		it('should compute status for task', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const task1 = helper.createTask(parent1.id);
 			const submission1 = helper.createSubmission(task1);
@@ -772,7 +772,7 @@ describe('TaskService', () => {
 
 		it('should compute status for multiple tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const parent2 = helper.createTaskParent(user.id);
 			const parent3 = helper.createTaskParent(user.id);
@@ -816,7 +816,7 @@ describe('TaskService', () => {
 
 		it('should compute status for multiple tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id);
 			const task1 = helper.createTask(parent1.id);
 
@@ -848,7 +848,7 @@ describe('TaskService', () => {
 		 */
 		it('should only pass parents where the user has write permissions', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(); // no write permissions
 
 			const tasks = [];
@@ -898,7 +898,7 @@ describe('TaskService', () => {
 
 		it('should return pagination promise', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 
 			const tasks = [];
 			const parents = [];
@@ -916,7 +916,7 @@ describe('TaskService', () => {
 
 		it('should find a list of tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent();
 			const task1 = helper.createTask(parent1.id);
 			const task2 = helper.createTask(parent1.id);
@@ -937,7 +937,7 @@ describe('TaskService', () => {
 
 		it('should return well formed tasks with parent and status', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent();
 			const task1 = helper.createTask(parent1.id);
 
@@ -957,7 +957,7 @@ describe('TaskService', () => {
 
 		it('should work for parents without tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent();
 
 			const tasks = [];
@@ -975,7 +975,7 @@ describe('TaskService', () => {
 
 		it('should find tasks from different parents', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent();
 			const parent2 = helper.createTaskParent();
 			const parent3 = helper.createTaskParent();
@@ -998,7 +998,7 @@ describe('TaskService', () => {
 
 		it('should work if no parent is matched', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 
 			const tasks = [];
 			const parents = [];
@@ -1015,7 +1015,7 @@ describe('TaskService', () => {
 
 		it('should pass pagination and order', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 
 			const tasks = [];
 			const parents = [];
@@ -1041,7 +1041,7 @@ describe('TaskService', () => {
 
 		it('should compute status for tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent();
 			const task1 = helper.createTask(parent1.id);
 			const submission1 = helper.createSubmission(task1);
@@ -1066,7 +1066,7 @@ describe('TaskService', () => {
 
 		it('should compute status for tasks', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent();
 			const parent2 = helper.createTaskParent();
 			const parent3 = helper.createTaskParent();
@@ -1113,7 +1113,7 @@ describe('TaskService', () => {
 		 */
 		it('should only pass parents where the user has no write permissions', async () => {
 			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as BaseEntity;
+			const user = helper.getFirstUser();
 			const parent1 = helper.createTaskParent(user.id); // write permissions
 
 			const tasks = [];
