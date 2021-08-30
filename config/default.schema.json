@@ -202,6 +202,16 @@
 					"default": false,
 					"description": "If enabled, school admins can allow students to create additional chat rooms"
 				},
+				"SCHOOL_SETTINGS_VISIBLE": {
+					"type": "boolean",
+					"default": false,
+					"description": "Only if enabled, school admins can activate the messenger in their school setting"
+				},
+				"SCHOOL_ROOM_ENABLED": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can choose to create a room for all students and teachers of the school"
+				},
 				"WELCOME_MESSAGE_ADMIN": {
 					"type": "string",
 					"description": "Greet new admin users with a personal message from the sync bot"
@@ -377,6 +387,21 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Custom School Policy can be uploaded by the school admin "
+		},
+		"ROCKETCHAT_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables chat function for the school."
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
