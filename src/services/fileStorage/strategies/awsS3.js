@@ -307,7 +307,9 @@ const createBucket = async (awsObject) => {
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
 		await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
 		await putBucketCors(awsObject);
-		await setBucketLifecycleConfiguration(awsObject);
+		if (Configuration.get('FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT') === true) {
+			await setBucketLifecycleConfiguration(awsObject);
+		}
 		return awsObject;
 	} catch (err) {
 		logger.error(`Error by creating the bucket ${awsObject.bucket}: ${err.code} ${err.message}`);
