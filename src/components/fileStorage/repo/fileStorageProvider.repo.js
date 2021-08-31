@@ -97,8 +97,9 @@ const moveFilesToTrashBatch = async (storageProvider, bucket, fileIds) => {
  * @param {*} fileName file name of the file that should be deleted
  */
 const deleteFile = async (storageProvider, bucket, fileName) => {
-	await storageProvider.deleteObject({ Bucket: bucket, Key: fileName }).promise();
-}
+	const storageProviderInstance = createStorageProviderInstance(storageProvider);
+	return storageProviderInstance.deleteObject({ Bucket: bucket, Key: fileName }).promise();
+};
 
 module.exports = {
 	private: {

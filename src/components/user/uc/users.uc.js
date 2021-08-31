@@ -193,17 +193,16 @@ const cleanupTrashbin = async () => {
 	const facades = ['/fileStorage/v2'];
 	for (const facadePath of facades) {
 		const facade = facadeLocator.facade(facadePath);
-		await facade.cleanupTrashbin(backupPeriodThreshold);
+		await facade.deleteExpiredData(backupPeriodThreshold);
 	}
 
-	return trashbinRepo.deleteExpiredData();
+	// await trashbinRepo.deleteExpiredData(backupPeriodThreshold);
+	await trashbinRepo.removeTrashbinDeletionFlags();
 };
 
 const getExpiredTrashbinDataByScope = trashbinRepo.getExpiredTrashbinDataByScope;
 
 const skipDeletionForTrashbinData = trashbinRepo.setDeletionSkipFlag;
-
-const removeTrashbinDeletionFlags = trashbinRepo.removeTrashinDeletionFlags;
 
 module.exports = {
 	getSchoolIdOfUser,
@@ -212,7 +211,6 @@ module.exports = {
 	getSchoolIdOfDeletedUser,
 	getExpiredTrashbinDataByScope,
 	skipDeletionForTrashbinData,
-	removeTrashbinDeletionFlags,
 	// following not to exported by facade
 	checkPermissions,
 	createUserTrashbin,

@@ -20,23 +20,19 @@ class UserFacade {
 	}
 
 	async cleanupTrashbin() {
-		return userUC.cleanupTrashbin();
+		return userUc.cleanupTrashbin();
 	}
 
 	async getSchoolIdOfDeletedUser(userId) {
 		return userUc.getSchoolIdOfDeletedUser(userId);
 	}
 
-	async getExpiredTrashbinDataByScope(scope) {
-		return userUc.getExpiredTrashbinDataByScope(scope);
+	async getExpiredTrashbinDataByScope(scope, backupPeriodThreshold) {
+		return userUc.getExpiredTrashbinDataByScope(scope, backupPeriodThreshold);
 	}
 
 	async skipDeletionForTrashbinData(trashbinId) {
 		return userUc.skipDeletionForTrashbinData(trashbinId);
-	}
-
-	async removeTrashbinDeletionFlags() {
-		return userUc.removeTrashbinDeletionFlags();
 	}
 }
 

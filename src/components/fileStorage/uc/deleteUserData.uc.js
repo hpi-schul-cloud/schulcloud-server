@@ -75,10 +75,10 @@ const removePersonalFiles = async (userId) => {
 	return { trashBinData, complete };
 };
 
-const deleteExpiredData = async () => {
+const deleteExpiredData = async (backupPeriodThreshold) => {
 	const userFacade = facadeLocator.facade('users/v2');
-	const filesToBeDeleted = userFacade.getExpiredTrashbinDataByScope('files');
-	for await (const file of filesToBeDeleted) {
+	const filesToBeDeleted = await userFacade.getExpiredTrashbinDataByScope('files', backupPeriodThreshold);
+	for (const file of filesToBeDeleted) {
 		try {
 			const userId = file.refOwnerModel === 'user' && file.owner;
 			if (!userId) {
@@ -95,7 +95,6 @@ const deleteExpiredData = async () => {
 			const bucketName = storageBucketName(schoolId);
 
 			const fileName = `expiring_${file.storageFileName}`;
-			info(`going to delete file #{fileName} in bucket #{bucketName}`);
 
 			await fileStorageProviderRepo.deleteFile(storageProvider, bucketName, fileName);
 		} catch (error) {

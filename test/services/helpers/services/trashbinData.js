@@ -6,6 +6,7 @@ const create = (opt) => async (data) => {
 	data = data || {};
 	data.userId = data.userId || opt.generateObjectId();
 	data.data = data.data || [];
+	data.skipDeletion = data.skipDeletion || false;
 
 	const trashbinObject = await trashbinModel.create(data);
 	createdTrashbinObjects.push(trashbinObject._id);
