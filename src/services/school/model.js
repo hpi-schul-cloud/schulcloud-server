@@ -9,6 +9,7 @@ const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
 const { countySchema } = require('../federalState/countyModel');
+const globals = require('../../../config/globals');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -25,6 +26,15 @@ const SCHOOL_FEATURES = {
 const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
 
 const defaultFeatures = [];
+
+const defaultStudentList =
+	globals.SC_THEME !== 'n21'
+		? {
+				teacher: {
+					STUDENT_LIST: true,
+				},
+		  }
+		: {};
 
 const rssFeedSchema = new Schema({
 	url: {
@@ -93,7 +103,10 @@ const schoolSchema = new Schema(
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
-		permissions: { type: Object },
+		permissions: {
+			type: Object,
+			default: defaultStudentList,
+		},
 		tombstoneUserId: {
 			type: Schema.Types.ObjectId,
 			ref: 'user',
