@@ -306,7 +306,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 
@@ -344,7 +344,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -365,7 +365,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -388,7 +388,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -405,7 +405,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -612,7 +612,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 
@@ -651,7 +651,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -672,7 +672,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -695,7 +695,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -712,7 +712,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -928,7 +928,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -947,7 +947,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
 			expect(result[0].task.getParent()).toBeDefined();
@@ -966,7 +966,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -989,7 +989,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -1006,7 +1006,7 @@ describe('TaskService', () => {
 			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
