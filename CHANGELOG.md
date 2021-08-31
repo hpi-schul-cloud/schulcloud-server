@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store 
 - BC-119 - remove malfunction S3 lifecycle migration
+- BC-121 - add script to cleanup trashbin data including S3 data
 
 ## 26.9.1
 
