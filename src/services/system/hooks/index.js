@@ -28,7 +28,10 @@ exports.before = {
 	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
 	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
 	create: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_CREATE')), encryptSecret],
-	update: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')), encryptSecret],
+	update: [
+		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
+		encryptSecret,
+	],
 	patch: [
 		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
 		encryptSecret,
