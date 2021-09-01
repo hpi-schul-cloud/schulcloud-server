@@ -107,6 +107,7 @@ const fileSchema = new Schema({
 
 enableAuditLog(fileSchema);
 
+// TODO add deleted flag in indexes
 /*
 query list with bigges impact of database load
 schulcloud.files               find         {"name": 1, "parent": 1}  -> 1 is split up in parent and name to try it out

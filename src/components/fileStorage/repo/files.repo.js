@@ -13,15 +13,6 @@ const isNotDeletedQuery = () => {
 	return andQuery;
 };
 
-const isDeletedQuery = () => {
-	const andQuery = {
-		deletedAt: {
-			$exists: true,
-		},
-	};
-	return andQuery;
-};
-
 /**
  *
  * @param {Date} date
@@ -52,7 +43,6 @@ const permissionSearchBaseQuery = (userId) => ({
 });
 
 const byUserBaseQuery = (userId) => ({
-	// TODO integrate not deleted here?
 	refOwnerModel: 'user',
 	owner: userId,
 });
@@ -63,7 +53,17 @@ const notDeletedFilesByUserPermissionQuery = (userId) => ({
 	$and: [permissionSearchBaseQuery(userId), isNotDeletedQuery],
 });
 
-const getFileById = async (id) => FileModel.findById(id).lean().exec();
+/**
+ * should return the file or null if not found
+ * TODO throw not found instead of null?
+ * @param {*} id
+ * @returns
+ */
+const getFileById = async (id) => {
+	const query = { $and: [{ _id: id }, isNotDeletedQuery] };
+	const result = await FileModel.findOne(query).lean().exec();
+	return result;
+};
 
 /**
  * @param {BSON|BSONString} userId
@@ -125,7 +125,7 @@ const removeFilePermissionsByUserId = async (userId) => {
 		throw new AssertionError(missingParameters({ userId }));
 	}
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
-	const result = await FileModel.updateMany(permissionSearchBaseQuery(userId), updateQuery).lean().exec();
+	const result = await FileModel.updateMany(notDeletedFilesByUserPermissionQuery(userId), updateQuery).lean().exec();
 	const { success } = updateManyResult(result);
 	return success;
 };
