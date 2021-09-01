@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Fixed
 
+- remove broken systemid from seed data
+- SC-9083 - expose env variables for school administration
 - BC-44 - remove JWT_WHITELIST_ACCEPT_ALL feature flag
 - BC-44 - integrate jwt whitelist check in nestjs jwt authentication
 - BC-42 - cycle detection in role inheritance
