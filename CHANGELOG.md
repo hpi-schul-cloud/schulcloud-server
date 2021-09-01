@@ -21,6 +21,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-119 - remove malfunction S3 lifecycle migration
 - BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 
+## [26.9.2] - 2021-08-27
+
+### Changed
+
+- BC-137 - fix bug with display of Blue Bar
+
 ## 26.9.1
 
 - SC-9192 - enable cors for nestjs app routes
