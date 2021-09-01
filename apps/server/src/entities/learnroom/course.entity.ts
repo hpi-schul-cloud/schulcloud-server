@@ -24,10 +24,10 @@ const DEFAULT = {
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.name })
-	name: string;
+	name: string = DEFAULT.name;
 
 	@Property({ default: DEFAULT.description })
-	description: string;
+	description: string = DEFAULT.description;
 
 	@Index()
 	@Property()
@@ -47,7 +47,7 @@ export class Course extends BaseEntityWithTimestamps {
 
 	// TODO: string color format
 	@Property({ default: DEFAULT.color })
-	color!: string;
+	color: string = DEFAULT.color;
 
 	constructor(props: ICourseProperties) {
 		super();
@@ -70,9 +70,9 @@ export class Course extends BaseEntityWithTimestamps {
 	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {
 		return {
 			id: this.id,
-			name: this.name || DEFAULT.name,
-			description: this.description || DEFAULT.description,
-			color: this.color || DEFAULT.color,
+			name: this.name,
+			description: this.description,
+			color: this.color,
 		};
 	}
 
