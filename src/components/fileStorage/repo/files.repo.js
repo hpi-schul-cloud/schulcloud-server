@@ -117,6 +117,7 @@ const getFilesWithUserPermissionsByUserId = async (userId) => {
 };
 
 /**
+ * removes users permissions on files for a given user
  * @param {BSON|BSONString} userId
  * @return {boolean} success
  */
