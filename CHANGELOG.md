@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store 
 - BC-119 - remove malfunction S3 lifecycle migration
+- BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 
 ## [26.9.2] - 2021-08-27
 
