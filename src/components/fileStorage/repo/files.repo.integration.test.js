@@ -29,22 +29,36 @@ describe('files.repo.integration.test', () => {
 	});
 
 	describe('getFileById', () => {
-		it('when file with given id exists the file gets returned', async () => {
-			const fileOwnerId = generateObjectId();
-			const file = await fileTestUtils.create({ owner: fileOwnerId });
+		describe('when a file is created and persisted', () => {
+			let fileOwnerId;
+			let file;
 
-			const result = await getFileById(file._id);
+			beforeEach(async () => {
+				fileOwnerId = generateObjectId();
+				file = await fileTestUtils.create({ owner: fileOwnerId });
+			});
 
-			expect(result._id).to.eql(file._id);
-			expect(result.owner).to.eql(fileOwnerId);
-		});
+			it('should read the file from persistence by valid id', async () => {
+				const result = await getFileById(file._id);
+				expect(result._id).to.eql(file._id);
+				expect(result.owner).to.eql(fileOwnerId);
+			});
 
-		it('when file with given id does not exist null gets returned', async () => {
-			const randomId = generateObjectId();
+			it('should resolve with null for invalid ids', async () => {
+				const randomId = generateObjectId();
+				// todo not found
+				const result = await getFileById(randomId);
+				expect(result).to.be.null;
+			});
 
-			const result = await getFileById(randomId);
+			describe('when the created file has been deleted', async () => {
+				it('should not be returned', async () => {
+					const deletedFile = await fileTestUtils.create({ owner: fileOwnerId, deletedAt: Date.now() });
 
-			expect(result).to.be.null;
+					const result = await getFileById(deletedFile._id);
+					expect(result).to.be.null;
+				});
+			});
 		});
 	});
 
