@@ -100,6 +100,7 @@ const fileSchema = new Schema({
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
+	deletedAt: { type: Date },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
