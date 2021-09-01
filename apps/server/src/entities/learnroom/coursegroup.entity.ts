@@ -10,7 +10,7 @@ export interface ICoursegroupProperties {
 @Entity({ tableName: 'coursegroups' })
 export class Coursegroup extends BaseEntityWithTimestamps {
 	@Property({ fieldName: 'userIds' })
-	studentIds: ObjectId[];
+	studentIds: ObjectId[] = [];
 
 	@Property()
 	courseId: ObjectId;
