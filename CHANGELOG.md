@@ -20,6 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-81 - remove old Lern-Store 
 - BC-119 - remove malfunction S3 lifecycle migration
 - BC-120 - add feature flag for S3 CORS
+- BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 
 ## 26.9.1
 
