@@ -14,7 +14,7 @@ const isNotDeletedQuery = () => {
 };
 
 /**
- *
+ * TODO integrate
  * @param {Date} date
  * @returns
  */
