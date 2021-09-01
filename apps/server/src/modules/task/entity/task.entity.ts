@@ -38,7 +38,7 @@ export class Task extends BaseEntityWithTimestamps {
 	private: boolean;
 
 	@Property({ fieldName: 'courseId' })
-	parentId?: ObjectId;
+	parentId: ObjectId;
 
 	@ManyToOne({ fieldName: 'lessonId' })
 	lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
@@ -57,8 +57,8 @@ export class Task extends BaseEntityWithTimestamps {
 		Object.assign(this, { lesson });
 	}
 
-	getParentId(): EntityId | undefined {
-		return this.parentId?.toHexString();
+	getParentId(): EntityId {
+		return this.parentId.toHexString();
 	}
 
 	getName(): string {
@@ -80,7 +80,10 @@ export class Task extends BaseEntityWithTimestamps {
 
 	setParent(parent: ITaskParent | undefined): void {
 		this.parent = parent;
-		this.parentId = parent ? new ObjectId(parent.id) : undefined;
+		if (parent) {
+			this.parentId = new ObjectId(parent.id);
+		}
+		
 	}
 
 	getParent(): ITaskParent | undefined {

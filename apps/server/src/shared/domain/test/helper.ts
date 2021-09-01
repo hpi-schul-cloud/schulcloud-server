@@ -28,8 +28,8 @@ export abstract class TestHelper<SchoolType> {
 
 	abstract createSchool(): SchoolType;
 
-	createId(): ObjectId {
-		const id = new ObjectId();
+	createId(entityId?: EntityId): ObjectId {
+		const id = new ObjectId(entityId);
 		return id;
 	}
 
