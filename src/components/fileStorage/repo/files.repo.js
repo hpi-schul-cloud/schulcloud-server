@@ -4,14 +4,11 @@ const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
 
-const isNotDeletedQuery = () => {
-	const andQuery = {
-		deletedAt: {
-			$exists: false,
-		},
-	};
-	return andQuery;
-};
+const isNotDeletedQuery = ({
+	deletedAt: {
+		$exists: false,
+	},
+});
 
 /**
  * TODO integrate
@@ -59,11 +56,7 @@ const notDeletedFilesByUserPermissionQuery = (userId) => ({
  * @param {*} id
  * @returns
  */
-const getFileById = async (id) => {
-	const query = { $and: [{ _id: id }, isNotDeletedQuery] };
-	const result = await FileModel.findOne(query).lean().exec();
-	return result;
-};
+const getFileById = async (id) => FileModel.findById(id).lean().exec();
 
 /**
  * @param {BSON|BSONString} userId
@@ -86,7 +79,8 @@ const removePersonalFilesByUserId = async (userId) => {
 		throw new AssertionError(missingParameters({ userId }));
 	}
 	const query = notDeletedFilesByUserQuery(userId);
-	const deleteResult = await FileModel.deleteMany(query).lean().exec();
+	const currentDate = new Date();
+	const deleteResult = await FileModel.updateMany(query, {deletedAt: currentDate}).lean().exec();
 	const { success } = updateManyResult(deleteResult);
 	return success;
 };
@@ -132,9 +126,10 @@ const removeFilePermissionsByUserId = async (userId) => {
 };
 
 module.exports = {
-	getFileById,
 	getPersonalFilesByUserId,
 	removePersonalFilesByUserId,
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
+	// only to be used for testing
+	getFileById,
 };

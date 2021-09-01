@@ -22,7 +22,7 @@ const create = async ({
 	refId,
 	additonalPermissions,
 	isDirectory = false,
-	deletedAt = null,
+	deletedAt = undefined,
 } = {}) => {
 	const data = {
 		isDirectory,
