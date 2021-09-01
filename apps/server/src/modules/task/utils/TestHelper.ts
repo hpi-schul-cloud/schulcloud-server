@@ -5,16 +5,16 @@ import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDes
 export class TaskParentTestEntity implements ITaskParent {
 	id: EntityId;
 
+	user: EntityId | undefined;
+
 	constructor(userIdWithWritePermissions?: EntityId) {
-		this.hasWritePermission = (userId: EntityId): boolean => {
-			const hasWritePermission = userIdWithWritePermissions === userId;
-			return hasWritePermission;
-		};
+		this.user = userIdWithWritePermissions;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	hasWritePermission(userId: EntityId): boolean {
-		return false;
+		const hasWritePermission = this.user !== undefined ? this.user === userId : false;
+		return hasWritePermission;
 	}
 
 	getDescriptions(): IParentDescriptionsProperties {

@@ -83,7 +83,6 @@ export class Task extends BaseEntityWithTimestamps {
 		if (parent) {
 			this.parentId = new ObjectId(parent.id);
 		}
-		
 	}
 
 	getParent(): ITaskParent | undefined {

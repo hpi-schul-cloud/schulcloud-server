@@ -1,7 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
-import { EntityId } from '@shared/domain';
-
 import { LearnroomTestHelper } from './testHelper';
 import { Course } from './course.entity';
 
