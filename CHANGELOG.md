@@ -9,20 +9,38 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## 26.9.2
+- remove broken systemid from seed data
+- SC-9083 - expose env variables for school administration
+- BC-44 - remove JWT_WHITELIST_ACCEPT_ALL feature flag
+- BC-44 - integrate jwt whitelist check in nestjs jwt authentication
+- BC-42 - cycle detection in role inheritance
+- BC-64 - enable e2e test execution for push event on main branch
+- BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
+- BC-37 - BC-54 - reduce resource consumption for deployed server
+- BC-81 - remove old Lern-Store 
+- BC-119 - remove malfunction S3 lifecycle migration
 
-- BC-106 - exit maintenance & change school year for LDAP schools on Boss and NBC
+## [26.9.2] - 2021-08-27
+
+### Changed
+
+- BC-137 - fix bug with display of Blue Bar
 
 ## 26.9.1
 
 - SC-9192 - enable cors for nestjs app routes
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9130 - use whiltelisted filenames at the s3 file storage backend
 
 ## 26.9.0
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
+
+### Changed
+
+- OPS-2491 - Change the hydra service url
 
 ## 26.8.0
 

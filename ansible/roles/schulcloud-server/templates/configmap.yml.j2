@@ -57,7 +57,7 @@ data:
   PORT: "{{ PORT_SERVER }}"
   TZ: "Europe/Berlin"
   IGNORE_DISCOVERABILITY: "{{ IGNORE_DISCOVERABILITY|default("true", true) }}"
-  HYDRA_URI: "{{ HYDRA_URI|default("https://hydra-host:4445", true) }}"
+  HYDRA_URI: "{{ HYDRA_URI|default("https://hydra-svc:4445", true) }}"
   DISPLAY_REQUEST_LEVEL: "{{ DISPLAY_REQUEST_LEVEL|default("-1", true) }}"
   # Consent Mindestalter
   CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: "{{ CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS|default("16", true) }}"
@@ -86,7 +86,6 @@ data:
   # notification
   NOTIFICATION_PLATFORM: "{{ NOTIFICATION_PLATFORM }}"
   NOTIFICATION_URI: "{{ NOTIFICATION_URI }}"
-  JWT_WHITELIST_ACCEPT_ALL: "{{ JWT_WHITELIST_ACCEPT_ALL }}"
   JWT_TIMEOUT_SECONDS: "{{ JWT_TIMEOUT_SECONDS|default("7200", true) }}"
   SKIP_CONDITIONS_CONSENT: "{{ SKIP_CONDITIONS_CONSENT|default("", true) }}"
 {% if FEATURE_TSP_ENABLED %}
