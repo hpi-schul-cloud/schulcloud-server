@@ -5,7 +5,7 @@ import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDes
 export class TaskParentTestEntity implements ITaskParent {
 	id: EntityId;
 
-	user: EntityId | undefined;
+	user?: EntityId;
 
 	constructor(userIdWithWritePermissions?: EntityId) {
 		this.user = userIdWithWritePermissions;
@@ -41,7 +41,7 @@ export class TaskTestHelper extends TestHelper<EntityId> {
 		return user;
 	}
 
-	createTaskParent(userIdWithWritePermissions?: EntityId): ITaskParent {
+	createTaskParent(userIdWithWritePermissions?: EntityId): TaskParentTestEntity {
 		const parent = new TaskParentTestEntity(userIdWithWritePermissions);
 		parent.id = this.createEntityId();
 		return parent;
