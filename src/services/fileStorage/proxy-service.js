@@ -2,6 +2,7 @@ const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { filesRepo } = require('../../components/fileStorage/repo');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
@@ -227,7 +228,8 @@ const fileStorageService = {
 
 		return parentPromise
 			.then(() =>
-				FileModel.find({ owner, parent: parent || { $exists: false } })
+				// TODO cleanup query
+				FileModel.find({ owner, parent: parent || { $exists: false }, deletedAt: { $exists: false } })
 					.lean()
 					.exec()
 			)
@@ -249,29 +251,25 @@ const fileStorageService = {
 	 * @param requestData, contains query parameters and userId/storageType set by middleware
 	 * @returns {Promise}
 	 */
-	remove(id, { query, payload }) {
-		const { userId, fileStorageType } = payload;
+	async remove(id, { query, payload }) {
+		const { userId } = payload;
 		const { _id = id } = query;
-		const fileInstance = FileModel.findOne({ _id });
 
-		return fileInstance
-			.lean()
-			.exec()
-			.then((file) => {
-				if (!file) {
-					throw new NotFound();
-				}
+		// check file exists
+		await filesRepo.getFileById(_id);
+		// check permissions
+		try {
+			await canDelete(userId, _id);
+		} catch (err) {
+			throw new Forbidden();
+		}
+		// remove file for user
+		await filesRepo.removeFileById(_id);
 
-				return Promise.all([
-					file,
-					canDelete(userId, _id).catch(() => {
-						throw new Forbidden();
-					}),
-				]);
-			})
-			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => fileInstance.remove().lean().exec())
-			.catch((err) => err);
+		// TODO move to job
+		// 	.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
+		// 	.then(() => fileInstance.remove().lean().exec())
+		// 	.catch((err) => err);
 	},
 	/**
 	 * Move file from one parent to another

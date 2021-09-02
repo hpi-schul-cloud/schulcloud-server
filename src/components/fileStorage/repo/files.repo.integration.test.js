@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { filesRepo } = require('.');
 
 const {
-	getFileById,
+	getFileOrDeletedFileById,
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 	getPersonalFilesByUserId,
@@ -28,7 +28,7 @@ describe('files.repo.integration.test', () => {
 		await server.close();
 	});
 
-	describe('getFileById', () => {
+	describe('getFileOrDeletedFileById', () => {
 		describe('when a file is created and persisted', () => {
 			let fileOwnerId;
 			let file;
@@ -39,7 +39,7 @@ describe('files.repo.integration.test', () => {
 			});
 
 			it('should read the file from persistence by valid id', async () => {
-				const result = await getFileById(file._id);
+				const result = await getFileOrDeletedFileById(file._id);
 				expect(result._id).to.eql(file._id);
 				expect(result.owner).to.eql(fileOwnerId);
 			});
@@ -47,7 +47,7 @@ describe('files.repo.integration.test', () => {
 			it('should resolve with null for invalid ids', async () => {
 				const randomId = generateObjectId();
 				// todo not found
-				const result = await getFileById(randomId);
+				const result = await getFileOrDeletedFileById(randomId);
 				expect(result).to.be.null;
 			});
 		});
@@ -103,7 +103,7 @@ describe('files.repo.integration.test', () => {
 				const success = await removePersonalFilesByUserId(userId);
 
 				expect(success).to.be.true;
-				const otherFileAfterDeletion = await getFileById(otherFile._id);
+				const otherFileAfterDeletion = await getFileOrDeletedFileById(otherFile._id);
 				expect(otherFileAfterDeletion).to.be.not.null;
 			});
 		});
@@ -120,8 +120,8 @@ describe('files.repo.integration.test', () => {
 
 				expect(success).to.be.true;
 				const [file1AfterDeletion, file2AfterDeletion] = await Promise.all([
-					getFileById(file1._id),
-					getFileById(file2._id),
+					getFileOrDeletedFileById(file1._id),
+					getFileOrDeletedFileById(file2._id),
 				]);
 				expect(file1AfterDeletion).to.have.property('deletedAt');
 				expect(file2AfterDeletion).to.have.property('deletedAt');
@@ -137,7 +137,7 @@ describe('files.repo.integration.test', () => {
 				const success = await removePersonalFilesByUserId(fileOwnerId);
 
 				expect(success).to.be.true;
-				const fileAfterDeletion = await getFileById(file._id);
+				const fileAfterDeletion = await getFileOrDeletedFileById(file._id);
 				expect(fileAfterDeletion.deletedAt).to.deep.equal(deletedAt);
 			});
 		});
@@ -156,7 +156,8 @@ describe('files.repo.integration.test', () => {
 
 				const result = await getFilesWithUserPermissionsByUserId(userId);
 				expect(result).to.be.an('array').with.lengthOf(1);
-				expect(result[0].permissions.every((permission) => permission.refId.toString() === userId.toString())).to.be.true;
+				expect(result[0].permissions.every((permission) => permission.refId.toString() === userId.toString())).to.be
+					.true;
 			});
 			it('returns only the files that are shared with the user', async () => {
 				const userId = generateObjectId();
@@ -181,7 +182,7 @@ describe('files.repo.integration.test', () => {
 
 				const result = await getFilesWithUserPermissionsByUserId(userId);
 				expect(result).to.be.an('array').with.lengthOf(0);
-			})
+			});
 		});
 
 		describe('when there is no file shared with the user', () => {
@@ -205,7 +206,7 @@ describe('files.repo.integration.test', () => {
 			const result = await removeFilePermissionsByUserId(userId);
 			expect(result).to.be.true;
 
-			const sharedFileCheck = await filesRepo.getFileById(sharedFile._id);
+			const sharedFileCheck = await filesRepo.getFileOrDeletedFileById(sharedFile._id);
 			expect(sharedFileCheck.permissions.some((permission) => permission.refId.toString() === userId.toString())).to.be
 				.false;
 		});

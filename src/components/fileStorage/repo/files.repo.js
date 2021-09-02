@@ -3,12 +3,13 @@ const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
+const { NotFound } = require('../../../errors');
 
-const isNotDeletedQuery = ({
+const isNotDeletedQuery = {
 	deletedAt: {
 		$exists: false,
 	},
-});
+};
 
 /**
  * TODO integrate
@@ -44,6 +45,8 @@ const byUserBaseQuery = (userId) => ({
 	owner: userId,
 });
 
+const notDeletedFileByFileId = (fileId) => ({ $and: [{ _id: fileId }, isNotDeletedQuery] });
+
 const notDeletedFilesByUserQuery = (userId) => ({ $and: [byUserBaseQuery(userId), isNotDeletedQuery] });
 
 const notDeletedFilesByUserPermissionQuery = (userId) => ({
@@ -51,12 +54,26 @@ const notDeletedFilesByUserPermissionQuery = (userId) => ({
 });
 
 /**
- * should return the file or null if not found
- * TODO throw not found instead of null?
+ * returns not deleted file by id, throws not found
  * @param {*} id
  * @returns
  */
-const getFileById = async (id) => FileModel.findById(id).lean().exec();
+const getFileById = async (id) => {
+	const file = FileModel.findOne(notDeletedFileByFileId(id)).lean().exec();
+	if (file == null) {
+		throw new NotFound();
+	}
+	return file;
+};
+
+/**
+ * resolves all files including deleted ones
+ * @param {*} id
+ * @returns
+ */
+const getFileOrDeletedFileById = async (id) => FileModel.findById(id).lean().exec();
+
+const removeFileById = async (id) => FileModel.findByIdAndUpdate(id, { deletedAt: new Date() });
 
 /**
  * @param {BSON|BSONString} userId
@@ -80,7 +97,7 @@ const removePersonalFilesByUserId = async (userId) => {
 	}
 	const query = notDeletedFilesByUserQuery(userId);
 	const currentDate = new Date();
-	const deleteResult = await FileModel.updateMany(query, {deletedAt: currentDate}).lean().exec();
+	const deleteResult = await FileModel.updateMany(query, { deletedAt: currentDate }).lean().exec();
 	const { success } = updateManyResult(deleteResult);
 	return success;
 };
@@ -129,7 +146,9 @@ module.exports = {
 	getPersonalFilesByUserId,
 	removePersonalFilesByUserId,
 	getFilesWithUserPermissionsByUserId,
+	removeFileById,
 	removeFilePermissionsByUserId,
 	// only to be used for testing
 	getFileById,
+	getFileOrDeletedFileById,
 };
