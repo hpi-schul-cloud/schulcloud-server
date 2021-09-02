@@ -59,7 +59,7 @@ const notDeletedFilesByUserPermissionQuery = (userId) => ({
  * @returns
  */
 const getFileById = async (id) => {
-	const file = FileModel.findOne(notDeletedFileByFileId(id)).lean().exec();
+	const file = await FileModel.findOne(notDeletedFileByFileId(id)).lean().exec();
 	if (file == null) {
 		throw new NotFound();
 	}
