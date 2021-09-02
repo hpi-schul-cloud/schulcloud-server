@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * DTO for returning a task document via api.
@@ -10,10 +10,10 @@ export class TaskResponse {
 	@ApiProperty()
 	duedate?: Date;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	courseName?: string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	displayColor?: string;
 
 	@ApiProperty()
@@ -26,7 +26,7 @@ export class TaskResponse {
 	updatedAt: Date;
 
 	@ApiProperty()
-	status?: {
+	status: {
 		submitted?: number;
 		maxSubmissions?: number;
 		graded?: number;
