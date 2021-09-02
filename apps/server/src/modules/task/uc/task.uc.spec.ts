@@ -42,11 +42,8 @@ describe('TaskService', () => {
 						findAll() {
 							throw new Error('Please write a mock for TaskRepo.findAll.');
 						},
-						findAllCurrentByIds() {
-							throw new Error('Please write a mock for TaskRepo.findAllCurrentByIds.');
-						},
-						findAllCurrentIgnoreIds() {
-							throw new Error('Please write a mock for TaskRepo.findAllCurrentIgnoreIds.');
+						findAllCurrent() {
+							throw new Error('Please write a mock for TaskRepo.findAllCurrent.');
 						},
 					},
 				},
@@ -87,14 +84,8 @@ describe('TaskService', () => {
 	};
 
 	const setTaskRepoMock = {
-		findAllCurrentByIds: (data: Task[] = []) => {
-			const spy = jest.spyOn(taskRepo, 'findAllCurrentByIds').mockImplementation(() => {
-				return Promise.resolve([data, data.length]);
-			});
-			return spy;
-		},
-		findAllCurrentIgnoreIds: (data: Task[] = []) => {
-			const spy = jest.spyOn(taskRepo, 'findAllCurrentIgnoreIds').mockImplementation(() => {
+		findAllCurrent: (data: Task[] = []) => {
+			const spy = jest.spyOn(taskRepo, 'findAllCurrent').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
 			});
 			return spy;
@@ -118,20 +109,14 @@ describe('TaskService', () => {
 	};
 
 	const setTaskUCMock = {
-		findAllOpenForTeacher: () => {
-			const spy = jest.spyOn(service, 'findAllOpenForTeacher').mockImplementation(() => {
+		findAllForTeacher: () => {
+			const spy = jest.spyOn(service, 'findAllForTeacher').mockImplementation(() => {
 				return Promise.resolve([[], 0]);
 			});
 			return spy;
 		},
-		findAllOpenForStudent: () => {
-			const spy = jest.spyOn(service, 'findAllOpenForStudent').mockImplementation(() => {
-				return Promise.resolve([[], 0]);
-			});
-			return spy;
-		},
-		findAllCompletedForStudent: () => {
-			const spy = jest.spyOn(service, 'findAllCompletedForStudent').mockImplementation(() => {
+		findAllForStudent: () => {
+			const spy = jest.spyOn(service, 'findAllForStudent').mockImplementation(() => {
 				return Promise.resolve([[], 0]);
 			});
 			return spy;
@@ -142,70 +127,9 @@ describe('TaskService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('findAllOpen', () => {
-		const findAllOpenMock = () => {
-			const spy1 = setTaskUCMock.findAllOpenForTeacher();
-			const spy2 = setTaskUCMock.findAllOpenForStudent();
-
-			const mockRestore = () => {
-				spy1.mockRestore();
-				spy2.mockRestore();
-			};
-
-			return mockRestore;
-		};
-
-		it('should throw if no permission exist', async () => {
-			const permissions = [];
-			const { currentUser } = createCurrentTestUser(permissions);
-
-			const mockRestore = findAllOpenMock();
-
-			const paginationQuery = new PaginationQuery();
-			const action = async () => service.findAllOpen(currentUser, paginationQuery);
-			await expect(action()).rejects.toThrow();
-
-			mockRestore();
-		});
-
-		it(`should pass if ${TaskDashBoardPermission.studentDashboard} flag exist and call findAllOpenForStudent.`, async () => {
-			const permissions = [TaskDashBoardPermission.studentDashboard];
-			const { currentUser } = createCurrentTestUser(permissions);
-
-			const mockRestore = findAllOpenMock();
-			const spy = setTaskUCMock.findAllOpenForStudent();
-
-			const paginationQuery = new PaginationQuery();
-			const result = await service.findAllOpen(currentUser, paginationQuery);
-
-			expect(result).toEqual([[], 0]);
-			expect(spy).toBeCalledTimes(1);
-
-			spy.mockRestore();
-			mockRestore();
-		});
-
-		it(`should pass if ${TaskDashBoardPermission.teacherDashboard} flag exist and call findAllOpenForTeacher.`, async () => {
-			const permissions = [TaskDashBoardPermission.teacherDashboard];
-			const { currentUser } = createCurrentTestUser(permissions);
-
-			const mockRestore = findAllOpenMock();
-			const spy = setTaskUCMock.findAllOpenForTeacher();
-
-			const paginationQuery = new PaginationQuery();
-			const result = await service.findAllOpen(currentUser, paginationQuery);
-
-			expect(result).toEqual([[], 0]);
-			expect(spy).toBeCalledTimes(1);
-
-			spy.mockRestore();
-			mockRestore();
-		});
-	});
-
-	describe('findAllCompleted', () => {
-		const findAllCompletedMock = () => {
-			const spy1 = setTaskUCMock.findAllCompletedForStudent();
+	describe('findAll', () => {
+		const findAllMock = () => {
+			const spy1 = setTaskUCMock.findAllForStudent();
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -218,24 +142,24 @@ describe('TaskService', () => {
 			const permissions = [];
 			const { currentUser } = createCurrentTestUser(permissions);
 
-			const mockRestore = findAllCompletedMock();
+			const mockRestore = findAllMock();
 
 			const paginationQuery = new PaginationQuery();
-			const action = async () => service.findAllCompleted(currentUser, paginationQuery);
+			const action = async () => service.findAll(currentUser, paginationQuery);
 			await expect(action()).rejects.toThrow();
 
 			mockRestore();
 		});
 
-		it(`should pass if ${TaskDashBoardPermission.studentDashboard} flag exist and call findAllCompletedForStudent.`, async () => {
+		it(`should pass if ${TaskDashBoardPermission.studentDashboard} flag exist and call findAllForStudent.`, async () => {
 			const permissions = [TaskDashBoardPermission.studentDashboard];
 			const { currentUser } = createCurrentTestUser(permissions);
 
-			const mockRestore = findAllCompletedMock();
-			const spy = setTaskUCMock.findAllCompletedForStudent();
+			const mockRestore = findAllMock();
+			const spy = setTaskUCMock.findAllForStudent();
 
 			const paginationQuery = new PaginationQuery();
-			const result = await service.findAllCompleted(currentUser, paginationQuery);
+			const result = await service.findAll(currentUser, paginationQuery);
 
 			expect(result).toEqual([[], 0]);
 			expect(spy).toBeCalledTimes(1);
@@ -248,25 +172,21 @@ describe('TaskService', () => {
 			const permissions = [TaskDashBoardPermission.teacherDashboard];
 			const { currentUser } = createCurrentTestUser(permissions);
 
-			const mockRestore = findAllCompletedMock();
+			const mockRestore = findAllMock();
 
 			const paginationQuery = new PaginationQuery();
-			const action = async () => service.findAllCompleted(currentUser, paginationQuery);
+			const action = async () => service.findAll(currentUser, paginationQuery);
 			await expect(action()).rejects.toThrow();
 
 			mockRestore();
 		});
 	});
 
-	describe('findAllOpenForStudent', () => {
-		const findAllOpenForStudentMocks = (
-			parents: TaskParentTestEntity[],
-			tasks: Task[],
-			submissions: Submission[] = []
-		) => {
+	describe('findAllForStudent', () => {
+		const findAllForStudentMocks = (parents: TaskParentTestEntity[], tasks: Task[], submissions: Submission[] = []) => {
 			const spy1 = setParentRepoMock.findAllByUserId(parents);
 			const spy2 = setSubmissionRepoMock.findAllByUserId(submissions);
-			const spy3 = setTaskRepoMock.findAllCurrentIgnoreIds(tasks);
+			const spy3 = setTaskRepoMock.findAllCurrent(tasks);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -282,11 +202,11 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [result, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(count).toEqual(0);
@@ -302,11 +222,11 @@ describe('TaskService', () => {
 			const tasks = [task1];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 
@@ -321,11 +241,11 @@ describe('TaskService', () => {
 			const tasks = [task1];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
 			expect(result[0].task.getParent()).toBeDefined();
@@ -340,11 +260,11 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -361,11 +281,11 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -384,11 +304,11 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const parents = [parent1, parent2, parent3];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -401,11 +321,11 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -418,8 +338,8 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks);
-			const spy = setTaskRepoMock.findAllCurrentIgnoreIds([]);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
+			const spy = setTaskRepoMock.findAllCurrent([]);
 
 			const skip = 0;
 			const limit = 10;
@@ -430,9 +350,9 @@ describe('TaskService', () => {
 			};
 
 			const user = helper.getFirstUser();
-			await service.findAllOpenForStudent(user.id, { skip, limit });
+			await service.findAllForStudent(user.id, { skip, limit });
 
-			expect(spy).toHaveBeenCalledWith([], [], expectedOptions);
+			expect(spy).toHaveBeenCalledWith([], expectedOptions);
 
 			mockRestore();
 			spy.mockRestore();
@@ -448,11 +368,11 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [submission1];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -480,11 +400,11 @@ describe('TaskService', () => {
 			const parents = [parent1, parent2, parent3];
 			const submissions = [submission1, submission3];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -520,11 +440,11 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [submission1, submission2, submission3];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [result, count] = await service.findAllOpenForStudent(user.id, paginationQuery);
+			const [result, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 			expect(result[0].status).toEqual({
@@ -548,29 +468,25 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [];
 
-			const mockRestore = findAllOpenForStudentMocks(parents, tasks, submissions);
-			const spy = setTaskRepoMock.findAllCurrentIgnoreIds();
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
+			const spy = setTaskRepoMock.findAllCurrent();
 
 			const paginationQuery = new PaginationQuery();
-			await service.findAllOpenForStudent(user.id, paginationQuery);
+			await service.findAllForStudent(user.id, paginationQuery);
 
 			const expectedOptions: IFindOptions<Task> = {
 				pagination: { skip: 0, limit: 10 },
 				order: { dueDate: SortOrder.asc },
 			};
 			const noParents = [];
-			expect(spy).toHaveBeenCalledWith(noParents, [], expectedOptions);
+			expect(spy).toHaveBeenCalledWith(noParents, expectedOptions);
 
 			mockRestore();
 		});
 	});
 
-	describe('findAllOpenForTeacher', () => {
-		const findAllOpenForTeacherMocks = (
-			parents: TaskParentTestEntity[],
-			tasks: Task[],
-			submissions: Submission[] = []
-		) => {
+	describe('findAllForTeacher', () => {
+		const findAllForTeacherMocks = (parents: TaskParentTestEntity[], tasks: Task[], submissions: Submission[] = []) => {
 			const spy1 = setParentRepoMock.findAllByUserId(parents);
 			const spy2 = setSubmissionRepoMock.findAllByTaskIds(submissions);
 			const spy3 = setTaskRepoMock.findAll(tasks);
@@ -589,10 +505,10 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [result, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(count).toEqual(0);
@@ -609,10 +525,10 @@ describe('TaskService', () => {
 			const tasks = [task1];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 
@@ -628,11 +544,11 @@ describe('TaskService', () => {
 			const tasks = [task1];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 
-			const [result] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [result] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 10, graded: 0 } });
 			expect(result[0].task.getParent()).toBeDefined();
@@ -648,10 +564,10 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -669,10 +585,10 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const parents = [parent1];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -692,10 +608,10 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const parents = [parent1, parent2, parent3];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -708,11 +624,11 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
 			const user = helper.getFirstUser();
-			const [, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -725,7 +641,7 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks);
+			const mockRestore = findAllForTeacherMocks(parents, tasks);
 			const spy = setTaskRepoMock.findAll([]);
 
 			const skip = 0;
@@ -737,7 +653,7 @@ describe('TaskService', () => {
 			};
 
 			const user = helper.getFirstUser();
-			await service.findAllOpenForTeacher(user.id, { skip, limit });
+			await service.findAllForTeacher(user.id, { skip, limit });
 
 			expect(spy).toHaveBeenCalledWith([], expectedOptions);
 
@@ -756,10 +672,10 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [submission1];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks, submissions);
+			const mockRestore = findAllForTeacherMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [result] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -788,10 +704,10 @@ describe('TaskService', () => {
 			const parents = [parent1, parent2, parent3];
 			const submissions = [submission1, submission3];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks, submissions);
+			const mockRestore = findAllForTeacherMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [result] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -828,10 +744,10 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [submission1, submission2, submission3];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks, submissions);
+			const mockRestore = findAllForTeacherMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllOpenForTeacher(user.id, paginationQuery);
+			const [result, count] = await service.findAllForTeacher(user.id, paginationQuery);
 
 			expect(count).toEqual(1);
 			expect(result[0].status).toEqual({
@@ -855,11 +771,11 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [];
 
-			const mockRestore = findAllOpenForTeacherMocks(parents, tasks, submissions);
+			const mockRestore = findAllForTeacherMocks(parents, tasks, submissions);
 			const spy = setTaskRepoMock.findAll();
 
 			const paginationQuery = new PaginationQuery();
-			await service.findAllOpenForTeacher(user.id, paginationQuery);
+			await service.findAllForTeacher(user.id, paginationQuery);
 
 			const expectedOptions: IFindOptions<Task> = {
 				pagination: { skip: 0, limit: 10 },
@@ -872,22 +788,16 @@ describe('TaskService', () => {
 		});
 	});
 
-	describe('findAllCompletedForStudent', () => {
-		const findAllCompletedForStudentMocks = (
-			parents: TaskParentTestEntity[],
-			tasks: Task[],
-			submissions: Submission[] = []
-		) => {
+	describe('findAllForStudent', () => {
+		const findAllForStudentMocks = (parents: TaskParentTestEntity[], tasks: Task[], submissions: Submission[] = []) => {
 			const spy1 = setParentRepoMock.findAllByUserId(parents);
 			const spy2 = setSubmissionRepoMock.findAllByUserId(submissions);
-			const spy3 = setTaskRepoMock.findAllCurrentByIds(tasks);
-			const spy4 = setTaskRepoMock.findAllCurrentIgnoreIds(tasks);
+			const spy3 = setTaskRepoMock.findAllCurrent(tasks);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
 				spy2.mockRestore();
 				spy3.mockRestore();
-				spy4.mockRestore();
 			};
 			return mockRestore;
 		};
@@ -903,10 +813,10 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(count).toEqual(0);
@@ -925,10 +835,10 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const parents = [parent1];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -944,10 +854,10 @@ describe('TaskService', () => {
 			const tasks = [task1];
 			const parents = [parent1];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(result[0]).toEqual({ task: task1, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
 			expect(result[0].task.getParent()).toBeDefined();
@@ -963,10 +873,10 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [parent1];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -986,10 +896,10 @@ describe('TaskService', () => {
 			const tasks = [task1, task2, task3];
 			const parents = [parent1, parent2, parent3];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(3);
 
@@ -1003,10 +913,10 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
 
 			const paginationQuery = new PaginationQuery();
-			const [, count] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [, count] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(count).toEqual(0);
 
@@ -1020,8 +930,8 @@ describe('TaskService', () => {
 			const tasks = [];
 			const parents = [];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks);
-			const spy = setTaskRepoMock.findAllCurrentByIds([]);
+			const mockRestore = findAllForStudentMocks(parents, tasks);
+			const spy = setTaskRepoMock.findAllCurrent([]);
 
 			const skip = 0;
 			const limit = 10;
@@ -1031,9 +941,9 @@ describe('TaskService', () => {
 				order: { dueDate: SortOrder.asc },
 			};
 
-			await service.findAllCompletedForStudent(user.id, { skip, limit });
+			await service.findAllForStudent(user.id, { skip, limit });
 
-			expect(spy).toHaveBeenCalledWith([], [], expectedOptions);
+			expect(spy).toHaveBeenCalledWith([], expectedOptions);
 
 			mockRestore();
 			spy.mockRestore();
@@ -1050,10 +960,10 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [submission1];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks, submissions);
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -1082,10 +992,10 @@ describe('TaskService', () => {
 			const parents = [parent1, parent2, parent3];
 			const submissions = [submission1, submission3];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks, submissions);
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAllCompletedForStudent(user.id, paginationQuery);
+			const [result] = await service.findAllForStudent(user.id, paginationQuery);
 
 			expect(result[0].status).toEqual({
 				graded: 0,
@@ -1120,18 +1030,18 @@ describe('TaskService', () => {
 			const parents = [parent1];
 			const submissions = [];
 
-			const mockRestore = findAllCompletedForStudentMocks(parents, tasks, submissions);
-			const spy = setTaskRepoMock.findAllCurrentByIds();
+			const mockRestore = findAllForStudentMocks(parents, tasks, submissions);
+			const spy = setTaskRepoMock.findAllCurrent();
 
 			const paginationQuery = new PaginationQuery();
-			await service.findAllCompletedForStudent(user.id, paginationQuery);
+			await service.findAllForStudent(user.id, paginationQuery);
 
 			const expectedOptions: IFindOptions<Task> = {
 				pagination: { skip: 0, limit: 10 },
 				order: { dueDate: SortOrder.asc },
 			};
 			const noParents = [];
-			expect(spy).toHaveBeenCalledWith(noParents, [], expectedOptions);
+			expect(spy).toHaveBeenCalledWith(noParents, expectedOptions);
 
 			mockRestore();
 		});

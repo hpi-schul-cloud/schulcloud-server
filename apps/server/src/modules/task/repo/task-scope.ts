@@ -19,16 +19,6 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byIds(taskIds: EntityId[]): TaskScope {
-		this.addQuery({ id: { $in: taskIds } });
-		return this;
-	}
-
-	ignoreIds(taskIds: EntityId[]): TaskScope {
-		this.addQuery({ id: { $nin: taskIds } });
-		return this;
-	}
-
 	afterDueDateOrNone(dueDate: Date): TaskScope {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
 		return this;
