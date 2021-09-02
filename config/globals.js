@@ -83,7 +83,7 @@ const globals = {
 	FILE_PREVIEW_CALLBACK_URI: process.env.FILE_PREVIEW_CALLBACK_URI || 'http://localhost:3030/fileStorage/thumbnail/',
 	ENABLE_THUMBNAIL_GENERATION: process.env.ENABLE_THUMBNAIL_GENERATION || false,
 	/** path must start and end with a slash */
-	SECURITY_CHECK_SERVICE_PATH: '/fileStorage/securityCheck/',
+	SECURITY_CHECK_SERVICE_PATH: '/v1/fileStorage/securityCheck/',
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE:
 		parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10) || 512 * 1024 * 1024,
 	// rocketchat (here are no defaults defined)

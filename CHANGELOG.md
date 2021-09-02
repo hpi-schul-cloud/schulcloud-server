@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-81 - remove old Lern-Store
 - BC-119 - remove malfunction S3 lifecycle migration
 - BC-38 - BC-124 - Add ansible files for Bosscloud (default)
+- BC-110 - fileStorage/security should only be called from within the cluster
 
 ## Added
 
