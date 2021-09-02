@@ -10,7 +10,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('trashbin repository', () => {
+describe('trashbin repository', () => {
 	let app;
 	let server;
 
