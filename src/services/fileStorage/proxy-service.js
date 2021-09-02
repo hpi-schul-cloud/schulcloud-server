@@ -154,7 +154,12 @@ const fileStorageService = {
 		const {
 			payload: { userId, fileStorageType },
 		} = params;
-		const { owner, parent, studentCanEdit, permissions: sendPermissions = [] } = data;
+		const { owner, parent, studentCanEdit, permissions: sendPermissions = [], deletedAt } = data;
+
+		if (deletedAt !== undefined) {
+			// creation of deleted files should fail
+			throw new BadRequest();
+		}
 
 		const refOwnerModel = await getRefOwnerModel(owner);
 
@@ -284,7 +289,7 @@ const fileStorageService = {
 		} = params;
 		const { parent } = data;
 		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent }).exec();
+		const fileObject = await FileModel.findOne({ _id: parent, deletedAt: { $exists: false } }).exec(); // TODO
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 
 		const permissionPromise = () => {
@@ -302,7 +307,7 @@ const fileStorageService = {
 				});
 			}
 
-			return Promise.resolve();
+			return Promise.reject(); // TODO
 		};
 
 		if (fileObject) {
