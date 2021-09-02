@@ -258,24 +258,15 @@ const reassignProviderForSchool = async (awsObject) => {
 	return awsObject;
 };
 
-const putBucketCors = async (awsObject) => {
-	try {
-		await awsObject.s3
-			.putBucketCors({
-				Bucket: awsObject.bucket,
-				CORSConfiguration: {
-					CORSRules: getCorsRules(),
-				},
-			})
-			.promise();
-	} catch (e) {
-		// not implemented
-		// min.io doesn't support this function
-		if (e.statusCode !== 501) {
-			throw e;
-		}
-	}
-};
+const putBucketCors = async (awsObject) =>
+	awsObject.s3
+		.putBucketCors({
+			Bucket: awsObject.bucket,
+			CORSConfiguration: {
+				CORSRules: getCorsRules(),
+			},
+		})
+		.promise();
 
 const setBucketLifecycleConfiguration = async (awsObject) =>
 	awsObject.s3
