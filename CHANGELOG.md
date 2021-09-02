@@ -35,6 +35,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
 
+## [26.9.2] - 2021-08-27
+
+### Changed
+
+- BC-137 - fix bug with display of Blue Bar
+
 ## [26.9.1] - 2021-08-18
 
 ## changed 
