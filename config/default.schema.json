@@ -111,11 +111,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
 		},
-		"JWT_WHITELIST_ACCEPT_ALL": {
-			"type": "boolean",
-			"default": false,
-			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
-		},
 		"TSP_API_BASE_URL": {
 			"type": "string",
 			"default": "https://www.schulportal-thueringen.de",
@@ -206,6 +201,16 @@
 					"type": "boolean",
 					"default": false,
 					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				},
+				"SCHOOL_SETTINGS_VISIBLE": {
+					"type": "boolean",
+					"default": false,
+					"description": "Only if enabled, school admins can activate the messenger in their school setting"
+				},
+				"SCHOOL_ROOM_ENABLED": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can choose to create a room for all students and teachers of the school"
 				},
 				"WELCOME_MESSAGE_ADMIN": {
 					"type": "string",
@@ -317,6 +322,11 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT": {
+			"type": "boolean",
+			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expiring_ after 7 days",
+			"default": false
+		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
 			"type": "integer",
 			"default": 100,
@@ -377,6 +387,21 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Custom School Policy can be uploaded by the school admin "
+		},
+		"ROCKETCHAT_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables chat function for the school."
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
@@ -449,11 +474,10 @@
 			"default": null,
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		},
-		"LERNSTORE_MODE": {
-			"type": "string",
-			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
-			"default": "EDUSHARING",
-			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		"FEATURE_LERNSTORE_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Defines if backend for the Lern-Store Edu-Sharing is enabled."
 		},
 		"ES_DOMAIN": {
 			"type": "string",
@@ -660,8 +684,7 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE"
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
 	],
 	"allOf": [
 		{
@@ -698,6 +721,18 @@
 					"FILE_SECURITY_SERVICE_PASSWORD",
 					"API_HOST"
 				]
+			}
+		},
+		"LERNSTORE_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_LERNSTORE_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": ["ES_USER", "ES_PASSWORD"]
 			}
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
