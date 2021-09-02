@@ -16,6 +16,10 @@ const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 
 const wopiPrefix = '/wopi/files/';
+const fileByIdQuery = (fileId) => {
+	const query = { _id: fileId, deletedAt: { $exists: false } };
+	return query;
+};
 
 /** Wopi-CheckFileInfo-Service
  * returns information about a file, a user’s permissions on that file,
@@ -42,7 +46,7 @@ class WopiFilesInfoService {
 		};
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id: fileId })
+		return FileModel.findOne(fileByIdQuery(fileId))
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -85,7 +89,7 @@ class WopiFilesInfoService {
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id })
+		return FileModel.findOne(fileByIdQuery(_id))
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -119,7 +123,7 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id: fileId })
+		return FileModel.findOne(fileByIdQuery(fileId))
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -171,7 +175,7 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id: fileId }).then((file) => {
+		return FileModel.findOne(fileByIdQuery(fileId)).then((file) => {
 			if (!file) {
 				throw new NotFound('The requested file was not found! (5)');
 			}
@@ -191,10 +195,11 @@ class WopiFilesContentsService {
 
 					return rp(options)
 						.then(() =>
-							FileModel.findOneAndUpdate(
-								{ _id: file._id },
-								{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length }
-							)
+							FileModel.findOneAndUpdate(fileByIdQuery(file._id), {
+								$inc: { __v: 1 },
+								updatedAt: Date.now(),
+								size: data.length,
+							})
 								.exec()
 								.catch((err) => {
 									logger.warning(new Error(err));
