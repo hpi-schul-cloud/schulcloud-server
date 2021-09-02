@@ -68,19 +68,10 @@ export class Scope<T> {
 		this._queries.push(query);
 	}
 
-	addQueryIfValueIsDefined<TT>(testedValue: TT, query: FilterQuery<T>): void {
-		const saveQuery = useQueryIfValueIsDefined(testedValue, query);
-		this.addQuery(saveQuery);
+	buildAndAddOrQuery<TT>(arrayOfObjects: TT[], selectedKey: string, targetKey: string): void {
+		if (arrayOfObjects.length > 0) {
+			const orQuery = createOrQueryFromList(arrayOfObjects, selectedKey, targetKey) as FilterQuery<T>;
+			this.addQuery(orQuery);
+		}
 	}
-
-	addQrQuery<TT>(arrayOfObjects: TT[], selectedKey: string, targetKey: string): void {
-		const orQuery = createOrQueryFromList(arrayOfObjects, selectedKey, targetKey) as FilterQuery<T>;
-		this.addQuery(orQuery);
-	}
-
-	useQueryIfValueIsDefined = useQueryIfValueIsDefined;
-
-	createOrQueryFromList = createOrQueryFromList;
-
-	isDefinedQuery = isDefinedQuery;
 }

@@ -1,10 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { Coursegroup, Course } from '../entity';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { Coursegroup, Course, LearnroomTestHelper } from '@src/entities';
 import { CoursegroupRepo } from './coursegroup.repo';
-
-import { LearnroomTestHelper } from '../utils/testHelper';
 
 describe('coursegroup repo', () => {
 	let module: TestingModule;
