@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Fixed
 
+- bc-196 - trying out stuff
 - remove broken systemid from seed data
 - SC-9083 - expose env variables for school administration
 - BC-44 - remove JWT_WHITELIST_ACCEPT_ALL feature flag
