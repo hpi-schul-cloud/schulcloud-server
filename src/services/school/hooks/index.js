@@ -286,6 +286,7 @@ const setDefaultStudentListPermission = async (hook) => {
 		hook.data.permissions.teacher.STUDENT_LIST = true;
 	}
 	return Promise.resolve(hook);
+};
 
 const preventSystemsChange = async (context) => {
 	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
