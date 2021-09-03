@@ -181,7 +181,20 @@ describe('systemId service', () => {
 			expect(result.ldapConfig.searchUserPassword).to.be.undefined;
 		});
 
-		// Cannot create another LDAP if you already have one?
+		it('CREATE system is added to the school after its creation', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+
+			const data = { type: 'ldap' };
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			const result = await app.service('systems').create(data, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(usersSchool._id, params);
+
+			expect(usersSchoolUpdated.systems[0].toString()).to.be.equal(result._id.toString());
+		});
 	});
 
 	describe('UPDATE endpoint', async () => {
@@ -460,6 +473,22 @@ describe('systemId service', () => {
 
 			const result = await app.service('systems').remove(usersSystem._id, params);
 			expect(result.ldapConfig.searchUserPassword).to.be.undefined;
+		});
+
+		it('REMOVE system is removed from the school after its removal', async () => {
+			const usersSystem = await testObjects.createTestSystem({
+				type: 'ldap',
+			});
+			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			await app.service('systems').remove(usersSystem._id, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(usersSchool._id, params);
+
+			expect(usersSchoolUpdated.systems).to.be.empty;
 		});
 	});
 });
