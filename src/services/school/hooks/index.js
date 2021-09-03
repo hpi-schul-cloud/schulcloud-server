@@ -286,6 +286,18 @@ const setDefaultStudentListPermission = async (hook) => {
 		hook.data.permissions.teacher.STUDENT_LIST = true;
 	}
 	return Promise.resolve(hook);
+
+const preventSystemsChange = async (context) => {
+	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+	if (isSuperHero) {
+		return context;
+	}
+
+	const schoolBeforeUpdate = await context.app.service('/schools').get(context.id);
+
+	context.data.systems = schoolBeforeUpdate.systems;
+
+	return context;
 };
 
 exports.before = {
@@ -306,6 +318,7 @@ exports.before = {
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateOfficialSchoolNumber,
 		validateCounty,
+		iff(isProvider('external'), [preventSystemsChange]),
 	],
 	patch: [
 		globalHooks.ifNotLocal(hasEditPermissions),
@@ -313,6 +326,7 @@ exports.before = {
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateOfficialSchoolNumber,
 		validateCounty,
+		iff(isProvider('external'), [preventSystemsChange]),
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
