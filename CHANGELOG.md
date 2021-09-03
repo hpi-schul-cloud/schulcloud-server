@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- BC-187 - secures the system route
 - remove broken systemid from seed data
 - SC-9083 - expose env variables for school administration
 - BC-44 - remove JWT_WHITELIST_ACCEPT_ALL feature flag
