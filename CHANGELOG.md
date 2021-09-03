@@ -27,12 +27,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store
 - BC-119 - remove malfunction S3 lifecycle migration
-- BC-120 - add feature flag for S3 CORS
 - BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 - BC-110 - fileStorage/security should only be called from within the cluster
 
 ### Added
 
+- BC-120 - add feature flag for S3 CORS
 - BC-5 - Show completed tasks for students
 
 ### Changed
