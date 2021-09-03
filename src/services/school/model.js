@@ -9,7 +9,6 @@ const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
 const { countySchema } = require('../federalState/countyModel');
-const defaultStudentList = require('./hooks/studentListPermission.hooks');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -94,10 +93,7 @@ const schoolSchema = new Schema(
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
-		permissions: {
-			type: Object,
-			default: defaultStudentList,
-		},
+		permissions: { type: Object },
 		tombstoneUserId: {
 			type: Schema.Types.ObjectId,
 			ref: 'user',

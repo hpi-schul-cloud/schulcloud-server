@@ -26,7 +26,7 @@ const create = (appPromise) => async ({
 	source = undefined,
 	sourceOptions = undefined,
 	enableStudentTeamCreation = undefined,
-	permissions = {},
+	permissions = undefined,
 	language = 'de',
 	timezone = 'Europe/Berlin',
 	storageProvider = undefined,
