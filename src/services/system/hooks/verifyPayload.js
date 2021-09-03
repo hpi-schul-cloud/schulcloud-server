@@ -2,7 +2,7 @@ const { Forbidden } = require('../../../errors');
 
 module.exports = async (context) => {
 	const currentSystem = await context.app.service('systems').get(context.id);
-	if (currentSystem.ldapConfig.provider === 'iserv-idm') {
+	if (currentSystem.type === 'ldap' && currentSystem.ldapConfig && currentSystem.ldapConfig.provider === 'iserv-idm') {
 		throw new Forbidden('Not allowed to change this system');
 	}
 

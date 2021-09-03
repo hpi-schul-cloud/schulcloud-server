@@ -53,7 +53,9 @@ exports.before = {
 		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
 		encryptSecret,
 	],
-	remove: [iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation])],
+	remove: [
+		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation, verifyPayload]),
+	],
 };
 
 exports.after = {

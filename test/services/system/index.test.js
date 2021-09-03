@@ -490,5 +490,27 @@ describe('systemId service', () => {
 
 			expect(usersSchoolUpdated.systems).to.be.empty;
 		});
+
+		it('REMOVE iServ configuration should not be removable', async () => {
+			const usersSystem = await testObjects.createTestSystem({
+				type: 'ldap',
+				ldapConfig: {
+					provider: 'iserv-idm',
+				},
+			});
+			const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			try {
+				await app.service('systems').remove(usersSystem._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('Not allowed to change this system');
+			}
+		});
 	});
 });
