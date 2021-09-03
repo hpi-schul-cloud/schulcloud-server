@@ -13,6 +13,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+
+## [26.10.1] - 2021-09-03
+
+### Added
+
+- BC-120 - add feature flag for S3 CORS
+
 ## [26.10.1] - 2021-09-03
 
 ### Fixed
@@ -38,7 +45,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-120 - add feature flag for S3 CORS
 - BC-5 - Show completed tasks for students
 
 ### Changed
