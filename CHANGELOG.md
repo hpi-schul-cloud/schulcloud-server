@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [Unreleased]
 
-## Fixed
+### Changed
+
+### Added
+
+## [26.10.0] - 2021-09-03
+
+### Fixed
 
 - remove broken systemid from seed data
 - SC-9083 - expose env variables for school administration
@@ -25,7 +31,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-110 - fileStorage/security should only be called from within the cluster
 - BS-112 - insert missing attribute during school creation
 
-## Added
+### Added
 
 - BC-5 - Show completed tasks for students
 
