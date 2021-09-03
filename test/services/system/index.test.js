@@ -143,27 +143,6 @@ describe('systemId service', () => {
 			}
 		});
 
-		it(
-			'CREATE cannot create a system for a foreign school' /* , async () => {
-			const usersSchool = await testObjects.createTestSchool();
-			const otherSchool = await testObjects.createTestSchool();
-
-			const data = { type: 'ldap' };
-
-			const user = await testObjects.createTestUser({ roles: ['student'], schoolId: [usersSchool._id] });
-			const params = await testObjects.generateRequestParamsFromUser(user);
-
-			try {
-				await app.service('systems').create(data, params);
-				throw new Error('should have failed');
-			} catch (err) {
-				expect(err.message).to.not.equal('should have failed');
-				expect(err.code).to.equal(403);
-				expect(err.message).to.equal("You don't have one of the permissions: SYSTEM_CREATE.");
-			}
-		} */
-		);
-
 		it('CREATE passwords are not included in the response', async () => {
 			const usersSchool = await testObjects.createTestSchool();
 
@@ -181,7 +160,7 @@ describe('systemId service', () => {
 			expect(result.ldapConfig.searchUserPassword).to.be.undefined;
 		});
 
-		it('CREATE system is added to the school after its creation', async () => {
+		it('CREATE system is added to the users school after its creation', async () => {
 			const usersSchool = await testObjects.createTestSchool();
 
 			const data = { type: 'ldap' };
