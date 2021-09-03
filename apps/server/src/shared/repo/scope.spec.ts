@@ -42,36 +42,26 @@ describe('scope.ts', () => {
 
 		it('should possible add multiple query and get it as concatination of $and.', () => {
 			const scope = new Scope<TestEntity>();
+
 			const query1 = { name: 'abc' };
 			scope.addQuery(query1);
 			const query2 = { numbers: 123 };
 			scope.addQuery(query2);
+
 			expect(scope.query).toEqual({ $and: [query1, query2] });
 		});
 
-		it('should support shorthand helper addQrQuery.', () => {
+		it('should support shorthand helper buildAndAddOrQuery.', () => {
 			const scope = new Scope<TestEntity>();
-			expect(typeof scope.addQrQuery).toEqual('function');
+			expect(typeof scope.buildAndAddOrQuery).toEqual('function');
 		});
 
-		it('should support shorthand helper addQueryIfValueIsDefined.', () => {
+		it('should not add a query if buildAndAddOrQuery is executed with empty array', () => {
 			const scope = new Scope<TestEntity>();
-			expect(typeof scope.addQueryIfValueIsDefined).toEqual('function');
-		});
 
-		it('should support shorthand helper useQueryIfValueIsDefined.', () => {
-			const scope = new Scope<TestEntity>();
-			expect(typeof scope.useQueryIfValueIsDefined).toEqual('function');
-		});
+			scope.buildAndAddOrQuery([], '123', '123');
 
-		it('should support shorthand helper createOrQueryFromList.', () => {
-			const scope = new Scope<TestEntity>();
-			expect(typeof scope.createOrQueryFromList).toEqual('function');
-		});
-
-		it('should support shorthand helper isDefinedQuery.', () => {
-			const scope = new Scope<TestEntity>();
-			expect(typeof scope.isDefinedQuery).toEqual('function');
+			expect(scope.query).toEqual(EmptyResultQuery);
 		});
 	});
 
