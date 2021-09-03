@@ -9,13 +9,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
-### Fixed
-
-- BC-187 - secures the system route
-
 ### Changed
 
 ### Added
+
+## [26.10.1] - 2021-09-03
+
+### Fixed
+
+- BC-187 - secures the system route
 
 ## [26.10.0] - 2021-09-03
 
