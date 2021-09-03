@@ -1,19 +1,30 @@
-/* istanbul ignore file */
-// TODO add spec, see news.mapper.spec
 import { TaskResponse } from '../controller/dto';
-import { Task, COURSE_DEFAULT_COLOR, ISubmissionStatus } from '../entity';
+import { TaskWithSubmissionStatus } from '../domain';
 
 export class TaskMapper {
-	static mapToResponse(task: Task, status?: ISubmissionStatus): TaskResponse {
+	// TODO: add status to task
+	static mapToResponse(taskWithStatus: TaskWithSubmissionStatus): TaskResponse {
+		const { task, status } = taskWithStatus;
 		const dto = new TaskResponse();
+
 		dto.id = task.id;
-		dto.name = task.name;
-		dto.duedate = task.dueDate;
-		dto.courseName = task.course?.name;
-		dto.displayColor = task.course?.color || COURSE_DEFAULT_COLOR;
+		dto.name = task.getName();
+		dto.duedate = task.getDueDate();
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;
-		dto.status = status || {};
+		dto.status = {
+			submitted: status.submitted,
+			maxSubmissions: status.maxSubmissions,
+			graded: status.graded,
+		};
+
+		const parent = task.getParent();
+		if (parent !== undefined) {
+			const parentData = parent.getDescriptions();
+			dto.courseName = parentData.name;
+			dto.displayColor = parentData.color;
+		}
+
 		return dto;
 	}
 }

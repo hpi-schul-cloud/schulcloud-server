@@ -1,32 +1,34 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId } from '../../../shared/domain';
-import { CourseGroupInfo, Submission, Task } from '../entity';
+
+import { Counted, EntityId } from '@shared/domain';
+
+// CourseGroupInfo must use from learnroom
+import { CourseGroupInfo, Submission } from '../entity';
+
+// TODO: add scope helper
 
 @Injectable()
 export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async getSubmissionsByTask(task: Task): Promise<Counted<Submission[]>> {
+	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this.em.findAndCount(Submission, {
-			task,
-		});
-		return [submissions, count];
-	}
-
-	async getSubmissionsByTasksList(tasks: Task[]): Promise<Counted<Submission[]>> {
-		const [submissions, count] = await this.em.findAndCount(Submission, {
-			task: { $in: tasks },
+			task: { $in: taskIds },
 		});
 
 		return [submissions, count];
 	}
 
-	async getAllSubmissionsByUser(userId: EntityId): Promise<Counted<Submission[]>> {
-		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
-		const result = await this.em.findAndCount(Submission, {
-			$or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }],
-		});
+	async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
+		const result = await this.em.findAndCount(Submission, await this.byUserIdQuery(userId));
 		return result;
+	}
+
+	private async byUserIdQuery(userId: EntityId): Promise<FilterQuery<Submission>> {
+		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
+		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
+		return query;
 	}
 }
