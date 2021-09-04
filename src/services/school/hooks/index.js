@@ -275,6 +275,19 @@ const validateCounty = async (context) => {
 	return context;
 };
 
+// school permission for teacher seeing students and classes depending if in NBC or not
+const setDefaultStudentListPermission = async (hook) => {
+	if (
+		Configuration.get('ADMIN_TOGGLE_STUDENT_VISIBILITY') === 'enabled' ||
+		Configuration.get('ADMIN_TOGGLE_STUDENT_VISIBILITY') === 'opt-out'
+	) {
+		hook.data.permissions = hook.data.permissions || {};
+		hook.data.permissions.teacher = hook.data.permissions.teacher || {};
+		hook.data.permissions.teacher.STUDENT_LIST = true;
+	}
+	return Promise.resolve(hook);
+};
+
 const preventSystemsChange = async (context) => {
 	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
 	if (isSuperHero) {
@@ -298,6 +311,7 @@ exports.before = {
 		setCurrentYearIfMissing,
 		validateOfficialSchoolNumber,
 		validateCounty,
+		setDefaultStudentListPermission,
 	],
 	update: [
 		globalHooks.hasPermission('SCHOOL_EDIT'),
