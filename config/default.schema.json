@@ -327,6 +327,11 @@
 			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expiring_ after 7 days",
 			"default": false
 		},
+		"FEATURE_S3_BUCKET_CORS": {
+			"type": "boolean",
+			"description": "true if CORS is supported by the S3 bucket. (Minio does not support it)",
+			"default": true
+		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
 			"type": "integer",
 			"default": 100,
