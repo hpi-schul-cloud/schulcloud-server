@@ -1,31 +1,22 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination, Counted, ICurrentUser, SortOrder } from '@shared/domain';
-import { CourseRepo } from '@src/repositories';
-import { Course } from '@src/entities';
 
-import { TaskRepo, SubmissionRepo } from '../repo';
-import { TaskDomainService, TaskWithSubmissionStatus } from '../domain';
-
-enum Permission {
-	read,
-	write,
-}
+import { TaskRepo } from '../repo';
+import { TaskWithStatusVo } from '../entity/task-with-status.vo';
+import { Task } from '../entity';
+import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
 export enum TaskDashBoardPermission {
 	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
 	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
 }
-
 @Injectable()
 export class TaskUC {
-	constructor(
-		private readonly taskRepo: TaskRepo,
-		private readonly submissionRepo: SubmissionRepo,
-		private readonly courseRepo: CourseRepo
-	) {}
+	constructor(private readonly taskRepo: TaskRepo, private readonly authorizationService: TaskAuthorizationService) {}
 
-	async findAll(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		let response: Counted<TaskWithSubmissionStatus[]>;
+	// TODO replace curentUser with userId. this requires that permissions are loaded inside the use case by authorization service
+	async findAll(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		let response: Counted<TaskWithStatusVo[]>;
 
 		if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)) {
 			response = await this.findAllForStudent(currentUser.userId, pagination);
@@ -38,34 +29,28 @@ export class TaskUC {
 		return response;
 	}
 
-	async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const parents = await this.findPermittedTaskParents(userId, Permission.read);
-		const parentIds = parents.map((parent) => parent.id);
-
-		// TODO replace by relation
-		const [submissionsOfStudent] = await this.submissionRepo.findAllByUserId(userId);
+	private async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 
 		const [tasks, total] = await this.taskRepo.findAllCurrent(parentIds, {
 			pagination,
 			order: { dueDate: SortOrder.asc },
 		});
 
-		const domain = new TaskDomainService(tasks, parents);
-		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
+		const computedTasks = tasks.map((task) => this.computeTaskStatusForStudent(task, userId));
 
 		return [computedTasks, total];
 	}
 
-	// TODO: rename teacher and student
-	async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const parents = await this.findPermittedTaskParents(userId, Permission.write);
-		const parentIds = parents.map((parent) => parent.id);
+	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
 
-		const [tasks, total] = await this.taskRepo.findAll(parentIds, { pagination, order: { createdAt: SortOrder.desc } });
+		const [tasks, total] = await this.taskRepo.findAll(parentIds, {
+			pagination,
+			order: { createdAt: SortOrder.desc },
+		});
 
-		const [submissionsOfTeacher] = await this.submissionRepo.findAllByTaskIds(tasks.map((o) => o.id));
-		const domain = new TaskDomainService(tasks, parents);
-		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
+		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task));
 
 		return [computedTasks, total];
 	}
@@ -75,16 +60,32 @@ export class TaskUC {
 		return hasPermission;
 	}
 
-	// coursegroups are missing
-	// lessons are missing -> only search for hidden: false,
-	private async findPermittedTaskParents(userId: EntityId, permission: Permission): Promise<Course[]> {
-		const [allCourses] = await this.courseRepo.findAllByUserId(userId);
+	private computeTaskStatusForStudent(task: Task, userId: EntityId): TaskWithStatusVo {
+		const studentSubmissions = task.submissions.getItems().filter((submission) => submission.student.id === userId);
 
-		// !!! Add Authorization service or logic until it is avaible !!!
-		const parents = allCourses.filter((c) =>
-			permission === Permission.write ? c.hasWritePermission(userId) : !c.hasWritePermission(userId)
-		);
+		const submitted = studentSubmissions.length > 0 ? 1 : 0;
+		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
+		const maxSubmissions = 1;
 
-		return parents;
+		return new TaskWithStatusVo(task, { submitted, maxSubmissions, graded });
+	}
+
+	private computeTaskStatusForTeacher(task: Task): TaskWithStatusVo {
+		const submittedStudentIds = task.submissions.getItems().map((submission) => submission.student.id);
+
+		// unique by studentId
+		const submitted = [...new Set(submittedStudentIds)].length;
+
+		const gradedStudentIds = task.submissions
+			.getItems()
+			.filter((submission) => submission.isGraded())
+			.map((submission) => submission.student.id);
+
+		// unique by studentId
+		const graded = [...new Set(gradedStudentIds)].length;
+
+		const maxSubmissions = task.parent ? task.parent.getNumberOfStudents() : 0;
+
+		return new TaskWithStatusVo(task, { submitted, maxSubmissions, graded });
 	}
 }

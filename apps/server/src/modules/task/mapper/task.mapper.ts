@@ -8,8 +8,8 @@ export class TaskMapper {
 		const dto = new TaskResponse();
 
 		dto.id = task.id;
-		dto.name = task.getName();
-		dto.duedate = task.getDueDate();
+		dto.name = task.name;
+		dto.duedate = task.dueDate;
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;
 		dto.status = {
@@ -18,9 +18,8 @@ export class TaskMapper {
 			graded: status.graded,
 		};
 
-		const parent = task.getParent();
-		if (parent !== undefined) {
-			const parentData = parent.getDescriptions();
+		if (task.parent !== undefined) {
+			const parentData = task.parent.getDescriptions();
 			dto.courseName = parentData.name;
 			dto.displayColor = parentData.color;
 		}

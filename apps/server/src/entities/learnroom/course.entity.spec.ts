@@ -77,7 +77,7 @@ describe('CourseEntity', () => {
 			helper.createAndAddUser();
 			const course = helper.createStudentCourse();
 
-			const number = course.getStudentsNumber();
+			const number = course.getNumberOfStudents();
 			expect(number).toEqual(2);
 		});
 
@@ -85,46 +85,8 @@ describe('CourseEntity', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createTeacherCourse();
 
-			const number = course.getStudentsNumber();
+			const number = course.getNumberOfStudents();
 			expect(number).toEqual(0);
-		});
-	});
-
-	describe('hasWritePermission', () => {
-		it('should return false for user is not member of course', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
-
-			const result = course.hasWritePermission(helper.getOtherUser().id);
-
-			expect(result).toEqual(false);
-		});
-
-		it('should return false for existing student', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
-
-			const result = course.hasWritePermission(helper.getFirstUser().id);
-
-			expect(result).toEqual(false);
-		});
-
-		it('should return true for existing teacher', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createTeacherCourse();
-
-			const result = course.hasWritePermission(helper.getFirstUser().id);
-
-			expect(result).toEqual(true);
-		});
-
-		it('should return true for existing substitution teacher', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createSubstitutionCourse();
-
-			const result = course.hasWritePermission(helper.getFirstUser().id);
-
-			expect(result).toEqual(true);
 		});
 	});
 });

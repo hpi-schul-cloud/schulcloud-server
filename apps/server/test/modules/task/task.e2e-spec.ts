@@ -2,19 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Request } from 'express';
-import { MikroORM, EntityManager } from '@mikro-orm/core';
+import { MikroORM, EntityManager, Collection } from '@mikro-orm/core';
 
 import { ICurrentUser } from '@shared/domain';
 import { PaginationResponse } from '@shared/controller';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@src/modules/user/utils';
-import { TaskTestHelper } from '@src/modules/task/utils';
-import { LearnroomTestHelper, Course } from '@src/entities';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { Task, Submission, UserTaskInfo } from '@src/modules/task/entity';
+import { ObjectId } from '@mikro-orm/mongodb';
 
-const modifiedCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
+const modifyCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
 	currentUser.user.id = user.id;
 	currentUser.userId = user.id;
 };
@@ -129,17 +128,14 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const task = new Task({ name: 'task #1', private: false, parent });
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			const parent = helperL.createTeacherCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
-
-			await em.persistAndFlush([task, parent, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -151,19 +147,18 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			const student = helper.getOtherUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			const student = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([teacher, student]);
+			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const task = new Task({ name: 'task #1', private: false, parent });
+			const submission = new Submission({ student, comment: '', task });
+			task.submissions = new Collection<Submission>(task, [submission]);
 
-			const parent = helperL.createTeacherCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
-			const submission = helper.createSubmission(task, student);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user, student, submission]);
+			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -171,27 +166,23 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0].status).toEqual({
 				submitted: 1,
-				maxSubmissions: parent.getStudentsNumber(),
+				maxSubmissions: parent.getNumberOfStudents(),
 				graded: 0,
 			});
 		});
 
 		it('[FIND] /tasks return a list of tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const task1 = new Task({ name: 'task #1', private: false, parent });
+			const task2 = new Task({ name: 'task #2', private: false, parent });
+			const task3 = new Task({ name: 'task #3', private: false, parent });
 
-			const parent = helperL.createTeacherCourse();
-			const task1 = helper.createTask(parent.id);
-			const task2 = helper.createTask(parent.id);
-			const task3 = helper.createTask(parent.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-			task3.changePrivate(false);
+			await em.persistAndFlush([task1, task2, task3]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, task3, parent, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -200,22 +191,18 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks return a list of tasks from multiple parents', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const parent1 = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent2 = new Course({ name: 'course #2', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent3 = new Course({ name: 'course #3', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
+			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
 
-			const parent1 = helperL.createTeacherCourse();
-			const parent2 = helperL.createTeacherCourse();
-			const parent3 = helperL.createTeacherCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			// parent3 has no task
-			task1.changePrivate(false);
-			task2.changePrivate(false);
+			await em.persistAndFlush([task1, task2, parent3]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, parent1, parent2, parent3, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -224,17 +211,15 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks should not return private tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const task = new Task({ name: 'task #1', private: true, parent });
 
-			const parent = helperL.createTeacherCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(true);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -242,18 +227,16 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks should nothing return from parent where the user has read permissions', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks should return nothing from parents where the user has only read permissions', async () => {
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [teacher._id] });
+			const task = new Task({ name: 'task #1', private: false, parent });
 
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -341,17 +324,23 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			const student = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([teacher, student]);
+			const parent = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+				studentIds: [student._id],
+			});
+			const task = new Task({ name: 'task #1', private: false, parent });
+			const submission = new Submission({ student, comment: '', task });
+			task.submissions = new Collection<Submission>(task, [submission]);
 
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user]);
+			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -360,24 +349,31 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0]).toHaveProperty('status');
 			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
 			expect(paginatedResult.data[0]).toHaveProperty('name');
+			expect(paginatedResult.data[0].status).toEqual({
+				submitted: 1,
+				maxSubmissions: 1,
+				graded: 0,
+			});
 		});
 
 		it('[FIND] /tasks return a list of tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			const student = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([teacher, student]);
+			const parent = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+				studentIds: [student._id],
+			});
+			const task1 = new Task({ name: 'task #1', private: false, parent });
+			const task2 = new Task({ name: 'task #2', private: false, parent });
+			const task3 = new Task({ name: 'task #3', private: false, parent });
 
-			const parent = helperL.createStudentCourse();
-			const task1 = helper.createTask(parent.id);
-			const task2 = helper.createTask(parent.id);
-			const task3 = helper.createTask(parent.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-			task3.changePrivate(false);
+			await em.persistAndFlush([task1, task2, task3]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, task3, parent, user]);
+			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -386,22 +382,34 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks return a list of tasks from multiple parents', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			const student = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([teacher, student]);
+			const parent1 = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+				studentIds: [student._id],
+			});
+			const parent2 = new Course({
+				name: 'course #2',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+				studentIds: [student._id],
+			});
+			const parent3 = new Course({
+				name: 'course #3',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+				studentIds: [student._id],
+			});
+			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
+			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
 
-			const parent1 = helperL.createStudentCourse();
-			const parent2 = helperL.createStudentCourse();
-			const parent3 = helperL.createStudentCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			// parent3 has no task
-			task1.changePrivate(false);
-			task2.changePrivate(false);
+			await em.persistAndFlush([task1, task2, parent3]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, parent1, parent2, parent3, user]);
+			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -410,17 +418,21 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks should not return private tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			const student = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([teacher, student]);
+			const parent = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+				studentIds: [student._id],
+			});
+			const task = new Task({ name: 'task #1', private: true, parent });
 
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(true);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user]);
+			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
@@ -429,20 +441,26 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks should nothing return from student where the user has write permissions', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+			const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
+			const subTeacher = new UserTaskInfo({ firstName: 'Hanna', lastName: 'Heinrich' });
+			await em.persistAndFlush([teacher, subTeacher]);
+			const parent1 = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				teacherIds: [teacher._id],
+			});
+			const parent2 = new Course({
+				name: 'course #2',
+				schoolId: new ObjectId(),
+				substitutionTeacherIds: [subTeacher._id],
+			});
+			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
+			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
 
-			const parent1 = helperL.createTeacherCourse();
-			const parent2 = helperL.createSubstitutionCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
+			await em.persistAndFlush([task1, task2]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, parent1, parent2, user]);
+			// modifyCurrentUserId?
 
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;

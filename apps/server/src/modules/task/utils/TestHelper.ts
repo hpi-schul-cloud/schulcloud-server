@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { EntityId, TestHelper } from '@shared/domain';
 
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';

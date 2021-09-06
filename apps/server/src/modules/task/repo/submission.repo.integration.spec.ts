@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { Course } from '@src/entities';
 import { MongoMemoryDatabaseModule } from '../../database';
 import { TaskTestHelper } from '../utils/TestHelper';
 import { FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo } from '../entity';
@@ -16,7 +17,7 @@ describe('submission repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
+					entities: [FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo, Course],
 				}),
 			],
 			providers: [SubmissionRepo],
@@ -93,7 +94,7 @@ describe('submission repo', () => {
 			const students = helper.getUsers() as UserTaskInfo[];
 			const task = helper.createTask();
 
-			const courseGroup = em.create(CourseGroupInfo, { courseId: new ObjectId(task.getParentId()), students });
+			const courseGroup = em.create(CourseGroupInfo, { courseId: new ObjectId(task.parent?.id), students });
 			const submission = helper.createSubmission(task, students[1]);
 			submission.courseGroup = courseGroup;
 

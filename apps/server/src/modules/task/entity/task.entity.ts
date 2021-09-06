@@ -48,38 +48,6 @@ export class Task extends BaseEntityWithTimestamps {
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
-	// getParentId(): EntityId | undefined {
-	// 	return this.parent?.id;
-	// }
-
-	// getName(): string {
-	// 	return this.name;
-	// }
-
-	// getDueDate(): Date | undefined {
-	// 	return this.dueDate;
-	// }
-
-	// changePrivate(toValue?: boolean): boolean {
-	// 	if (toValue) {
-	// 		this.private = toValue;
-	// 	} else {
-	// 		this.private = !this.private;
-	// 	}
-	// 	return this.private;
-	// }
-
-	// setParent(parent: ITaskParent | undefined): void {
-	// 	this.parent = parent;
-	// 	if (parent) {
-	// 		this.parentId = new ObjectId(parent.id);
-	// 	}
-	// }
-
-	// getParent(): ITaskParent | undefined {
-	// 	return this.parent;
-	// }
-
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
@@ -87,6 +55,6 @@ export class Task extends BaseEntityWithTimestamps {
 		this.private = !!props.private;
 		this.parent = props.parent;
 		this.lesson = props.lesson;
-		this.submissions.set(props.submissions || []);
+		this.submissions = new Collection<Submission>(this, props.submissions || []);
 	}
 }

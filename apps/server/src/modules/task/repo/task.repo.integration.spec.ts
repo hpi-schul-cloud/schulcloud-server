@@ -9,7 +9,7 @@ import { CourseGroupInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTa
 
 import { TaskRepo } from './task.repo';
 
-describe('TaskService', () => {
+describe('TaskRepo', () => {
 	let module: TestingModule;
 	let repo: TaskRepo;
 	let em: EntityManager;
