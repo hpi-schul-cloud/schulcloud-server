@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe.only('systemId service', () => {
+describe('systemId service', () => {
 	let app;
 	let server;
 
