@@ -9,6 +9,10 @@ class AbstractFileStorageStrategy {
 		throw new TypeError('connect method has to be implemented.');
 	}
 
+	getBucket() {
+		throw new TypeError('get bucket method has to be implemented');
+	}
+
 	listBucketsNames() {
 		throw new TypeError('list buckets method has to be implemented');
 	}

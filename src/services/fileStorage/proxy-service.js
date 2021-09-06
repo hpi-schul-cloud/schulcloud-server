@@ -3,6 +3,7 @@ const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
+const { getUser } = require('../helpers/utils/userHelpers');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
@@ -171,6 +172,9 @@ const fileStorageService = {
 			throw new GeneralError('Can not create default Permissions', err);
 		});
 
+		const strategy = createCorrectStrategy(fileStorageType);
+		const bucket = await strategy.getBucket(userId);
+
 		const props = sanitizeObj(
 			Object.assign(data, {
 				isDirectory: false,
@@ -180,6 +184,7 @@ const fileStorageService = {
 				permissions,
 				creator: userId,
 				storageFileName: decodeURIComponent(data.storageFileName),
+				bucket,
 			})
 		);
 
@@ -188,7 +193,6 @@ const fileStorageService = {
 			logger.error({ message, stack: err.stack });
 		};
 
-		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
