@@ -1051,17 +1051,6 @@
 },
 {
 	"_id": {
-		"$oid": "60fa652ccd6f463cfc047978"
-	},
-	"state": "up",
-	"name": "add_S3_expiration",
-	"createdAt": {
-		"$date": "2021-07-23T06:43:56.538Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "610d5f167e894e69bd474574"
 	},
 	"state": "up",
