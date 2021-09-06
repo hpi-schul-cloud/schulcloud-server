@@ -9,7 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
-## Fixed
+### Fixed
+
+- BC-232 prevent users from changing schoolyears
 
 ### Changed
 
