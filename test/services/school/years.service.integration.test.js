@@ -4,7 +4,7 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
-describe.only('years service', () => {
+describe('years service', () => {
 	let app;
 	let server;
 
