@@ -3,8 +3,6 @@ import { Course } from '@src/entities';
 import { TaskResponse } from '../controller/dto';
 import { Task } from '../entity';
 
-import { TaskTestHelper } from '../utils/TestHelper';
-
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (

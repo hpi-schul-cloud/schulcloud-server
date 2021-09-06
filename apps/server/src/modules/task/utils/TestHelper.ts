@@ -29,7 +29,7 @@ export class TaskParentTestEntity implements ITaskParent {
 		};
 	}
 
-	getStudentsNumber(): number {
+	getNumberOfStudents(): number {
 		return 10;
 	}
 }

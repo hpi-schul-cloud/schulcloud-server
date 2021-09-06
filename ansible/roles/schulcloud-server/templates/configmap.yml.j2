@@ -10,7 +10,7 @@ data:
   NODE_ENV: "production"
   NODE_OPTIONS: "--max-old-space-size=2048"
   HOST: "https://{{ DOMAIN }}"
-  API_HOST: "https://{{ DOMAIN }}/api"
+  API_HOST: "http://api-svc:3030/api"
   SC_TITLE: "{{ SC_TITLE }}"
   SC_SHORT_TITLE: "{{ SC_SHORT_TITLE }}"
   SC_THEME: "{{ SC_THEME }}"
@@ -26,7 +26,7 @@ data:
   # STAIC Infos
   MEMORY_INTERVAL_TIME: "{{ MEMORY_INTERVAL_TIME|default("0", true) }}"
   REQUEST_LOGGING_ENABLED: "{{ REQUEST_LOGGING_ENABLED|default("false", true) }}"
-  # LDAP SYNC 
+  # LDAP SYNC
   LDAP_SCHOOL_SYNCER_POOL_SIZE: "{{ LDAP_SCHOOL_SYNCER_POOL_SIZE|default("1", true) }}"
   LDAP_SYSTEM_SYNCER_POOL_SIZE: "{{ LDAP_SYSTEM_SYNCER_POOL_SIZE|default("2", true) }}"
   # SMTP
@@ -48,11 +48,11 @@ data:
   ROCKET_CHAT_URI: "http://rocketchat-svc:5000"
   # anything else
   CALENDAR_URI: "http://calendar-svc:3000"
-{% if CONTENT_URI is defined %}  
+{% if CONTENT_URI is defined %}
   CONTENT_URI: "{{ CONTENT_URI }}"
 {% endif %}
   KEEP_ALIVE: "{{ KEEP_ALIVE|default("true", true) }}"
-  #  Prints slow requests above 4 s in log 
+  #  Prints slow requests above 4 s in log
   #  LEAD_TIME: "4000"
   PORT: "{{ PORT_SERVER }}"
   TZ: "Europe/Berlin"
@@ -111,6 +111,7 @@ data:
   ALERT_STATUS_API_URL: "{{ ALERT_STATUS_URL|default("https://status.hpi-schul-cloud.de", true) }}/api/v1"
   FEATURE_MORGAN_LOG_ENABLED: "false"
   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: "{{ FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED|default("false", true) }}"
+  FEATURE_S3_BUCKET_CORS: "{{ FEATURE_S3_BUCKET_CORS|default("false", true) }}"
   FEATURE_TSP_AUTO_CONSENT_ENABLED: "{{ FEATURE_TSP_AUTO_CONSENT_ENABLED|default("false", true) }}"
 {% if FEATURE_API_VALIDATION_ENABLED is defined %}
   FEATURE_API_VALIDATION_ENABLED: "{{ FEATURE_API_VALIDATION_ENABLED|default("false", true) }}"

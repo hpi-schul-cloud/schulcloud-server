@@ -25,7 +25,7 @@ export interface ITaskParent {
 
 	hasWritePermission(userId: EntityId): boolean;
 	getDescriptions(): IParentDescriptionsProperties;
-	getStudentsNumber(): number;
+	getNumberOfStudents(): number;
 }
 
 @Entity({ tableName: 'homeworks' })

@@ -7,10 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [Unreleased]
 
 ## Fixed
 
+### Changed
+
+### Added
+
+
+## [26.10.2] - 2021-09-03
+
+### Added
+
+- BC-120 - add feature flag for S3 CORS
+
+## [26.10.1] - 2021-09-03
+
+### Fixed
+
+- BC-187 - secures the system route
+- BC-233 - when an LDAP system is removed from a school, the ldapschoolidentifier and lastLdapSync are removed as well
+
+## [26.10.0] - 2021-09-03
+
+### Fixed
 
 - remove broken systemid from seed data
 - SC-9083 - expose env variables for school administration
@@ -22,12 +43,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-37 - BC-54 - reduce resource consumption for deployed server
 - BC-81 - remove old Lern-Store
 - BC-119 - remove malfunction S3 lifecycle migration
-- Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
+- BC-38 - BC-124 - Add ansible files for Bosscloud (default)
+- BC-110 - fileStorage/security should only be called from within the cluster
+- BS-112 - insert missing attribute during school creation
+
+### Added
+
 - BC-5 - Show completed tasks for students
 
 ### Changed
 
 - Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
+
+## [26.9.2] - 2021-08-27
+
+### Changed
+
+- BC-137 - fix bug with display of Blue Bar
 
 ## [26.9.1] - 2021-08-18
 
@@ -43,10 +75,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
-
-### Added
-
-- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 
 ## Added
 
