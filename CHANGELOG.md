@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-121 add bucket to file documents
+
 ### Fixed
 
 - BC-232 prevent users from changing schoolyears
