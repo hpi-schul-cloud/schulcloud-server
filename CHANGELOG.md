@@ -42,6 +42,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-119 - remove malfunction S3 lifecycle migration
 - BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 - BC-110 - fileStorage/security should only be called from within the cluster
+- BS-112 - insert missing attribute during school creation
 
 ### Added
 
