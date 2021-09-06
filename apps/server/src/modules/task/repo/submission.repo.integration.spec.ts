@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { Course } from '@src/entities';
 import { MongoMemoryDatabaseModule } from '../../database';
-import { TaskTestHelper } from '../utils/TestHelper';
 import { FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo } from '../entity';
 
 import { SubmissionRepo } from './submission.repo';
@@ -36,74 +35,74 @@ describe('submission repo', () => {
 
 	describe('findAllByTasks', () => {
 		it('should return only the requested submissions of homeworks', async () => {
-			const helper = new TaskTestHelper();
-			const students = helper.getUsers();
+			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const task1 = new Task({ name: 'task #1' });
+			const task2 = new Task({ name: 'task #2' });
+			const task3 = new Task({ name: 'task #3' });
+			task1.submissions.add(new Submission({ task: task1, comment: 'comment', student }));
+			task2.submissions.add(new Submission({ task: task2, comment: 'comment', student }));
+			task3.submissions.add(new Submission({ task: task3, comment: 'comment', student }));
 
-			const tasks = [helper.createTask(), helper.createTask(), helper.createTask()];
+			await em.persistAndFlush([task1, task2, task3]);
+			em.clear();
 
-			const submissions = [
-				helper.createSubmission(tasks[0]),
-				helper.createSubmission(tasks[1]),
-				helper.createSubmission(tasks[2]),
-			];
-
-			await em.persistAndFlush([...students, ...tasks, ...submissions]);
-
-			const requestedTaskIds = [tasks[0].id, tasks[1].id];
-			const [result, count] = await repo.findAllByTaskIds(requestedTaskIds);
+			const [result, count] = await repo.findAllByTaskIds([task1.id, task2.id]);
 			expect(count).toEqual(2);
 			expect(result).toHaveLength(2);
+			const resultTaskIds = result.map((o) => o.task.id);
+			expect(resultTaskIds.includes(task1.id)).toEqual(true);
+			expect(resultTaskIds.includes(task2.id)).toEqual(true);
 		});
 	});
 
 	describe('findAllByUserId', () => {
 		it('should return submissions that have the user as userId', async () => {
-			const helper = new TaskTestHelper();
-			const student = helper.getFirstUser() as UserTaskInfo;
+			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const task = new Task({ name: 'task #1' });
+			task.submissions.add(new Submission({ task: task, comment: 'comment', student }));
 
-			const task = helper.createTask();
-			const submission = helper.createSubmission(task);
-
-			await em.persistAndFlush([student, task, submission]);
+			await em.persistAndFlush([task]);
+			em.clear();
 
 			const [result, count] = await repo.findAllByUserId(student.id);
 
 			expect(count).toEqual(1);
 			expect(result.length).toEqual(1);
-			expect(result[0].student.firstName).toEqual(student.firstName);
+			expect(result[0].student.id).toEqual(student.id);
 		});
 
 		it('should return submissions where the user is a team member', async () => {
-			const helper = new TaskTestHelper();
-			helper.createAndAddUser();
-			const students = helper.getUsers() as UserTaskInfo[];
-			const task = helper.createTask();
+			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const task = new Task({ name: 'task #1' });
+			task.submissions.add(new Submission({ student: student1, comment: '', task, teamMembers: [student1, student2] }));
 
-			const submission = helper.createTeamMemberSubmission(task, students);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([...students, task, submission]);
-
-			const [result, count] = await repo.findAllByUserId(students[0].id);
+			const [result, count] = await repo.findAllByUserId(student1.id);
 			expect(count).toEqual(1);
-			expect(result[0].teamMembers[0].firstName).toEqual(students[0].firstName);
+			expect(result[0].teamMembers[0].id).toEqual(student1.id);
 		});
 
 		it('should return submissions where the user is in the course group', async () => {
-			const helper = new TaskTestHelper();
-			helper.createAndAddUser();
-			const students = helper.getUsers() as UserTaskInfo[];
-			const task = helper.createTask();
+			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			await em.persistAndFlush(course);
 
-			const courseGroup = em.create(CourseGroupInfo, { courseId: new ObjectId(task.parent?.id), students });
-			const submission = helper.createSubmission(task, students[1]);
+			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const courseGroup = em.create(CourseGroupInfo, { courseId: course._id, students: [student1, student2] });
+			const task = new Task({ name: 'task #1', parent: course });
+			const submission = new Submission({ student: student1, comment: '', task });
 			submission.courseGroup = courseGroup;
 
-			await em.persistAndFlush([...students, task, submission, courseGroup]);
+			await em.persistAndFlush([task, courseGroup]);
+			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(students[0].id);
+			const [result, count] = await repo.findAllByUserId(student1.id);
 
 			expect(count).toEqual(1);
-			expect(result[0]?.courseGroup?.students[0]?.firstName).toEqual(students[0].firstName);
+			expect(result[0]?.courseGroup?.students[0]?.id).toEqual(student1.id);
 		});
 	});
 });
