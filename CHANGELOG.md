@@ -25,6 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-187 - secures the system route
+- BC-233 - when an LDAP system is removed from a school, the ldapschoolidentifier and lastLdapSync are removed as well
 
 ## [26.10.0] - 2021-09-03
 
