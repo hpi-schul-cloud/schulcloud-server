@@ -69,7 +69,7 @@ const fileSchema = new Schema({
 			return !this.isDirectory;
 		},
 	},
-	bucket: { type: String },
+	bucket: { type: String, required: true },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {
