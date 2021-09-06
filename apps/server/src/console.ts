@@ -2,7 +2,7 @@
 // console.ts - example of entrypoint
 import { BootstrapConsole } from 'nestjs-console';
 import { ServerModule } from './server.module';
-// import { ConsoleModule } from '.';
+// import { FilesModule } from './modules/files/files.module';
 
 const bootstrap = new BootstrapConsole({
 	module: ServerModule,

@@ -11,27 +11,6 @@ const isNotDeletedQuery = {
 	},
 };
 
-/**
- * TODO integrate
- * @param {Date} date
- * @returns
- */
-const isDeletedSinceQuery = (date) => {
-	const andQuery = {
-		deletedAt: {
-			$and: [
-				{
-					$exists: true,
-				},
-				{
-					$lte: date,
-				},
-			],
-		},
-	};
-	return andQuery;
-};
-
 const permissionSearchBaseQuery = (userId) => ({
 	permissions: {
 		$elemMatch: {
@@ -142,12 +121,23 @@ const removeFilePermissionsByUserId = async (userId) => {
 	return success;
 };
 
+/**
+ * Get all files that should be permanently deleted according to the backupPeriodThreshold
+ * @param {Date} backupPeriodThreshold
+ * @returns expired files
+ */
+const getExpiredFiles = async (backupPeriodThreshold) =>
+	FileModel.find({ deletedAt: { $lt: backupPeriodThreshold } })
+		.lean()
+		.exec();
+
 module.exports = {
 	getPersonalFilesByUserId,
 	removePersonalFilesByUserId,
 	getFilesWithUserPermissionsByUserId,
 	removeFileById,
 	removeFilePermissionsByUserId,
+	getExpiredFiles,
 	// only to be used for testing
 	getFileById,
 	getFileOrDeletedFileById,

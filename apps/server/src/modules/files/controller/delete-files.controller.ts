@@ -14,10 +14,10 @@ export class DeleteFilesController {
 		command: 'remove-deleted-files-data-removed-since-days <days>',
 		description: 'cleanup job to remove file data of deleted files that have been removed since <days> days.',
 	})
-	removeDeletedFilesData(removedSinceDays: number): void {
+	async removeDeletedFilesData(removedSinceDays: number): Promise<void> {
 		const removedSince = new Date();
 		removedSince.setDate(removedSince.getDate() - removedSinceDays);
 
-		this.deleteFilesUc.removeDeletedFilesData(removedSince);
+		await this.deleteFilesUc.removeDeletedFilesData(removedSince);
 	}
 }

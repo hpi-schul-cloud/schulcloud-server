@@ -1,5 +1,6 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { ConsoleModule } from 'nestjs-console';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthModule } from './modules/authentication/auth.module';
@@ -11,6 +12,7 @@ import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
+import { FilesModule } from './modules/files/files.module';
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
 
 import {
@@ -38,10 +40,13 @@ import { User, Role, Account } from './modules/user/entity';
 
 import { Course, Coursegroup } from './modules/learnroom/entity';
 
+import { File } from './modules/files/entity';
+
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
 const taskEntities = [Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
 const learnroomEntities = [Course, Coursegroup];
+const fileEntities = [File];
 
 @Module({
 	imports: [
@@ -55,18 +60,21 @@ const learnroomEntities = [Course, Coursegroup];
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
 		LearnroomModule,
+		FilesModule,
 
+		ConsoleModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...courseEntities, ...taskEntities, ...userEntities, ...learnroomEntities],
+			entities: [...courseEntities, ...taskEntities, ...userEntities, ...learnroomEntities, ...fileEntities],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},
+			debug: true,
 		}),
 		CoreModule,
 	],

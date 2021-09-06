@@ -18,7 +18,7 @@ const decryptAccessKey = (secretAccessKey) => {
 
 const getStorageProvider = async (storageProviderId) => {
 	const storageProvider = await fileStorageProviderRepo.getStorageProviderMetaInformation(storageProviderId);
-	if (storageProvider) storageProvider.secretAccessKey = decryptAccessKey(storageProvider.secretAccessKey);
+	// if (storageProvider) storageProvider.secretAccessKey = decryptAccessKey(storageProvider.secretAccessKey);
 	return storageProvider;
 };
 
