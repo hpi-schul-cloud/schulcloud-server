@@ -12,6 +12,7 @@ import { createCurrentTestUser } from '@src/modules/user/utils';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { Task, Submission, UserTaskInfo } from '@src/modules/task/entity';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course } from '@src/entities';
 
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
 	currentUser.user.id = user.id;

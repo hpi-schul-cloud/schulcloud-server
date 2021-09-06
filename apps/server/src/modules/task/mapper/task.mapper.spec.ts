@@ -103,9 +103,8 @@ describe('task.mapper', () => {
 	});
 
 	it('should not set parent meta informations if it is not exist in task.', () => {
-		const helper = new TaskTestHelper();
-		const parent = helper.createTaskParent();
-		const task = helper.createTask(parent.id);
+		// task has no parent
+		const task = new Task({ name: 'test task#1' });
 
 		const status = {
 			graded: 0,

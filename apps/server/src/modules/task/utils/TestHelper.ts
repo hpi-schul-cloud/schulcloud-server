@@ -1,6 +1,8 @@
 /* istanbul ignore file */
 
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId, TestHelper } from '@shared/domain';
+import { Course } from '@src/entities';
 
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
 
@@ -50,19 +52,23 @@ export class TaskTestHelper extends TestHelper<EntityId> {
 	}
 
 	createTask(parentId?: EntityId, dueDate?: Date): Task {
+		const parent = new Course({ schoolId: new ObjectId() });
 		const id = this.createId(parentId);
-		const task = new Task({ name: '', parentId: id, dueDate });
+		parent._id = id;
+		parent.id = id.toHexString();
+		const task = new Task({ name: '', parent, dueDate });
 		this.addId(task);
 		return task;
 	}
 
 	createLessonWithTask(): { task: Task; lesson: LessonTaskInfo; parentId: EntityId } {
-		const parentId = this.createId();
-		const lesson = new LessonTaskInfo({ courseId: parentId });
+		const parent = new Course({ schoolId: new ObjectId() });
+		this.addId(parent);
+		const lesson = new LessonTaskInfo({ course: parent });
 		this.addId(lesson);
-		const task = new Task({ name: '', parentId, lesson });
+		const task = new Task({ name: '', parent, lesson });
 		this.addId(task);
-		return { task, lesson, parentId: parentId.toHexString() };
+		return { task, lesson, parentId: parent.id };
 	}
 
 	createSubmission(task: Task, student?: UserTaskInfo): Submission {
