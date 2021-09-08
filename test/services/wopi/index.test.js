@@ -86,6 +86,7 @@ describe('wopi service', function test() {
 			size: 11348,
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
+			bucket: 'bucket-test',
 		});
 		return app
 			.service('wopi/files/:fileId')
@@ -130,6 +131,7 @@ describe('wopi service', function test() {
 				size: 11348,
 				storageFileName: `${Date.now()}-Test.docx`,
 				permissions: [],
+				bucket: 'bucket-test',
 			});
 			let params = await generateRequestParamsFromUser(user);
 			params = Object.assign(params, {
@@ -156,6 +158,7 @@ describe('wopi service', function test() {
 			size: 11348,
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
+			bucket: 'bucket-test',
 		});
 		const headers = {};
 		headers['x-wopi-override'] = 'LOCK';
