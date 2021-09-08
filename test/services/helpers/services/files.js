@@ -22,6 +22,7 @@ const create = async ({
 	refId,
 	additonalPermissions,
 	isDirectory = false,
+	bucket = 'bucket-test',
 } = {}) => {
 	const data = {
 		isDirectory,
@@ -40,6 +41,7 @@ const create = async ({
 		creator: creator || owner,
 		refOwnerModel,
 		thumbnailRequestToken: uuidv4(),
+		bucket,
 	};
 	if (additonalPermissions) {
 		data.permissions = [...data.permissions, ...additonalPermissions];
