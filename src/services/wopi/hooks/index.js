@@ -73,7 +73,7 @@ const checkLockHeader = (hook) => {
 	const lockId = hook.params.headers['x-wopi-lock'];
 	const { fileId } = hook.params.route;
 	// check if lockId is correct for the given file
-	return FileModel.findOne({ _id: fileId }).then((file) => {
+	return FileModel.findOne({ _id: fileId, deletedAt: { $exists: false } }).then((file) => {
 		if (!file) {
 			throw new NotFound('The requested file was not found!');
 		}

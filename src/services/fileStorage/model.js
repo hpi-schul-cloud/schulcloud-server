@@ -69,6 +69,7 @@ const fileSchema = new Schema({
 			return !this.isDirectory;
 		},
 	},
+	bucket: { type: String },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {
@@ -100,6 +101,7 @@ const fileSchema = new Schema({
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
+	deletedAt: { type: Date },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

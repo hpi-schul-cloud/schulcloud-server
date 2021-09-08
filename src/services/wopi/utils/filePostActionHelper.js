@@ -3,6 +3,12 @@ const mongoose = require('mongoose');
 const { NotImplemented } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
 
+// TODO
+const fileByIdQuery = (fileId) => {
+	const query = { _id: fileId, deletedAt: { $exists: false } };
+	return query;
+};
+
 /**
  * Just because the route /wopi/files/:id should trigger different
  * actions for a different 'X-WOPI-Override' header value,
@@ -25,19 +31,19 @@ const deleteFile = (file, payload, account, app) => {
  */
 const lock = (file) => {
 	file.lockId = mongoose.Types.ObjectId();
-	return FileModel.update({ _id: file._id }, file)
+	return FileModel.update(fileByIdQuery(file._id), file)
 		.exec()
 		.then(() => Promise.resolve({ lockId: file.lockId }));
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
 const getLock = (file) =>
-	FileModel.findOne({ _id: file._id })
+	FileModel.findOne(fileByIdQuery(file._id))
 		.exec()
 		.then(() => Promise.resolve({ lockId: file.lockId }));
 
 /** https://wopirest.readthedocs.io/en/latest/files/Unlock.html */
-const unlock = (file) => FileModel.update({ _id: file._id }, { $unset: { lockId: 1 } }).exec();
+const unlock = (file) => FileModel.update(fileByIdQuery(file._id), { $unset: { lockId: 1 } }).exec();
 
 /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
 const renameFile = (file, payload, account, app) => {

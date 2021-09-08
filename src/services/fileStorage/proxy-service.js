@@ -2,6 +2,7 @@ const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { filesRepo } = require('../../components/fileStorage/repo');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
@@ -153,7 +154,12 @@ const fileStorageService = {
 		const {
 			payload: { userId, fileStorageType },
 		} = params;
-		const { owner, parent, studentCanEdit, permissions: sendPermissions = [] } = data;
+		const { owner, parent, studentCanEdit, permissions: sendPermissions = [], deletedAt } = data;
+
+		if (deletedAt !== undefined) {
+			// creation of deleted files should fail
+			throw new BadRequest();
+		}
 
 		const refOwnerModel = await getRefOwnerModel(owner);
 
@@ -227,7 +233,7 @@ const fileStorageService = {
 
 		return parentPromise
 			.then(() =>
-				FileModel.find({ owner, parent: parent || { $exists: false } })
+				FileModel.find({ owner, parent: parent || { $exists: false }, deletedAt: { $exists: false } })
 					.lean()
 					.exec()
 			)
@@ -249,29 +255,20 @@ const fileStorageService = {
 	 * @param requestData, contains query parameters and userId/storageType set by middleware
 	 * @returns {Promise}
 	 */
-	remove(id, { query, payload }) {
-		const { userId, fileStorageType } = payload;
+	async remove(id, { query, payload }) {
+		const { userId } = payload;
 		const { _id = id } = query;
-		const fileInstance = FileModel.findOne({ _id });
 
-		return fileInstance
-			.lean()
-			.exec()
-			.then((file) => {
-				if (!file) {
-					throw new NotFound();
-				}
-
-				return Promise.all([
-					file,
-					canDelete(userId, _id).catch(() => {
-						throw new Forbidden();
-					}),
-				]);
-			})
-			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => fileInstance.remove().lean().exec())
-			.catch((err) => err);
+		// check file exists
+		await filesRepo.getFileById(_id);
+		// check permissions
+		try {
+			await canDelete(userId, _id);
+		} catch (err) {
+			throw new Forbidden();
+		}
+		// remove file for user
+		await filesRepo.removeFileById(_id);
 	},
 	/**
 	 * Move file from one parent to another
@@ -286,7 +283,7 @@ const fileStorageService = {
 		} = params;
 		const { parent } = data;
 		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent }).exec();
+		const fileObject = await FileModel.findOne({ _id: parent, deletedAt: { $exists: false } }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 
 		const permissionPromise = () => {
@@ -304,7 +301,7 @@ const fileStorageService = {
 				});
 			}
 
-			return Promise.resolve();
+			return Promise.reject(); // ToDo
 		};
 
 		if (fileObject) {
@@ -380,7 +377,9 @@ const signedUrlService = {
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = _flatFileName || generateFileNameSuffix(filename);
 
-		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
+		const parentPromise = parent
+			? FileModel.findOne({ parent, name: filename, deletedAt: { $exists: false } }).exec()
+			: Promise.resolve({});
 
 		const header = {
 			name: encodeURIComponent(filename),
@@ -422,7 +421,9 @@ const signedUrlService = {
 	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
 		const strategy = createCorrectStrategy(fileStorageType);
-		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
+		const fileObject = await FileModel.findOne({ _id: file, deletedAt: { $exists: false } })
+			.lean()
+			.exec();
 
 		if (!fileObject) {
 			throw new NotFound('File seems not to be there.');
