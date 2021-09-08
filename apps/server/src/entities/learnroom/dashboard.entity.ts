@@ -1,13 +1,13 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
 export class DefaultGridElement implements GridElement {
-	getAvatar = (): string => {
-		return 'some default avatar defined in frontend maybe';
+	getName = (): string => {
+		return 'some default example name';
 	};
 }
 
 export interface GridElement {
-	getAvatar: () => string;
+	getName: () => string;
 }
 
 export class DashboardEntity extends BaseEntityWithTimestamps {
