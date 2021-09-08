@@ -1,5 +1,6 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { ConsoleModule } from 'nestjs-console';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthModule } from './modules/authentication/auth.module';
@@ -11,8 +12,11 @@ import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
+import { FilesModule } from './modules/files/files.module';
 
 import { Course, Coursegroup } from './entities';
+
+import { File } from './modules/files/entity';
 
 import {
 	CourseNews,
@@ -33,6 +37,7 @@ const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
 const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
+const fileEntities = [File];
 
 @Module({
 	imports: [
@@ -45,14 +50,16 @@ const userEntities = [User, Role, Account];
 			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
+		FilesModule,
 
+		ConsoleModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...entities, ...courseEntities, ...taskEntities, ...userEntities],
+			entities: [...entities, ...courseEntities, ...taskEntities, ...userEntities, ...fileEntities],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
