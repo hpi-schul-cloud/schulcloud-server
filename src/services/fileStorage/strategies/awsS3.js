@@ -335,9 +335,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		};
 	}
 
-	async getBucket(userId) {
-		const user = await UserModel.userModel.findById(userId).lean().exec();
-		return getBucketName(user.schoolId);
+	getBucket(schoolId) {
+		return getBucketName(schoolId);
 	}
 
 	async listBucketsNames(awsObject) {

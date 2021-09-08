@@ -2,7 +2,6 @@ const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { getUser } = require('../helpers/utils/userHelpers');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
@@ -143,6 +142,23 @@ const getRefOwnerModel = async (owner) => {
 	return refOwnerModel;
 };
 
+/**
+ * returns the schoolId of the given file owner
+ * @param {('user'|'course'|'teams'))} ownerType type of the file owner
+ * @param {ObjectId} ownerId id of the owner
+ * @returns {Promise<ObjectId>} schoolId of the owner
+ */
+const getOwnerSchoolId = async (ownerType, ownerId) => {
+	const ownerModel = {
+		user: userModel,
+		course: courseModel,
+		teams: teamsModel,
+	};
+	const owner = await ownerModel[ownerType].findById(ownerId);
+	const schoolId = ownerType === 'teams' ? owner.schoolIds[0] : owner.schoolId;
+	return schoolId;
+};
+
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 	/**
@@ -167,12 +183,16 @@ const fileStorageService = {
 		});
 
 		const strategy = createCorrectStrategy(fileStorageType);
-		const bucket = await strategy.getBucket(userId);
+
+		const fileOwner = owner || userId;
+
+		const ownerSchoolId = await getOwnerSchoolId(refOwnerModel, fileOwner);
+		const bucket = strategy.getBucket(ownerSchoolId);
 
 		const props = sanitizeObj(
 			Object.assign(data, {
 				isDirectory: false,
-				owner: owner || userId,
+				owner: fileOwner,
 				parent,
 				refOwnerModel,
 				permissions,
