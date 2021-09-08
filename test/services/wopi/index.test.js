@@ -20,6 +20,7 @@ describe('wopi service', function test() {
 		size: 11348,
 		storageFileName: '1501061352639-Test.docx',
 		permissions: [],
+		bucket: 'bucket-test',
 		__v: 0,
 	};
 
@@ -31,6 +32,7 @@ describe('wopi service', function test() {
 		size: 11348,
 		storageFileName: '1501161352639-Test1.docx',
 		permissions: [],
+		bucket: 'bucket-test',
 		__v: 0,
 	};
 
