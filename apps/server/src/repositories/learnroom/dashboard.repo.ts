@@ -6,8 +6,12 @@ import {
 	DashboardGrid,
 } from '../../entities/learnroom/dashboard.entity';
 
+export interface IDashboardRepo {
+	getUsersDashboard(): Promise<DashboardEntity>;
+}
+
 @Injectable()
-export class DashboardRepo {
+export class DashboardRepo implements IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity> {
 		const diagonalGrid: DashboardGrid = [];
 		const diagonalSize = 5;
