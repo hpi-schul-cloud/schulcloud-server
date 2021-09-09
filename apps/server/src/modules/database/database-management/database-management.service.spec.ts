@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Long, serialize, deserialize } from 'bson';
 import { MongoMemoryDatabaseModule } from '..';
 import { User } from '../../../entities';
 import { ManagementService } from './database-management.service';
@@ -53,5 +54,16 @@ describe('MongoConsoleService', () => {
 			const entityNotFoundFromPersistence = await em.findOne<User>(User.name, { _id: sampleEntity._id });
 			expect(entityNotFoundFromPersistence).toBe(null);
 		});
+	});
+
+	describe('when loading bson as json', () => {
+		// Serialize a document
+		const doc = { long: Long.fromNumber(100) };
+		const data = serialize(doc);
+		console.log('data:', data);
+
+		// De serialize it again
+		const doc_2 = deserialize(data);
+		console.log('doc_2:', doc_2);
 	});
 });
