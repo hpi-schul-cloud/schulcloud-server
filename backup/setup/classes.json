@@ -1,19 +1,34 @@
-[
-{
-	"_id" : { "$oid": "59a3c81ca2049554a93fec58"},
-	"updatedAt" : { "$date": "2017-11-17T08:59:47.757Z" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
-	"name" : "Demo-Klasse",
-	"teacherIds" : [
-		{ "$oid": "599ec1688e4e364ec18ff46e"},
-		{ "$oid": "59ad4c412b442b7f81810285"}
+[{
+	"_id": {
+		"$oid": "59a3c81ca2049554a93fec58"
+	},
+	"updatedAt": {
+		"$date": "2017-11-17T08:59:47.757Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"name": "Demo-Klasse",
+	"teacherIds": [
+		{
+			"$oid": "599ec1688e4e364ec18ff46e"
+		},
+		{
+			"$oid": "59ad4c412b442b7f81810285"
+		}
 	],
-	"createdAt" : { "$date": "2017-08-28T07:37:00.402Z"},
-	"userIds" : [
-		{ "$oid": "599ec14d8e4e364ec18ff46d"},
-		{ "$oid": "59ae89b71f513506904e1cc9"}
+	"createdAt": {
+		"$date": "2017-08-28T07:37:00.402Z"
+	},
+	"userIds": [
+		{
+			"$oid": "599ec14d8e4e364ec18ff46d"
+		},
+		{
+			"$oid": "59ae89b71f513506904e1cc9"
+		}
 	],
-	"__v" : 0
+	"__v": 0
 },
 {
 	"_id": {
@@ -74,5 +89,5 @@
 		"$date": "2021-11-05T11:28:29.382Z"
 	},
 	"__v": 0
-}
-]
+}]
+

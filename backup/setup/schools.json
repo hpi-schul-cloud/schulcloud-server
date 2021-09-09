@@ -1,33 +1,5 @@
 [{
 	"_id": {
-		"$oid": "5f2987e020834114b8efd6f7"
-	},
-	"name": "Schiller-Oberschule",
-	"fileStorageType": "awsS3",
-	"systems": [
-		{
-			"$oid": "0000d186816abba584714c90"
-		}
-	],
-	"updatedAt": {
-		"$date": "2020-08-04T07:21:33.616Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"__v": 0,
-	"currentYear": {
-		"$oid": "5ebd6dc14a431f75ec9a3e77"
-	},
-	"purpose": "demo",
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
-},
-{
-	"_id": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"name": "Paul-Gerhardt-Gymnasium",
@@ -35,11 +7,13 @@
 	"federalState": {
 		"$oid": "0000b186816abba584714c53"
 	},
-	"county":{
-		"antaresKey" : "BRB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
-		"countyId" : 12051,
-		"name" : "Brandenburg an der Havel"
+	"county": {
+		"antaresKey": "BRB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8812"
+		},
+		"countyId": 12051,
+		"name": "Brandenburg an der Havel"
 	},
 	"systems": [
 		{
@@ -65,39 +39,39 @@
 		"messenger"
 	],
 	"enableStudentTeamCreation": false,
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
 },
 {
 	"_id": {
-		"$oid": "5f2987e020834114b8efd6f9"
+		"$oid": "5f2987e020834114b8efd6f7"
 	},
+	"name": "Schiller-Oberschule",
+	"fileStorageType": "awsS3",
+	"systems": [
+		{
+			"$oid": "0000d186816abba584714c90"
+		}
+	],
 	"updatedAt": {
-		"$date": "2020-07-27T08:21:14.719Z"
-	},
-	"name": "Expertenschule",
-	"federalState": {
-		"$oid": "0000b186816abba584714c53"
-	},
-	"county":{
-		"antaresKey" : "CB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-		"countyId" : 12052,
-		"name" : "Cottbus"
+		"$date": "2020-08-04T07:21:33.616Z"
 	},
 	"createdAt": {
-		"$date": "2018-11-09T10:04:11.721Z"
+		"$date": "2017-01-01T00:06:37.148Z"
 	},
-	"systems": [],
 	"__v": 0,
-	"fileStorageType": "awsS3",
 	"currentYear": {
 		"$oid": "5ebd6dc14a431f75ec9a3e77"
 	},
-	"purpose": "expert"
+	"purpose": "demo",
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
 },
 {
 	"_id": {
@@ -110,12 +84,14 @@
 	"federalState": {
 		"$oid": "0000b186816abba584714c53"
 	},
-	"county":{
-            "antaresKey" : "CB",
-            "_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-            "countyId" : 12052,
-            "name" : "Cottbus"
-        },
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
+	},
 	"createdAt": {
 		"$date": "2017-08-24T12:04:11.721Z"
 	},
@@ -126,11 +102,41 @@
 		"$oid": "5ebd6dc14a431f75ec9a3e77"
 	},
 	"purpose": "demo",
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f2987e020834114b8efd6f9"
+	},
+	"updatedAt": {
+		"$date": "2020-07-27T08:21:14.719Z"
+	},
+	"name": "Expertenschule",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
+	},
+	"createdAt": {
+		"$date": "2018-11-09T10:04:11.721Z"
+	},
+	"systems": [],
+	"__v": 0,
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
+	},
+	"purpose": "expert"
 },
 {
 	"_id": {
@@ -149,11 +155,13 @@
 	"federalState": {
 		"$oid": "0000b186816abba584714c53"
 	},
-	"county":{
-		"antaresKey" : "CB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-		"countyId" : 12052,
-		"name" : "Cottbus"
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
 	},
 	"fileStorageType": "awsS3",
 	"currentYear": {
@@ -194,11 +202,13 @@
 	"federalState": {
 		"$oid": "0000b186816abba584714c53"
 	},
-	"county":{
-		"antaresKey" : "CB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-		"countyId" : 12052,
-		"name" : "Cottbus"
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
 	},
 	"fileStorageType": "awsS3",
 	"currentYear": {
@@ -277,9 +287,11 @@
 	"federalState": {
 		"$oid": "0000b186816abba584714c58"
 	},
-	"county":{
-		"antaresKey" : "NI",
-		"_id": {"$oid":"5fa55eb53f472a2d986c8812"},
+	"county": {
+		"antaresKey": "NI",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8812"
+		},
 		"countyId": 3256,
 		"name": "Nienburg/Weser"
 	},
