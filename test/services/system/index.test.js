@@ -470,6 +470,44 @@ describe('systemId service', () => {
 			expect(usersSchoolUpdated.systems).to.be.empty;
 		});
 
+		it('REMOVE should remove ldapschoolidentifier from school if ldap system is removed', async () => {
+			const usersSystem = await testObjects.createTestSystem({
+				type: 'ldap',
+			});
+			const usersSchool = await testObjects.createTestSchool({
+				systems: [usersSystem._id],
+				ldapSchoolIdentifier: 'someidentifier',
+			});
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			await app.service('systems').remove(usersSystem._id, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(usersSchool._id, params);
+
+			expect(usersSchoolUpdated.ldapSchoolIdentifier).to.be.undefined;
+		});
+
+		it('REMOVE should remove ldapLastSync from school if ldap system is removed', async () => {
+			const usersSystem = await testObjects.createTestSystem({
+				type: 'ldap',
+			});
+			const usersSchool = await testObjects.createTestSchool({
+				systems: [usersSystem._id],
+				ldapLastSync: '20201020000000Z',
+			});
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			await app.service('systems').remove(usersSystem._id, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(usersSchool._id);
+
+			expect(usersSchoolUpdated.ldapLastSync).to.be.undefined;
+		});
+
 		it('REMOVE iServ configuration should not be removable', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',

@@ -178,7 +178,8 @@
 		"TEACHER_EDIT",
 		"TEACHER_LIST",
 		"TOOL_CREATE",
-		"TOOL_EDIT"
+		"TOOL_EDIT",
+		"YEARS_EDIT"
 	],
 	"__v": 2
 },

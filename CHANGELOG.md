@@ -13,6 +13,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Fixed
+
+- BC-232 prevent users from changing schoolyears
+- BC-233 - when an LDAP system is removed from a school, the ldapschoolidentifier and lastLdapSync are removed as well
+- moved some changelog entries into their correct place
+
 ## [26.10.3] - 2021-09-09
 
 ### Fixed
@@ -24,6 +30,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-120 - add feature flag for S3 CORS
+- BS-112 - insert missing attribute during school creation
 
 ## [26.10.1] - 2021-09-03
 
@@ -47,7 +54,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-119 - remove malfunction S3 lifecycle migration
 - BC-38 - BC-124 - Add ansible files for Bosscloud (default)
 - BC-110 - fileStorage/security should only be called from within the cluster
-- BS-112 - insert missing attribute during school creation
 
 ### Added
 
