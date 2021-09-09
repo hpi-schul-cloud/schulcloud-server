@@ -1,10 +1,30 @@
 [{
 	"_id": {
-		"$oid": "0000b186816abba584714c52"
+		"$oid": "0000b186816abba584714c50"
 	},
-	"name": "Berlin",
-	"abbreviation": "BE",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Coat_of_arms_of_Berlin.svg/450px-Coat_of_arms_of_Berlin.svg.png",
+	"counties" : [
+        {
+            "antaresKey" : "S",
+            "_id": {"$oid": "5fa55eb53f472a2d986c87ba"},
+            "countyId" : 8111,
+            "name" : "Stuttgart"
+        },
+        {
+            "antaresKey" : "BB",
+            "_id": {"$oid": "5fa55eb53f472a2d986c87bb"},
+            "countyId" : 8115,
+            "name" : "Böblingen"
+        },
+        {
+            "antaresKey" : "ES",
+            "_id": {"$oid": "5fa55eb53f472a2d986c87bc"},
+            "countyId" : 8116,
+            "name" : "Esslingen"
+        }
+	],
+	"name": "Baden-Württemberg",
+	"abbreviation": "BW",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_Baden-W%C3%BCrttemberg_%28lesser%29.svg/430px-Coat_of_arms_of_Baden-W%C3%BCrttemberg_%28lesser%29.svg.png",
 	"__v": 0
 },
 {
@@ -18,11 +38,34 @@
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c61"
+		"$oid": "0000b186816abba584714c52"
 	},
-	"name": "Saarland",
-	"abbreviation": "SL",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Wappen_des_Saarlands.svg/512px-Wappen_des_Saarlands.svg.png",
+	"name": "Berlin",
+	"abbreviation": "BE",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Coat_of_arms_of_Berlin.svg/450px-Coat_of_arms_of_Berlin.svg.png",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"counties" : [
+        {
+            "antaresKey" : "BRB",
+            "_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
+            "countyId" : 12051,
+            "name" : "Brandenburg an der Havel"
+        },
+        {
+            "antaresKey" : "CB",
+            "_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
+            "countyId" : 12052,
+            "name" : "Cottbus"
+        }
+	],
+	"name": "Brandenburg",
+	"abbreviation": "BB",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Brandenburg_Wappen.svg/354px-Brandenburg_Wappen.svg.png",
 	"__v": 0
 },
 {
@@ -36,38 +79,20 @@
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c63"
+		"$oid": "0000b186816abba584714c55"
 	},
-	"name": "Sachsen-Anhalt",
-	"abbreviation": "ST",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wappen_Sachsen-Anhalt.svg/554px-Wappen_Sachsen-Anhalt.svg.png",
+	"name": "Hamburg",
+	"abbreviation": "HH",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Coat_of_arms_of_Hamburg.svg/225px-Coat_of_arms_of_Hamburg.svg.png",
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c65"
+		"$oid": "0000b186816abba584714c56"
 	},
-	"name": "Thüringen",
-	"abbreviation": "TH",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Coat_of_arms_of_Thuringia.svg/512px-Coat_of_arms_of_Thuringia.svg.png",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000b186816abba584714c64"
-	},
-	"name": "Schleswig-Holstein",
-	"abbreviation": "SH",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/DEU_Schleswig-Holstein_COA.svg/402px-DEU_Schleswig-Holstein_COA.svg.png",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000b186816abba584714c60"
-	},
-	"name": "Rheinland-Pfalz",
-	"abbreviation": "RP",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Coat_of_arms_of_Rhineland-Palatinate.svg/600px-Coat_of_arms_of_Rhineland-Palatinate.svg.png",
+	"name": "Hessen",
+	"abbreviation": "HE",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Coat_of_arms_of_Hesse.svg/428px-Coat_of_arms_of_Hesse.svg.png",
 	"__v": 0
 },
 {
@@ -81,6 +106,23 @@
 },
 {
 	"_id": {
+		"$oid": "0000b186816abba584714c58"
+	},
+	"name": "Niedersachsen",
+	"abbreviation": "NI",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Coat_of_arms_of_Lower_Saxony.svg/593px-Coat_of_arms_of_Lower_Saxony.svg.png",
+	"__v": 0,
+	"counties" : [
+		{
+			"antaresKey" : "NI",
+			"_id": {"$oid":"5fa55eb53f472a2d986c8812"},
+			"countyId": 3256,
+			"name": "Nienburg/Weser"
+		}
+	]
+},
+{
+	"_id": {
 		"$oid": "0000b186816abba584714c59"
 	},
 	"name": "Nordrhein-Westfalen",
@@ -90,65 +132,11 @@
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c58"
+		"$oid": "0000b186816abba584714c61"
 	},
-	"name": "Niedersachsen",
-	"abbreviation": "NI",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Coat_of_arms_of_Lower_Saxony.svg/593px-Coat_of_arms_of_Lower_Saxony.svg.png",
-	"__v": 0,
-	"counties": [
-		{
-			"antaresKey": "NI",
-			"_id": {
-				"$oid": "5fa55eb53f472a2d986c8812"
-			},
-			"countyId": 3256,
-			"name": "Nienburg/Weser"
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "0000b186816abba584714c50"
-	},
-	"counties": [
-		{
-			"antaresKey": "S",
-			"_id": {
-				"$oid": "5fa55eb53f472a2d986c87ba"
-			},
-			"countyId": 8111,
-			"name": "Stuttgart"
-		},
-		{
-			"antaresKey": "BB",
-			"_id": {
-				"$oid": "5fa55eb53f472a2d986c87bb"
-			},
-			"countyId": 8115,
-			"name": "Böblingen"
-		},
-		{
-			"antaresKey": "ES",
-			"_id": {
-				"$oid": "5fa55eb53f472a2d986c87bc"
-			},
-			"countyId": 8116,
-			"name": "Esslingen"
-		}
-	],
-	"name": "Baden-Württemberg",
-	"abbreviation": "BW",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_Baden-W%C3%BCrttemberg_%28lesser%29.svg/430px-Coat_of_arms_of_Baden-W%C3%BCrttemberg_%28lesser%29.svg.png",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000b186816abba584714c55"
-	},
-	"name": "Hamburg",
-	"abbreviation": "HH",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Coat_of_arms_of_Hamburg.svg/225px-Coat_of_arms_of_Hamburg.svg.png",
+	"name": "Saarland",
+	"abbreviation": "SL",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Wappen_des_Saarlands.svg/512px-Wappen_des_Saarlands.svg.png",
 	"__v": 0
 },
 {
@@ -162,38 +150,38 @@
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c53"
+		"$oid": "0000b186816abba584714c63"
 	},
-	"counties": [
-		{
-			"antaresKey": "BRB",
-			"_id": {
-				"$oid": "5fa55eb53f472a2d986c8812"
-			},
-			"countyId": 12051,
-			"name": "Brandenburg an der Havel"
-		},
-		{
-			"antaresKey": "CB",
-			"_id": {
-				"$oid": "5fa55eb53f472a2d986c8813"
-			},
-			"countyId": 12052,
-			"name": "Cottbus"
-		}
-	],
-	"name": "Brandenburg",
-	"abbreviation": "BB",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Brandenburg_Wappen.svg/354px-Brandenburg_Wappen.svg.png",
+	"name": "Sachsen-Anhalt",
+	"abbreviation": "ST",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Wappen_Sachsen-Anhalt.svg/554px-Wappen_Sachsen-Anhalt.svg.png",
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c56"
+		"$oid": "0000b186816abba584714c64"
 	},
-	"name": "Hessen",
-	"abbreviation": "HE",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Coat_of_arms_of_Hesse.svg/428px-Coat_of_arms_of_Hesse.svg.png",
+	"name": "Schleswig-Holstein",
+	"abbreviation": "SH",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/DEU_Schleswig-Holstein_COA.svg/402px-DEU_Schleswig-Holstein_COA.svg.png",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000b186816abba584714c65"
+	},
+	"name": "Thüringen",
+	"abbreviation": "TH",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Coat_of_arms_of_Thuringia.svg/512px-Coat_of_arms_of_Thuringia.svg.png",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000b186816abba584714c60"
+	},
+	"name": "Rheinland-Pfalz",
+	"abbreviation": "RP",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Coat_of_arms_of_Rhineland-Palatinate.svg/600px-Coat_of_arms_of_Rhineland-Palatinate.svg.png",
 	"__v": 0
 },
 {

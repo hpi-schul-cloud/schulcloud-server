@@ -1,239 +1,141 @@
-[{
-	"_id": {
-		"$oid": "5e1dba1eaa30ab4df47e11d2"
-	},
-	"schoolIds": [
-		{
-			"$oid": "5f2987e020834114b8efd6f8"
-		}
-	],
-	"description": "Test Team Beschreibung",
-	"classIds": [],
-	"color": "#1976d2",
-	"features": [
-		"isTeam"
-	],
-	"name": "Test Team",
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"userIds": [
-		{
-			"userId": {
-				"$oid": "0000d231816abba584714c9e"
-			},
-			"role": {
-				"$oid": "5bb5c62bfb457b1c3c0c7e14"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f8"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:19:48.481Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:19:48.481Z"
-			}
-		},
-		{
-			"userId": {
-				"$oid": "0000d213816abba584714c0b"
-			},
-			"role": {
-				"$oid": "5bb5c49efb457b1c3c0c7e11"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f8"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:19:48.481Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:19:48.481Z"
-			}
-		},
-		{
-			"userId": {
-				"$oid": "0000d224816abba584714c9c"
-			},
-			"role": {
-				"$oid": "5bb5c190fb457b1c3c0c7e0f"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f8"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:19:48.481Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:19:48.481Z"
-			}
-		}
-	],
-	"filePermission": [
-		{
-			"write": true,
-			"read": true,
-			"create": true,
-			"delete": true,
-			"refPermModel": "role",
-			"refId": {
-				"$oid": "5bb5c190fb457b1c3c0c7e0f"
-			}
-		},
-		{
-			"write": true,
-			"read": true,
-			"create": true,
-			"delete": true,
-			"refPermModel": "role",
-			"refId": {
-				"$oid": "5bb5c391fb457b1c3c0c7e10"
-			}
-		}
-	],
-	"invitedUserIds": [
-		{
-			"email": "paul.test@schul-cloud.org",
-			"role": "teamexpert",
-			"updatedAt": {
-				"$date": "2020-01-15T12:19:41.559Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:19:41.559Z"
-			}
-		}
-	],
-	"createdAt": {
-		"$date": "2020-01-14T12:54:54.047Z"
-	},
-	"updatedAt": {
-		"$date": "2020-01-15T12:20:14.673Z"
-	},
-	"__v": 0
+[{ 
+    "_id" : { "$oid": "5e1dba1eaa30ab4df47e11d2" }, 
+    "schoolIds" : [
+        { "$oid": "5f2987e020834114b8efd6f8" }
+    ], 
+    "description" : "Test Team Beschreibung", 
+    "classIds" : [
+
+    ], 
+    "color" : "#1976d2", 
+    "features" : [
+        "isTeam"
+    ], 
+    "name" : "Test Team", 
+    "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+    "userIds" : [
+        {
+            "userId" : { "$oid": "0000d231816abba584714c9e" }, 
+            "role" : { "$oid": "5bb5c62bfb457b1c3c0c7e14" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:19:48.481Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:19:48.481Z" }
+        }, 
+        {
+            "userId" : { "$oid": "0000d213816abba584714c0b" }, 
+            "role" : { "$oid": "5bb5c49efb457b1c3c0c7e11" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:19:48.481Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:19:48.481Z" }
+        }, 
+        {
+            "userId" : { "$oid": "0000d224816abba584714c9c" }, 
+            "role" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:19:48.481Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:19:48.481Z" }
+        }
+    ], 
+    "filePermission" : [
+        {
+            "write" : true, 
+            "read" : true, 
+            "create" : true, 
+            "delete" : true, 
+            "refPermModel" : "role", 
+            "refId" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" }
+        }, 
+        {
+            "write" : true, 
+            "read" : true, 
+            "create" : true, 
+            "delete" : true, 
+            "refPermModel" : "role", 
+            "refId" : { "$oid": "5bb5c391fb457b1c3c0c7e10" }
+        }
+    ], 
+    "invitedUserIds" : [
+        {
+            "email" : "paul.test@schul-cloud.org", 
+            "role" : "teamexpert", 
+            "updatedAt" : { "$date": "2020-01-15T12:19:41.559Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:19:41.559Z" }
+        }
+    ], 
+    "createdAt" : { "$date": "2020-01-14T12:54:54.047Z" }, 
+    "updatedAt" : { "$date": "2020-01-15T12:20:14.673Z" }, 
+    "__v" : 0
 },
-{
-	"_id": {
-		"$oid": "5e1dc275322ce040a850b14b"
-	},
-	"schoolIds": [
-		{
-			"$oid": "5f2987e020834114b8efd6f8"
-		},
-		{
-			"$oid": "5f2987e020834114b8efd6f6"
-		}
-	],
-	"description": "",
-	"classIds": [],
-	"color": "#d32f2f",
-	"features": [
-		"isTeam"
-	],
-	"name": "A-Team",
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"userIds": [
-		{
-			"userId": {
-				"$oid": "0000d231816abba584714c9e"
-			},
-			"role": {
-				"$oid": "5bb5c62bfb457b1c3c0c7e14"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f8"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			}
-		},
-		{
-			"userId": {
-				"$oid": "0000d224816abba584714c9c"
-			},
-			"role": {
-				"$oid": "5bb5c391fb457b1c3c0c7e10"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f8"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			}
-		},
-		{
-			"userId": {
-				"$oid": "58b40278dac20e0645353e3a"
-			},
-			"role": {
-				"$oid": "5bb5c190fb457b1c3c0c7e0f"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f8"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			}
-		},
-		{
-			"userId": {
-				"$oid": "59ad4c412b442b7f81810285"
-			},
-			"role": {
-				"$oid": "5bb5c545fb457b1c3c0c7e13"
-			},
-			"schoolId": {
-				"$oid": "5f2987e020834114b8efd6f6"
-			},
-			"updatedAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			},
-			"createdAt": {
-				"$date": "2020-01-15T12:20:53.682Z"
-			}
-		}
-	],
-	"filePermission": [
-		{
-			"write": true,
-			"read": true,
-			"create": true,
-			"delete": true,
-			"refPermModel": "role",
-			"refId": {
-				"$oid": "5bb5c190fb457b1c3c0c7e0f"
-			}
-		},
-		{
-			"write": true,
-			"read": true,
-			"create": true,
-			"delete": true,
-			"refPermModel": "role",
-			"refId": {
-				"$oid": "5bb5c391fb457b1c3c0c7e10"
-			}
-		}
-	],
-	"invitedUserIds": [],
-	"createdAt": {
-		"$date": "2020-01-14T13:30:29.108Z"
-	},
-	"updatedAt": {
-		"$date": "2020-01-15T12:20:53.682Z"
-	},
-	"__v": 0
+{ 
+    "_id" : { "$oid": "5e1dc275322ce040a850b14b" }, 
+    "schoolIds" : [
+        { "$oid": "5f2987e020834114b8efd6f8" }, 
+        { "$oid": "5f2987e020834114b8efd6f6" }
+    ], 
+    "description" : "", 
+    "classIds" : [
+
+    ], 
+    "color" : "#d32f2f", 
+    "features" : [
+        "isTeam"
+    ], 
+    "name" : "A-Team", 
+    "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+    "userIds" : [
+        {
+            "userId" : { "$oid": "0000d231816abba584714c9e" }, 
+            "role" : { "$oid": "5bb5c62bfb457b1c3c0c7e14" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
+        }, 
+        {
+            "userId" : { "$oid": "0000d224816abba584714c9c" }, 
+            "role" : { "$oid": "5bb5c391fb457b1c3c0c7e10" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
+        }, 
+        {
+            "userId" : { "$oid": "58b40278dac20e0645353e3a" }, 
+            "role" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
+        }, 
+        {
+            "userId" : { "$oid": "59ad4c412b442b7f81810285" }, 
+            "role" : { "$oid": "5bb5c545fb457b1c3c0c7e13" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f6" }, 
+            "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
+            "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
+        }
+    ], 
+    "filePermission" : [
+        {
+            "write" : true, 
+            "read" : true, 
+            "create" : true, 
+            "delete" : true, 
+            "refPermModel" : "role", 
+            "refId" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" }
+        }, 
+        {
+            "write" : true, 
+            "read" : true, 
+            "create" : true, 
+            "delete" : true, 
+            "refPermModel" : "role", 
+            "refId" : { "$oid": "5bb5c391fb457b1c3c0c7e10" }
+        }
+    ], 
+    "invitedUserIds" : [
+
+    ], 
+    "createdAt" : { "$date": "2020-01-14T13:30:29.108Z" }, 
+    "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
+    "__v" : 0
 },
 {
 	"_id": {
@@ -304,4 +206,3 @@
 	},
 	"__v": 0
 }]
-

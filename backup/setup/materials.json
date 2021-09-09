@@ -1,11 +1,12 @@
-[{
+[
+{
 	"_id": {
 		"$oid": "59b6bdc75c9ec20c6f083659"
 	},
 	"title": "Merkmale von quadratischen Funktionen herausfinden",
 	"client": "Khan Academy",
 	"url": "/content/redirect/5991916cc9df580090bc0d36",
-	"description": "Sal ermittelt die Nullstellen, den Scheitelpunkt & die Symmetrieachse von quadratischen Funktionen, die in der Scheitelpunktform, der faktorisierten Form, & der Normalform gegeben sind.",
+	"description": "Sal ermittelt die Nullstellen, den Scheitelpunkt \u0026 die Symmetrieachse von quadratischen Funktionen, die in der Scheitelpunktform, der faktorisierten Form, \u0026 der Normalform gegeben sind.",
 	"createdAt": {
 		"$date": "2017-09-11T16:45:59.504Z"
 	},
@@ -33,5 +34,5 @@
 	"subjects": [],
 	"license": [],
 	"__v": 0
-}]
-
+}
+]
