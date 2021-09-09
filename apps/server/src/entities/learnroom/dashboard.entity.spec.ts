@@ -9,7 +9,7 @@ describe('dashboard entity', () => {
 		});
 	});
 
-	describe('getter', () => {
+	describe('grid', () => {
 		it('getGrid should return correct value', () => {
 			const dashboard = new DashboardEntity({ grid: [[]] });
 			const testGrid = dashboard.getGrid();
@@ -17,9 +17,20 @@ describe('dashboard entity', () => {
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
-			const dashboard = new DashboardEntity({ grid: [[{ getName: () => 'example String' }]] });
+			const dashboard = new DashboardEntity({ grid: [[{ getName: () => 'test element' }]] });
 			const testGrid = dashboard.getGrid();
-			expect(testGrid[0][0].getName()).toEqual('example String');
+
+			if (testGrid[0][0] != null) {
+				expect(testGrid[0][0].getName()).toEqual('test element');
+			} else {
+				throw new Error('gridElement should not be null');
+			}
+		});
+
+		it('grid allows for null values', () => {
+			const dashboard = new DashboardEntity({ grid: [[null]] });
+			const testGrid = dashboard.getGrid();
+			expect(testGrid[0][0]).toBeNull();
 		});
 	});
 });

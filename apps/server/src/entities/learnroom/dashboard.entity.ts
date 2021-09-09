@@ -1,8 +1,14 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
 export class DefaultGridElement implements GridElement {
+	name: string;
+
+	constructor(name: string) {
+		this.name = name;
+	}
+
 	getName = (): string => {
-		return 'some default example name';
+		return this.name;
 	};
 }
 
