@@ -220,7 +220,7 @@ const exportCollection = async ({ collection, filePath }) => {
 		collection,
 		'--out',
 		filePath,
-		args['--sort'] ? `--sort "${args['--sort']}"` : undefined,
+		args['--sort'] ? `--sort "${args['--sort']}"` : ' --sort "{ createdAt: 1 }"',
 		'--jsonArray',
 		args['--pretty'] ? '--pretty' : undefined,
 	];

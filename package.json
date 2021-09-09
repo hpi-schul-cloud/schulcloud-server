@@ -41,7 +41,7 @@
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
 		"migration-prune": "migrate prune --config ./config/migrate.js",
-		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
+		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations",
 		"migrate-etherpads": "node ./migrate-etherpads.js",
 		"nest:prebuild": "rimraf dist",
 		"nest:build": "nest build",
