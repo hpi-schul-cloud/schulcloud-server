@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-213 - rewrite file deletion with deletion marker
+
 ### Added
 
 ### Fixed
