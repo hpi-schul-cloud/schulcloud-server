@@ -6,20 +6,22 @@ export class DefaultGridElement implements GridElement {
 	};
 }
 
+export type DashboardGrid = (GridElement | null)[][];
+
 export interface GridElement {
 	getName: () => string;
 }
 
 export class DashboardEntity extends BaseEntityWithTimestamps {
-	grid: GridElement[][];
+	grid: DashboardGrid;
 
-	constructor(props: { grid: GridElement[][] }) {
+	constructor(props: { grid: DashboardGrid }) {
 		super();
 		this.grid = props.grid || [];
 		Object.assign(this, {});
 	}
 
-	getGrid(): GridElement[][] {
+	getGrid(): DashboardGrid {
 		return this.grid;
 	}
 }
