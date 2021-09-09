@@ -16,7 +16,7 @@ export class DashboardRepo {
 			for (let j = 0; j < i; j += 1) {
 				row.push(null);
 			}
-			row.push(new DefaultGridElement());
+			row.push(new DefaultGridElement(i.toString()));
 			diagonalGrid.push(row);
 		}
 		return Promise.resolve(new DashboardEntity({ grid: diagonalGrid }));
