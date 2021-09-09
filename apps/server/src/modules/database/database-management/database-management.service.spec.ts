@@ -5,7 +5,7 @@ import { MongoMemoryDatabaseModule } from '..';
 import { User } from '../../../entities';
 import { ManagementService } from './database-management.service';
 
-describe('MongoConsoleService', () => {
+describe.only('MongoConsoleService', () => {
 	let module: TestingModule;
 	let service: ManagementService;
 	let em: EntityManager;
@@ -56,14 +56,15 @@ describe('MongoConsoleService', () => {
 		});
 	});
 
-	describe('when loading bson as json', () => {
+	it('when loading bson as json', () => {
 		// Serialize a document
 		const doc = { long: Long.fromNumber(100) };
 		const data = serialize(doc);
 		console.log('data:', data);
 
 		// De serialize it again
-		const doc_2 = deserialize(data);
-		console.log('doc_2:', doc_2);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const doc2 = deserialize(data);
+		console.log('doc_2:', doc2);
 	});
 });

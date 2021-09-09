@@ -12,8 +12,12 @@ export class DatabaseManagementController {
 	}
 
 	@Post('seed-database')
-	async resetCollections(): Promise<string[]> {
-		const collectionNamesDropped = this.managementService.resetAllCollections();
-		return collectionNamesDropped;
+	async resetCollections(): Promise<void> {
+		await this.managementService.resetAllCollections();
+	}
+
+	@Post('export-database')
+	async exportCollections(): Promise<void> {
+		await this.managementService.exportAllCollections();
 	}
 }

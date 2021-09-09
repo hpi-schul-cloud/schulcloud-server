@@ -66,7 +66,7 @@ describe('MongoConsoleModule', () => {
 			}).toThrow();
 			expect(service).toBeUndefined();
 			expect(() => {
-				controller = module.get<MongoConsoleController>(MongoConsoleController);
+				controller = module.get<DatabaseManagementController>(DatabaseManagementController);
 			}).toThrow();
 			expect(controller).toBeUndefined();
 		});

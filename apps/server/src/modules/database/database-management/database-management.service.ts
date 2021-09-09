@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable no-return-assign */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-restricted-syntax */
@@ -5,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as BSON from 'bson';
 import { Logger } from '../../../core/logger/logger.service';
 
 const basePath = '../../../../../../backup/setup';
@@ -21,61 +25,78 @@ export class ManagementService {
 		this.logger = new Logger(ManagementService.name, true);
 	}
 
-	/**
-	 * Drops all collections of the mongo drivers database connection.
-	 * Hint: The originated MongoDriver.dropCollections() would only remove collections of registered entities.
-	 */
-	async dropAllCollections(): Promise<string[]> {
-		const driver = this.em.getDriver();
-		const db = driver.getConnection('write').getDb();
-		const collections = ((await db.listCollections().toArray()) || []) as ICollection[];
-		const collectionNames = collections.map((collection) => collection.name);
-		for (const collection of collectionNames) {
-			this.logger.log(`drop collection: ${collection}`);
-			// eslint-disable-next-line no-await-in-loop
-			await db.dropCollection(collection);
-			this.logger.log(`collection dropped: ${collection}`);
-		}
-		return collectionNames;
-	}
-
 	async importCollection(
 		collectionName: string,
 		dropCollection: boolean,
 		documents: Record<string, unknown>[]
 	): Promise<void> {
 		this.logger.log(`import documents into collection ${collectionName}...`);
-		const driver = this.em.getDriver();
-		const db = driver.getConnection('write').getDb();
+		const { db, collection } = this.getCollection(collectionName);
 		if (dropCollection) {
 			await db.dropCollection(collectionName);
 			this.logger.log(`dropped collection ${collectionName} successfully`);
 			await db.createCollection(collectionName);
 		}
-		const collection = db.collection(collectionName);
-		const { insertedCount } = await collection.insertMany(documents, {
+		const jsonDocuments = BSON.EJSON.deserialize(documents) as any[];
+		const { insertedCount } = await collection.insertMany(jsonDocuments, {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
 		});
 		this.logger.log(`imported ${insertedCount} documents into collection ${collectionName} successfully`);
 	}
 
-	async resetAllCollections(): Promise<string[]> {
-		const folder = path.join(__dirname, basePath);
-		const files = fs.readdirSync(folder);
-		const backupData = files.map((collectionFile) => {
-			const filePath = path.join(folder, collectionFile);
+	private getCollection(collectionName: string) {
+		// TODO constructor
+		const driver = this.em.getDriver();
+		const db = driver.getConnection('write').getDb();
+		const collection = db.collection(collectionName);
+		return { db, collection };
+	}
+
+	async resetAllCollections(): Promise<void> {
+		const files = this.getCollectionFiles();
+		for (const { filePath, collectionName } of files) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const collectionName = collectionFile.split('.')[0];
-			const file = fs.readFileSync(filePath, 'utf-8');
-			const documents = JSON.parse(file) as Record<string, any>[];
-			return { documents, collection: collectionName };
-		});
-		for (const { collection, documents } of backupData) {
-			if (documents) {
-				await this.importCollection(collection, true, documents);
-			}
+			const bsonDocuments = this.loadBsonFromFile(filePath);
+			await this.importCollection(collectionName, true, bsonDocuments);
 		}
+	}
+
+	private loadBsonFromFile(filePath: string) {
+		const file = fs.readFileSync(filePath, 'utf-8'); // TODO no encoding, no json step?
+		const bsonDocuments = JSON.parse(file) as Record<string, unknown>[];
+		return bsonDocuments;
+	}
+
+	private getCollectionFiles() {
+		const folder = path.join(__dirname, basePath);
+		const filenames = fs.readdirSync(folder);
+		const files = filenames.map((fileName) => ({
+			filePath: path.join(folder, fileName),
+			collectionName: fileName.split('.')[0],
+		}));
 		return files;
+	}
+
+	async exportCollection(name: string): Promise<BSON.Document> {
+		const { collection } = this.getCollection(name);
+		const documents = await collection.find({}).toArray();
+		this.logger.log(`found ${documents.length} documents in collection ${name}`);
+		const bsonDocuments = BSON.EJSON.serialize(documents);
+		return bsonDocuments;
+	}
+
+	async exportAllCollections(): Promise<void> {
+		const files = this.getCollectionFiles();
+		for (const { filePath, collectionName } of files) {
+			const documents = await this.exportCollection(collectionName);
+			this.writeDocumentsToFile(documents, filePath);
+		}
+	}
+
+	private writeDocumentsToFile(documents: BSON.Document, filePath: string) {
+		const data = JSON.stringify(documents, undefined, '	');
+		fs.writeFileSync(filePath, data);
+		this.logger.log(`write documents in ${filePath}`);
 	}
 }
