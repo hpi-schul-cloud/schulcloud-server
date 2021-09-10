@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 ### Fixed
+- BC-111 wait for mongodb to spin up in deployment
 
 ## [26.11.0] - 2021-09-22
 
