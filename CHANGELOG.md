@@ -23,6 +23,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-262 - remove S3 lifecycle configuration code
 
+## [26.10.3] - 2021-09-09
+
+### Fixed
+
+- BC-267 - skip whitelist-check for api requests on /wopi
+
+
 ## [26.10.2] - 2021-09-03
 
 ### Added
