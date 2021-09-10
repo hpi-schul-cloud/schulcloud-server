@@ -3,7 +3,18 @@ import { DashboardEntity } from './dashboard.entity';
 describe('dashboard entity', () => {
 	describe('constructor', () => {
 		it('should create dashboard when passing empty grid', () => {
-			const gridElement = { xPos: 1, yPos: 2, getName: () => 'test element' };
+			const gridElement = {
+				getPosition: () => ({
+					x: 1,
+					y: 1,
+				}),
+				getMetadata: () => ({
+					id: 'someId',
+					title: 'Mathe 3d',
+					shortTitle: 'Ma',
+					displayColor: '#FFFFFF',
+				}),
+			};
 			const dashboard = new DashboardEntity({ grid: [gridElement] });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
@@ -24,11 +35,22 @@ describe('dashboard entity', () => {
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
-			const gridElement = { xPos: 1, yPos: 2, getName: () => 'test element' };
+			const gridElement = {
+				getPosition: () => ({
+					x: 1,
+					y: 1,
+				}),
+				getMetadata: () => ({
+					id: 'someId',
+					title: 'Calendar-Dashboard',
+					shortTitle: 'CAL',
+					displayColor: '#FFFFFF',
+				}),
+			};
 			const dashboard = new DashboardEntity({ grid: [gridElement] });
 			const testGrid = dashboard.getGrid();
 
-			expect(testGrid[0].getName()).toEqual('test element');
+			expect(testGrid[0].getMetadata().title).toEqual('Calendar-Dashboard');
 		});
 	});
 });

@@ -1,28 +1,38 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
+export type GridElementReferenceMetadata = {
+	id: string;
+	title: string;
+	shortTitle: string;
+	displayColor: string;
+};
+
 export interface IGridElementReference {
-	getName: () => string;
+	getMetadata: () => GridElementReferenceMetadata;
 }
 
 export class DefaultGridReference implements IGridElementReference {
 	// This is only a temporary fake class, for use until other references, like courses, are fully supported.
-	name: string;
+	title: string;
 
-	constructor(name: string) {
-		this.name = name;
+	constructor(title: string) {
+		this.title = title;
 	}
 
-	getName = (): string => {
-		return this.name;
-	};
+	getMetadata(): GridElementReferenceMetadata {
+		return {
+			id: 'someId',
+			title: this.title,
+			shortTitle: this.title.substr(0, 2),
+			displayColor: '#FFFFFF',
+		};
+	}
 }
 
 export interface IGridElement {
-	xPos: number;
+	getPosition(): { x: number; y: number };
 
-	yPos: number;
-
-	getName: () => string;
+	getMetadata: () => GridElementReferenceMetadata;
 }
 
 export class GridElement implements IGridElement {
@@ -38,8 +48,12 @@ export class GridElement implements IGridElement {
 
 	yPos: number;
 
-	getName(): string {
-		return this.reference.getName();
+	getPosition(): { x: number; y: number } {
+		return { x: this.xPos, y: this.yPos };
+	}
+
+	getMetadata(): GridElementReferenceMetadata {
+		return this.reference.getMetadata();
 	}
 }
 

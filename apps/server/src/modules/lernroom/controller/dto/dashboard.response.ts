@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DashboardGridElement {
+export class DashboardGridElementResponse {
 	@ApiProperty({
 		description: 'The id of the Grid element',
 		pattern: '[a-f0-9]{24}',
@@ -17,10 +17,10 @@ export class DashboardGridElement {
 	})
 	shortTitle: string;
 
-	@ApiProperty({
+	/* @ApiProperty({
 		description: 'Hyperlink of the Grid element',
 	})
-	url: string;
+	url: string; */
 
 	@ApiProperty({
 		description: 'Color of the Grid element',
@@ -48,5 +48,5 @@ export class DashboardResponse {
 	@ApiProperty({
 		description: 'List of all elements visible on the dashboard',
 	})
-	gridElements: DashboardGridElement[];
+	gridElements: DashboardGridElementResponse[];
 }
