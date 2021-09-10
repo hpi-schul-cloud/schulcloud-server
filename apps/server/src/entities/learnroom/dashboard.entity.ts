@@ -1,6 +1,11 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
-export class DefaultGridElement implements GridElement {
+export interface IGridElementReference {
+	getName: () => string;
+}
+
+export class DefaultGridReference implements IGridElementReference {
+	// This is only a temporary fake class, for use until other references, like courses, are fully supported.
 	name: string;
 
 	constructor(name: string) {
@@ -12,22 +17,42 @@ export class DefaultGridElement implements GridElement {
 	};
 }
 
-export type DashboardGrid = (GridElement | null)[][];
+export interface IGridElement {
+	xPos: number;
 
-export interface GridElement {
+	yPos: number;
+
 	getName: () => string;
 }
 
-export class DashboardEntity extends BaseEntityWithTimestamps {
-	grid: DashboardGrid;
+export class GridElement implements IGridElement {
+	constructor(x: number, y: number, reference: IGridElementReference) {
+		this.xPos = x;
+		this.yPos = y;
+		this.reference = reference;
+	}
 
-	constructor(props: { grid: DashboardGrid }) {
+	reference: IGridElementReference;
+
+	xPos: number;
+
+	yPos: number;
+
+	getName(): string {
+		return this.reference.getName();
+	}
+}
+
+export class DashboardEntity extends BaseEntityWithTimestamps {
+	grid: IGridElement[];
+
+	constructor(props: { grid: IGridElement[] }) {
 		super();
 		this.grid = props.grid || [];
 		Object.assign(this, {});
 	}
 
-	getGrid(): DashboardGrid {
+	getGrid(): IGridElement[] {
 		return this.grid;
 	}
 }

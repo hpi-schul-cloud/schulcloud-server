@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-	DashboardEntity,
-	DefaultGridElement,
-	GridElement,
-	DashboardGrid,
-} from '../../entities/learnroom/dashboard.entity';
+import { DashboardEntity, DefaultGridReference, GridElement } from '../../entities/learnroom/dashboard.entity';
 
 export interface IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity>;
@@ -13,16 +8,12 @@ export interface IDashboardRepo {
 @Injectable()
 export class DashboardRepo implements IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity> {
-		const diagonalGrid: DashboardGrid = [];
+		const gridArray: GridElement[] = [];
 		const diagonalSize = 5;
+		const elementReference = new DefaultGridReference('exampletitle');
 		for (let i = 0; i < diagonalSize; i += 1) {
-			const row: (GridElement | null)[] = [];
-			for (let j = 0; j < i; j += 1) {
-				row.push(null);
-			}
-			row.push(new DefaultGridElement(i.toString()));
-			diagonalGrid.push(row);
+			gridArray.push(new GridElement(i, i, elementReference));
 		}
-		return Promise.resolve(new DashboardEntity({ grid: diagonalGrid }));
+		return Promise.resolve(new DashboardEntity({ grid: gridArray }));
 	}
 }
