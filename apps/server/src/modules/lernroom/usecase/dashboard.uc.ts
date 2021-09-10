@@ -7,7 +7,7 @@ export class DashboardUc {
 	constructor(@Inject('DASHBOARD_REPO') private dashboardRepo: IDashboardRepo) {}
 
 	async getUsersDashboard(): Promise<DashboardEntity> {
-		const dashboard = this.dashboardRepo.getUsersDashboard();
+		const dashboard = await this.dashboardRepo.getUsersDashboard();
 		return dashboard;
 	}
 }
