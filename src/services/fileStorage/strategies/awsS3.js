@@ -268,24 +268,6 @@ const putBucketCors = async (awsObject) =>
 		})
 		.promise();
 
-const setBucketLifecycleConfiguration = async (awsObject) =>
-	awsObject.s3
-		.putBucketLifecycleConfiguration({
-			Bucket: awsObject.bucket,
-			LifecycleConfiguration: {
-				Rules: [
-					{
-						Prefix: 'expiring_',
-						Expiration: {
-							Days: 7,
-						},
-						Status: 'Enabled',
-					},
-				],
-			},
-		})
-		.promise();
-
 /**
  * Creates bucket. If s3 create bucket returns 409 (Conflict)
  * - it means that the bucket already exists by another provider
@@ -299,9 +281,6 @@ const createBucket = async (awsObject) => {
 		await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
 		if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 			await putBucketCors(awsObject);
-		}
-		if (Configuration.get('FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT') === true) {
-			await setBucketLifecycleConfiguration(awsObject);
 		}
 		return awsObject;
 	} catch (err) {
