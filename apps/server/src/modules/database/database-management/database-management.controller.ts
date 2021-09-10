@@ -1,4 +1,4 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Param, Post } from '@nestjs/common';
 import { Logger } from '../../../core/logger/logger.service';
 import { ManagementService } from './database-management.service';
 
@@ -12,12 +12,22 @@ export class DatabaseManagementController {
 	}
 
 	@Post('seed-database')
-	async resetCollections(): Promise<void> {
-		await this.managementService.resetAllCollections();
+	async importCollections(): Promise<void> {
+		await this.managementService.seedAllCollectionsFromFiles();
+	}
+
+	@Post('seed-database/:collectionName')
+	async importCollection(@Param('collectionName') collectionName: string): Promise<void> {
+		await this.managementService.seedCollectionFromFile(collectionName);
 	}
 
 	@Post('export-database')
 	async exportCollections(): Promise<void> {
-		await this.managementService.exportAllCollections();
+		await this.managementService.exportAllCollectionsToFiles();
+	}
+
+	@Post('export-database/:collectionName')
+	async exportCollection(@Param('collectionName') collectionName: string): Promise<void> {
+		await this.managementService.exportCollectionToFile(collectionName);
 	}
 }

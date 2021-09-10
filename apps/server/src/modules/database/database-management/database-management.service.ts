@@ -29,47 +29,38 @@ export class ManagementService {
 	async importCollection(
 		collectionName: string,
 		dropCollection: boolean,
-		documents: Record<string, unknown>[]
-	): Promise<void> {
+		bsonDocuments: Record<string, unknown>[]
+	): Promise<number> {
 		this.logger.log(`import documents into collection ${collectionName}...`);
 		const { db, collection } = this.getCollection(collectionName);
 		if (dropCollection) {
 			await db.dropCollection(collectionName);
-			this.logger.log(`dropped collection ${collectionName} successfully`);
+			this.logger.log(` - dropped collection ${collectionName} successfully`);
 			await db.createCollection(collectionName);
 		}
-		const jsonDocuments = BSON.EJSON.deserialize(documents) as any[];
+		const jsonDocuments = BSON.EJSON.deserialize(bsonDocuments) as any[];
 		const { insertedCount } = await collection.insertMany(jsonDocuments, {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
 		});
-		this.logger.log(`imported ${insertedCount} documents into collection ${collectionName} successfully`);
+		this.logger.log(` - imported ${insertedCount} documents into collection ${collectionName} successfully`);
+		return insertedCount;
 	}
 
 	private getCollection(collectionName: string) {
-		// TODO constructor
 		const driver = this.em.getDriver();
 		const db = driver.getConnection('write').getDb();
 		const collection = db.collection(collectionName);
 		return { db, collection };
 	}
 
-	async resetAllCollections(): Promise<void> {
-		const files = this.getCollectionFiles();
-		for (const { filePath, collectionName } of files) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const bsonDocuments = this.loadBsonFromFile(filePath);
-			await this.importCollection(collectionName, true, bsonDocuments);
-		}
-	}
-
-	private loadBsonFromFile(filePath: string) {
+	private loadBjsonFromFile(filePath: string) {
 		const file = fs.readFileSync(filePath, 'utf-8'); // TODO no encoding, no json step?
 		const bsonDocuments = JSON.parse(file) as Record<string, unknown>[];
 		return bsonDocuments;
 	}
 
-	private getCollectionFiles() {
+	private loadCollectionsFromFilesystem() {
 		const folder = path.join(__dirname, basePath);
 		const filenames = fs.readdirSync(folder);
 		const files = filenames.map((fileName) => ({
@@ -79,26 +70,69 @@ export class ManagementService {
 		return files;
 	}
 
-	async exportCollection(name: string): Promise<any[]> {
+	private async geCollectionDocuments(name: string): Promise<any[]> {
 		const { collection } = this.getCollection(name);
 		const documents = await collection.find({}).toArray();
-		this.logger.log(`found ${documents.length} documents in collection ${name}`);
 		const bsonDocuments = BSON.EJSON.serialize(documents) as any[];
 		return bsonDocuments;
 	}
 
-	async exportAllCollections(): Promise<void> {
-		const files = this.getCollectionFiles();
+	private writeTextToFile(text: string, filePath: string) {
+		fs.writeFileSync(filePath, text + EOL);
+	}
+
+	private async import(collections?: string[]): Promise<void> {
+		const files = this.loadFilesAndFilterByCollectionName(collections);
 		for (const { filePath, collectionName } of files) {
-			const documents = await this.exportCollection(collectionName);
-			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
-			const text = JSON.stringify(sortedDocuments, undefined, '	');
-			this.writeDocumentsToFile(text, filePath);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const bsonDocuments = this.loadBjsonFromFile(filePath);
+			await this.importCollection(collectionName, true, bsonDocuments);
 		}
 	}
 
-	private writeDocumentsToFile(text: string, filePath: string) {
-		fs.writeFileSync(filePath, text + EOL);
-		this.logger.log(`write documents in ${filePath}`);
+	private async export(collections?: string[]): Promise<void> {
+		const files = this.loadFilesAndFilterByCollectionName(collections);
+		for (const { filePath, collectionName } of files) {
+			const documents = await this.geCollectionDocuments(collectionName);
+			this.logger.log(`found ${documents.length} documents in collection ${collectionName}...`);
+			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
+			const text = JSON.stringify(sortedDocuments, undefined, '	');
+			this.writeTextToFile(text, filePath);
+			this.logger.log(` - text data written to file ${filePath}`);
+		}
+	}
+
+	private loadFilesAndFilterByCollectionName(collections: string[] | undefined) {
+		let files = this.loadCollectionsFromFilesystem();
+
+		if (collections?.length !== 0) {
+			files = files.filter(({ collectionName }) => collections?.includes(collectionName));
+
+			if (files.length === 0) {
+				throw new Error(
+					`collectionName invalid. collection names available to be used: ${JSON.stringify(
+						this.loadCollectionsFromFilesystem().map((file) => file.collectionName)
+					)}`
+				);
+			}
+			this.logger.log(`collections found: ${JSON.stringify(files.map((file) => file.collectionName))}`);
+		}
+		return files;
+	}
+
+	async seedCollectionFromFile(collectionName: string): Promise<void> {
+		await this.import([collectionName]);
+	}
+
+	async seedAllCollectionsFromFiles(): Promise<void> {
+		await this.import();
+	}
+
+	async exportCollectionToFile(collectionName: string): Promise<void> {
+		await this.export([collectionName]);
+	}
+
+	async exportAllCollectionsToFiles(): Promise<void> {
+		await this.export();
 	}
 }
