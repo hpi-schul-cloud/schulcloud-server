@@ -13,6 +13,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as BSON from 'bson';
 import { orderBy } from 'lodash';
+import { EOL } from 'os';
 import { Logger } from '../../../core/logger/logger.service';
 
 const basePath = '../../../../../../backup/setup';
@@ -90,14 +91,14 @@ export class ManagementService {
 		const files = this.getCollectionFiles();
 		for (const { filePath, collectionName } of files) {
 			const documents = await this.exportCollection(collectionName);
-			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt', 'name'], ['asc', 'asc', 'asc']);
+			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date', 'name'], ['asc', 'asc', 'asc']);
 			const text = JSON.stringify(sortedDocuments, undefined, '	');
 			this.writeDocumentsToFile(text, filePath);
 		}
 	}
 
 	private writeDocumentsToFile(text: string, filePath: string) {
-		fs.writeFileSync(filePath, text);
+		fs.writeFileSync(filePath, text + EOL);
 		this.logger.log(`write documents in ${filePath}`);
 	}
 }
