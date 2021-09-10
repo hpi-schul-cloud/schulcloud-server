@@ -28,7 +28,7 @@ const ownerModel = {
 
 module.exports = {
 	up: async function up() {
-		let errorCode = 1;
+		let successful = true;
 		alert('Start adding buckets to file documents...');
 		await connect();
 		const files = FileModel.find({ bucket: { $exists: false } });
@@ -44,12 +44,14 @@ module.exports = {
 				await file.save();
 			} catch (err) {
 				error(`bucket could not be added to the file ${file._id}`, err);
-				errorCode = 1;
+				successful = false;
 			}
 		}
 		await close();
 		alert('Done!');
-		process.exit(errorCode);
+		if (!successful) {
+			throw new Error('Buckets could not be added to all files.');
+		}
 	},
 
 	down: async function down() {
