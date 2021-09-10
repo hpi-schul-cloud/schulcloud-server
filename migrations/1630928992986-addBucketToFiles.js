@@ -6,6 +6,10 @@ const { connect, close } = require('../src/utils/database');
 
 const { Schema } = mongoose;
 
+const { userModel } = require('../src/services/user/model');
+const { courseModel } = require('../src/services/user-group/model');
+const { teamsModel } = require('../src/services/teams/model');
+
 const FileModel = mongoose.model(
 	'file_20210906',
 	new mongoose.Schema({
@@ -16,38 +20,15 @@ const FileModel = mongoose.model(
 	'files'
 );
 
-const UserModel = mongoose.model(
-	'user_20210906',
-	new mongoose.Schema({
-		schoolId: { type: Schema.Types.ObjectId },
-	}),
-	'users'
-);
-
-const CourseModel = mongoose.model(
-	'course_20210906',
-	new mongoose.Schema({
-		schoolId: { type: Schema.Types.ObjectId },
-	}),
-	'courses'
-);
-
-const TeamModel = mongoose.model(
-	'team_20210906',
-	new mongoose.Schema({
-		schoolIds: { type: [Schema.Types.ObjectId] },
-	}),
-	'teams'
-);
-
 const ownerModel = {
-	user: UserModel,
-	course: CourseModel,
-	teams: TeamModel,
+	user: userModel,
+	course: courseModel,
+	teams: teamsModel,
 };
 
 module.exports = {
 	up: async function up() {
+		let errorCode = 1;
 		alert('Start adding buckets to file documents...');
 		await connect();
 		const files = FileModel.find({ bucket: { $exists: false } });
@@ -63,10 +44,12 @@ module.exports = {
 				await file.save();
 			} catch (err) {
 				error(`bucket could not be added to the file ${file._id}`, err);
+				errorCode = 1;
 			}
 		}
 		await close();
 		alert('Done!');
+		process.exit(errorCode);
 	},
 
 	down: async function down() {
