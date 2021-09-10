@@ -97,6 +97,7 @@
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
+		"bson": "^4.5.1",
 		"chalk": "^4.0.0",
 		"class-transformer": "^0.4.0",
 		"class-validator": "^0.13.1",
