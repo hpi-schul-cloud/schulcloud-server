@@ -1,3 +1,6 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable no-extend-native */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable no-return-assign */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -9,13 +12,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as BSON from 'bson';
+import { orderBy } from 'lodash';
 import { Logger } from '../../../core/logger/logger.service';
 
 const basePath = '../../../../../../backup/setup';
-
-interface ICollection {
-	name: string;
-}
 
 @Injectable()
 export class ManagementService {
@@ -78,11 +78,11 @@ export class ManagementService {
 		return files;
 	}
 
-	async exportCollection(name: string): Promise<BSON.Document> {
+	async exportCollection(name: string): Promise<any[]> {
 		const { collection } = this.getCollection(name);
 		const documents = await collection.find({}).toArray();
 		this.logger.log(`found ${documents.length} documents in collection ${name}`);
-		const bsonDocuments = BSON.EJSON.serialize(documents);
+		const bsonDocuments = BSON.EJSON.serialize(documents) as any[];
 		return bsonDocuments;
 	}
 
@@ -90,13 +90,14 @@ export class ManagementService {
 		const files = this.getCollectionFiles();
 		for (const { filePath, collectionName } of files) {
 			const documents = await this.exportCollection(collectionName);
-			this.writeDocumentsToFile(documents, filePath);
+			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt', 'name'], ['asc', 'asc', 'asc']);
+			const text = JSON.stringify(sortedDocuments, undefined, '	');
+			this.writeDocumentsToFile(text, filePath);
 		}
 	}
 
-	private writeDocumentsToFile(documents: BSON.Document, filePath: string) {
-		const data = JSON.stringify(documents, undefined, '	');
-		fs.writeFileSync(filePath, data);
+	private writeDocumentsToFile(text: string, filePath: string) {
+		fs.writeFileSync(filePath, text);
 		this.logger.log(`write documents in ${filePath}`);
 	}
 }
