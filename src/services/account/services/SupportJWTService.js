@@ -10,11 +10,10 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const { getRedisClient, redisSetAsync } = require('../../../utils/redis');
+const { getRedisClient } = require('../../../utils/redis');
 const {
-	createRedisIdentifierFromJwtData,
-	extractRedisDataFromJwt,
-	getRedisData,
+	addTokenToWhitelist,
+	createRedisIdentifierFromJwtToken
 } = require('../../authentication/logic/whitelist');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
@@ -128,15 +127,6 @@ class SupportJWTService {
 		);
 	}
 
-	async addToWhitelist(jwt) {
-		if (getRedisClient()) {
-			const { accountId, jti, privateDevice } = extractRedisDataFromJwt(jwt);
-			const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
-			const redisData = getRedisData({ privateDevice });
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset);
-		}
-	}
-
 	async create({ userId }, params) {
 		try {
 			if (!userId) {
@@ -154,7 +144,10 @@ class SupportJWTService {
 			const userData = await this.app.service('authentication').getUserData(requestedUserId, account._id);
 			const jwt = await this.jwt.create(currentUserId, userData);
 
-			await this.addToWhitelist(jwt);
+			if (getRedisClient()) {
+				const redisIdentifier = createRedisIdentifierFromJwtToken(jwt);
+				await addTokenToWhitelist(redisIdentifier);
+			}
 
 			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;
