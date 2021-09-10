@@ -51,7 +51,7 @@ const createRedisIdentifierFromJwtToken = (token) => {
 /**
  * Routes as (regular expressions) which should be ignored for the auto-logout feature.
  */
-const AUTO_LOGOUT_BLACKLIST = [/^accounts\/jwtTimer$/, /^authentication$/, /wopi\//, /roster\//];
+const AUTO_LOGOUT_BLACKLIST = [/^accounts\/jwtTimer$/, /^authentication$/, /^wopi\//, /roster\//];
 
 /**
  * a path string or false when expect false
@@ -69,13 +69,6 @@ const redisClientExists = () => !!getRedisClient();
  * @returns
  */
 const isTokenAvailable = (token) => !!token;
-/**
- * when redis is enabled and the path is not whitelisted and a jwt is given, this token must be whitelisted to resume
- * @param {string|boolean} path
- * @param {string} accessToken
- * @returns
- */
-const mustCheckTokenIsWhitelisted = (path) => !isRouteWhitelisted(path) && redisClientExists();
 
 const addTokenToWhitelist = async (redisIdentifier, privateDevice = false) => {
 	const redisData = getRedisData({ privateDevice });
@@ -92,12 +85,11 @@ const isTokenWhitelisted = async (redisIdentifier) => {
 /**
  * ensures jwt is whitelisted, when path is not blacklisted.
  * requires accountId and jti from jwt token to be given.
- * @param {string|boolean} path
  * @param {*} param1
  * @returns
  */
-const ensureTokenIsWhitelisted = async (path, { accountId, jti, privateDevice }) => {
-	if (mustCheckTokenIsWhitelisted(path)) {
+const ensureTokenIsWhitelisted = async ({ accountId, jti, privateDevice }) => {
+	if (redisClientExists()) {
 		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
@@ -119,4 +111,5 @@ module.exports = {
 	ensureTokenIsWhitelisted,
 	isTokenAvailable,
 	getRedisData,
+	isRouteWhitelisted,
 };
