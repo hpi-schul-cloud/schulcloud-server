@@ -12,7 +12,7 @@ import { DashboardMapper } from '../mapper/dashboard.mapper';
 export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}
 
-	@Get(':id')
+	@Get()
 	async findOne(): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.getUsersDashboard(/* dashboardId, currentUser.userId */);
 		const dto = DashboardMapper.mapToResponse(dashboard);
