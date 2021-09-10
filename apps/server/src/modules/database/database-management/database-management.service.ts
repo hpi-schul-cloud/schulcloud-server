@@ -91,7 +91,7 @@ export class ManagementService {
 		const files = this.getCollectionFiles();
 		for (const { filePath, collectionName } of files) {
 			const documents = await this.exportCollection(collectionName);
-			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date', 'name'], ['asc', 'asc', 'asc']);
+			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
 			const text = JSON.stringify(sortedDocuments, undefined, '	');
 			this.writeDocumentsToFile(text, filePath);
 		}
