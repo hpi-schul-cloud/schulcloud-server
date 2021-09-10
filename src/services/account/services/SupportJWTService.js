@@ -58,14 +58,7 @@ class JWT {
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
-	async create(userId, supportUserId, secret) {
-		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
-
-		if (!account && !account._id) {
-			throw new Error(`Account for user with the id ${userId} do not exist.`);
-		}
-		const accountId = account._id.toString();
-
+	async create(supportUserId, userData, secret) {
 		const header = {
 			alg: 'HS256',
 			typ: 'access',
@@ -75,15 +68,14 @@ class JWT {
 		const exp = iat + this.expiredOffset;
 
 		const jwtData = {
+			...userData,
 			support: true, // mark for support jwts
 			supportUserId,
-			accountId,
-			userId,
 			iat,
 			exp,
 			aud: this.aud,
 			iss: 'feathers',
-			sub: accountId,
+			sub: userData.accountId,
 			jti: `support_${ObjectId()}`,
 		};
 
@@ -154,7 +146,13 @@ class SupportJWTService {
 			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			const jwt = await this.jwt.create(userId, currentUserId);
+			const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
+			if (!account && !account._id) {
+				throw new Error(`Account for user with the id ${userId} does not exist.`);
+			}
+
+			const userData = await this.app.service('authentication').getUserData(requestedUserId, account._id);
+			const jwt = await this.jwt.create(currentUserId, userData);
 
 			await this.addToWhitelist(jwt);
 

@@ -8,17 +8,24 @@ const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
 
 class SCAuthenticationService extends AuthenticationService {
+	async getUserData(userId, accountId){
+		const user = await this.app.service('usersModel').get(userId);
+		const account = await this.app.service('accountModel').get(accountId);
+		return {
+			accountId: account._id,
+			userId: user._id,
+			schoolId: user.schoolId,
+			roles: user.roles,
+		}
+	}
 	async getPayload(authResult, params) {
 		let payload = await super.getPayload(authResult, params);
+		const userData = await this.getUserData(authResult.account.userId, authResult.account._id)
+
 		if (authResult.account && authResult.account.userId) {
-			const user = await this.app.service('usersModel').get(authResult.account.userId);
 			payload = {
 				...payload,
-				accountId: authResult.account._id,
-				systemId: authResult.account.systemId,
-				userId: user._id,
-				schoolId: user.schoolId,
-				roles: user.roles,
+				...userData,
 			};
 		}
 		return payload;
