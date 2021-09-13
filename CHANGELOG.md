@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+## [26.10.4] - 2021-09-13 --> [26.9.3]
+
 ## [26.10.3] - 2021-09-09
 
 ### Fixed
@@ -57,6 +59,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
 
+## [26.9.3] - 2021-09-10
+
+### Fixed
+
+- BC-239 - fix date parsing for students birth date
+
 ## [26.9.2] - 2021-08-27
 
 ### Changed
@@ -65,7 +73,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.9.1] - 2021-08-18
 
-## changed 
+### Changed
 
 - SC-9192 - enable cors for nestjs app routes
 - SC-9130 - use whiltelisted filenames at the s3 file storage backend
@@ -75,6 +83,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## changed 
 
+- SC-9231 - add permissions to SuperHero to edit admin role
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 
@@ -94,6 +103,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
 ## [26.7.0] - 2021-07-28
+## 26.7.0
 
 ### Added
 
