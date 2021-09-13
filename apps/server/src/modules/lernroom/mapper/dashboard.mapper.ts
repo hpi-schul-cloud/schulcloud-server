@@ -2,7 +2,6 @@ import { DashboardEntity } from '../../../entities/learnroom/dashboard.entity';
 import { DashboardResponse, DashboardGridElementResponse } from '../controller/dto';
 
 export class DashboardMapper {
-	// TODO: add status to task
 	static mapToResponse(dashboard: DashboardEntity): DashboardResponse {
 		const dto = new DashboardResponse();
 

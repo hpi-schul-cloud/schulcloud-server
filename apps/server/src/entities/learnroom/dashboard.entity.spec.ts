@@ -2,7 +2,7 @@ import { DashboardEntity } from './dashboard.entity';
 
 describe('dashboard entity', () => {
 	describe('constructor', () => {
-		it('should create dashboard when passing empty grid', () => {
+		it('should create dashboard with prefilled Grid', () => {
 			const gridElement = {
 				getPosition: () => ({
 					x: 1,
@@ -20,7 +20,7 @@ describe('dashboard entity', () => {
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
 
-		it('should create dashboard with prefilled Grid', () => {
+		it('should create dashboard when passing empty grid', () => {
 			const dashboard = new DashboardEntity({ grid: [] });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
@@ -38,7 +38,7 @@ describe('dashboard entity', () => {
 			const gridElement = {
 				getPosition: () => ({
 					x: 1,
-					y: 1,
+					y: 2,
 				}),
 				getMetadata: () => ({
 					id: 'someId',
@@ -50,7 +50,12 @@ describe('dashboard entity', () => {
 			const dashboard = new DashboardEntity({ grid: [gridElement] });
 			const testGrid = dashboard.getGrid();
 
+			expect(testGrid[0].getPosition().x).toEqual(1);
+			expect(testGrid[0].getPosition().y).toEqual(2);
+			expect(testGrid[0].getMetadata().id).toEqual('someId');
 			expect(testGrid[0].getMetadata().title).toEqual('Calendar-Dashboard');
+			expect(testGrid[0].getMetadata().shortTitle).toEqual('CAL');
+			expect(testGrid[0].getMetadata().displayColor).toEqual('#FFFFFF');
 		});
 	});
 });

@@ -8,5 +8,9 @@ describe('dashboard mapper', () => {
 		const entity = new DashboardEntity({ grid: gridArray });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);
+		expect(result.gridElements[0].xPosition).toEqual(1);
+		expect(result.gridElements[0].yPosition).toEqual(2);
+		expect(result.gridElements[0].title).toEqual('exampletitle');
+		expect(result.gridElements[0].shortTitle).toEqual('ex');
 	});
 });
