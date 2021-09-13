@@ -16,14 +16,14 @@ import { orderBy } from 'lodash';
 import { EOL } from 'os';
 import { Logger } from '../../../core/logger/logger.service';
 
-const basePath = '../../../../../../backup/setup';
-
 @Injectable()
-export class ManagementService {
+export class DatabaseManagementService {
 	private logger: Logger;
 
+	private basePath = '../../../../../../backup/setup';
+
 	constructor(private em: EntityManager) {
-		this.logger = new Logger(ManagementService.name, true);
+		this.logger = new Logger(DatabaseManagementService.name, true);
 	}
 
 	async importCollection(
@@ -61,7 +61,7 @@ export class ManagementService {
 	}
 
 	private loadCollectionsFromFilesystem() {
-		const folder = path.join(__dirname, basePath);
+		const folder = path.join(__dirname, this.basePath);
 		const filenames = fs.readdirSync(folder);
 		const files = filenames.map((fileName) => ({
 			filePath: path.join(folder, fileName),
@@ -70,8 +70,8 @@ export class ManagementService {
 		return files;
 	}
 
-	private async geCollectionDocuments(name: string): Promise<any[]> {
-		const { collection } = this.getCollection(name);
+	private async getDocumentsOfCollection(collectionName: string): Promise<any[]> {
+		const { collection } = this.getCollection(collectionName);
 		const documents = await collection.find({}).toArray();
 		const bsonDocuments = BSON.EJSON.serialize(documents) as any[];
 		return bsonDocuments;
@@ -81,7 +81,7 @@ export class ManagementService {
 		fs.writeFileSync(filePath, text + EOL);
 	}
 
-	private async import(collections?: string[]): Promise<void> {
+	async import(collections?: string[]): Promise<void> {
 		const files = this.loadFilesAndFilterByCollectionName(collections);
 		for (const { filePath, collectionName } of files) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -90,10 +90,10 @@ export class ManagementService {
 		}
 	}
 
-	private async export(collections?: string[]): Promise<void> {
+	async export(collections?: string[]): Promise<void> {
 		const files = this.loadFilesAndFilterByCollectionName(collections);
 		for (const { filePath, collectionName } of files) {
-			const documents = await this.geCollectionDocuments(collectionName);
+			const documents = await this.getDocumentsOfCollection(collectionName);
 			this.logger.log(`found ${documents.length} documents in collection ${collectionName}...`);
 			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
 			const text = JSON.stringify(sortedDocuments, undefined, '	');
@@ -118,21 +118,5 @@ export class ManagementService {
 			this.logger.log(`collections found: ${JSON.stringify(files.map((file) => file.collectionName))}`);
 		}
 		return files;
-	}
-
-	async seedCollectionFromFile(collectionName: string): Promise<void> {
-		await this.import([collectionName]);
-	}
-
-	async seedAllCollectionsFromFiles(): Promise<void> {
-		await this.import();
-	}
-
-	async exportCollectionToFile(collectionName: string): Promise<void> {
-		await this.export([collectionName]);
-	}
-
-	async exportAllCollectionsToFiles(): Promise<void> {
-		await this.export();
 	}
 }

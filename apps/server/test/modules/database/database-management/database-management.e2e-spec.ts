@@ -5,14 +5,22 @@ import { MikroORM } from '@mikro-orm/core';
 
 import { ServerModule } from '@src/server.module';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { ServerAndManagementModule } from '../../../../src/server-and-management.module';
 
 describe('Mongo Management Controller (e2e)', () => {
-	describe('When having ServerModule compiled', () => {
+	describe('When compile ServerAndManagementModule', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerAndManagementModule],
+				providers: [
+					// {
+					// 	provide: 'SEED_DATA_DIR_PATH',
+					// 	useValue: '../../../../../../backup/setup',
+					// },
+				],
+				// TODO use memory database instead
 			}).compile();
 
 			app = module.createNestApplication();
@@ -25,9 +33,9 @@ describe('Mongo Management Controller (e2e)', () => {
 			await orm.close();
 		});
 
-		describe('POST /mongo-console/drop', () => {
-			it('should result with 404 by default', async () => {
-				await request(app.getHttpServer()).post(`/mongo-console/drop`).expect(404);
+		describe('POST /management/seed-database', () => {
+			it('should seed the database from filesystem', async () => {
+				await request(app.getHttpServer()).post(`/management/seed-database`).expect(201);
 			});
 		});
 	});

@@ -678,10 +678,10 @@
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
 		},
-		"PUBLISH_MONGO_CONSOLE": {
+		"ENABLE_MANAGEMENT_API": {
 			"type": "boolean",
 			"default": false,
-			"description": "Publishes the mongo console controller. Do NOT publish the route in production!"
+			"description": "Enable to load the server with management api enabled. Do NOT publish the route in production!"
 		}
 	},
 	"required": [

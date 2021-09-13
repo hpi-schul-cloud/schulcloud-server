@@ -7,13 +7,15 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { Logger } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { enableOpenApiDocs } from './shared/controller/swagger';
 import { Mail } from './modules/mail/mail.interface';
 import { MailService } from './modules/mail/mail.service';
+import { ServerAndManagementModule } from './server-and-management.module';
 
-async function bootstrap() {
+async function bootstrap(module: ServerModule | ServerAndManagementModule, port: number) {
 	sourceMapInstall();
 
 	// load the legacy feathers/express server
@@ -29,7 +31,7 @@ async function bootstrap() {
 	nestExpress.set('feathersApp', feathersExpress);
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(module, nestExpressAdapter);
 
 	// customize nest app settings
 	nestApp.enableCors();
@@ -65,6 +67,21 @@ async function bootstrap() {
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	rootExpress.listen(3030);
+	rootExpress.listen(port);
 }
-void bootstrap();
+
+if (Configuration.get('ENABLE_MANAGEMENT_API') === true) {
+	// start management api
+	console.warn('######################################################################');
+	console.warn('#####   ENABLE_MANAGEMENT_API has been set true                  #####');
+	console.warn('#####   start server management module on port 3333              #####');
+	console.warn('#####   DO NOT USE IN PRODUCTION!                                #####');
+	console.warn('######################################################################');
+	void bootstrap(ServerAndManagementModule, 3333);
+} else {
+	// start default application
+	console.log('######################################################################');
+	console.log('#####   start server module on port 3030                         #####');
+	console.log('######################################################################');
+	void bootstrap(ServerModule, 3030);
+}

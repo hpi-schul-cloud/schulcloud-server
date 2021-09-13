@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseManagementController } from './database-management.controller';
+import { DatabaseManagementService } from './database-management.service';
 
 describe('DatabaseManagementController', () => {
 	let controller: DatabaseManagementController;
@@ -7,12 +8,31 @@ describe('DatabaseManagementController', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [DatabaseManagementController],
+			providers: [
+				{
+					provide: DatabaseManagementService,
+					useValue: {
+						seedCollectionFromFile(collectionName: string): Promise<void> {
+							return Promise.resolve();
+						},
+						seedAllCollectionsFromFiles(): Promise<void> {
+							return Promise.resolve();
+						},
+						exportCollectionToFile(collectionName: string): Promise<void> {
+							return Promise.resolve();
+						},
+						exportAllCollectionsToFiles(): Promise<void> {
+							return Promise.resolve();
+						},
+					},
+				},
+			],
 		}).compile();
 
 		controller = module.get<DatabaseManagementController>(DatabaseManagementController);
 	});
 
-	it.skip('should be defined', () => {
+	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
 });

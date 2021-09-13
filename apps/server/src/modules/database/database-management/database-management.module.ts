@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DatabaseManagementController } from './database-management.controller';
-import { ManagementService } from './database-management.service';
+import { DatabaseManagementService } from './database-management.service';
 
 @Module({
-	providers: [ManagementService],
+	providers: [DatabaseManagementService],
 	controllers: [DatabaseManagementController],
 })
 export class DatabaseManagementModule {}

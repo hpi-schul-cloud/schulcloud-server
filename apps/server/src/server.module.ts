@@ -28,7 +28,6 @@ import {
 import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo } from './modules/task/entity';
 
 import { User, Role, Account } from './modules/user/entity';
-import { DatabaseManagementModule } from './modules/database/database-management/database-management.module';
 
 const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
@@ -60,8 +59,6 @@ const userEntities = [User, Role, Account];
 			},
 			// debug: true, // use it for locally debugging of querys
 		}),
-		// TODO use config or argv here?
-		DatabaseManagementModule,
 		CoreModule,
 	],
 	controllers: [ServerController],
