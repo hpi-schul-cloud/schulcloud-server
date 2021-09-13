@@ -13,7 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-121 add bucket to file documents
+- BC-121 add bucket and storage provider to file documents
 
 ### Fixed
 
