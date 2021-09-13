@@ -9,7 +9,7 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe('start server', () => {
+describe.only('start server', () => {
 	let app;
 	let accountService;
 
@@ -35,7 +35,7 @@ describe('start server', () => {
 			testObjects.createTestUser().then((testUser) => testObjects.createTestAccount(testAccount, null, testUser))
 		);
 
-		it('should get a JWT which includes accountId and roles', async () => {
+		it('should get a JWT which includes accountId, userId, roles, and schoolId', async () => {
 			const res = await chai
 				.request(app)
 				.post('/authentication')
@@ -50,9 +50,12 @@ describe('start server', () => {
 
 			const decodedToken = jwt.decode(res.body.accessToken);
 
-			// get the account id from JWT
+			// get the account id, user id, roles and school id from JWT
 			decodedToken.should.have.property('accountId');
+			decodedToken.should.have.property('userId');
 			decodedToken.should.have.property('roles');
+			decodedToken.should.have.property('schoolId');
+
 
 			const account = await accountService.get(decodedToken.accountId);
 			account.username.should.equal(testAccount.username);
