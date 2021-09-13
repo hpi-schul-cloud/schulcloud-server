@@ -10,11 +10,7 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const { getRedisClient } = require('../../../utils/redis');
-const {
-	addTokenToWhitelist,
-	createRedisIdentifierFromJwtToken
-} = require('../../authentication/logic/whitelist');
+const { ensureTokenIsWhitelisted } = require('../../authentication/logic/whitelist');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
 const DEFAULT_AUDIENCE = 'https://hpi-schul-cloud.de'; // The organisation that create this jwt.
@@ -88,6 +84,8 @@ class JWT {
 		signature = this.HmacSHA256(signature, secret); // algorithm: 'HS256',
 		signature = this.base64url(signature);
 
+		await ensureTokenIsWhitelisted(jwtData);
+
 		const jwt = `${encodedHeader}.${encodedData}.${signature}`;
 		return jwt;
 	}
@@ -143,11 +141,6 @@ class SupportJWTService {
 
 			const userData = await this.app.service('authentication').getUserData(requestedUserId, account._id);
 			const jwt = await this.jwt.create(currentUserId, userData);
-
-			if (getRedisClient()) {
-				const redisIdentifier = createRedisIdentifierFromJwtToken(jwt);
-				await addTokenToWhitelist(redisIdentifier);
-			}
 
 			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;
