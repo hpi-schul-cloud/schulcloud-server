@@ -9,6 +9,7 @@ const { Schema } = mongoose;
 const { userModel } = require('../src/services/user/model');
 const { courseModel } = require('../src/services/user-group/model');
 const { teamsModel } = require('../src/services/teams/model');
+const { schoolModel } = require('../src/services/school/model');
 
 const FileModel = mongoose.model(
 	'file_20210906',
@@ -16,6 +17,7 @@ const FileModel = mongoose.model(
 		refOwnerModel: { type: String },
 		owner: { type: Schema.Types.ObjectId },
 		bucket: { type: String },
+		storageProviderId: { type: Schema.Types.ObjectId },
 	}),
 	'files'
 );
@@ -31,16 +33,18 @@ module.exports = {
 		let successful = true;
 		alert('Start adding buckets to file documents...');
 		await connect();
-		const files = FileModel.find({ bucket: { $exists: false } });
+		const files = FileModel.find({ $or: [{ bucket: { $exists: false } }, { storageProviderId: { $exists: false } }] });
 		const fileCount = await files.count();
 		alert(`${fileCount} files will be processed...`);
 		for await (const file of files) {
 			try {
 				const ownerType = file.refOwnerModel;
-				const owner = await ownerModel[ownerType].findById(file.owner);
+				const owner = await ownerModel[ownerType].findById(file.owner).lean().exec();
 				const schoolId = ownerType === 'teams' ? owner.schoolIds[0] : owner.schoolId;
+				const school = await schoolModel.findById(schoolId).lean().exec();
 				const bucket = `bucket-${schoolId}`;
-				file.bucket = bucket;
+				if (!file.bucket) file.bucket = bucket;
+				if (!file.storageProviderId) file.storageProviderId = school.storageProvider;
 				await file.save();
 			} catch (err) {
 				error(`bucket could not be added to the file ${file._id}`, err);

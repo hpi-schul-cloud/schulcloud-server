@@ -21,6 +21,7 @@ const {
 	createPermission,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { schoolModel } = require('../school/model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
@@ -188,6 +189,8 @@ const fileStorageService = {
 
 		const ownerSchoolId = await getOwnerSchoolId(refOwnerModel, fileOwner);
 		const bucket = strategy.getBucket(ownerSchoolId);
+		const school = await schoolModel.findById(ownerSchoolId).lean().exec();
+		const storageProviderId = school.storageProvider;
 
 		const props = sanitizeObj(
 			Object.assign(data, {
@@ -198,6 +201,7 @@ const fileStorageService = {
 				permissions,
 				creator: userId,
 				storageFileName: decodeURIComponent(data.storageFileName),
+				storageProviderId,
 				bucket,
 			})
 		);
