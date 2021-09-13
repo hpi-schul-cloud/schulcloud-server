@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '../../../src/server.module';
+import { DashboardResponse } from '../../../src/modules/lernroom/controller/dto/';
 import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '../../../src/modules/user/utils';
 
@@ -39,6 +40,7 @@ describe('User Controller (e2e)', () => {
 	it('[GET] dashboard', async () => {
 		const response = await request(app.getHttpServer()).get('/dashboard');
 		expect(response.status).toEqual(200);
-		expect(typeof response.body.gridElements[0].title).toBe('string');
+		const body = response.body as DashboardResponse;
+		expect(typeof body.gridElements[0].title).toBe('string');
 	});
 });

@@ -30,7 +30,7 @@ export class DefaultGridReference implements IGridElementReference {
 }
 
 export interface IGridElement {
-	getPosition(): { x: number; y: number };
+	getPosition: () => { x: number; y: number };
 
 	getMetadata: () => GridElementReferenceMetadata;
 }

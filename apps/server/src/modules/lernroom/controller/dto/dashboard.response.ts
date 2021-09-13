@@ -17,11 +17,6 @@ export class DashboardGridElementResponse {
 	})
 	shortTitle: string;
 
-	/* @ApiProperty({
-		description: 'Hyperlink of the Grid element',
-	})
-	url: string; */
-
 	@ApiProperty({
 		description: 'Color of the Grid element',
 	})
