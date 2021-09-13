@@ -9,7 +9,7 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe.only('start server', () => {
+describe('start server', () => {
 	let app;
 	let accountService;
 
