@@ -88,6 +88,7 @@
 		"@nestjs/platform-express": "^7.6.13",
 		"@nestjs/swagger": "^4.8.0",
 		"@sentry/node": "^6.2.0",
+		"@types/crypto-js": "^4.0.2",
 		"ajv": "^8.5.0",
 		"amqp-connection-manager": "^3.2.2",
 		"amqplib": "^0.8.0",

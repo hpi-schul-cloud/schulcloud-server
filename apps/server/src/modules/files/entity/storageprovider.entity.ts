@@ -11,4 +11,7 @@ export class StorageProvider extends BaseEntityWithTimestamps {
 
 	@Property()
 	secretAccessKey: string;
+
+	@Property()
+	region: string;
 }

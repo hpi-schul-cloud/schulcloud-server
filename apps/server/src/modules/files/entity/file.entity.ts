@@ -7,10 +7,10 @@ export class File extends BaseEntityWithTimestamps {
 	deletedAt?: Date;
 
 	@Property()
-	storageFileName?: string;
+	storageFileName: string;
 
 	@Property()
-	bucketId?: string;
+	bucket: string;
 
 	@Property()
 	isDirectory: boolean;

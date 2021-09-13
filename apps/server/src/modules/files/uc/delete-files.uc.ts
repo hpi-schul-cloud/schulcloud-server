@@ -5,7 +5,7 @@ import { FilesRepo, FileStorageRepo } from '../repo';
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private logger: Logger) {
+	constructor(private filesRepo: FilesRepo, private fileStorageRepo: FileStorageRepo, private logger: Logger) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
@@ -17,13 +17,7 @@ export class DeleteFilesUc {
 		console.log('foo');
 		const filesForDeletion = await this.filesRepo.getExpiredFiles(removedSince);
 		for (const file of filesForDeletion) {
-
+			this.fileStorageRepo.deleteFile(file);
 		};
-		console.log(filesForDeletion);
-		// create filter
-		// create cursor
-		// enqueue files
-		// delete s3 data
-		// delete file document
 	}
 }
