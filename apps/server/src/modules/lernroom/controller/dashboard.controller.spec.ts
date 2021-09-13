@@ -34,7 +34,7 @@ describe('dashboard uc', () => {
 				const dashboard = new DashboardEntity({ grid: [] });
 				return Promise.resolve(dashboard);
 			});
-			const response = await controller.findForUser();
+			const response = await controller.findOne();
 
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
