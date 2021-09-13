@@ -25,7 +25,7 @@ describe('start server', () => {
 		await server.close();
 	});
 
-	describe('General login service', () => {
+	describe.only('General login service', () => {
 		const testAccount = {
 			username: `${Date.now()}poweruser@mail.schul.tech`,
 			password: 'passwordA',
@@ -35,7 +35,7 @@ describe('start server', () => {
 			testObjects.createTestUser().then((testUser) => testObjects.createTestAccount(testAccount, null, testUser))
 		);
 
-		it('should get a JWT which includes accountId', async () => {
+		it('should get a JWT which includes accountId and roles', async () => {
 			const res = await chai
 				.request(app)
 				.post('/authentication')
@@ -52,6 +52,7 @@ describe('start server', () => {
 
 			// get the account id from JWT
 			decodedToken.should.have.property('accountId');
+			decodedToken.should.have.property('roles');
 
 			const account = await accountService.get(decodedToken.accountId);
 			account.username.should.equal(testAccount.username);
