@@ -12,7 +12,7 @@ import { DashboardUc } from './usecase/dashboard.uc';
 		DashboardUc,
 		{
 			provide: 'DASHBOARD_REPO',
-			useValue: DashboardRepo,
+			useClass: DashboardRepo,
 		},
 	],
 })

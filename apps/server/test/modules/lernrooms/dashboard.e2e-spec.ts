@@ -38,6 +38,7 @@ describe('User Controller (e2e)', () => {
 
 	it('[GET] dashboard', async () => {
 		const response = await request(app.getHttpServer()).get('/dashboard');
-		expect(response.status === 200);
+		expect(response.status).toEqual(200);
+		expect(typeof response.body.gridElements[0].title).toBe('string');
 	});
 });
