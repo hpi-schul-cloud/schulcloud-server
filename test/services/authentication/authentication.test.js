@@ -25,7 +25,7 @@ describe('start server', () => {
 		await server.close();
 	});
 
-	describe.only('General login service', () => {
+	describe('General login service', () => {
 		const testAccount = {
 			username: `${Date.now()}poweruser@mail.schul.tech`,
 			password: 'passwordA',
