@@ -12,7 +12,7 @@ export class DashboardRepo implements IDashboardRepo {
 		const diagonalSize = 5;
 		const elementReference = new DefaultGridReference('exampletitle');
 		for (let i = 0; i < diagonalSize; i += 1) {
-			gridArray.push(new GridElement(i, i, elementReference));
+			gridArray.push(new GridElement(Math.floor(Math.random() * 6 + 1), i + 1, elementReference));
 		}
 		return Promise.resolve(new DashboardEntity({ grid: gridArray }));
 	}

@@ -24,7 +24,7 @@ export class DefaultGridReference implements IGridElementReference {
 			id: 'someId',
 			title: this.title,
 			shortTitle: this.title.substr(0, 2),
-			displayColor: '#FFFFFF',
+			displayColor: '#f23f76',
 		};
 	}
 }
