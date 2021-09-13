@@ -163,6 +163,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		createTestSubmission: submissions.create,
 		createTestSystem: testSystem.create,
 		createTestUser: users.create,
+		createTestYear: years.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,

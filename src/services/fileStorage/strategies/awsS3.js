@@ -29,7 +29,7 @@ const getCorsRules = () => [
 	},
 ];
 
-const getConfig = (provider, useCors = true) => {
+const getConfig = (provider) => {
 	const awsConfig = new aws.Config({
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,
@@ -39,7 +39,7 @@ const getConfig = (provider, useCors = true) => {
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
 	});
-	if (useCors) {
+	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 		awsConfig.cors_rules = getCorsRules();
 	}
 	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
@@ -99,12 +99,12 @@ if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 }
 // end legacy
 
-const getS3 = (storageProvider, useCors) => {
+const getS3 = (storageProvider) => {
 	const S3_KEY = Configuration.get('S3_KEY');
 	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
 		CryptoJS.enc.Utf8
 	);
-	return new aws.S3(getConfig(storageProvider, useCors));
+	return new aws.S3(getConfig(storageProvider));
 };
 
 const listBuckets = async (awsObject) => {
@@ -258,39 +258,12 @@ const reassignProviderForSchool = async (awsObject) => {
 	return awsObject;
 };
 
-const putBucketCors = async (awsObject) => {
-	try {
-		await awsObject.s3
-			.putBucketCors({
-				Bucket: awsObject.bucket,
-				CORSConfiguration: {
-					CORSRules: getCorsRules(),
-				},
-			})
-			.promise();
-	} catch (e) {
-		// not implemented
-		// min.io doesn't support this function
-		if (e.statusCode !== 501) {
-			throw e;
-		}
-	}
-};
-
-const setBucketLifecycleConfiguration = async (awsObject) =>
+const putBucketCors = async (awsObject) =>
 	awsObject.s3
-		.putBucketLifecycleConfiguration({
+		.putBucketCors({
 			Bucket: awsObject.bucket,
-			LifecycleConfiguration: {
-				Rules: [
-					{
-						Prefix: 'expiring_',
-						Expiration: {
-							Days: 7,
-						},
-						Status: 'Enabled',
-					},
-				],
+			CORSConfiguration: {
+				CORSRules: getCorsRules(),
 			},
 		})
 		.promise();
@@ -306,9 +279,8 @@ const createBucket = async (awsObject) => {
 	try {
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
 		await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
-		await putBucketCors(awsObject);
-		if (Configuration.get('FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT') === true) {
-			await setBucketLifecycleConfiguration(awsObject);
+		if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
+			await putBucketCors(awsObject);
 		}
 		return awsObject;
 	} catch (err) {
@@ -324,8 +296,8 @@ const createBucket = async (awsObject) => {
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {
-	connect(storageProvider, useCors) {
-		return getS3(storageProvider, useCors);
+	connect(storageProvider) {
+		return getS3(storageProvider);
 	}
 
 	async create(schoolId) {

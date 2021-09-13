@@ -9,7 +9,44 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
-## Fixed
+### Changed
+
+### Added
+
+- New task relevant seed data.
+
+### Fixed
+
+- BC-232 prevent users from changing schoolyears
+- BC-233 - when an LDAP system is removed from a school, the ldapschoolidentifier and lastLdapSync are removed as well
+- moved some changelog entries into their correct place
+
+### Removed
+
+- BC-262 - remove S3 lifecycle configuration code
+
+## [26.10.3] - 2021-09-09
+
+### Fixed
+
+- BC-267 - skip whitelist-check for api requests on /wopi
+
+## [26.10.2] - 2021-09-03
+
+### Added
+
+- BC-120 - add feature flag for S3 CORS
+- BS-112 - insert missing attribute during school creation
+
+## [26.10.1] - 2021-09-03
+
+### Fixed
+
+- BC-187 - secures the system route
+
+## [26.10.0] - 2021-09-03
+
+### Fixed
 
 - remove broken systemid from seed data
 - SC-9083 - expose env variables for school administration
@@ -22,10 +59,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-81 - remove old Lern-Store
 - BC-119 - remove malfunction S3 lifecycle migration
 - BC-38 - BC-124 - Add ansible files for Bosscloud (default)
+- BC-110 - fileStorage/security should only be called from within the cluster
 
-## Added
+### Added
 
-- New task relevant seed data.
 - BC-5 - Show completed tasks for students
 
 ### Changed
