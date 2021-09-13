@@ -13,6 +13,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-9 add entity and repo for course dashboards
+- BC-9 add a route to recieve dummy data for course dashboards
+
 ### Fixed
 
 - BC-232 prevent users from changing schoolyears
