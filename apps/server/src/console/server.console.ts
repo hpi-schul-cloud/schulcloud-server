@@ -2,7 +2,7 @@
 import { Command, Console } from 'nestjs-console';
 import { ConsoleWriter } from './console-writer/console-writer.service';
 
-@Console()
+@Console({ command: 'server', description: 'sample server console' })
 export class ServerConsole {
 	constructor(private consoleWriter: ConsoleWriter) {}
 

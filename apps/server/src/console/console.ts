@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-// TODO add console e2e test definitions
 /* eslint-disable promise/always-return */
 import { BootstrapConsole } from 'nestjs-console';
 import { ServerConsoleModule } from './server-console.module';
