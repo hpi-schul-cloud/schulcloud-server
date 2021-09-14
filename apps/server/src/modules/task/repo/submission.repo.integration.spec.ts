@@ -59,7 +59,7 @@ describe('submission repo', () => {
 		it('should return submissions that have the user as userId', async () => {
 			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
 			const task = new Task({ name: 'task #1' });
-			task.submissions.add(new Submission({ task: task, comment: 'comment', student }));
+			task.submissions.add(new Submission({ task, comment: 'comment', student }));
 
 			await em.persistAndFlush([task]);
 			em.clear();
