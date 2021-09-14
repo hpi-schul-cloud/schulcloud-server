@@ -14,6 +14,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-164 - refactored the supportJWTservice and added roles information to its jwt data
+- BC-9 add entity and repo for course dashboards
+- BC-9 add a route to recieve dummy data for course dashboards
 
 ### Fixed
 
