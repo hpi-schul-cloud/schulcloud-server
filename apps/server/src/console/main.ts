@@ -2,10 +2,10 @@
 // TODO add console e2e test definitions
 /* eslint-disable promise/always-return */
 import { BootstrapConsole } from 'nestjs-console';
-import { ServerModule } from './server.module';
+import { ServerConsoleModule } from './server-console.module';
 
 const bootstrap = new BootstrapConsole({
-	module: ServerModule,
+	module: ServerConsoleModule,
 	useDecorators: true,
 });
 void bootstrap.init().then(async (app) => {

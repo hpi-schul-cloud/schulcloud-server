@@ -2,7 +2,6 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ConsoleModule } from 'nestjs-console';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
@@ -29,7 +28,6 @@ import {
 import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo } from './modules/task/entity';
 
 import { User, Role, Account } from './modules/user/entity';
-import { ServerConsole } from './server.console';
 
 const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
@@ -62,9 +60,7 @@ const userEntities = [User, Role, Account];
 			// debug: true, // use it for locally debugging of querys
 		}),
 		CoreModule,
-		ConsoleModule,
 	],
-	providers: [ServerConsole],
 	controllers: [ServerController],
 })
 export class ServerModule {}

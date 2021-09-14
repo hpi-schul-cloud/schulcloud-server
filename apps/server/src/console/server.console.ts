@@ -1,19 +1,20 @@
 /* eslint-disable no-console */
-import { Command, Console, createSpinner } from 'nestjs-console';
+import { Command, Console } from 'nestjs-console';
+import { ConsoleWriter } from './console-writer/console-writer.service';
 
 @Console()
 export class ServerConsole {
-	spinner = createSpinner();
+	constructor(private consoleWriter: ConsoleWriter) {}
 
 	/** test method for console output */
 	@Command({ command: 'test', description: 'sample test output' })
 	getHello(): void {
-		this.spinner.info('Schulcloud Server API');
+		this.consoleWriter.info('Schulcloud Server API');
 	}
 
 	/** test method for console input */
 	@Command({ command: 'out <whatever>', description: 'return input args' })
 	getInOut(whatever: string): void {
-		this.spinner.info(`input was: ${whatever}`);
+		this.consoleWriter.info(`input was: ${whatever}`);
 	}
 }
