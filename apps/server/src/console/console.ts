@@ -3,6 +3,10 @@
 import { BootstrapConsole } from 'nestjs-console';
 import { ServerConsoleModule } from './server-console.module';
 
+/**
+ * The console is starting the application wrapped into commander.
+ * This allows adding console commands to execute provider methods.
+ */
 const bootstrap = new BootstrapConsole({
 	module: ServerConsoleModule,
 	useDecorators: true,

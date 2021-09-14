@@ -13,6 +13,12 @@ export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule
 	}
 }
 
+export const boot = async (bootstrap: BootstrapConsole, args: string[]): Promise<void> => {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const commandResponse = await bootstrap.boot([process.argv0, 'console', ...args]);
+	return Promise.resolve();
+};
+
 describe('ServerConsole (e2e)', () => {
 	let app: INestApplicationContext;
 	let bootstrap: BootstrapConsole;
@@ -39,12 +45,12 @@ describe('ServerConsole (e2e)', () => {
 	});
 
 	it('should poduce default output when executing "console server test"', async () => {
-		await bootstrap.boot([process.argv0, 'console', 'server', 'test']);
+		await boot(bootstrap, ['server', 'test']);
 		expect(logMock).toHaveBeenCalledWith('Schulcloud Server API');
 	});
 	it('should return input string param when executing "console server out <whatever>"', async () => {
 		const sampleInputString = 'sample-input';
-		await bootstrap.boot([process.argv0, 'console', 'server', 'out', sampleInputString]);
+		await boot(bootstrap, ['server', 'out', sampleInputString]);
 		expect(logMock).toHaveBeenCalledWith(`input was: ${sampleInputString}`);
 	});
 });
