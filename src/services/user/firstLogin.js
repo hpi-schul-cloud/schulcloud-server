@@ -12,8 +12,16 @@ const getAutomaticConsent = () => ({
 	dateOfTermsOfUseConsent: Date.now(),
 });
 
+/**
+ * Parse a given string as ISO date or timestamp.
+ * If a timestamp is provided only the date part is taken into account.
+ * The returned date object's time will be always at 00:00.
+ * @param {string} dateString
+ * @returns {Date}
+ * @throws if the date is invalid
+ */
 const parseDate = (dateString) => {
-	const date = moment.utc(dateString, 'DD.MM.YYYY');
+	const date = moment.utc(dateString, 'YYYY-MM-DD');
 	if (!date.isValid()) {
 		throw new Error('Bitte einen validen Geburtstag auswählen.');
 	}
