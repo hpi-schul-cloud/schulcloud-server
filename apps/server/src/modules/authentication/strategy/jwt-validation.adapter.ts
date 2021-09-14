@@ -14,7 +14,7 @@ export class JwtValidationAdapter {
 	 */
 	async isWhitelisted(accountId: string, jti: string): Promise<void> {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-		await ensureTokenIsWhitelisted(false, { accountId, jti, privateDevice: false });
+		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice: false });
 	}
 
 	async addToWhitelist(accountId: string, jti: string): Promise<void> {
