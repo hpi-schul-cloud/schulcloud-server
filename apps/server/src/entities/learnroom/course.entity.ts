@@ -1,6 +1,7 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { IGridElementReference, GridElementReferenceMetadata } from './dashboard.entity';
 
 interface ICourseProperties {
 	name: string;
@@ -22,7 +23,7 @@ const DEFAULT = {
 };
 
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps {
+export class Course extends BaseEntityWithTimestamps implements IGridElementReference {
 	@Property({ default: DEFAULT.name })
 	name: string = DEFAULT.name;
 
@@ -65,6 +66,15 @@ export class Course extends BaseEntityWithTimestamps {
 	getStudentsNumber(): number {
 		// TODO remove "|| []" when we can rely on db schema integrity
 		return (this.studentIds || []).length;
+	}
+
+	getMetadata(): GridElementReferenceMetadata {
+		return {
+			id: this.id,
+			title: this.name,
+			shortTitle: this.name.substr(0, 2),
+			displayColor: this.color,
+		};
 	}
 
 	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {

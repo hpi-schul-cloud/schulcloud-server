@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId, Counted } from '@shared/domain';
 import { DashboardEntity, DefaultGridReference, GridElement } from '../../entities/learnroom/dashboard.entity';
 
 export interface IDashboardRepo {
