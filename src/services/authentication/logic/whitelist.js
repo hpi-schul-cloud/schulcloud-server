@@ -77,6 +77,16 @@ const addTokenToWhitelist = async (redisIdentifier, privateDevice = false) => {
 	return { ttl: expirationInSeconds };
 };
 
+const addTokenToWhitelistWithIdAndJti = async (accountId, jti, privateDevice = false) => {
+	if (redisClientExists()) {
+		const redisData = getRedisData({ privateDevice });
+		const { expirationInSeconds } = redisData;
+		const redisIdentifier = await createRedisIdentifierFromJwtData(accountId, jti);
+		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
+		return { ttl: expirationInSeconds };
+	}
+};
+
 const isTokenWhitelisted = async (redisIdentifier) => {
 	const redisResponse = await redisGetAsync(redisIdentifier);
 	return !!redisResponse;
@@ -112,4 +122,5 @@ module.exports = {
 	isTokenAvailable,
 	getRedisData,
 	isRouteWhitelisted,
+	addTokenToWhitelistWithIdAndJti,
 };

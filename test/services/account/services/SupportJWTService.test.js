@@ -7,7 +7,6 @@ const { expect } = chai;
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-
 describe('supportJWTService', () => {
 	let app;
 	let supportJWTService;
@@ -79,7 +78,7 @@ describe('supportJWTService', () => {
 		}
 	});
 
-	it("accountId, userId, roles, and schoolId values should be present in jwtData", async () => {
+	it('accountId, userId, roles, and schoolId values should be present in jwtData', async () => {
 		const [superhero, student] = await Promise.all([
 			testObjects.setupUser({ roles: 'superhero' }),
 			testObjects.setupUser({ roles: 'student' }),
@@ -95,7 +94,7 @@ describe('supportJWTService', () => {
 		expect(schoolId).to.be.equal(student.user.schoolId.toString());
 	});
 
-	it("superhero data should be the same as the requested user data when using the support jwt", async () => {
+	it('superhero data should be the same as the requested user data when using the support jwt', async () => {
 		const [superhero, student] = await Promise.all([
 			testObjects.setupUser({ roles: 'superhero' }),
 			testObjects.setupUser({ roles: 'student' }),

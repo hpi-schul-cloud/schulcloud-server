@@ -10,7 +10,7 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const { ensureTokenIsWhitelisted } = require('../../authentication/logic/whitelist');
+const { addTokenToWhitelistWithIdAndJti } = require('../../authentication/logic/whitelist');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
 const DEFAULT_AUDIENCE = 'https://hpi-schul-cloud.de'; // The organisation that create this jwt.
@@ -84,7 +84,7 @@ class JWT {
 		signature = this.HmacSHA256(signature, secret); // algorithm: 'HS256',
 		signature = this.base64url(signature);
 
-		await ensureTokenIsWhitelisted(jwtData);
+		await addTokenToWhitelistWithIdAndJti(jwtData.accountId, jwtData.jti);
 
 		const jwt = `${encodedHeader}.${encodedData}.${signature}`;
 		return jwt;
