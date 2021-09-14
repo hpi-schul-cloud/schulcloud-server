@@ -10,6 +10,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise);
 describe('supportJWTService', () => {
 	let app;
 	let supportJWTService;
+	let meService;
 	const testedPermission = 'CREATE_SUPPORT_JWT';
 
 	let server;
