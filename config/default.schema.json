@@ -322,10 +322,10 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
-		"FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT": {
+		"FEATURE_S3_BUCKET_CORS": {
 			"type": "boolean",
-			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expiring_ after 7 days",
-			"default": false
+			"description": "true if CORS is supported by the S3 bucket. (Minio does not support it)",
+			"default": true
 		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
 			"type": "integer",
