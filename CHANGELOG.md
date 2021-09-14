@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-164 - refactored the supportJWTservice and added roles information to its jwt data
+
 ### Fixed
 
 - BC-232 prevent users from changing schoolyears
@@ -28,7 +30,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-267 - skip whitelist-check for api requests on /wopi
-
 
 ## [26.10.2] - 2021-09-03
 
@@ -76,15 +77,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.9.1] - 2021-08-18
 
-## changed 
+## changed
 
 - SC-9192 - enable cors for nestjs app routes
 - SC-9130 - use whiltelisted filenames at the s3 file storage backend
 
-
 ## [26.9.0] - 2021-08-14
 
-## changed 
+## changed
 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
