@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-279 - introduce console application interface to call providers via console command
+
 ### Fixed
 
 - BC-232 prevent users from changing schoolyears
