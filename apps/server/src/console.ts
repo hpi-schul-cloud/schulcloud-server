@@ -1,10 +1,11 @@
+/* istanbul ignore file */
+// TODO add console e2e test definitions
 /* eslint-disable promise/always-return */
-// console.ts - example of entrypoint
 import { BootstrapConsole } from 'nestjs-console';
-import { ServerConsoleModule } from './server-console.module';
+import { ServerModule } from './server.module';
 
 const bootstrap = new BootstrapConsole({
-	module: ServerConsoleModule,
+	module: ServerModule,
 	useDecorators: true,
 });
 void bootstrap.init().then(async (app) => {
