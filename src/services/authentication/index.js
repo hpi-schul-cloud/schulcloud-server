@@ -8,11 +8,10 @@ const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
 
 class SCAuthenticationService extends AuthenticationService {
-	async getUserData(userId, accountId) {
-		const user = await this.app.service('usersModel').get(userId);
-		const account = await this.app.service('accountModel').get(accountId);
+	async getUserData(user, account) {
 		return {
 			accountId: account._id,
+			systemId: account.systemId,
 			userId: user._id,
 			schoolId: user.schoolId,
 			roles: user.roles,

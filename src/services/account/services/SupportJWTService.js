@@ -139,7 +139,9 @@ class SupportJWTService {
 				throw new Error(`Account for user with the id ${userId} does not exist.`);
 			}
 
-			const userData = await this.app.service('authentication').getUserData(requestedUserId, account._id);
+			const user = await this.app.service('usersModel').get(requestedUserId);
+
+			const userData = await this.app.service('authentication').getUserData(user, account);
 			const jwt = await this.jwt.create(currentUserId, userData);
 
 			this.executeInfo(currentUserId, requestedUserId);
