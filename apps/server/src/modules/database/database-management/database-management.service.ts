@@ -110,7 +110,9 @@ export class DatabaseManagementService {
 
 			if (files.length === 0) {
 				throw new Error(
-					`collectionName invalid. collection names available to be used: ${JSON.stringify(
+					`At least one collectionName of ${JSON.stringify(
+						collections
+					)} is invalid. Collection names available are: ${JSON.stringify(
 						this.loadCollectionsFromFilesystem().map((file) => file.collectionName)
 					)}`
 				);

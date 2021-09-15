@@ -4,6 +4,7 @@ import { DatabaseManagementService } from './database-management.service';
 
 @Module({
 	providers: [DatabaseManagementService],
+	exports: [DatabaseManagementService],
 	controllers: [DatabaseManagementController],
 })
 export class DatabaseManagementModule {}

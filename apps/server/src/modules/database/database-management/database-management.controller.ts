@@ -1,9 +1,10 @@
 import { Controller, Param, Post } from '@nestjs/common';
 import { Logger } from '../../../core/logger/logger.service';
+import { IDatabaseManagementController } from './database-management.interface';
 import { DatabaseManagementService } from './database-management.service';
 
-@Controller('management')
-export class DatabaseManagementController {
+@Controller('management/database')
+export class DatabaseManagementController implements IDatabaseManagementController {
 	private logger: Logger;
 
 	constructor(private managementService: DatabaseManagementService) {
@@ -11,22 +12,22 @@ export class DatabaseManagementController {
 		this.logger.error('Do not use Mongo Management Controller via REST in production!');
 	}
 
-	@Post('seed-database')
+	@Post('seed')
 	async importCollections(): Promise<void> {
 		await this.managementService.import();
 	}
 
-	@Post('seed-database/:collectionName')
+	@Post('seed/:collectionName')
 	async importCollection(@Param('collectionName') collectionName: string): Promise<void> {
 		await this.managementService.import([collectionName]);
 	}
 
-	@Post('export-database')
+	@Post('export')
 	async exportCollections(): Promise<void> {
 		await this.managementService.export();
 	}
 
-	@Post('export-database/:collectionName')
+	@Post('export/:collectionName')
 	async exportCollection(@Param('collectionName') collectionName: string): Promise<void> {
 		await this.managementService.export([collectionName]);
 	}
