@@ -198,31 +198,15 @@ const fileStorageService = {
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
-			return canCreate(creatorId, parent)
-				.then(() =>
-					FileModel.findOne(props)
-						.lean()
-						.exec()
-						.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-				)
-				.then((file) => {
-					prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
-					prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
-					return Promise.resolve(file);
-				})
-				.catch((err) => {
-					throw new Forbidden(err);
-				});
+			await canCreate(creatorId, parent);
 		}
 
-		return FileModel.findOne(props)
-			.exec()
-			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then((file) => {
-				prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
-				prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
-				return Promise.resolve(file);
-			});
+		let file = await FileModel.findOne(props).lean().exec();
+		if (!file) file = FileModel.create(props);
+
+		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
+		prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
+		return file;
 	},
 
 	/**
