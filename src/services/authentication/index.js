@@ -19,7 +19,8 @@ class SCAuthenticationService extends AuthenticationService {
 	}
 	async getPayload(authResult, params) {
 		let payload = await super.getPayload(authResult, params);
-		const userData = await this.getUserData(authResult.account.userId, authResult.account._id);
+		const user = await this.app.service('usersModel').get(authResult.account.userId);
+		const userData = await this.getUserData(user, authResult.account);
 
 		if (authResult.account && authResult.account.userId) {
 			payload = {
