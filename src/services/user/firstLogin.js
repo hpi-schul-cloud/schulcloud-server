@@ -47,12 +47,10 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
-	// wrong birthday object?
 	if (data.studentBirthdate) {
 		userUpdate.birthday = parseDate(data.studentBirthdate);
 	}
 
-	// malformed email?
 	if (data['student-email']) {
 		if (!constants.expressions.email.test(data['student-email'])) {
 			return Promise.reject(new Error('Bitte eine valide E-Mail-Adresse eingeben.'));
