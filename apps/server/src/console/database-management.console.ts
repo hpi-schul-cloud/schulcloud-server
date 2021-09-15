@@ -1,46 +1,58 @@
 /* eslint-disable no-console */
 import { Command, Console } from 'nestjs-console';
-import { IDatabaseManagementController } from '../modules/database/database-management/database-management.interface';
 import { DatabaseManagementService } from '../modules/database/database-management/database-management.service';
 import { ConsoleWriter } from './console-writer/console-writer.service';
 
+interface Options {
+	collection?: string;
+}
 @Console({ command: 'database', description: 'database setup console' })
-export class DatabaseManagementConsole implements IDatabaseManagementController {
+export class DatabaseManagementConsole {
 	constructor(private consoleWriter: ConsoleWriter, private managementService: DatabaseManagementService) {}
 
 	@Command({
-		command: 'seed',
+		command: 'seed <collection>',
+		options: [
+			{
+				flags: '-c, --collection <collection>',
+				required: false,
+				description: 'filter for a specific <collection>',
+			},
+		],
 		description: 'reset database collections with seed data from filesystem',
 	})
-	async importCollections(): Promise<void> {
-		this.consoleWriter.info(`import all collections from filesystem...`);
-		await this.managementService.import();
-		this.consoleWriter.info(`done.`);
-	}
-
-	@Command({
-		command: 'seed-collection <collection>',
-		description: 'reset database collection <collection> with seed data from filesystem',
-	})
-	async importCollection(collection: string): Promise<void> {
-		this.consoleWriter.info(`import collection ${collection} from filesystem...`);
-		await this.managementService.import([collection]);
-		this.consoleWriter.info(`done.`);
+	async seedCollections(collection?: string): Promise<void> {
+		if (collection != null) {
+			this.consoleWriter.info(`seed collection ${collection} from filesystem...`);
+			await this.managementService.seed([collection]);
+			this.consoleWriter.info(`done.`);
+		} else {
+			this.consoleWriter.info(`seed all collections from filesystem...`);
+			await this.managementService.seed();
+			this.consoleWriter.info(`done.`);
+		}
 	}
 
 	@Command({
 		command: 'export',
+		options: [
+			{
+				flags: '-c, --collection <collection>',
+				required: false,
+				description: 'filter for a specific <collection>',
+			},
+		],
 		description: 'export database collections to filesystem',
 	})
-	async exportCollections(): Promise<void> {
-		await this.managementService.export();
-	}
-
-	@Command({
-		command: 'export-collection <collectionName>',
-		description: 'export database collection <collectionName> to filesystem',
-	})
-	async exportCollection(collectionName: string): Promise<void> {
-		await this.managementService.export([collectionName]);
+	async exportCollections(options: Options): Promise<void> {
+		if (options.collection != null) {
+			this.consoleWriter.info(`export collection ${options.collection} from filesystem...`);
+			const collections = await this.managementService.export([options.collection]);
+			this.consoleWriter.info(`done for collections ${collections.join(',')}}`);
+		} else {
+			this.consoleWriter.info(`export all collections from filesystem...`);
+			const collections = await this.managementService.export();
+			this.consoleWriter.info(`done for collections ${collections.join(',')}}`);
+		}
 	}
 }

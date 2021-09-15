@@ -1,10 +1,9 @@
 import { Controller, Param, Post } from '@nestjs/common';
 import { Logger } from '../../../core/logger/logger.service';
-import { IDatabaseManagementController } from './database-management.interface';
 import { DatabaseManagementService } from './database-management.service';
 
 @Controller('management/database')
-export class DatabaseManagementController implements IDatabaseManagementController {
+export class DatabaseManagementController {
 	private logger: Logger;
 
 	constructor(private managementService: DatabaseManagementService) {
@@ -14,12 +13,12 @@ export class DatabaseManagementController implements IDatabaseManagementControll
 
 	@Post('seed')
 	async importCollections(): Promise<void> {
-		await this.managementService.import();
+		await this.managementService.seed();
 	}
 
 	@Post('seed/:collectionName')
 	async importCollection(@Param('collectionName') collectionName: string): Promise<void> {
-		await this.managementService.import([collectionName]);
+		await this.managementService.seed([collectionName]);
 	}
 
 	@Post('export')
