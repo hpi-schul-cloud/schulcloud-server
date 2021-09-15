@@ -15,26 +15,12 @@ import { TaskMapper } from '../mapper/task.mapper';
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC) {}
 
-	@Get('open')
-	async findAllOpen(
+	@Get()
+	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<PaginationResponse<TaskResponse[]>> {
-		const [tasksWithStatus, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
-		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
-			return TaskMapper.mapToResponse(taskWithStatus);
-		});
-		const { skip, limit } = paginationQuery;
-		const result = new PaginationResponse(taskresponses, total, skip, limit);
-		return result;
-	}
-
-	@Get('completed')
-	async findAllCompleted(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() paginationQuery: PaginationQuery
-	): Promise<PaginationResponse<TaskResponse[]>> {
-		const [tasksWithStatus, total] = await this.taskUc.findAllCompleted(currentUser, paginationQuery);
+		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser, paginationQuery);
 		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
 			return TaskMapper.mapToResponse(taskWithStatus);
 		});
