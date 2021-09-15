@@ -28,8 +28,20 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:start:dev` run application without build from sources in dev-mode with hot-reload
 - `nest:start:debug` run application in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:prod` start applicaiton in production mode, requires `nest:build` to be executed beforehand
+
+### How to build and server the documentation
+
 - `nest:docs:build` builds code documentation and module relations into /documentation folder
 - `nest:docs:serve` builds code documentation and module relations into /documentation folder and serves it on port :8080 with hot reload on changes
+
+### How to start the server console
+
+The console offers management capabilities of the application.
+
+- `nest:console` after nest:build in production or
+- `nest:console:dev` for development
+
+To run a specific command run `npm run nest:console:dev -- command <param>`. The `--`is required for npm to send params to the console. Use `--help`to get an overview about existing commands.
 
 # How to test the nest-application with jest
 
