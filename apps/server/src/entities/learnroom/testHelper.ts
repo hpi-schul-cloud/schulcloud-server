@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntity, EntityId, TestHelper } from '@shared/domain';
 

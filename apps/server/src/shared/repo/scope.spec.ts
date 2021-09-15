@@ -63,6 +63,14 @@ describe('scope.ts', () => {
 
 			expect(scope.query).toEqual(EmptyResultQuery);
 		});
+
+		it('should not add a query if buildAndAddOrQuery is executed with array', () => {
+			const scope = new Scope<TestEntity>();
+
+			scope.buildAndAddOrQuery([{ id: 1 }, { id: 2 }], 'id', 'courseId');
+
+			expect(scope.query).toBeDefined();
+		});
 	});
 
 	describe('isDefined', () => {
