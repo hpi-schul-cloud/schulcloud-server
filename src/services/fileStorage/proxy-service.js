@@ -143,23 +143,6 @@ const getRefOwnerModel = async (owner) => {
 	return refOwnerModel;
 };
 
-/**
- * returns the schoolId of the given file owner
- * @param {('user'|'course'|'teams'))} ownerType type of the file owner
- * @param {ObjectId} ownerId id of the owner
- * @returns {Promise<ObjectId>} schoolId of the owner
- */
-const getOwnerSchoolId = async (ownerType, ownerId) => {
-	const ownerModel = {
-		user: userModel,
-		course: courseModel,
-		teams: teamsModel,
-	};
-	const owner = await ownerModel[ownerType].findById(ownerId);
-	const schoolId = ownerType === 'teams' ? owner.schoolIds[0] : owner.schoolId;
-	return schoolId;
-};
-
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 	/**
@@ -169,13 +152,13 @@ const fileStorageService = {
 	 */
 	async create(data, params) {
 		const {
-			payload: { userId, fileStorageType },
+			payload: { userId: creatorId, fileStorageType },
 		} = params;
 		const { owner, parent, studentCanEdit, permissions: sendPermissions = [] } = data;
 
 		const refOwnerModel = await getRefOwnerModel(owner);
 
-		const permissions = await createDefaultPermissions(userId, refOwnerModel, {
+		const permissions = await createDefaultPermissions(creatorId, refOwnerModel, {
 			studentCanEdit,
 			sendPermissions,
 			owner,
@@ -185,11 +168,12 @@ const fileStorageService = {
 
 		const strategy = createCorrectStrategy(fileStorageType);
 
-		const fileOwner = owner || userId;
+		const fileOwner = owner || creatorId;
 
-		const ownerSchoolId = await getOwnerSchoolId(refOwnerModel, fileOwner);
-		const bucket = strategy.getBucket(ownerSchoolId);
-		const school = await schoolModel.findById(ownerSchoolId).lean().exec();
+		const creator = await userModel.findById(creatorId).lean().exec();
+		const { schoolId } = creator;
+		const bucket = strategy.getBucket(schoolId);
+		const school = await schoolModel.findById(schoolId).lean().exec();
 		const storageProviderId = school.storageProvider;
 
 		const props = sanitizeObj(
@@ -199,7 +183,7 @@ const fileStorageService = {
 				parent,
 				refOwnerModel,
 				permissions,
-				creator: userId,
+				creator: creatorId,
 				storageFileName: decodeURIComponent(data.storageFileName),
 				storageProviderId,
 				bucket,
@@ -214,7 +198,7 @@ const fileStorageService = {
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
-			return canCreate(userId, parent)
+			return canCreate(creatorId, parent)
 				.then(() =>
 					FileModel.findOne(props)
 						.lean()
@@ -222,8 +206,8 @@ const fileStorageService = {
 						.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
 				)
 				.then((file) => {
-					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
+					prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
+					prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
 					return Promise.resolve(file);
 				})
 				.catch((err) => {
@@ -235,8 +219,8 @@ const fileStorageService = {
 			.exec()
 			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
 			.then((file) => {
-				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
+				prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
+				prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
 				return Promise.resolve(file);
 			});
 	},

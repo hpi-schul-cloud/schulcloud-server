@@ -16,6 +16,7 @@ const FileModel = mongoose.model(
 	new mongoose.Schema({
 		refOwnerModel: { type: String },
 		owner: { type: Schema.Types.ObjectId },
+		creator: { type: Schema.Types.ObjectId },
 		bucket: { type: String },
 		storageProviderId: { type: Schema.Types.ObjectId },
 	}),
@@ -38,9 +39,16 @@ module.exports = {
 		alert(`${fileCount} files will be processed...`);
 		for await (const file of files) {
 			try {
-				const ownerType = file.refOwnerModel;
-				const owner = await ownerModel[ownerType].findById(file.owner).lean().exec();
-				const schoolId = ownerType === 'teams' ? owner.schoolIds[0] : owner.schoolId;
+				let schoolId;
+				const creatorId = file.creator;
+				if (creatorId) {
+					const creator = await userModel.findById(creatorId).lean().exec();
+					({ schoolId } = creator);
+				} else {
+					const ownerType = file.refOwnerModel;
+					const owner = await ownerModel[ownerType].findById(file.owner).lean().exec();
+					schoolId = ownerType === 'teams' ? owner.schoolIds[0] : owner.schoolId;
+				}
 				const school = await schoolModel.findById(schoolId).lean().exec();
 				const bucket = `bucket-${schoolId}`;
 				if (!file.bucket) file.bucket = bucket;
@@ -60,7 +68,7 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
-		await FileModel.updateMany({}, { $unset: { bucket: '' } });
+		await FileModel.updateMany({}, { $unset: { bucket: '', storageProviderId: '' } });
 		await close();
 	},
 };
