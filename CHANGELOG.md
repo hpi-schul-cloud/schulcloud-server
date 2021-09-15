@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-274 Change Course Colors
+
 ### Added
 
 - BC-9 add entity and repo for course dashboards
