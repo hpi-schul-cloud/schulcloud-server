@@ -1,5 +1,11 @@
+// use shared entity until it is avaible and delete this file
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain';
+
+interface IUserTaskInfoProperties {
+	firstName: string;
+	lastName: string;
+}
 
 @Entity({ tableName: 'users' })
 export class UserTaskInfo extends BaseEntity {
@@ -9,8 +15,11 @@ export class UserTaskInfo extends BaseEntity {
 	@Property()
 	lastName!: string;
 
-	constructor(partial: Partial<UserTaskInfo>) {
+	constructor(props: IUserTaskInfoProperties) {
 		super();
-		Object.assign(this, partial);
+		this.firstName = props.firstName;
+		this.lastName = props.lastName;
+
+		Object.assign(this, {});
 	}
 }

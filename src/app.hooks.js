@@ -3,12 +3,17 @@ const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Sentry = require('@sentry/node');
 
-const { AutoLogout, SlowQuery } = require('./errors');
+const { SlowQuery } = require('./errors');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
-const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
+const {
+	extractRedisDataFromJwt,
+	isRouteWhitelisted,
+	isTokenAvailable,
+	ensureTokenIsWhitelisted,
+} = require('./services/authentication/logic/whitelist');
 const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
@@ -61,37 +66,16 @@ const displayInternRequests = (level) => (context) => {
 };
 
 /**
- * Routes as (regular expressions) which should be ignored for the auto-logout feature.
- */
-const AUTO_LOGOUT_BLACKLIST = [/^accounts\/jwtTimer$/, /^authentication$/, /wopi\//, /roster\//];
-
-/**
  * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
  * if so, the expiration timer is reset, if not the user is logged out automatically.
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	const ignoreRoute =
-		typeof context.path === 'string' && AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
-	const redisClientExists = !!getRedisClient();
-	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
-	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.params.authentication.accessToken);
-		const redisResponse = await redisGetAsync(redisIdentifier);
-		const redisData = getRedisData({ privateDevice });
-		const { expirationInSeconds } = redisData;
-		if (redisResponse) {
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
-		} else {
-			// ------------------------------------------------------------------------
-			// this is so we can ensure a fluid release without booting out all users.
-			if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
-				await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
-				return context;
-			}
-			// ------------------------------------------------------------------------
-			throw new AutoLogout('Session was expired due to inactivity - autologout.');
-		}
+	const { path } = context;
+	const { accessToken } = (context.params || {}).authentication || {};
+	if (!isRouteWhitelisted(path) && isTokenAvailable(accessToken)) {
+		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(accessToken);
+		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice });
 	}
 	return context;
 };

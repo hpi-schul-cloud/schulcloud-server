@@ -4,10 +4,11 @@ import { Injectable } from '@nestjs/common';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 import { UserFacade } from '../../user';
+import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly userFacade: UserFacade) {
+	constructor(private readonly userFacade: UserFacade, private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
@@ -17,12 +18,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(payload: JwtPayload): Promise<JwtPayload> {
-		// TODO: check jwt is whitelisted
-
-		// TODO: check user is active
-		// TODO: throw not authentication error if user not exist or is not activated
+		// check jwt is whitelisted and extend whitelist entry
+		const { accountId, jti } = payload;
+		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+		// check user exists
 		const resolvedUser = await this.userFacade.resolveUser(payload);
 		payload.user = resolvedUser; // todo decide request.user or request.user.user to be used everywhere
+		// TODO: check user/account is active and has one role
 		return payload;
 	}
 }

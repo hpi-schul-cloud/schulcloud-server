@@ -1,0 +1,33 @@
+name: Test e2e
+
+on:
+  push:
+    branches: 
+      - main
+
+jobs:
+  end-to-end-tests-push-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set BRANCH_NAME on push
+        run: |
+          branch_name=${GITHUB_REF#refs/*/}
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+      - name: run git change
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+      - name: execute tests
+        env:
+          DOCKER_ID: ${{ secrets.DOCKER_ID }}
+          MY_DOCKER_PASSWORD: ${{ secrets.MY_DOCKER_PASSWORD }}
+        run: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/main/scripts/ci/fetch.github.sh" | bash
+      - uses: actions/upload-artifact@v2
+        name: upload results
+        if: always()
+        with:
+          name: report
+          path: end-to-end-tests/reports
+          

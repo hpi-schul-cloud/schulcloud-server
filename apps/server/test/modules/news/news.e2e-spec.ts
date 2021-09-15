@@ -4,16 +4,16 @@ import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
 import * as moment from 'moment';
-import { PaginationResponse } from '@shared/controller/dto/pagination.response';
+
+import { EntityId } from '@shared/domain';
+import { PaginationResponse } from '@shared/controller';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { News, NewsTargetModel } from '../../../src/modules/news/entity';
-import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
+import { News, NewsTargetModel } from '@src/modules/news/entity';
+import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
@@ -66,8 +66,8 @@ describe('News Controller (e2e)', () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		orm = module.get<MikroORM>(MikroORM);
-		em = module.get<EntityManager>(EntityManager);
+		orm = module.get(MikroORM);
+		em = module.get(EntityManager);
 	});
 
 	beforeEach(async () => {

@@ -183,6 +183,44 @@ describe('school service', () => {
 		});
 	});
 
+	describe('update schools', () => {
+		it('UPDATE external administrators should not be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+			school.systems = [systemId];
+
+			await app.service('/schools').update(school._id, school, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.be.empty;
+		});
+
+		it('UPDATE superheroes should be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+			school.systems = [systemId];
+
+			await app.service('/schools').update(school._id, school, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.not.be.empty;
+		});
+	});
+
 	describe('patch schools', () => {
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
@@ -435,6 +473,40 @@ describe('school service', () => {
 			const countyId = '5fa55eb53f472a2d986c8812';
 			const result = await app.service('/schools').patch(school._id, { county: countyId }, params);
 			expect(result.county._id.toString()).to.be.eq(countyId);
+		});
+
+		it('PATCH external administrators should not be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+
+			await app.service('/schools').patch(school._id, { systems: [systemId] }, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.be.empty;
+		});
+
+		it('PATCH superheroes should be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+
+			await app.service('/schools').patch(school._id, { systems: [systemId] }, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.not.be.empty;
 		});
 	});
 });
