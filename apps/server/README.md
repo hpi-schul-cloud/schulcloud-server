@@ -29,7 +29,7 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:start:debug` run application in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:prod` start applicaiton in production mode, requires `nest:build` to be executed beforehand
 
-### How to build and server the documentation
+### How to build and serve the documentation
 
 - `nest:docs:build` builds code documentation and module relations into /documentation folder
 - `nest:docs:serve` builds code documentation and module relations into /documentation folder and serves it on port :8080 with hot reload on changes
