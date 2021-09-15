@@ -47,7 +47,7 @@ module.exports = {
 				} else {
 					const ownerType = file.refOwnerModel;
 					const owner = await ownerModel[ownerType].findById(file.owner).lean().exec();
-					schoolId = ownerType === 'teams' ? owner.schoolIds[0] : owner.schoolId;
+					({ schoolId } = owner);
 				}
 				const school = await schoolModel.findById(schoolId).lean().exec();
 				const bucket = `bucket-${schoolId}`;
