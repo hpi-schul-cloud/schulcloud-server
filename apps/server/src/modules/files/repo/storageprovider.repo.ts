@@ -48,9 +48,8 @@ export class FileStorageRepo extends BaseRepo<StorageProvider> {
 	}
 
 	async deleteFile(file: File): Promise<void> {
-		const { storageProviderId, bucket, storageFileName } = file;
-		const storageProvider = await this.findOneById(storageProviderId);
-		const storageProviderInstance = createStorageProviderInstance(storageProvider);
+		const { storageProvider, bucket, storageFileName } = file;
+		const storageProviderInstance = createStorageProviderInstance(storageProvider.id);
 		await storageProviderInstance.deleteObject({ Bucket: bucket, Key: storageFileName }).promise();
 	}
 }

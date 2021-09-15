@@ -16,7 +16,7 @@ import { FilesModule } from './modules/files/files.module';
 
 import { Course, Coursegroup } from './entities';
 
-import { File } from './modules/files/entity';
+import { File, StorageProvider } from './modules/files/entity';
 
 import {
 	CourseNews,
@@ -37,7 +37,7 @@ const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
 const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
-const fileEntities = [File];
+const fileEntities = [File, StorageProvider];
 
 @Module({
 	imports: [
