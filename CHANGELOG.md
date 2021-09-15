@@ -86,7 +86,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.9.1] - 2021-08-18
 
-## changed
+### Changed
 
 - SC-9192 - enable cors for nestjs app routes
 - SC-9130 - use whiltelisted filenames at the s3 file storage backend
@@ -112,7 +112,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
 ## [26.7.0] - 2021-07-28
-## 26.7.0
 
 ### Added
 
