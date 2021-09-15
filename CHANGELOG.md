@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-164 - refactored the supportJWTservice and added roles information to its jwt data
 - BC-279 - introduce console application interface to call providers via console command
 - BC-9 add entity and repo for course dashboards
 - BC-9 add a route to recieve dummy data for course dashboards
@@ -34,7 +35,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-267 - skip whitelist-check for api requests on /wopi
-
 
 ## [26.10.2] - 2021-09-03
 
