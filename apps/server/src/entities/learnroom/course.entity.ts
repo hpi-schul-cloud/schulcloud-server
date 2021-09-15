@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 
 interface ICourseProperties {
-	name: string;
+	name?: string;
 	description?: string;
 	schoolId: ObjectId;
 	teacherIds?: ObjectId[];
@@ -62,7 +62,7 @@ export class Course extends BaseEntityWithTimestamps {
 		Object.assign(this, {});
 	}
 
-	getStudentsNumber(): number {
+	getNumberOfStudents(): number {
 		// TODO remove "|| []" when we can rely on db schema integrity
 		return (this.studentIds || []).length;
 	}
@@ -74,29 +74,5 @@ export class Course extends BaseEntityWithTimestamps {
 			description: this.description,
 			color: this.color,
 		};
-	}
-
-	/**
-	 * Important user group operations are only a temporary solution until we have established groups
-	 */
-	private isTeacher(userId: EntityId): boolean {
-		// TODO remove "|| []" when we can rely on db schema integrity
-		const isTeacher = (this.teacherIds || []).map((id) => id.toHexString()).includes(userId);
-		return isTeacher;
-	}
-
-	private isSubstitutionTeacher(userId: EntityId): boolean {
-		// TODO remove "|| []" when we can rely on db schema integrity
-		const isSubstitutionTeacher = (this.substitutionTeacherIds || []).map((id) => id.toHexString()).includes(userId);
-		return isSubstitutionTeacher;
-	}
-
-	/**
-	 * Important using hasWritePermissions and isMember as read and write permission interpretation,
-	 * is only a temporary solution until we have implement an authorization interface that can used.
-	 */
-	hasWritePermission(userId: EntityId): boolean {
-		const isPrivilegedMember = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
-		return isPrivilegedMember;
 	}
 }

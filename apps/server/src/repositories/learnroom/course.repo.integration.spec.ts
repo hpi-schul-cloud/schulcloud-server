@@ -1,10 +1,18 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { Course, LearnroomTestHelper } from '@src/entities';
+import { Course } from '@src/entities';
 
+import { UserTaskInfo } from '@src/modules/task/entity';
+import { EntityId } from '@shared/domain';
 import { CourseRepo } from './course.repo';
+
+const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
+	const ids2 = arr2.map((o) => o.id);
+	const isEqual = arr1.every((o) => ids2.includes(o.id));
+	return isEqual;
+};
 
 describe('course repo', () => {
 	let module: TestingModule;
@@ -15,7 +23,7 @@ describe('course repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Course],
+					entities: [Course, UserTaskInfo],
 				}),
 			],
 			providers: [CourseRepo],
@@ -39,11 +47,14 @@ describe('course repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
+			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			await em.persistAndFlush(student);
+			const course = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [student._id] });
 
 			await em.persistAndFlush([course]);
-			const [result] = await repo.findAllByUserId(helper.getFirstUser().id);
+			em.clear();
+
+			const [result] = await repo.findAllByUserId(student.id);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = [
@@ -78,65 +89,132 @@ describe('course repo', () => {
 		});
 
 		it('should return course of teachers', async () => {
-			const helper = new LearnroomTestHelper();
-			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
+			const teacher = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			await em.persistAndFlush(teacher);
+			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId(), teacherIds: [teacher._id] });
 
-			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.getFirstUser().id);
+			await em.persistAndFlush([course1, course2]);
+			em.clear();
 
-			const expectedResult = [courses, 2];
-			expect(result).toEqual(expectedResult);
+			const [result, count] = await repo.findAllByUserId(teacher.id);
+
+			expect(checkEqualIds(result, [course1, course2])).toEqual(true);
+			expect(count).toEqual(2);
 		});
 
 		it('should return course of students', async () => {
-			const helper = new LearnroomTestHelper();
-			const courses = [helper.createStudentCourse(), helper.createStudentCourse()];
+			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			await em.persistAndFlush(student);
+			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [student._id] });
+			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId(), studentIds: [student._id] });
 
-			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.getFirstUser().id);
+			await em.persistAndFlush([course1, course2]);
+			em.clear();
 
-			const expectedResult = [courses, 2];
-			expect(result).toEqual(expectedResult);
+			const [result, count] = await repo.findAllByUserId(student.id);
+
+			expect(checkEqualIds(result, [course1, course2])).toEqual(true);
+			expect(count).toEqual(2);
 		});
 
 		it('should return course of substitution teachers', async () => {
-			const helper = new LearnroomTestHelper();
-			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
+			const subTeacher = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			await em.persistAndFlush(subTeacher);
+			const course1 = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				substitutionTeacherIds: [subTeacher._id],
+			});
+			const course2 = new Course({
+				name: 'course #2',
+				schoolId: new ObjectId(),
+				substitutionTeacherIds: [subTeacher._id],
+			});
 
-			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.getFirstUser().id);
+			await em.persistAndFlush([course1, course2]);
+			em.clear();
 
-			const expectedResult = [courses, 2];
-			expect(result).toEqual(expectedResult);
+			const [result, count] = await repo.findAllByUserId(subTeacher.id);
+
+			expect(checkEqualIds(result, [course1, course2])).toEqual(true);
+			expect(count).toEqual(2);
 		});
 
 		it('should handle mixed roles in courses', async () => {
-			const helper = new LearnroomTestHelper();
-			const courses = [helper.createStudentCourse(), helper.createTeacherCourse(), helper.createSubstitutionCourse()];
+			const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			await em.persistAndFlush(user);
+			const course1 = new Course({
+				name: 'course #1',
+				schoolId: new ObjectId(),
+				studentIds: [user._id],
+			});
+			const course2 = new Course({
+				name: 'course #2',
+				schoolId: new ObjectId(),
+				substitutionTeacherIds: [user._id],
+			});
+			const course3 = new Course({
+				name: 'course #3',
+				schoolId: new ObjectId(),
+				teacherIds: [user._id],
+			});
 
-			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(helper.getFirstUser().id);
+			await em.persistAndFlush([course1, course2, course3]);
+			em.clear();
 
-			const expectedResult = [courses, 3];
-			expect(result).toEqual(expectedResult);
+			const [result, count] = await repo.findAllByUserId(user.id);
+
+			expect(checkEqualIds(result, [course1, course2, course3])).toEqual(true);
+			expect(count).toEqual(3);
 		});
 
 		it('should only return courses where the user is a member of it', async () => {
-			const helper = new LearnroomTestHelper();
-			const courses = [helper.createStudentCourse(), helper.createTeacherCourse(), helper.createSubstitutionCourse()];
-
-			const helperOther = new LearnroomTestHelper();
+			const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const otherUser = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([user, otherUser]);
+			const courses = [
+				new Course({
+					name: 'course #1',
+					schoolId: new ObjectId(),
+					studentIds: [user._id],
+				}),
+				new Course({
+					name: 'course #2',
+					schoolId: new ObjectId(),
+					substitutionTeacherIds: [user._id],
+				}),
+				new Course({
+					name: 'course #3',
+					schoolId: new ObjectId(),
+					teacherIds: [user._id],
+				}),
+			];
 			const otherCourses = [
-				helperOther.createStudentCourse(),
-				helperOther.createTeacherCourse(),
-				helperOther.createSubstitutionCourse(),
+				new Course({
+					name: 'other course #1',
+					schoolId: new ObjectId(),
+					studentIds: [otherUser._id],
+				}),
+				new Course({
+					name: 'other course #2',
+					schoolId: new ObjectId(),
+					substitutionTeacherIds: [otherUser._id],
+				}),
+				new Course({
+					name: 'other course #3',
+					schoolId: new ObjectId(),
+					teacherIds: [otherUser._id],
+				}),
 			];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
-			const result = await repo.findAllByUserId(helper.getFirstUser().id);
+			em.clear();
 
-			const expectedResult = [courses, 3];
-			expect(result).toEqual(expectedResult);
+			const [result, count] = await repo.findAllByUserId(user.id);
+
+			expect(checkEqualIds(result, courses)).toEqual(true);
+			expect(count).toEqual(3);
 		});
 	});
 });

@@ -1,12 +1,11 @@
 // must deleted
-import { Entity, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
+import { Course } from '@src/entities';
 
 interface LessonTaskInfoProperties {
 	hidden?: boolean;
-	courseId: ObjectId;
+	course: Course;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -14,13 +13,12 @@ export class LessonTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	hidden: boolean;
 
-	@Property()
-	courseId: ObjectId;
+	@ManyToOne({ fieldName: 'courseId' })
+	course: Course;
 
 	constructor(props: LessonTaskInfoProperties) {
 		super();
-		this.hidden = props.hidden || true;
-		this.courseId = props.courseId;
-		Object.assign(this, {});
+		this.hidden = !!props.hidden;
+		this.course = props.course;
 	}
 }
