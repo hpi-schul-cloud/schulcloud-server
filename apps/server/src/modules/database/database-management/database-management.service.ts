@@ -55,6 +55,10 @@ export class DatabaseManagementService {
 		await this.db.createCollection(collectionName);
 		const collection = this.getCollection(collectionName);
 		const jsonDocuments = BSON.EJSON.deserialize(bsonDocuments) as any[];
+		if (jsonDocuments.length === 0) {
+			this.logger.log(` - imported 0 documents into collection ${collectionName}`);
+			return 0;
+		}
 		const { insertedCount } = await collection.insertMany(jsonDocuments, {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
@@ -75,7 +79,7 @@ export class DatabaseManagementService {
 	}
 
 	private loadBjsonFromFile(filePath: string) {
-		const file = fs.readFileSync(filePath, 'utf-8'); // TODO no encoding, no json step?
+		const file = fs.readFileSync(filePath, 'utf-8');
 		const bsonDocuments = JSON.parse(file) as Record<string, unknown>[];
 		return bsonDocuments;
 	}
@@ -156,14 +160,8 @@ export class DatabaseManagementService {
 			const documents = await this.getDocumentsOfCollection(collectionName);
 			this.logger.log(`found ${documents.length} documents in collection ${collectionName}...`);
 			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
-			if (sortedDocuments.length === 0) {
-				// create emnpty file
-				this.writeTextToFile('', filePath);
-			} else {
-				// write bson to file
-				const text = JSON.stringify(sortedDocuments, undefined, '	');
-				this.writeTextToFile(text + EOL, filePath);
-			}
+			const text = JSON.stringify(sortedDocuments, undefined, '	');
+			this.writeTextToFile(text + EOL, filePath);
 			this.logger.log(` - text data written to file ${filePath}`);
 		}
 		return files.map((i) => i.collectionName);
