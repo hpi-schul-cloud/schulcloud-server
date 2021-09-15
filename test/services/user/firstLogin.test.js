@@ -7,6 +7,7 @@ describe('firstLogin.test', () => {
 	let parseDate;
 
 	before(() => {
+		// eslint-disable-next-line no-underscore-dangle
 		parseDate = firstLogin.__get__('parseDate');
 	});
 
