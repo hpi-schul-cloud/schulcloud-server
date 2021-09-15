@@ -12,8 +12,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-213 - rewrite file deletion with deletion marker
+- BC-179 - refactor task and entity and relations
 
 ### Added
+
+- BC-279 - introduce console application interface to call providers via console command
+- BC-9 add entity and repo for course dashboards
+- BC-9 add a route to recieve dummy data for course dashboards
 
 ### Fixed
 
@@ -78,7 +83,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.9.1] - 2021-08-18
 
-## changed 
+## changed
 
 - SC-9192 - enable cors for nestjs app routes
 - SC-9130 - use whiltelisted filenames at the s3 file storage backend
@@ -86,7 +91,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.9.0] - 2021-08-14
 
-## changed 
+## changed
 
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
