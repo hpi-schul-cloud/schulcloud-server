@@ -14,7 +14,7 @@ import * as path from 'path';
 import * as BSON from 'bson';
 import { orderBy } from 'lodash';
 import { EOL } from 'os';
-import { Db } from 'mongodb';
+import { Collection, Db } from 'mongodb';
 import { Logger } from '../../../core/logger/logger.service';
 
 export interface ICollectionFile {
@@ -46,11 +46,14 @@ export class DatabaseManagementService {
 
 	async importCollection(collectionName: string, bsonDocuments: Record<string, unknown>[]): Promise<number> {
 		this.logger.log(`import documents into collection ${collectionName}...`);
-		const collection = this.getCollection(collectionName);
-		await this.db.dropCollection(collectionName);
-		this.logger.log(` - dropped collection ${collectionName} successfully`);
+		const collections = await this.getCollections();
+		if (collections.includes(collectionName)) {
+			// drop collection if exists
+			await this.db.dropCollection(collectionName);
+			this.logger.log(` - dropped collection ${collectionName} successfully`);
+		}
 		await this.db.createCollection(collectionName);
-
+		const collection = this.getCollection(collectionName);
 		const jsonDocuments = BSON.EJSON.deserialize(bsonDocuments) as any[];
 		const { insertedCount } = await collection.insertMany(jsonDocuments, {
 			forceServerObjectId: true,
@@ -60,7 +63,7 @@ export class DatabaseManagementService {
 		return insertedCount;
 	}
 
-	private getCollection(collectionName: string) {
+	private getCollection(collectionName: string): Collection {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
@@ -103,7 +106,7 @@ export class DatabaseManagementService {
 	}
 
 	private writeTextToFile(text: string, filePath: string) {
-		fs.writeFileSync(filePath, text + EOL);
+		fs.writeFileSync(filePath, text);
 	}
 
 	private async loadCollections(collectionFilter: string[] | undefined, source: 'files' | 'database') {
@@ -153,8 +156,14 @@ export class DatabaseManagementService {
 			const documents = await this.getDocumentsOfCollection(collectionName);
 			this.logger.log(`found ${documents.length} documents in collection ${collectionName}...`);
 			const sortedDocuments = orderBy(documents, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
-			const text = JSON.stringify(sortedDocuments, undefined, '	');
-			this.writeTextToFile(text, filePath);
+			if (sortedDocuments.length === 0) {
+				// create emnpty file
+				this.writeTextToFile('', filePath);
+			} else {
+				// write bson to file
+				const text = JSON.stringify(sortedDocuments, undefined, '	');
+				this.writeTextToFile(text + EOL, filePath);
+			}
 			this.logger.log(` - text data written to file ${filePath}`);
 		}
 		return files.map((i) => i.collectionName);
