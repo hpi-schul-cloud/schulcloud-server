@@ -150,6 +150,8 @@ data:
   # Lernstore
 {% if FEATURE_LERNSTORE_ENABLED is defined %}
   FEATURE_LERNSTORE_ENABLED: "{{ FEATURE_LERNSTORE_ENABLED|default("false", true) }}"
+  ES_DOMAIN: "{{ ES_DOMAIN|default("https://mv-repo.schul-cloud.org", true) }}"
+  ES_USER: "{{ ES_USER|default("", true) }}"
 {% if FEATURE_ES_MERLIN_ENABLED is defined and FEATURE_ES_MERLIN_ENABLED == "true" %}
   FEATURE_ES_MERLIN_ENABLED: "{{ FEATURE_ES_MERLIN_ENABLED }}"
   ES_MERLIN_AUTH_URL: "{{ ES_MERLIN_AUTH_URL|default("http://merlin.nibis.de/auth.php", true) }}"
