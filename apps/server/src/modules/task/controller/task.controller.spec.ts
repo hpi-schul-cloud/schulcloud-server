@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo } from '@src/repositories';
-import { TaskRepo, SubmissionRepo } from '../repo';
+import { TaskRepo } from '../repo';
 import { TaskUC } from '../uc';
+import { TaskAuthorizationService } from '../uc/task.authorization.service';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {
@@ -11,24 +11,17 @@ describe('TaskController', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				TaskUC,
-				CourseRepo,
-				{
-					provide: CourseRepo,
-					useValue: {
-						findAllByUserId: () => {
-							// throw new Error('Please write a mock for CourseRepo.findCoursesWithGroupsByUserId.');
-						},
-					},
-				},
-				TaskRepo,
 				{
 					provide: TaskRepo,
 					useValue: {},
 				},
-				SubmissionRepo,
 				{
-					provide: SubmissionRepo,
-					useValue: {},
+					provide: TaskAuthorizationService,
+					useValue: {
+						getPermittedCourses() {
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourses');
+						},
+					},
 				},
 			],
 			controllers: [TaskController],

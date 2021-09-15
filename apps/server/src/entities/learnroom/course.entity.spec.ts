@@ -1,6 +1,4 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-
-import { LearnroomTestHelper } from './testHelper';
 import { Course } from './course.entity';
 
 const DEFAULT = {
@@ -18,16 +16,14 @@ describe('CourseEntity', () => {
 		});
 
 		it('should create a course by passing required properties', () => {
-			const schoolId = new ObjectId();
-			const course = new Course({ name: '', schoolId });
+			const course = new Course({ name: '', schoolId: new ObjectId() });
 			expect(course instanceof Course).toEqual(true);
 		});
 	});
 
 	describe('getDescriptions', () => {
 		it('should return the right properties', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
+			const course = new Course({ name: '', schoolId: new ObjectId() });
 
 			const result = course.getDescriptions();
 
@@ -39,8 +35,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should work and passing default informations if only required values exist', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
+			const course = new Course({ name: '', schoolId: new ObjectId() });
 
 			const result = course.getDescriptions();
 
@@ -71,60 +66,20 @@ describe('CourseEntity', () => {
 	});
 
 	describe('getStudents', () => {
-		it('should count the student number', () => {
-			const helper = new LearnroomTestHelper();
-			// add addtional user
-			helper.createAndAddUser();
-			const course = helper.createStudentCourse();
+		it('should count the number of assigned students', () => {
+			const course = new Course({ name: '', schoolId: new ObjectId(), studentIds: [new ObjectId(), new ObjectId()] });
 
-			const number = course.getStudentsNumber();
+			const number = course.getNumberOfStudents();
+
 			expect(number).toEqual(2);
 		});
 
-		it('should return 0 if no student is inside', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createTeacherCourse();
+		it('should return 0 if no student is assigned', () => {
+			const course = new Course({ name: '', schoolId: new ObjectId(), teacherIds: [new ObjectId()], studentIds: [] });
 
-			const number = course.getStudentsNumber();
+			const number = course.getNumberOfStudents();
+
 			expect(number).toEqual(0);
-		});
-	});
-
-	describe('hasWritePermission', () => {
-		it('should return false for user is not member of course', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
-
-			const result = course.hasWritePermission(helper.getOtherUser().id);
-
-			expect(result).toEqual(false);
-		});
-
-		it('should return false for existing student', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createStudentCourse();
-
-			const result = course.hasWritePermission(helper.getFirstUser().id);
-
-			expect(result).toEqual(false);
-		});
-
-		it('should return true for existing teacher', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createTeacherCourse();
-
-			const result = course.hasWritePermission(helper.getFirstUser().id);
-
-			expect(result).toEqual(true);
-		});
-
-		it('should return true for existing substitution teacher', () => {
-			const helper = new LearnroomTestHelper();
-			const course = helper.createSubstitutionCourse();
-
-			const result = course.hasWritePermission(helper.getFirstUser().id);
-
-			expect(result).toEqual(true);
 		});
 	});
 });

@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-179 - refactor task and entity and relations
+
 ### Added
 
 - BC-164 - refactored the supportJWTservice and added roles information to its jwt data
