@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-121 add bucket and storage provider to file documents
+- BC-164 - refactored the supportJWTservice and added roles information to its jwt data
 - BC-279 - introduce console application interface to call providers via console command
 - BC-9 add entity and repo for course dashboards
 - BC-9 add a route to recieve dummy data for course dashboards
@@ -35,7 +36,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-267 - skip whitelist-check for api requests on /wopi
-
 
 ## [26.10.2] - 2021-09-03
 
@@ -87,7 +87,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9192 - enable cors for nestjs app routes
 - SC-9130 - use whiltelisted filenames at the s3 file storage backend
-
 
 ## [26.9.0] - 2021-08-14
 
