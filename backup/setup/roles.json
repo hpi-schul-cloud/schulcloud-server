@@ -179,55 +179,61 @@
 			"TEACHER_EDIT",
 			"TEACHER_LIST",
 			"TOOL_CREATE",
-			"TOOL_EDIT"
+			"TOOL_EDIT",
+			"YEARS_EDIT"
 		],
 		"__v": 2
 	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"ADMIN_EDIT",
-		"CLASS_LIST",
-		"CREATE_SUPPORT_JWT",
-		"DATASOURCES_CREATE",
-		"DATASOURCES_DELETE",
-		"DATASOURCES_EDIT",
-		"DATASOURCES_RUN",
-		"DATASOURCES_RUN_VIEW",
-		"DATASOURCES_VIEW",
-		"FEDERALSTATE_CREATE",
-		"FEDERALSTATE_EDIT",
-		"MESSENGER_ROOM_CREATE",
-		"MESSENGER_SYNC",
-		"RELEASES_CREATE",
-		"RELEASES_EDIT",
-		"REQUEST_CONSENTS",
-		"ROLE_CREATE",
-		"ROLE_EDIT",
-		"SCHOOL_CREATE",
-		"SCHOOL_EDIT",
-		"STUDENT_CREATE",
-		"STUDENT_DELETE",
-		"STUDENT_EDIT",
-		"STUDENT_LIST",
-		"SUBMISSIONS_SCHOOL_VIEW",
-		"SYNC_START",
-		"TEACHER_CREATE",
-		"TEACHER_DELETE",
-		"TEACHER_EDIT",
-		"TEACHER_LIST",
-		"TOOL_CREATE",
-		"TOOL_EDIT",
-		"YEARS_EDIT"
-	],
-	"__v": 2
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c98"
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714c98"
+		},
+		"name": "teacher",
+		"updatedAt": {
+			"$date": "2021-09-15T13:03:52.288Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [
+			"ACCOUNT_CREATE",
+			"CLASS_CREATE",
+			"CLASS_EDIT",
+			"CLASS_LIST",
+			"CLASS_REMOVE",
+			"COURSE_CREATE",
+			"COURSE_EDIT",
+			"COURSE_REMOVE",
+			"ENTERTHECLOUD_START",
+			"LESSONS_VIEW",
+			"MESSENGER_ROOM_CREATE",
+			"NEWS_CREATE",
+			"NEWS_EDIT",
+			"REQUEST_CONSENTS",
+			"SCHOOL_NEWS_EDIT",
+			"STUDENT_EDIT",
+			"STUDENT_LIST",
+			"STUDENT_SKIP_REGISTRATION",
+			"SUBMISSIONS_SCHOOL_VIEW",
+			"TEACHER_LIST",
+			"TEAM_INVITE_EXTERNAL",
+			"TEAM_INVITE_EXTERNAL",
+			"TOOL_CREATE",
+			"TOOL_EDIT",
+			"TOOL_NEW_VIEW",
+			"TOPIC_CREATE",
+			"TOPIC_EDIT",
+			"USERGROUP_CREATE",
+			"USERGROUP_EDIT",
+			"USER_CREATE",
+			"TASK_DASHBOARD_TEACHER_VIEW_V3"
+		],
+		"__v": 2
 	},
 	{
 		"_id": {
