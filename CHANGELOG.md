@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-179 - refactor task and entity and relations
+
 ### Added
 
 - BC-279 - introduce console application interface to call providers via console command
