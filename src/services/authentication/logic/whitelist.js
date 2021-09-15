@@ -77,6 +77,7 @@ const addTokenToWhitelist = async (redisIdentifier, privateDevice = false) => {
 	return { ttl: expirationInSeconds };
 };
 
+// eslint-disable-next-line consistent-return
 const addTokenToWhitelistWithIdAndJti = async (accountId, jti, privateDevice = false) => {
 	if (redisClientExists()) {
 		const redisData = getRedisData({ privateDevice });
