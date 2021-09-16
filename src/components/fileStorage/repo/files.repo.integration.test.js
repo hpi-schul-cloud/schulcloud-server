@@ -9,7 +9,7 @@ const {
 	removePersonalFilesByUserId,
 } = require('./files.repo');
 
-describe('files.repo.integration.test', () => {
+describe.only('files.repo.integration.test', () => {
 	let fileTestUtils;
 	let server;
 	let generateObjectId;
@@ -84,7 +84,7 @@ describe('files.repo.integration.test', () => {
 		describe('when the personal files of a user are deleted', () => {
 			it('should not return them', async () => {
 				const fileOwnerId = generateObjectId();
-				await fileTestUtils.create({ owner: fileOwnerId, deletedAt: new Date() });
+				await fileTestUtils.create({ owner: fileOwnerId });
 
 				const result = await getPersonalFilesByUserId(fileOwnerId);
 

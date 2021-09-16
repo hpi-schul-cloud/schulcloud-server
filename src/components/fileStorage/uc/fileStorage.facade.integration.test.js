@@ -25,10 +25,7 @@ describe('fileStorageFacade', () => {
 		beforeEach(async () => {
 			user = await testObjects.createTestUser();
 			const userPermission = testObjects.files.createPermission({ refId: user._id });
-			file = await testObjects.createTestFile({
-				owner: testObjects.generateObjectId(),
-				additonalPermissions: [userPermission],
-			});
+			file = await testObjects.createTestFile({ owner: testObjects.generateObjectId(), additonalPermissions: [userPermission] });
 		});
 
 		afterEach(testObjects.cleanup);
@@ -54,7 +51,7 @@ describe('fileStorageFacade', () => {
 				await deleteFunction(user._id);
 			}
 
-			const result = await filesRepo.getFileOrDeletedFileById(file._id);
+			const result = await filesRepo.getFileById(file._id);
 
 			expect(result.permissions.some((permission) => permission.refId.toString() === user._id.toString())).to.be.false;
 		});

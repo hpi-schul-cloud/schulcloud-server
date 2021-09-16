@@ -3,15 +3,8 @@ const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
-const { NotFound } = require('../../../errors');
 
-const isNotDeletedQuery = {
-	deletedAt: {
-		$exists: false,
-	},
-};
-
-const permissionSearchBaseQuery = (userId) => ({
+const permissionSearchQuery = (userId) => ({
 	permissions: {
 		$elemMatch: {
 			refId: userId,
@@ -19,40 +12,14 @@ const permissionSearchBaseQuery = (userId) => ({
 	},
 });
 
-const byUserBaseQuery = (userId) => ({
+const personalFileSearchQuery = (userId) => ({
 	refOwnerModel: 'user',
 	owner: userId,
 });
 
-const notDeletedFileByFileId = (fileId) => ({ $and: [{ _id: fileId }, isNotDeletedQuery] });
+const getFileById = async (id) => FileModel.findById(id).lean().exec();
 
-const notDeletedFilesByUserQuery = (userId) => ({ $and: [byUserBaseQuery(userId), isNotDeletedQuery] });
-
-const notDeletedFilesByUserPermissionQuery = (userId) => ({
-	$and: [permissionSearchBaseQuery(userId), isNotDeletedQuery],
-});
-
-/**
- * returns not deleted file by id, throws not found
- * @param {*} id
- * @returns
- */
-const getFileById = async (id) => {
-	const file = await FileModel.findOne(notDeletedFileByFileId(id)).lean().exec();
-	if (file == null) {
-		throw new NotFound();
-	}
-	return file;
-};
-
-/**
- * resolves all files including deleted ones
- * @param {*} id
- * @returns
- */
-const getFileOrDeletedFileById = async (id) => FileModel.findById(id).lean().exec();
-
-const removeFileById = async (id) => FileModel.findByIdAndUpdate(id, { deletedAt: new Date() });
+const getFileOrDeletedFileById = async (id) => FileModel.findOneWithDeleted({ _id: id });
 
 /**
  * @param {BSON|BSONString} userId
@@ -62,9 +29,10 @@ const getPersonalFilesByUserId = async (userId) => {
 	if (!isValidObjectId(userId)) {
 		throw new AssertionError(missingParameters({ userId }));
 	}
-	const query = notDeletedFilesByUserQuery(userId);
-	return FileModel.find(query).lean().exec();
+	return FileModel.find(personalFileSearchQuery(userId)).lean().exec();
 };
+
+const removeFileById = async (id) => FileModel.deleteById(id).lean().exec();
 
 /**
  * @param {BSON|BSONString} userId
@@ -74,9 +42,7 @@ const removePersonalFilesByUserId = async (userId) => {
 	if (!isValidObjectId(userId)) {
 		throw new AssertionError(missingParameters({ userId }));
 	}
-	const query = notDeletedFilesByUserQuery(userId);
-	const currentDate = new Date();
-	const deleteResult = await FileModel.updateMany(query, { deletedAt: currentDate }).lean().exec();
+	const deleteResult = await FileModel.delete(personalFileSearchQuery(userId)).lean().exec();
 	const { success } = updateManyResult(deleteResult);
 	return success;
 };
@@ -85,11 +51,10 @@ const removePersonalFilesByUserId = async (userId) => {
  * @param {BSON|BSONString} userId
  * @return {data} filePermissions
  */
-const getFilesWithUserPermissionsByUserId = async (userId) => {
-	const query = notDeletedFilesByUserPermissionQuery(userId);
-	return FileModel.aggregate([
+const getFilesWithUserPermissionsByUserId = async (userId) =>
+	FileModel.aggregate([
 		{
-			$match: query,
+			$match: permissionSearchQuery(userId),
 		},
 		{
 			$project: {
@@ -104,10 +69,8 @@ const getFilesWithUserPermissionsByUserId = async (userId) => {
 			},
 		},
 	]);
-};
 
 /**
- * removes users permissions on files for a given user
  * @param {BSON|BSONString} userId
  * @return {boolean} success
  */
@@ -116,7 +79,7 @@ const removeFilePermissionsByUserId = async (userId) => {
 		throw new AssertionError(missingParameters({ userId }));
 	}
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
-	const result = await FileModel.updateMany(notDeletedFilesByUserPermissionQuery(userId), updateQuery).lean().exec();
+	const result = await FileModel.updateMany(permissionSearchQuery(userId), updateQuery).lean().exec();
 	const { success } = updateManyResult(result);
 	return success;
 };
@@ -132,13 +95,13 @@ const getExpiredFiles = async (backupPeriodThreshold) =>
 		.exec();
 
 module.exports = {
+	getFileById,
 	getPersonalFilesByUserId,
 	removePersonalFilesByUserId,
 	getFilesWithUserPermissionsByUserId,
-	removeFileById,
 	removeFilePermissionsByUserId,
+	removeFileById,
 	getExpiredFiles,
 	// only to be used for testing
-	getFileById,
 	getFileOrDeletedFileById,
 };

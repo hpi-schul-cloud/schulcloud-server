@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseDelete = require('mongoose-delete');
 const { v4: uuidv4 } = require('uuid');
 
 const { enableAuditLog } = require('../../utils/database');
@@ -69,7 +70,6 @@ const fileSchema = new Schema({
 			return !this.isDirectory;
 		},
 	},
-	bucket: { type: String },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {
@@ -101,10 +101,11 @@ const fileSchema = new Schema({
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
-	deletedAt: { type: Date },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
+
+fileSchema.plugin(mongooseDelete, { deletedAt: true, overrideMethods: true });
 
 enableAuditLog(fileSchema);
 

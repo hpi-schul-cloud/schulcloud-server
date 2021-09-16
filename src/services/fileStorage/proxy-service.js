@@ -233,7 +233,7 @@ const fileStorageService = {
 
 		return parentPromise
 			.then(() =>
-				FileModel.find({ owner, parent: parent || { $exists: false }, deletedAt: { $exists: false } })
+				FileModel.find({ owner, parent: parent || { $exists: false } })
 					.lean()
 					.exec()
 			)
@@ -283,7 +283,7 @@ const fileStorageService = {
 		} = params;
 		const { parent } = data;
 		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent, deletedAt: { $exists: false } }).exec();
+		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 
 		const permissionPromise = () => {
@@ -377,9 +377,7 @@ const signedUrlService = {
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = _flatFileName || generateFileNameSuffix(filename);
 
-		const parentPromise = parent
-			? FileModel.findOne({ parent, name: filename, deletedAt: { $exists: false } }).exec()
-			: Promise.resolve({});
+		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
 
 		const header = {
 			name: encodeURIComponent(filename),
@@ -421,9 +419,7 @@ const signedUrlService = {
 	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
 		const strategy = createCorrectStrategy(fileStorageType);
-		const fileObject = await FileModel.findOne({ _id: file, deletedAt: { $exists: false } })
-			.lean()
-			.exec();
+		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
 
 		if (!fileObject) {
 			throw new NotFound('File seems not to be there.');

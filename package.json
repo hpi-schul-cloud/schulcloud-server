@@ -130,6 +130,7 @@
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "^5.12.3",
+		"mongoose-delete": "^0.5.4",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.6.0",

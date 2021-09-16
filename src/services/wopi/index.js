@@ -16,10 +16,6 @@ const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 
 const wopiPrefix = '/wopi/files/';
-const fileByIdQuery = (fileId) => {
-	const query = { _id: fileId, deletedAt: { $exists: false } };
-	return query;
-};
 
 /** Wopi-CheckFileInfo-Service
  * returns information about a file, a user’s permissions on that file,
@@ -46,7 +42,7 @@ class WopiFilesInfoService {
 		};
 
 		// check whether a valid file is requested
-		return FileModel.findOne(fileByIdQuery(fileId))
+		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -89,7 +85,7 @@ class WopiFilesInfoService {
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
 		// check whether a valid file is requested
-		return FileModel.findOne(fileByIdQuery(_id))
+		return FileModel.findOne({ _id })
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -123,7 +119,7 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne(fileByIdQuery(fileId))
+		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -162,7 +158,7 @@ class WopiFilesContentsService {
 	 * updates a file’s binary contents, file has to exist in proxy db
 	 * https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	 */
-	async create(data, params) {
+	create(data, params) {
 		if (!(params.route || {}).fileId) {
 			throw new BadRequest('No fileId exist.');
 		}
@@ -175,28 +171,44 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		const file = await FileModel.findOne(fileByIdQuery(fileId));
-		if (!file) {
-			throw new NotFound('The requested file was not found! (5)');
-		}
-		file.key = decodeURIComponent(file.key);
+		return FileModel.findOne({ _id: fileId }).then((file) => {
+			if (!file) {
+				throw new NotFound('The requested file was not found! (5)');
+			}
+			file.key = decodeURIComponent(file.key);
 
-		const signedUrl = await signedUrlService.patch(file._id, {}, { payload, account });
-		// put binary content directly to file in storage
-		const options = {
-			method: 'PUT',
-			uri: signedUrl.url,
-			contentType: file.type,
-			body: data,
-		};
+			// generate signedUrl for updating file to storage
+			return signedUrlService
+				.patch(file._id, {}, { payload, account })
+				.then((signedUrl) => {
+					// put binary content directly to file in storage
+					const options = {
+						method: 'PUT',
+						uri: signedUrl.url,
+						contentType: file.type,
+						body: data,
+					};
 
-		await rp(options);
-		await FileModel.findOneAndUpdate(fileByIdQuery(file._id), {
-			$inc: { __v: 1 },
-			updatedAt: Date.now(),
-			size: data.length,
-		}).exec();
-		return { lockId: file.lockId };
+					return rp(options)
+						.then(() =>
+							FileModel.findOneAndUpdate(
+								{ _id: file._id },
+								{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length }
+							)
+								.exec()
+								.catch((err) => {
+									logger.warning(new Error(err));
+								})
+						)
+						.then(() => Promise.resolve({ lockId: file.lockId }))
+						.catch((err) => {
+							logger.warning(err);
+						});
+				})
+				.catch((err) => {
+					logger.warning(new Error(err));
+				});
+		});
 	}
 }
 
