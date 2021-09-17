@@ -65,7 +65,11 @@
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
 		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"schoolExport": "node ./scripts/schoolExport.js",
-		"schoolImport": "node ./scripts/schoolImport.js"
+		"schoolImport": "node ./scripts/schoolImport.js",
+		"preinstall": "npx npm-force-resolutions"
+	},
+	"resolutions": {
+		"mpath": "0.8.4"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.5.11",
@@ -129,7 +133,7 @@
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
-		"mongoose": "^5.12.3",
+		"mongoose": "^5.13.9",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.6.0",
