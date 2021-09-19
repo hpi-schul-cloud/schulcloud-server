@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsOptional, IsString } from 'class-validator';
-import { NewsTargetModel } from '../../entity';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 

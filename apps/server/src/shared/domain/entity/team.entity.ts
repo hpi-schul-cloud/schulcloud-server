@@ -1,8 +1,8 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntity } from '@shared/domain';
+import { BaseEntity } from './base.entity';
 
 @Entity({ tableName: 'teams' })
-export class TeamInfo extends BaseEntity {
+export class Team extends BaseEntity {
 	@Property()
 	name!: string;
 

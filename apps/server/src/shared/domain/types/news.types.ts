@@ -1,12 +1,12 @@
-import { EntityId } from '@shared/domain';
-import { CourseInfo } from './course-info.entity';
-import { SchoolInfo } from './school-info.entity';
-import { TeamInfo } from './team-info.entity';
+import { EntityId } from './entity-id';
+import { Course } from '../entity/course.entity';
+import { School } from '../entity/school.entity';
+import { Team } from '../entity/team.entity';
 
 export enum NewsTargetModel {
-	School = 'schools',
-	Course = 'courses',
-	Team = 'teams',
+	'School' = 'schools',
+	'Course' = 'courses',
+	'Team' = 'teams',
 }
 
 /** news interface for ceating news */
@@ -26,4 +26,4 @@ export interface INewsScope {
 	unpublished?: boolean;
 }
 
-export type NewsTargetInfo = SchoolInfo | TeamInfo | CourseInfo;
+export type NewsTargetInfo = School | Team | Course;

@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { DashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
 
 import { DashboardController } from './controller/dashboard.controller';
-import { DashboardUc } from './usecase/dashboard.uc';
+import { DashboardUc } from './uc/dashboard.uc';
 
 @Module({
 	imports: [],

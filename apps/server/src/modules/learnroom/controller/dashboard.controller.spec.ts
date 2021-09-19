@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity } from '../../../shared/domain/entity/dashboard.entity';
-import { DashboardUc } from '../usecase/dashboard.uc';
+import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
 

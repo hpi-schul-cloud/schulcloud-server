@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { DashboardUc } from '../usecase/dashboard.uc';
+import { DashboardUc } from '../uc/dashboard.uc';
 
 import { Authenticate } from '../../authentication/decorator/auth.decorator';
 

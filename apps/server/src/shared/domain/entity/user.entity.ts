@@ -1,5 +1,6 @@
 import { Entity, Property, Index, Unique } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { EntityId } from '../types';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IUserProperties {
 	email: string;
