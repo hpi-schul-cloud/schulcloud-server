@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '../../../src/server.module';
-import { DashboardResponse } from '../../../src/modules/lernroom/controller/dto';
+import { DashboardResponse } from '../../../src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '../../../src/modules/user/utils';
 
