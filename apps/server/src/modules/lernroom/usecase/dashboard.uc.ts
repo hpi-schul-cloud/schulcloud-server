@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DashboardEntity } from '@src/entities/learnroom/dashboard.entity';
+import { DashboardEntity } from '@shared/domain';
 import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
 
 @Injectable()

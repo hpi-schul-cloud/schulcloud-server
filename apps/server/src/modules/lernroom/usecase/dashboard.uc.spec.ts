@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
-import { DashboardEntity } from '@src/entities/learnroom/dashboard.entity';
+import { DashboardEntity } from '@shared/domain';
 import { DashboardUc } from './dashboard.uc';
 
 describe('dashboard uc', () => {

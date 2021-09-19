@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course } from '@src/entities';
+import { Course } from '@shared/domain';
 import { TaskResponse } from '../controller/dto';
 import { Task } from '../entity';
 

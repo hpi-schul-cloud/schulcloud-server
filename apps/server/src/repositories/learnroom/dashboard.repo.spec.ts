@@ -1,5 +1,5 @@
 import { DashboardRepo } from './dashboard.repo';
-import { DashboardEntity } from '../../entities/learnroom/dashboard.entity';
+import { DashboardEntity } from '../../shared/domain/entity/dashboard.entity';
 
 describe('dashboard repo', () => {
 	describe('getters', () => {

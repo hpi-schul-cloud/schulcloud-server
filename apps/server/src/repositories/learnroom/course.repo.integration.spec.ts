@@ -2,10 +2,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { Course } from '@src/entities';
 
 import { UserTaskInfo } from '@src/modules/task/entity';
-import { EntityId } from '@shared/domain';
+import { EntityId, Course } from '@shared/domain';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {

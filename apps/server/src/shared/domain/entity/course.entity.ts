@@ -1,6 +1,7 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { EntityId } from '../types';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 interface ICourseProperties {
 	name?: string;

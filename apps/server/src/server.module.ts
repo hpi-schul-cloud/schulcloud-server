@@ -2,6 +2,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { Course, Coursegroup } from '@shared/domain';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
@@ -12,8 +13,6 @@ import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
 import { LearnroomModule } from './modules/lernroom/lernroom.module';
-
-import { Course, Coursegroup } from './entities';
 
 import {
 	CourseNews,

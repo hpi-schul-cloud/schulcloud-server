@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
-import { Course } from '@src/entities';
 
-import { EntityId, ICurrentUser } from '@shared/domain';
+import { EntityId, ICurrentUser, Course } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Collection } from '@mikro-orm/core';
 import { Submission, Task, UserTaskInfo } from '../entity';

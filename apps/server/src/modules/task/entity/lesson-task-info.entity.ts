@@ -1,7 +1,6 @@
 // must deleted
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
-import { Course } from '@src/entities';
+import { BaseEntityWithTimestamps, Course } from '@shared/domain';
 
 interface LessonTaskInfoProperties {
 	hidden?: boolean;

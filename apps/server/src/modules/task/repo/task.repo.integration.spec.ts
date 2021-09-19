@@ -1,8 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain';
+import { Course, SortOrder } from '@shared/domain';
 
-import { Course } from '@src/entities';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
 import { CourseGroupInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';

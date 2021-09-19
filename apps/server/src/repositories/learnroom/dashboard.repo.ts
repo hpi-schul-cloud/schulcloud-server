@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DashboardEntity, DefaultGridReference, GridElement } from '../../entities/learnroom/dashboard.entity';
+import { DashboardEntity, DefaultGridReference, GridElement } from '../../shared/domain/entity/dashboard.entity';
 
 export interface IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity>;

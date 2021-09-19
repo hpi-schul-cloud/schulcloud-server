@@ -1,8 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { Course } from '@src/entities';
-import { EntityId, Counted } from '@shared/domain';
+import { EntityId, Course, Counted } from '@shared/domain';
 import { Scope } from '@shared/repo';
 
 class CourseScope extends Scope<Course> {

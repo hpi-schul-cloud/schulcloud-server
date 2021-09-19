@@ -1,8 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, EntityId } from '@shared/domain';
-import { Coursegroup } from '@src/entities';
+import { Counted, EntityId, Coursegroup } from '@shared/domain';
 
 @Injectable()
 export class CoursegroupRepo {

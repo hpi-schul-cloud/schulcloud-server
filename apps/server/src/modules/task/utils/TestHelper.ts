@@ -1,8 +1,7 @@
 /* istanbul ignore file */
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId, TestHelper } from '@shared/domain';
-import { Course } from '@src/entities';
+import { EntityId, Course, TestHelper } from '@shared/domain';
 
 import { Submission, Task, UserTaskInfo, LessonTaskInfo, ITaskParent, IParentDescriptionsProperties } from '../entity';
 

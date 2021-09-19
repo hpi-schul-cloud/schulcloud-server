@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM, EntityManager, Collection } from '@mikro-orm/core';
 
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, Course } from '@shared/domain';
 import { PaginationResponse } from '@shared/controller';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -12,7 +12,6 @@ import { createCurrentTestUser } from '@src/modules/user/utils';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { Task, Submission, UserTaskInfo } from '@src/modules/task/entity';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course } from '@src/entities';
 
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
 	currentUser.user.id = user.id;

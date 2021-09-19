@@ -1,4 +1,4 @@
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export type GridElementReferenceMetadata = {
 	id: string;

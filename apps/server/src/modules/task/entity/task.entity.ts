@@ -1,6 +1,5 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
-import { Course } from '@src/entities';
+import { BaseEntityWithTimestamps, EntityId, Course } from '@shared/domain';
 import type { Submission } from './submission.entity';
 import { LessonTaskInfo } from './lesson-task-info.entity';
 

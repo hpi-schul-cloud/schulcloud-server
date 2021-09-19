@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity } from '../../../entities/learnroom/dashboard.entity';
+import { DashboardEntity } from '../../../shared/domain/entity/dashboard.entity';
 import { DashboardUc } from '../usecase/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
