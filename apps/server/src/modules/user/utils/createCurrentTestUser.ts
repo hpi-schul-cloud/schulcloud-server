@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, User, Role } from '@shared/domain';
 import { ResolvedUserMapper } from '../mapper';
-import { User, Role } from '../entity';
 
 export const createCurrentTestUser = (
 	initPermissions?: string[]

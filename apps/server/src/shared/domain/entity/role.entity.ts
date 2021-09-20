@@ -1,16 +1,12 @@
 import { Entity, Property, Unique, Index } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { EntityId } from '../types';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IRoleProperties {
 	permissions?: string[];
 	roles?: EntityId[];
 	name: string;
 }
-
-export type IPermissionsAndRoles = {
-	permissions: string[];
-	roles: Role[];
-};
 
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntityWithTimestamps {

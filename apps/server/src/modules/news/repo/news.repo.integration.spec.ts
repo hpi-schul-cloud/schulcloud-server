@@ -13,6 +13,7 @@ import {
 	Team,
 	TeamNews,
 	User,
+	Role,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { NewsTargetModel } from '@shared/domain/types/news.types';
@@ -27,7 +28,7 @@ describe('NewsRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [News, CourseNews, Course, SchoolNews, School, TeamNews, Team, User],
+					entities: [News, CourseNews, Course, SchoolNews, School, TeamNews, Team, User, Role],
 				}),
 			],
 			providers: [NewsRepo],

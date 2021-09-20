@@ -11,7 +11,7 @@ import {
 	TeamNews,
 	User,
 } from '@shared/domain';
-import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTargetInfo } from '@shared/domain/types/news.types';
+import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTarget } from '@shared/domain/types/news.types';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
@@ -49,7 +49,7 @@ const createNews = <T extends News>(
 	NewsType: { new (props: INewsProperties): T },
 	school: School,
 	creator: User,
-	target: NewsTargetInfo
+	target: NewsTarget
 ): T => {
 	const newsId = new ObjectId().toHexString();
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -78,7 +78,7 @@ const getExpectedNewsResponse = (
 	creator: User,
 	news: News,
 	newsProps: { title: string; content: string },
-	target: NewsTargetInfo
+	target: NewsTarget
 ): NewsResponse => {
 	const schoolInfoResponse = new SchoolInfoResponse();
 	const schoolProps = (({ id, name }) => ({ id, name }))(school);

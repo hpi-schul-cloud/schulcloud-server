@@ -2,7 +2,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Course, Coursegroup, School, Team } from '@shared/domain';
+import { Course, Coursegroup, School, Team, User, Role, Account } from '@shared/domain';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
@@ -16,8 +16,6 @@ import { MailModule } from './modules/mail/mail.module';
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
 
 import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo } from './modules/task/entity';
-
-import { User, Role, Account } from './modules/user/entity';
 
 const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, School, SchoolNews, TeamNews, Team];

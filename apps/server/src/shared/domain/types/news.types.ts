@@ -1,7 +1,7 @@
 import { EntityId } from './entity-id';
-import { Course } from '../entity/course.entity';
-import { School } from '../entity/school.entity';
-import { Team } from '../entity/team.entity';
+import type { Course } from '../entity/course.entity';
+import type { School } from '../entity/school.entity';
+import type { Team } from '../entity/team.entity';
 
 export enum NewsTargetModel {
 	'School' = 'schools',
@@ -26,4 +26,4 @@ export interface INewsScope {
 	unpublished?: boolean;
 }
 
-export type NewsTargetInfo = School | Team | Course;
+export type NewsTarget = School | Team | Course;

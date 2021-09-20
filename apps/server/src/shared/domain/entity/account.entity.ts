@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 // TODO add tests to improve coverage
 
-import { Entity, ManyToMany, Property, Collection } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
-import { User } from './user.entity';
+import { Entity, ManyToOne, Property, Collection } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from './base.entity';
+import type { User } from './user.entity';
 
 @Entity({ tableName: 'accounts' })
 export class Account extends BaseEntityWithTimestamps {
@@ -20,7 +20,7 @@ export class Account extends BaseEntityWithTimestamps {
 	password: string; // hash and secret inside the application
 	*/
 
-	@ManyToMany({ fieldName: 'userIds', type: User })
+	@ManyToOne('User', { fieldName: 'userId' })
 	user = new Collection<User>(this);
 
 	@Property()

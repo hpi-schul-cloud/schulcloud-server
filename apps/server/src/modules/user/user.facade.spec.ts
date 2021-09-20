@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Role, User } from '@shared/domain';
 import { UserUC } from './uc';
 import { UserFacade } from './user.facade';
-import { Role, User } from './entity';
 import { ResolvedUserMapper } from './mapper';
 import { createCurrentTestUser } from './utils';
 import { ResolvedUser } from './controller/dto';

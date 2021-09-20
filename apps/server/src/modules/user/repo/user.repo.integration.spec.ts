@@ -1,8 +1,8 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User, Role } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '../../database';
-import { User } from '../entity';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -14,7 +14,7 @@ describe('user repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [User],
+					entities: [User, Role],
 				}),
 			],
 			providers: [UserRepo],

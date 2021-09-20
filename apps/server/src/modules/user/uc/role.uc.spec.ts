@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '../entity';
+import { Role } from '@shared/domain';
 import { RoleRepo } from '../repo';
 import { RoleUC } from './role.uc';
 

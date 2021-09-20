@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { User, Role } from '@shared/domain';
 import { ResolvedUserMapper } from './ResolvedUser.mapper';
 import { ResolvedUser } from '../controller/dto';
-import { User, Role } from '../entity';
 
 describe('ResolvedUserMapper', () => {
 	it('should has mapToResponse static method', () => {
