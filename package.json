@@ -65,11 +65,7 @@
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
 		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"schoolExport": "node ./scripts/schoolExport.js",
-		"schoolImport": "node ./scripts/schoolImport.js",
-		"preinstall": "npx npm-force-resolutions"
-	},
-	"resolutions": {
-		"mpath": "0.8.4"
+		"schoolImport": "node ./scripts/schoolImport.js"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.5.11",
@@ -142,7 +138,6 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^3.1.20",
 		"nestjs-console": "^5.0.1",
-		"npm-force-resolutions": "0.0.10",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"passport": "^0.4.1",
