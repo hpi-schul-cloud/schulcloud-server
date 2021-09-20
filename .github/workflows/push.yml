@@ -1,5 +1,5 @@
 ---
-name: Build and push Docker Image
+name: push workflow
 
 on:
   push:
