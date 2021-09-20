@@ -206,7 +206,7 @@ describe('files.repo.integration.test', () => {
 			const result = await removeFilePermissionsByUserId(userId);
 			expect(result).to.be.true;
 
-			const sharedFileCheck = await filesRepo.getFileOrDeletedFileById(sharedFile._id);
+			const sharedFileCheck = await filesRepo.getFileById(sharedFile._id);
 			expect(sharedFileCheck.permissions.some((permission) => permission.refId.toString() === userId.toString())).to.be
 				.false;
 		});

@@ -301,7 +301,7 @@ const fileStorageService = {
 				});
 			}
 
-			return Promise.reject(); // ToDo
+			return Promise.reject();
 		};
 
 		if (fileObject) {
