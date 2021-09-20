@@ -10,11 +10,11 @@ class AbstractFileStorageStrategy {
 	}
 
 	getBucket() {
-		throw new TypeError('get bucket method has to be implemented');
+		throw new TypeError('getBucket method has to be implemented');
 	}
 
 	listBucketsNames() {
-		throw new TypeError('list buckets method has to be implemented');
+		throw new TypeError('listBucketsNames method has to be implemented');
 	}
 
 	create() {
