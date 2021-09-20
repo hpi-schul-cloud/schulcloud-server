@@ -75,23 +75,32 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
 
+## [26.9.3] - 2021-09-10
+
+### Fixed
+
+- BC-239 - fix date parsing for students birth date
+
 ## [26.9.2] - 2021-08-27
 
 ### Changed
 
 - BC-137 - fix bug with display of Blue Bar
+- BC-106 - exit maintenance & change school year for LDAP schools on Boss and NBC
 
 ## [26.9.1] - 2021-08-18
 
-## changed
+### Changed
 
 - SC-9192 - enable cors for nestjs app routes
 - SC-9130 - use whiltelisted filenames at the s3 file storage backend
 
 ## [26.9.0] - 2021-08-14
 
-## changed
+### Changed
 
+- OPS-2491 - Change the hydra service url
+- SC-9231 - add permissions to SuperHero to edit admin role
 - SC-9269 - let eslint ensure no tests with .only exist anymore
 - SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
 
@@ -99,10 +108,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
 - SC-9231 - add permissions to SuperHero to edit admin role
-
-### Changed
-
-- OPS-2491 - Change the hydra service url
 
 ## [26.8.0] - 2021-08-10
 
