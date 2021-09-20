@@ -1,42 +1,42 @@
 import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
-import { UserTaskInfo } from './user-task-info.entity';
-import { FileTaskInfo } from './file-task-info.entity';
-import { Task } from './task.entity';
-import { CourseGroupInfo } from './course-group-info.entity';
+import { BaseEntityWithTimestamps } from './base.entity';
+import type { CourseGroup } from './coursegroup.entity';
+import type { User } from './user.entity';
+import type { File } from './file.entity';
+import type { Task } from './task.entity';
 
 interface ISubmissionProperties {
 	task: Task;
-	student: UserTaskInfo;
-	courseGroup?: CourseGroupInfo[];
-	teamMembers?: UserTaskInfo[];
+	student: User;
+	courseGroup?: CourseGroup[];
+	teamMembers?: User[];
 	comment: string;
-	studentFiles?: FileTaskInfo[];
+	studentFiles?: File[];
 	grade?: number;
 	gradeComment?: string;
-	gradeFiles?: FileTaskInfo[];
+	gradeFiles?: File[];
 }
 
 @Entity({ tableName: 'submissions' })
 export class Submission extends BaseEntityWithTimestamps {
-	@ManyToOne({ fieldName: 'homeworkId' })
+	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	task: Task;
 
-	@ManyToOne({ fieldName: 'studentId' })
-	student: UserTaskInfo; // <-- User
+	@ManyToOne('User', { fieldName: 'studentId' })
+	student: User;
 
-	@ManyToOne({ fieldName: 'courseGroupId' })
-	courseGroup?: CourseGroupInfo;
+	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId' })
+	courseGroup?: CourseGroup;
 
-	@ManyToMany({ fieldName: 'teamMembers', type: UserTaskInfo })
-	teamMembers = new Collection<UserTaskInfo>(this);
+	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
+	teamMembers = new Collection<User>(this);
 
 	/* ***** student uploads ***** */
 	@Property()
 	comment: string | null;
 
-	@ManyToMany({ fieldName: 'fileIds', type: FileTaskInfo })
-	studentFiles = new Collection<FileTaskInfo>(this);
+	@ManyToMany('File', undefined, { fieldName: 'fileIds' })
+	studentFiles = new Collection<File>(this);
 
 	/* ***** teacher uploads ***** */
 	@Property()
@@ -45,8 +45,8 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property()
 	gradeComment: string | null;
 
-	@ManyToMany({ fieldName: 'gradeFileIds', type: FileTaskInfo })
-	gradeFiles = new Collection<FileTaskInfo>(this);
+	@ManyToMany('File', undefined, { fieldName: 'gradeFileIds' })
+	gradeFiles = new Collection<File>(this);
 
 	isGraded(): boolean {
 		const isGraded =

@@ -1,4 +1,4 @@
-import { Task } from './task.entity';
+import { Task } from '../entity/task.entity';
 
 interface ITaskStatus {
 	submitted: number;

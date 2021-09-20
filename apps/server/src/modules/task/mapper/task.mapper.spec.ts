@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course } from '@shared/domain';
+import { Course, Task } from '@shared/domain';
 import { TaskResponse } from '../controller/dto';
-import { Task } from '../entity';
 
 import { TaskMapper } from './task.mapper';
 

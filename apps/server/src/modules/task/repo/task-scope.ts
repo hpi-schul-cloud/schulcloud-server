@@ -1,6 +1,5 @@
-import { EntityId } from '@shared/domain';
+import { EntityId, Task } from '@shared/domain';
 import { Scope } from '@shared/repo';
-import { Task } from '../entity';
 
 export class TaskScope extends Scope<Task> {
 	byParentIds(parentIds: EntityId[]): TaskScope {

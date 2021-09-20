@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 
-import { EntityId, IFindOptions } from '@shared/domain';
+import { EntityId, IFindOptions, Lesson, Task } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 
-// TODO lessonTaskInfo must deleted
-import { Task, LessonTaskInfo } from '../entity';
 import { TaskScope } from './task-scope';
 
 @Injectable()
@@ -63,8 +61,8 @@ export class TaskRepo {
 	}
 
 	// TODO move to lesson repo
-	private async findVisibleLessons(parentIds: EntityId[]): Promise<LessonTaskInfo[]> {
-		const lessons = await this.em.find(LessonTaskInfo, {
+	private async findVisibleLessons(parentIds: EntityId[]): Promise<Lesson[]> {
+		const lessons = await this.em.find(Lesson, {
 			course: { $in: parentIds },
 			hidden: false,
 		});

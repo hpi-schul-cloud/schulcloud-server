@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
-import { UserTaskInfo } from '@src/modules/task/entity';
-import { EntityId, Course } from '@shared/domain';
+import { EntityId, Course, User, Role } from '@shared/domain';
+import { userFactory } from '@shared/domain/factory';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -22,7 +22,7 @@ describe('course repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Course, UserTaskInfo],
+					entities: [Course, User, Role],
 				}),
 			],
 			providers: [CourseRepo],
@@ -46,7 +46,7 @@ describe('course repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(student);
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [student._id] });
 
@@ -88,7 +88,7 @@ describe('course repo', () => {
 		});
 
 		it('should return course of teachers', async () => {
-			const teacher = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const teacher = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(teacher);
 			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
 			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId(), teacherIds: [teacher._id] });
@@ -103,7 +103,7 @@ describe('course repo', () => {
 		});
 
 		it('should return course of students', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(student);
 			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [student._id] });
 			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId(), studentIds: [student._id] });
@@ -118,7 +118,7 @@ describe('course repo', () => {
 		});
 
 		it('should return course of substitution teachers', async () => {
-			const subTeacher = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const subTeacher = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(subTeacher);
 			const course1 = new Course({
 				name: 'course #1',
@@ -141,7 +141,7 @@ describe('course repo', () => {
 		});
 
 		it('should handle mixed roles in courses', async () => {
-			const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(user);
 			const course1 = new Course({
 				name: 'course #1',
@@ -169,8 +169,8 @@ describe('course repo', () => {
 		});
 
 		it('should only return courses where the user is a member of it', async () => {
-			const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			const otherUser = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const otherUser = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([user, otherUser]);
 			const courses = [
 				new Course({

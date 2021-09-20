@@ -2,7 +2,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Course, Coursegroup, School, Team, User, Role, Account } from '@shared/domain';
+import { Account, Course, CourseGroup, File, Lesson, Role, School, Submission, Task, Team, User } from '@shared/domain';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
@@ -14,13 +14,6 @@ import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
-
-import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo } from './modules/task/entity';
-
-const entities = [Course, Coursegroup];
-const courseEntities = [CourseNews, News, School, SchoolNews, TeamNews, Team];
-const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
-const userEntities = [User, Role, Account];
 
 @Module({
 	imports: [
@@ -41,7 +34,23 @@ const userEntities = [User, Role, Account];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...entities, ...courseEntities, ...taskEntities, ...userEntities],
+			entities: [
+				Account,
+				Course,
+				CourseGroup,
+				File,
+				Lesson,
+				Role,
+				School,
+				Submission,
+				Task,
+				Team,
+				User,
+				CourseNews,
+				News,
+				SchoolNews,
+				TeamNews,
+			],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);

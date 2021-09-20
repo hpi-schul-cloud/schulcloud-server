@@ -1,14 +1,16 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId, Course } from '@shared/domain';
+import { BaseEntityWithTimestamps } from './base.entity';
+import { EntityId } from '../types';
+import type { Course } from './course.entity';
+import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import { LessonTaskInfo } from './lesson-task-info.entity';
 
 interface ITaskProperties {
 	name: string;
 	dueDate?: Date;
 	private?: boolean;
 	parent?: Course;
-	lesson?: LessonTaskInfo;
+	lesson?: Lesson;
 	submissions?: Submission[];
 }
 
@@ -38,11 +40,11 @@ export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	private = true;
 
-	@ManyToOne({ fieldName: 'courseId' })
+	@ManyToOne('Course', { fieldName: 'courseId' })
 	parent?: Course;
 
-	@ManyToOne({ fieldName: 'lessonId' })
-	lesson?: LessonTaskInfo; // In database exist also null, but it can not set.
+	@ManyToOne('Lesson', { fieldName: 'lessonId' })
+	lesson?: Lesson; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);

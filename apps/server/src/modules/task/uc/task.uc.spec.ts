@@ -3,17 +3,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
 
-import { EntityId, ICurrentUser, Course } from '@shared/domain';
+import { EntityId, ICurrentUser, Course, Submission, Task } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Collection } from '@mikro-orm/core';
-import { Submission, Task, UserTaskInfo } from '../entity';
 
+import { userFactory } from '@shared/domain/factory';
 import { TaskRepo } from '../repo';
 
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
-// TODO: coursegroups test completly missing
+// TODO: courseGroups test completly missing
 // TODO: how work this stuff with lessons
 // TODO: how work this stuff with ignoredTask
 
@@ -230,7 +230,7 @@ describe('TaskService', () => {
 		});
 
 		it('should compute submitted status for task', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = currentUser.userId;
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -254,9 +254,9 @@ describe('TaskService', () => {
 			spyGetPermittedCourses.mockRestore();
 		});
 		it('should only count the submissions of the given user', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student1.id = currentUser.userId;
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -282,7 +282,7 @@ describe('TaskService', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = currentUser.userId;
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -310,9 +310,9 @@ describe('TaskService', () => {
 		});
 
 		it('should only count the graded submissions of the given user', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student1.id = currentUser.userId;
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -435,7 +435,7 @@ describe('TaskService', () => {
 		});
 
 		it('should compute submitted status for task', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -460,9 +460,9 @@ describe('TaskService', () => {
 		});
 
 		it('should count all student ids of submissions', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student1.id = new ObjectId().toHexString();
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -488,7 +488,7 @@ describe('TaskService', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -516,9 +516,9 @@ describe('TaskService', () => {
 		});
 
 		it('should count all student ids of graded submissions', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student1.id = currentUser.userId;
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -546,9 +546,9 @@ describe('TaskService', () => {
 		});
 
 		it('should count only unique student ids of graded submissions', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student1.id = currentUser.userId;
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });
@@ -578,9 +578,9 @@ describe('TaskService', () => {
 		});
 
 		it('should count only unique student ids of submissions', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student1.id = new ObjectId().toHexString();
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			const task = new Task({ name: 'task #1', private: false, parent: course });

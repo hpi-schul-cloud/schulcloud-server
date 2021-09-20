@@ -1,11 +1,11 @@
 import { Collection } from '@mikro-orm/core';
-import { FileTaskInfo } from './file-task-info.entity';
+import { userFactory } from '../factory';
+import { File } from './file.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
-import { UserTaskInfo } from './user-task-info.entity';
 
 const buildSubmission = () => {
-	const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+	const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 	const task = new Task({ name: 'task #1' });
 	const submission = new Submission({ student: user, comment: '', task });
 	return submission;
@@ -26,9 +26,9 @@ describe('Submission entity', () => {
 
 	it('should be graded if grade grade files have been associated', () => {
 		const submission = buildSubmission();
-		const teacher = new UserTaskInfo({ firstName: 'Carl', lastName: 'Cord' });
-		const file = new FileTaskInfo({ name: 'grade file', creator: teacher });
-		submission.gradeFiles = new Collection<FileTaskInfo>(submission, [file]);
+		const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+		const file = new File({ name: 'grade file', creator: teacher });
+		submission.gradeFiles = new Collection<File>(submission, [file]);
 		expect(submission.isGraded()).toEqual(true);
 	});
 

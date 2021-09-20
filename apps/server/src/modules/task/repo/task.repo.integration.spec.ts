@@ -1,10 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SortOrder } from '@shared/domain';
+import { Course, CourseGroup, File, Lesson, SortOrder, Submission, Task, User, Role } from '@shared/domain';
+import { userFactory } from '@shared/domain/factory';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-
-import { CourseGroupInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
 
 import { TaskRepo } from './task.repo';
 
@@ -17,7 +16,7 @@ describe('TaskRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Course, Task, Submission, LessonTaskInfo, UserTaskInfo, CourseGroupInfo, FileTaskInfo],
+					entities: [Course, Task, Submission, User, Role, Lesson, CourseGroup, File],
 				}),
 			],
 			providers: [TaskRepo],
@@ -76,7 +75,7 @@ describe('TaskRepo', () => {
 
 		it('should return task in a visible lesson of the users course', async () => {
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-			const lesson = new LessonTaskInfo({ course, hidden: false });
+			const lesson = new Lesson({ course, hidden: false });
 			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
 			await em.persistAndFlush([task]);
@@ -89,7 +88,7 @@ describe('TaskRepo', () => {
 
 		it('should not return task from a hidden lesson', async () => {
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-			const lesson = new LessonTaskInfo({ course, hidden: true });
+			const lesson = new Lesson({ course, hidden: true });
 			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
 			await em.persistAndFlush([task]);
@@ -102,7 +101,7 @@ describe('TaskRepo', () => {
 
 		it('should not return task in a lesson when hidden is null', async () => {
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-			const lesson = new LessonTaskInfo({ course });
+			const lesson = new Lesson({ course });
 			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 			// @ts-expect-error: Test case
 			lesson.hidden = null;
@@ -129,17 +128,7 @@ describe('TaskRepo', () => {
 			expect(result).toHaveLength(1);
 		});
 
-		it.skip('should not return task in a lesson of a different course', async () => {
-			/* look like it not testable anymore
-			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
-			const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
-			const lesson = em.create(LessonTaskInfo, { course });
-			const task = em.create(Task, { name: 'roll some dice', lesson, course });
-			await em.persistAndFlush([user, course, lesson, task]);
-			const [result, total] = await repo.findAll(user.id);
-			expect(total).toEqual(0);
-			*/
-		});
+		it.skip('should not return task in a lesson of a different course', async () => {});
 	});
 
 	describe('findAllCurrent', () => {
@@ -158,7 +147,7 @@ describe('TaskRepo', () => {
 			});
 			it('should populate the lesson', async () => {
 				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-				const lesson = new LessonTaskInfo({ course, hidden: false });
+				const lesson = new Lesson({ course, hidden: false });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -170,7 +159,7 @@ describe('TaskRepo', () => {
 				expect(result[0].lesson?.id).toEqual(lesson.id);
 			});
 			it('should populate the list of submissions', async () => {
-				const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+				const student = userFactory.build();
 				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 				const task = new Task({ name: 'task #1', private: false, parent: course });
 				task.submissions.add(new Submission({ task, student, comment: 'my solution to the task #1' }));
@@ -297,7 +286,7 @@ describe('TaskRepo', () => {
 		describe('open tasks in lessons', () => {
 			it('should return task in a visible lesson of the users course', async () => {
 				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-				const lesson = new LessonTaskInfo({ course, hidden: false });
+				const lesson = new Lesson({ course, hidden: false });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -309,7 +298,7 @@ describe('TaskRepo', () => {
 			});
 			it('should not return task in a hidden lesson', async () => {
 				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-				const lesson = new LessonTaskInfo({ course, hidden: true });
+				const lesson = new Lesson({ course, hidden: true });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -321,7 +310,7 @@ describe('TaskRepo', () => {
 			});
 			it('should not return task in a lesson where hidden is null', async () => {
 				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
-				const lesson = new LessonTaskInfo({ course });
+				const lesson = new Lesson({ course });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 				// @ts-expect-error: Test case - we have null values in the database
 				lesson.hidden = null;
@@ -333,16 +322,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
-			it.skip('should not return task in a lesson of a different task', async () => {
-				// // I think it can not solved on this place after changes
-				// const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
-				// const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
-				// const lesson = em.create(LessonTaskInfo, { course });
-				// const task = em.create(Task, { name: 'roll some dice', lesson, course });
-				// await em.persistAndFlush([user, course, lesson, task]);
-				// const [result, total] = await repo.findAllCurrent(user.id);
-				// expect(total).toEqual(0);
-			});
+			it.skip('should not return task in a lesson of a different task', async () => {});
 		});
 	});
 });

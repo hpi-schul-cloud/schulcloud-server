@@ -1,9 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { Course } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo } from '../entity';
+import { Course, CourseGroup, File, Lesson, Submission, Task, User, Role } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+
+import { userFactory } from '@shared/domain/factory';
 
 import { SubmissionRepo } from './submission.repo';
 
@@ -16,7 +17,7 @@ describe('submission repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo, Course],
+					entities: [File, Lesson, Submission, Task, User, Role, Course, CourseGroup],
 				}),
 			],
 			providers: [SubmissionRepo],
@@ -30,12 +31,12 @@ describe('submission repo', () => {
 	});
 
 	afterEach(async () => {
-		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(UserTaskInfo, {}), em.nativeDelete(Submission, {})]);
+		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(User, {}), em.nativeDelete(Submission, {})]);
 	});
 
 	describe('findAllByTasks', () => {
 		it('should return only the requested submissions of homeworks', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			const task1 = new Task({ name: 'task #1' });
 			const task2 = new Task({ name: 'task #2' });
 			const task3 = new Task({ name: 'task #3' });
@@ -57,7 +58,7 @@ describe('submission repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return submissions that have the user as userId', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			const task = new Task({ name: 'task #1' });
 			task.submissions.add(new Submission({ task, comment: 'comment', student }));
 
@@ -72,8 +73,8 @@ describe('submission repo', () => {
 		});
 
 		it('should return submissions where the user is a team member', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			const task = new Task({ name: 'task #1' });
 			task.submissions.add(new Submission({ student: student1, comment: '', task, teamMembers: [student1, student2] }));
 
@@ -89,9 +90,9 @@ describe('submission repo', () => {
 			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
 			await em.persistAndFlush(course);
 
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
-			const courseGroup = em.create(CourseGroupInfo, { courseId: course._id, students: [student1, student2] });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const courseGroup = em.create(CourseGroup, { courseId: course._id, students: [student1, student2] });
 			const task = new Task({ name: 'task #1', parent: course });
 			const submission = new Submission({ student: student1, comment: '', task });
 			submission.courseGroup = courseGroup;
