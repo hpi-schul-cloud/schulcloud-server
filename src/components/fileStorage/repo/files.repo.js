@@ -1,5 +1,5 @@
 const { FileModel } = require('./db');
-const { AssertionError } = require('../../../errors');
+const { AssertionError, NotFound } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
@@ -17,7 +17,11 @@ const personalFileSearchQuery = (userId) => ({
 	owner: userId,
 });
 
-const getFileById = async (id) => FileModel.findById(id).lean().exec();
+const getFileById = async (id) => {
+	const file = await FileModel.findById(id).lean().exec();
+	if (!file) throw new NotFound();
+	return file;
+};
 
 const getFileOrDeletedFileById = async (id) => FileModel.findOneWithDeleted({ _id: id });
 
