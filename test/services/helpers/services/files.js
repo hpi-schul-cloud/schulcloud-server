@@ -22,6 +22,7 @@ const create = async ({
 	refId,
 	additonalPermissions,
 	isDirectory = false,
+	deletedAt,
 } = {}) => {
 	const data = {
 		isDirectory,
@@ -40,6 +41,8 @@ const create = async ({
 		creator: creator || owner,
 		refOwnerModel,
 		thumbnailRequestToken: uuidv4(),
+		deleted: deletedAt !== undefined,
+		deletedAt,
 	};
 	if (additonalPermissions) {
 		data.permissions = [...data.permissions, ...additonalPermissions];
