@@ -13,6 +13,7 @@ import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
 import { FilesModule } from './modules/files/files.module';
+import { LearnroomModule } from './modules/lernroom/lernroom.module';
 
 import { Course, Coursegroup } from './entities';
 
@@ -45,6 +46,7 @@ const fileEntities = [File, StorageProvider];
 		TaskModule,
 		NewsModule,
 		UserModule,
+		LearnroomModule,
 		MailModule.forRoot({
 			uri: Configuration.get('RABBITMQ_URI') as string,
 			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
