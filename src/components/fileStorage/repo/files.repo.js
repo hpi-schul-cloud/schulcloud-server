@@ -23,8 +23,6 @@ const getFileById = async (id) => {
 	return file;
 };
 
-const getFileOrDeletedFileById = async (id) => FileModel.findOneWithDeleted({ _id: id });
-
 /**
  * @param {BSON|BSONString} userId
  * @return {data} personal files of the user
@@ -91,16 +89,6 @@ const removeFilePermissionsByUserId = async (userId) => {
 	return success;
 };
 
-/**
- * Get all files that should be permanently deleted according to the backupPeriodThreshold
- * @param {Date} backupPeriodThreshold
- * @returns expired files
- */
-const getExpiredFiles = async (backupPeriodThreshold) =>
-	FileModel.find({ deletedAt: { $lt: backupPeriodThreshold } })
-		.lean()
-		.exec();
-
 module.exports = {
 	getFileById,
 	getPersonalFilesByUserId,
@@ -108,7 +96,4 @@ module.exports = {
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 	removeFileById,
-	getExpiredFiles,
-	// only to be used for testing
-	getFileOrDeletedFileById,
 };

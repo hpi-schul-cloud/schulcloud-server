@@ -1,13 +1,19 @@
 const { expect } = require('chai');
 const { filesRepo } = require('.');
 
+const { FileModel } = require('./db');
+
+const { NotFound } = require('../../../errors');
+
 const {
-	getFileOrDeletedFileById,
+	getFileById,
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 	getPersonalFilesByUserId,
 	removePersonalFilesByUserId,
 } = require('./files.repo');
+
+const getFileOrDeletedFileById = async (id) => FileModel.findOneWithDeleted({ _id: id });
 
 describe('files.repo.integration.test', () => {
 	let fileTestUtils;
@@ -28,7 +34,7 @@ describe('files.repo.integration.test', () => {
 		await server.close();
 	});
 
-	describe('getFileOrDeletedFileById', () => {
+	describe('getFileById', () => {
 		describe('when a file is created and persisted', () => {
 			let fileOwnerId;
 			let file;
@@ -39,16 +45,14 @@ describe('files.repo.integration.test', () => {
 			});
 
 			it('should read the file from persistence by valid id', async () => {
-				const result = await getFileOrDeletedFileById(file._id);
+				const result = await getFileById(file._id);
 				expect(result._id).to.eql(file._id);
 				expect(result.owner).to.eql(fileOwnerId);
 			});
 
-			it('should resolve with null for invalid ids', async () => {
+			it('should throw NotFound for invalid ids', async () => {
 				const randomId = generateObjectId();
-				// todo not found
-				const result = await getFileOrDeletedFileById(randomId);
-				expect(result).to.be.null;
+				await expect(getFileById(randomId)).to.be.rejectedWith(NotFound);
 			});
 		});
 	});
@@ -103,7 +107,7 @@ describe('files.repo.integration.test', () => {
 				const success = await removePersonalFilesByUserId(userId);
 
 				expect(success).to.be.true;
-				const otherFileAfterDeletion = await getFileOrDeletedFileById(otherFile._id);
+				const otherFileAfterDeletion = await getFileById(otherFile._id);
 				expect(otherFileAfterDeletion).to.be.not.null;
 			});
 		});
