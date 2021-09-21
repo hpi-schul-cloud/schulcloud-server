@@ -145,7 +145,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		if (classPathAdditions !== '') {
 			const options = {
-				filter: filterForModifiedEntities(school, `${classAttributeNameMapping.description}=*`),
+				filter: filterForModifiedEntities(school, `(${classAttributeNameMapping.description}=*)`),
 				scope: 'sub',
 				attributes: [
 					classAttributeNameMapping.dn,

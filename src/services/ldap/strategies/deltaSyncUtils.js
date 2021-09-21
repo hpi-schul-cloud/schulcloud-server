@@ -1,15 +1,6 @@
 const moment = require('moment');
 
 /**
- * Convert date to LDAP timestamp format
- * @param date
- * @returns {string} formatted as "YYYYMMDDHHmmssZ"
- */
-const dateToLdapTimestamp = (date) => {
-	return `${moment(date).utc().format('YYYYMMDDHHmmss')}Z`;
-};
-
-/**
  * Returns an LDAP filter based on a given filter and a last change time. If lastChange is
  * undefined or does not match the correct format, the base filter is returned. Otherwise,
  * the base filter is combined with a filter for recently updated entities (i.e. updated
@@ -28,6 +19,4 @@ const filterForModifiedEntities = (school, existingFilter = '') => {
 
 module.exports = {
 	filterForModifiedEntities,
-	getModifiedFilter,
-	dateToLdapTimestamp,
 };

@@ -30,7 +30,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 	 */
 	getUsers(school) {
 		const options = {
-			filter: filterForModifiedEntities(school, 'objectClass=person'),
+			filter: filterForModifiedEntities(school, '(objectClass=person)'),
 			scope: 'sub',
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};
