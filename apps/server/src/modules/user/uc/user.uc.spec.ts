@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { IPermissionsAndRoles } from '@shared/domain';
 import { createCurrentTestUser } from '../utils';
 import { UserRepo } from '../repo';
 import { UserUC } from './user.uc';
 import { RoleUC } from './role.uc';
 import { ResolvedUser } from '../controller/dto';
-import { IPermissionsAndRoles } from '../entity';
 
 describe('UserUC', () => {
 	let service: UserUC;

@@ -2,7 +2,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User, Role } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '../../database';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {

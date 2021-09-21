@@ -1,6 +1,5 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-
 import { User } from './user.entity';
+import { userFactory } from '../factory';
 
 describe('User Entity', () => {
 	describe('constructor', () => {
@@ -11,8 +10,7 @@ describe('User Entity', () => {
 		});
 
 		it('should create a user by passing required properties', () => {
-			const schoolId = new ObjectId().toHexString();
-			const user = new User({ firstName: '', lastName: '', school: schoolId, email: 'test@email.de' });
+			const user = userFactory.build();
 			expect(user instanceof User).toEqual(true);
 		});
 	});

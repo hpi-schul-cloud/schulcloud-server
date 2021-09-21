@@ -1,4 +1,4 @@
-import { DashboardEntity, GridElement, DefaultGridReference } from '../../../shared/domain/entity/dashboard.entity';
+import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
 import { DashboardMapper } from './dashboard.mapper';
 import { DashboardResponse } from '../controller/dto';
 

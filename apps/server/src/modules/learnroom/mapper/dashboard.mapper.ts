@@ -1,4 +1,4 @@
-import { DashboardEntity } from '../../../shared/domain/entity/dashboard.entity';
+import { DashboardEntity } from '@shared/domain';
 import { DashboardResponse, DashboardGridElementResponse } from '../controller/dto';
 
 export class DashboardMapper {

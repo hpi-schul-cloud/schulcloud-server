@@ -3,10 +3,10 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { ServerModule } from '../../../src/server.module';
-import { DashboardResponse } from '../../../src/modules/learnroom/controller/dto';
-import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '../../../src/modules/user/utils';
+import { ServerModule } from '@src/server.module';
+import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { createCurrentTestUser } from '@src/modules/user/utils';
 
 describe('User Controller (e2e)', () => {
 	let app: INestApplication;
