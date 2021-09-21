@@ -29,4 +29,18 @@ export class CourseRepo {
 		const [courses, count] = await this.em.findAndCount(Course, scope.query);
 		return [courses, count];
 	}
+
+	async findAllForStudent(userId: EntityId): Promise<Counted<Course[]>> {
+		const query = { studentIds: new ObjectId(userId) };
+		const [courses, count] = await this.em.findAndCount(Course, query);
+		return [courses, count];
+	}
+
+	async findAllForTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+		const isTeacher = { teacherIds: new ObjectId(userId) };
+		const isSubstitutionTeacher = { substitutionTeacherIds: new ObjectId(userId) };
+		const query = { $or: [isTeacher, isSubstitutionTeacher] };
+		const [courses, count] = await this.em.findAndCount(Course, query);
+		return [courses, count];
+	}
 }
