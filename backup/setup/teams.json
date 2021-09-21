@@ -7,7 +7,7 @@
     "classIds" : [
 
     ], 
-    "color" : "#1976d2", 
+    "color" : "#827717", 
     "features" : [
         "isTeam"
     ], 
@@ -76,7 +76,7 @@
     "classIds" : [
 
     ], 
-    "color" : "#d32f2f", 
+    "color" : "#0091EA", 
     "features" : [
         "isTeam"
     ], 
@@ -148,7 +148,7 @@
 	],
 	"description": "Have fun",
 	"classIds": [],
-	"color": "#d32f2f",
+	"color": "#009688",
 	"features": [
 		"isTeam"
 	],
