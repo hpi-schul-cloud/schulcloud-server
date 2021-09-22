@@ -1,4 +1,4 @@
-import { Console, Command, createSpinner } from 'nestjs-console';
+import { Console, Command } from 'nestjs-console';
 import { Logger } from '../../../core/logger/logger.service';
 import { DeleteFilesUc } from '../uc';
 
@@ -11,8 +11,8 @@ export class DeleteFilesController {
 	}
 
 	@Command({
-		command: 'remove-deleted-files-data-removed-since-days <days>',
-		description: 'cleanup job to remove file data of deleted files that have been removed since <days> days.',
+		command: 'remove-deleted-files <days>',
+		description: 'cleanup job to remove file data of deleted files that have been removed for <days> days.',
 	})
 	async removeDeletedFilesData(removedSinceDays: number): Promise<void> {
 		const removedSince = new Date();

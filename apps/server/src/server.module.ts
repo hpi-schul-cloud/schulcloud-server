@@ -1,6 +1,5 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { ConsoleModule } from 'nestjs-console';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthModule } from './modules/authentication/auth.module';
@@ -54,7 +53,6 @@ const fileEntities = [File, StorageProvider];
 		}),
 		FilesModule,
 
-		ConsoleModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
