@@ -29,6 +29,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - BC-262 - remove S3 lifecycle configuration code
+- BC-247 - remove timestamp from LDAP search Query for sync
 
 ## [26.10.3] - 2021-09-09
 
