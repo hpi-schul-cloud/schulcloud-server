@@ -57,13 +57,21 @@ export class GridElement implements IGridElement {
 	}
 }
 
-export class DashboardEntity extends BaseEntityWithTimestamps {
+export type DashboardProps = { grid: IGridElement[] };
+
+export class DashboardEntity {
+	id: string;
+
 	grid: IGridElement[];
 
-	constructor(props: { grid: IGridElement[] }) {
-		super();
+	constructor(id: string, props: DashboardProps) {
 		this.grid = props.grid || [];
+		this.id = id;
 		Object.assign(this, {});
+	}
+
+	getId(): string {
+		return this.id;
 	}
 
 	getGrid(): IGridElement[] {

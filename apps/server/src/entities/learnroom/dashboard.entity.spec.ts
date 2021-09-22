@@ -15,13 +15,13 @@ describe('dashboard entity', () => {
 					displayColor: '#FFFFFF',
 				}),
 			};
-			const dashboard = new DashboardEntity({ grid: [gridElement] });
+			const dashboard = new DashboardEntity('someid', { grid: [gridElement] });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
 
 		it('should create dashboard when passing empty grid', () => {
-			const dashboard = new DashboardEntity({ grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [] });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
@@ -29,7 +29,7 @@ describe('dashboard entity', () => {
 
 	describe('grid', () => {
 		it('getGrid should return correct value', () => {
-			const dashboard = new DashboardEntity({ grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [] });
 			const testGrid = dashboard.getGrid();
 			expect(Array.isArray(testGrid)).toEqual(true);
 		});
@@ -47,7 +47,7 @@ describe('dashboard entity', () => {
 					displayColor: '#FFFFFF',
 				}),
 			};
-			const dashboard = new DashboardEntity({ grid: [gridElement] });
+			const dashboard = new DashboardEntity('someid', { grid: [gridElement] });
 			const testGrid = dashboard.getGrid();
 
 			expect(testGrid[0].getPosition().x).toEqual(1);
