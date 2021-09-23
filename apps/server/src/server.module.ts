@@ -15,6 +15,8 @@ import { LearnroomModule } from './modules/lernroom/lernroom.module';
 
 import { Course, Coursegroup } from './entities';
 
+import { DashboardGridElementModel, DashboardModelEntity } from './repositories/learnroom/dashboard.model.entity';
+
 import {
 	CourseNews,
 	News,
@@ -32,6 +34,7 @@ import { User, Role, Account } from './modules/user/entity';
 
 const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
+const learnroomDashboardEntities = [DashboardModelEntity, DashboardGridElementModel];
 const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
 
@@ -54,7 +57,7 @@ const userEntities = [User, Role, Account];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...entities, ...courseEntities, ...taskEntities, ...userEntities],
+			entities: [...entities, ...courseEntities, ...learnroomDashboardEntities, ...taskEntities, ...userEntities],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
