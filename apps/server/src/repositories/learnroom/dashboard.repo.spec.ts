@@ -1,9 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { wrap } from '@mikro-orm/core';
 import { DashboardRepo } from './dashboard.repo';
 import { DashboardEntity, GridElement, DefaultGridReference } from '../../entities/learnroom/dashboard.entity';
-import { DashboardModelEntity, DashboardGridElementModel, mapToEntity } from './dashboard.model.entity';
+import { DashboardModelEntity, DashboardGridElementModel } from './dashboard.model.entity';
 import { Course } from '../../entities';
 import { MongoMemoryDatabaseModule } from '../../modules/database';
 
@@ -44,5 +43,21 @@ describe('dashboard repo', () => {
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(dashboard.id).toEqual(result.id);
 		expect(dashboard).toEqual(result);
+	});
+
+	describe('temporary getUsersDashboard fake implementation', () => {
+		it('returns a dashboard', async () => {
+			const result = await repo.getUsersDashboard();
+			expect(result instanceof DashboardEntity).toEqual(true);
+			expect(result.grid.length).toBeGreaterThan(0);
+		});
+
+		it('always returns the same dashboard', async () => {
+			const firstDashboard = await repo.getUsersDashboard();
+			// cant manipulate the dashboard, because the entity doesnt support changes yet
+			const secondDashboard = await repo.getUsersDashboard();
+			expect(firstDashboard.id).toEqual(secondDashboard.id);
+			expect(firstDashboard).toEqual(secondDashboard);
+		});
 	});
 });

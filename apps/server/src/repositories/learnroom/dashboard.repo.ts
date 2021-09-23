@@ -37,6 +37,11 @@ export class DashboardRepo implements IDashboardRepo {
 	}
 
 	async getUsersDashboard(): Promise<DashboardEntity> {
+		const hardcodedTestDashboardId = '0000d213816abba584714c0a';
+		const dashboardModel = await this.em.findOne(DashboardModelEntity, hardcodedTestDashboardId);
+		if (dashboardModel) {
+			return mapToEntity(dashboardModel);
+		}
 		const gridArray: GridElement[] = [];
 		const diagonalSize = 5;
 		const elementReference = new DefaultGridReference('exampletitle');
@@ -45,6 +50,10 @@ export class DashboardRepo implements IDashboardRepo {
 				new GridElement(new ObjectId().toString(), Math.floor(Math.random() * 6 + 1), i + 1, elementReference)
 			);
 		}
-		return Promise.resolve(new DashboardEntity('thisisfake', { grid: gridArray }));
+		const dashboard = new DashboardEntity(hardcodedTestDashboardId, { grid: gridArray });
+		this.persist(dashboard);
+		await this.em.flush();
+
+		return dashboard;
 	}
 }
