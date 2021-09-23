@@ -105,7 +105,7 @@ const fileSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-fileSchema.plugin(mongooseDelete, { deletedAt: true, overrideMethods: true });
+fileSchema.plugin(mongooseDelete, { deletedAt: true, overrideMethods: true, indexFields: true });
 
 enableAuditLog(fileSchema);
 
