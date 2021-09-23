@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
-import { DashboardModelEntity, mapToModel, mapToEntity } from './dashboard.model.entity';
+import { DashboardModelEntity } from './dashboard.model.entity';
 import {
 	DashboardEntity,
 	DashboardProps,
 	DefaultGridReference,
 	GridElement,
 } from '../../entities/learnroom/dashboard.entity';
+import { DashboardModelMapper } from './dashboard.model.mapper';
 
 export interface IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity>;
@@ -25,14 +26,14 @@ export class DashboardRepo implements IDashboardRepo {
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
 	persist(entity: DashboardEntity): DashboardEntity {
-		const modelEntity = mapToModel(entity);
+		const modelEntity = DashboardModelMapper.mapToModel(entity);
 		this.em.persist(modelEntity);
 		return entity;
 	}
 
 	async getDashboardById(id: EntityId): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
-		const dashboard = mapToEntity(dashboardModel);
+		const dashboard = DashboardModelMapper.mapToEntity(dashboardModel);
 		return dashboard;
 	}
 
@@ -40,7 +41,7 @@ export class DashboardRepo implements IDashboardRepo {
 		const hardcodedTestDashboardId = '0000d213816abba584714c0a';
 		const dashboardModel = await this.em.findOne(DashboardModelEntity, hardcodedTestDashboardId);
 		if (dashboardModel) {
-			return mapToEntity(dashboardModel);
+			return DashboardModelMapper.mapToEntity(dashboardModel);
 		}
 		const gridArray: GridElement[] = [];
 		const diagonalSize = 5;
