@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-9 add entity and repo for course dashboards
 - BC-9 add a route to recieve dummy data for course dashboards
+- BC-318 implement persistance for course dashboards
 
 ### Fixed
 
