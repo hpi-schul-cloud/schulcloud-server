@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { EntityId, Counted } from '@shared/domain';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityId } from '@shared/domain';
 import { DashboardModelEntity, mapToModel, mapToEntity } from './dashboard.model.entity';
 import {
 	DashboardEntity,
@@ -41,7 +41,9 @@ export class DashboardRepo implements IDashboardRepo {
 		const diagonalSize = 5;
 		const elementReference = new DefaultGridReference('exampletitle');
 		for (let i = 0; i < diagonalSize; i += 1) {
-			gridArray.push(new GridElement(Math.floor(Math.random() * 6 + 1), i + 1, elementReference));
+			gridArray.push(
+				new GridElement(new ObjectId().toString(), Math.floor(Math.random() * 6 + 1), i + 1, elementReference)
+			);
 		}
 		return Promise.resolve(new DashboardEntity('thisisfake', { grid: gridArray }));
 	}

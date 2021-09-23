@@ -1,4 +1,4 @@
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 
 export type GridElementReferenceMetadata = {
 	id: string;
@@ -30,13 +30,18 @@ export class DefaultGridReference implements IGridElementReference {
 }
 
 export interface IGridElement {
+	getId: () => EntityId;
+
 	getPosition: () => { x: number; y: number };
 
 	getMetadata: () => GridElementReferenceMetadata;
 }
 
 export class GridElement implements IGridElement {
-	constructor(x: number, y: number, reference: IGridElementReference) {
+	id: EntityId;
+
+	constructor(id: EntityId, x: number, y: number, reference: IGridElementReference) {
+		this.id = id;
 		this.xPos = x;
 		this.yPos = y;
 		this.reference = reference;
@@ -47,6 +52,10 @@ export class GridElement implements IGridElement {
 	xPos: number;
 
 	yPos: number;
+
+	getId(): EntityId {
+		return this.id;
+	}
 
 	getPosition(): { x: number; y: number } {
 		return { x: this.xPos, y: this.yPos };
@@ -60,7 +69,7 @@ export class GridElement implements IGridElement {
 export type DashboardProps = { grid: IGridElement[] };
 
 export class DashboardEntity {
-	id: string;
+	id: EntityId;
 
 	grid: IGridElement[];
 

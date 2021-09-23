@@ -4,6 +4,7 @@ describe('dashboard entity', () => {
 	describe('constructor', () => {
 		it('should create dashboard with prefilled Grid', () => {
 			const gridElement = {
+				getId: () => 'gridelementid',
 				getPosition: () => ({
 					x: 1,
 					y: 1,
@@ -36,6 +37,7 @@ describe('dashboard entity', () => {
 
 		it('when testGrid contains element, getGrid should return that element', () => {
 			const gridElement = {
+				getId: () => 'gridelementid',
 				getPosition: () => ({
 					x: 1,
 					y: 2,
