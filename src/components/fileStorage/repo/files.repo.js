@@ -45,7 +45,7 @@ const removePersonalFilesByUserId = async (userId) => {
 		throw new AssertionError(missingParameters({ userId }));
 	}
 	const personalNotDeletedFileSearchQuery = {
-		$and: [personalFileSearchQuery(userId), { deletedAt: { $exists: false } }],
+		$and: [personalFileSearchQuery(userId), { deleted: false }],
 	};
 	const deleteResult = await FileModel.delete(personalNotDeletedFileSearchQuery).lean().exec();
 	const { success } = updateManyResult(deleteResult);
