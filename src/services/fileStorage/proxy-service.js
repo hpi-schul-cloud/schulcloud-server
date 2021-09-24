@@ -2,6 +2,7 @@ const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { filesRepo } = require('../../components/fileStorage/repo');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
@@ -154,7 +155,12 @@ const fileStorageService = {
 		const {
 			payload: { userId: creatorId, fileStorageType },
 		} = params;
-		const { owner, parent, studentCanEdit, permissions: sendPermissions = [] } = data;
+		const { owner, parent, studentCanEdit, permissions: sendPermissions = [], deletedAt } = data;
+
+		if (deletedAt !== undefined) {
+			// creation of deleted files should fail
+			throw new BadRequest();
+		}
 
 		const refOwnerModel = await getRefOwnerModel(owner);
 
@@ -245,29 +251,20 @@ const fileStorageService = {
 	 * @param requestData, contains query parameters and userId/storageType set by middleware
 	 * @returns {Promise}
 	 */
-	remove(id, { query, payload }) {
-		const { userId, fileStorageType } = payload;
+	async remove(id, { query, payload }) {
+		const { userId } = payload;
 		const { _id = id } = query;
-		const fileInstance = FileModel.findOne({ _id });
 
-		return fileInstance
-			.lean()
-			.exec()
-			.then((file) => {
-				if (!file) {
-					throw new NotFound();
-				}
-
-				return Promise.all([
-					file,
-					canDelete(userId, _id).catch(() => {
-						throw new Forbidden();
-					}),
-				]);
-			})
-			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => fileInstance.remove().lean().exec())
-			.catch((err) => err);
+		// check file exists
+		await filesRepo.getFileById(_id);
+		// check permissions
+		try {
+			await canDelete(userId, _id);
+		} catch (err) {
+			throw new Forbidden();
+		}
+		// remove file for user
+		await filesRepo.removeFileById(_id);
 	},
 	/**
 	 * Move file from one parent to another
@@ -300,7 +297,7 @@ const fileStorageService = {
 				});
 			}
 
-			return Promise.resolve();
+			return Promise.reject();
 		};
 
 		if (fileObject) {
