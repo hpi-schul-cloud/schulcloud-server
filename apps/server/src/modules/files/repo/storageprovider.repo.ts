@@ -20,7 +20,7 @@ function createStorageProviderClient(provider: StorageProvider): S3Client {
 		tls: true,
 		credentials: {
 			accessKeyId: provider.accessKeyId,
-			secretAccessKey: provider.secretAccessKey,
+			secretAccessKey: decryptAccessKey(provider.secretAccessKey),
 		},
 	});
 }
@@ -36,6 +36,6 @@ export class FileStorageRepo extends BaseRepo<StorageProvider> {
 	async deleteFile(file: File): Promise<void> {
 		const { storageProvider, bucket, storageFileName } = file;
 		const storageProviderClient = createStorageProviderClient(storageProvider);
-		await storageProviderClient.send(new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
+		await storageProviderClient.send(new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName }));
 	}
 }
