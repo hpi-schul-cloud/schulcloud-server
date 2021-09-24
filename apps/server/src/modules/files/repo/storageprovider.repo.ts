@@ -1,6 +1,5 @@
 import CryptoJS from 'crypto-js';
-import AWS from 'aws-sdk/global';
-import S3 from 'aws-sdk/clients/s3';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
@@ -8,36 +7,23 @@ import { EntityId } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { StorageProvider, File } from '../entity';
 
-const HOST = Configuration.get('HOST') as string;
-
-function getAWSConfig(provider: StorageProvider): AWS.Config {
-	const awsConfig = new AWS.Config({
-		signatureVersion: 'v4',
-		s3ForcePathStyle: true,
-		sslEnabled: true,
-		accessKeyId: provider.accessKeyId,
-		secretAccessKey: provider.secretAccessKey,
-		region: provider.region,
-		// @ts-ignore
-		cors_rules: {
-			AllowedHeaders: ['*'],
-			AllowedMethods: ['PUT'],
-			AllowedOrigins: [HOST],
-			MaxAgeSeconds: 300,
-		},
-	});
-	// @ts-ignore
-	awsConfig.endpoint = new AWS.Endpoint(provider.endpointUrl);
-	return awsConfig;
-}
-
 function decryptAccessKey(secretAccessKey: string): string {
 	const S3_KEY = Configuration.get('S3_KEY') as string;
 	return CryptoJS.AES.decrypt(secretAccessKey, S3_KEY).toString(CryptoJS.enc.Utf8);
 }
 
-const createStorageProviderInstance = (storageProviderMetaInformation) =>
-	new S3(getAWSConfig(storageProviderMetaInformation));
+function createStorageProviderClient(provider: StorageProvider): S3Client {
+	return new S3Client({
+		endpoint: provider.endpointUrl,
+		forcePathStyle: true,
+		region: provider.region,
+		tls: true,
+		credentials: {
+			accessKeyId: provider.accessKeyId,
+			secretAccessKey: provider.secretAccessKey,
+		},
+	});
+}
 
 @Injectable()
 export class FileStorageRepo extends BaseRepo<StorageProvider> {
@@ -49,7 +35,7 @@ export class FileStorageRepo extends BaseRepo<StorageProvider> {
 
 	async deleteFile(file: File): Promise<void> {
 		const { storageProvider, bucket, storageFileName } = file;
-		const storageProviderInstance = createStorageProviderInstance(storageProvider.id);
-		await storageProviderInstance.deleteObject({ Bucket: bucket, Key: storageFileName }).promise();
+		const storageProviderClient = createStorageProviderClient(storageProvider);
+		await storageProviderClient.send(new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 	}
 }
