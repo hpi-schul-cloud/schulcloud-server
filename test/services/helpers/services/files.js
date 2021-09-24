@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { ObjectId } = require('mongoose').Types;
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 
@@ -23,6 +24,7 @@ const create = async ({
 	additonalPermissions,
 	isDirectory = false,
 	deletedAt,
+	bucket = 'bucket-test',
 } = {}) => {
 	const data = {
 		isDirectory,
@@ -43,6 +45,8 @@ const create = async ({
 		thumbnailRequestToken: uuidv4(),
 		deleted: deletedAt !== undefined,
 		deletedAt,
+		bucket,
+		storageProviderId: ObjectId(),
 	};
 	if (additonalPermissions) {
 		data.permissions = [...data.permissions, ...additonalPermissions];
