@@ -56,6 +56,6 @@ export class Task extends BaseEntityWithTimestamps {
 		this.private = !!props.private;
 		this.parent = props.parent;
 		this.lesson = props.lesson;
-		this.submissions = new Collection<Submission>(this, props.submissions || []);
+		this.submissions.set(props.submissions || []);
 	}
 }

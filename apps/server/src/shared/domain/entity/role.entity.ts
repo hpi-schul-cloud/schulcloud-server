@@ -1,10 +1,9 @@
-import { Entity, Property, Unique, Index } from '@mikro-orm/core';
-import { EntityId } from '../types';
+import { Entity, Property, Unique, Index, ManyToMany, Collection } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IRoleProperties {
 	permissions?: string[];
-	roles?: EntityId[];
+	roles?: Role[];
 	name: string;
 }
 
@@ -26,14 +25,13 @@ export class Role extends BaseEntityWithTimestamps {
 	// @ManyToMany({ fieldName: 'roles', type: Role })
 	// roles = new Collection<Role>(this);
 
-	@Property()
-	roles: EntityId[] = [];
+	@ManyToMany('Role')
+	roles = new Collection<Role>(this);
 
 	constructor(props: IRoleProperties) {
 		super();
 		this.name = props.name;
 		this.permissions = props.permissions || [];
-		this.roles = props.roles || [];
-		// Object.assign(this, { roles: props.roles });
+		this.roles.set(props.roles || []);
 	}
 }

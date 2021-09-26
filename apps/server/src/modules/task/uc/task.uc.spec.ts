@@ -3,11 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
 
-import { EntityId, ICurrentUser, Course, Submission, Task } from '@shared/domain';
+import { EntityId, ICurrentUser, Submission, Task } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Collection } from '@mikro-orm/core';
 
 import { userFactory } from '@shared/domain/factory';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { courseFactory } from '@shared/domain/factory/course.factory';
 import { TaskRepo } from '../repo';
 
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
@@ -18,12 +20,14 @@ import { TaskAuthorizationService, TaskParentPermission } from './task.authoriza
 // TODO: how work this stuff with ignoredTask
 
 describe('TaskService', () => {
+	let module: TestingModule;
 	let service: TaskUC;
 	let taskRepo: TaskRepo;
 	let authorizationService: TaskAuthorizationService;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				TaskUC,
 				{
@@ -51,6 +55,10 @@ describe('TaskService', () => {
 		service = module.get(TaskUC);
 		taskRepo = module.get(TaskRepo);
 		authorizationService = module.get(TaskAuthorizationService);
+	});
+
+	afterEach(async () => {
+		await module.close();
 	});
 
 	const setTaskRepoMock = {
@@ -196,7 +204,7 @@ describe('TaskService', () => {
 		});
 
 		it('should return well formed task with parent and status', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 
 			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task]);
@@ -212,7 +220,7 @@ describe('TaskService', () => {
 		});
 
 		it('should find a list of tasks', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task1 = new Task({ name: 'task #1', private: false, parent: course });
 			const task2 = new Task({ name: 'task #2', private: false, parent: course });
 			const task3 = new Task({ name: 'task #2', private: false, parent: course });
@@ -232,7 +240,7 @@ describe('TaskService', () => {
 		it('should compute submitted status for task', async () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = currentUser.userId;
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
@@ -258,7 +266,7 @@ describe('TaskService', () => {
 			student1.id = currentUser.userId;
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
@@ -284,7 +292,7 @@ describe('TaskService', () => {
 		it('should compute graded status for task', async () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = currentUser.userId;
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
@@ -314,7 +322,7 @@ describe('TaskService', () => {
 			student1.id = currentUser.userId;
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
@@ -398,7 +406,7 @@ describe('TaskService', () => {
 		});
 
 		it('should return well formed task with parent and status', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 
 			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
@@ -417,7 +425,7 @@ describe('TaskService', () => {
 		});
 
 		it('should find a list of tasks', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task1 = new Task({ name: 'task #1', private: false, parent: course });
 			const task2 = new Task({ name: 'task #2', private: false, parent: course });
 			const task3 = new Task({ name: 'task #2', private: false, parent: course });
@@ -437,7 +445,7 @@ describe('TaskService', () => {
 		it('should compute submitted status for task', async () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
@@ -464,7 +472,7 @@ describe('TaskService', () => {
 			student1.id = new ObjectId().toHexString();
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
@@ -490,7 +498,7 @@ describe('TaskService', () => {
 		it('should compute graded status for task', async () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
@@ -520,7 +528,7 @@ describe('TaskService', () => {
 			student1.id = currentUser.userId;
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
@@ -550,7 +558,7 @@ describe('TaskService', () => {
 			student1.id = currentUser.userId;
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
@@ -582,7 +590,7 @@ describe('TaskService', () => {
 			student1.id = new ObjectId().toHexString();
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student1, comment: 'submission #2' });

@@ -2,8 +2,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Account, Course, CourseGroup, File, Lesson, Role, School, Submission, Task, Team, User } from '@shared/domain';
-import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
+import { ALL_ENTITIES } from '@shared/domain';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
@@ -34,23 +33,7 @@ import { LearnroomModule } from './modules/learnroom/learnroom.module';
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [
-				Account,
-				Course,
-				CourseGroup,
-				File,
-				Lesson,
-				Role,
-				School,
-				Submission,
-				Task,
-				Team,
-				User,
-				CourseNews,
-				News,
-				SchoolNews,
-				TeamNews,
-			],
+			entities: ALL_ENTITIES,
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);

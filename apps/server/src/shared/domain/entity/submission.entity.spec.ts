@@ -1,4 +1,6 @@
 import { Collection } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { userFactory } from '../factory';
 import { File } from './file.entity';
 import { Submission } from './submission.entity';
@@ -12,6 +14,16 @@ const buildSubmission = () => {
 };
 
 describe('Submission entity', () => {
+	let module: TestingModule;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({ imports: [MongoMemoryDatabaseModule.forRoot()] }).compile();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should be graded if grade percentage is set', () => {
 		const submission = buildSubmission();
 		submission.grade = 50;

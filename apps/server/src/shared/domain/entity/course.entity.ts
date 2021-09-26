@@ -1,15 +1,16 @@
-import { Entity, Property, Index } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
 import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
+import type { School } from './school.entity';
+import type { User } from './user.entity';
 
 interface ICourseProperties {
 	name?: string;
 	description?: string;
-	schoolId: ObjectId;
-	teacherIds?: ObjectId[];
-	substitutionTeacherIds?: ObjectId[];
-	studentIds?: ObjectId[];
+	school: School;
+	students?: User[];
+	teachers?: User[];
+	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
 }
@@ -31,20 +32,20 @@ export class Course extends BaseEntityWithTimestamps {
 	description: string = DEFAULT.description;
 
 	@Index()
-	@Property()
-	schoolId: ObjectId;
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	school!: School;
 
 	@Index()
-	@Property({ fieldName: 'userIds' })
-	studentIds: ObjectId[] = [];
+	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	students = new Collection<User>(this);
 
 	@Index()
-	@Property()
-	teacherIds: ObjectId[] = [];
+	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
+	teachers = new Collection<User>(this);
 
 	@Index()
-	@Property({ fieldName: 'substitutionIds' })
-	substitutionTeacherIds: ObjectId[] = [];
+	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
+	substitutionTeachers = new Collection<User>(this);
 
 	// TODO: string color format
 	@Property({ default: DEFAULT.color })
@@ -54,18 +55,15 @@ export class Course extends BaseEntityWithTimestamps {
 		super();
 		this.name = props.name || DEFAULT.name;
 		this.description = props.description || DEFAULT.description;
-		this.schoolId = props.schoolId;
-		this.studentIds = props.studentIds || [];
-		this.teacherIds = props.teacherIds || [];
-		this.substitutionTeacherIds = props.substitutionTeacherIds || [];
+		this.school = props.school;
+		this.students.set(props.students || []);
+		this.teachers.set(props.teachers || []);
+		this.substitutionTeachers.set(props.substitutionTeachers || []);
 		this.color = props.color || DEFAULT.color;
-
-		Object.assign(this, {});
 	}
 
 	getNumberOfStudents(): number {
-		// TODO remove "|| []" when we can rely on db schema integrity
-		return (this.studentIds || []).length;
+		return this.students.length;
 	}
 
 	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {

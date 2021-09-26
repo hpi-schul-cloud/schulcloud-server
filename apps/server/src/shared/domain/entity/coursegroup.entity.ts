@@ -1,10 +1,11 @@
-import { Entity, Property, Collection, ManyToMany } from '@mikro-orm/core';
+import { Entity, Collection, ManyToMany, ManyToOne } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { User } from './user.entity';
+import type { Course } from './course.entity';
 
 export interface ICourseGroupProperties {
-	courseId: ObjectId;
+	course: Course;
 	students?: User[];
 }
 
@@ -13,17 +14,16 @@ export class CourseGroup extends BaseEntityWithTimestamps {
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
-	@Property()
-	courseId: ObjectId;
+	@ManyToOne('Course', { fieldName: 'courseId' })
+	course: Course;
 
 	constructor(props: ICourseGroupProperties) {
 		super();
-		this.students = new Collection<User>(props.students || []);
-		this.courseId = props.courseId;
-		Object.assign(this, {});
+		this.course = props.course;
+		this.students.set(props.students || []);
 	}
 
 	getParentId(): ObjectId {
-		return this.courseId;
+		return this.course._id;
 	}
 }

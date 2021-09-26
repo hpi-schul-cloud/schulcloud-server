@@ -1,7 +1,8 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, File, Lesson, SortOrder, Submission, Task, User, Role } from '@shared/domain';
+import { Course, Lesson, SortOrder, School, Submission, Task } from '@shared/domain';
 import { userFactory } from '@shared/domain/factory';
+import { courseFactory } from '@shared/domain/factory/course.factory';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
@@ -14,11 +15,7 @@ describe('TaskRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [Course, Task, Submission, User, Role, Lesson, CourseGroup, File],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [TaskRepo],
 		}).compile();
 		repo = module.get(TaskRepo);
@@ -35,7 +32,7 @@ describe('TaskRepo', () => {
 
 	describe('findAll', () => {
 		it('should return task of teachers course', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 
 			await em.persistAndFlush([task]);
@@ -47,9 +44,9 @@ describe('TaskRepo', () => {
 		});
 
 		it('should not return task that are not requested', async () => {
-			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course1 = courseFactory.build({ name: 'course #1' });
 			const task1 = new Task({ name: 'task #1', private: false, parent: course1 });
-			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId() });
+			const course2 = courseFactory.build({ name: 'course #2' });
 			const task2 = new Task({ name: 'task #2', private: false, parent: course2 });
 
 			await em.persistAndFlush([task1, task2]);
@@ -62,7 +59,7 @@ describe('TaskRepo', () => {
 		});
 
 		it('should not return private task of course', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: true, parent: course });
 
 			await em.persistAndFlush([task]);
@@ -74,7 +71,7 @@ describe('TaskRepo', () => {
 		});
 
 		it('should return task in a visible lesson of the users course', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const lesson = new Lesson({ course, hidden: false });
 			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
@@ -87,7 +84,7 @@ describe('TaskRepo', () => {
 		});
 
 		it('should not return task from a hidden lesson', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const lesson = new Lesson({ course, hidden: true });
 			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
@@ -100,7 +97,7 @@ describe('TaskRepo', () => {
 		});
 
 		it('should not return task in a lesson when hidden is null', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const lesson = new Lesson({ course });
 			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 			// @ts-expect-error: Test case
@@ -115,7 +112,7 @@ describe('TaskRepo', () => {
 		});
 
 		it('should return task if lesson is null', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 			// @ts-expect-error: Test case - in database null exist
 			task.lesson = null;
@@ -134,7 +131,7 @@ describe('TaskRepo', () => {
 	describe('findAllCurrent', () => {
 		describe('return value', () => {
 			it('should populate the parent', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: false, parent: course });
 
 				await em.persistAndFlush([task]);
@@ -146,7 +143,7 @@ describe('TaskRepo', () => {
 				expect(result[0].parent?.id).toEqual(course.id);
 			});
 			it('should populate the lesson', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const lesson = new Lesson({ course, hidden: false });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
@@ -160,7 +157,7 @@ describe('TaskRepo', () => {
 			});
 			it('should populate the list of submissions', async () => {
 				const student = userFactory.build();
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: false, parent: course });
 				task.submissions.add(new Submission({ task, student, comment: 'my solution to the task #1' }));
 
@@ -174,7 +171,7 @@ describe('TaskRepo', () => {
 				expect(result[0].submissions[0].id).toEqual(task.submissions[0].id);
 			});
 			it('should return the expected properties', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: false, parent: course });
 
 				await em.persistAndFlush([task]);
@@ -187,7 +184,7 @@ describe('TaskRepo', () => {
 				expect(result[0]).toHaveProperty('parent');
 			});
 			it('should return a paginated result', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task1 = new Task({ name: 'task #1', private: false, parent: course });
 				const task2 = new Task({ name: 'task #2', private: false, parent: course });
 				const task3 = new Task({ name: 'task #3', private: false, parent: course });
@@ -203,7 +200,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(4);
 			});
 			it('should be sorted with earlier duedates first', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const dueDate1 = new Date(Date.now() + 500);
 				const dueDate2 = new Date(Date.now() - 500);
 				const task1 = new Task({ name: 'task #1', private: false, parent: course, dueDate: dueDate1 });
@@ -220,7 +217,7 @@ describe('TaskRepo', () => {
 				expect(result[1].id).toEqual(task1.id);
 			});
 			it('should not return private tasks', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: true, parent: course });
 
 				await em.persistAndFlush([task]);
@@ -233,7 +230,7 @@ describe('TaskRepo', () => {
 		});
 		describe('open tasks in courses', () => {
 			it('should return task of students course', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: false, parent: course });
 
 				await em.persistAndFlush([task]);
@@ -244,9 +241,9 @@ describe('TaskRepo', () => {
 				expect(result).toHaveLength(1);
 			});
 			it('should not return other tasks', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: false, parent: course });
-				const otherCourse = new Course({ name: 'course #2', schoolId: new ObjectId() });
+				const otherCourse = new Course({ name: 'course #2', school: new School({ name: 'school #1' }) });
 				const otherTask = new Task({ name: 'task #2', private: false, parent: otherCourse });
 
 				await em.persistAndFlush([task, otherTask]);
@@ -257,7 +254,7 @@ describe('TaskRepo', () => {
 				expect(result).toHaveLength(1);
 			});
 			it('should not return private task of course', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const task = new Task({ name: 'task #1', private: true, parent: course });
 
 				await em.persistAndFlush([task]);
@@ -268,7 +265,7 @@ describe('TaskRepo', () => {
 				expect(result).toHaveLength(0);
 			});
 			it('should filter tasks that are more than one week overdue', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
@@ -285,7 +282,7 @@ describe('TaskRepo', () => {
 		});
 		describe('open tasks in lessons', () => {
 			it('should return task in a visible lesson of the users course', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const lesson = new Lesson({ course, hidden: false });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
@@ -297,7 +294,7 @@ describe('TaskRepo', () => {
 				expect(result).toHaveLength(1);
 			});
 			it('should not return task in a hidden lesson', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const lesson = new Lesson({ course, hidden: true });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 
@@ -309,7 +306,7 @@ describe('TaskRepo', () => {
 				expect(result).toHaveLength(0);
 			});
 			it('should not return task in a lesson where hidden is null', async () => {
-				const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+				const course = courseFactory.build();
 				const lesson = new Lesson({ course });
 				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
 				// @ts-expect-error: Test case - we have null values in the database

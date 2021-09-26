@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { RoleRepo } from '../repo';
 import { RoleUC } from './role.uc';
 
 describe('RoleUC', () => {
+	let module: TestingModule;
 	let service: RoleUC;
 	let repo: RoleRepo;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				RoleUC,
 				RoleRepo,
@@ -23,6 +26,10 @@ describe('RoleUC', () => {
 
 		service = module.get(RoleUC);
 		repo = module.get(RoleRepo);
+	});
+
+	afterEach(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

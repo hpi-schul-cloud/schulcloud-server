@@ -10,8 +10,8 @@ import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { TaskResponse } from '@src/modules/task/controller/dto';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { userFactory } from '@shared/domain/factory';
+import { courseFactory } from '@shared/domain/factory/course.factory';
 
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.user.id = user.id;
@@ -58,8 +58,7 @@ describe('Task Controller (e2e)', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
-
-		const { currentUser } = createCurrentTestUser(['TASK_DASHBOARD_TEACHER_VIEW_V3']);
+		let currentUser: ICurrentUser;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -79,6 +78,7 @@ describe('Task Controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
+			currentUser = createCurrentTestUser(['TASK_DASHBOARD_TEACHER_VIEW_V3']).currentUser;
 		});
 
 		afterAll(async () => {
@@ -129,8 +129,7 @@ describe('Task Controller (e2e)', () => {
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
-			await em.persistAndFlush([teacher]);
-			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent = courseFactory.build({ teachers: [teacher] });
 			const task = new Task({ name: 'task #1', private: false, parent });
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -150,7 +149,7 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent = courseFactory.build({ teachers: [teacher] });
 			const task = new Task({ name: 'task #1', private: false, parent });
 			const submission = new Submission({ student, comment: '', task });
 			task.submissions = new Collection<Submission>(task, [submission]);
@@ -174,7 +173,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return a list of tasks', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent = courseFactory.build({ teachers: [teacher] });
 			const task1 = new Task({ name: 'task #1', private: false, parent });
 			const task2 = new Task({ name: 'task #2', private: false, parent });
 			const task3 = new Task({ name: 'task #3', private: false, parent });
@@ -193,9 +192,9 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return a list of tasks from multiple parents', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent1 = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
-			const parent2 = new Course({ name: 'course #2', schoolId: new ObjectId(), teacherIds: [teacher._id] });
-			const parent3 = new Course({ name: 'course #3', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+			const parent2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
+			const parent3 = courseFactory.build({ name: 'course #3', teachers: [teacher] });
 			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
 			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
 
@@ -213,7 +212,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks should not return private tasks', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const parent = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 			const task = new Task({ name: 'task #1', private: true, parent });
 
 			await em.persistAndFlush([task]);
@@ -230,7 +229,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks should return nothing from parents where the user has only read permissions', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [teacher._id] });
+			const parent = courseFactory.build({ name: 'course #1', students: [teacher] });
 			const task = new Task({ name: 'task #1', private: false, parent });
 
 			await em.persistAndFlush([task]);
@@ -249,8 +248,7 @@ describe('Task Controller (e2e)', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
-
-		const { currentUser } = createCurrentTestUser(['TASK_DASHBOARD_VIEW_V3']);
+		let currentUser: ICurrentUser;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -270,6 +268,7 @@ describe('Task Controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
+			currentUser = createCurrentTestUser(['TASK_DASHBOARD_VIEW_V3']).currentUser;
 		});
 
 		afterAll(async () => {
@@ -327,11 +326,10 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = new Course({
+			const parent = courseFactory.build({
 				name: 'course #1',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
-				studentIds: [student._id],
+				teachers: [teacher],
+				students: [student],
 			});
 			const task = new Task({ name: 'task #1', private: false, parent });
 			const submission = new Submission({ student, comment: '', task });
@@ -360,11 +358,10 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = new Course({
+			const parent = courseFactory.build({
 				name: 'course #1',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
-				studentIds: [student._id],
+				teachers: [teacher],
+				students: [student],
 			});
 			const task1 = new Task({ name: 'task #1', private: false, parent });
 			const task2 = new Task({ name: 'task #2', private: false, parent });
@@ -385,23 +382,20 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent1 = new Course({
+			const parent1 = courseFactory.build({
 				name: 'course #1',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
-				studentIds: [student._id],
+				teachers: [teacher],
+				students: [student],
 			});
-			const parent2 = new Course({
+			const parent2 = courseFactory.build({
 				name: 'course #2',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
-				studentIds: [student._id],
+				teachers: [teacher],
+				students: [student],
 			});
-			const parent3 = new Course({
+			const parent3 = courseFactory.build({
 				name: 'course #3',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
-				studentIds: [student._id],
+				teachers: [teacher],
+				students: [student],
 			});
 			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
 			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
@@ -421,11 +415,10 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = new Course({
+			const parent = courseFactory.build({
 				name: 'course #1',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
-				studentIds: [student._id],
+				teachers: [teacher],
+				students: [student],
 			});
 			const task = new Task({ name: 'task #1', private: true, parent });
 
@@ -444,15 +437,13 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const subTeacher = userFactory.build({ firstName: 'Hanna', lastName: 'Heinrich' });
 			await em.persistAndFlush([teacher, subTeacher]);
-			const parent1 = new Course({
+			const parent1 = courseFactory.build({
 				name: 'course #1',
-				schoolId: new ObjectId(),
-				teacherIds: [teacher._id],
+				teachers: [teacher],
 			});
-			const parent2 = new Course({
+			const parent2 = courseFactory.build({
 				name: 'course #2',
-				schoolId: new ObjectId(),
-				substitutionTeacherIds: [subTeacher._id],
+				substitutionTeachers: [subTeacher],
 			});
 			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
 			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });

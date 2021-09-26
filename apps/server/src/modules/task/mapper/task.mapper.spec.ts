@@ -1,5 +1,6 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, Task } from '@shared/domain';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Course, Task, School } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { TaskResponse } from '../controller/dto';
 
 import { TaskMapper } from './task.mapper';
@@ -29,10 +30,22 @@ const createExpectedResponse = (
 };
 
 describe('task.mapper', () => {
+	let module: TestingModule;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
+		}).compile();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should map if parent and fullfilled status exist', () => {
 		const parent = new Course({
 			name: 'course #1',
-			schoolId: new ObjectId(),
+			school: new School({ name: 'school #1' }),
 			description: 'a short description for course #1',
 		});
 		const task = new Task({ name: 'task #1', private: false, parent });
@@ -54,7 +67,7 @@ describe('task.mapper', () => {
 	it('should filter not necessary informations from status', () => {
 		const parent = new Course({
 			name: 'course #1',
-			schoolId: new ObjectId(),
+			school: new School({ name: 'school #1' }),
 			description: 'a short description for course #1',
 		});
 		const task = new Task({ name: 'task #1', private: false, parent });
@@ -77,7 +90,7 @@ describe('task.mapper', () => {
 	it('should filter not necessary informations from task', () => {
 		const parent = new Course({
 			name: 'course #1',
-			schoolId: new ObjectId(),
+			school: new School({ name: 'school #1' }),
 			description: 'a short description for course #1',
 		});
 		const task = new Task({ name: 'task #1', private: false, parent });
@@ -99,7 +112,7 @@ describe('task.mapper', () => {
 		expect(result).toStrictEqual(expected);
 	});
 
-	it('should not set parent meta informations if it is not exist in task.', () => {
+	it('should not set parent meta informations if it does not exist in task.', () => {
 		// task has no parent
 		const task = new Task({ name: 'test task#1' });
 

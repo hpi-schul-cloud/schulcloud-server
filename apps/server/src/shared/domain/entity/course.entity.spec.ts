@@ -1,4 +1,8 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { userFactory } from '../factory';
+import { courseFactory } from '../factory/course.factory';
+import { schoolFactory } from '../factory/school.factory';
 import { Course } from './course.entity';
 
 const DEFAULT = {
@@ -8,6 +12,18 @@ const DEFAULT = {
 };
 
 describe('CourseEntity', () => {
+	let module: TestingModule;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
+		}).compile();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
@@ -16,14 +32,14 @@ describe('CourseEntity', () => {
 		});
 
 		it('should create a course by passing required properties', () => {
-			const course = new Course({ name: '', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			expect(course instanceof Course).toEqual(true);
 		});
 	});
 
 	describe('getDescriptions', () => {
 		it('should return the right properties', () => {
-			const course = new Course({ name: '', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 
 			const result = course.getDescriptions();
 
@@ -35,7 +51,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should work and passing default informations if only required values exist', () => {
-			const course = new Course({ name: '', schoolId: new ObjectId() });
+			const course = new Course({ school: schoolFactory.build() });
 
 			const result = course.getDescriptions();
 
@@ -48,17 +64,17 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return values if they are set', () => {
-			const schoolId = new ObjectId();
 			const name = 'A1';
-			const color = 'FFFFFF';
 			const description = 'Happy hour.';
-			const course = new Course({ name, schoolId, color, description });
+			const color = 'FFFFFF';
+
+			const course = courseFactory.build({ name, description, color });
 
 			const result = course.getDescriptions();
 
 			expect(result).toEqual({
-				description,
 				name,
+				description,
 				color,
 				id: course.id,
 			});
@@ -67,7 +83,9 @@ describe('CourseEntity', () => {
 
 	describe('getStudents', () => {
 		it('should count the number of assigned students', () => {
-			const course = new Course({ name: '', schoolId: new ObjectId(), studentIds: [new ObjectId(), new ObjectId()] });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const course = courseFactory.build({ students: [student1, student2] });
 
 			const number = course.getNumberOfStudents();
 
@@ -75,7 +93,8 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return 0 if no student is assigned', () => {
-			const course = new Course({ name: '', schoolId: new ObjectId(), teacherIds: [new ObjectId()], studentIds: [] });
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			const course = courseFactory.build({ teachers: [teacher], students: [] });
 
 			const number = course.getNumberOfStudents();
 

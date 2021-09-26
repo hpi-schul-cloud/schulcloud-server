@@ -24,7 +24,7 @@ export class RoleRepo {
 
 		for (let i = 0; i < role.roles.length; i += 1) {
 			// eslint-disable-next-line no-await-in-loop
-			const resolvedSubRole = await this.resolvePermissionsFromSubRolesById(role.roles[i]);
+			const resolvedSubRole = await this.resolvePermissionsFromSubRolesById(role.roles[i].id);
 			permissions = [...permissions, ...resolvedSubRole.permissions];
 		}
 

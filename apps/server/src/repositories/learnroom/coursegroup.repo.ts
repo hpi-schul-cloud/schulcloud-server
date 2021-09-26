@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { Counted, EntityId, CourseGroup } from '@shared/domain';
@@ -9,7 +9,7 @@ export class CourseGroupRepo {
 
 	async findByCourseIds(courseIds: EntityId[]): Promise<Counted<CourseGroup[]>> {
 		const [courseGroups, count] = await this.em.findAndCount(CourseGroup, {
-			courseId: { $in: courseIds.map((id) => new ObjectId(id)) },
+			course: { $in: courseIds },
 		});
 		return [courseGroups, count];
 	}

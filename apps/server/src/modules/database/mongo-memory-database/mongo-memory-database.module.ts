@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { ALL_ENTITIES } from '@shared/domain';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoDatabaseModuleOptions } from '../types';
 
@@ -46,9 +47,12 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	) {}
 
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+		const defaultOptions = {
+			entities: ALL_ENTITIES,
+		};
 		return {
 			module: MongoMemoryDatabaseModule,
-			imports: [createMikroOrmModule(options || {})],
+			imports: [createMikroOrmModule({ ...defaultOptions, ...options })],
 			exports: [MikroOrmModule],
 		};
 	}

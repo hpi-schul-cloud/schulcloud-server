@@ -1,5 +1,5 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '../entity/user.entity';
+import { schoolFactory } from './school.factory';
 
 export const userFactory = {
 	build: (props?: { firstName?: string; lastName?: string }): User => {
@@ -8,7 +8,7 @@ export const userFactory = {
 			lastName: 'Doe',
 			email: `user.${Date.now()}@example.com`,
 			roles: [],
-			school: new ObjectId().toHexString(),
+			school: schoolFactory.build(),
 			...props,
 		});
 		return user;
