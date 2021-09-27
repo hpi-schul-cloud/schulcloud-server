@@ -20,6 +20,8 @@ describe('wopi service', function test() {
 		size: 11348,
 		storageFileName: '1501061352639-Test.docx',
 		permissions: [],
+		bucket: 'bucket-test',
+		storageProviderId: testObjects.generateObjectId(),
 		__v: 0,
 	};
 
@@ -31,6 +33,8 @@ describe('wopi service', function test() {
 		size: 11348,
 		storageFileName: '1501161352639-Test1.docx',
 		permissions: [],
+		bucket: 'bucket-test',
+		storageProviderId: testObjects.generateObjectId(),
 		__v: 0,
 	};
 
@@ -84,6 +88,8 @@ describe('wopi service', function test() {
 			size: 11348,
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
+			bucket: 'bucket-test',
+			storageProviderId: testObjects.generateObjectId(),
 		});
 		return app
 			.service('wopi/files/:fileId')
@@ -128,6 +134,8 @@ describe('wopi service', function test() {
 				size: 11348,
 				storageFileName: `${Date.now()}-Test.docx`,
 				permissions: [],
+				bucket: 'bucket-test',
+				storageProviderId: testObjects.generateObjectId(),
 			});
 			let params = await generateRequestParamsFromUser(user);
 			params = Object.assign(params, {
@@ -154,6 +162,8 @@ describe('wopi service', function test() {
 			size: 11348,
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
+			bucket: 'bucket-test',
+			storageProviderId: testObjects.generateObjectId(),
 		});
 		const headers = {};
 		headers['x-wopi-override'] = 'LOCK';

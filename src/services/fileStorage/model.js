@@ -69,6 +69,12 @@ const fileSchema = new Schema({
 			return !this.isDirectory;
 		},
 	},
+	bucket: { type: String, required: true },
+	storageProviderId: {
+		type: Schema.Types.ObjectId,
+		required: true,
+		ref: 'storageProvider',
+	},
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {

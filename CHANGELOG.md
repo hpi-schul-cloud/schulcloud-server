@@ -19,10 +19,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-68 - e2e run dependent on build image job
 - BC-179 - refactor task and entity and relations
 
 ### Added
 
+- BC-121 add bucket and storage provider to file documents
 - BC-164 - refactored the supportJWTservice and added roles information to its jwt data
 - BC-279 - introduce console application interface to call providers via console command
 - BC-9 add entity and repo for course dashboards
