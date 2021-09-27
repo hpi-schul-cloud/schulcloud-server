@@ -48,6 +48,14 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToMany({ fieldName: 'gradeFileIds', type: FileTaskInfo })
 	gradeFiles = new Collection<FileTaskInfo>(this);
 
+	isGraded(): boolean {
+		const isGraded =
+			(typeof this.grade === 'number' && this.grade >= 0) ||
+			(typeof this.gradeComment === 'string' && this.gradeComment.length > 0) ||
+			(this.gradeFiles !== undefined && this.gradeFiles.length > 0);
+		return isGraded;
+	}
+
 	constructor(props: ISubmissionProperties) {
 		super();
 		this.student = props.student;
