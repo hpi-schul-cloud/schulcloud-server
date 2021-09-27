@@ -23,6 +23,7 @@ const create = async ({
 	refId,
 	additonalPermissions,
 	isDirectory = false,
+	deletedAt,
 	bucket = 'bucket-test',
 } = {}) => {
 	const data = {
@@ -42,6 +43,8 @@ const create = async ({
 		creator: creator || owner,
 		refOwnerModel,
 		thumbnailRequestToken: uuidv4(),
+		deleted: deletedAt !== undefined,
+		deletedAt,
 		bucket,
 		storageProviderId: ObjectId(),
 	};
