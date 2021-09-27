@@ -11,11 +11,11 @@ export class File extends BaseEntityWithTimestamps {
 	storageFileName: string;
 
 	@Property()
-	bucket: string;
+	bucket!: string;
 
 	@Property()
 	isDirectory: boolean;
 
 	@ManyToOne({ fieldName: 'storageProviderId' })
-	storageProvider: StorageProvider;
+	storageProvider!: StorageProvider;
 }

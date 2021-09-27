@@ -16,8 +16,14 @@ export class DeleteFilesUc {
 		const filesForDeletion = await this.filesRepo.getExpiredFiles(removedSince);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const file of filesForDeletion) {
-			// eslint-disable-next-line no-await-in-loop
-			await this.fileStorageRepo.deleteFile(file);
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				await this.fileStorageRepo.deleteFile(file);
+				// eslint-disable-next-line no-await-in-loop
+				await this.filesRepo.deleteFile(file);
+			} catch (err) {
+				this.logger.error(err);
+			}
 		}
 	}
 }

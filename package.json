@@ -54,6 +54,7 @@
 		"nest:start:prod": "node dist/apps/server/main",
 		"nest:console": "node dist/apps/server/console/console",
 		"nest:console:dev": "ts-node -r tsconfig-paths/register apps/server/src/console/console.ts",
+		"nest:console:dev:filedeletion": "ts-node -r tsconfig-paths/register apps/server/src/console/console.ts -- remove-deleted-files 0",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest",
 		"nest:test:spec": "jest \"\\.spec\\.ts$\"",

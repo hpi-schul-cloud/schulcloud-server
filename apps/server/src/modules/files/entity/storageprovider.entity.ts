@@ -1,16 +1,16 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
-@Entity({ tableName: 'storageProviders' })
+@Entity({ tableName: 'storageproviders' })
 export class StorageProvider extends BaseEntityWithTimestamps {
 	@Property()
-	endpointUrl: string;
+	endpointUrl!: string;
 
 	@Property()
-	accessKeyId: string;
+	accessKeyId!: string;
 
 	@Property()
-	secretAccessKey: string;
+	secretAccessKey!: string;
 
 	@Property()
 	region: string;

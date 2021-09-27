@@ -7,4 +7,8 @@ export class FilesRepo extends BaseRepo<File> {
 	getExpiredFiles(backupPeriodThreshold: Date): Promise<File[]> {
 		return this.em.find(File, { deletedAt: { $lt: backupPeriodThreshold } });
 	}
+
+	deleteFile(file: File): Promise<void> {
+		return this.em.removeAndFlush(file);
+	}
 }
