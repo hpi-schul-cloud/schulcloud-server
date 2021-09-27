@@ -9,6 +9,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Fixed
+
+## [26.11.0] - 2021-09-22
+
 ### Changed
 
 - BC-274 Change Course Colors
