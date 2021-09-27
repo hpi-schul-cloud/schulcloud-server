@@ -97,6 +97,8 @@ describe('fileStorage services', () => {
 			size: 1200,
 			storageFileName: 'storage.jpg',
 			thumbnail: 'thumbnail.jpg',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.Types.ObjectId(),
 		};
 
 		const created = [];

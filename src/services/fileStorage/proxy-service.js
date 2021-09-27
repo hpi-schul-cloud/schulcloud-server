@@ -21,6 +21,7 @@ const {
 	createPermission,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { schoolModel } = require('../school/model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
@@ -151,13 +152,13 @@ const fileStorageService = {
 	 */
 	async create(data, params) {
 		const {
-			payload: { userId, fileStorageType },
+			payload: { userId: creatorId, fileStorageType },
 		} = params;
 		const { owner, parent, studentCanEdit, permissions: sendPermissions = [] } = data;
 
 		const refOwnerModel = await getRefOwnerModel(owner);
 
-		const permissions = await createDefaultPermissions(userId, refOwnerModel, {
+		const permissions = await createDefaultPermissions(creatorId, refOwnerModel, {
 			studentCanEdit,
 			sendPermissions,
 			owner,
@@ -165,15 +166,27 @@ const fileStorageService = {
 			throw new GeneralError('Can not create default Permissions', err);
 		});
 
+		const strategy = createCorrectStrategy(fileStorageType);
+
+		const fileOwner = owner || creatorId;
+
+		const creator = await userModel.findById(creatorId).lean().exec();
+		const { schoolId } = creator;
+		const bucket = strategy.getBucket(schoolId);
+		const school = await schoolModel.findById(schoolId).lean().exec();
+		const storageProviderId = school.storageProvider;
+
 		const props = sanitizeObj(
 			Object.assign(data, {
 				isDirectory: false,
-				owner: owner || userId,
+				owner: fileOwner,
 				parent,
 				refOwnerModel,
 				permissions,
-				creator: userId,
+				creator: creatorId,
 				storageFileName: decodeURIComponent(data.storageFileName),
+				storageProviderId,
+				bucket,
 			})
 		);
 
@@ -182,35 +195,18 @@ const fileStorageService = {
 			logger.error({ message, stack: err.stack });
 		};
 
-		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
-			return canCreate(userId, parent)
-				.then(() =>
-					FileModel.findOne(props)
-						.lean()
-						.exec()
-						.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-				)
-				.then((file) => {
-					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-					return Promise.resolve(file);
-				})
-				.catch((err) => {
-					throw new Forbidden(err);
-				});
+			await canCreate(creatorId, parent);
 		}
 
-		return FileModel.findOne(props)
-			.exec()
-			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then((file) => {
-				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-				return Promise.resolve(file);
-			});
+		let file = await FileModel.findOne(props).lean().exec();
+		if (!file) file = FileModel.create(props);
+
+		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
+		prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
+		return file;
 	},
 
 	/**
