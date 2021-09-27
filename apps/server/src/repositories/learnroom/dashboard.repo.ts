@@ -33,7 +33,7 @@ export class DashboardRepo implements IDashboardRepo {
 
 	async getDashboardById(id: EntityId): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
-		const dashboard = DashboardModelMapper.mapToEntity(dashboardModel);
+		const dashboard = await DashboardModelMapper.mapToEntity(dashboardModel);
 		return dashboard;
 	}
 
@@ -45,8 +45,8 @@ export class DashboardRepo implements IDashboardRepo {
 		}
 		const gridArray: GridElement[] = [];
 		const diagonalSize = 5;
-		const elementReference = new DefaultGridReference('exampletitle');
 		for (let i = 0; i < diagonalSize; i += 1) {
+			const elementReference = new DefaultGridReference(new ObjectId().toString(), 'exampletitle');
 			gridArray.push(
 				new GridElement(new ObjectId().toString(), Math.floor(Math.random() * 6 + 1), i + 1, elementReference)
 			);

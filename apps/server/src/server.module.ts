@@ -15,7 +15,11 @@ import { LearnroomModule } from './modules/lernroom/lernroom.module';
 
 import { Course, Coursegroup } from './entities';
 
-import { DashboardGridElementModel, DashboardModelEntity } from './repositories/learnroom/dashboard.model.entity';
+import {
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	DefaultGridReferenceModel,
+} from './repositories/learnroom/dashboard.model.entity';
 
 import {
 	CourseNews,
@@ -34,7 +38,7 @@ import { User, Role, Account } from './modules/user/entity';
 
 const entities = [Course, Coursegroup];
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
-const learnroomDashboardEntities = [DashboardModelEntity, DashboardGridElementModel];
+const learnroomDashboardEntities = [DashboardModelEntity, DashboardGridElementModel, DefaultGridReferenceModel];
 const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
 

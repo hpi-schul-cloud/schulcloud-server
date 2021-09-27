@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardRepo } from './dashboard.repo';
 import { DashboardEntity, GridElement, DefaultGridReference } from '../../entities/learnroom/dashboard.entity';
-import { DashboardModelEntity, DashboardGridElementModel } from './dashboard.model.entity';
+import { DashboardModelEntity, DashboardGridElementModel, DefaultGridReferenceModel } from './dashboard.model.entity';
 import { Course } from '../../entities';
 import { MongoMemoryDatabaseModule } from '../../modules/database';
 
@@ -15,7 +15,7 @@ describe('dashboard repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardModelEntity, DashboardGridElementModel, Course],
+					entities: [DashboardModelEntity, DashboardGridElementModel, DefaultGridReferenceModel, Course],
 				}),
 			],
 			providers: [DashboardRepo],
@@ -36,7 +36,9 @@ describe('dashboard repo', () => {
 
 	it('should persist dashboard with gridElements', async () => {
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
-			grid: [new GridElement(new ObjectId().toString(), 1, 2, new DefaultGridReference('Mathe'))],
+			grid: [
+				new GridElement(new ObjectId().toString(), 1, 2, new DefaultGridReference(new ObjectId().toString(), 'Mathe')),
+			],
 		});
 		repo.persist(dashboard);
 		await em.flush();

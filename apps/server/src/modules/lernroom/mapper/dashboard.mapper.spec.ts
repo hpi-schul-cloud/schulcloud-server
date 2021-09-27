@@ -4,7 +4,9 @@ import { DashboardResponse } from '../controller/dto';
 
 describe('dashboard mapper', () => {
 	it('should map the required properties correctly', () => {
-		const gridArray: GridElement[] = [new GridElement('id', 1, 2, new DefaultGridReference('exampletitle'))];
+		const gridArray: GridElement[] = [
+			new GridElement('id', 1, 2, new DefaultGridReference('referenceid', 'exampletitle')),
+		];
 		const entity = new DashboardEntity('someid', { grid: gridArray });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);

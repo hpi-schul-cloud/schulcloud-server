@@ -13,18 +13,24 @@ export interface IGridElementReference {
 
 export class DefaultGridReference implements IGridElementReference {
 	// This is only a temporary fake class, for use until other references, like courses, are fully supported.
+	id: EntityId;
+
 	title: string;
 
-	constructor(title: string) {
+	displayColor: string;
+
+	constructor(id: EntityId, title: string, displayColor = '#f23f76') {
+		this.id = id;
 		this.title = title;
+		this.displayColor = displayColor;
 	}
 
 	getMetadata(): GridElementReferenceMetadata {
 		return {
-			id: 'someId',
+			id: this.id,
 			title: this.title,
 			shortTitle: this.title.substr(0, 2),
-			displayColor: '#f23f76',
+			displayColor: this.displayColor,
 		};
 	}
 }
