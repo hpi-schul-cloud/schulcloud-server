@@ -1090,7 +1090,7 @@
 	"name": "adjust-course-colors",
 	"createdAt": {
 		"$date": "2021-09-15T09:51:11.74Z"
-  },
+    },
 	"__v": 0
 }]
 
