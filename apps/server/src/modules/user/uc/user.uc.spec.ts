@@ -56,7 +56,7 @@ describe('UserUC', () => {
 				return Promise.resolve(user);
 			});
 
-			const result = await service.getUserWithPermissions(currentUser);
+			const result = await service.getUserWithPermissions(currentUser.userId);
 			expect(result instanceof ResolvedUser).toBe(true);
 
 			userRepoSpy.mockRestore();
