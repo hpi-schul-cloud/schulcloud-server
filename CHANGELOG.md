@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-274 Change Course Colors
 - BC-213 - rewrite file deletion with deletion marker
 - BC-68 - e2e run dependent on build image job
 - BC-179 - refactor task and entity and relations
