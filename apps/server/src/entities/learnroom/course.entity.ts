@@ -1,6 +1,7 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { IGridElementReference, GridElementReferenceMetadata } from './dashboard.entity';
 
 interface ICourseProperties {
 	name?: string;
