@@ -254,7 +254,7 @@ describe('fileStorage services', () => {
 					query: {},
 					...context,
 				})
-				.then(({ code }) => {
+				.catch(({ code }) => {
 					expect(code).to.be.equal(404);
 					return done();
 				});
@@ -268,7 +268,7 @@ describe('fileStorage services', () => {
 					query: {},
 					...context,
 				})
-				.then(({ code }) => {
+				.catch(({ code }) => {
 					expect(code).to.be.equal(403);
 					return done();
 				});
