@@ -1,4 +1,4 @@
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 
 export type GridElementReferenceMetadata = {
 	id: string;
@@ -13,30 +13,41 @@ export interface IGridElementReference {
 
 export class DefaultGridReference implements IGridElementReference {
 	// This is only a temporary fake class, for use until other references, like courses, are fully supported.
+	id: EntityId;
+
 	title: string;
 
-	constructor(title: string) {
+	displayColor: string;
+
+	constructor(id: EntityId, title: string, displayColor = '#f23f76') {
+		this.id = id;
 		this.title = title;
+		this.displayColor = displayColor;
 	}
 
 	getMetadata(): GridElementReferenceMetadata {
 		return {
-			id: 'someId',
+			id: this.id,
 			title: this.title,
 			shortTitle: this.title.substr(0, 2),
-			displayColor: '#f23f76',
+			displayColor: this.displayColor,
 		};
 	}
 }
 
 export interface IGridElement {
+	getId: () => EntityId;
+
 	getPosition: () => { x: number; y: number };
 
 	getMetadata: () => GridElementReferenceMetadata;
 }
 
 export class GridElement implements IGridElement {
-	constructor(x: number, y: number, reference: IGridElementReference) {
+	id: EntityId;
+
+	constructor(id: EntityId, x: number, y: number, reference: IGridElementReference) {
+		this.id = id;
 		this.xPos = x;
 		this.yPos = y;
 		this.reference = reference;
@@ -48,6 +59,10 @@ export class GridElement implements IGridElement {
 
 	yPos: number;
 
+	getId(): EntityId {
+		return this.id;
+	}
+
 	getPosition(): { x: number; y: number } {
 		return { x: this.xPos, y: this.yPos };
 	}
@@ -57,13 +72,21 @@ export class GridElement implements IGridElement {
 	}
 }
 
-export class DashboardEntity extends BaseEntityWithTimestamps {
+export type DashboardProps = { grid: IGridElement[] };
+
+export class DashboardEntity {
+	id: EntityId;
+
 	grid: IGridElement[];
 
-	constructor(props: { grid: IGridElement[] }) {
-		super();
+	constructor(id: string, props: DashboardProps) {
 		this.grid = props.grid || [];
+		this.id = id;
 		Object.assign(this, {});
+	}
+
+	getId(): string {
+		return this.id;
 	}
 
 	getGrid(): IGridElement[] {
