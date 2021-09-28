@@ -31,7 +31,7 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity({ grid: [] });
+				const dashboard = new DashboardEntity('someid', { grid: [] });
 				return Promise.resolve(dashboard);
 			});
 			const response = await controller.findForUser();

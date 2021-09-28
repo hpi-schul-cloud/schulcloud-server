@@ -30,7 +30,7 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			jest.spyOn(repo, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity({ grid: [] });
+				const dashboard = new DashboardEntity('someid', { grid: [] });
 				return Promise.resolve(dashboard);
 			});
 			const dashboard = await service.getUsersDashboard();

@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { Role, User } from '@shared/domain';
+import { schoolFactory } from '@shared/domain/factory/school.factory';
 import { UserUC } from './uc';
 import { UserFacade } from './user.facade';
 import { ResolvedUserMapper } from './mapper';
 import { createCurrentTestUser } from './utils';
 import { ResolvedUser } from './controller/dto';
-import { schoolFactory } from '@shared/domain/factory/school.factory';
 
 describe('UserFacade', () => {
 	let module: TestingModule;

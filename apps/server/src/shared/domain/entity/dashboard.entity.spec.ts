@@ -4,6 +4,7 @@ describe('dashboard entity', () => {
 	describe('constructor', () => {
 		it('should create dashboard with prefilled Grid', () => {
 			const gridElement = {
+				getId: () => 'gridelementid',
 				getPosition: () => ({
 					x: 1,
 					y: 1,
@@ -15,13 +16,13 @@ describe('dashboard entity', () => {
 					displayColor: '#FFFFFF',
 				}),
 			};
-			const dashboard = new DashboardEntity({ grid: [gridElement] });
+			const dashboard = new DashboardEntity('someid', { grid: [gridElement] });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
 
 		it('should create dashboard when passing empty grid', () => {
-			const dashboard = new DashboardEntity({ grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [] });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
@@ -29,13 +30,14 @@ describe('dashboard entity', () => {
 
 	describe('grid', () => {
 		it('getGrid should return correct value', () => {
-			const dashboard = new DashboardEntity({ grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [] });
 			const testGrid = dashboard.getGrid();
 			expect(Array.isArray(testGrid)).toEqual(true);
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
 			const gridElement = {
+				getId: () => 'gridelementid',
 				getPosition: () => ({
 					x: 1,
 					y: 2,
@@ -47,7 +49,7 @@ describe('dashboard entity', () => {
 					displayColor: '#FFFFFF',
 				}),
 			};
-			const dashboard = new DashboardEntity({ grid: [gridElement] });
+			const dashboard = new DashboardEntity('someid', { grid: [gridElement] });
 			const testGrid = dashboard.getGrid();
 
 			expect(testGrid[0].getPosition().x).toEqual(1);

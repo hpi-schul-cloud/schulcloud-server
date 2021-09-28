@@ -8,7 +8,7 @@ import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 
-describe('User Controller (e2e)', () => {
+describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 
