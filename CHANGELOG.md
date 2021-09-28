@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+BC-237 - Clean up global entity registration
+
 ### Fixed
 
 ## [26.11.0] - 2021-09-22
