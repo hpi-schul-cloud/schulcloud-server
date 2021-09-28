@@ -9,7 +9,7 @@ export class RoleUC {
 	constructor(private readonly roleRepo: RoleRepo) {}
 
 	async resolvePermissionsByIdList(ids: EntityId[]): Promise<IPermissionsAndRoles> {
-		const roles = await Promise.all((ids || []).map((id) => this.roleRepo.resolvePermissionsFromSubRolesById(id)));
+		const roles = await Promise.all(ids.map((id) => this.roleRepo.resolvePermissionsFromSubRolesById(id)));
 
 		let permissions: string[] = [];
 		roles.forEach((role) => {
