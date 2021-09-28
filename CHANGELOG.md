@@ -9,8 +9,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
+### Added
+
 ### Changed
 
+### Fixed
+
+## [26.11.0] - 2021-09-22
+
+### Changed
+
+- BC-274 Change Course Colors
 - BC-213 - rewrite file deletion with deletion marker
 - BC-68 - e2e run dependent on build image job
 - BC-179 - refactor task and entity and relations
@@ -22,6 +31,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-279 - introduce console application interface to call providers via console command
 - BC-9 add entity and repo for course dashboards
 - BC-9 add a route to recieve dummy data for course dashboards
+- BC-318 implement persistance for course dashboards
 
 ### Fixed
 
