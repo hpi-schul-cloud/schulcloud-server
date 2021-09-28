@@ -20,7 +20,7 @@ export class CourseGroup extends BaseEntityWithTimestamps {
 	constructor(props: ICourseGroupProperties) {
 		super();
 		this.course = props.course;
-		this.students.set(props.students || []);
+		if (props.students) this.students.set(props.students);
 	}
 
 	getParentId(): ObjectId {

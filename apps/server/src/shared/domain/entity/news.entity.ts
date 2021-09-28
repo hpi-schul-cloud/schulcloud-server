@@ -1,24 +1,24 @@
 import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { EntityId } from '../types/entity-id';
 import type { Course } from './course.entity';
 import type { School } from './school.entity';
 import type { Team } from './team.entity';
 import type { User } from './user.entity';
 import { NewsTarget, NewsTargetModel } from '../types/news.types';
+import { EntityId } from '../types';
 
 export interface INewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
-	school: EntityId;
-	creator: EntityId;
-	target: EntityId;
+	school: EntityId | School;
+	creator: EntityId | User;
+	target: EntityId | NewsTarget;
 
 	externalId?: string;
 	source?: 'internal' | 'rss';
 	sourceDescription?: string;
-	updater?: EntityId;
+	updater?: User;
 }
 
 @Entity({
@@ -70,7 +70,10 @@ export abstract class News extends BaseEntityWithTimestamps {
 		this.title = props.title;
 		this.content = props.content;
 		this.displayAt = props.displayAt;
-		Object.assign(this, { school: props.school, creator: props.creator, target: props.target });
+		Object.assign(this, { school: props.school, creator: props.creator, updater: props.updater, target: props.target });
+		this.externalId = props.externalId;
+		this.source = props.source;
+		this.sourceDescription = props.sourceDescription;
 	}
 
 	static createInstance(targetModel: NewsTargetModel, props: INewsProperties): News {

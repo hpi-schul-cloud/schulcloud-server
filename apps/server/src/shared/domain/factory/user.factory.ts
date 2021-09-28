@@ -2,7 +2,7 @@ import { User } from '../entity/user.entity';
 import { schoolFactory } from './school.factory';
 
 export const userFactory = {
-	build: (props?: { firstName?: string; lastName?: string }): User => {
+	build: (props?: { firstName?: string; lastName?: string; email?: string }): User => {
 		const user = new User({
 			firstName: 'John',
 			lastName: 'Doe',

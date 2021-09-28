@@ -1,19 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	BaseEntity,
-	Course,
-	CourseNews,
-	INewsProperties,
-	News,
-	School,
-	SchoolNews,
-	Team,
-	TeamNews,
-	User,
-} from '@shared/domain';
+import { Course, CourseNews, INewsProperties, News, School, SchoolNews, Team, TeamNews, User } from '@shared/domain';
 import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTarget } from '@shared/domain/types/news.types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { schoolFactory } from '@shared/domain/factory/school.factory';
+import { userFactory } from '@shared/domain/factory';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
@@ -24,13 +15,6 @@ import {
 	UserInfoResponse,
 } from '../controller/dto';
 import { TargetInfoResponse } from '../controller/dto/target-info.response';
-
-const createDataInfo = <T extends BaseEntity>(props, Type: { new (props): T }): T => {
-	const id = new ObjectId().toHexString();
-	const dataInfo = new Type(props);
-	dataInfo.id = id;
-	return dataInfo;
-};
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
@@ -128,8 +112,8 @@ describe('NewsMapper', () => {
 
 	describe('mapToResponse', () => {
 		it('should correctly map school news to Dto', () => {
-			const school = createDataInfo({ name: 'test school' }, School);
-			const creator = createDataInfo({ firstName: 'fname', lastName: 'lname', email: 'john.doe@example.com' }, User);
+			const school = schoolFactory.build();
+			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
 			const schoolNews = createNews(newsProps, SchoolNews, school, creator, school);
 
@@ -138,9 +122,9 @@ describe('NewsMapper', () => {
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map course news to dto', () => {
-			const school = createDataInfo({ name: 'test school' }, School);
-			const course = createDataInfo({ name: 'test course' }, Course);
-			const creator = createDataInfo({ firstName: 'fname', lastName: 'lname' }, User);
+			const school = schoolFactory.build();
+			const creator = userFactory.build();
+			const course = new Course({ name: 'course #1', school });
 			const newsProps = { title: 'test title', content: 'test content' };
 			const courseNews = createNews(newsProps, CourseNews, school, creator, course);
 
@@ -150,9 +134,9 @@ describe('NewsMapper', () => {
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map team news to dto', () => {
-			const school = createDataInfo({ name: 'test school' }, School);
-			const team = createDataInfo({ name: 'test course' }, Team);
-			const creator = createDataInfo({ firstName: 'fname', lastName: 'lname' }, User);
+			const school = schoolFactory.build();
+			const team = new Team({ name: 'team #1' });
+			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
 			const teamNews = createNews(newsProps, TeamNews, school, creator, team);
 

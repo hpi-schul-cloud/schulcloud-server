@@ -38,6 +38,6 @@ export class User extends BaseEntityWithTimestamps {
 		this.lastName = props.lastName;
 		this.email = props.email;
 		this.school = props.school;
-		this.roles.set(props.roles || []);
+		this.roles.set(props.roles);
 	}
 }

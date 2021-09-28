@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { userFactory } from '@shared/domain/factory';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -34,24 +35,21 @@ describe('user repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const idA = new ObjectId().toHexString();
-			const userA = em.create(User, { id: idA });
+			const user = userFactory.build();
 
-			await em.persistAndFlush([userA]);
-			const result = await repo.findById(idA);
+			await em.persistAndFlush([user]);
+			const result = await repo.findById(user.id);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id'].sort()
 			);
 		});
 
 		it('should return one role that matched by id', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const userA = em.create(User, { id: idA });
-			const userB = em.create(User, { id: idB });
+			const userA = userFactory.build();
+			const userB = userFactory.build();
 
 			await em.persistAndFlush([userA, userB]);
-			const result = await repo.findById(idA);
+			const result = await repo.findById(userA.id);
 			expect(result).toEqual(userA);
 		});
 

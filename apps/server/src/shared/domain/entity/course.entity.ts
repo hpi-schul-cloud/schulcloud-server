@@ -53,13 +53,13 @@ export class Course extends BaseEntityWithTimestamps {
 
 	constructor(props: ICourseProperties) {
 		super();
-		this.name = props.name || DEFAULT.name;
-		this.description = props.description || DEFAULT.description;
+		if (props.name) this.name = props.name;
+		if (props.description) this.description = props.description;
 		this.school = props.school;
-		this.students.set(props.students || []);
-		this.teachers.set(props.teachers || []);
-		this.substitutionTeachers.set(props.substitutionTeachers || []);
-		this.color = props.color || DEFAULT.color;
+		if (props.students) this.students.set(props.students);
+		if (props.teachers) this.teachers.set(props.teachers);
+		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
+		if (props.color) this.color = props.color;
 	}
 
 	getNumberOfStudents(): number {

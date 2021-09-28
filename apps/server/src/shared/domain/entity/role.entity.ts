@@ -31,7 +31,7 @@ export class Role extends BaseEntityWithTimestamps {
 	constructor(props: IRoleProperties) {
 		super();
 		this.name = props.name;
-		this.permissions = props.permissions || [];
-		this.roles.set(props.roles || []);
+		if (props.permissions) this.permissions = props.permissions;
+		if (props.roles) this.roles.set(props.roles);
 	}
 }
