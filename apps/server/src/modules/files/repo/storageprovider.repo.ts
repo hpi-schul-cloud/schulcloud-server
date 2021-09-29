@@ -28,14 +28,9 @@ function createStorageProviderClient(provider: StorageProvider): S3Client {
 
 @Injectable()
 export class FileStorageRepo extends BaseRepo<StorageProvider> {
-	findOneById(id: EntityId): Promise<StorageProvider> {
-		return this.em.findOneOrFail(StorageProvider, id);
-	}
-
 	async deleteFile(file: File): Promise<void> {
 		const { storageProvider, bucket, storageFileName } = file;
-		const storageProviderEntity = await this.findOneById(storageProvider.id);
-		const storageProviderClient = createStorageProviderClient(storageProviderEntity);
+		const storageProviderClient = createStorageProviderClient(storageProvider);
 		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 		await storageProviderClient.send(deletionCommand);
 	}

@@ -66,7 +66,14 @@ const fileEntities = [File, StorageProvider];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...entities, ...courseEntities, ...learnroomDashboardEntities, ...taskEntities, ...userEntities, ...fileEntities],
+			entities: [
+				...entities,
+				...courseEntities,
+				...learnroomDashboardEntities,
+				...taskEntities,
+				...userEntities,
+				...fileEntities,
+			],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
