@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '..';
+import { MongoMemoryDatabaseModule } from '../../../modules/database';
 import { User } from '../../../entities';
+import { FileSystemModule } from '../file-system/file-system.module';
 import { DatabaseManagementController } from './database-management.controller';
 import { DatabaseManagementModule } from './database-management.module';
 import { DatabaseManagementService } from './database-management.service';
@@ -13,6 +14,7 @@ describe('DatabaseManagementModule', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
+				FileSystemModule,
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
 						// sample entity used for start and test the module

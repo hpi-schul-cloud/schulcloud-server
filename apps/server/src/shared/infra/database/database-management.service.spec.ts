@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '..';
+import { MongoMemoryDatabaseModule } from '../../../modules/database';
 import { User } from '../../../entities';
 import { DatabaseManagementService } from './database-management.service';
 

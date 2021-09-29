@@ -9,13 +9,13 @@
 /* eslint-disable no-restricted-syntax */
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as BSON from 'bson';
 import { orderBy } from 'lodash';
 import { EOL } from 'os';
 import { Collection, Db } from 'mongodb';
 import { Logger } from '../../../core/logger/logger.service';
+import { FileSystemAdapter } from '../file-system/file-system.adapter';
 
 export interface ICollectionFile {
 	filePath: string;
@@ -37,7 +37,7 @@ export class DatabaseManagementService {
 	 */
 	private folder: string;
 
-	constructor(private em: EntityManager) {
+	constructor(private em: EntityManager, private fileSystemService: FileSystemAdapter) {
 		const driver = this.em.getDriver();
 		this.db = driver.getConnection('write').getDb();
 		this.folder = path.join(__dirname, this.basePath);
@@ -79,13 +79,13 @@ export class DatabaseManagementService {
 	}
 
 	private loadBjsonFromFile(filePath: string) {
-		const file = fs.readFileSync(filePath, 'utf-8');
+		const file = this.fileSystemService.readFileSync(filePath);
 		const bsonDocuments = JSON.parse(file) as Record<string, unknown>[];
 		return bsonDocuments;
 	}
 
 	private loadAllCollectionsFromFilesystem(): ICollectionFile[] {
-		const filenames = fs.readdirSync(this.folder);
+		const filenames = this.fileSystemService.readDirSync(this.folder);
 		const files = filenames.map((fileName) => ({
 			filePath: path.join(this.folder, fileName),
 			collectionName: fileName.split('.')[0],
@@ -110,7 +110,7 @@ export class DatabaseManagementService {
 	}
 
 	private writeTextToFile(text: string, filePath: string) {
-		fs.writeFileSync(filePath, text);
+		this.fileSystemService.writeFileSync(filePath, text);
 	}
 
 	private async loadCollections(collectionFilter: string[] | undefined, source: 'files' | 'database') {
