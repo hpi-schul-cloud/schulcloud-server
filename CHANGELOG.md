@@ -15,6 +15,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+## [26.11.1] - 2021-09-29
+
+### Fixed
+
+- BC-365 - fixed task overview pagination
+
 ## [26.11.0] - 2021-09-22
 
 ### Changed
@@ -38,7 +44,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-232 prevent users from changing schoolyears
 - BC-233 - when an LDAP system is removed from a school, the ldapschoolidentifier and lastLdapSync are removed as well
 - moved some changelog entries into their correct place
-- BC-365 - fixed task overview pagination
 
 ### Removed
 
