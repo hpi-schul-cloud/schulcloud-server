@@ -14,8 +14,8 @@ export class FileSystemAdapter {
 
 	/**
 	 * Lists filenames of given folderPath
-	 * @param folderPath
-	 * @returns
+	 * @param folderPath path to an existing folder
+	 * @returns string array of filenames
 	 */
 	readDirSync(folderPath: string): string[] {
 		const filenames = fs.readdirSync(folderPath, { encoding: this.encoding });
@@ -24,7 +24,9 @@ export class FileSystemAdapter {
 
 	/**
 	 * Write text to file, will override existing files.
-	 * @param filePath
+	 * The folder in which the file will be created must exist.
+	 * The path format depends on os
+	 * @param filePath path to a file
 	 * @param text
 	 */
 	writeFileSync(filePath: string, text: string): void {
@@ -33,8 +35,8 @@ export class FileSystemAdapter {
 
 	/**
 	 * Read file from filesystem with given encoding, defaults to utf-8
-	 * @param filePath
-	 * @returns
+	 * @param filePath path to existing file, format depending on os
+	 * @returns file content as encoded text
 	 */
 	readFileSync(filePath: string): string {
 		const text = fs.readFileSync(filePath, this.encoding);
@@ -43,7 +45,9 @@ export class FileSystemAdapter {
 
 	/**
 	 * Creates a folder in systems temp path.
-	 * The folder name given will be extended by six random characters.
+	 * The dirNamePrefix given will be extended by six random characters.
+	 * @param dirNamePrefix
+	 * @returns full path string to temp folder, format depends on os
 	 */
 	createTmpDir(dirNamePrefix: string): string {
 		const tmpDirPath = fs.mkdtempSync(path.join(os.tmpdir(), dirNamePrefix));
@@ -52,6 +56,7 @@ export class FileSystemAdapter {
 
 	/**
 	 * Removes the given folder recursively including content when not empty.
+	 * @param folderPath path to an existing folder, format depending on os
 	 */
 	removeDirRecursive(folderPath: string): void {
 		fs.rmdirSync(folderPath, { recursive: true });
