@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { File } from '../entity';
+import { File, StorageProvider } from '../entity';
 import { FilesRepo } from './files.repo';
 
 interface FileData {
@@ -37,7 +37,7 @@ describe('FilesRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [File],
+					entities: [File, StorageProvider],
 				}),
 			],
 			providers: [FilesRepo],
