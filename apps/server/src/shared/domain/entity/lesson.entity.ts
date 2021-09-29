@@ -10,14 +10,14 @@ interface LessonProperties {
 @Entity({ tableName: 'lessons' })
 export class Lesson extends BaseEntityWithTimestamps {
 	@Property()
-	hidden: boolean;
+	hidden = false;
 
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
 	constructor(props: LessonProperties) {
 		super();
-		this.hidden = !!props.hidden;
+		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;
 	}
 }

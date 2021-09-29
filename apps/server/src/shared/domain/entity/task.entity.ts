@@ -53,7 +53,7 @@ export class Task extends BaseEntityWithTimestamps {
 		super();
 		this.name = props.name;
 		this.dueDate = props.dueDate;
-		this.private = !!props.private;
+		if (props.private !== undefined) this.private = props.private;
 		this.parent = props.parent;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
