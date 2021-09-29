@@ -70,11 +70,18 @@ const fileSchema = new Schema({
 			return !this.isDirectory;
 		},
 	},
-	bucket: { type: String, required: true },
+	bucket: {
+		type: String,
+		required() {
+			return !this.isDirectory;
+		},
+	},
 	storageProviderId: {
 		type: Schema.Types.ObjectId,
-		required: true,
 		ref: 'storageProvider',
+		required() {
+			return !this.isDirectory;
+		},
 	},
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuidv4 },
