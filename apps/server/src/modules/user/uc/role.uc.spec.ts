@@ -44,11 +44,5 @@ describe('RoleUC', () => {
 
 			repoSpy.mockRestore();
 		});
-
-		it('should work with emptry id input.', async () => {
-			// @ts-expect-error Test Case for Bug BC-315
-			const result = await service.resolvePermissionsByIdList();
-			expect(result).toEqual({ permissions: [], roles: [] });
-		});
 	});
 });
