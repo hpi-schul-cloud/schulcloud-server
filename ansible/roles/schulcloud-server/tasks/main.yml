@@ -15,14 +15,14 @@
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
       template: secret.yml.j2
-    when: ONEPASSWORD is undefined or ONEPASSWORD is defined and not ONEPASSWORD
+    when: ONEPASSWORD_OPERATOR is undefined or ONEPASSWORD_OPERATOR is defined and not ONEPASSWORD_OPERATOR
       
   - name: Secret by 1Password
     community.kubernetes.k8s:
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
       template: onepassword.yml.j2
-    when: ONEPASSWORD is defined and ONEPASSWORD|bool
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
     
   - name: DB Init Configmap File
     community.kubernetes.k8s:
