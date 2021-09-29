@@ -4,7 +4,7 @@ import { File } from '../entity';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<File> {
-	propertiesToPopulate = ['storageprovider'];
+	propertiesToPopulate = ['storageProvider'];
 
 	async getExpiredFiles(backupPeriodThreshold: Date): Promise<File[]> {
 		const files = await this.em.find(File, { deletedAt: { $lt: backupPeriodThreshold } });
