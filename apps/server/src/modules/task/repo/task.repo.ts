@@ -53,7 +53,8 @@ export class TaskRepo {
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
 		const { pagination, order } = options || {};
 		const [taskEntities, count] = await this.em.findAndCount(Task, query, {
-			...pagination,
+			offset: pagination?.skip,
+			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap,
 		});
 		await this.em.populate(taskEntities, ['parent', 'lesson', 'submissions']);
