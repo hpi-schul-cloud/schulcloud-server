@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { User } from './user.entity';
-import { userFactory } from '../factory';
+import { schoolFactory } from '../factory';
 
 describe('User Entity', () => {
 	let module: TestingModule;
@@ -22,7 +22,7 @@ describe('User Entity', () => {
 		});
 
 		it('should create a user by passing required properties', () => {
-			const user = userFactory.build();
+			const user = new User({ email: 'john.doe@example.com', school: schoolFactory.build(), roles: [] });
 			expect(user instanceof User).toEqual(true);
 		});
 	});

@@ -71,7 +71,11 @@ const getExpectedNewsResponse = (
 	Object.assign(schoolInfoResponse, schoolProps);
 
 	const creatorResponse: UserInfoResponse = new UserInfoResponse();
-	const creatorProps = (({ id, firstName, lastName }) => ({ id, firstName, lastName }))(creator);
+	const creatorProps = {
+		id: creator.id,
+		firstName: creator.firstName,
+		lastName: creator.lastName,
+	};
 	Object.assign(creatorResponse, creatorProps);
 	const expected: NewsResponse = new NewsResponse();
 	const targetResponse = new TargetInfoResponse();
