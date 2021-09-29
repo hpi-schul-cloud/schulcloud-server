@@ -64,8 +64,11 @@ export class TaskUC {
 		const submitted = studentSubmissions.length > 0 ? 1 : 0;
 		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
 		const maxSubmissions = 1;
+		const isDraft = task.isDraft();
 
-		return new TaskWithStatusVo(task, { submitted, maxSubmissions, graded });
+		const valueObject = new TaskWithStatusVo(task, { submitted, maxSubmissions, graded, isDraft });
+
+		return valueObject;
 	}
 
 	private computeTaskStatusForTeacher(task: Task): TaskWithStatusVo {
@@ -81,9 +84,11 @@ export class TaskUC {
 
 		// unique by studentId
 		const graded = [...new Set(gradedStudentIds)].length;
-
 		const maxSubmissions = task.parent ? task.parent.getNumberOfStudents() : 0;
+		const isDraft = task.isDraft();
 
-		return new TaskWithStatusVo(task, { submitted, maxSubmissions, graded });
+		const valueObject = new TaskWithStatusVo(task, { submitted, maxSubmissions, graded, isDraft });
+
+		return valueObject;
 	}
 }

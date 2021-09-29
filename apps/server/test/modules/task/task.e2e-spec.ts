@@ -166,6 +166,7 @@ describe('Task Controller (e2e)', () => {
 				submitted: 1,
 				maxSubmissions: parent.getNumberOfStudents(),
 				graded: 0,
+				isDraft: false,
 			});
 		});
 
@@ -350,6 +351,7 @@ describe('Task Controller (e2e)', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				graded: 0,
+				isDraft: false,
 			});
 		});
 

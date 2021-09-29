@@ -212,7 +212,7 @@ describe('TaskService', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser, paginationQuery);
-			expect(result[0]).toEqual({ task, status: { submitted: 0, maxSubmissions: 1, graded: 0 } });
+			expect(result[0]).toEqual({ task, status: { submitted: 0, maxSubmissions: 1, graded: 0, isDraft: false } });
 			expect(result[0].task.parent).toBeDefined();
 
 			spyTaskRepoFindAllCurrent.mockRestore();
@@ -256,6 +256,7 @@ describe('TaskService', () => {
 				graded: 0,
 				submitted: 1,
 				maxSubmissions: 1,
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAllCurrent.mockRestore();
@@ -283,6 +284,7 @@ describe('TaskService', () => {
 				graded: 0,
 				submitted: 1,
 				maxSubmissions: 1,
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAllCurrent.mockRestore();
@@ -310,6 +312,7 @@ describe('TaskService', () => {
 				graded: 1,
 				submitted: 1,
 				maxSubmissions: 1,
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAllCurrent.mockRestore();
@@ -341,6 +344,7 @@ describe('TaskService', () => {
 				graded: 1,
 				submitted: 1,
 				maxSubmissions: 1,
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAllCurrent.mockRestore();
@@ -407,7 +411,7 @@ describe('TaskService', () => {
 
 		it('should return well formed task with parent and status', async () => {
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: true, parent: course });
 
 			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
@@ -416,7 +420,7 @@ describe('TaskService', () => {
 			const [result] = await service.findAll(currentUser, paginationQuery);
 			expect(result[0]).toEqual({
 				task,
-				status: { submitted: 0, maxSubmissions: course.getNumberOfStudents(), graded: 0 },
+				status: { submitted: 0, maxSubmissions: course.getNumberOfStudents(), graded: 0, isDraft: true },
 			});
 			expect(result[0].task.parent).toBeDefined();
 
@@ -461,6 +465,7 @@ describe('TaskService', () => {
 				graded: 0,
 				submitted: 1,
 				maxSubmissions: course.getNumberOfStudents(),
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAll.mockRestore();
@@ -489,6 +494,7 @@ describe('TaskService', () => {
 				graded: 0,
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAll.mockRestore();
@@ -516,6 +522,7 @@ describe('TaskService', () => {
 				graded: 1,
 				submitted: 1,
 				maxSubmissions: course.getNumberOfStudents(),
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAll.mockRestore();
@@ -547,6 +554,7 @@ describe('TaskService', () => {
 				graded: 2,
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAll.mockRestore();
@@ -579,6 +587,7 @@ describe('TaskService', () => {
 				graded: 2,
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAll.mockRestore();
@@ -608,6 +617,7 @@ describe('TaskService', () => {
 				graded: 0,
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
+				isDraft: false,
 			});
 
 			spyTaskRepoFindAll.mockRestore();

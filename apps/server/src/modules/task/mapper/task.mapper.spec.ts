@@ -7,7 +7,7 @@ import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
-	status: { graded: number; maxSubmissions: number; submitted: number },
+	status: { graded: number; maxSubmissions: number; submitted: number; isDraft: boolean },
 	parent?: { name: string; color: string }
 ): TaskResponse => {
 	const expected = new TaskResponse();
@@ -20,6 +20,7 @@ const createExpectedResponse = (
 		graded: status.graded,
 		maxSubmissions: status.maxSubmissions,
 		submitted: status.submitted,
+		isDraft: status.isDraft,
 	};
 	if (parent !== undefined) {
 		expected.courseName = parent.name;
@@ -56,6 +57,7 @@ describe('task.mapper', () => {
 			graded: 0,
 			maxSubmissions,
 			submitted: 0,
+			isDraft: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
@@ -78,6 +80,7 @@ describe('task.mapper', () => {
 			graded: 0,
 			maxSubmissions,
 			submitted: 0,
+			isDraft: false,
 			additionalKey: '123',
 		};
 
@@ -104,6 +107,7 @@ describe('task.mapper', () => {
 			graded: 0,
 			maxSubmissions,
 			submitted: 0,
+			isDraft: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
@@ -120,6 +124,7 @@ describe('task.mapper', () => {
 			graded: 0,
 			maxSubmissions: 10,
 			submitted: 0,
+			isDraft: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });

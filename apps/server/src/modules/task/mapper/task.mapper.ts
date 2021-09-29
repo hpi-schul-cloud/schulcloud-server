@@ -15,6 +15,7 @@ export class TaskMapper {
 			submitted: status.submitted,
 			maxSubmissions: status.maxSubmissions,
 			graded: status.graded,
+			isDraft: status.isDraft,
 		};
 
 		if (task.parent !== undefined) {

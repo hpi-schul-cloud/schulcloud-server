@@ -49,6 +49,11 @@ export class Task extends BaseEntityWithTimestamps {
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
+	isDraft(): boolean {
+		// private can be undefined in the database
+		return !!this.private;
+	}
+
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
