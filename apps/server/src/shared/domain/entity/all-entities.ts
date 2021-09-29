@@ -3,7 +3,6 @@ import {
 	DashboardGridElementModel,
 	DefaultGridReferenceModel,
 } from '@src/repositories/learnroom/dashboard.model.entity';
-import { Account } from './account.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { File } from './file.entity';
@@ -17,7 +16,6 @@ import { Team } from './team.entity';
 import { User } from './user.entity';
 
 export const ALL_ENTITIES = [
-	Account,
 	Course,
 	CourseGroup,
 	DashboardModelEntity,
