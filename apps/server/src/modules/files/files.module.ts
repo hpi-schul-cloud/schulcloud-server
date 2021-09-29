@@ -8,6 +8,5 @@ import { DeleteFilesUc } from './uc';
 @Module({
 	imports: [ConsoleModule, LoggerModule],
 	providers: [DeleteFilesController, DeleteFilesUc, FilesRepo, FileStorageRepo],
-	// exports: [DeleteFilesController]
 })
 export class FilesModule {}
