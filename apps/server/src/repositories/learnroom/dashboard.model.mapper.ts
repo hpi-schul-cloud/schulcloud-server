@@ -1,10 +1,5 @@
 import { Collection, wrap } from '@mikro-orm/core';
-import {
-	DashboardEntity,
-	GridElement,
-	IGridElement,
-	DefaultGridReference,
-} from '../../entities/learnroom/dashboard.entity';
+import { DashboardEntity, GridElement, IGridElement, DefaultGridReference } from '@shared/domain';
 import { DashboardGridElementModel, DashboardModelEntity, DefaultGridReferenceModel } from './dashboard.model.entity';
 
 export class DashboardModelMapper {

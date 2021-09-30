@@ -2,19 +2,9 @@ import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityId, SortOrder } from '@shared/domain';
+import { EntityId, News, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import {
-	CourseInfo,
-	CourseNews,
-	News,
-	NewsTargetModel,
-	SchoolInfo,
-	SchoolNews,
-	TeamInfo,
-	TeamNews,
-	UserInfo,
-} from '../entity';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {
@@ -24,11 +14,7 @@ describe('NewsRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [News, CourseNews, CourseInfo, SchoolNews, SchoolInfo, TeamNews, TeamInfo, UserInfo],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [NewsRepo],
 		}).compile();
 

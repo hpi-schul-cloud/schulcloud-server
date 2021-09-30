@@ -1,10 +1,12 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { Course } from '@src/entities';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo } from '../entity';
+import { CourseGroup, Submission, Task, User } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
+import { userFactory } from '@shared/domain/factory';
+
+import { courseFactory } from '@shared/domain/factory/course.factory';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
@@ -14,11 +16,7 @@ describe('submission repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo, Course],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [SubmissionRepo],
 		}).compile();
 		repo = module.get(SubmissionRepo);
@@ -30,12 +28,12 @@ describe('submission repo', () => {
 	});
 
 	afterEach(async () => {
-		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(UserTaskInfo, {}), em.nativeDelete(Submission, {})]);
+		await Promise.all([em.nativeDelete(Task, {}), em.nativeDelete(User, {}), em.nativeDelete(Submission, {})]);
 	});
 
 	describe('findAllByTasks', () => {
 		it('should return only the requested submissions of homeworks', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			const task1 = new Task({ name: 'task #1' });
 			const task2 = new Task({ name: 'task #2' });
 			const task3 = new Task({ name: 'task #3' });
@@ -57,7 +55,7 @@ describe('submission repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return submissions that have the user as userId', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			const task = new Task({ name: 'task #1' });
 			task.submissions.add(new Submission({ task, comment: 'comment', student }));
 
@@ -72,8 +70,8 @@ describe('submission repo', () => {
 		});
 
 		it('should return submissions where the user is a team member', async () => {
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			const task = new Task({ name: 'task #1' });
 			task.submissions.add(new Submission({ student: student1, comment: '', task, teamMembers: [student1, student2] }));
 
@@ -86,12 +84,12 @@ describe('submission repo', () => {
 		});
 
 		it('should return submissions where the user is in the course group', async () => {
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId() });
+			const course = courseFactory.build();
 			await em.persistAndFlush(course);
 
-			const student1 = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			const student2 = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
-			const courseGroup = em.create(CourseGroupInfo, { courseId: course._id, students: [student1, student2] });
+			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const courseGroup = em.create(CourseGroup, { courseId: course._id, students: [student1, student2] });
 			const task = new Task({ name: 'task #1', parent: course });
 			const submission = new Submission({ student: student1, comment: '', task });
 			submission.courseGroup = courseGroup;

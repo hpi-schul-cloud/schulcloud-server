@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
 
 ### Fixed

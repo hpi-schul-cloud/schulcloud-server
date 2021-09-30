@@ -1,10 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { DashboardRepo } from './dashboard.repo';
-import { DashboardEntity, GridElement, DefaultGridReference } from '../../entities/learnroom/dashboard.entity';
-import { DashboardModelEntity, DashboardGridElementModel, DefaultGridReferenceModel } from './dashboard.model.entity';
-import { Course } from '../../entities';
-import { MongoMemoryDatabaseModule } from '../../modules/database';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;
@@ -13,11 +11,7 @@ describe('dashboard repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardModelEntity, DashboardGridElementModel, DefaultGridReferenceModel, Course],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [DashboardRepo],
 		}).compile();
 
