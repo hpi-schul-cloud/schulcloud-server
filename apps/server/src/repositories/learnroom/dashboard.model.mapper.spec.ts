@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DashboardEntity } from '../../entities/learnroom/dashboard.entity';
+import { DashboardEntity } from '@shared/domain';
 import { DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 

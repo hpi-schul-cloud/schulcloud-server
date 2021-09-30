@@ -1,15 +1,29 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { User, Role } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { Test, TestingModule } from '@nestjs/testing';
+import { schoolFactory } from '@shared/domain/factory/school.factory';
 import { ResolvedUserMapper } from './ResolvedUser.mapper';
 import { ResolvedUser } from '../controller/dto';
-import { User, Role } from '../entity';
 
 describe('ResolvedUserMapper', () => {
+	let module: TestingModule;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
+		}).compile();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should has mapToResponse static method', () => {
 		expect(typeof ResolvedUserMapper.mapToResponse).toEqual('function');
 	});
 
 	it('should work for valid input', () => {
-		const school = new ObjectId().toHexString();
+		const school = schoolFactory.build();
 		const roles = [new Role({ name: 'name' })] as Role[];
 		const user = new User({ email: 'email', roles, school });
 		const result = ResolvedUserMapper.mapToResponse(user, ['A'], roles);
@@ -17,7 +31,7 @@ describe('ResolvedUserMapper', () => {
 	});
 
 	it('should work work without second and third parameter and set default values ', () => {
-		const school = new ObjectId().toHexString();
+		const school = schoolFactory.build();
 		const roles = [new Role({ name: 'name' })] as Role[];
 		const user = new User({ email: 'email', roles, school });
 		const result = ResolvedUserMapper.mapToResponse(user);

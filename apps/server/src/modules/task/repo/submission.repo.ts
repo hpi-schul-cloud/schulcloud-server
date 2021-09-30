@@ -2,10 +2,7 @@ import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, EntityId } from '@shared/domain';
-
-// CourseGroupInfo must use from learnroom
-import { CourseGroupInfo, Submission } from '../entity';
+import { Counted, EntityId, CourseGroup, Submission } from '@shared/domain';
 
 // TODO: add scope helper
 
@@ -27,7 +24,7 @@ export class SubmissionRepo {
 	}
 
 	private async byUserIdQuery(userId: EntityId): Promise<FilterQuery<Submission>> {
-		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
+		const courseGroupsOfUser = await this.em.find(CourseGroup, { students: userId });
 		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
 		return query;
 	}

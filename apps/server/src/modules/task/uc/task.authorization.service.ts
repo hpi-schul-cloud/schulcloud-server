@@ -15,7 +15,7 @@ export class TaskAuthorizationService {
 	 * Important user group operations are only a temporary solution until we have established groups
 	 */
 	async getPermittedCourses(userId: EntityId, permission: TaskParentPermission): Promise<EntityId[]> {
-		// coursegroups are missing
+		// courseGroups are missing
 		// lessons are missing -> only search for hidden: false,
 		const [permittedCourses] =
 			permission === TaskParentPermission.write
