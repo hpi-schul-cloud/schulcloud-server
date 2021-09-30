@@ -96,4 +96,15 @@ describe('FilesRepo', () => {
 			expect(result.length).toEqual(0);
 		});
 	});
+
+	describe('deleteFile', () => {
+		it('should delete the given file', async () => {
+			const file = await createTestFile();
+
+			await repo.deleteFile(file);
+
+			const searchedFile = await em.findOne(File, file._id);
+			expect(searchedFile).toBeNull;
+		});
+	});
 });
