@@ -7,9 +7,16 @@ import * as path from 'path';
 export class FileSystemAdapter {
 	private encoding: BufferEncoding;
 
+	private _EOL: string;
+
 	constructor() {
 		// TODO configuration
 		this.encoding = 'utf-8';
+		this._EOL = os.EOL;
+	}
+
+	get EOL() {
+		return this._EOL;
 	}
 
 	/**
@@ -56,7 +63,7 @@ export class FileSystemAdapter {
 
 	/**
 	 * Removes the given folder recursively including content when not empty.
-	 * @param folderPath path to an existing folder, format depending on os
+	 * @param folderPath path to an existing folder, format depending on
 	 */
 	removeDirRecursive(folderPath: string): void {
 		fs.rmdirSync(folderPath, { recursive: true });
