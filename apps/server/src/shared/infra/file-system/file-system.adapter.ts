@@ -15,7 +15,7 @@ export class FileSystemAdapter {
 		this._EOL = os.EOL;
 	}
 
-	get EOL() {
+	get EOL(): string {
 		return this._EOL;
 	}
 
@@ -67,5 +67,9 @@ export class FileSystemAdapter {
 	 */
 	removeDirRecursive(folderPath: string): void {
 		fs.rmdirSync(folderPath, { recursive: true });
+	}
+
+	joinPath(...paths: string[]): string {
+		return path.join(...paths);
 	}
 }
