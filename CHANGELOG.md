@@ -23,6 +23,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-370 - fixed file directory creation 
 
+### Security
+
+- BC-297 - fixed set-values dependency vulnerabilities
+
 ## [26.11.1] - 2021-09-29
 
 ### Fixed
