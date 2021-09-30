@@ -12,6 +12,7 @@ import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
+import { FilesModule } from './modules/files/files.module';
 
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
 
