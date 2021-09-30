@@ -1,27 +1,43 @@
-/* istanbul ignore file */
-// TODO add tests to improve coverage
-
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property, ManyToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { User } from './user.entity';
+import type { StorageProvider } from './storageprovider.entity';
 
 interface IFileProperties {
-	name: string;
-	creator: User;
+	deletedAt?: Date;
+	storageFileName: string;
+	bucket: string;
+	storageProvider: StorageProvider;
 }
 
-@Entity({ tableName: 'files' })
-export class File extends BaseEntityWithTimestamps {
+@Entity({ tableName: 'files', discriminatorColumn: 'isDirectory' })
+export class BaseFile extends BaseEntityWithTimestamps {
 	@Property()
-	name: string;
+	deletedAt?: Date;
 
 	@Property()
-	creator: User;
+	isDirectory: boolean;
+}
+
+@Entity({ discriminatorValue: 'true' })
+export class Directory extends BaseFile {}
+
+@Entity({ discriminatorValue: 'false' })
+export class File extends BaseFile {
+	@Property()
+	storageFileName: string;
+
+	@Property()
+	bucket: string;
+
+	@ManyToOne({ fieldName: 'storageProviderId' })
+	storageProvider: StorageProvider;
 
 	constructor(props: IFileProperties) {
 		super();
-		this.name = props.name;
-		this.creator = props.creator;
-		Object.assign(this, {});
+		this.isDirectory = false;
+		this.deletedAt = props.deletedAt;
+		this.storageFileName = props.storageFileName;
+		this.bucket = props.bucket;
+		this.storageProvider = props.storageProvider;
 	}
 }

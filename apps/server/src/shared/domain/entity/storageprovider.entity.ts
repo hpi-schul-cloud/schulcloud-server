@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 interface IStorageProviderProperties {
 	endpointUrl: string;

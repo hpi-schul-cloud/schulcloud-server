@@ -5,7 +5,7 @@ import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { StorageProvider, File } from '../entity';
+import { StorageProvider, File } from '@shared/domain';
 
 function decryptAccessKey(secretAccessKey: string): string {
 	const S3_KEY = Configuration.get('S3_KEY') as string;

@@ -6,7 +6,7 @@ import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 
-import { File, StorageProvider } from '../entity';
+import { File, StorageProvider } from '@shared/domain';
 import { FilesRepo, FileStorageRepo } from '.';
 
 describe('FileStorageRepo', () => {

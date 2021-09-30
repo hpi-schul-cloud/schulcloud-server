@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { BaseFile, File, Directory } from '../entity';
+import { BaseFile, File, Directory } from '@shared/domain';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<BaseFile> {

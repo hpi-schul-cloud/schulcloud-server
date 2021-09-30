@@ -5,7 +5,8 @@ import {
 } from '@src/repositories/learnroom/dashboard.model.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
-import { File } from './file.entity';
+import { File, Directory } from './file.entity';
+import { StorageProvider } from './storageprovider.entity';
 import { Lesson } from './lesson.entity';
 import { News, CourseNews, SchoolNews, TeamNews } from './news.entity';
 import { Role } from './role.entity';
@@ -22,6 +23,8 @@ export const ALL_ENTITIES = [
 	DashboardGridElementModel,
 	DefaultGridReferenceModel,
 	File,
+	Directory,
+	StorageProvider,
 	Lesson,
 	Role,
 	School,
