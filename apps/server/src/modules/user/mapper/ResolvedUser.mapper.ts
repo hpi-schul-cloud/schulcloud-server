@@ -1,5 +1,5 @@
+import { User, Role } from '@shared/domain';
 import { ResolvedUser } from '../controller/dto';
-import { User, Role } from '../entity';
 
 export class ResolvedUserMapper {
 	static mapToResponse(user: User, permissions: string[] = [], roles: Role[] = []): ResolvedUser {

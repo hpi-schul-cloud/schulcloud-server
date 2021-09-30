@@ -1,6 +1,6 @@
 import { Entity, Property, ManyToOne, OneToMany, Collection, IdentifiedReference } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from '../../shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
 @Entity()
 export class DefaultGridReferenceModel extends BaseEntityWithTimestamps {

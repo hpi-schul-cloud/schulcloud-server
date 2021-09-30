@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { PaginationResponse, PaginationQuery } from '@shared/controller/';
 import { Controller, Get, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { TaskUC } from '../uc/task.uc';
 import { TaskResponse } from './dto';

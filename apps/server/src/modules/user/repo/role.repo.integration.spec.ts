@@ -1,8 +1,8 @@
 import { NotFoundError, ValidationError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { Role } from '../entity';
+import { Role } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -12,11 +12,7 @@ describe('role repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [Role],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);
@@ -160,21 +156,15 @@ describe('role repo', () => {
 		});
 
 		it('should resolve permissions of existing subroles', async () => {
-			const idD1 = new ObjectId().toHexString();
-			const idC1 = new ObjectId().toHexString();
-			const idC2 = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const idA = new ObjectId().toHexString();
-
-			const roleD1 = em.create(Role, { permissions: ['D'], id: idD1 });
-			const roleC1 = em.create(Role, { permissions: ['C', 'C1'], roles: [idD1], id: idC1 });
-			const roleC2 = em.create(Role, { permissions: ['C', 'C2'], id: idC2 });
-			const roleB = em.create(Role, { permissions: ['B', 'C'], roles: [idC1, idC2], id: idB });
-			const roleA = em.create(Role, { permissions: ['A', 'B'], roles: [idB], id: idA });
+			const roleD1 = em.create(Role, { permissions: ['D'] });
+			const roleC1 = em.create(Role, { permissions: ['C', 'C1'], roles: [roleD1] });
+			const roleC2 = em.create(Role, { permissions: ['C', 'C2'] });
+			const roleB = em.create(Role, { permissions: ['B', 'C'], roles: [roleC1, roleC2] });
+			const roleA = em.create(Role, { permissions: ['A', 'B'], roles: [roleB] });
 
 			await em.persistAndFlush([roleA, roleB, roleC1, roleC2, roleD1]);
 
-			const result = await repo.resolvePermissionsFromSubRolesById(idA);
+			const result = await repo.resolvePermissionsFromSubRolesById(roleA.id);
 			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
 		});
 	});

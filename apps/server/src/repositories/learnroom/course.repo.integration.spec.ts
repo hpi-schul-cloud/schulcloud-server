@@ -1,11 +1,11 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { Course } from '@src/entities';
 
-import { UserTaskInfo } from '@src/modules/task/entity';
-import { EntityId } from '@shared/domain';
+import { EntityId, Course } from '@shared/domain';
+import { userFactory } from '@shared/domain/factory';
+import { courseFactory } from '@shared/domain/factory/course.factory';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -21,11 +21,7 @@ describe('course repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [Course, UserTaskInfo],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [CourseRepo],
 		}).compile();
 		repo = module.get(CourseRepo);
@@ -47,11 +43,10 @@ describe('course repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			await em.persistAndFlush(student);
-			const course = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [student._id] });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const course = courseFactory.build({ students: [student] });
 
-			await em.persistAndFlush([course]);
+			await em.persistAndFlush(course);
 			em.clear();
 
 			const [result] = await repo.findAllByUserId(student.id);
@@ -63,11 +58,11 @@ describe('course repo', () => {
 				'createdAt',
 				'description',
 				'name',
-				'schoolId',
-				'substitutionTeacherIds',
-				'teacherIds',
+				'school',
+				'substitutionTeachers',
+				'teachers',
 				'updatedAt',
-				'studentIds',
+				'students',
 			].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
@@ -89,10 +84,10 @@ describe('course repo', () => {
 		});
 
 		it('should return course of teachers', async () => {
-			const teacher = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const teacher = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(teacher);
-			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId(), teacherIds: [teacher._id] });
-			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId(), teacherIds: [teacher._id] });
+			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
@@ -104,10 +99,9 @@ describe('course repo', () => {
 		});
 
 		it('should return course of students', async () => {
-			const student = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			await em.persistAndFlush(student);
-			const course1 = new Course({ name: 'course #1', schoolId: new ObjectId(), studentIds: [student._id] });
-			const course2 = new Course({ name: 'course #2', schoolId: new ObjectId(), studentIds: [student._id] });
+			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const course1 = courseFactory.build({ name: 'course #1', students: [student] });
+			const course2 = courseFactory.build({ name: 'course #2', students: [student] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
@@ -119,18 +113,10 @@ describe('course repo', () => {
 		});
 
 		it('should return course of substitution teachers', async () => {
-			const subTeacher = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const subTeacher = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(subTeacher);
-			const course1 = new Course({
-				name: 'course #1',
-				schoolId: new ObjectId(),
-				substitutionTeacherIds: [subTeacher._id],
-			});
-			const course2 = new Course({
-				name: 'course #2',
-				schoolId: new ObjectId(),
-				substitutionTeacherIds: [subTeacher._id],
-			});
+			const course1 = courseFactory.build({ name: 'course #1', substitutionTeachers: [subTeacher] });
+			const course2 = courseFactory.build({ name: 'course #2', substitutionTeachers: [subTeacher] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
@@ -142,23 +128,11 @@ describe('course repo', () => {
 		});
 
 		it('should handle mixed roles in courses', async () => {
-			const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
+			const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			await em.persistAndFlush(user);
-			const course1 = new Course({
-				name: 'course #1',
-				schoolId: new ObjectId(),
-				studentIds: [user._id],
-			});
-			const course2 = new Course({
-				name: 'course #2',
-				schoolId: new ObjectId(),
-				substitutionTeacherIds: [user._id],
-			});
-			const course3 = new Course({
-				name: 'course #3',
-				schoolId: new ObjectId(),
-				teacherIds: [user._id],
-			});
+			const course1 = courseFactory.build({ name: 'course #1', students: [user] });
+			const course2 = courseFactory.build({ name: 'course #2', teachers: [user] });
+			const course3 = courseFactory.build({ name: 'course #3', substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
@@ -170,42 +144,18 @@ describe('course repo', () => {
 		});
 
 		it('should only return courses where the user is a member of it', async () => {
-			const user = new UserTaskInfo({ firstName: 'John', lastName: 'Doe' });
-			const otherUser = new UserTaskInfo({ firstName: 'Marla', lastName: 'Mathe' });
+			const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const otherUser = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([user, otherUser]);
 			const courses = [
-				new Course({
-					name: 'course #1',
-					schoolId: new ObjectId(),
-					studentIds: [user._id],
-				}),
-				new Course({
-					name: 'course #2',
-					schoolId: new ObjectId(),
-					substitutionTeacherIds: [user._id],
-				}),
-				new Course({
-					name: 'course #3',
-					schoolId: new ObjectId(),
-					teacherIds: [user._id],
-				}),
+				courseFactory.build({ name: 'course #1', students: [user] }),
+				courseFactory.build({ name: 'course #2', substitutionTeachers: [user] }),
+				courseFactory.build({ name: 'course #3', teachers: [user] }),
 			];
 			const otherCourses = [
-				new Course({
-					name: 'other course #1',
-					schoolId: new ObjectId(),
-					studentIds: [otherUser._id],
-				}),
-				new Course({
-					name: 'other course #2',
-					schoolId: new ObjectId(),
-					substitutionTeacherIds: [otherUser._id],
-				}),
-				new Course({
-					name: 'other course #3',
-					schoolId: new ObjectId(),
-					teacherIds: [otherUser._id],
-				}),
+				courseFactory.build({ name: 'course #1', students: [otherUser] }),
+				courseFactory.build({ name: 'course #2', substitutionTeachers: [otherUser] }),
+				courseFactory.build({ name: 'course #3', teachers: [otherUser] }),
 			];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
