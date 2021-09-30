@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { BaseFile, StorageProvider } from '../entity';
+import { BaseFile, File, Directory, StorageProvider } from '../entity';
 import { FilesRepo } from './files.repo';
 
 interface FileData {
@@ -21,8 +21,8 @@ describe('FilesRepo', () => {
 		storageFileName = 'storageFileName',
 		bucket = 'test-bucket',
 		deletedAt = undefined,
-	}: FileData = {}): Promise<BaseFile> => {
-		const file = em.create(BaseFile, {
+	}: FileData = {}): Promise<File> => {
+		const file = em.create(File, {
 			isDirectory,
 			storageFileName,
 			bucket,
@@ -37,7 +37,7 @@ describe('FilesRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [BaseFile, StorageProvider],
+					entities: [BaseFile, File, Directory, StorageProvider],
 				}),
 			],
 			providers: [FilesRepo],
