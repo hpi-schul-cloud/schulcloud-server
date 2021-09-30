@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '../../../modules/database';
-import { User } from '../../../entities';
-import { FileSystemModule } from '../file-system/file-system.module';
-import { DatabaseManagementController } from './database-management.controller';
-import { DatabaseManagementModule } from './database-management.module';
-import { DatabaseManagementUc } from './database-management.uc';
+import { FileSystemModule } from '@shared/infra/file-system/file-system.module';
+import { MongoMemoryDatabaseModule } from '../database';
+import { User } from '../../entities';
+import { DatabaseManagementController } from './controller/database-management.controller';
+import { ManagementModule } from './management.module';
+import { DatabaseManagementUc } from './uc/database-management.uc';
 
 describe('DatabaseManagementModule', () => {
 	let module: TestingModule;
@@ -21,7 +21,7 @@ describe('DatabaseManagementModule', () => {
 						User,
 					],
 				}),
-				DatabaseManagementModule,
+				ManagementModule,
 			],
 		}).compile();
 		service = module.get<DatabaseManagementUc>(DatabaseManagementUc);

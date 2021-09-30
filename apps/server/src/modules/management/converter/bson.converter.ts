@@ -4,7 +4,7 @@ import * as BSON from 'bson';
 @Injectable()
 export class BsonConverter {
 	/**
-	 * Serializes documents to an Extended JSON JavaScript objects from plain JavaScript objects.
+	 * Serializes documents from plain JavaScript objects to Extended JSON JavaScript objects.
 	 * @param documents mongo-json documents
 	 * @returns mongo-bson/ejson objects
 	 */

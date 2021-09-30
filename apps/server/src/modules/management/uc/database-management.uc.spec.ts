@@ -1,67 +1,65 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '../../../modules/database';
+import { MongoMemoryDatabaseModule } from '../../database';
 import { User } from '../../../entities';
 import { DatabaseManagementUc } from './database-management.uc';
-import { FileSystemModule } from '../file-system/file-system.module';
+import { ManagementModule } from '../management.module';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;
 	let service: DatabaseManagementUc;
-	let em: EntityManager;
-	const allCollections = [
-		'_teaminviteduserschemas',
-		'_teamuserschemas',
-		'accounts',
-		'activations',
-		'analytics',
-		'base64files',
-		'classes',
-		'consents',
-		'consents_history',
-		'consentversions',
-		'coursegroups',
-		'courses',
-		'directories',
-		'federalstates',
-		'files',
-		'gradelevels',
-		'grades',
-		'helpdocuments',
-		'homeworks',
-		'keys',
-		'lessons',
-		'links',
-		'ltitools',
-		'materials',
-		'migrations',
-		'news',
-		'newshistories',
-		'passwordRecovery',
-		'passwordrecoveries',
-		'problems',
-		'pseudonyms',
-		'registrationpins',
-		'rocketchatchannels',
-		'rocketchatusers',
-		'roles',
-		'schools',
-		'storageproviders',
-		'submissions',
-		'systems',
-		'teams',
-		'trashbins',
-		'users',
-		'users_history',
-		'videoconferences',
-		'webuntismetadatas',
-		'years',
+	const allCollectionsWithDocumentCounts = [
+		'_teaminviteduserschemas:0',
+		'_teamuserschemas:0',
+		'accounts:63',
+		'activations:0',
+		'analytics:1',
+		'base64files:0',
+		'classes:3',
+		'consents_history:1',
+		'consents:2',
+		'consentversions:3',
+		'coursegroups:1',
+		'courses:12',
+		'directories:1',
+		'federalstates:17',
+		'files:0',
+		'gradelevels:13',
+		'grades:0',
+		'helpdocuments:5',
+		'homeworks:50',
+		'keys:1',
+		'lessons:15',
+		'links:28',
+		'ltitools:2',
+		'materials:2',
+		'migrations:98',
+		'news:11',
+		'newshistories:1',
+		'passwordrecoveries:0',
+		'passwordRecovery:1',
+		'problems:1',
+		'pseudonyms:1',
+		'registrationpins:54',
+		'rocketchatchannels:1',
+		'rocketchatusers:1',
+		'roles:19',
+		'schools:9',
+		'storageproviders:0',
+		'submissions:26',
+		'systems:2',
+		'teams:3',
+		'trashbins:0',
+		'users_history:292',
+		'users:62',
+		'videoconferences:0',
+		'webuntismetadatas:1',
+		'years:9',
 	];
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				FileSystemModule,
+				ManagementModule,
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
 						// sample entity used for start and test the module
@@ -70,9 +68,7 @@ describe('DatabaseManagementService', () => {
 					],
 				}),
 			],
-			providers: [DatabaseManagementUc],
 		}).compile();
-		em = module.get<EntityManager>(EntityManager);
 		service = module.get<DatabaseManagementUc>(DatabaseManagementUc);
 	});
 
@@ -90,40 +86,40 @@ describe('DatabaseManagementService', () => {
 		});
 		it('should persist all database collections', async () => {
 			const collections = await service.exportCollectionsToFileSystem();
-			expect(collections).toContainEqual(allCollections);
+			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
 		});
 		it('should persist all database collections when define empty filter', async () => {
 			const collections = await service.exportCollectionsToFileSystem([]);
-			expect(collections).toContainEqual(allCollections);
+			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
 		});
 		it('should persist a database collection when it exists', async () => {
 			const collections = await service.exportCollectionsToFileSystem(['roles']);
-			expect(collections).toContainEqual(['roles']);
+			expect(collections).toEqual(allCollectionsWithDocumentCounts.filter((name) => name.startsWith('roles')));
 		});
-		it('should fail when persist a database collection which does not exist', () => {
-			expect(async () => {
+		it('should fail when persist a database collection which does not exist', async () => {
+			await expect(async () => {
 				await service.exportCollectionsToFileSystem(['non_existing_collection']);
-			}).toThrow();
+			}).rejects.toThrow();
 		});
 	});
 
 	describe('When import some collections from filesystem', () => {
 		it('should seed all collections from filesystem', async () => {
 			const collections = await service.seedDatabaseCollectionsFromFileSystem();
-			expect(collections).toContainEqual(allCollections);
+			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
 		});
 		it('should seed all collections from filesystem for empty filter', async () => {
 			const collections = await service.seedDatabaseCollectionsFromFileSystem([]);
-			expect(collections).toContainEqual(allCollections);
+			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
 		});
 		it('should seed a database collection when it exists', async () => {
 			const collections = await service.seedDatabaseCollectionsFromFileSystem(['roles']);
-			expect(collections).toContainEqual('roles');
+			expect(collections).toEqual(allCollectionsWithDocumentCounts.filter((name) => name.startsWith('roles')));
 		});
-		it('should fail when seed a database collection which does not exist', () => {
-			expect(async () => {
+		it('should fail when seed a database collection which does not exist', async () => {
+			await expect(async () => {
 				await service.seedDatabaseCollectionsFromFileSystem(['non_existing_collection']);
-			}).toThrow();
+			}).rejects.toThrow();
 		});
 	});
 });

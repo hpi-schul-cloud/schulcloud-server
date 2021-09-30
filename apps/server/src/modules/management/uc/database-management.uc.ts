@@ -1,17 +1,10 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable no-extend-native */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable no-return-assign */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable no-await-in-loop */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable no-restricted-syntax */
+
 import { Injectable } from '@nestjs/common';
 import { orderBy } from 'lodash';
-import { FileSystemAdapter } from '../file-system/file-system.adapter';
-import { DatabaseManagementService } from './database-management.service';
-import { BsonConverter } from './converter/bson.converter';
+import { FileSystemAdapter } from '@shared/infra/file-system/file-system.adapter';
+import { DatabaseManagementService } from '@shared/infra/database/management/database-management.service';
+import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -122,27 +115,37 @@ export class DatabaseManagementUc {
 			'files',
 			collections
 		);
+
 		const seededCollectionsWithAmount: string[] = [];
 
-		for (const { filePath, collectionName } of collectionsToSeed) {
-			// load text from backup file
-			const text = this.fileSystemAdapter.readFileSync(filePath);
-			// create bson-objects from text
-			const bsonDocuments = JSON.parse(text) as unknown[];
-			// deserialize bson (format of mongoexport) to json documents we can import to mongo
-			const jsonDocuments = this.bsonConverter.deserialize(bsonDocuments);
-			// drop existing collection if exists
-			await this.databaseManagementService.dropCollectionIfExists(collectionName);
-			// create collection again
-			await this.databaseManagementService.createCollection(collectionName);
-			// import backuop data into database collection
-			const importedDocumentsAmount = await this.databaseManagementService.importCollection(
-				collectionName,
-				jsonDocuments
-			);
-			// keep collection name and number of imported documents
-			seededCollectionsWithAmount.push(`${collectionName}:${importedDocumentsAmount}`);
-		}
+		await Promise.all(
+			collectionsToSeed.map(async ({ filePath, collectionName }) => {
+				// load text from backup file
+				const text = this.fileSystemAdapter.readFileSync(filePath);
+				// create bson-objects from text
+				const bsonDocuments = JSON.parse(text) as unknown[];
+				// deserialize bson (format of mongoexport) to json documents we can import to mongo
+				const jsonDocuments = this.bsonConverter.deserialize(bsonDocuments);
+
+				// hint: collection drop/create is very slow, delete all documents instead
+				const collectionExists = await this.databaseManagementService.collectionExists(collectionName);
+				if (collectionExists) {
+					// clear existing documents, if collection exists
+					await this.databaseManagementService.clearCollection(collectionName);
+				} else {
+					// create collection
+					await this.databaseManagementService.createCollection(collectionName);
+				}
+
+				// import backuop data into database collection
+				const importedDocumentsAmount = await this.databaseManagementService.importCollection(
+					collectionName,
+					jsonDocuments
+				);
+				// keep collection name and number of imported documents
+				seededCollectionsWithAmount.push(`${collectionName}:${importedDocumentsAmount}`);
+			})
+		);
 		return seededCollectionsWithAmount;
 	}
 
@@ -159,21 +162,23 @@ export class DatabaseManagementUc {
 		);
 		const exportedCollections: string[] = [];
 
-		for (const { filePath, collectionName } of collectionsToExport) {
-			// load json documents from collection
-			const jsonDocuments = await this.databaseManagementService.findDocumentsOfCollection(collectionName);
-			// serialize to bson (format of mongoexport)
-			const bsonDocuments = this.bsonConverter.deserialize(jsonDocuments);
-			// sort results to have 'new' data added at documents end
-			const sortedBsonDocuments = orderBy(bsonDocuments, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
-			// convert to text
-			const TAB = '	';
-			const text = JSON.stringify(sortedBsonDocuments, undefined, TAB);
-			// persist to filesystem
-			this.fileSystemAdapter.writeFileSync(filePath, text + this.fileSystemAdapter.EOL);
-			// keep collection name and number of exported documents
-			exportedCollections.push(`${collectionName}:${sortedBsonDocuments.length}`);
-		}
+		await Promise.all(
+			collectionsToExport.map(async ({ filePath, collectionName }) => {
+				// load json documents from collection
+				const jsonDocuments = await this.databaseManagementService.findDocumentsOfCollection(collectionName);
+				// serialize to bson (format of mongoexport)
+				const bsonDocuments = this.bsonConverter.serialize(jsonDocuments);
+				// sort results to have 'new' data added at documents end
+				const sortedBsonDocuments = orderBy(bsonDocuments, ['_id.$oid', 'createdAt.$date'], ['asc', 'asc']);
+				// convert to text
+				const TAB = '	';
+				const text = JSON.stringify(sortedBsonDocuments, undefined, TAB);
+				// persist to filesystem
+				this.fileSystemAdapter.writeFileSync(filePath, text + this.fileSystemAdapter.EOL);
+				// keep collection name and number of exported documents
+				exportedCollections.push(`${collectionName}:${sortedBsonDocuments.length}`);
+			})
+		);
 		return exportedCollections;
 	}
 }

@@ -7,8 +7,7 @@ export class DatabaseManagementService {
 	constructor(private em: EntityManager) {}
 
 	private get db(): Db {
-		const db = this.em.getConnection('write').getDb();
-		return db;
+		return this.em.getConnection('write').getDb();
 	}
 
 	async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
@@ -29,6 +28,12 @@ export class DatabaseManagementService {
 		return documents;
 	}
 
+	async clearCollection(collectionName: string): Promise<number> {
+		const collection = this.getDatabaseCollection(collectionName);
+		const { deletedCount } = await collection.deleteMany({});
+		return deletedCount || 0;
+	}
+
 	async dropCollectionIfExists(collectionName: string): Promise<void> {
 		const collectionExists = await this.collectionExists(collectionName);
 		if (collectionExists) {
@@ -43,7 +48,9 @@ export class DatabaseManagementService {
 	}
 
 	async getCollectionNames(): Promise<string[]> {
-		const collections = (await this.db.listCollections().toArray()) as unknown[] as { name: string }[];
+		const collections = (await this.db.listCollections(undefined, { nameOnly: true }).toArray()) as unknown[] as {
+			name: string;
+		}[];
 		const collectionNames = collections.map((collection) => collection.name);
 		return collectionNames;
 	}
