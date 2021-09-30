@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { BaseFile } from '../entity';
+import { BaseFile, File } from '../entity';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<BaseFile> {
@@ -8,7 +8,8 @@ export class FilesRepo extends BaseRepo<BaseFile> {
 
 	async getExpiredFiles(backupPeriodThreshold: Date): Promise<BaseFile[]> {
 		const files = await this.em.find(BaseFile, { deletedAt: { $lt: backupPeriodThreshold } });
-		await this.em.populate(files, this.propertiesToPopulate);
+		const regularFiles: File[] = files.filter((file) => !file.isDirectory) as File[];
+		await this.em.populate(regularFiles, this.propertiesToPopulate);
 		return files;
 	}
 
