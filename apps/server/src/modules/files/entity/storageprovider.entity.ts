@@ -1,6 +1,13 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 
+interface IStorageProviderProperties {
+	endpointUrl: string;
+	accessKeyId: string;
+	secretAccessKey: string;
+	region?: string;
+}
+
 @Entity({ tableName: 'storageproviders' })
 export class StorageProvider extends BaseEntityWithTimestamps {
 	@Property()
@@ -13,5 +20,13 @@ export class StorageProvider extends BaseEntityWithTimestamps {
 	secretAccessKey!: string;
 
 	@Property()
-	region: string;
+	region?: string;
+
+	constructor(props: IStorageProviderProperties) {
+		super();
+		this.endpointUrl = props.endpointUrl;
+		this.accessKeyId = props.accessKeyId;
+		this.secretAccessKey = props.secretAccessKey;
+		this.region = props.region;
+	}
 }

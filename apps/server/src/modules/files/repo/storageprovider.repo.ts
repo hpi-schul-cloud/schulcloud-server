@@ -1,4 +1,5 @@
-import CryptoJS from 'crypto-js';
+import { decrypt } from 'crypto-js/aes';
+import Utf8 from 'crypto-js/enc-utf8';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 import { Injectable } from '@nestjs/common';
@@ -8,7 +9,7 @@ import { StorageProvider, File } from '../entity';
 
 function decryptAccessKey(secretAccessKey: string): string {
 	const S3_KEY = Configuration.get('S3_KEY') as string;
-	return CryptoJS.AES.decrypt(secretAccessKey, S3_KEY).toString(CryptoJS.enc.Utf8);
+	return decrypt(secretAccessKey, S3_KEY).toString(Utf8);
 }
 
 function createStorageProviderClient(provider: StorageProvider): S3Client {
