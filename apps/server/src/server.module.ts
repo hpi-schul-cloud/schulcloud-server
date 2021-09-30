@@ -16,7 +16,7 @@ import { LearnroomModule } from './modules/lernroom/lernroom.module';
 
 import { Course, Coursegroup } from './entities';
 
-import { File, StorageProvider } from './modules/files/entity';
+import { BaseFile, File, Directory, StorageProvider } from './modules/files/entity';
 
 import {
 	DashboardGridElementModel,
@@ -44,7 +44,7 @@ const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, User
 const learnroomDashboardEntities = [DashboardModelEntity, DashboardGridElementModel, DefaultGridReferenceModel];
 const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
-const fileEntities = [File, StorageProvider];
+const fileEntities = [BaseFile, File, Directory, StorageProvider];
 
 @Module({
 	imports: [

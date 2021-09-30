@@ -67,7 +67,7 @@ describe('FilesRepo', () => {
 
 	describe('getExpiredFiles', () => {
 		beforeEach(async () => {
-			await em.nativeDelete(BaseFile, {});
+			await em.nativeDelete(File, {});
 		});
 
 		it('should return expired file', async () => {
