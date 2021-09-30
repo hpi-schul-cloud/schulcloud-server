@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { FilesRepo, FileStorageRepo } from '../repo';
+import { File } from '../entity';
 
 @Injectable()
 export class DeleteFilesUc {
@@ -18,7 +19,7 @@ export class DeleteFilesUc {
 		for (const file of filesForDeletion) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				await this.fileStorageRepo.deleteFile(file);
+				if (!file.isDirectory) await this.fileStorageRepo.deleteFile(file as File);
 				// eslint-disable-next-line no-await-in-loop
 				await this.filesRepo.deleteFile(file);
 			} catch (err) {

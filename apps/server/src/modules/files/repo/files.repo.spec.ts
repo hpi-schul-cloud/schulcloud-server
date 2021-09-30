@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { File, StorageProvider } from '../entity';
+import { BaseFile, StorageProvider } from '../entity';
 import { FilesRepo } from './files.repo';
 
 interface FileData {
@@ -21,8 +21,8 @@ describe('FilesRepo', () => {
 		storageFileName = 'storageFileName',
 		bucket = 'test-bucket',
 		deletedAt = undefined,
-	}: FileData = {}): Promise<File> => {
-		const file = em.create(File, {
+	}: FileData = {}): Promise<BaseFile> => {
+		const file = em.create(BaseFile, {
 			isDirectory,
 			storageFileName,
 			bucket,
@@ -37,7 +37,7 @@ describe('FilesRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [File, StorageProvider],
+					entities: [BaseFile, StorageProvider],
 				}),
 			],
 			providers: [FilesRepo],
@@ -48,7 +48,7 @@ describe('FilesRepo', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(File, {});
+		await em.nativeDelete(BaseFile, {});
 	});
 
 	afterAll(async () => {
@@ -67,7 +67,7 @@ describe('FilesRepo', () => {
 
 	describe('getExpiredFiles', () => {
 		beforeEach(async () => {
-			await em.nativeDelete(File, {});
+			await em.nativeDelete(BaseFile, {});
 		});
 
 		it('should return expired file', async () => {
