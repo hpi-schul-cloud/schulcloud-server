@@ -18,11 +18,7 @@ describe('FileStorageRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [File, StorageProvider],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [FileStorageRepo],
 		}).compile();
 
