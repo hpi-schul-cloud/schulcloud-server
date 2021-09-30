@@ -1,18 +1,18 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Collection, Db } from 'mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
-	private db: Db;
+	constructor(private em: EntityManager) {}
 
-	constructor(private em: EntityManager) {
-		const driver = this.em.getDriver();
-		this.db = driver.getConnection('write').getDb();
+	private get db(): Db {
+		const db = this.em.getConnection('write').getDb();
+		return db;
 	}
 
 	async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
-		const collection = this.getCollection(collectionName);
+		const collection = this.getDatabaseCollection(collectionName);
 		if (jsonDocuments.length === 0) {
 			return 0;
 		}
@@ -23,8 +23,8 @@ export class DatabaseManagementService {
 		return insertedCount;
 	}
 
-	async getDocumentsOfCollectionAsJson(collectionName: string): Promise<unknown[]> {
-		const collection = this.getCollection(collectionName);
+	async findDocumentsOfCollection(collectionName: string): Promise<unknown[]> {
+		const collection = this.getDatabaseCollection(collectionName);
 		const documents = (await collection.find({}).toArray()) as unknown[];
 		return documents;
 	}
@@ -37,19 +37,19 @@ export class DatabaseManagementService {
 		}
 	}
 
-	getCollection(collectionName: string): Collection {
+	getDatabaseCollection(collectionName: string): Collection {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
 
-	async getCollections(): Promise<string[]> {
+	async getCollectionNames(): Promise<string[]> {
 		const collections = (await this.db.listCollections().toArray()) as unknown[] as { name: string }[];
 		const collectionNames = collections.map((collection) => collection.name);
 		return collectionNames;
 	}
 
 	async collectionExists(collectionName: string): Promise<boolean> {
-		const collections = await this.getCollections();
+		const collections = await this.getCollectionNames();
 		const result = collections.includes(collectionName);
 		return result;
 	}

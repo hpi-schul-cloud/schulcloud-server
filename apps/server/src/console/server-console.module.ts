@@ -5,9 +5,10 @@ import { ConsoleWriter } from './console-writer/console-writer.service';
 import { DatabaseManagementConsole } from './database-management.console';
 import { ServerModule } from '../server.module';
 import { DatabaseManagementModule } from '../shared/infra/database-management/database-management.module';
+import { ServerAndManagementModule } from '../server-and-management.module';
 
 @Module({
-	imports: [ServerModule, DatabaseManagementModule, ConsoleModule],
+	imports: [ServerAndManagementModule, ConsoleModule],
 	providers: [
 		ConsoleWriter,
 		/** add console services as providers */

@@ -11,7 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { orderBy } from 'lodash';
 import { FileSystemAdapter } from '../file-system/file-system.adapter';
 import { DatabaseManagementService } from './database-management.service';
-import { BsonConverter } from './bson.converter';
+import { BsonConverter } from './converter/bson.converter';
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -39,8 +39,12 @@ export class DatabaseManagementUc {
 		private bsonConverter: BsonConverter
 	) {}
 
+	/**
+	 * Loads all collection names from database and adds related file paths.
+	 * @returns {ICollectionFilePath}
+	 */
 	private async loadAllCollectionsFromDatabase(): Promise<ICollectionFilePath[]> {
-		const collections = await this.databaseManagementService.getCollections();
+		const collections = await this.databaseManagementService.getCollectionNames();
 		const collectionsWithFilePaths = collections.map((collectionName) => ({
 			filePath: this.fileSystemAdapter.joinPath(this.seedDataFolderPath, `${collectionName}.json`),
 			collectionName,
@@ -48,6 +52,10 @@ export class DatabaseManagementUc {
 		return collectionsWithFilePaths;
 	}
 
+	/**
+	 * Loads all collection names and file paths from backup files.
+	 * @returns {ICollectionFilePath}
+	 */
 	private loadAllCollectionsFromFilesystem(): ICollectionFilePath[] {
 		const filenames = this.fileSystemAdapter.readDirSync(this.seedDataFolderPath);
 		const collectionsWithFilePaths = filenames.map((fileName) => ({
@@ -57,6 +65,12 @@ export class DatabaseManagementUc {
 		return collectionsWithFilePaths;
 	}
 
+	/**
+	 * Scans <source> for existing collections and optionally filters them based on <collectionNameFilter>
+	 * @param source
+	 * @param collectionNameFilter
+	 * @returns {ICollectionFilePath} the filtered collection names and related file paths
+	 */
 	private async loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 		source: 'files' | 'database',
 		collectionNameFilter?: string[]
@@ -97,6 +111,11 @@ export class DatabaseManagementUc {
 		return allCollectionsWithFilePaths;
 	}
 
+	/**
+	 * Imports all or filtered <collections> from filesystem as bson to database.
+	 * @param collections optional filter applied on existing collections
+	 * @returns the list of collection names exported
+	 */
 	async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
 		// detect collections to seed based on filesystem data
 		const collectionsToSeed = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
@@ -127,6 +146,11 @@ export class DatabaseManagementUc {
 		return seededCollectionsWithAmount;
 	}
 
+	/**
+	 * Exports all or defined <collections> from database as bson to filesystem.
+	 * @param collections optional filter applied on existing collections
+	 * @returns the list of collection names exported
+	 */
 	async exportCollectionsToFileSystem(collections?: string[]): Promise<string[]> {
 		// detect collections to export based on database collections
 		const collectionsToExport = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
@@ -137,7 +161,7 @@ export class DatabaseManagementUc {
 
 		for (const { filePath, collectionName } of collectionsToExport) {
 			// load json documents from collection
-			const jsonDocuments = await this.databaseManagementService.getDocumentsOfCollectionAsJson(collectionName);
+			const jsonDocuments = await this.databaseManagementService.findDocumentsOfCollection(collectionName);
 			// serialize to bson (format of mongoexport)
 			const bsonDocuments = this.bsonConverter.deserialize(jsonDocuments);
 			// sort results to have 'new' data added at documents end
