@@ -21,6 +21,7 @@
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"classIds" : [],
+	"color" : "#54616e",
 	"__v" : 0
 },
 {
@@ -66,7 +67,7 @@
 			"eventId" : "457b4a47-c72a-4553-95e4-62351aed493c"
 		}
 	],
-	"color" : "#ffb9b9",
+	"color" : "#795548",
 	"ltiToolIds" : [
 		{ "$oid": "59a55f39a2049554a93fed16" }
 	],
@@ -128,7 +129,7 @@
 			"eventId" : "5bbc5c75-e39c-4067-b163-9b67b3102e6b"
 		}
 	],
-	"color" : "#aee1bd",
+	"color" : "#D50000",
 	"ltiToolIds" : [
 		{ "$oid": "59a403bfa2049554a93feca9"},
 		{ "$oid": "59b6c0225c9ec20c6f08365b"}
@@ -189,7 +190,7 @@
 		"eventId" : "2b53fe07-4e6b-468b-a848-f3d1717d7811"
 	}
 ],
-"color" : "#a5d6fa",
+"color" : "#0091EA",
 "ltiToolIds" : [
 	{ "$oid": "59a55f4ba2049554a93fed18"}
 ],
@@ -253,7 +254,7 @@
 			"eventId" : "f2271331-12ab-467c-8eaa-67c7a302a3d5"
 		}
 	],
-	"color" : "#ffc5a8",
+	"color" : "#009688",
 	"ltiToolIds" : [
 		{ "$oid": "59a55f54a2049554a93fed19" }
 	],
@@ -305,7 +306,7 @@
 			"eventId" : "2a094383-b6c5-472c-b6df-241aeaecb772"
 		}
 	],
-	"color" : "#b0b0d9",
+	"color" : "#304FFE",
 	"ltiToolIds" : [
 		{ "$oid": "59a55f6ca2049554a93fed1b"}
 	],
@@ -339,7 +340,7 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#ACACAC",
+	"color": "#54616e",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
@@ -379,7 +380,7 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#FF4081",
+	"color": "#304FFE",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
@@ -415,7 +416,7 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#00E5FF",
+	"color": "#009688",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
@@ -455,7 +456,7 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#1DE9B6",
+	"color": "#0091EA",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
@@ -498,7 +499,7 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#FFEE58",
+	"color": "#827717",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
@@ -534,7 +535,7 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#D4AF37",
+	"color": "#EF6C00",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {

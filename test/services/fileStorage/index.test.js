@@ -97,6 +97,8 @@ describe('fileStorage services', () => {
 			size: 1200,
 			storageFileName: 'storage.jpg',
 			thumbnail: 'thumbnail.jpg',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.Types.ObjectId(),
 		};
 
 		const created = [];
@@ -252,7 +254,7 @@ describe('fileStorage services', () => {
 					query: {},
 					...context,
 				})
-				.then(({ code }) => {
+				.catch(({ code }) => {
 					expect(code).to.be.equal(404);
 					return done();
 				});
@@ -266,7 +268,7 @@ describe('fileStorage services', () => {
 					query: {},
 					...context,
 				})
-				.then(({ code }) => {
+				.catch(({ code }) => {
 					expect(code).to.be.equal(403);
 					return done();
 				});

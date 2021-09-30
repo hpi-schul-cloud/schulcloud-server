@@ -41,9 +41,10 @@ const removePermissionsThatUserCanAccess = async (userId) => {
  */
 const removePersonalFiles = async (userId) => {
 	const personalFiles = await filesRepo.getPersonalFilesByUserId(userId);
+	const personalFileIds = personalFiles.map((file) => file._id);
 	const trashBinData = {
 		scope: 'files',
-		data: personalFiles,
+		data: personalFileIds,
 	};
 	if (personalFiles.length === 0) {
 		return { trashBinData, complete: true };
