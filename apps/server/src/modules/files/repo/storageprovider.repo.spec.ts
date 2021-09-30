@@ -65,7 +65,6 @@ describe('FileStorageRepo', () => {
 			});
 
 			const file = new File({
-				isDirectory: false,
 				bucket,
 				storageFileName,
 				storageProvider,
