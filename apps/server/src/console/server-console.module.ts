@@ -4,7 +4,7 @@ import { ServerConsole } from './server.console';
 import { ConsoleWriter } from './console-writer/console-writer.service';
 import { DatabaseManagementConsole } from './database-management.console';
 import { ServerModule } from '../server.module';
-import { DatabaseManagementModule } from '../modules/database/database-management/database-management.module';
+import { DatabaseManagementModule } from '../shared/infra/database-management/database-management.module';
 
 @Module({
 	imports: [ServerModule, DatabaseManagementModule, ConsoleModule],
