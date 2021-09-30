@@ -4,11 +4,11 @@ import { User } from '../../../entities';
 import { FileSystemModule } from '../file-system/file-system.module';
 import { DatabaseManagementController } from './database-management.controller';
 import { DatabaseManagementModule } from './database-management.module';
-import { DatabaseManagementService } from './database-management.service';
+import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementModule', () => {
 	let module: TestingModule;
-	let service: DatabaseManagementService;
+	let service: DatabaseManagementUc;
 	let controller: DatabaseManagementController;
 
 	beforeAll(async () => {
@@ -24,7 +24,7 @@ describe('DatabaseManagementModule', () => {
 				DatabaseManagementModule,
 			],
 		}).compile();
-		service = module.get<DatabaseManagementService>(DatabaseManagementService);
+		service = module.get<DatabaseManagementUc>(DatabaseManagementUc);
 		controller = module.get<DatabaseManagementController>(DatabaseManagementController);
 	});
 

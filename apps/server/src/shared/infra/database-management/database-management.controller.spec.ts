@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseManagementController } from './database-management.controller';
-import { DatabaseManagementService } from './database-management.service';
+import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementController', () => {
 	let controller: DatabaseManagementController;
@@ -10,7 +10,7 @@ describe('DatabaseManagementController', () => {
 			controllers: [DatabaseManagementController],
 			providers: [
 				{
-					provide: DatabaseManagementService,
+					provide: DatabaseManagementUc,
 					useValue: {
 						seedCollectionFromFile(collectionName: string): Promise<void> {
 							return Promise.resolve();
