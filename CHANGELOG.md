@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
+- BC-111 wait for mongodb to spin up in deployment
 
 - BC-370 - fixed file directory creation 
 
