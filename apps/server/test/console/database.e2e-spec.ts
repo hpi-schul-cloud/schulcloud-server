@@ -1,15 +1,15 @@
 import { INestApplicationContext } from '@nestjs/common';
+import { CommanderError } from 'commander';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '../../src/console/console.module';
-import { ConsoleWriterService } from '../../src/shared/infra/console/console-writer/console-writer.service';
+import { DatabaseManagementUc } from '../../src/modules/management/uc/database-management.uc';
 import { execute, TestBootstrapConsole } from './bootstrap.console';
 
 describe('ServerConsole (e2e)', () => {
 	let app: INestApplicationContext;
 	let console: BootstrapConsole;
 	let consoleService: ConsoleService;
-	let consoleWriter: ConsoleWriterService;
-	let logMock: jest.SpyInstance;
+	let uc: DatabaseManagementUc;
 	beforeAll(async () => {
 		console = new TestBootstrapConsole({
 			module: ServerConsoleModule,
@@ -18,26 +18,7 @@ describe('ServerConsole (e2e)', () => {
 		app = await console.init();
 		await app.init();
 		consoleService = app.get<ConsoleService>(ConsoleService);
-		consoleWriter = app.get<ConsoleWriterService>(ConsoleWriterService);
-	});
-
-	beforeEach(() => {
-		// .exitOverride(function ignoreExitCode0(err: CommanderError) {
-		// 	if (err.exitCode !== 0) throw err;
-		// });
-		consoleService
-			.getRootCli()
-			.exitOverride()
-			.configureOutput({
-				writeOut: (text: string) => consoleWriter.info(text),
-				writeErr: (text: string) => consoleWriter.info(text),
-			});
-		logMock = jest.spyOn(consoleWriter, 'info').mockImplementation();
-	});
-
-	afterEach(() => {
-		logMock.mockReset();
-		consoleService.resetCli();
+		uc = app.get<DatabaseManagementUc>(DatabaseManagementUc);
 	});
 
 	afterAll(async () => {
@@ -45,15 +26,26 @@ describe('ServerConsole (e2e)', () => {
 	});
 
 	describe('Command "database"', () => {
-		it('should display database and help', async () => {
-			await execute(console, ['database', '--help']);
+		let exportCollectionsToFileSystemMock: jest.SpyInstance;
+		let seedDatabaseCollectionsFromFileSystemMock: jest.SpyInstance;
+
+		beforeEach(() => {
+			const cli = consoleService.getCli('database');
+			cli?.exitOverride((err: CommanderError) => {
+				if (err.exitCode !== 0) throw err;
+			});
+			exportCollectionsToFileSystemMock = jest.spyOn(uc, 'exportCollectionsToFileSystem');
+			seedDatabaseCollectionsFromFileSystemMock = jest.spyOn(uc, 'seedDatabaseCollectionsFromFileSystem');
 		});
-		// TODO remove help and execute when using in memory db, add log mock
-		it('should offer "seed" and help', async () => {
-			await execute(console, ['database', 'seed', '--help']);
+
+		afterEach(() => {
+			exportCollectionsToFileSystemMock.mockReset();
+			seedDatabaseCollectionsFromFileSystemMock.mockReset();
+			consoleService.resetCli();
 		});
-		it('should offer "export" and help', async () => {
-			await execute(console, ['database', 'export', '--help']);
+		it('should provide command "seed"', async () => {
+			await execute(console, ['database', 'seed']);
+			expect(seedDatabaseCollectionsFromFileSystemMock).toBeCalled();
 		});
 	});
 });
