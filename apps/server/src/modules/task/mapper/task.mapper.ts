@@ -1,9 +1,8 @@
+import { TaskWithStatusVo } from '@shared/domain';
 import { TaskResponse } from '../controller/dto';
-import { TaskWithSubmissionStatus } from '../domain';
 
 export class TaskMapper {
-	// TODO: add status to task
-	static mapToResponse(taskWithStatus: TaskWithSubmissionStatus): TaskResponse {
+	static mapToResponse(taskWithStatus: TaskWithStatusVo): TaskResponse {
 		const { task, status } = taskWithStatus;
 		const dto = new TaskResponse();
 

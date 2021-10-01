@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsIn, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { NewsTargetModel } from '../../entity';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 

@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.10.3",
+	"version": "26.11.2",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -130,6 +130,7 @@
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "^5.13.9",
+		"mongoose-delete": "^0.5.4",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.6.0",

@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-
-import { IPermissionsAndRoles } from '../entity';
+import { EntityId, IPermissionsAndRoles } from '@shared/domain';
 import { RoleRepo } from '../repo';
 
 @Injectable()

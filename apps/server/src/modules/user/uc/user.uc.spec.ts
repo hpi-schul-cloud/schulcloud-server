@@ -1,18 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { IPermissionsAndRoles } from '@shared/domain';
 import { createCurrentTestUser } from '../utils';
 import { UserRepo } from '../repo';
 import { UserUC } from './user.uc';
 import { RoleUC } from './role.uc';
 import { ResolvedUser } from '../controller/dto';
-import { IPermissionsAndRoles } from '../entity';
 
 describe('UserUC', () => {
+	let module: TestingModule;
 	let service: UserUC;
 	let roleUC: RoleUC;
 	let repo: UserRepo;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				UserUC,
 				UserRepo,
@@ -35,6 +38,10 @@ describe('UserUC', () => {
 		service = module.get(UserUC);
 		roleUC = module.get(RoleUC);
 		repo = module.get(UserRepo);
+	});
+
+	afterEach(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
