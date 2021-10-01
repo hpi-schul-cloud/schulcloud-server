@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
+- BC-269 - check in firstLogin that students can only pass with existing birthdate 
 
 ### Fixed
 
