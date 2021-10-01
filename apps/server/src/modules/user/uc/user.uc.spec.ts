@@ -29,7 +29,7 @@ describe('UserUC', () => {
 				{
 					provide: RoleUC,
 					useValue: {
-						resolvePermissionsByIdList() {},
+						resolvePermissionsByRoles() {},
 					},
 				},
 			],
@@ -54,7 +54,7 @@ describe('UserUC', () => {
 			const permissions = ['A', 'B'] as string[];
 			const { currentUser, user, roles } = createCurrentTestUser(permissions);
 
-			const roleUCSpy = jest.spyOn(roleUC, 'resolvePermissionsByIdList').mockImplementation(() => {
+			const roleUCSpy = jest.spyOn(roleUC, 'resolvePermissionsByRoles').mockImplementation(() => {
 				const result = { roles, permissions } as IPermissionsAndRoles;
 				return Promise.resolve(result);
 			});

@@ -32,7 +32,7 @@ describe('jwt strategy', () => {
 				{
 					provide: UserFacade,
 					useValue: {
-						resolveUser(payload: ICurrentUser) {
+						resolveUser(userId: EntityId) {
 							return new ResolvedUser();
 						},
 					},
@@ -65,9 +65,10 @@ describe('jwt strategy', () => {
 		});
 		it('should load the defined user', async () => {
 			const accountId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
 			const resolveUserSpy = jest.spyOn(facade, 'resolveUser');
-			const payload = { accountId, jti } as JwtPayload;
+			const payload = { accountId, jti, userId } as JwtPayload;
 			await strategy.validate(payload);
 			expect(resolveUserSpy).toHaveBeenCalledWith(payload);
 		});

@@ -11,7 +11,8 @@ export class UserUC {
 
 	async getUserWithPermissions(userId: EntityId): Promise<ResolvedUser> {
 		const user = await this.userRepo.findById(userId);
-		const resolved = await this.roleUC.resolvePermissionsByIdList(user.roles);
+		const roles = user.roles.getItems();
+		const resolved = await this.roleUC.resolvePermissionsByRoles(roles);
 
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, resolved.permissions, resolved.roles);
 		return resolvedUser;
