@@ -3,6 +3,8 @@ import { MongoMemoryDatabaseModule } from '../../database';
 import { User } from '../../../entities';
 import { DatabaseManagementUc } from './database-management.uc';
 import { ManagementModule } from '../management.module';
+import { FileSystemAdapter } from '../../../shared/infra/file-system/file-system.adapter';
+import { DatabaseManagementService } from '../../../shared/infra/database/management/database-management.service';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;
@@ -70,6 +72,20 @@ describe('DatabaseManagementService', () => {
 						User,
 					],
 				}),
+			],
+			providers: [
+				{
+					provide: FileSystemAdapter,
+					useValue: {},
+				},
+				{
+					provide: DatabaseManagementService,
+					useValue: {
+						getCollectionNames() {
+							return ['collectionName'];
+						},
+					},
+				},
 			],
 		}).compile();
 		service = module.get<DatabaseManagementUc>(DatabaseManagementUc);
