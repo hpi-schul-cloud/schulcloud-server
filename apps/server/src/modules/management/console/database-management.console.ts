@@ -1,13 +1,13 @@
 import { Command, Console } from 'nestjs-console';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
-import { ConsoleWriter } from '../../../shared/infra/console/console-writer/console-writer.service';
+import { ConsoleWriterService } from '../../../shared/infra/console/console-writer/console-writer.service';
 
 interface Options {
 	collection?: string;
 }
 @Console({ command: 'database', description: 'database setup console' })
 export class DatabaseManagementConsole {
-	constructor(private consoleWriter: ConsoleWriter, private databaseManagementUc: DatabaseManagementUc) {}
+	constructor(private consoleWriter: ConsoleWriterService, private databaseManagementUc: DatabaseManagementUc) {}
 
 	@Command({
 		command: 'seed',

@@ -10,6 +10,11 @@ export class DatabaseManagementService {
 		return this.em.getConnection('write').getDb();
 	}
 
+	private getDatabaseCollection(collectionName: string): Collection {
+		const collection = this.db.collection(collectionName);
+		return collection;
+	}
+
 	async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
 		const collection = this.getDatabaseCollection(collectionName);
 		if (jsonDocuments.length === 0) {
@@ -34,19 +39,6 @@ export class DatabaseManagementService {
 		return deletedCount || 0;
 	}
 
-	async dropCollectionIfExists(collectionName: string): Promise<void> {
-		const collectionExists = await this.collectionExists(collectionName);
-		if (collectionExists) {
-			// drop collection if exists
-			await this.db.dropCollection(collectionName);
-		}
-	}
-
-	getDatabaseCollection(collectionName: string): Collection {
-		const collection = this.db.collection(collectionName);
-		return collection;
-	}
-
 	async getCollectionNames(): Promise<string[]> {
 		const collections = (await this.db.listCollections(undefined, { nameOnly: true }).toArray()) as unknown[] as {
 			name: string;
@@ -63,5 +55,9 @@ export class DatabaseManagementService {
 
 	async createCollection(collectionName: string): Promise<void> {
 		await this.db.createCollection(collectionName);
+	}
+
+	async dropCollection(collectionName: string): Promise<void> {
+		await this.db.dropCollection(collectionName);
 	}
 }

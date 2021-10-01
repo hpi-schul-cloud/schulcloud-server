@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConsoleWriter } from './console-writer.service';
+import { ConsoleWriterService } from './console-writer.service';
 
 @Module({
-	imports: [ConsoleWriter],
-	exports: [ConsoleWriter],
+	imports: [ConsoleWriterService],
+	exports: [ConsoleWriterService],
 })
 export class ConsoleWriterModule {}

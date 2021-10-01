@@ -5,7 +5,7 @@ import { createSpinner } from 'nestjs-console';
 /**
  * Console writer service using ora spinner internally.
  */
-export class ConsoleWriter {
+export class ConsoleWriterService {
 	spinner = createSpinner();
 
 	info(text: string): void {

@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '../../../../modules/database';
+import { UserInfo } from '../../../../modules/news/entity';
 import { DatabaseManagementModule } from './database-management.module';
 import { DatabaseManagementService } from './database-management.service';
 
@@ -8,7 +10,15 @@ describe('DatabaseManagementModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [DatabaseManagementModule],
+			imports: [
+				DatabaseManagementModule,
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [
+						// sample entity used for start and test the module
+						UserInfo,
+					],
+				}),
+			],
 		}).compile();
 		service = module.get<DatabaseManagementService>(DatabaseManagementService);
 	});

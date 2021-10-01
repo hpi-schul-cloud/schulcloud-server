@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriter } from './console-writer.service';
+import { ConsoleWriterService } from './console-writer.service';
 
-describe('FileSystemModule', () => {
+describe('ConsoleWriterModule', () => {
 	let module: TestingModule;
-	let service: ConsoleWriter;
+	let service: ConsoleWriterService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConsoleWriter],
+			imports: [ConsoleWriterService],
 		}).compile();
-		service = module.get<ConsoleWriter>(ConsoleWriter);
+		service = module.get<ConsoleWriterService>(ConsoleWriterService);
 	});
 
 	afterAll(async () => {

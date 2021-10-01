@@ -8,7 +8,7 @@ import { BsonConverter } from './converter/bson.converter';
 import { FileSystemModule } from '../../shared/infra/file-system/file-system.module';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementModule } from '../../shared/infra/database/management/database-management.module';
-import { ConsoleWriter } from '../../shared/infra/console/console-writer/console-writer.service';
+import { ConsoleWriterService } from '../../shared/infra/console/console-writer/console-writer.service';
 import { UserInfo } from '../news/entity';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../config';
 
@@ -37,7 +37,7 @@ import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../config';
 		// console providers
 		DatabaseManagementConsole,
 		// infra services
-		ConsoleWriter,
+		ConsoleWriterService,
 	],
 	controllers: [DatabaseManagementController],
 })
