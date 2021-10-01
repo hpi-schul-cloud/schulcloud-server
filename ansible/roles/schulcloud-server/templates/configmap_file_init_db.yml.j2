@@ -4,7 +4,7 @@ metadata:
   name: api-db-init-file
   namespace: {{ NAMESPACE }}
   labels:
-    app: rocketchat
+    app: api-deployment
 data:
   update.sh: |
     #! /bin/bash
@@ -15,6 +15,14 @@ data:
       do
         sleep 1
       done
+    mongo $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
+    sleep 3
+    if [[ $(mongo --quiet --eval "db.isMaster().setName") != rs0 ]]
+    then
+        echo "replicaset config failed :("
+    else
+        echo "gg, hacky mongo replicaset"
+    fi
     for file in /schulcloud-server/backup/setup/*
     do
         mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
