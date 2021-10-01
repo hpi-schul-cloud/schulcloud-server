@@ -1,129 +1,89 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder } from '@shared/domain';
-import { CourseRepo } from '@src/repositories';
-import { Course } from '@src/entities';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, Task, TaskWithStatusVo } from '@shared/domain';
 
-import { TaskRepo, SubmissionRepo } from '../repo';
-import { TaskDomainService, TaskWithSubmissionStatus } from '../domain';
-
-enum Permission {
-	read,
-	write,
-}
+import { TaskRepo } from '../repo';
+import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
 export enum TaskDashBoardPermission {
 	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
 	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
 }
-
 @Injectable()
 export class TaskUC {
-	constructor(
-		private readonly taskRepo: TaskRepo,
-		private readonly submissionRepo: SubmissionRepo,
-		private readonly courseRepo: CourseRepo
-	) {}
+	constructor(private readonly taskRepo: TaskRepo, private readonly authorizationService: TaskAuthorizationService) {}
 
-	// coursegroups are missing
-	// lessons are missing -> only search for hidden: false,
-	private async findPermittedTaskParents(userId: EntityId, permission: Permission): Promise<Course[]> {
-		const [allCourses] = await this.courseRepo.findAllByUserId(userId);
-
-		// !!! Add Authorization service or logic until it is avaible !!!
-		const parents = allCourses.filter((c) =>
-			permission === Permission.write ? c.hasWritePermission(userId) : !c.hasWritePermission(userId)
-		);
-
-		return parents;
-	}
-
-	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const parents = await this.findPermittedTaskParents(userId, Permission.read);
-
-		const [submissionsOfStudent] = await this.submissionRepo.findAllByUserId(userId);
-		const taskIdsWithSubmissions = [...new Set(submissionsOfStudent.map((submission) => submission.task.id))];
-
-		const parentIds = parents.map((parent) => parent.id);
-
-		const [tasks, total] = await this.taskRepo.findAllCurrentIgnoreIds(parentIds, taskIdsWithSubmissions, {
-			pagination,
-			order: { dueDate: SortOrder.asc },
-		});
-
-		const domain = new TaskDomainService(tasks, parents);
-		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
-
-		return [computedTasks, total];
-	}
-
-	async findAllCompletedForStudent(
-		userId: EntityId,
-		pagination: IPagination
-	): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const parents = await this.findPermittedTaskParents(userId, Permission.read);
-
-		const [submissionsOfStudent] = await this.submissionRepo.findAllByUserId(userId);
-		const taskIdsWithSubmissions = [...new Set(submissionsOfStudent.map((submission) => submission.task.id))];
-
-		const parentIds = parents.map((course) => course.id);
-
-		const [tasks, total] = await this.taskRepo.findAllCurrentByIds(parentIds, taskIdsWithSubmissions, {
-			pagination,
-			order: { dueDate: SortOrder.asc },
-		});
-
-		const domain = new TaskDomainService(tasks, parents);
-		const computedTasks = domain.computeStatusForStudents(submissionsOfStudent);
-
-		return [computedTasks, total];
-	}
-
-	// TODO: rename teacher and student
-	async findAllOpenForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		const parents = await this.findPermittedTaskParents(userId, Permission.write);
-
-		const parentIds = parents.map((parent) => parent.id);
-
-		const [tasks, total] = await this.taskRepo.findAll(parentIds, { pagination, order: { createdAt: SortOrder.desc } });
-		const [submissionsOfTeacher] = await this.submissionRepo.findAllByTaskIds(tasks.map((o) => o.id));
-
-		const domain = new TaskDomainService(tasks, parents);
-		const computedTasks = domain.computeStatusForTeachers(submissionsOfTeacher);
-
-		return [computedTasks, total];
-	}
-
-	async findAllOpen(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		let response: Counted<TaskWithSubmissionStatus[]>;
-
-		if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.teacherDashboard)) {
-			response = await this.findAllOpenForTeacher(currentUser.userId, pagination);
-		} else if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)) {
-			response = await this.findAllOpenForStudent(currentUser.userId, pagination);
-		} else {
-			throw new UnauthorizedException();
-		}
-
-		return response;
-	}
-
-	async findAllCompleted(
-		currentUser: ICurrentUser,
-		pagination: IPagination
-	): Promise<Counted<TaskWithSubmissionStatus[]>> {
-		let response: Counted<TaskWithSubmissionStatus[]>;
+	// TODO replace curentUser with userId. this requires that permissions are loaded inside the use case by authorization service
+	async findAll(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		let response: Counted<TaskWithStatusVo[]>;
 
 		if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)) {
-			response = await this.findAllCompletedForStudent(currentUser.userId, pagination);
+			response = await this.findAllForStudent(currentUser.userId, pagination);
+		} else if (this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.teacherDashboard)) {
+			response = await this.findAllForTeacher(currentUser.userId, pagination);
 		} else {
 			throw new UnauthorizedException();
 		}
 
 		return response;
+	}
+
+	private async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
+
+		const [tasks, total] = await this.taskRepo.findAllCurrent(parentIds, {
+			pagination,
+			order: { dueDate: SortOrder.asc },
+		});
+
+		const computedTasks = tasks.map((task) => this.computeTaskStatusForStudent(task, userId));
+
+		return [computedTasks, total];
+	}
+
+	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
+
+		const [tasks, total] = await this.taskRepo.findAll(parentIds, {
+			pagination,
+			order: { createdAt: SortOrder.desc },
+		});
+
+		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task));
+
+		return [computedTasks, total];
 	}
 
 	private hasTaskDashboardPermission(currentUser: ICurrentUser, permission: TaskDashBoardPermission): boolean {
 		const hasPermission = currentUser.user.permissions.includes(permission);
 		return hasPermission;
+	}
+
+	private computeTaskStatusForStudent(task: Task, userId: EntityId): TaskWithStatusVo {
+		const studentSubmissions = task.submissions.getItems().filter((submission) => submission.student.id === userId);
+
+		const submitted = studentSubmissions.length > 0 ? 1 : 0;
+		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
+		const maxSubmissions = 1;
+
+		return new TaskWithStatusVo(task, { submitted, maxSubmissions, graded });
+	}
+
+	private computeTaskStatusForTeacher(task: Task): TaskWithStatusVo {
+		const submittedStudentIds = task.submissions.getItems().map((submission) => submission.student.id);
+
+		// unique by studentId
+		const submitted = [...new Set(submittedStudentIds)].length;
+
+		const gradedStudentIds = task.submissions
+			.getItems()
+			.filter((submission) => submission.isGraded())
+			.map((submission) => submission.student.id);
+
+		// unique by studentId
+		const graded = [...new Set(gradedStudentIds)].length;
+
+		const maxSubmissions = task.parent ? task.parent.getNumberOfStudents() : 0;
+
+		return new TaskWithStatusVo(task, { submitted, maxSubmissions, graded });
 	}
 }

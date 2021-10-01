@@ -1,7 +1,7 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { Course, Task, School } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { TaskResponse } from '../controller/dto';
-import { Task } from '../entity';
-
-import { TaskTestHelper } from '../utils/TestHelper';
 
 import { TaskMapper } from './task.mapper';
 
@@ -12,8 +12,8 @@ const createExpectedResponse = (
 ): TaskResponse => {
 	const expected = new TaskResponse();
 	expected.id = task.id;
-	expected.name = task.getName();
-	expected.duedate = task.getDueDate();
+	expected.name = task.name;
+	expected.duedate = task.dueDate;
 	expected.createdAt = task.createdAt;
 	expected.updatedAt = task.updatedAt;
 	expected.status = {
@@ -30,14 +30,27 @@ const createExpectedResponse = (
 };
 
 describe('task.mapper', () => {
-	it('should map if parent and fullfilled status exist', () => {
-		const helper = new TaskTestHelper();
-		const parent = helper.createTaskParent();
-		const task = helper.createTask(parent.id);
+	let module: TestingModule;
 
-		task.setParent(parent);
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
+		}).compile();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	it('should map if parent and fullfilled status exist', () => {
+		const parent = new Course({
+			name: 'course #1',
+			school: new School({ name: 'school #1' }),
+			description: 'a short description for course #1',
+		});
+		const task = new Task({ name: 'task #1', private: false, parent });
 		const parentDescriptions = parent.getDescriptions();
-		const maxSubmissions = parent.getStudentsNumber();
+		const maxSubmissions = parent.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
@@ -52,13 +65,14 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter not necessary informations from status', () => {
-		const helper = new TaskTestHelper();
-		const parent = helper.createTaskParent();
-		const task = helper.createTask(parent.id);
-
-		task.setParent(parent);
+		const parent = new Course({
+			name: 'course #1',
+			school: new School({ name: 'school #1' }),
+			description: 'a short description for course #1',
+		});
+		const task = new Task({ name: 'task #1', private: false, parent });
 		const parentDescriptions = parent.getDescriptions();
-		const maxSubmissions = parent.getStudentsNumber();
+		const maxSubmissions = parent.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
@@ -74,15 +88,17 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter not necessary informations from task', () => {
-		const helper = new TaskTestHelper();
-		const parent = helper.createTaskParent();
-		const task = helper.createTask(parent.id);
+		const parent = new Course({
+			name: 'course #1',
+			school: new School({ name: 'school #1' }),
+			description: 'a short description for course #1',
+		});
+		const task = new Task({ name: 'task #1', private: false, parent });
 		// @ts-expect-error test-case
 		task.key = 1;
 
-		task.setParent(parent);
 		const parentDescriptions = parent.getDescriptions();
-		const maxSubmissions = parent.getStudentsNumber();
+		const maxSubmissions = parent.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
@@ -96,10 +112,9 @@ describe('task.mapper', () => {
 		expect(result).toStrictEqual(expected);
 	});
 
-	it('should not set parent meta informations if it is not exist in task.', () => {
-		const helper = new TaskTestHelper();
-		const parent = helper.createTaskParent();
-		const task = helper.createTask(parent.id);
+	it('should not set parent meta informations if it does not exist in task.', () => {
+		// task has no parent
+		const task = new Task({ name: 'test task#1' });
 
 		const status = {
 			graded: 0,

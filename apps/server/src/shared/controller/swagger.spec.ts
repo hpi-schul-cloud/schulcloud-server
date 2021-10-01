@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as request from 'supertest';
-import { ServerModule } from '../../server.module';
+import { ServerModule } from '@src/server.module';
 import { enableOpenApiDocs } from './swagger';
 
 describe('swagger setup', () => {

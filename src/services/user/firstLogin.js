@@ -12,6 +12,22 @@ const getAutomaticConsent = () => ({
 	dateOfTermsOfUseConsent: Date.now(),
 });
 
+/**
+ * Parse a given string as ISO date or timestamp.
+ * If a timestamp is provided only the date part is taken into account.
+ * The returned date object's time will be always at 00:00.
+ * @param {string} dateString
+ * @returns {Date}
+ * @throws if the date is invalid
+ */
+const parseDate = (dateString) => {
+	const date = moment.utc(dateString, 'YYYY-MM-DD');
+	if (!date.isValid()) {
+		throw new Error('Bitte einen validen Geburtstag auswählen.');
+	}
+	return date.toDate();
+};
+
 const firstLogin = async (data, params, app) => {
 	if (!passwordsMatch(data['password-1'], data['password-2'])) {
 		return Promise.reject(new Error('Die neuen Passwörter stimmen nicht überein.'));
@@ -31,18 +47,10 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
-	// wrong birthday object?
 	if (data.studentBirthdate) {
-		data.studentBirthdate = moment(data.studentBirthdate).format('DD.MM.YYYY');
-		const dateArr = data.studentBirthdate.split('.');
-		const userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
-		// eslint-disable-next-line no-restricted-globals
-		if (userBirthday instanceof Date && isNaN(userBirthday)) {
-			return Promise.reject(new Error('Bitte einen validen Geburtstag auswählen.'));
-		}
-		userUpdate.birthday = userBirthday;
+		userUpdate.birthday = parseDate(data.studentBirthdate);
 	}
-	// malformed email?
+
 	if (data['student-email']) {
 		if (!constants.expressions.email.test(data['student-email'])) {
 			return Promise.reject(new Error('Bitte eine valide E-Mail-Adresse eingeben.'));

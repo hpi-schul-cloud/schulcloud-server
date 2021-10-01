@@ -1,11 +1,9 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { EntityId, Task } from '@shared/domain';
 import { Scope } from '@shared/repo';
-import { Task } from '../entity';
 
 export class TaskScope extends Scope<Task> {
-	byParents(parentIds: EntityId[]): TaskScope {
-		this.addQuery({ parentId: { $in: parentIds.map((id) => new ObjectId(id)) } });
+	byParentIds(parentIds: EntityId[]): TaskScope {
+		this.addQuery({ parent: { $in: parentIds } });
 		return this;
 	}
 
@@ -16,16 +14,6 @@ export class TaskScope extends Scope<Task> {
 
 	byLessonsOrNone(lessonIds: EntityId[]): TaskScope {
 		this.addQuery({ $or: [{ lesson: { $in: lessonIds } }, { lesson: null }] });
-		return this;
-	}
-
-	byIds(taskIds: EntityId[]): TaskScope {
-		this.addQuery({ id: { $in: taskIds } });
-		return this;
-	}
-
-	ignoreIds(taskIds: EntityId[]): TaskScope {
-		this.addQuery({ id: { $nin: taskIds } });
 		return this;
 	}
 

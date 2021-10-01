@@ -1,25 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { Counted } from '@shared/domain';
-import { Scope } from '@shared/repo';
-import { Coursegroup, Course } from '@src/entities';
-
-class CoursegroupScope extends Scope<Coursegroup> {
-	byCourses(courses: Course[]): CoursegroupScope {
-		this.buildAndAddOrQuery(courses, 'id', 'courseId');
-		return this;
-	}
-}
+import { Counted, EntityId, CourseGroup } from '@shared/domain';
 
 @Injectable()
-export class CoursegroupRepo {
+export class CourseGroupRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findByCourses(courses: Course[]): Promise<Counted<Coursegroup[]>> {
-		const scope = new CoursegroupScope();
-		scope.byCourses(courses);
-		const [coursegroups, count] = await this.em.findAndCount(Coursegroup, scope.query);
-		return [coursegroups, count];
+	async findByCourseIds(courseIds: EntityId[]): Promise<Counted<CourseGroup[]>> {
+		const [courseGroups, count] = await this.em.findAndCount(CourseGroup, {
+			course: { $in: courseIds },
+		});
+		return [courseGroups, count];
 	}
 }

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModel } from '@src/modules/news/entity';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { EntityId } from '@shared/domain';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthorizationService } from './authorization.service';

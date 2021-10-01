@@ -2,6 +2,7 @@ const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { filesRepo } = require('../../components/fileStorage/repo');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
@@ -21,6 +22,7 @@ const {
 	createPermission,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { schoolModel } = require('../school/model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
@@ -151,13 +153,18 @@ const fileStorageService = {
 	 */
 	async create(data, params) {
 		const {
-			payload: { userId, fileStorageType },
+			payload: { userId: creatorId, fileStorageType },
 		} = params;
-		const { owner, parent, studentCanEdit, permissions: sendPermissions = [] } = data;
+		const { owner, parent, studentCanEdit, permissions: sendPermissions = [], deletedAt } = data;
+
+		if (deletedAt !== undefined) {
+			// creation of deleted files should fail
+			throw new BadRequest();
+		}
 
 		const refOwnerModel = await getRefOwnerModel(owner);
 
-		const permissions = await createDefaultPermissions(userId, refOwnerModel, {
+		const permissions = await createDefaultPermissions(creatorId, refOwnerModel, {
 			studentCanEdit,
 			sendPermissions,
 			owner,
@@ -165,15 +172,27 @@ const fileStorageService = {
 			throw new GeneralError('Can not create default Permissions', err);
 		});
 
+		const strategy = createCorrectStrategy(fileStorageType);
+
+		const fileOwner = owner || creatorId;
+
+		const creator = await userModel.findById(creatorId).lean().exec();
+		const { schoolId } = creator;
+		const bucket = strategy.getBucket(schoolId);
+		const school = await schoolModel.findById(schoolId).lean().exec();
+		const storageProviderId = school.storageProvider;
+
 		const props = sanitizeObj(
 			Object.assign(data, {
 				isDirectory: false,
-				owner: owner || userId,
+				owner: fileOwner,
 				parent,
 				refOwnerModel,
 				permissions,
-				creator: userId,
+				creator: creatorId,
 				storageFileName: decodeURIComponent(data.storageFileName),
+				storageProviderId,
+				bucket,
 			})
 		);
 
@@ -182,35 +201,18 @@ const fileStorageService = {
 			logger.error({ message, stack: err.stack });
 		};
 
-		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
-			return canCreate(userId, parent)
-				.then(() =>
-					FileModel.findOne(props)
-						.lean()
-						.exec()
-						.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-				)
-				.then((file) => {
-					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-					return Promise.resolve(file);
-				})
-				.catch((err) => {
-					throw new Forbidden(err);
-				});
+			await canCreate(creatorId, parent);
 		}
 
-		return FileModel.findOne(props)
-			.exec()
-			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then((file) => {
-				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-				return Promise.resolve(file);
-			});
+		let file = await FileModel.findOne(props).lean().exec();
+		if (!file) file = FileModel.create(props);
+
+		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
+		prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);
+		return file;
 	},
 
 	/**
@@ -249,29 +251,20 @@ const fileStorageService = {
 	 * @param requestData, contains query parameters and userId/storageType set by middleware
 	 * @returns {Promise}
 	 */
-	remove(id, { query, payload }) {
-		const { userId, fileStorageType } = payload;
+	async remove(id, { query, payload }) {
+		const { userId } = payload;
 		const { _id = id } = query;
-		const fileInstance = FileModel.findOne({ _id });
 
-		return fileInstance
-			.lean()
-			.exec()
-			.then((file) => {
-				if (!file) {
-					throw new NotFound();
-				}
-
-				return Promise.all([
-					file,
-					canDelete(userId, _id).catch(() => {
-						throw new Forbidden();
-					}),
-				]);
-			})
-			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => fileInstance.remove().lean().exec())
-			.catch((err) => err);
+		// check file exists
+		await filesRepo.getFileById(_id);
+		// check permissions
+		try {
+			await canDelete(userId, _id);
+		} catch (err) {
+			throw new Forbidden();
+		}
+		// remove file for user
+		await filesRepo.removeFileById(_id);
 	},
 	/**
 	 * Move file from one parent to another
@@ -304,7 +297,7 @@ const fileStorageService = {
 				});
 			}
 
-			return Promise.resolve();
+			return Promise.reject();
 		};
 
 		if (fileObject) {
