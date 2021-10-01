@@ -6,14 +6,14 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import * as moment from 'moment';
 
-import { EntityId } from '@shared/domain';
+import { EntityId, News } from '@shared/domain';
 import { PaginationResponse } from '@shared/controller';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { News, NewsTargetModel } from '@src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;

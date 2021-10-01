@@ -11,10 +11,27 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-343 - run unstable e2e tests on label `run unstable tests` 
+
 ### Changed
+
+- BC-237 - Clean up global entity registration
+- BC-331 - BC-354 - rename ansible variables for OnePassword
+
+### Fixed
+
+## [26.11.2] - 2021-09-29
 
 ### Fixed
 - BC-111 wait for mongodb to spin up in deployment
+
+- BC-370 - fixed file directory creation 
+
+## [26.11.1] - 2021-09-29
+
+### Fixed
+
+- BC-365 - fixed task overview pagination
 
 ## [26.11.0] - 2021-09-22
 

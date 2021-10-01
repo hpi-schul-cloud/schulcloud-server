@@ -1,9 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { UserFacade } from '@src/modules/user';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
-import { UserFacade } from '../../user';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 @Injectable()

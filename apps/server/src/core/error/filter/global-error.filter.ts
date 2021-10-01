@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErr
 import * as _ from 'lodash';
 import { Response } from 'express';
 import { BusinessError, ApiValidationError } from '@shared/common';
-import { Logger } from '../../logger/logger.service';
+import { Logger } from '@src/core/logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
 import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';

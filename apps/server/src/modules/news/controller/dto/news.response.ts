@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { NewsTargetModel } from '../../entity';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { SchoolInfoResponse } from './school-info.response';
 import { TargetInfoResponse } from './target-info.response';
 import { UserInfoResponse } from './user-info.response';

@@ -1,9 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, Task, TaskWithStatusVo } from '@shared/domain';
 
 import { TaskRepo } from '../repo';
-import { TaskWithStatusVo } from '../entity/task-with-status.vo';
-import { Task } from '../entity';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
 export enum TaskDashBoardPermission {

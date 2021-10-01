@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe, PaginationQuery, PaginationResponse } from '@shared/controller';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { NewsUc } from '../uc/news.uc';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 
 import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from './dto';
 import { NewsMapper } from '../mapper/news.mapper';

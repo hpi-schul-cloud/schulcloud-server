@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId, DashboardEntity, DefaultGridReference, GridElement, DashboardProps } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
 import { DashboardModelEntity } from './dashboard.model.entity';
-import {
-	DashboardEntity,
-	DashboardProps,
-	DefaultGridReference,
-	GridElement,
-} from '../../entities/learnroom/dashboard.entity';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 export interface IDashboardRepo {
