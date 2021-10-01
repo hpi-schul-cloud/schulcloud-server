@@ -29,7 +29,7 @@ export class File extends BaseFile {
 	@Property()
 	bucket: string;
 
-	@ManyToOne({ fieldName: 'storageProviderId' })
+	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId' })
 	storageProvider: StorageProvider;
 
 	constructor(props: IFileProperties) {
