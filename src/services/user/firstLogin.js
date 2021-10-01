@@ -42,8 +42,6 @@ const parseDate = (dateString) => {
 	return date.toDate();
 };
 
-// TODO: Outsource and split logic
-// TODO: why i can execute firstLogin if firstLogin is false?
 const firstLogin = async (data, params, app) => {
 	const { accountId } = params.authentication.payload;
 
@@ -54,7 +52,6 @@ const firstLogin = async (data, params, app) => {
 
 	const user = await app.service('users').get(params.account.userId);
 
-	// TODO: is this not a part of the auto populated roles in users
 	const userRoles = await app.service('roles').find({
 		query: { _id: { $in: user.roles }, $select: ['name'] },
 		paginate: false,
@@ -72,7 +69,7 @@ const firstLogin = async (data, params, app) => {
 
 	// if firstLogin === false skip execution?
 
-	// check password
+	// password
 	if (!passwordsMatch(data['password-1'], data['password-2'])) {
 		throw new Error('Die neuen Passwörter stimmen nicht überein.');
 	}
@@ -83,14 +80,14 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
-	// check birthdate
+	// birthdate
 	validateExistingStudentBirthdate(user, userRoles, data);
 
 	if (data.studentBirthdate) {
 		userUpdate.birthday = parseDate(data.studentBirthdate);
 	}
 
-	// check email
+	// email
 	if (data['student-email']) {
 		if (!constants.expressions.email.test(data['student-email'])) {
 			throw new Error('Bitte eine valide E-Mail-Adresse eingeben.');
@@ -98,10 +95,10 @@ const firstLogin = async (data, params, app) => {
 		userUpdate.email = data['student-email'];
 	}
 
-	// TODO: consent also part of user now, why not patch by this request. If the third parameter really needed?
+	// TODO: consent also part of user now, why not patch by this request. Is the third parameter really needed?
 	userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 
-	// _update consents_
+	// consents
 	const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 	if (consentSkipCondition !== '') {
 		// If one of the user's roles is included in one of the groups defined as
