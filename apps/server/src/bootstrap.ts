@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { bootstrap } from './bootstrap';
 import { ManagementModule } from './modules/management/management.module';
 
