@@ -7,14 +7,18 @@ metadata:
     app: rocketchat
 data:
   update.sh: |
-    #!/bin/bash
+    #! /bin/bash
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
+    npm install
+    until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
+      do
+        sleep 1
+      done
     for file in /schulcloud-server/backup/setup/*
     do
         mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
     done
-    npm install
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
     mongo $DATABASE__URL --eval 'db.systems.insert({
       "alias" : "Zentrales IServ",
