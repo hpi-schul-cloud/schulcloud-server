@@ -95,7 +95,7 @@
 		"args": "^5.0.1",
 		"async": "^2.6.0",
 		"aws-sdk": "^2.970.0",
-		"axios": "^0.21.0",
+		"axios": "^0.22.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
