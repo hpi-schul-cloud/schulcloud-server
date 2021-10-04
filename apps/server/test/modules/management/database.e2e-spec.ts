@@ -23,17 +23,20 @@ describe('Database Management Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	describe('When having the management module enabled', () => {
-		it('should seed the whole database from filesystem when calling without collection', async () => {
+	describe('When post to database management route', () => {
+		it('should seed all collections', async () => {
 			await request(app.getHttpServer()).post(`/management/database/seed`).expect(201);
 		});
-		it('should seed a collection from filesystem when calling with collection', async () => {
+		it('should seed a collection', async () => {
 			await request(app.getHttpServer()).post(`/management/database/seed/${sampleCollectionName}`).expect(201);
 		});
-		it('should export the whole database to filesystem when calling without collection', async () => {
+		it('should fail for unknown collection', async () => {
+			await request(app.getHttpServer()).post(`/management/database/seed/unknown_collection_name`).expect(500);
+		});
+		it('should export the whole database to filesystem', async () => {
 			await request(app.getHttpServer()).post(`/management/database/export`).expect(201);
 		});
-		it('should export a collection to filesystem when calling with collection', async () => {
+		it('should export a collection to filesystem', async () => {
 			await request(app.getHttpServer()).post(`/management/database/export/${sampleCollectionName}`).expect(201);
 		});
 	});

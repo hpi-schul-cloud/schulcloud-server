@@ -1,23 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplicationContext } from '@nestjs/common';
 
-import { AbstractBootstrapConsole, BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '@src/console/console.module';
 import { ConsoleWriter } from '@src/console/console-writer/console-writer.service';
-
-export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {
-	create(): Promise<TestingModule> {
-		return Test.createTestingModule({
-			imports: [this.options.module],
-		}).compile();
-	}
-}
-
-export const boot = async (bootstrap: BootstrapConsole, args: string[]): Promise<void> => {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const commandResponse = await bootstrap.boot([process.argv0, 'console', ...args]);
-	return Promise.resolve();
-};
+import { execute, TestBootstrapConsole } from './bootstrap.console';
 
 describe('ServerConsole (e2e)', () => {
 	let app: INestApplicationContext;
@@ -34,7 +20,6 @@ describe('ServerConsole (e2e)', () => {
 		await app.init();
 		consoleService = app.get<ConsoleService>(ConsoleService);
 		consoleWriter = app.get<ConsoleWriter>(ConsoleWriter);
-
 		logMock = jest.spyOn(consoleWriter, 'info').mockImplementation();
 	});
 
@@ -45,12 +30,12 @@ describe('ServerConsole (e2e)', () => {
 	});
 
 	it('should poduce default output when executing "console server test"', async () => {
-		await boot(bootstrap, ['server', 'test']);
+		await execute(bootstrap, ['server', 'test']);
 		expect(logMock).toHaveBeenCalledWith('Schulcloud Server API');
 	});
 	it('should return input string param when executing "console server out <whatever>"', async () => {
 		const sampleInputString = 'sample-input';
-		await boot(bootstrap, ['server', 'out', sampleInputString]);
+		await execute(bootstrap, ['server', 'out', sampleInputString]);
 		expect(logMock).toHaveBeenCalledWith(`input was: ${sampleInputString}`);
 	});
 });
