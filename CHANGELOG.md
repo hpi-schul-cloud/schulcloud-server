@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
+- BC-269 - check in firstLogin that students can only pass with existing birthdate 
 
 ### Fixed
 
@@ -45,6 +46,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-213 - rewrite file deletion with deletion marker
 - BC-68 - e2e run dependent on build image job
 - BC-179 - refactor task and entity and relations
+- BC-315 - stabilized resolve user roles workflow by use roles from requested user and not from jwt
 
 ### Added
 
