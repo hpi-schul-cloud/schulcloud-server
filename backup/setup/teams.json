@@ -161,188 +161,48 @@
 			"userId": {
 				"$oid": "5fa2c71bb229544f2c6966d9"
 			},
-			{
-				"$oid": "5f2987e020834114b8efd6f6"
-			}
-		],
-		"description": "",
-		"classIds": [],
-		"color": "#d32f2f",
-		"features": [
-			"isTeam"
-		],
-		"name": "A-Team",
-		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f8"
-		},
-		"userIds": [
-			{
-				"userId": {
-					"$oid": "0000d231816abba584714c9e"
-				},
-				"role": {
-					"$oid": "5bb5c62bfb457b1c3c0c7e14"
-				},
-				"schoolId": {
-					"$oid": "5f2987e020834114b8efd6f8"
-				},
-				"updatedAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				},
-				"createdAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				}
+			"role": {
+				"$oid": "5bb5c62bfb457b1c3c0c7e14"
 			},
-			{
-				"userId": {
-					"$oid": "0000d224816abba584714c9c"
-				},
-				"role": {
-					"$oid": "5bb5c391fb457b1c3c0c7e10"
-				},
-				"schoolId": {
-					"$oid": "5f2987e020834114b8efd6f8"
-				},
-				"updatedAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				},
-				"createdAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				}
-			},
-			{
-				"userId": {
-					"$oid": "58b40278dac20e0645353e3a"
-				},
-				"role": {
-					"$oid": "5bb5c190fb457b1c3c0c7e0f"
-				},
-				"schoolId": {
-					"$oid": "5f2987e020834114b8efd6f8"
-				},
-				"updatedAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				},
-				"createdAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				}
-			},
-			{
-				"userId": {
-					"$oid": "59ad4c412b442b7f81810285"
-				},
-				"role": {
-					"$oid": "5bb5c545fb457b1c3c0c7e13"
-				},
-				"schoolId": {
-					"$oid": "5f2987e020834114b8efd6f6"
-				},
-				"updatedAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				},
-				"createdAt": {
-					"$date": "2020-01-15T12:20:53.682Z"
-				}
-			}
-		],
-		"filePermission": [
-			{
-				"write": true,
-				"read": true,
-				"create": true,
-				"delete": true,
-				"refPermModel": "role",
-				"refId": {
-					"$oid": "5bb5c190fb457b1c3c0c7e0f"
-				}
-			},
-			{
-				"write": true,
-				"read": true,
-				"create": true,
-				"delete": true,
-				"refPermModel": "role",
-				"refId": {
-					"$oid": "5bb5c391fb457b1c3c0c7e10"
-				}
-			}
-		],
-		"invitedUserIds": [],
-		"createdAt": {
-			"$date": "2020-01-14T13:30:29.108Z"
-		},
-		"updatedAt": {
-			"$date": "2020-01-15T12:20:53.682Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "5fa3e16aa9c31a26f4d1dc43"
-		},
-		"schoolIds": [
-			{
+			"schoolId": {
 				"$oid": "5fa2c5ccb229544f2c69666c"
-			}
-		],
-		"description": "Have fun",
-		"classIds": [],
-		"color": "#d32f2f",
-		"features": [
-			"isTeam"
-		],
-		"name": "Musik",
-		"schoolId": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"userIds": [
-			{
-				"userId": {
-					"$oid": "5fa2c71bb229544f2c6966d9"
-				},
-				"role": {
-					"$oid": "5bb5c62bfb457b1c3c0c7e14"
-				},
-				"schoolId": {
-					"$oid": "5fa2c5ccb229544f2c69666c"
-				},
-				"createdAt": {
-					"$date": "2020-11-05T11:26:34.133Z"
-				},
-				"updatedAt": {
-					"$date": "2020-11-05T11:26:34.133Z"
-				}
-			}
-		],
-		"filePermission": [
-			{
-				"write": true,
-				"read": true,
-				"create": true,
-				"delete": true,
-				"refPermModel": "role",
-				"refId": {
-					"$oid": "5bb5c190fb457b1c3c0c7e0f"
-				}
 			},
-			{
-				"write": true,
-				"read": true,
-				"create": true,
-				"delete": true,
-				"refPermModel": "role",
-				"refId": {
-					"$oid": "5bb5c391fb457b1c3c0c7e10"
-				}
+			"createdAt": {
+				"$date": "2020-11-05T11:26:34.133Z"
+			},
+			"updatedAt": {
+				"$date": "2020-11-05T11:26:34.133Z"
 			}
-		],
-		"invitedUserIds": [],
-		"createdAt": {
-			"$date": "2020-11-05T11:26:34.133Z"
+		}
+	],
+	"filePermission": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refPermModel": "role",
+			"refId": {
+				"$oid": "5bb5c190fb457b1c3c0c7e0f"
+			}
 		},
-		"updatedAt": {
-			"$date": "2020-11-05T11:26:34.133Z"
-		},
-		"__v": 0
-	}
-]
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refPermModel": "role",
+			"refId": {
+				"$oid": "5bb5c391fb457b1c3c0c7e10"
+			}
+		}
+	],
+	"invitedUserIds": [],
+	"createdAt": {
+		"$date": "2020-11-05T11:26:34.133Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T11:26:34.133Z"
+	},
+	"__v": 0
+}]

@@ -1,58 +1,29 @@
-[
-	{
-		"_id": {
-			"$oid": "000069d5c43227155b73abab"
-		},
-		"userId": {
-			"$oid": "0000d224816abba584714c9c"
-		},
-		"userConsent": {
-			"form": "digital",
-			"privacyConsent": true,
-			"termsOfUseConsent": true,
-			"dateOfPrivacyConsent": {
-				"$date": "2017-01-01T00:06:37.148Z"
-			},
-			"dateOfTermsOfUseConsent": {
-				"$date": "2017-01-01T00:06:37.148Z"
-			}
-		},
-		"parentConsents": [
-			{
-				"parentId": {
-					"$oid": "0000d213816abba584714c0b"
-				},
-				"form": "digital",
-				"privacyConsent": true,
-				"termsOfUseConsent": true,
-				"dateOfPrivacyConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				},
-				"dateOfTermsOfUseConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				}
-			}
-		]
-	},
-	{
-		"_id": {
-			"$oid": "000069d5c43227155b73abac"
-		},
-		"userId": {
-			"$oid": "58b40278dac20e0645353e3a"
-		},
-		"parentConsents": [
-			{
-				"form": "analog",
-				"privacyConsent": true,
-				"termsOfUseConsent": true,
-				"dateOfPrivacyConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				},
-				"dateOfTermsOfUseConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				}
-			}
-		]
-	}
-]
+[{
+    "_id" : { "$oid" : "000069d5c43227155b73abab"},
+    "userId": { "$oid": "0000d224816abba584714c9c" },
+    "userConsent": {
+        "form": "digital",
+        "privacyConsent": true,
+        "termsOfUseConsent": true,
+        "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+    },
+    "parentConsents": [ {
+        "parentId": { "$oid" : "0000d213816abba584714c0b"},
+        "form": "digital",
+        "privacyConsent": true,
+        "termsOfUseConsent": true,
+        "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+    }]
+},{
+    "_id" : { "$oid" : "000069d5c43227155b73abac"},
+    "userId": { "$oid": "58b40278dac20e0645353e3a" },
+    "parentConsents": [ {
+        "form": "analog",
+        "privacyConsent": true,
+        "termsOfUseConsent": true,
+        "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+    }]
+}]
