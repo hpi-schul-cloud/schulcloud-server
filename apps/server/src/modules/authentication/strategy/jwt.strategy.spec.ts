@@ -26,7 +26,7 @@ describe('jwt strategy', () => {
 				{
 					provide: JwtValidationAdapter,
 					useValue: {
-						isWhitelisted(accountId: string, jti: string) {
+						isWhitelisted() {
 							return Promise.resolve();
 						},
 					},
@@ -72,7 +72,7 @@ describe('jwt strategy', () => {
 			const resolveUserSpy = jest.spyOn(facade, 'resolveUser');
 			const payload = { accountId, jti, userId } as JwtPayload;
 			await strategy.validate(payload);
-			expect(resolveUserSpy).toHaveBeenCalledWith(payload);
+			expect(resolveUserSpy).toHaveBeenCalledWith(userId);
 		});
 	});
 });
