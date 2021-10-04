@@ -1,13 +1,13 @@
-import { Injectable, Scope, Logger as NestLogger } from '@nestjs/common';
+import { Injectable, Scope, Logger as ConsoleLogger } from '@nestjs/common';
 import { ILogger } from './logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
  * Default logger for server application.
- * Must implement ILogger but must not extend NestLogger (this can be changed).
+ * Must implement ILogger but must not extend ConsoleLogger (this can be changed).
  * Transient injection: Wherever injected, a separate instance will be created, that can be provided with a custom context.
  */
-export class Logger extends NestLogger implements ILogger {
+export class Logger extends ConsoleLogger implements ILogger {
 	/**
 	 * This Logger Service can be initialized with a context, that will be added to every log.
 	 * It implements @ILogger which provides the logger methods.

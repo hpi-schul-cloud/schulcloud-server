@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, News, SortOrder } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
-import { Logger } from '@src/core/logger/logger.service';
+import { Logger, ILogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { NewsTargetModel, ICreateNews, INewsScope, IUpdateNews } from '@shared/domain/types/news.types';
 import { NewsRepo } from '../repo/news.repo';
@@ -11,8 +11,10 @@ type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 
 @Injectable()
 export class NewsUc {
-	constructor(private newsRepo: NewsRepo, private authorizationService: AuthorizationService, private logger: Logger) {
-		this.logger.setContext(NewsUc.name);
+	private logger: ILogger;
+
+	constructor(private newsRepo: NewsRepo, private authorizationService: AuthorizationService) {
+		this.logger = new Logger(NewsUc.name);
 	}
 
 	/**
