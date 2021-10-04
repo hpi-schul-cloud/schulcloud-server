@@ -22,7 +22,6 @@ export class TaskRepo {
 
 		const scope = new TaskScope();
 		scope.byParentIds(parentIds);
-		scope.byPublic();
 		scope.byLessonsOrNone(visibleLessons.map((o) => o.id));
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
