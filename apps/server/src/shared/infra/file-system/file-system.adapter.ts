@@ -10,13 +10,11 @@ export class FileSystemAdapter {
 	private _EOL: string;
 
 	constructor() {
-		// TODO configuration
 		this.encoding = 'utf-8';
-		this._EOL = os.EOL;
 	}
 
 	get EOL(): string {
-		return this._EOL;
+		return os.EOL;
 	}
 
 	/**

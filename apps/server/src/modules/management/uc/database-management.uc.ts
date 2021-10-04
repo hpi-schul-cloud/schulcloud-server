@@ -18,6 +18,12 @@ export class DatabaseManagementUc {
 	 */
 	private basePath = '../../../../../../backup/setup';
 
+	constructor(
+		private fileSystemAdapter: FileSystemAdapter,
+		private databaseManagementService: DatabaseManagementService,
+		private bsonConverter: BsonConverter
+	) {}
+
 	/**
 	 * absolute path reference for seed data folder.
 	 */
@@ -25,12 +31,6 @@ export class DatabaseManagementUc {
 		const folderPath = this.fileSystemAdapter.joinPath(__dirname, this.basePath);
 		return folderPath;
 	}
-
-	constructor(
-		private fileSystemAdapter: FileSystemAdapter,
-		private databaseManagementService: DatabaseManagementService,
-		private bsonConverter: BsonConverter
-	) {}
 
 	/**
 	 * Loads all collection names from database and adds related file paths.

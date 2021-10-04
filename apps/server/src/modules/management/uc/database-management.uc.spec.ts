@@ -1,94 +1,58 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain';
 import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { ManagementModule } from '@src/modules/management/management.module';
+import { ObjectId } from 'mongodb';
 import { DatabaseManagementUc } from './database-management.uc';
+import { BsonConverter } from '../converter/bson.converter';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;
-	let service: DatabaseManagementUc;
-	const allCollectionsWithDocumentCounts = [
-		'_teaminviteduserschemas:0',
-		'_teamuserschemas:0',
-		'accounts:63',
-		'activations:0',
-		'analytics:1',
-		'base64files:0',
-		'classes:3',
-		'consents_history:1',
-		'consents:2',
-		'consentversions:3',
-		'coursegroups:1',
-		'courses:12',
-		'datasourceruns:99',
-		'datasources:28',
-		'directories:1',
-		'federalstates:17',
-		'files:0',
-		'gradelevels:13',
-		'grades:0',
-		'helpdocuments:5',
-		'homeworks:50',
-		'keys:1',
-		'lessons:15',
-		'links:28',
-		'ltitools:2',
-		'materials:2',
-		'migrations:98',
-		'news:0',
-		'newshistories:1',
-		'passwordrecoveries:0',
-		'passwordRecovery:1',
-		'problems:1',
-		'pseudonyms:1',
-		'registrationpins:54',
-		'rocketchatchannels:1',
-		'rocketchatusers:1',
-		'roles:19',
-		'schoolgroups:94',
-		'schools:9',
-		'storageproviders:0',
-		'submissions:26',
-		'systems:2',
-		'teams:3',
-		'trashbins:0',
-		'users_history:292',
-		'users:62',
-		'videoconferences:0',
-		'webuntismetadatas:1',
-		'years:9',
-	];
-
+	let uc: DatabaseManagementUc;
+	let fileSystemAdapter: FileSystemAdapter;
+	let dbService: DatabaseManagementService;
+	let bsonConverter: BsonConverter;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				ManagementModule,
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						// sample entity used for start and test the module
-						// TODO loop through all entities when have autodiscover enabled
-						User,
-					],
-				}),
-			],
 			providers: [
+				DatabaseManagementUc,
+				BsonConverter,
 				{
 					provide: FileSystemAdapter,
-					useValue: {},
+					useValue: {
+						joinPath(_basePath: string, ...paths: string[]) {
+							// skip variable basePath, take filename only without / or \
+							const adapter = new FileSystemAdapter();
+							return adapter.joinPath(...paths);
+						},
+						writeFileSync(_path: string, _text: string) {},
+						get EOL() {
+							return '<EOL>';
+						},
+					},
 				},
 				{
 					provide: DatabaseManagementService,
 					useValue: {
 						getCollectionNames() {
-							return ['collectionName'];
+							return ['collectionName1', 'collectionName2'];
+						},
+						findDocumentsOfCollection(collectionName) {
+							if (collectionName === 'collectionName1') {
+								return [{ first: 'foo1' }, { first: 'bar1' }];
+							}
+							if (collectionName === 'collectionName2') {
+								return [{ first: 'foo2' }];
+							}
+							return [];
 						},
 					},
 				},
 			],
 		}).compile();
-		service = module.get<DatabaseManagementUc>(DatabaseManagementUc);
+		uc = module.get<DatabaseManagementUc>(DatabaseManagementUc);
+		fileSystemAdapter = module.get<FileSystemAdapter>(FileSystemAdapter);
+		dbService = module.get<DatabaseManagementService>(DatabaseManagementService);
+		bsonConverter = module.get<BsonConverter>(BsonConverter);
 	});
 
 	afterAll(async () => {
@@ -96,49 +60,114 @@ describe('DatabaseManagementService', () => {
 	});
 
 	it('should be defined', () => {
-		expect(service).toBeDefined();
+		expect(uc).toBeDefined();
 	});
 
 	describe('When export some collections to file system', () => {
-		beforeAll(async () => {
-			await service.seedDatabaseCollectionsFromFileSystem();
+		const collection1Export = [
+			'collectionName1.json',
+			`[
+	{
+		"first": "foo1"
+	},
+	{
+		"first": "bar1"
+	}
+]<EOL>`,
+		];
+		const collection2Export = [
+			'collectionName2.json',
+			`[
+	{
+		"first": "foo2"
+	}
+]<EOL>`,
+		];
+		let fileSystemAdapterMock: jest.SpyInstance<void, [filePath: string, text: string]>;
+
+		beforeEach(() => {
+			fileSystemAdapterMock = jest.spyOn(fileSystemAdapter, 'writeFileSync');
 		});
-		it('should persist all database collections', async () => {
-			const collections = await service.exportCollectionsToFileSystem();
-			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
+		afterEach(() => {
+			fileSystemAdapterMock.mockReset();
 		});
-		it('should persist all database collections when define empty filter', async () => {
-			const collections = await service.exportCollectionsToFileSystem([]);
-			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
+
+		it('should persist all database collections for undefined filter', async () => {
+			const collections = await uc.exportCollectionsToFileSystem();
+			expect(collections).toEqual(['collectionName1:2', 'collectionName2:1']);
+			expect(fileSystemAdapterMock).toBeCalledTimes(2);
+			expect(fileSystemAdapterMock).toBeCalledWith(...collection1Export);
+			expect(fileSystemAdapterMock).toBeCalledWith(...collection2Export);
 		});
-		it('should persist a database collection when it exists', async () => {
-			const collections = await service.exportCollectionsToFileSystem(['roles']);
-			expect(collections).toEqual(allCollectionsWithDocumentCounts.filter((name) => name.startsWith('roles')));
+		it('should persist all database collections for empty filter', async () => {
+			const collections = await uc.exportCollectionsToFileSystem([]);
+			expect(collections).toEqual(['collectionName1:2', 'collectionName2:1']);
+			expect(fileSystemAdapterMock).toBeCalledTimes(2);
+			expect(fileSystemAdapterMock).toBeCalledWith(...collection1Export);
+			expect(fileSystemAdapterMock).toBeCalledWith(...collection2Export);
+		});
+		it('should persist a given database collection when it exists', async () => {
+			const collections = await uc.exportCollectionsToFileSystem(['collectionName1']);
+			expect(collections).toEqual(['collectionName1:2']);
+			expect(fileSystemAdapterMock).toBeCalledTimes(1);
+			expect(fileSystemAdapterMock).toBeCalledWith(...collection1Export);
 		});
 		it('should fail when persist a database collection which does not exist', async () => {
 			await expect(async () => {
-				await service.exportCollectionsToFileSystem(['non_existing_collection']);
+				await uc.exportCollectionsToFileSystem(['non_existing_collection']);
 			}).rejects.toThrow();
 		});
-	});
+		it('should return names and document counts', async () => {
+			const collections1 = await uc.exportCollectionsToFileSystem(['collectionName1']);
+			expect(collections1).toEqual(['collectionName1:2']);
+			const collections2 = await uc.exportCollectionsToFileSystem(['collectionName2']);
+			expect(collections2).toEqual(['collectionName2:1']);
+		});
+		describe('When writing text fo file', () => {
+			it('should sort documents by age (id first, then createdAt)', async () => {
+				const smallDate = new Date();
+				const largerDate = new Date();
+				const largerId = new ObjectId('110000000000000000000000');
+				largerDate.setDate(smallDate.getDate() + 1);
+				const expectedFirst = {
+					_id: new ObjectId('100000000000000000000000'),
+					createdAt: largerDate,
+				};
+				const expectedSecond = {
+					_id: largerId,
+					createdAt: smallDate,
+				};
+				const expectedLast = {
+					_id: largerId,
+					createdAt: largerDate,
+				};
+				const dbMock = jest
+					.spyOn(dbService, 'findDocumentsOfCollection')
+					.mockReturnValue(Promise.resolve([expectedSecond, expectedLast, expectedFirst]));
 
-	describe('When import some collections from filesystem', () => {
-		it('should seed all collections from filesystem', async () => {
-			const collections = await service.seedDatabaseCollectionsFromFileSystem();
-			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
-		});
-		it('should seed all collections from filesystem for empty filter', async () => {
-			const collections = await service.seedDatabaseCollectionsFromFileSystem([]);
-			expect(collections).toEqual(expect.arrayContaining(allCollectionsWithDocumentCounts));
-		});
-		it('should seed a database collection when it exists', async () => {
-			const collections = await service.seedDatabaseCollectionsFromFileSystem(['roles']);
-			expect(collections).toEqual(allCollectionsWithDocumentCounts.filter((name) => name.startsWith('roles')));
-		});
-		it('should fail when seed a database collection which does not exist', async () => {
-			await expect(async () => {
-				await service.seedDatabaseCollectionsFromFileSystem(['non_existing_collection']);
-			}).rejects.toThrow();
+				await uc.exportCollectionsToFileSystem(['collectionName1']);
+				expect(fileSystemAdapterMock).toBeCalledTimes(1);
+				const text = fileSystemAdapterMock.mock.calls[0][1];
+				const expectedResult = `${JSON.stringify(
+					bsonConverter.serialize([expectedFirst, expectedSecond, expectedLast]),
+					undefined,
+					'\t'
+				)}<EOL>`;
+				expect(text).toEqual(expectedResult);
+				dbMock.mockReset();
+			});
+			it('should add system EOL to end of text', async () => {
+				await uc.exportCollectionsToFileSystem(['collectionName1']);
+				expect(fileSystemAdapterMock).toBeCalledTimes(1);
+				const arg = fileSystemAdapterMock.mock.calls[0][1];
+				expect(arg).toEqual(expect.stringMatching(/<EOL>$/));
+			});
+			it('should use <collectionName>.json as filename', async () => {
+				await uc.exportCollectionsToFileSystem(['collectionName1']);
+				expect(fileSystemAdapterMock).toBeCalledTimes(1);
+				const arg = fileSystemAdapterMock.mock.calls[0][0];
+				expect(arg).toEqual('collectionName1.json');
+			});
 		});
 	});
 });
