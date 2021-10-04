@@ -34,10 +34,10 @@ describe('RoleUC', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
-		expect(typeof service.resolvePermissionsByIdList).toEqual('function');
+		expect(typeof service.resolvePermissionsByRoles).toEqual('function');
 	});
 
-	describe('resolvePermissionsByIdList', () => {
+	describe('resolvePermissionsByRoles', () => {
 		it('should return valid solved and mapped typ', async () => {
 			const nameA = `a${Date.now()}`;
 			const roleA = new Role({ name: nameA, permissions: ['A', 'C'] });
@@ -46,7 +46,7 @@ describe('RoleUC', () => {
 				return Promise.resolve(roleA);
 			});
 
-			const result = await service.resolvePermissionsByIdList([roleA.id]);
+			const result = await service.resolvePermissionsByRoles([roleA]);
 			expect(Object.keys(result).sort()).toEqual(['permissions', 'roles'].sort());
 
 			repoSpy.mockRestore();
