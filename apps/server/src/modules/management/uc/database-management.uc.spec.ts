@@ -11,6 +11,7 @@ describe('DatabaseManagementService', () => {
 	let fileSystemAdapter: FileSystemAdapter;
 	let dbService: DatabaseManagementService;
 	let bsonConverter: BsonConverter;
+	const collectionNames = ['collectionName1', 'collectionName2'];
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -25,6 +26,19 @@ describe('DatabaseManagementService', () => {
 							return adapter.joinPath(...paths);
 						},
 						writeFileSync(_path: string, _text: string) {},
+						readDirSync(_path: string) {
+							// expect json files in folder
+							return collectionNames.map((name) => `${name}.json`);
+						},
+						readFileSync(fileName: string) {
+							if (fileName === 'collectionName1.json') {
+								return '[{"foo":"bar1"},{"foo":"bar2"}]';
+							}
+							if (fileName === 'collectionName2.json') {
+								return '[{"foo":"bar1"},{"foo":"bar2"}]';
+							}
+							return '[]';
+						},
 						get EOL() {
 							return '<EOL>';
 						},
@@ -34,7 +48,8 @@ describe('DatabaseManagementService', () => {
 					provide: DatabaseManagementService,
 					useValue: {
 						getCollectionNames() {
-							return ['collectionName1', 'collectionName2'];
+							// expect some names
+							return collectionNames;
 						},
 						findDocumentsOfCollection(collectionName) {
 							if (collectionName === 'collectionName1') {
@@ -44,6 +59,14 @@ describe('DatabaseManagementService', () => {
 								return [{ first: 'foo2' }];
 							}
 							return [];
+						},
+						collectionExists() {
+							return true;
+						},
+						clearCollection(_collectionName: string) {},
+						createCollection(_collectionName: string) {},
+						importCollection(_collectionName: string, jsonDocuments: unknown[]) {
+							return jsonDocuments.length;
 						},
 					},
 				},
@@ -123,8 +146,8 @@ describe('DatabaseManagementService', () => {
 			const collections2 = await uc.exportCollectionsToFileSystem(['collectionName2']);
 			expect(collections2).toEqual(['collectionName2:1']);
 		});
-		describe('When writing text fo file', () => {
-			it('should sort documents by age (id first, then createdAt)', async () => {
+		describe('When writing documents as text fo file', () => {
+			it('should sort documents by age (id first, then createdAt) and convert to bson', async () => {
 				const smallDate = new Date();
 				const largerDate = new Date();
 				const largerId = new ObjectId('110000000000000000000000');
@@ -167,6 +190,81 @@ describe('DatabaseManagementService', () => {
 				expect(fileSystemAdapterMock).toBeCalledTimes(1);
 				const arg = fileSystemAdapterMock.mock.calls[0][0];
 				expect(arg).toEqual('collectionName1.json');
+			});
+		});
+	});
+
+	describe('When import some collections from filesystem', () => {
+		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
+			const collections = await uc.seedDatabaseCollectionsFromFileSystem();
+			expect(collections).toEqual(['collectionName1:2', 'collectionName2:2']);
+		});
+		it('should seed all collections from filesystem for empty filter and return collectionnames with document counts', async () => {
+			const collections = await uc.seedDatabaseCollectionsFromFileSystem([]);
+			expect(collections).toEqual(['collectionName1:2', 'collectionName2:2']);
+		});
+		it('should seed a given database collection when it exists and return collectionnames with document counts', async () => {
+			const collections = await uc.seedDatabaseCollectionsFromFileSystem(['collectionName1']);
+			expect(collections).toEqual(['collectionName1:2']);
+		});
+		it('should fail when seed a database collection which does not exist', async () => {
+			await expect(async () => {
+				await uc.seedDatabaseCollectionsFromFileSystem(['non_existing_collection']);
+			}).rejects.toThrow();
+		});
+
+		describe('When import a collection', () => {
+			const collectionName = 'collectionName1';
+			let collectionExistsMock: jest.SpyInstance;
+			let clearCollectionMock: jest.SpyInstance;
+			let createCollectionMock: jest.SpyInstance;
+			beforeEach(() => {
+				collectionExistsMock = jest.spyOn(dbService, 'collectionExists');
+				clearCollectionMock = jest.spyOn(dbService, 'clearCollection');
+				createCollectionMock = jest.spyOn(dbService, 'createCollection');
+			});
+			afterEach(() => {
+				collectionExistsMock.mockReset();
+				clearCollectionMock.mockReset();
+				createCollectionMock.mockReset();
+			});
+			it('should clear existing collection if documents already exists', async () => {
+				collectionExistsMock.mockReturnValue(Promise.resolve(true));
+				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
+				expect(collectionExistsMock).toBeCalledTimes(1);
+				expect(clearCollectionMock).toBeCalledWith(collectionName);
+				expect(createCollectionMock).not.toBeCalled();
+			});
+			it('should create new collection if collection does not exist', async () => {
+				collectionExistsMock.mockReturnValue(Promise.resolve(false));
+				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
+				expect(collectionExistsMock).toBeCalledTimes(1);
+				expect(createCollectionMock).toBeCalledWith(collectionName);
+				expect(clearCollectionMock).not.toBeCalled();
+			});
+			it('should convert bson from file to json before db import', async () => {
+				const smallDate = new Date('2021-10-04T11:04:45.593Z');
+				const jsonDoc = {
+					_id: new ObjectId('100000000000000000000000'),
+					createdAt: smallDate,
+				};
+				const bsonDocsAsText = `${JSON.stringify(bsonConverter.serialize([jsonDoc]))}`;
+				expect(bsonDocsAsText).toEqual(
+					'[{"_id":{"$oid":"100000000000000000000000"},"createdAt":{"$date":"2021-10-04T11:04:45.593Z"}}]'
+				);
+				const readFileMock = jest.spyOn(fileSystemAdapter, 'readFileSync').mockReturnValue(bsonDocsAsText);
+				const importCollectionMock = jest.spyOn(dbService, 'importCollection');
+				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
+				expect(readFileMock).toBeCalledWith(`${collectionName}.json`);
+				expect(readFileMock).toBeCalledTimes(1);
+				const args = importCollectionMock.mock.calls[0];
+				expect(importCollectionMock).toBeCalledTimes(1);
+				expect(args[0]).toEqual(collectionName);
+				expect(JSON.stringify(args[1])).toEqual(
+					'[{"_id":"100000000000000000000000","createdAt":"2021-10-04T11:04:45.593Z"}]'
+				);
+				importCollectionMock.mockReset();
+				readFileMock.mockReset();
 			});
 		});
 	});
