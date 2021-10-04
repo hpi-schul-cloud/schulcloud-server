@@ -2,13 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { ICurrentUser } from '@shared/domain';
+
 import { ResolvedUser } from '@src/modules/user/controller/dto';
 import { UserFacade } from '@src/modules/user';
+
 import { jwtConstants } from '../constants';
+import { JwtPayload } from '../interface/jwt-payload';
+
 import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
-import { JwtPayload } from '../interface/jwt-payload';
 
 describe('jwt strategy', () => {
 	let adapter: JwtValidationAdapter;
@@ -24,7 +26,7 @@ describe('jwt strategy', () => {
 				{
 					provide: JwtValidationAdapter,
 					useValue: {
-						isWhitelisted(accountId: string, jti: string) {
+						isWhitelisted() {
 							return Promise.resolve();
 						},
 					},
@@ -32,7 +34,7 @@ describe('jwt strategy', () => {
 				{
 					provide: UserFacade,
 					useValue: {
-						resolveUser(payload: ICurrentUser) {
+						resolveUser() {
 							return new ResolvedUser();
 						},
 					},
@@ -65,11 +67,12 @@ describe('jwt strategy', () => {
 		});
 		it('should load the defined user', async () => {
 			const accountId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
 			const resolveUserSpy = jest.spyOn(facade, 'resolveUser');
-			const payload = { accountId, jti } as JwtPayload;
+			const payload = { accountId, jti, userId } as JwtPayload;
 			await strategy.validate(payload);
-			expect(resolveUserSpy).toHaveBeenCalledWith(payload);
+			expect(resolveUserSpy).toHaveBeenCalledWith(userId);
 		});
 	});
 });
