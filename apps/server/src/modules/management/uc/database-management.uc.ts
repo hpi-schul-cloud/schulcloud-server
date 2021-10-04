@@ -106,6 +106,7 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Imports all or filtered <collections> from filesystem as bson to database.
+	 * The behaviour should match $ mongoimport
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
@@ -151,6 +152,7 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Exports all or defined <collections> from database as bson to filesystem.
+	 * The behaviour should match $ mongoexport
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
