@@ -1,0 +1,97 @@
+[
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc06"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.425Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.425Z"
+		},
+		"xPos": 5,
+		"yPos": 1,
+		"reference": {
+			"$oid": "61571142aadaf65c372dfc05"
+		},
+		"dashboard": {
+			"$oid": "0000d213816abba584714c0a"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc08"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"xPos": 6,
+		"yPos": 2,
+		"reference": {
+			"$oid": "61571142aadaf65c372dfc07"
+		},
+		"dashboard": {
+			"$oid": "0000d213816abba584714c0a"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc0a"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"xPos": 6,
+		"yPos": 3,
+		"reference": {
+			"$oid": "61571142aadaf65c372dfc09"
+		},
+		"dashboard": {
+			"$oid": "0000d213816abba584714c0a"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc0c"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"xPos": 5,
+		"yPos": 4,
+		"reference": {
+			"$oid": "61571142aadaf65c372dfc0b"
+		},
+		"dashboard": {
+			"$oid": "0000d213816abba584714c0a"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc0e"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"xPos": 5,
+		"yPos": 5,
+		"reference": {
+			"$oid": "61571142aadaf65c372dfc0d"
+		},
+		"dashboard": {
+			"$oid": "0000d213816abba584714c0a"
+		}
+	}
+]

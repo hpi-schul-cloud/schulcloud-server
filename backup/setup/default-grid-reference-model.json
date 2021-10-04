@@ -1,0 +1,67 @@
+[
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc05"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.426Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.426Z"
+		},
+		"title": "exampletitle",
+		"color": "#f23f76"
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc07"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"title": "exampletitle",
+		"color": "#f23f76"
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc09"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.430Z"
+		},
+		"title": "exampletitle",
+		"color": "#f23f76"
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc0b"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"title": "exampletitle",
+		"color": "#f23f76"
+	},
+	{
+		"_id": {
+			"$oid": "61571142aadaf65c372dfc0d"
+		},
+		"createdAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"updatedAt": {
+			"$date": "2021-10-01T13:46:42.431Z"
+		},
+		"title": "exampletitle",
+		"color": "#f23f76"
+	}
+]

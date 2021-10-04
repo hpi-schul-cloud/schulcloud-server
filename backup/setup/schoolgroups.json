@@ -1,0 +1,1224 @@
+[
+	{
+		"_id": {
+			"$oid": "5ff429aba1e2926ef796a83c"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-05T08:56:11.253Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-05T08:56:11.253Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5ff42a3dcd27066fa2ee3046"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-05T08:58:37.492Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-05T08:58:37.492Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5ff42f262c539a713865c7f8"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-05T09:19:34.748Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-05T09:19:34.748Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5ff44351e9773579496887b5"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-05T10:45:37.259Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-05T10:45:37.259Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5ff469ea88b27f19074e5d9e"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-05T13:30:18.614Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-05T13:30:18.614Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5ff46b6d8c92711c4e725439"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-05T13:36:45.572Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-05T13:36:45.572Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "600564dc773609156e4c00c1"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-18T10:37:16.406Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-18T10:37:16.406Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6006b76a82daac5864a7c1c1"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-19T10:41:46.189Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-19T10:41:46.189Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6006cf9209be5760243a58d2"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-19T12:24:50.918Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-19T12:24:50.918Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60114c7fa07550d5ae57b58e"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-01-27T11:20:31.711Z"
+		},
+		"updatedAt": {
+			"$date": "2021-01-27T11:20:31.711Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "601816bdb25100c6d5d3803b"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-02-01T14:57:01.919Z"
+		},
+		"updatedAt": {
+			"$date": "2021-02-01T14:57:01.919Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60181a803f374dca296d6e6d"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-02-01T15:13:04.365Z"
+		},
+		"updatedAt": {
+			"$date": "2021-02-01T15:13:04.365Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60181cab58554fcb95e4dfd8"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-02-01T15:22:19.250Z"
+		},
+		"updatedAt": {
+			"$date": "2021-02-01T15:22:19.250Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6018290f0a58bdd8fddd41f6"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-02-01T16:15:11.838Z"
+		},
+		"updatedAt": {
+			"$date": "2021-02-01T16:15:11.838Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6053299226c6931780440c23"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T10:21:06.844Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T10:21:06.844Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60532b2b519b4018929b1a4a"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T10:27:55.770Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T10:27:55.770Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6053338aaa97d81bbb5bf3e4"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T11:03:38.101Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T11:03:38.101Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6053345e05af511cb82cdaa3"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T11:07:10.900Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T11:07:10.900Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "605336eedcd0621e6d9832fc"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T11:18:06.401Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T11:18:06.401Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60536c7d21b017385d7cbf72"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T15:06:37.491Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T15:06:37.491Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60536db93d86463980840c69"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-18T15:11:53.007Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-18T15:11:53.007Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6054bf33a471ff16ad25fc28"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-19T15:11:47.249Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-19T15:11:47.249Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6054c83ac242db2010febb33"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-19T15:50:18.552Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-19T15:50:18.552Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6054cb78e7c2bf25417cf338"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-19T16:04:08.362Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-19T16:04:08.362Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6054ce987de20a2a2d7bd6b6"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-19T16:17:28.414Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-19T16:17:28.414Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6054d1be0a53072f8021daa9"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-19T16:30:54.417Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-19T16:30:54.417Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6054d4001470ec359b7490fd"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-19T16:40:32.016Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-19T16:40:32.016Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6059c330316ee985872263a0"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-23T10:30:08.306Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-23T10:30:08.306Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6059c72147b3e98b33e120f9"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-23T10:46:57.335Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-23T10:46:57.335Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6059ca8d327a20904da88564"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-23T11:01:33.946Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-23T11:01:33.946Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6059fb849f5b65b6262a80d0"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-23T14:30:28.119Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-23T14:30:28.119Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "605a056dbc1c89ba963ddd8c"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-23T15:12:45.386Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-23T15:12:45.386Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6061ff543989dbee264744ae"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-03-29T16:24:52.301Z"
+		},
+		"updatedAt": {
+			"$date": "2021-03-29T16:24:52.301Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "606eef2b120f37a95d52dbb6"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-08T11:55:23.777Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-08T11:55:23.777Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "606ef173d76062ab521de4a1"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-08T12:05:07.980Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-08T12:05:07.980Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "606f08ec9ed98cb9b993fdb8"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-08T13:45:16.727Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-08T13:45:16.727Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6075a68092aac4a42df6e259"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-13T14:11:12.412Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-13T14:11:12.412Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607d945e7d2ee46d32f6a556"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-19T14:31:58.986Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-19T14:31:58.986Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607d94baa7198c6e3cac1ec5"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-19T14:33:30.316Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-19T14:33:30.316Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607d9780cac76b746f0955bd"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-19T14:45:20.381Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-19T14:45:20.381Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607d981ab325ad758da51fe1"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-19T14:47:54.866Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-19T14:47:54.866Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607d9bee172fe2786aa91631"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-19T15:04:14.136Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-19T15:04:14.136Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607d9f76470f437aea084a35"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-19T15:19:18.881Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-19T15:19:18.881Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e821f655bc787ef72f5dd"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T07:26:23.045Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T07:26:23.045Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e86c59670ad8d233ddb8e"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T07:46:13.151Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T07:46:13.151Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e8eaf689ebc9563dbc126"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T08:19:59.086Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T08:19:59.086Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e8fe59a30bc971482973f"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T08:25:09.436Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T08:25:09.436Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e94eac917569c6652bd4e"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T08:46:34.364Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T08:46:34.364Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e992646ab44a76f34c68f"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T09:04:38.606Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T09:04:38.606Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607e9ee3da1441acb7b394f2"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-20T09:29:07.424Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-20T09:29:07.424Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "607fe1d55a6e3f1febbc0cbd"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-04-21T08:27:01.802Z"
+		},
+		"updatedAt": {
+			"$date": "2021-04-21T08:27:01.802Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60955d50b8f1460bb8148d77"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-07T15:31:28.663Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-07T15:31:28.663Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b0e64d2ad0228e10879fc9"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T12:47:09.782Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T12:47:09.782Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b0eb2cb2c48f986a39ea4d"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T13:07:56.363Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T13:07:56.363Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b1077d5066e8f4abae9bfb"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T15:08:45.365Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T15:08:45.365Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b1088933c410f8f4b1f3db"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T15:13:13.110Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T15:13:13.110Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b10a98c404fb03c4321152"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T15:22:00.696Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T15:22:00.696Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b10cd2807276127a40d8be"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T15:31:30.063Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T15:31:30.063Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b10de965d8051c614f8130"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-28T15:36:09.072Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-28T15:36:09.072Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b4af0d4c1dc56e3f3b8acf"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-31T09:40:29.084Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-31T09:40:29.084Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b4c11df8c2da16c434472c"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-31T10:57:33.422Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-31T10:57:33.422Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b4ca68a1098034c28c441a"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-31T11:37:12.400Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-31T11:37:12.400Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b4d1a02bbc1f485a9df20f"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-31T12:08:00.718Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-31T12:08:00.718Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b4e3e41f909a87114d302c"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-05-31T13:25:56.049Z"
+		},
+		"updatedAt": {
+			"$date": "2021-05-31T13:25:56.049Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b5dfef24a215ce17c8e610"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-01T07:21:19.024Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-01T07:21:19.024Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60b73ca719be085c88ac69e3"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-02T08:09:11.012Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-02T08:09:11.012Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c3241f0ef76bc7b6e5fcb4"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-11T08:51:43.479Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-11T08:51:43.479Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c32960370055d677f0efed"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-11T09:14:08.022Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-11T09:14:08.022Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c3418b725d18f12a808a2c"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-11T10:57:15.531Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-11T10:57:15.531Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c70d5d6d5b355133eb1cd5"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-14T08:03:41.444Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-14T08:03:41.444Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c73bd4e55df10e00f33e99"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-14T11:21:56.609Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-14T11:21:56.609Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c9bb222f24b02dacdafbd3"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-16T08:49:38.719Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-16T08:49:38.719Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c9bf233a422138351f2a21"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-16T09:06:43.995Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-16T09:06:43.995Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c9c13a1fcaea4114374bbc"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-16T09:15:38.563Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-16T09:15:38.563Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c9c4e0192fb652d74781e3"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-16T09:31:12.210Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-16T09:31:12.210Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60c9f9ecfff19d764bdea992"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-16T13:17:32.300Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-16T13:17:32.300Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "60cb32376734edfa0c3199eb"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-06-17T11:29:59.566Z"
+		},
+		"updatedAt": {
+			"$date": "2021-06-17T11:29:59.566Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114c7369f2c8a82d8f46426"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T07:01:10.260Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T07:01:10.260Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114daae0da2f60bd8266d2b"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T08:24:14.305Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T08:24:14.305Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114e3a389f2c61cc58462a6"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T09:02:27.122Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T09:02:27.122Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114e5a4b355281e44098618"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T09:11:00.384Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T09:11:00.384Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114e9de781ac321a375b854"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T09:29:02.782Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T09:29:02.782Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114f430022f6f3156ab45e5"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T10:13:04.945Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T10:13:04.945Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6114f8709a632d399c9e5470"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T10:31:12.243Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T10:31:12.243Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "611541cde53394698da67f19"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-12T15:44:13.043Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-12T15:44:13.043Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6116106f3a7b4677f1eff110"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-13T06:25:51.049Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-13T06:25:51.049Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6116263b14fc8e7de994812d"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-13T07:58:51.845Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-13T07:58:51.845Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "61263cad1010850d38ca16a3"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-25T12:50:53.482Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-25T12:50:53.482Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6126443f24d7831fb4aae2fe"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-25T13:23:11.957Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-25T13:23:11.957Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "612646b32c517f25fa3eeb21"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-25T13:33:39.348Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-25T13:33:39.348Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "61274c665565b335f7dfc7bf"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-26T08:10:14.601Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-26T08:10:14.601Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "612757b82101b3471f62409a"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-08-26T08:58:32.290Z"
+		},
+		"updatedAt": {
+			"$date": "2021-08-26T08:58:32.290Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6130970ae56805eb7294724a"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-09-02T09:19:06.832Z"
+		},
+		"updatedAt": {
+			"$date": "2021-09-02T09:19:06.832Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "61388cb9e4b2e9c536cdbe47"
+		},
+		"name": "defaultSchoolGroup",
+		"createdAt": {
+			"$date": "2021-09-08T10:13:13.475Z"
+		},
+		"updatedAt": {
+			"$date": "2021-09-08T10:13:13.475Z"
+		},
+		"__v": 0
+	}
+]
