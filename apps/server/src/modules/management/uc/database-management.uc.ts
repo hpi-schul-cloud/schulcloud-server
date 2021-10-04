@@ -71,15 +71,11 @@ export class DatabaseManagementUc {
 		let allCollectionsWithFilePaths: ICollectionFilePath[];
 
 		// load all available collections from source
-		switch (source) {
-			case 'files':
-				allCollectionsWithFilePaths = this.loadAllCollectionsFromFilesystem();
-				break;
-			case 'database':
-				allCollectionsWithFilePaths = await this.loadAllCollectionsFromDatabase();
-				break;
-			default:
-				throw new Error(`invalid source ${JSON.stringify(source)}, use 'files' or 'database' instead`);
+		if (source === 'files') {
+			allCollectionsWithFilePaths = this.loadAllCollectionsFromFilesystem();
+		} else {
+			// source === 'database'
+			allCollectionsWithFilePaths = await this.loadAllCollectionsFromDatabase();
 		}
 
 		// when a collection name filter is given, apply it and check
