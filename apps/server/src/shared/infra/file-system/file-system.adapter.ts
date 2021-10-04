@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
+import { promises as fsp } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+
+const { mkdir, readdir, writeFile, readFile, rm, mkdtemp } = fsp;
 
 @Injectable()
 export class FileSystemAdapter {
 	private encoding: BufferEncoding;
-
-	private _EOL: string;
 
 	constructor() {
 		this.encoding = 'utf-8';
@@ -17,13 +17,17 @@ export class FileSystemAdapter {
 		return os.EOL;
 	}
 
+	async createDir(folderPath: string): Promise<void> {
+		await mkdir(folderPath);
+	}
+
 	/**
 	 * Lists filenames of given folderPath
 	 * @param folderPath path to an existing folder
 	 * @returns string array of filenames
 	 */
-	readDirSync(folderPath: string): string[] {
-		const filenames = fs.readdirSync(folderPath, { encoding: this.encoding });
+	async readDir(folderPath: string): Promise<string[]> {
+		const filenames = await readdir(folderPath, { encoding: this.encoding });
 		return filenames;
 	}
 
@@ -34,8 +38,8 @@ export class FileSystemAdapter {
 	 * @param filePath path to a file
 	 * @param text
 	 */
-	writeFileSync(filePath: string, text: string): void {
-		fs.writeFileSync(filePath, text);
+	async writeFile(filePath: string, text: string): Promise<void> {
+		await writeFile(filePath, text);
 	}
 
 	/**
@@ -43,8 +47,8 @@ export class FileSystemAdapter {
 	 * @param filePath path to existing file, format depending on os
 	 * @returns file content as encoded text
 	 */
-	readFileSync(filePath: string): string {
-		const text = fs.readFileSync(filePath, this.encoding);
+	async readFile(filePath: string): Promise<string> {
+		const text = await readFile(filePath, this.encoding);
 		return text;
 	}
 
@@ -54,8 +58,9 @@ export class FileSystemAdapter {
 	 * @param dirNamePrefix
 	 * @returns full path string to temp folder, format depends on os
 	 */
-	createTmpDir(dirNamePrefix: string): string {
-		const tmpDirPath = fs.mkdtempSync(path.join(os.tmpdir(), dirNamePrefix));
+	async createTmpDir(dirNamePrefix: string): Promise<string> {
+		const dirPath = this.joinPath(os.tmpdir(), dirNamePrefix);
+		const tmpDirPath = await mkdtemp(dirPath);
 		return tmpDirPath;
 	}
 
@@ -63,8 +68,8 @@ export class FileSystemAdapter {
 	 * Removes the given folder recursively including content when not empty.
 	 * @param folderPath path to an existing folder, format depending on
 	 */
-	removeDirRecursive(folderPath: string): void {
-		fs.rmdirSync(folderPath, { recursive: true });
+	async removeDirRecursive(folderPath: string): Promise<void> {
+		await rm(folderPath, { recursive: true, force: true });
 	}
 
 	joinPath(...paths: string[]): string {

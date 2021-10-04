@@ -106,10 +106,10 @@ describe('DatabaseManagementService', () => {
 	}
 ]<EOL>`,
 		];
-		let fileSystemAdapterMock: jest.SpyInstance<void, [filePath: string, text: string]>;
+		let fileSystemAdapterMock: jest.SpyInstance;
 
 		beforeEach(() => {
-			fileSystemAdapterMock = jest.spyOn(fileSystemAdapter, 'writeFileSync');
+			fileSystemAdapterMock = jest.spyOn(fileSystemAdapter, 'writeFile');
 		});
 		afterEach(() => {
 			fileSystemAdapterMock.mockReset();
@@ -170,7 +170,8 @@ describe('DatabaseManagementService', () => {
 
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
 				expect(fileSystemAdapterMock).toBeCalledTimes(1);
-				const text = fileSystemAdapterMock.mock.calls[0][1];
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const text: unknown = fileSystemAdapterMock.mock.calls[0][1];
 				const expectedResult = `${JSON.stringify(
 					bsonConverter.serialize([expectedFirst, expectedSecond, expectedLast]),
 					undefined,
@@ -182,13 +183,15 @@ describe('DatabaseManagementService', () => {
 			it('should add system EOL to end of text', async () => {
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
 				expect(fileSystemAdapterMock).toBeCalledTimes(1);
-				const arg = fileSystemAdapterMock.mock.calls[0][1];
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const arg: unknown = fileSystemAdapterMock.mock.calls[0][1];
 				expect(arg).toEqual(expect.stringMatching(/<EOL>$/));
 			});
 			it('should use <collectionName>.json as filename', async () => {
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
 				expect(fileSystemAdapterMock).toBeCalledTimes(1);
-				const arg = fileSystemAdapterMock.mock.calls[0][0];
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const arg: unknown = fileSystemAdapterMock.mock.calls[0][0];
 				expect(arg).toEqual('collectionName1.json');
 			});
 		});
@@ -252,7 +255,7 @@ describe('DatabaseManagementService', () => {
 				expect(bsonDocsAsText).toEqual(
 					'[{"_id":{"$oid":"100000000000000000000000"},"createdAt":{"$date":"2021-10-04T11:04:45.593Z"}}]'
 				);
-				const readFileMock = jest.spyOn(fileSystemAdapter, 'readFileSync').mockReturnValue(bsonDocsAsText);
+				const readFileMock = jest.spyOn(fileSystemAdapter, 'readFile').mockReturnValue(Promise.resolve(bsonDocsAsText));
 				const importCollectionMock = jest.spyOn(dbService, 'importCollection');
 				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
 				expect(readFileMock).toBeCalledWith(`${collectionName}.json`);

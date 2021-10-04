@@ -16,7 +16,7 @@ export class DatabaseManagementUc {
 	/**
 	 * relative path to seed data folder based of location of this file.
 	 */
-	private basePath = '../../../../../../backup/setup';
+	private basePath = '../../../../../../backup';
 
 	constructor(
 		private fileSystemAdapter: FileSystemAdapter,
@@ -25,21 +25,41 @@ export class DatabaseManagementUc {
 	) {}
 
 	/**
-	 * absolute path reference for seed data folder.
+	 * absolute path reference for seed data base folder.
 	 */
-	private get seedDataFolderPath(): string {
+	private get baseDir(): string {
 		const folderPath = this.fileSystemAdapter.joinPath(__dirname, this.basePath);
 		return folderPath;
+	}
+
+	/**
+	 * setup dir with json files
+	 */
+	private getSeedFolder() {
+		return this.fileSystemAdapter.joinPath(this.baseDir, 'setup');
+	}
+
+	/**
+	 * export folder name based on current date
+	 * @returns
+	 */
+	private getTargetFolder() {
+		const now = new Date();
+		const currentDateTime = `${now.getFullYear()}_${
+			now.getMonth() + 1
+		}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}`;
+		const targetFolder = this.fileSystemAdapter.joinPath(this.baseDir, currentDateTime);
+		return targetFolder;
 	}
 
 	/**
 	 * Loads all collection names from database and adds related file paths.
 	 * @returns {ICollectionFilePath}
 	 */
-	private async loadAllCollectionsFromDatabase(): Promise<ICollectionFilePath[]> {
+	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<ICollectionFilePath[]> {
 		const collections = await this.databaseManagementService.getCollectionNames();
 		const collectionsWithFilePaths = collections.map((collectionName) => ({
-			filePath: this.fileSystemAdapter.joinPath(this.seedDataFolderPath, `${collectionName}.json`),
+			filePath: this.fileSystemAdapter.joinPath(targetFolder, `${collectionName}.json`),
 			collectionName,
 		}));
 		return collectionsWithFilePaths;
@@ -49,10 +69,10 @@ export class DatabaseManagementUc {
 	 * Loads all collection names and file paths from backup files.
 	 * @returns {ICollectionFilePath}
 	 */
-	private loadAllCollectionsFromFilesystem(): ICollectionFilePath[] {
-		const filenames = this.fileSystemAdapter.readDirSync(this.seedDataFolderPath);
+	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<ICollectionFilePath[]> {
+		const filenames = await this.fileSystemAdapter.readDir(baseDir);
 		const collectionsWithFilePaths = filenames.map((fileName) => ({
-			filePath: this.fileSystemAdapter.joinPath(this.seedDataFolderPath, fileName),
+			filePath: this.fileSystemAdapter.joinPath(baseDir, fileName),
 			collectionName: fileName.split('.')[0],
 		}));
 		return collectionsWithFilePaths;
@@ -66,16 +86,17 @@ export class DatabaseManagementUc {
 	 */
 	private async loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 		source: 'files' | 'database',
+		folder: string,
 		collectionNameFilter?: string[]
 	) {
-		let allCollectionsWithFilePaths: ICollectionFilePath[];
+		let allCollectionsWithFilePaths: ICollectionFilePath[] = [];
 
 		// load all available collections from source
 		if (source === 'files') {
-			allCollectionsWithFilePaths = this.loadAllCollectionsFromFilesystem();
+			allCollectionsWithFilePaths = await this.loadAllCollectionsFromFilesystem(folder);
 		} else {
 			// source === 'database'
-			allCollectionsWithFilePaths = await this.loadAllCollectionsFromDatabase();
+			allCollectionsWithFilePaths = await this.loadAllCollectionsFromDatabase(folder);
 		}
 
 		// when a collection name filter is given, apply it and check
@@ -88,8 +109,8 @@ export class DatabaseManagementUc {
 				throw new Error(
 					`At least one collectionName of ${JSON.stringify(
 						collectionNameFilter
-					)} is invalid. Collection names available are: ${JSON.stringify(
-						this.loadAllCollectionsFromFilesystem().map((file) => file.collectionName)
+					)} is invalid. Collection names available in '${source}' are: ${JSON.stringify(
+						allCollectionsWithFilePaths.map((file) => file.collectionName)
 					)}`
 				);
 			}
@@ -108,8 +129,10 @@ export class DatabaseManagementUc {
 	 */
 	async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
 		// detect collections to seed based on filesystem data
+		const setupPath = this.getSeedFolder();
 		const collectionsToSeed = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 			'files',
+			setupPath,
 			collections
 		);
 
@@ -118,7 +141,7 @@ export class DatabaseManagementUc {
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {
 				// load text from backup file
-				const text = this.fileSystemAdapter.readFileSync(filePath);
+				const text = await this.fileSystemAdapter.readFile(filePath);
 				// create bson-objects from text
 				const bsonDocuments = JSON.parse(text) as unknown[];
 				// deserialize bson (format of mongoexport) to json documents we can import to mongo
@@ -153,9 +176,12 @@ export class DatabaseManagementUc {
 	 * @returns the list of collection names exported
 	 */
 	async exportCollectionsToFileSystem(collections?: string[]): Promise<string[]> {
+		const targetFolder = this.getTargetFolder();
+		await this.fileSystemAdapter.createDir(targetFolder);
 		// detect collections to export based on database collections
 		const collectionsToExport = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 			'database',
+			targetFolder,
 			collections
 		);
 		const exportedCollections: string[] = [];
@@ -172,7 +198,7 @@ export class DatabaseManagementUc {
 				const TAB = '	';
 				const text = JSON.stringify(sortedBsonDocuments, undefined, TAB);
 				// persist to filesystem
-				this.fileSystemAdapter.writeFileSync(filePath, text + this.fileSystemAdapter.EOL);
+				await this.fileSystemAdapter.writeFile(filePath, text + this.fileSystemAdapter.EOL);
 				// keep collection name and number of exported documents
 				exportedCollections.push(`${collectionName}:${sortedBsonDocuments.length}`);
 			})
