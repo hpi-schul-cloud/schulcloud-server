@@ -2,8 +2,8 @@
 
 import { Injectable } from '@nestjs/common';
 import { orderBy } from 'lodash';
-import { FileSystemAdapter } from '@shared/infra/file-system/file-system.adapter';
-import { DatabaseManagementService } from '@shared/infra/database/management/database-management.service';
+import { FileSystemAdapter } from '@shared/infra/file-system';
+import { DatabaseManagementService } from '@shared/infra/database';
 import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '../../database';
-import { User } from '../../../entities';
+import { User } from '@shared/domain';
+import { FileSystemAdapter } from '@shared/infra/file-system';
+import { DatabaseManagementService } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { ManagementModule } from '@src/modules/management/management.module';
 import { DatabaseManagementUc } from './database-management.uc';
-import { ManagementModule } from '../management.module';
-import { FileSystemAdapter } from '../../../shared/infra/file-system/file-system.adapter';
-import { DatabaseManagementService } from '../../../shared/infra/database/management/database-management.service';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;

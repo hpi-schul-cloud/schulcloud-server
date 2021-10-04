@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'mongodb';
-import { MongoMemoryDatabaseModule } from '../../../../modules/database';
-import { UserInfo } from '../../../../modules/news/entity';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { DatabaseManagementService } from './database-management.service';
 
 const randomChars = () => {
@@ -12,11 +11,7 @@ describe('DatabaseManagementService', () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [UserInfo],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [DatabaseManagementService],
 		}).compile();
 

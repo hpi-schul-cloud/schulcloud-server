@@ -1,6 +1,6 @@
 import { Command, Console } from 'nestjs-console';
+import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
-import { ConsoleWriterService } from '../../../shared/infra/console/console-writer/console-writer.service';
 
 interface Options {
 	collection?: string;

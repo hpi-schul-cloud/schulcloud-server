@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplicationContext } from '@nestjs/common';
 
 import { AbstractBootstrapConsole, BootstrapConsole, ConsoleService } from 'nestjs-console';
-import { ServerConsoleModule } from '@src/console/server-console.module';
+import { ServerConsoleModule } from '@src/console/console.module';
 import { ConsoleWriter } from '@src/console/console-writer/console-writer.service';
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {

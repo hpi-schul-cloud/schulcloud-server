@@ -1,8 +1,8 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { CommanderError } from 'commander';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
-import { ServerConsoleModule } from '../../src/console/console.module';
-import { DatabaseManagementUc } from '../../src/modules/management/uc/database-management.uc';
+import { ServerConsoleModule } from '@src/console/console.module';
+import { DatabaseManagementUc } from '@src/modules/management/uc/database-management.uc';
 import { execute, TestBootstrapConsole } from './bootstrap.console';
 
 describe('ServerConsole (e2e)', () => {

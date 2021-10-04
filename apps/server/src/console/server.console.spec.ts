@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriter } from './console-writer/console-writer.service';
-import { ServerConsoleModule } from './server-console.module';
+import { ServerConsoleModule } from './console.module';
 import { ServerConsole } from './server.console';
 
 describe('ServerConsole', () => {
