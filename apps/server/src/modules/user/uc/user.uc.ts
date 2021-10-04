@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { ResolvedUserMapper } from '../mapper';
 import { ResolvedUser } from '../controller/dto/ResolvedUser.dto';
 import { RoleUC } from './role.uc';
@@ -9,11 +9,10 @@ import { UserRepo } from '../repo';
 export class UserUC {
 	constructor(private readonly userRepo: UserRepo, private readonly roleUC: RoleUC) {}
 
-	async getUserWithPermissions(currentUser: ICurrentUser): Promise<ResolvedUser> {
-		const [user, resolved] = await Promise.all([
-			this.userRepo.findById(currentUser.userId),
-			this.roleUC.resolvePermissionsByIdList(currentUser.roles),
-		]);
+	async getUserWithPermissions(userId: EntityId): Promise<ResolvedUser> {
+		const user = await this.userRepo.findById(userId);
+		const roles = user.roles.getItems();
+		const resolved = await this.roleUC.resolvePermissionsByRoles(roles);
 
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, resolved.permissions, resolved.roles);
 		return resolvedUser;
