@@ -22,7 +22,7 @@ const validateExistingStudentBirthdate = (user, userRoles, data = {}) => {
 	}
 
 	if ((user.birthday || data.studentBirthdate) === false) {
-		throw new Error('Bitte ein Geburtstag angeben.');
+		throw new Error('Bitte gib dein Geburtsdatum an.');
 	}
 };
 
