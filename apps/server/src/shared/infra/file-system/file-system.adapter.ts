@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { promises as fsp } from 'fs';
+import { promises as fsp, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-const { mkdir, readdir, writeFile, readFile, rm, mkdtemp } = fsp;
+import rimraf = require('rimraf');
+
+const { mkdir, readdir, writeFile, readFile, mkdtemp } = fsp;
 
 @Injectable()
 export class FileSystemAdapter {
@@ -17,8 +19,13 @@ export class FileSystemAdapter {
 		return os.EOL;
 	}
 
+	/**
+	 * creates a directory if not already exists
+	 * @param folderPath
+	 */
 	async createDir(folderPath: string): Promise<void> {
-		await mkdir(folderPath);
+		const exists = existsSync(folderPath);
+		if (!exists) await mkdir(folderPath);
 	}
 
 	/**
@@ -69,7 +76,9 @@ export class FileSystemAdapter {
 	 * @param folderPath path to an existing folder, format depending on
 	 */
 	async removeDirRecursive(folderPath: string): Promise<void> {
-		await rm(folderPath, { recursive: true, force: true });
+		// fs.rm changed in node 14.14, use rimraf instead
+		rimraf.sync(folderPath);
+		return Promise.resolve();
 	}
 
 	joinPath(...paths: string[]): string {

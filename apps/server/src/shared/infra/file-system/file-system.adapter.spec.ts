@@ -20,7 +20,7 @@ describe('FileSystemAdapter', () => {
 		it('should create and remove a temporary folder name', async () => {
 			const tmpDirPath = await adapter.createTmpDir('prefix');
 			expect(tmpDirPath).toContain('prefix');
-			await expect(adapter.readDir(tmpDirPath)).rejects.not.toThrow();
+			await expect(adapter.readDir(tmpDirPath)).resolves.not.toThrow();
 			await adapter.removeDirRecursive(tmpDirPath);
 			await expect(adapter.readDir(tmpDirPath)).rejects.toThrow();
 		});
@@ -41,7 +41,7 @@ describe('FileSystemAdapter', () => {
 		it('should remove an directory containing files recursively', async () => {
 			const tmpDirPath = await adapter.createTmpDir('prefix');
 			await adapter.writeFile(path.join(tmpDirPath, 'fileName1.txt'), '');
-			await expect(adapter.readDir(tmpDirPath)).rejects.not.toThrow();
+			await expect(adapter.readDir(tmpDirPath)).resolves.not.toThrow();
 			await adapter.removeDirRecursive(tmpDirPath);
 			await expect(adapter.readDir(tmpDirPath)).rejects.toThrow();
 		});
@@ -68,7 +68,7 @@ describe('FileSystemAdapter', () => {
 			it('should list files from folder', async () => {
 				await adapter.writeFile(path.join(tempDir, 'fileName1.txt'), '');
 				await adapter.writeFile(path.join(tempDir, 'fileName2.txt'), '');
-				const fileNames = adapter.readDir(tempDir);
+				const fileNames = await adapter.readDir(tempDir);
 				expect(fileNames).toEqual(expect.arrayContaining(['fileName1.txt', 'fileName2.txt']));
 			});
 		});
@@ -78,7 +78,7 @@ describe('FileSystemAdapter', () => {
 				const folder = adapter.joinPath(tempDir, 'folderName');
 				await adapter.createDir(folder);
 			});
-			it('should keep folder when already exists', async () => {
+			it('should continue when folder already exists', async () => {
 				const folder = adapter.joinPath(tempDir, 'folderName');
 				await adapter.createDir(folder);
 				await adapter.createDir(folder);
