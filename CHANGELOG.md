@@ -20,6 +20,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+### Security
+
+- BC-297 - fixed set-value dependency vulnerabilities
+
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
