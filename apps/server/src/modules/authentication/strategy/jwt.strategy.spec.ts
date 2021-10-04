@@ -2,13 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { ICurrentUser } from '@shared/domain';
+
 import { ResolvedUser } from '@src/modules/user/controller/dto';
 import { UserFacade } from '@src/modules/user';
+
 import { jwtConstants } from '../constants';
+import { JwtPayload } from '../interface/jwt-payload';
+
 import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
-import { JwtPayload } from '../interface/jwt-payload';
 
 describe('jwt strategy', () => {
 	let adapter: JwtValidationAdapter;
@@ -32,7 +34,7 @@ describe('jwt strategy', () => {
 				{
 					provide: UserFacade,
 					useValue: {
-						resolveUser(userId: EntityId) {
+						resolveUser() {
 							return new ResolvedUser();
 						},
 					},

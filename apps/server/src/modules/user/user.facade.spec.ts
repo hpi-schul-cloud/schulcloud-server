@@ -54,7 +54,7 @@ describe('UserFacade', () => {
 				return Promise.resolve(resolvedUser);
 			});
 
-			const result = await facade.resolveUser(currentUser);
+			const result = await facade.resolveUser(currentUser.userId);
 			expect(result instanceof ResolvedUser).toBe(true);
 			serviceSpy.mockRestore();
 		});
