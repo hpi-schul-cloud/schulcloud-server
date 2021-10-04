@@ -17,14 +17,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
-- BC-269 - check in firstLogin that students can only pass with existing birthdate 
+- BC-269 - check in firstLogin that students can only pass with existing birthdate
+- BC-231 - upgraded nestjs@7 to nestjs@8
 
 ### Fixed
 
 ### Security
 
 - BC-297 - fixed set-value dependency vulnerabilities
-- BC-377 - fixed axios dependency vulnerabilities
 
 ## [26.11.2] - 2021-09-29
 

@@ -95,7 +95,7 @@
 		"args": "^5.0.1",
 		"async": "^2.6.0",
 		"aws-sdk": "^2.970.0",
-		"axios": "^0.22.0",
+		"axios": "^0.21.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
@@ -166,7 +166,7 @@
 		"universal-analytics": "^0.4.17",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"wait-on": "^6.0.0",
+		"wait-on": "^5.0.1",
 		"winston": "^3.2.0",
 		"xml2js-es6-promise": "^1.1.1"
 	},
