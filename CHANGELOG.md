@@ -21,6 +21,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+### Security
+
+- BC-297 - fixed set-value dependency vulnerabilities
+
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
@@ -42,6 +46,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-213 - rewrite file deletion with deletion marker
 - BC-68 - e2e run dependent on build image job
 - BC-179 - refactor task and entity and relations
+- BC-315 - stabilized resolve user roles workflow by use roles from requested user and not from jwt
 
 ### Added
 
