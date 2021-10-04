@@ -63,7 +63,8 @@ export class GridElement implements IGridElement {
 		return this.id;
 	}
 
-	getPosition(): { x: number; y: number } {
+	// todo: consider removing position from gridElements, for cleaner update operations.
+	getPosition(): GridPosition {
 		return { x: this.xPos, y: this.yPos };
 	}
 
@@ -72,15 +73,35 @@ export class GridElement implements IGridElement {
 	}
 }
 
-export type DashboardProps = { grid: IGridElement[] };
+export type GridPosition = { x: number; y: number };
+
+export type GridElementWithPosition = {
+	gridElement: IGridElement;
+	pos: GridPosition;
+};
+
+export type DashboardProps = { colums?: number; rows?: number; grid: IGridElement[] };
 
 export class DashboardEntity {
 	id: EntityId;
 
-	grid: IGridElement[];
+	colums: number;
+
+	rows: number;
+
+	grid: { [position: number]: IGridElement };
+
+	private gridIndexFromPosition(pos: GridPosition): number {
+		return this.colums * pos.y + pos.x;
+	}
 
 	constructor(id: string, props: DashboardProps) {
-		this.grid = props.grid || [];
+		this.colums = props.colums || 5;
+		this.rows = props.rows || 5;
+		this.grid = {};
+		props.grid.forEach((element) => {
+			this.grid[this.gridIndexFromPosition(element.getPosition())] = element;
+		});
 		this.id = id;
 		Object.assign(this, {});
 	}
@@ -90,6 +111,6 @@ export class DashboardEntity {
 	}
 
 	getGrid(): IGridElement[] {
-		return this.grid;
+		return Object.values(this.grid);
 	}
 }

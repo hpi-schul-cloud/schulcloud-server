@@ -45,7 +45,7 @@ describe('dashboard repo', () => {
 		it('returns a dashboard', async () => {
 			const result = await repo.getUsersDashboard();
 			expect(result instanceof DashboardEntity).toEqual(true);
-			expect(result.grid.length).toBeGreaterThan(0);
+			expect(result.getGrid().length).toBeGreaterThan(0);
 		});
 
 		it('always returns the same dashboard', async () => {

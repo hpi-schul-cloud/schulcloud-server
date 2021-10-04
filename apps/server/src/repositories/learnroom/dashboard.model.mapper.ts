@@ -32,7 +32,7 @@ export class DashboardModelMapper {
 		const modelEntity = new DashboardModelEntity(entity.getId());
 		modelEntity.gridElements = new Collection<DashboardGridElementModel>(
 			modelEntity,
-			entity.grid.map((element) => DashboardModelMapper.mapGridElementToModel(element, modelEntity))
+			entity.getGrid().map((element) => DashboardModelMapper.mapGridElementToModel(element, modelEntity))
 		);
 		return modelEntity;
 	}
