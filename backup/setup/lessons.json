@@ -732,5 +732,47 @@
 		"$date": "2020-11-05T11:16:12.973Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"materialIds": [],
+	"hidden": false,
+	"isCopyFrom": null,
+	"position": 0,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"name": "Lesson 1",
+	"contents": [
+		{
+			"_id": {
+				"$oid": "615ac1a94ab618538c42a61a"
+			},
+			"title": "Text Title",
+			"hidden": false,
+			"component": "text",
+			"user": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"content": {
+				"text": "<p>Seed data example lesson.</p>"
+			}
+		}
+	],
+	"time": {
+		"$date": "2021-10-03T22:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-04T08:56:09.637Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T08:56:14.023Z"
+	},
+	"__v": 0
 }
 ]

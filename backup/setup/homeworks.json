@@ -1,1643 +1,558 @@
 [{
 	"_id": {
-		"$oid": "59cce16281297026d02cdc49"
+		"$oid": "615ac1f74ab618538c42a774"
 	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - ohne Kurs, offen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T11:47:46.622Z"
-	},
-	"dueDate": {
-		"$date": "2030-11-16T12:47:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": null,
-	"updatedAt": {
-		"$date": "2017-09-28T11:47:46.648Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:47:46.648Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce19681297026d02cdc4a"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - ohne Kurs, abgelaufen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T11:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2017-09-20T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": null,
-	"updatedAt": {
-		"$date": "2017-09-28T11:48:38.156Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:48:38.156Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce1d381297026d02cdc4b"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - mit Kurs, offen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T11:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-09-28T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce2c61113d1132c98dc06"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - mit Kurs, abgelaufen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2016-09-20T11:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2017-07-28T13:00:00.000Z"
-	},
-	"private": true,
+	"maxTeamMembers": null,
 	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce352c6abf042248e888c"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "zu archivierende Aufgabe von Marla",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2020-09-29T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:56:02.897Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:56:02.897Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce3f6c6abf042248e888d"
-	},
+	"name": "Visible in years",
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Marla (Mathe) - offen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-28T08:00:00.000Z"
+		"$date": "2023-10-06T08:56:00Z"
 	},
 	"dueDate": {
-		"$date": "2300-09-28T15:00:00.000Z"
+		"$date": "2024-10-18T08:56:00Z"
 	},
-	"archived": [],
-	"lessonId": null,
+	"createdAt": {
+		"$date": "2021-10-04T08:57:27.744Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T08:57:27.745Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac20b4ab618538c42a89f"
+	},
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:58:46.601Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-09-28T11:58:46.601Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce4171113d1132c98dc07"
-	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Time is over",
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Marla (Mathe) - abgelaufen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-06-28T08:00:00.000Z"
+		"$date": "2021-10-04T08:57:47.526Z"
 	},
 	"dueDate": {
-		"$date": "2017-07-28T15:00:00.000Z"
+		"$date": "2021-10-04T09:00:00Z"
 	},
-	"archived": [],
-	"lessonId": null,
+	"createdAt": {
+		"$date": "2021-10-04T08:57:47.55Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T08:57:47.55Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac23b4ab618538c42a9c9"
+	},
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-06-28T11:58:46.601Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-07-28T11:58:46.601Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce4c3c6abf042248e888e"
-	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Draft without dates",
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Private Aufgabe von Cord - mit Kurs, offen",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-28T12:00:00.000Z"
+		"$date": "2021-10-04T08:58:35.449Z"
 	},
-	"dueDate": {
-		"$date": "2300-06-28T13:00:00.000Z"
-	},
+	"dueDate": null,
 	"private": true,
-	"archived": [],
-	"lessonId": null,
+	"createdAt": {
+		"$date": "2021-10-04T08:58:35.472Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T08:58:35.472Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac2694ab618538c42aae6"
+	},
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:02:11.432Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-09-28T12:02:11.432Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false
-},{
-	"_id": {
-		"$oid": "59cce4ebc6abf042248e888f"
-	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task where each student see task from others",
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Private Aufgabe Cord - ohne Kurs",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-28T12:02:51.553Z"
+		"$date": "2021-10-04T08:59:21.035Z"
 	},
-	"dueDate": {
-		"$date": "2026-09-28T12:02:51.553Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": null,
-	"updatedAt": {
-		"$date": "2017-09-28T12:02:51.562Z"
-	},
+	"dueDate": null,
+	"publicSubmissions": true,
 	"createdAt": {
-		"$date": "2017-09-28T12:02:51.562Z"
+		"$date": "2021-10-04T08:59:21.058Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T08:59:21.058Z"
 	},
 	"__v": 0
-},{
+},
+{
 	"_id": {
-		"$oid": "59cce6c6d5e50214e47b601d"
+		"$oid": "615ac28f4ab618538c42ac10"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": 2,
+	"archived": [],
+	"name": "Task for groups member size 2",
+	"teamSubmissions": true,
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Archivierte Aufgaben von Cord - mit Kurs, offen",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-20T10:00:00.000Z"
+		"$date": "2021-10-04T08:59:59.794Z"
 	},
 	"dueDate": {
-		"$date": "2300-10-25T15:00:00.000Z"
+		"$date": "2024-10-04T08:59:00Z"
 	},
-	"archived": [{
-			"$oid": "0000d231816abba584714c9e"
-		}
-	],
-	"lessonId": null,
+	"createdAt": {
+		"$date": "2021-10-04T08:59:59.822Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T08:59:59.822Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac2a74ab618538c42ad3b"
+	},
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:10:46.181Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-09-28T12:10:46.180Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59d1f63ce0a06325e8b5288b"
-	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task without end date",
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Marla (Mathe) - mit Abgabe & Bewertung",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-20T10:00:00.000Z"
+		"$date": "2021-10-04T09:00:23.801Z"
 	},
-	"dueDate": {
-		"$date": "2300-10-25T15:00:00.000Z"
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2021-10-04T09:00:23.824Z"
 	},
-	"archived": [],
-	"lessonId": null,
+	"updatedAt": {
+		"$date": "2021-10-04T09:00:23.824Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac2b74ab618538c42ae65"
+	},
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:10:46.181Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-09-28T12:10:46.180Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59d1fae6395c8218f82cb914"
-	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 1",
+	"description": "",
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Marla (Mathe) - mit Abgabe, Bewertung, PublicSubmissions",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-20T10:00:00.000Z"
+		"$date": "2021-10-04T09:00:39.945Z"
 	},
 	"dueDate": {
-		"$date": "2300-10-25T15:00:00.000Z"
+		"$date": "2024-10-04T09:00:00Z"
 	},
-	"archived": [],
-	"lessonId": null,
+	"createdAt": {
+		"$date": "2021-10-04T09:00:39.967Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T09:00:39.967Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "615ac2c44ab618538c42af8f"
+	},
+	"fileIds": [],
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:10:46.181Z"
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
 	},
-	"createdAt": {
-		"$date": "2017-09-28T12:10:46.180Z"
-	},
-    "publicSubmissions": true,
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "59a3c87aa2049554a93fec5c"
-	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 2",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Gedichtanalyse Theodor Storm - Die Stadt",
-	"description": "\u003cp\u003eAnalysiere die \u0026#xE4;u\u0026#xDF;ere Form des Gedichts! Orientiere dich dabei am Leitfaden der letzten Stunde!\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-08-28T08:00:00.000Z"
+		"$date": "2021-10-04T09:00:52.194Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-28T08:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a3e4a4a2049554a93fec93"
-	},
-	"courseId": {
-		"$oid": "59a3cd61a2049554a93fec68"
-	},
-	"updatedAt": {
-		"$date": "2017-08-28T07:38:34.167Z"
+		"$date": "2023-10-12T09:00:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-08-28T07:38:34.167Z"
+		"$date": "2021-10-04T09:00:52.222Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:00:52.222Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59a40665a2049554a93fecb9"
+		"$oid": "615ac2d14ab618538c42b0b9"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 3",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Einführung in Wahrscheinlichkeitsrechnung",
-	"description": "\u003cp\u003eZeichne und erkl\u0026#xE4;re ein Baumdiagramm f\u0026#xFC;r einen zweifachen M\u0026#xFC;nzwurf (Kopf oder Zahl!).\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-08-28T07:30:00.000Z"
+		"$date": "2021-10-04T09:01:05.547Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-28T10:00:00.000Z"
-	},
-	"publicSubmissions": false,
-	"lessonId": {
-		"$oid": "59a3cad2a2049554a93fec64"
-	},
-	"courseId": {
-		"$oid": "59a3cabaa2049554a93fec60"
-	},
-	"updatedAt": {
-		"$date": "2017-08-28T12:02:45.639Z"
+		"$date": "2023-01-19T10:01:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-08-28T12:02:45.639Z"
+		"$date": "2021-10-04T09:01:05.572Z"
 	},
-	"__v": 0,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:01:05.572Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59a406a3a2049554a93fecba"
+		"$oid": "615ac2de4ab618538c42b1e4"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 4",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Kontrolle Test zur Wahrscheinlichkeitsrechnung",
-	"description": "\u003cp\u003eErinnerung!\u003c/p\u003e\r\n\r\n\u003cp\u003e\u0026#xA0;\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-08-28T13:30:00.000Z"
+		"$date": "2021-10-04T09:01:18.903Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-28T12:00:00.000Z"
-	},
-	"private": true,
-	"lessonId": {
-		"$oid": "59a3cad2a2049554a93fec64"
-	},
-	"courseId": {
-		"$oid": "59a3cabaa2049554a93fec60"
-	},
-	"updatedAt": {
-		"$date": "2017-08-28T12:03:47.302Z"
+		"$date": "2024-10-11T09:01:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-08-28T12:03:47.302Z"
+		"$date": "2021-10-04T09:01:18.951Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:01:18.951Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59a40c67a2049554a93feccf"
+		"$oid": "615ac2ec4ab618538c42b30e"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 5",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufbau des Auges",
-	"description": "\u003cp\u003eFertige eine Zeichnung des Auges eines Tiers deiner Wahl an! Wir werden alle Sch\u0026#xFC;ler-Zeichnungen im Unterricht vergleichen und Gemeinsamkeiten und Unterschiede herausfinden!\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-08-28T12:00:00.000Z"
+		"$date": "2021-10-04T09:01:32.336Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-28T12:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a3c755a2049554a93fec52"
-	},
-	"courseId": {
-		"$oid": "59a3c657a2049554a93fec3a"
-	},
-	"updatedAt": {
-		"$date": "2017-08-28T12:28:23.340Z"
+		"$date": "2025-10-17T09:01:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-08-28T12:28:23.340Z"
+		"$date": "2021-10-04T09:01:32.36Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:01:32.36Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59a41144a2049554a93fecdb"
+		"$oid": "615ac2fc4ab618538c42b438"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 6",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Nachbarstaaten Deutschlands",
-	"description": "\u003cp\u003e1. Welche der Nachbarstaaten Deutschlands habt ihr schon besucht?\u003c/p\u003e\r\n\r\n\u003cp\u003e2. Sucht geographische Informationen zu euren bereisten Nachbarstaaten Deutschlands heraus. Wir werden in der n\u0026#xE4;chsten Stunde eine \u0026quot;Reise\u0026quot; durch die Nachbarstaaten Deutschlands begehen!\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-08-28T12:00:00.000Z"
+		"$date": "2021-10-04T09:01:48.937Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-28T12:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a3e4bba2049554a93fec94"
-	},
-	"courseId": {
-		"$oid": "59a3ce58a2049554a93fec6e"
-	},
-	"updatedAt": {
-		"$date": "2017-08-28T12:49:08.574Z"
+		"$date": "2024-10-04T09:01:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-08-28T12:49:08.574Z"
+		"$date": "2021-10-04T09:01:48.968Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:01:48.968Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59a662f6a2049554a93fed43"
+		"$oid": "615ac30c4ab618538c42b562"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 7",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Inhaltszusammenfassung Kurzgeschichte \"Die Kirschen\"",
-	"description": "\u003cp\u003eBitte verfasst eine Inhaltszusammenfassung der Kurzgeschichte \u0026quot;Die Kirschen\u0026quot; von Wolfgang Borchert. Orientiert euch dabei an dem Leitfaden der letzten Stunde!\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-08-30T06:00:00.000Z"
+		"$date": "2021-10-04T09:02:04.718Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-31T12:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a662bea2049554a93fed41"
-	},
-	"courseId": {
-		"$oid": "59a3cd61a2049554a93fec68"
-	},
-	"updatedAt": {
-		"$date": "2017-08-30T07:02:14.395Z"
+		"$date": "2024-10-11T09:02:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-08-30T07:02:14.395Z"
+		"$date": "2021-10-04T09:02:04.739Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:02:04.739Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59ae6dc31f513506904e1c82"
+		"$oid": "615ac3184ab618538c42b68d"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 8",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Julia Franck - Die Streuselschnecke",
-	"description": "\u003col\u003e\r\n\u0009\u003cli\u003eFasse den Inhalt mit eigenen Worten zusammen.\u003c/li\u003e\r\n\u0009\u003cli\u003eBeschreibe die Methapher der Streuselschnecke.\u003c/li\u003e\r\n\u003c/ol\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-05T12:00:00.000Z"
+		"$date": "2021-10-04T09:02:16.208Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-31T12:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a3cf10a2049554a93fec72"
-	},
-	"courseId": {
-		"$oid": "59a3cd61a2049554a93fec68"
-	},
-	"updatedAt": {
-		"$date": "2017-09-05T09:26:27.587Z"
+		"$date": "2023-10-13T09:02:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-09-05T09:26:27.587Z"
+		"$date": "2021-10-04T09:02:16.232Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:02:16.232Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59ae6f3d1f513506904e1c8a"
+		"$oid": "615ac3264ab618538c42b7b7"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 9",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufbau des Nervensystems",
-	"description": "\u003cp\u003eIn welche Bestandteile l\u0026#xE4;sst sich das Nervensystem des Menschen sinnvoll untergliedern?\u003c/p\u003e\r\n\r\n\u003cp\u003eF\u0026#xFC;lle die Tabelle aus und nenne stichpunktartig die wichtigsten Funktionen der Nervensystem-Bestandteile.\u003c/p\u003e\r\n\r\n\u003cp\u003e\u0026#xA0;\u003c/p\u003e\r\n\r\n\u003ctable border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"height:158px; width:651px\"\u003e\r\n\u0009\u003ctbody\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u003cspan style=\"color:#e74c3c\"\u003ezentrales Nervensystem\u003c/span\u003e\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u003cspan style=\"color:#e74c3c\"\u003eperipheres Nervensystem\u003c/span\u003e\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\r\n\u0009\u0009\u0009\u003cp\u003e\u003cspan style=\"color:#e74c3c\"\u003eBestandteil\u003c/span\u003e\u003c/p\u003e\r\n\u0009\u0009\u0009\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u003cspan style=\"color:#e74c3c\"\u003eFunktion\u003c/span\u003e\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u003cspan style=\"color:#e74c3c\"\u003eBestandteil\u003c/span\u003e\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u003cspan style=\"color:#e74c3c\"\u003eFunktion\u003c/span\u003e\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e\u0026#xA0;\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u003c/tbody\u003e\r\n\u003c/table\u003e\r\n\r\n\u003cp\u003e\u0026#xA0;\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-05T12:00:00.000Z"
+		"$date": "2021-10-04T09:02:30.478Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-31T12:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a6c215a2049554a93fed79"
-	},
-	"courseId": {
-		"$oid": "59a3c657a2049554a93fec3a"
-	},
-	"updatedAt": {
-		"$date": "2017-09-05T09:32:45.934Z"
+		"$date": "2024-12-13T10:02:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-09-05T09:32:45.934Z"
+		"$date": "2021-10-04T09:02:30.496Z"
 	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
+	"updatedAt": {
+		"$date": "2021-10-04T09:02:30.496Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "59ae6fa71f513506904e1c8b"
+		"$oid": "615ac3324ab618538c42b8e1"
 	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task 10",
+	"description": "",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
+		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Würfelspiel",
-	"description": "\u003cp\u003eFasst eure Gedanken zum W\u0026#xFC;rfelspiel zusammen! Wie wahrscheinlich ist es, dass man beim W\u0026#xFC;rfeln eine 6 w\u0026#xFC;rfelt?\u003c/p\u003e\r\n",
 	"availableDate": {
-		"$date": "2017-09-05T12:00:00.000Z"
+		"$date": "2021-10-04T09:02:42.773Z"
 	},
 	"dueDate": {
-		"$date": "2018-05-31T09:34:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a3cad2a2049554a93fec64"
-	},
-	"courseId": {
-		"$oid": "59a3cabaa2049554a93fec60"
-	},
-	"updatedAt": {
-		"$date": "2017-09-05T09:34:31.875Z"
+		"$date": "2023-10-13T09:02:00Z"
 	},
 	"createdAt": {
-		"$date": "2017-09-05T09:34:31.875Z"
+		"$date": "2021-10-04T09:02:42.797Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-04T09:02:42.797Z"
 	},
 	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "59ae6fc01f513506904e1c8c"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
-	},
-	"name": "Kontrolle Test zur Wahrscheinlichkeitsrechnung",
-	"description": "\u003cp\u003eErinnerung!!\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-05T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-05-31T09:34:00.000Z"
-	},
-	"private": true,
-	"lessonId": {
-		"$oid": "59a3cad2a2049554a93fec64"
-	},
-	"courseId": {
-		"$oid": "59a3cabaa2049554a93fec60"
-	},
-	"updatedAt": {
-		"$date": "2017-09-05T09:34:56.418Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-05T09:34:56.418Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "59ae709d1f513506904e1ca9"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
-	},
-	"name": "Fläche, Einwohnerzahlen und Bevölkerungsdichte",
-	"description": "\u003cp\u003eRecherchiert die Fl\u0026#xE4;che, Einwohnerzahlen und Bev\u0026#xF6;lkerungsdichte f\u0026#xFC;r den Nachbarstaat Deutschlands eurer Gruppe!\u003c/p\u003e\r\n\r\n\u003cp\u003eJeder Gruppe der letzten Stunde hatte ich ein Land zugewiesen, hier findet ihr nochmal die \u0026#xDC;bersicht:\u003c/p\u003e\r\n\r\n\u003col\u003e\r\n\u0009\u003cli\u003eGruppe: D\u0026#xE4;nemark\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Polen\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Tschechien\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: \u0026#xD6;sterreich\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Schweiz\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Frankreich\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Luxemburg\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Belgien\u003c/li\u003e\r\n\u0009\u003cli\u003eGruppe: Niederlande\u003c/li\u003e\r\n\u003c/ol\u003e\r\n\r\n\u003cp\u003e\u0026#xA0;\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-05T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-05-31T09:38:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a3e4bba2049554a93fec94"
-	},
-	"courseId": {
-		"$oid": "59a3ce58a2049554a93fec6e"
-	},
-	"updatedAt": {
-		"$date": "2017-09-05T09:38:37.115Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-05T09:38:37.114Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
-},
-{
-	"_id": {
-		"$oid": "59ae711c1f513506904e1cc5"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
-	},
-	"name": "QUIZ: Vorbereitung für die nächste Stunde!",
-	"description": "\u003cp\u003eQuiz zu den Nachbarstaaten Deutschlands vorbereiten! (25 Kopien)\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-05T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-05-31T12:00:00.000Z"
-	},
-	"private": true,
-	"lessonId": {
-		"$oid": "59a3e4bba2049554a93fec94"
-	},
-	"courseId": {
-		"$oid": "59a3ce58a2049554a93fec6e"
-	},
-	"updatedAt": {
-		"$date": "2017-09-05T09:40:44.117Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-05T09:40:44.117Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false
-},
-{
-	"_id": {
-		"$oid": "59afd42e1f513506904e1d1a"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
-	},
-	"name": "Bestandteile des menschlichen Auges",
-	"description": "\u003cp\u003eVergleiche die \u003ca href=\"https://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52\" target=\"_blank\"\u003eAbbildung des Auges im Biologieunterricht\u003c/a\u003e\u0026#xA0;mit der nachfolgenden Abbildung und schreibe zu den Punkten jeweils die korrekte Bezeichnung auf:\u003c/p\u003e\r\n\r\n\u003cp\u003e\u003cimg alt=\"\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/augeabb_task_web.png\"\u003e\u003c/p\u003e\r\n\r\n\u003ctable border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:800px\"\u003e\r\n\u0009\u003ctbody\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e1):________________________\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e2):________________________\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e3):________________________\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e4):________________________\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u003c/tbody\u003e\r\n\u003c/table\u003e\r\n\r\n\u003cp\u003e\u0026#xA0;\u003c/p\u003e\r\n\r\n\u003cp\u003e\u0026#xA0;\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-06T10:55:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-04-30T14:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a529eba2049554a93fecff"
-	},
-	"courseId": {
-		"$oid": "59a3c948a2049554a93fec5f"
-	},
-	"updatedAt": {
-		"$date": "2017-09-06T10:55:42.299Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-06T10:55:42.299Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
-},
-{
-	"_id": {
-		"$oid": "59afdd5b1f513506904e1d33"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
-	},
-	"name": "Bilder zu Hauptstädten der Nachbarstaaten Deutschlands",
-	"description": "\u003cp\u003eBilder zu Hauptst\u0026#xE4;dten der Nachbarstaaten Deutschlands in die Schul-Cloud recherchieren und in die einbinden!\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-06T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-05-31T12:00:00.000Z"
-	},
-	"private": true,
-	"lessonId": {
-		"$oid": "59a3e4bba2049554a93fec94"
-	},
-	"courseId": {
-		"$oid": "59a3ce58a2049554a93fec6e"
-	},
-	"updatedAt": {
-		"$date": "2017-09-06T11:34:51.711Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-06T11:34:51.710Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false
-},
-{
-	"_id": {
-		"$oid": "59afe3e31f513506904e1d53"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "599ec1688e4e364ec18ff46e"
-	},
-	"name": "Bestandteile einer Kamera",
-	"description": "\u003cp\u003eIn der folgenden Abbildung siehst Du den Strahlengang einer einfachen Kamera.\u003cbr\u003e\r\nBesuche die Seite \u003ca href=\"https://www.lernhelfer.de/schuelerlexikon/kunst/artikel/kameratypen\" target=\"_blank\"\u003ehttps://www.lernhelfer.de/schuelerlexikon/kunst/artikel/kameratypen\u003c/a\u003e; scrolle dort bis zur \u0026#xDC;berschrift \u0026quot;Aufbau einer\u0026#xA0;Sucherkamera\u0026quot;.\u003cbr\u003e\r\nVergleiche Abbildung dort mit der nachfolgenden Abbildung und schreibe zu den Punkten jeweils die korrekte Bezeichnung auf:\u003c/p\u003e\r\n\r\n\u003cp\u003e\u003cimg alt=\"Strahlengang einer einfachen Kamera\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/kamera_web.png\"\u003e\u003c/p\u003e\r\n\r\n\u003ctable border=\"1\" cellpadding=\"1\" cellspacing=\"1\"\u003e\r\n\u0009\u003ctbody\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e1):________________________\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e2):________________________\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u0009\u003ctr\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e3):________________________\u003c/td\u003e\r\n\u0009\u0009\u0009\u003ctd\u003e4):________________________\u003c/td\u003e\r\n\u0009\u0009\u003c/tr\u003e\r\n\u0009\u003c/tbody\u003e\r\n\u003c/table\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-06T12:01:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-04-30T14:00:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a529eba2049554a93fecff"
-	},
-	"courseId": {
-		"$oid": "59a3c948a2049554a93fec5f"
-	},
-	"updatedAt": {
-		"$date": "2017-09-06T12:02:43.310Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-06T12:02:43.309Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
-},
-{
-	"_id": {
-		"$oid": "59afea401f513506904e1d61"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
-	},
-	"name": "Eigenschaften einer Sammellinse",
-	"description": "\u003cp\u003eLies die \u003ca href=\"https://de.wikipedia.org/wiki/Sammellinse\" target=\"_blank\"\u003eWikipedia-Beschreibung der Sammellinse\u003c/a\u003e\u0026#xA0;und beantworte danach folgende Fragen \u003cins\u003ein ganzen S\u0026#xE4;tzen\u003c/ins\u003e:\u003c/p\u003e\r\n\r\n\u003col\u003e\r\n\u0009\u003cli\u003eWas wird durch eine Sammellinse erzeugt?\u003cbr\u003e\r\n\u0009\u0026#xA0;\u003c/li\u003e\r\n\u0009\u003cli\u003eWelche Lichtstrahlen werden von der Sammellinse im Brennpunkt fokussiert?\u003cbr\u003e\r\n\u0009\u0026#xA0;\u003c/li\u003e\r\n\u0009\u003cli\u003eIn welchem\u0026#xA0;Wellenl\u0026#xE4;ngenbereich (Sammelbezeichnung) fokussiert eine Sammellinse, in welchen nicht?\u003c/li\u003e\r\n\u003c/ol\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-06T12:14:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2018-04-30T12:14:00.000Z"
-	},
-	"lessonId": {
-		"$oid": "59a529eba2049554a93fecff"
-	},
-	"courseId": {
-		"$oid": "59a3c948a2049554a93fec5f"
-	},
-	"updatedAt": {
-		"$date": "2017-09-06T12:29:52.848Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-06T12:29:52.848Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"private": false
-},
-{
-	"_id": {
-		"$oid": "59c4daacd69d413e2ff0bd24"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
-	},
-	"teacherId": {
-		"$oid": "59ad4c412b442b7f81810285"
-	},
-	"name": "Weekly Challenge 7",
-	"description": "",
-	"availableDate": {
-		"$date": "2017-09-22T14:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2017-09-22T15:00:00.000Z"
-	},
-	"lessonId": null,
-	"courseId": {
-		"$oid": "59a3cd61a2049554a93fec68"
-	},
-	"updatedAt": {
-		"$date": "2017-09-22T09:41:00.385Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-22T09:41:00.385Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3a99ea9c31a26f4d1d4e5"
-	},
-	"fileIds": [],
-	"courseId": null,
-	"lessonId": null,
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Biologie 7C ",
-	"description": "<p>Herz</p>",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T07:27:00Z"
-	},
-	"dueDate": {
-		"$date": "2023-11-04T07:27:00Z"
-	},
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T07:28:30.102Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:28:30.102Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b0b7a9c31a26f4d1d749"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task1",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T07:58:47.348Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T07:58:47.382Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:58:47.382Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b0dba9c31a26f4d1d764"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task2",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T07:59:00Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T07:59:23.317Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:59:23.317Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false,
-	"teamSubmissions": false
-},
-{
-	"_id": {
-		"$oid": "5fa3b1a3a9c31a26f4d1d77f"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task3",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:02:43.523Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:02:43.554Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:02:43.554Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b21ca9c31a26f4d1d840"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task4",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:04:44.35Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:04:44.386Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:04:44.386Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b23da9c31a26f4d1d868"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task5",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:05:17.76Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:05:17.786Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:05:17.786Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b256a9c31a26f4d1d890"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task6",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:05:42.443Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:05:42.473Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:05:42.473Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b273a9c31a26f4d1d8b8"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task7",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:06:11.107Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:06:11.139Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:06:11.139Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b69ba9c31a26f4d1d8e0"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task8",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:23:55.191Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:23:55.223Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:23:55.223Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b8caa9c31a26f4d1d8fb"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task9",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:33:14.817Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:33:14.862Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:33:14.862Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b8e8a9c31a26f4d1d923"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task10",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:33:44.558Z"
-	},
-	"dueDate": null,
-	"private": true,
-	"createdAt": {
-		"$date": "2020-11-05T08:33:44.584Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:33:44.584Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b8fea9c31a26f4d1d94b"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task11",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:34:06.137Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:34:06.173Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:34:06.173Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b912a9c31a26f4d1d974"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task12",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:34:26.613Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:34:26.647Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:34:26.647Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b92aa9c31a26f4d1d99d"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task13",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:34:50.407Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:34:50.439Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:34:50.439Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b93da9c31a26f4d1d9c6"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task14",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:35:09.032Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:35:09.062Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:35:09.062Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b956a9c31a26f4d1d9ef"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task15",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:35:34.721Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:35:34.761Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:35:34.761Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b96ca9c31a26f4d1da18"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task16",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:35:56.778Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:35:56.808Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:35:56.808Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b986a9c31a26f4d1da41"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task17",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:36:22.38Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:36:22.41Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:36:22.41Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b9a9a9c31a26f4d1da6a"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task18",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:36:57.885Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:36:57.91Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:36:57.91Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b9bea9c31a26f4d1da93"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task19",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:37:18.615Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:37:18.644Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:37:18.644Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3b9d1a9c31a26f4d1dabc"
-	},
-	"fileIds": [],
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
-	},
-	"lessonId": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
-	},
-	"maxTeamMembers": null,
-	"archived": [],
-	"name": "Task20",
-	"description": "",
-	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"teacherId": {
-		"$oid": "5fa2c71bb229544f2c6966d9"
-	},
-	"availableDate": {
-		"$date": "2020-11-05T08:37:37.236Z"
-	},
-	"dueDate": null,
-	"createdAt": {
-		"$date": "2020-11-05T08:37:37.27Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T08:37:37.27Z"
-	},
-	"__v": 0
-}
-]
+}]
+
