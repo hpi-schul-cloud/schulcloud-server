@@ -3,7 +3,7 @@ import { INestApplicationContext } from '@nestjs/common';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '@src/console/console.module';
 import { ConsoleWriter } from '@src/console/console-writer/console-writer.service';
-import { execute, TestBootstrapConsole } from './bootstrap.console';
+import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
 describe('ServerConsole (e2e)', () => {
 	let app: INestApplicationContext;
