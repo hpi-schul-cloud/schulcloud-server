@@ -32,7 +32,7 @@ const ownerModel = {
 async function* batchIterator(iterator, batchSize) {
 	let batch = [];
 	for await (const item of iterator) {
-		if (batch.length > batchSize) {
+		if (batch.length >= batchSize) {
 			yield batch;
 			batch = [];
 		}
@@ -41,6 +41,31 @@ async function* batchIterator(iterator, batchSize) {
 	yield batch;
 }
 
+const addBucketAndStorageProviderToFiles = async (files) =>
+	Promise.all(
+		files.map(async (file) => {
+			try {
+				let schoolId;
+				const creatorId = file.creator;
+				if (creatorId) {
+					const creator = await userModel.findById(creatorId).lean().exec();
+					({ schoolId } = creator);
+				} else {
+					const ownerType = file.refOwnerModel;
+					const owner = await ownerModel[ownerType].findById(file.owner).lean().exec();
+					({ schoolId } = owner);
+				}
+				const school = await schoolModel.findById(schoolId).lean().exec();
+				const bucket = `bucket-${schoolId}`;
+				if (!file.bucket) file.bucket = bucket;
+				if (!file.storageProviderId) file.storageProviderId = school.storageProvider;
+				await file.save();
+			} catch (err) {
+				error(`bucket could not be added to the file ${file._id}`, err);
+			}
+		})
+	);
+
 module.exports = {
 	up: async function up() {
 		alert('Start adding buckets to file documents...');
@@ -48,30 +73,13 @@ module.exports = {
 		const files = FileModel.find({ $or: [{ bucket: { $exists: false } }, { storageProviderId: { $exists: false } }] });
 		const fileCount = await files.count();
 		alert(`${fileCount} files will be processed...`);
-		for await (const fileBatch of batchIterator(files, 100)) {
-			await Promise.all(
-				fileBatch.map(async (file) => {
-					try {
-						let schoolId;
-						const creatorId = file.creator;
-						if (creatorId) {
-							const creator = await userModel.findById(creatorId).lean().exec();
-							({ schoolId } = creator);
-						} else {
-							const ownerType = file.refOwnerModel;
-							const owner = await ownerModel[ownerType].findById(file.owner).lean().exec();
-							({ schoolId } = owner);
-						}
-						const school = await schoolModel.findById(schoolId).lean().exec();
-						const bucket = `bucket-${schoolId}`;
-						if (!file.bucket) file.bucket = bucket;
-						if (!file.storageProviderId) file.storageProviderId = school.storageProvider;
-						await file.save();
-					} catch (err) {
-						error(`bucket could not be added to the file ${file._id}`, err);
-					}
-				})
-			);
+		const fileBatchIterator = batchIterator(files, 3);
+		let fileBatch = await fileBatchIterator.next();
+		while (!fileBatch.done) {
+			// eslint-disable-next-line no-await-in-loop
+			await addBucketAndStorageProviderToFiles(fileBatch.value);
+			// eslint-disable-next-line no-await-in-loop
+			fileBatch = await fileBatchIterator.next();
 		}
 		await close();
 		alert('Done!');
