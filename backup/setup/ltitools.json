@@ -1,47 +1,45 @@
-[
-	{
-		"_id": {
-			"$oid": "5d4aa4bdc4d8d047f850ca31"
-		},
-		"name": "Portfolio",
-		"url": "https://portfolio.niedersachsen.cloud/login",
-		"isLocal": true,
-		"isTemplate": false,
-		"key": "none",
-		"secret": "none",
-		"oAuthClientId": "portfolio",
-		"friendlyUrl": "portfolio",
-		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"customs": [],
-		"privacy_permission": "pseudonymous",
-		"roles": [],
-		"__v": 0
+[{
+	"_id": {
+		"$oid": "5d4aa4bdc4d8d047f850ca31"
 	},
-	{
-		"_id": {
-			"$oid": "5e2f04d5118b164c1f51861e"
-		},
-		"roles": [],
-		"privacy_permission": "anonymous",
-		"name": "Video-Konferenz mit BigBlueButton",
-		"url": "BBB_URL",
-		"isTemplate": true,
-		"isLocal": true,
-		"logo_url": "/images/tools/bbb/available.png",
-		"secret": "none",
-		"key": "none",
-		"customs": [],
-		"createdAt": {
-			"$date": "2020-01-27T15:42:13.633Z"
-		},
-		"updatedAt": {
-			"$date": "2020-01-27T15:42:13.633Z"
-		},
-		"__v": 0
-	}
-]
+	"name": "Portfolio",
+	"url": "https://portfolio.niedersachsen.cloud/login",
+	"isLocal": true,
+	"isTemplate": false,
+	"key": "none",
+	"secret": "none",
+	"oAuthClientId": "portfolio",
+	"friendlyUrl": "portfolio",
+	"updatedAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"customs": [],
+	"privacy_permission": "pseudonymous",
+	"roles": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e2f04d5118b164c1f51861e"
+	},
+	"roles": [],
+	"privacy_permission": "anonymous",
+	"name": "Video-Konferenz mit BigBlueButton",
+	"url": "BBB_URL",
+	"isTemplate": true,
+	"isLocal": true,
+	"logo_url": "/images/tools/bbb/available.png",
+	"secret": "none",
+	"key": "none",
+	"customs": [],
+	"createdAt": {
+		"$date": "2020-01-27T15:42:13.633Z"
+	},
+	"updatedAt": {
+		"$date": "2020-01-27T15:42:13.633Z"
+	},
+	"__v": 0
+}]
