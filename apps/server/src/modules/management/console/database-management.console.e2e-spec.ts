@@ -4,7 +4,6 @@ import { ServerConsoleModule } from '@src/console/console.module';
 import { DatabaseManagementUc } from '@src/modules/management/uc/database-management.uc';
 import { CommanderError } from 'commander';
 import { execute, TestBootstrapConsole } from '../../../console/test-bootstrap.console';
-// import { ConsoleWriter } from '../../../console/console-writer';
 
 describe('ServerConsole (e2e)', () => {
 	let app: INestApplicationContext;
