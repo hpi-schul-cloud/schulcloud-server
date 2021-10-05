@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* istanbul ignore file */
 import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
@@ -47,6 +48,9 @@ export async function bootstrap(module: ServerModule | ManagementModule, port: n
 	switch (moduleName) {
 		case ServerModule.name:
 			// start default server module
+			console.log('####################################');
+			console.log(`### Start Server on port ${port}    ###`);
+			console.log('####################################');
 
 			// provide NestJS mail service to feathers app
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -76,6 +80,9 @@ export async function bootstrap(module: ServerModule | ManagementModule, port: n
 			break;
 		case ManagementModule.name:
 			// start management module only
+			console.log('###############################################');
+			console.log(`### Start Server Management on port ${port}    ###`);
+			console.log('###############################################');
 			rootExpress.use('/api', nestExpress);
 			break;
 		default:
