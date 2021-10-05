@@ -73,7 +73,7 @@ module.exports = {
 		const files = FileModel.find({ $or: [{ bucket: { $exists: false } }, { storageProviderId: { $exists: false } }] });
 		const fileCount = await files.count();
 		alert(`${fileCount} files will be processed...`);
-		const fileBatchIterator = batchIterator(files, 3);
+		const fileBatchIterator = batchIterator(files, 100);
 		let fileBatch = await fileBatchIterator.next();
 		while (!fileBatch.done) {
 			// eslint-disable-next-line no-await-in-loop
