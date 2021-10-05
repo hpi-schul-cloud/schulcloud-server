@@ -42,7 +42,7 @@ export async function bootstrap(module: ServerModule | ManagementModule, port: n
 	// mount instances
 	const rootExpress = express();
 
-	const moduleName = (module as any as { name: string }).name;
+	const moduleName = (module as unknown as { name: string }).name;
 
 	switch (moduleName) {
 		case ServerModule.name:

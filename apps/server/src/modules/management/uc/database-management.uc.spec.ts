@@ -25,12 +25,13 @@ describe('DatabaseManagementService', () => {
 							const adapter = new FileSystemAdapter();
 							return adapter.joinPath(...paths);
 						},
-						writeFileSync(_path: string, _text: string) {},
-						readDirSync(_path: string) {
+						createDir(_path: string) {},
+						readDir(_path: string) {
 							// expect json files in folder
 							return collectionNames.map((name) => `${name}.json`);
 						},
-						readFileSync(fileName: string) {
+						writeFile(_path: string, _text: string) {},
+						readFile(fileName: string) {
 							if (fileName === 'collectionName1.json') {
 								return '[{"foo":"bar1"},{"foo":"bar2"}]';
 							}
@@ -145,6 +146,11 @@ describe('DatabaseManagementService', () => {
 			expect(collections1).toEqual(['collectionName1:2']);
 			const collections2 = await uc.exportCollectionsToFileSystem(['collectionName2']);
 			expect(collections2).toEqual(['collectionName2:1']);
+		});
+		it('should create export dir (based on current date time)', async () => {
+			const createDirMock = jest.spyOn(fileSystemAdapter, 'createDir');
+			await uc.exportCollectionsToFileSystem(['collectionName1']);
+			expect(createDirMock).toHaveBeenCalled();
 		});
 		describe('When writing documents as text fo file', () => {
 			it('should sort documents by age (id first, then createdAt) and convert to bson', async () => {

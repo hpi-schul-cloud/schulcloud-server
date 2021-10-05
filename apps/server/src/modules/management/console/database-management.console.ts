@@ -20,10 +20,12 @@ export class DatabaseManagementConsole {
 		],
 		description: 'reset database collections with seed data from filesystem',
 	})
-	async seedCollections(options: Options): Promise<void> {
+	async seedCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
 		const collections = await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter);
-		this.consoleWriter.info(JSON.stringify(collections));
+		const report = JSON.stringify(collections);
+		this.consoleWriter.info(report);
+		return collections;
 	}
 
 	@Command({
@@ -37,9 +39,11 @@ export class DatabaseManagementConsole {
 		],
 		description: 'export database collections to filesystem',
 	})
-	async exportCollections(options: Options): Promise<void> {
+	async exportCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
 		const collections = await this.databaseManagementUc.exportCollectionsToFileSystem(filter);
-		this.consoleWriter.info(JSON.stringify(collections));
+		const report = JSON.stringify(collections);
+		this.consoleWriter.info(report);
+		return collections;
 	}
 }
