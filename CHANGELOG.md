@@ -26,6 +26,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-297 - fixed set-value dependency vulnerabilities
 - BC-377 - fixed axios dependency vulnerabilities
 
+## [26.11.3] - 2021-10-05
+
+### Fixed
+
+- BC-121 - run add bucket to files migration in parallel 
+
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
