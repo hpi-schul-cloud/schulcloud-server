@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable promise/always-return */
 import { BootstrapConsole } from 'nestjs-console';
-import { ServerConsoleModule } from './server-console.module';
+import { ServerConsoleModule } from './console.module';
 
 /**
  * The console is starting the application wrapped into commander.
