@@ -1,25 +1,40 @@
-[{
-    "versionNumber": "testversion",
-    "consentText": "lorem ipsum",
-    "date": {"$date": "2017-01-01T00:06:40.150Z"}
-},
-{
-    "_id" : {"$oid": "5e2e96015f1e4f83f86e355f"},
-    "versionNumber" : "tou-1",
-    "title" : "Title of this update of the terms of use",
-    "consentText" : "This is an explanatory text",
-    "consentTypes" : [ 
-        "termsOfUse"
-    ],
-    "publishedAt" : {"$date": "2020-01-01T00:00:00.000Z"}
-},
-{
-    "_id" : {"$oid": "5e2e96015f1e4f83f86e3560"},
-    "versionNumber" : "prv-1",
-    "title" : "Title of this update of the privacy documents",
-    "consentText" : "This is an explanatory text",
-    "consentTypes" : [ 
-        "privacy"
-    ],
-    "publishedAt" : {"$date": "2020-01-01T00:00:00.000Z"}
-}]
+[
+	{
+		"_id": {
+			"$oid": "5e2e96015f1e4f83f86e355f"
+		},
+		"versionNumber": "tou-1",
+		"title": "Title of this update of the terms of use",
+		"consentText": "This is an explanatory text",
+		"consentTypes": [
+			"termsOfUse"
+		],
+		"publishedAt": {
+			"$date": "2020-01-01T00:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "5e2e96015f1e4f83f86e3560"
+		},
+		"versionNumber": "prv-1",
+		"title": "Title of this update of the privacy documents",
+		"consentText": "This is an explanatory text",
+		"consentTypes": [
+			"privacy"
+		],
+		"publishedAt": {
+			"$date": "2020-01-01T00:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "615d9bb496a83abb6c0727cc"
+		},
+		"versionNumber": "testversion",
+		"consentText": "lorem ipsum",
+		"date": {
+			"$date": "2017-01-01T00:06:40.150Z"
+		}
+	}
+]

@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-25  - sort database seeds ascending by date of creation (_id, createdAt)
 - BC-25  - move logic of npm run setup into console application and add management application with same behavior 
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
