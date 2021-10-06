@@ -31,7 +31,13 @@ describe('dashboard repo', () => {
 	it('should persist dashboard with gridElements', async () => {
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
-				new GridElement(new ObjectId().toString(), 1, 2, new DefaultGridReference(new ObjectId().toString(), 'Mathe')),
+				{
+					pos: { x: 1, y: 3 },
+					gridElement: new GridElement(
+						new ObjectId().toString(),
+						new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+					),
+				},
 			],
 		});
 		repo.persist(dashboard);

@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, DashboardEntity, DefaultGridReference, GridElement, DashboardProps } from '@shared/domain';
+import {
+	EntityId,
+	DashboardEntity,
+	DefaultGridReference,
+	GridElement,
+	DashboardProps,
+	GridElementWithPosition,
+} from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardModelMapper } from './dashboard.model.mapper';
@@ -37,13 +44,14 @@ export class DashboardRepo implements IDashboardRepo {
 		if (dashboardModel) {
 			return DashboardModelMapper.mapToEntity(dashboardModel);
 		}
-		const gridArray: GridElement[] = [];
-		const diagonalSize = 5;
+		const gridArray: GridElementWithPosition[] = [];
+		const diagonalSize = 4;
 		for (let i = 0; i < diagonalSize; i += 1) {
 			const elementReference = new DefaultGridReference(new ObjectId().toString(), 'exampletitle');
-			gridArray.push(
-				new GridElement(new ObjectId().toString(), Math.floor(Math.random() * 6 + 1), i + 1, elementReference)
-			);
+			gridArray.push({
+				pos: { x: Math.floor(Math.random() * 4 + 1), y: i + 1 },
+				gridElement: new GridElement(new ObjectId().toString(), elementReference),
+			});
 		}
 		const dashboard = new DashboardEntity(hardcodedTestDashboardId, { grid: gridArray });
 		this.persist(dashboard);

@@ -38,34 +38,21 @@ export class DefaultGridReference implements IGridElementReference {
 export interface IGridElement {
 	getId: () => EntityId;
 
-	getPosition: () => { x: number; y: number };
-
 	getMetadata: () => GridElementReferenceMetadata;
 }
 
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	constructor(id: EntityId, x: number, y: number, reference: IGridElementReference) {
+	constructor(id: EntityId, reference: IGridElementReference) {
 		this.id = id;
-		this.xPos = x;
-		this.yPos = y;
 		this.reference = reference;
 	}
 
 	reference: IGridElementReference;
 
-	xPos: number;
-
-	yPos: number;
-
 	getId(): EntityId {
 		return this.id;
-	}
-
-	// todo: consider removing position from gridElements, for cleaner update operations.
-	getPosition(): GridPosition {
-		return { x: this.xPos, y: this.yPos };
 	}
 
 	getMetadata(): GridElementReferenceMetadata {
@@ -80,7 +67,7 @@ export type GridElementWithPosition = {
 	pos: GridPosition;
 };
 
-export type DashboardProps = { colums?: number; rows?: number; grid: IGridElement[] };
+export type DashboardProps = { colums?: number; rows?: number; grid: GridElementWithPosition[] };
 
 export class DashboardEntity {
 	id: EntityId;
@@ -89,18 +76,24 @@ export class DashboardEntity {
 
 	rows: number;
 
-	grid: { [position: number]: IGridElement };
+	grid: Map<number, IGridElement>;
 
 	private gridIndexFromPosition(pos: GridPosition): number {
 		return this.colums * pos.y + pos.x;
 	}
 
+	private positionFromGridIndex(index: number): GridPosition {
+		const y = Math.floor(index / this.colums);
+		const x = index % this.colums;
+		return { x, y };
+	}
+
 	constructor(id: string, props: DashboardProps) {
 		this.colums = props.colums || 5;
 		this.rows = props.rows || 5;
-		this.grid = {};
+		this.grid = new Map<number, IGridElement>();
 		props.grid.forEach((element) => {
-			this.grid[this.gridIndexFromPosition(element.getPosition())] = element;
+			this.grid.set(this.gridIndexFromPosition(element.pos), element.gridElement);
 		});
 		this.id = id;
 		Object.assign(this, {});
@@ -110,7 +103,15 @@ export class DashboardEntity {
 		return this.id;
 	}
 
-	getGrid(): IGridElement[] {
-		return Object.values(this.grid);
+	getGrid(): GridElementWithPosition[] {
+		const result = [...this.grid.keys()].map((key) => {
+			const position = this.positionFromGridIndex(key);
+			const value = this.grid.get(key) as IGridElement;
+			return {
+				pos: position,
+				gridElement: value,
+			};
+		});
+		return result;
 	}
 }
