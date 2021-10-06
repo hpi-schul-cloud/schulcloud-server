@@ -1,18 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriter } from './console-writer/console-writer.service';
-import { ServerConsoleModule } from './server-console.module';
+import { ServerConsoleModule } from './console.module';
 import { ServerConsole } from './server.console';
 
 describe('ServerConsole', () => {
 	let serverConsole: ServerConsole;
 	let consoleWriter: ConsoleWriter;
-	beforeEach(async () => {
-		const app: TestingModule = await Test.createTestingModule({
+	let module: TestingModule;
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
 			imports: [ServerConsoleModule],
 		}).compile();
 
-		serverConsole = app.get<ServerConsole>(ServerConsole);
-		consoleWriter = app.get<ConsoleWriter>(ConsoleWriter);
+		serverConsole = module.get<ServerConsole>(ServerConsole);
+		consoleWriter = module.get<ConsoleWriter>(ConsoleWriter);
+	});
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('root', () => {
