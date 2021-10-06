@@ -1,5 +1,37 @@
 [{
 	"_id": {
+		"$oid": "5fa3a99ea9c31a26f4d1d4e5"
+	},
+	"fileIds": [],
+	"courseId": null,
+	"lessonId": null,
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Biologie 7C ",
+	"description": "<p>Herz</p>",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T07:27:00Z"
+	},
+	"dueDate": {
+		"$date": "2023-11-04T07:27:00Z"
+	},
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T07:28:30.102Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:28:30.102Z"
+	},
+	"__v": 0
+	},
+	{
+	"_id": {
 		"$oid": "615ac1f74ab618538c42a774"
 	},
 	"fileIds": [],
