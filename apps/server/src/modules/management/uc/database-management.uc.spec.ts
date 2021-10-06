@@ -150,7 +150,15 @@ describe('DatabaseManagementService', () => {
 		it('should create export dir (based on current date time)', async () => {
 			const createDirMock = jest.spyOn(fileSystemAdapter, 'createDir');
 			await uc.exportCollectionsToFileSystem(['collectionName1']);
-			expect(createDirMock).toHaveBeenCalled();
+			expect(createDirMock).toHaveBeenCalledTimes(1);
+			createDirMock.mockReset();
+		});
+		it('should override seed files in setup folder when override flag is set', async () => {
+			const createDirMock = jest.spyOn(fileSystemAdapter, 'createDir');
+			await uc.exportCollectionsToFileSystem(['collectionName1'], true);
+			expect(createDirMock).toHaveBeenCalledTimes(1);
+			expect(createDirMock).toHaveBeenCalledWith(expect.stringContaining('setup'));
+			createDirMock.mockReset();
 		});
 		describe('When writing documents as text fo file', () => {
 			it('should sort documents by age (id first, then createdAt) and convert to bson', async () => {
