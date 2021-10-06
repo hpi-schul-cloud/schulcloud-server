@@ -17,7 +17,8 @@ describe('ConsoleWriter', () => {
 	});
 	describe('when using info on console writer', () => {
 		it('should call spinner info with same input text', () => {
-			const spinnerSpy = jest.spyOn(service.spinner, 'info');
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			const spinnerSpy = jest.spyOn(service['spinner'], 'info');
 			const someRandomText = 'random text';
 			service.info(someRandomText);
 			expect(spinnerSpy).toHaveBeenCalledWith(someRandomText);
