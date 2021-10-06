@@ -1,15 +1,13 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '@src/console/console.module';
-import { DatabaseManagementUc } from '@src/modules/management/uc/database-management.uc';
 import { CommanderError } from 'commander';
-import { execute, TestBootstrapConsole } from '../../../console/test-bootstrap.console';
+import { execute, TestBootstrapConsole } from './bootstrap.console';
 
-describe('ServerConsole (e2e)', () => {
+describe('DatabaseManagementConsole (e2e)', () => {
 	let app: INestApplicationContext;
 	let console: BootstrapConsole;
 	let consoleService: ConsoleService;
-	let uc: DatabaseManagementUc;
 	beforeAll(async () => {
 		console = new TestBootstrapConsole({
 			module: ServerConsoleModule,
@@ -18,7 +16,6 @@ describe('ServerConsole (e2e)', () => {
 		app = await console.init();
 		await app.init();
 		consoleService = app.get<ConsoleService>(ConsoleService);
-		uc = app.get<DatabaseManagementUc>(DatabaseManagementUc);
 	});
 
 	afterAll(async () => {

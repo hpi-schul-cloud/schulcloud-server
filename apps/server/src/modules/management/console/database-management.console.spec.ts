@@ -3,7 +3,7 @@ import { ConsoleWriterService } from '@shared/infra/console';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 import { DatabaseManagementConsole } from './database-management.console';
 
-describe('ServerConsole', () => {
+describe('DatabaseManagementConsole', () => {
 	let service: DatabaseManagementConsole;
 	let module: TestingModule;
 	let consoleWriter: ConsoleWriterService;
