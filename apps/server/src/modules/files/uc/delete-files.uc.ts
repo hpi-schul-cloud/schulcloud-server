@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
-import { FilesRepo, FileStorageRepo } from '../repo';
 import { File } from '@shared/domain';
+import { FilesRepo, FileStorageRepo } from '../repo';
 
 @Injectable()
 export class DeleteFilesUc {
