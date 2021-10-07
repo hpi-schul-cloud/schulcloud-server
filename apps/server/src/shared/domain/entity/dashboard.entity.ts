@@ -114,4 +114,17 @@ export class DashboardEntity {
 		});
 		return result;
 	}
+
+	moveElement(from: GridPosition, to: GridPosition): GridElementWithPosition {
+		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
+		if (elementToMove) {
+			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
+			this.grid.delete(this.gridIndexFromPosition(from));
+			return {
+				pos: to,
+				gridElement: elementToMove,
+			};
+		}
+		throw new Error();
+	}
 }

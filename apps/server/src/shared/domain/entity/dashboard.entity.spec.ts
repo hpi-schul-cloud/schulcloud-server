@@ -53,7 +53,26 @@ describe('dashboard entity', () => {
 		it.todo('when elements are returned, they should include positions');
 	});
 
-	/* describe('moveElement', () => {
-		it('when the new position is taken, it should return an error', () => {});
-	}); */
+	describe('moveElement', () => {
+		it('should move existing element to a new position', () => {
+			const gridElement = {
+				getId: () => 'gridelementid',
+				getMetadata: () => ({
+					id: 'someId',
+					title: 'Calendar-Dashboard',
+					shortTitle: 'CAL',
+					displayColor: '#FFFFFF',
+				}),
+			};
+			const dashboard = new DashboardEntity('someid', { grid: [{ pos: { x: 1, y: 2 }, gridElement }] });
+			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
+			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
+			const grid = dashboard.getGrid();
+			expect(grid[0].pos).toEqual({ x: 3, y: 3 });
+		});
+
+		it.todo('when no element at origin position, it should throw notFound');
+
+		it.todo('when the new position is taken, it should throw badrequest');
+	});
 });
