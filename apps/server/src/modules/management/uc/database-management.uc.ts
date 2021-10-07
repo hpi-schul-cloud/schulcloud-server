@@ -43,7 +43,11 @@ export class DatabaseManagementUc {
 	 * export folder name based on current date
 	 * @returns
 	 */
-	private getTargetFolder() {
+	private getTargetFolder(toSeedFolder?: boolean) {
+		if (toSeedFolder === true) {
+			const targetFolder = this.getSeedFolder();
+			return targetFolder;
+		}
 		const now = new Date();
 		const currentDateTime = `${now.getFullYear()}_${
 			now.getMonth() + 1
@@ -173,10 +177,11 @@ export class DatabaseManagementUc {
 	 * Exports all or defined <collections> from database as bson to filesystem.
 	 * The behaviour should match $ mongoexport
 	 * @param collections optional filter applied on existing collections
+	 * @param toSeedFolder optional override existing seed data files
 	 * @returns the list of collection names exported
 	 */
-	async exportCollectionsToFileSystem(collections?: string[]): Promise<string[]> {
-		const targetFolder = this.getTargetFolder();
+	async exportCollectionsToFileSystem(collections?: string[], toSeedFolder?: boolean): Promise<string[]> {
+		const targetFolder = this.getTargetFolder(toSeedFolder);
 		await this.fileSystemAdapter.createDir(targetFolder);
 		// detect collections to export based on database collections
 		const collectionsToExport = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(

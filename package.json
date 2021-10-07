@@ -41,7 +41,7 @@
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
 		"migration-prune": "migrate prune --config ./config/migrate.js",
-		"migration-persist": "npm run nest:start:console -- database export --collection migrations",
+		"migration-persist": "npm run nest:start:console -- database export --collection migrations --override",
 		"migrate-etherpads": "node ./migrate-etherpads.js",
 		"nest:prebuild": "rimraf dist",
 		"nest:build": "nest build",

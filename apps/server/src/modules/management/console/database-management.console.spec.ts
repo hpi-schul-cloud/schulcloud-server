@@ -60,6 +60,13 @@ describe('DatabaseManagementConsole', () => {
 			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
 			consoleInfoSpy.mockReset();
 		});
+		it('should pass override flag to uc', async () => {
+			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
+			await service.exportCollections({ collection: 'singleCollection', override: true });
+			const result = JSON.stringify(['singleCollection:4']);
+			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			consoleInfoSpy.mockReset();
+		});
 		it('should seed existing collections', async () => {
 			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
 			await service.seedCollections({});
