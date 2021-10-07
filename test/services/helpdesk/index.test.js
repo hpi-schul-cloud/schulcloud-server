@@ -10,7 +10,7 @@ describe('helpdesk service', function test() {
 	let app;
 	let helpdeskService;
 	let logger;
-	let originalMailService;;
+	let originalMailService;
 
 	const testProblem = {
 		type: 'contactAdmin',
@@ -152,6 +152,24 @@ describe('helpdesk service', function test() {
 		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);
+	});
+
+	it.only('POST /helpdesk to schoolcloud with wish should be send additionally to default email if federal state email is provided and supportType is specified', async () => {
+		const postBody = {
+			type: 'contactHPI',
+			supportType: 'wish',
+			subject: 'Dies ist ein Titel 5',
+			problemDescription: 'Dies ist die Problembeschreibung 2',
+			replyEmail: 'test@mail.de',
+		};
+		const mailService = new MockMailService();
+		app.use('/mails', mailService);
+		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de');
+		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
+		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
+		expect(mailService.create.emails).to.contain('ticketsystem@schul-cloud.org');
 		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);
 	});
 
