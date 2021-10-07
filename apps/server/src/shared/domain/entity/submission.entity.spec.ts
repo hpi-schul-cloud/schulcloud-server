@@ -1,7 +1,7 @@
 import { Collection } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { userFactory } from '../factory';
+import { userFactory, fileFactory } from '../factory';
 import { File } from './file.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
@@ -39,7 +39,7 @@ describe('Submission entity', () => {
 	it('should be graded if grade grade files have been associated', () => {
 		const submission = buildSubmission();
 		const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
-		const file = new File({ name: 'grade file', creator: teacher });
+		const file = fileFactory.build({ creator: teacher });
 		submission.gradeFiles = new Collection<File>(submission, [file]);
 		expect(submission.isGraded()).toEqual(true);
 	});

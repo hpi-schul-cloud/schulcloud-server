@@ -7,6 +7,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 
 import { File, StorageProvider } from '@shared/domain';
+import { fileFactory } from '@shared/domain/factory';
 import { FilesRepo, FileStorageRepo } from '.';
 
 describe('FileStorageRepo', () => {
@@ -54,17 +55,7 @@ describe('FileStorageRepo', () => {
 			const bucket = 'bucket';
 			const storageFileName = 'storageFileName';
 
-			const storageProvider = new StorageProvider({
-				endpointUrl: 'http://localhost',
-				accessKeyId: 'accessKeyId',
-				secretAccessKey: 'secret',
-			});
-
-			const file = new File({
-				bucket,
-				storageFileName,
-				storageProvider,
-			});
+			const file = fileFactory.build();
 
 			await repo.deleteFile(file);
 

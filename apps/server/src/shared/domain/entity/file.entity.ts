@@ -1,12 +1,14 @@
 import { Entity, Property, ManyToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { StorageProvider } from './storageprovider.entity';
+import type { User } from './user.entity';
 
 interface IFileProperties {
 	deletedAt?: Date;
 	storageFileName: string;
 	bucket: string;
 	storageProvider: StorageProvider;
+	creator?: User;
 }
 
 @Entity({ tableName: 'files', discriminatorColumn: 'isDirectory' })
@@ -16,6 +18,9 @@ export class BaseFile extends BaseEntityWithTimestamps {
 
 	@Property()
 	isDirectory: boolean;
+
+	@Property()
+	creator?: User;
 }
 
 @Entity({ discriminatorValue: 'true' })
@@ -39,5 +44,6 @@ export class File extends BaseFile {
 		this.storageFileName = props.storageFileName;
 		this.bucket = props.bucket;
 		this.storageProvider = props.storageProvider;
+		this.creator = props.creator;
 	}
 }
