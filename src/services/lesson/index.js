@@ -2,9 +2,7 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const { BadRequest } = require('../../errors');
 const { LessonModel } = require('./model');
-const { courseModel } = require('../user-group/model');
 const { lessonContentService, lessonContentServiceHooks } = require('./services/lessonContentService');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
@@ -36,12 +34,12 @@ module.exports = function setup() {
 	const systemService = app.service('/lessons');
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');
 	const lessonCopyService = app.service('/lessons/copy');
-	
+
 	const hooksWrapper = {
 		before: hooks.before(),
 		after: hooks.after,
 	};
-	
+
 	app.service('/lessons/contents/:type/').hooks(lessonContentServiceHooks);
 	systemService.hooks(hooksWrapper);
 	lessonFilesService.hooks(hooksWrapper);

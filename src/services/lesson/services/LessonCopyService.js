@@ -144,7 +144,7 @@ class LessonCopyService {
 			});
 		const tempLesson = this.createTempLesson(sourceLesson, newCourseId);
 		const newLesson = await LessonModel.create(tempLesson).catch((err) => {
-			throw new GeneralError('Can not create new lesson.', err);
+			throw new GeneralError('Can not create new lesson.', { err });
 		});
 
 		return Promise.all([

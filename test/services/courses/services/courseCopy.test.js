@@ -1,16 +1,11 @@
 const assert = require('assert');
-const chai = require('chai');
+const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-const testUserId = '0000d231816abba584714c9e';
-const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
-
-let shareToken;
-
-describe('courses copy service', () => {
+describe.only('courses copy service', () => {
 	let app;
 	let copyCourseService;
 	let shareCourseService;
@@ -36,9 +31,9 @@ describe('courses copy service', () => {
 		const newCourseName = 'testCourse 76';
 		const courseCopy = await copyCourseService.create({ _id: course._id, name: newCourseName });
 
-		chai.expect(courseCopy.name).to.equal(newCourseName);
-		chai.expect(courseCopy.schoolId.toString()).to.equal(course.schoolId.toString());
-		chai.expect(courseCopy.userIds).to.have.lengthOf(0);
+		expect(courseCopy.name).to.equal(newCourseName);
+		expect(courseCopy.schoolId.toString()).to.equal(course.schoolId.toString());
+		expect(courseCopy.userIds).to.have.lengthOf(0);
 	});
 
 	it('creates a course copy including homeworks', async () => {
@@ -57,42 +52,53 @@ describe('courses copy service', () => {
 			courseId: course._id,
 		});
 
+		// _.omit(tempData, ['_id', 'courseId', 'copyCourseId']);
+		// data.copyCourseId || data._id
 		const courseCopy = await copyCourseService.create({
-			_id: testCourseExample,
+			copyCourseId: course._id,
 			name: 'course copy',
 			userId: teacher._id,
 		});
 
-		chai.expect(courseCopy.name).to.equal('course copy');
-		chai.expect(courseCopy.userIds).to.have.lengthOf(0);
+		expect(courseCopy.name).to.equal('course copy');
+		expect(courseCopy.userIds).to.have.lengthOf(0);
 
 		const homeworkCopies = await app.service('homework').find({
 			query: { courseId: course._id },
 			account: { userId: teacher._id },
 		});
-		chai.expect(homeworkCopies.total).to.equal(1);
+		expect(homeworkCopies.total).to.equal(1);
 	});
 
 	it('creates a shareToken for a course', async () => {
 		const course = await testObjects.createTestCourse({});
 		const sharedCourse = await shareCourseService.get(course._id);
-		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
+		expect(sharedCourse.shareToken).to.not.be.undefined;
 	});
 
 	it('find name of course through shareToken', async () => {
 		const course = await testObjects.createTestCourse({ name: 'Deutsch 10a' });
 		const sharedCourse = await shareCourseService.get(course._id);
 		const courseName = await shareCourseService.find({ query: { shareToken: sharedCourse.shareToken } });
-		chai.expect(courseName).to.equal('Deutsch 10a');
+		expect(courseName).to.equal('Deutsch 10a');
 	});
 
-	it('creates a course copy through shareToken', async () => {
-		const course = await shareCourseService.create({
+	it('creates a course copy through shareToken and override with new name', async () => {
+		const shareToken = `abc${testObjects.randomGen()}`;
+		const courseName = 'testCourse 76';
+
+		const course = await testObjects.createTestCourse({ shareToken });
+		const user = await testObjects.createTestUser();
+		const userId = user._id.toString();
+
+		const newCourse = await shareCourseService.create({
 			shareToken,
-			courseName: 'testCourse 76',
-			userId: testUserId,
+			courseName,
+			userId,
 		});
-		chai.expect(course.name).to.equal('testCourse 76');
+		expect(newCourse.name).to.equal(courseName);
+		expect(newCourse._id.toString() !== course._id.toString()).to.be.true;
+		expect(newCourse.teacherIds[0].toString()).to.equal(userId);
 	});
 
 	it('teacher can share a course', async () => {
@@ -100,6 +106,6 @@ describe('courses copy service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		const course = await testObjects.createTestCourse({ teacherIds: [teacher._id] });
 		const sharedCourse = await shareCourseService.get(course._id, params);
-		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
+		expect(sharedCourse.shareToken).to.not.be.undefined;
 	});
 });

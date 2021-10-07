@@ -8,38 +8,42 @@ const removeManyCourses = (ids) =>
 		.lean()
 		.exec();
 
-const createTestCourse = (appPromise, opt) => async ({
-	// required fields for base group
-	name = 'testCourse',
-	description = 'testCourseDescription',
-	schoolId = opt.schoolId,
-	userIds = [],
-	classIds = [],
-	teacherIds = [],
-	ltiToolIds = [],
-	substitutionIds = [],
-	features = [],
-	startDate,
-	untilDate,
-} = {}) => {
-	const app = await appPromise;
-	const course = await app.service('courses').create({
-		// required fields for course
-		name,
-		description,
-		schoolId,
-		userIds,
-		classIds,
-		teacherIds,
-		ltiToolIds,
-		substitutionIds,
-		features,
+const createTestCourse =
+	(appPromise, opt) =>
+	async ({
+		// required fields for base group
+		name = 'testCourse',
+		description = 'testCourseDescription',
+		schoolId = opt.schoolId,
+		userIds = [],
+		classIds = [],
+		teacherIds = [],
+		ltiToolIds = [],
+		substitutionIds = [],
+		features = [],
 		startDate,
 		untilDate,
-	});
-	createdCourseIds.push(course._id.toString());
-	return course;
-};
+		shareToken,
+	} = {}) => {
+		const app = await appPromise;
+		const course = await app.service('courses').create({
+			// required fields for course
+			name,
+			description,
+			schoolId,
+			userIds,
+			classIds,
+			teacherIds,
+			ltiToolIds,
+			substitutionIds,
+			features,
+			startDate,
+			untilDate,
+			shareToken,
+		});
+		createdCourseIds.push(course._id.toString());
+		return course;
+	};
 
 const cleanup = () => {
 	if (createdCourseIds.length === 0) {
@@ -50,10 +54,8 @@ const cleanup = () => {
 	return removeManyCourses(ids);
 };
 
-module.exports = (app, opt) => {
-	return {
-		create: createTestCourse(app, opt),
-		cleanup,
-		info: createdCourseIds,
-	};
-};
+module.exports = (app, opt) => ({
+	create: createTestCourse(app, opt),
+	cleanup,
+	info: createdCourseIds,
+});

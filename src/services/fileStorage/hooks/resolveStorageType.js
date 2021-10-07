@@ -17,9 +17,6 @@ const resolveStorageType = (context) => {
 			payload.schoolId = _id;
 			payload.fileStorageType = fileStorageType;
 			return context;
-		})
-		.catch((err) => {
-			throw new Error(err);
 		});
 };
 

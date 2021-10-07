@@ -2,31 +2,25 @@
 const _ = require('lodash');
 const { nanoid } = require('nanoid');
 
-const { GeneralError } = require('../../../errors');
-const logger = require('../../../logger');
+const { GeneralError, BadRequest } = require('../../../errors');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
 const { homeworkModel } = require('../../homework/model');
 const { LessonModel } = require('../../lesson/model');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
-const createHomework = (homework, courseId, lessonId, userId, app, newTeacherId) =>
-	app
-		.service('homework/copy')
-		.create({
-			_id: homework._id,
-			courseId,
-			lessonId,
-			userId,
-			newTeacherId,
-		})
-		.then((res) => res)
-		.catch((err) => Promise.reject(err));
+const createHomework = (app, homework, courseId, userId) =>
+	app.service('homework/copy').create({
+		_id: homework._id,
+		courseId,
+		lessonId: undefined,
+		userId,
+		newTeacherId: homework.teacherId,
+	});
 
 const createLesson = (app, data) => app.service('lessons/copy').create(data);
 
 class CourseCopyService {
-	constructor(app) {
+	setup(app) {
 		this.app = app;
 	}
 
@@ -38,6 +32,8 @@ class CourseCopyService {
 	 * @returns newly created course.
 	 */
 	async create(data, params) {
+		const { userId } = params.account || {};
+
 		let tempData = JSON.parse(JSON.stringify(data));
 		tempData = _.omit(tempData, ['_id', 'courseId', 'copyCourseId']);
 		/* In the hooks some strange things happen, and the Id doesnt get here.
@@ -65,76 +61,69 @@ class CourseCopyService {
 		];
 		tempCourse = _.omit(tempCourse, attributs);
 
-		tempCourse = Object.assign(tempCourse, tempData, { userId: (params.account || {}).userId });
+		tempCourse = Object.assign(tempCourse, tempData, { userId });
 		tempCourse.isCopyFrom = sourceCourseId;
-		const res = await this.app.service('courses').create(tempCourse);
 
-		const [homeworks, lessons] = await Promise.all([
-			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'),
+		const [newCourse, homeworks, lessons] = await Promise.all([
+			this.app.service('courses').create(tempCourse),
+			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'), // why populate lesson ?!
 			LessonModel.find({ courseId: sourceCourseId }),
 		]).catch((err) => {
-			throw new GeneralError('Can not fetch data to copy this course.', err);
+			throw new GeneralError('Can not prepare data to copy the course.', { err });
 		});
 
+		// TODO: lesson and homework promise all can combined to reduce execution time
+		// catch should add to createLesson and createHomework
 		await Promise.all(
 			lessons.map((lesson) =>
 				createLesson(this.app, {
 					lessonId: lesson._id,
-					newCourseId: res._id,
-					userId: params.account.userId,
+					newCourseId: newCourse._id,
+					userId,
 					shareToken: lesson.shareToken,
 				})
 			)
-		).catch((err) => {
-			logger.warning(err);
-			throw new GeneralError('Can not copy one or many lessons.', err);
+		).catch((errors) => {
+			throw new BadRequest('Can not copy one or many lessons.', { errors });
 		});
 
 		await Promise.all(
 			homeworks.map((homework) => {
 				// homeworks that are part of a lesson are copied in LessonCopyService
 				if (!homework.lessonId) {
-					return createHomework(
-						homework,
-						res._id,
-						undefined,
-						equalIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
-						this.app,
-						params.account.userId
-					);
+					return createHomework(this.app, homework, newCourse._id, userId);
 				}
 				return false;
 			})
-		).catch((err) => {
-			throw new GeneralError('Can not copy one or many homeworks.', err);
+		).catch((errors) => {
+			throw new BadRequest('Can not copy one or many homeworks.', { errors });
 		});
 
-		return res;
+		return newCourse;
 	}
 }
 
 class CourseShareService {
-	constructor(app) {
+	setup(app) {
 		this.app = app;
 	}
 
 	// If provided with param shareToken then return course name
-	find(params) {
-		return courseModel.findOne({ shareToken: params.query.shareToken }).then((course) => course.name);
+	async find(params) {
+		const course = await courseModel.findOne({ shareToken: params.query.shareToken }).lean().exec();
+		return course.name;
 	}
 
 	// otherwise create a shareToken for given courseId and the respective lessons.
-	async get(id, params) {
-		const coursesService = this.app.service('courses');
-		const lessonsService = this.app.service('lessons');
-
+	async get(id) {
 		// Get Course and check for shareToken, if not found create one
 		// Also check the corresponding lessons and add shareToken
-		const course = await coursesService.get(id);
+		const course = await this.app.service('courses').get(id);
 		if (!course.shareToken) {
-			const lessons = await lessonsService.find({ query: { courseId: id } });
+			const lessons = await this.app.service('lessons').find({ query: { courseId: id } });
 			for (let i = 0; i < lessons.data.length; i += 1) {
 				if (!lessons.data[i].shareToken) {
+					// Todo: logic must changed ..async operation without await or catch with logging can result in unhandled rejections.
 					LessonModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) }).exec();
 				}
 			}
@@ -146,57 +135,49 @@ class CourseShareService {
 		return { shareToken: course.shareToken };
 	}
 
-	create(data, params) {
-		const { shareToken } = data;
+	async create(data, params) {
+		const { shareToken, courseName } = data;
 		const { userId } = params.account || {};
-		const { courseName } = data;
-		const copyService = this.app.service('courses/copy');
 
-		return courseModel.find({ shareToken }).then((courses) => {
-			const course = courses[0];
-			let tempCourse = JSON.parse(JSON.stringify(course));
-			tempCourse = _.omit(tempCourse, [
-				'createdAt',
-				'updatedAt',
-				'__v',
-				'teacherIds',
-				'classIds',
-				'userIds',
-				'substitutionIds',
-				'shareToken',
-				'schoolId',
-				'untilDate',
-				'startDate',
-				'times',
-			]);
+		const [courses, user] = await Promise.all([
+			courseModel.find({ shareToken }).lean().exec(),
+			this.app.service('users').get(userId),
+		]);
 
-			tempCourse.teacherIds = [userId];
+		const course = courses[0];
+		let tempCourse = JSON.parse(JSON.stringify(course));
+		tempCourse = _.omit(tempCourse, [
+			'createdAt',
+			'updatedAt',
+			'__v',
+			'teacherIds',
+			'classIds',
+			'userIds',
+			'substitutionIds',
+			'shareToken',
+			'schoolId',
+			'untilDate',
+			'startDate',
+			'times',
+		]);
 
-			if (courseName) {
-				tempCourse.name = courseName;
-			}
+		tempCourse.teacherIds = [userId];
 
-			return this.app
-				.service('users')
-				.get(userId)
-				.then((user) => {
-					tempCourse.schoolId = user.schoolId;
-					tempCourse.userId = userId;
+		if (courseName) {
+			tempCourse.name = courseName;
+		}
 
-					return copyService
-						.create(tempCourse)
-						.then((res) => res)
-						.catch((err) => err);
-				});
-		});
+		tempCourse.schoolId = user.schoolId;
+		tempCourse.userId = userId;
+
+		const newCourse = await this.app.service('courses/copy').create(tempCourse);
+		return newCourse;
 	}
 }
 
-module.exports = function setup() {
-	const app = this;
-
-	app.use('/courses/copy', new CourseCopyService(app));
-	app.use('/courses-share', new CourseShareService(app));
+module.exports = (app) => {
+	app.use('/courses/copy', new CourseCopyService());
+	app.use('/courses-share', new CourseShareService());
 
 	const courseCopyService = app.service('/courses/copy');
 	const courseShareService = app.service('/courses-share');
