@@ -1,3 +1,4 @@
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { EntityId } from '../types/entity-id';
 
 export type GridElementReferenceMetadata = {
@@ -118,6 +119,9 @@ export class DashboardEntity {
 	moveElement(from: GridPosition, to: GridPosition): GridElementWithPosition {
 		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
 		if (elementToMove) {
+			if (this.grid.get(this.gridIndexFromPosition(to))) {
+				throw new BadRequestException('target position already taken');
+			}
 			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
 			this.grid.delete(this.gridIndexFromPosition(from));
 			return {
@@ -125,6 +129,6 @@ export class DashboardEntity {
 				gridElement: elementToMove,
 			};
 		}
-		throw new Error();
+		throw new NotFoundException('no element at origin position');
 	}
 }

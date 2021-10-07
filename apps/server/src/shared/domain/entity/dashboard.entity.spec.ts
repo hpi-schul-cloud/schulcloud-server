@@ -1,3 +1,4 @@
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { DashboardEntity } from './dashboard.entity';
 
 describe('dashboard entity', () => {
@@ -50,7 +51,7 @@ describe('dashboard entity', () => {
 			expect(testGrid[0].gridElement.getMetadata().displayColor).toEqual('#FFFFFF');
 		});
 
-		it.todo('when elements are returned, they should include positions');
+		// it.todo('when elements are returned, they should include positions', () => {});
 	});
 
 	describe('moveElement', () => {
@@ -71,8 +72,30 @@ describe('dashboard entity', () => {
 			expect(grid[0].pos).toEqual({ x: 3, y: 3 });
 		});
 
-		it.todo('when no element at origin position, it should throw notFound');
+		it('when no element at origin position, it should throw notFound', () => {
+			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const callMove = () => dashboard.moveElement({ x: 4, y: 2 }, { x: 3, y: 2 });
+			expect(callMove).toThrow(NotFoundException);
+		});
 
-		it.todo('when the new position is taken, it should throw badrequest');
+		it('when the new position is taken, it should throw badrequest', () => {
+			const gridElement = {
+				getId: () => 'gridelementid',
+				getMetadata: () => ({
+					id: 'someId',
+					title: 'Calendar-Dashboard',
+					shortTitle: 'CAL',
+					displayColor: '#FFFFFF',
+				}),
+			};
+			const dashboard = new DashboardEntity('someid', {
+				grid: [
+					{ pos: { x: 1, y: 2 }, gridElement },
+					{ pos: { x: 3, y: 3 }, gridElement },
+				],
+			});
+			const callMove = () => dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
+			expect(callMove).toThrow(BadRequestException);
+		});
 	});
 });
