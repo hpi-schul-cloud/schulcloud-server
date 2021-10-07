@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
@@ -100,6 +101,8 @@ describe('FilesRepo', () => {
 			await repo.deleteFile(file);
 
 			const searchedFile = await em.findOne(File, file._id);
+
+			// eslint-disable-next-line @typescript-eslint/unbound-method
 			expect(searchedFile).toBeNull;
 		});
 	});
