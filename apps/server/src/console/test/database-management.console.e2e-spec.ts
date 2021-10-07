@@ -39,7 +39,7 @@ describe('DatabaseManagementConsole (e2e)', () => {
 
 		it('should fail for unknown command', async () => {
 			await expect(execute(console, ['database', 'not_existing_command'])).rejects.toThrow(
-				`unknown command 'not_existing_command'. See 'console database --help'`
+				`error: unknown command 'not_existing_command'`
 			);
 		});
 		it('should provide command "seed"', async () => {
