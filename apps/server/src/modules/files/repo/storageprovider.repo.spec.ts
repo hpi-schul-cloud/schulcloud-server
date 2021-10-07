@@ -55,7 +55,7 @@ describe('FileStorageRepo', () => {
 			const bucket = 'bucket';
 			const storageFileName = 'storageFileName';
 
-			const file = fileFactory.build();
+			const file = fileFactory.build({ bucket, storageFileName });
 
 			await repo.deleteFile(file);
 
