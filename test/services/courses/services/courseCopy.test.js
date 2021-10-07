@@ -1,11 +1,12 @@
 const assert = require('assert');
+const { nanoid } = require('nanoid');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe.only('courses copy service', () => {
+describe('courses copy service', () => {
 	let app;
 	let copyCourseService;
 	let shareCourseService;
@@ -84,7 +85,7 @@ describe.only('courses copy service', () => {
 	});
 
 	it('creates a course copy through shareToken and override with new name', async () => {
-		const shareToken = `abc${testObjects.randomGen()}`;
+		const shareToken = nanoid(12);
 		const courseName = 'testCourse 76';
 
 		const course = await testObjects.createTestCourse({ shareToken });

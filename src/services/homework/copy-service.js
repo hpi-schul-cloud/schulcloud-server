@@ -24,7 +24,7 @@ class HomeworkCopyService {
 		if (fileIds.length > 0) {
 			const $or = (fileIds || []).map((_id) => ({ _id }));
 
-			const files = await FileModel.find({ $or });
+			const files = await FileModel.find({ $or }).lean().exec();
 
 			const copiedFiles = await Promise.all(
 				files.map((file) =>
@@ -54,7 +54,7 @@ class HomeworkCopyService {
 	async get(id, params) {
 		const ignoredKeys = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'fileIds'];
 
-		const copyAssignment = await HomeworkModel.findOne({ _id: id }).exec();
+		const copyAssignment = await HomeworkModel.findOne({ _id: id }).lean().exec();
 		const fileIds = await this.copyFilesIfExist(copyAssignment.fileIds, params);
 
 		const addingKeys = {

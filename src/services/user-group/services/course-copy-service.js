@@ -40,7 +40,7 @@ class CourseCopyService {
 		Thats why we use copyCourseId (_id works in case of import)
 		Todo: clean up different usecases */
 		const sourceCourseId = data.copyCourseId || data._id; // blub... :-)
-		const course = await courseModel.findOne({ _id: sourceCourseId });
+		const course = await courseModel.findOne({ _id: sourceCourseId }).lean().exec();
 
 		let tempCourse = JSON.parse(JSON.stringify(course));
 		const attributs = [
@@ -66,8 +66,8 @@ class CourseCopyService {
 
 		const [newCourse, homeworks, lessons] = await Promise.all([
 			this.app.service('courses').create(tempCourse),
-			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'), // why populate lesson ?!
-			LessonModel.find({ courseId: sourceCourseId }),
+			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId').lean().exec(), // why populate lesson ?!
+			LessonModel.find({ courseId: sourceCourseId }).lean().exec(),
 		]).catch((err) => {
 			throw new GeneralError('Can not prepare data to copy the course.', { err });
 		});
@@ -124,7 +124,9 @@ class CourseShareService {
 			for (let i = 0; i < lessons.data.length; i += 1) {
 				if (!lessons.data[i].shareToken) {
 					// Todo: logic must changed ..async operation without await or catch with logging can result in unhandled rejections.
-					LessonModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) }).exec();
+					LessonModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
+						.lean()
+						.exec();
 				}
 			}
 
