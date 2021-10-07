@@ -98,7 +98,7 @@ describe('FileSystemAdapter', () => {
 				const fileName = 'file.txt';
 				// use utf-8 test file content for comparison
 				const testText = await adapter.readFile(path.join(__dirname, 'utf-8-test-file.txt'));
-				expect(testText.length).toEqual(7160);
+				expect(testText.length).toBeGreaterThanOrEqual(7160); // not the same for all os
 				await adapter.writeFile(path.join(tempDir, fileName), testText);
 				const text = await adapter.readFile(path.join(tempDir, fileName));
 				expect(text).toEqual(testText);
