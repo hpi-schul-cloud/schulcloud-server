@@ -21,12 +21,6 @@ export interface IDashboardRepo {
 export class DashboardRepo implements IDashboardRepo {
 	constructor(protected readonly em: EntityManager) {}
 
-	create(dashboardProps: DashboardProps): DashboardEntity {
-		// todo: implementation, testing, etc
-		// this should create a modelentity and get an id from mongo
-		return new DashboardEntity('thisisalsofake', dashboardProps);
-	}
-
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
 	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
 		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
