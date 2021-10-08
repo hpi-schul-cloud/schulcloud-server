@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DashboardEntity } from '@shared/domain';
+import { DashboardEntity, EntityId, ICurrentUser, GridPosition } from '@shared/domain';
 import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
 
 @Injectable()
@@ -8,6 +8,18 @@ export class DashboardUc {
 
 	async getUsersDashboard(): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard();
+		return dashboard;
+	}
+
+	async moveElementOnDashboard(
+		dashboardId: EntityId,
+		from: GridPosition,
+		to: GridPosition
+		/* currentUser: ICurrentUser */
+	): Promise<DashboardEntity> {
+		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
+		dashboard.moveElement(from, to);
+		await this.dashboardRepo.persistAndFlush(dashboard);
 		return dashboard;
 	}
 }

@@ -21,7 +21,7 @@ describe('dashboard repo', () => {
 
 	it('should persist a plain dashboard', async () => {
 		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [] });
-		repo.persist(dashboard);
+		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(dashboard).toEqual(result);
@@ -40,11 +40,51 @@ describe('dashboard repo', () => {
 				},
 			],
 		});
-		repo.persist(dashboard);
+		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(dashboard.id).toEqual(result.id);
 		expect(dashboard).toEqual(result);
+	});
+
+	describe('persistAndFlush', () => {
+		it('should persist dashboard with gridElements', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: new GridElement(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+						),
+					},
+				],
+			});
+			await repo.persistAndFlush(dashboard);
+			const result = await repo.getDashboardById(dashboard.id);
+			expect(dashboard.id).toEqual(result.id);
+			expect(dashboard).toEqual(result);
+		});
+
+		it('should be idempotent', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: new GridElement(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+						),
+					},
+				],
+			});
+			await repo.persistAndFlush(dashboard);
+			await repo.persistAndFlush(dashboard);
+
+			const result = await repo.getDashboardById(dashboard.id);
+			expect(dashboard.id).toEqual(result.id);
+			expect(dashboard).toEqual(result);
+		});
 	});
 
 	describe('temporary getUsersDashboard fake implementation', () => {

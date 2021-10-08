@@ -13,6 +13,8 @@ import { DashboardModelMapper } from './dashboard.model.mapper';
 
 export interface IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity>;
+	getDashboardById(id: EntityId): Promise<DashboardEntity>;
+	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
 }
 
 @Injectable()
@@ -26,9 +28,15 @@ export class DashboardRepo implements IDashboardRepo {
 	}
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
-	persist(entity: DashboardEntity): DashboardEntity {
-		const modelEntity = DashboardModelMapper.mapToModel(entity);
+	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
+		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
 		this.em.persist(modelEntity);
+		return entity;
+	}
+
+	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
+		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
+		await this.em.persistAndFlush(modelEntity);
 		return entity;
 	}
 
@@ -54,8 +62,7 @@ export class DashboardRepo implements IDashboardRepo {
 			});
 		}
 		const dashboard = new DashboardEntity(hardcodedTestDashboardId, { grid: gridArray });
-		this.persist(dashboard);
-		await this.em.flush();
+		await this.persistAndFlush(dashboard);
 
 		return dashboard;
 	}
