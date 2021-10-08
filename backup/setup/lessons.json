@@ -1,736 +1,938 @@
 [
-{
-	"_id" : { "$oid": "59a3e4a4a2049554a93fec93" },
-	"updatedAt" : { "$date": "2017-09-18T10:00:01.877Z" },
-	"createdAt" : { "$date": "2017-06-08T07:52:47.496Z" },
-	"courseId" : { "$oid": "59a3cd61a2049554a93fec68" },
-	"name" : "Gedichtanalyse: Theodor Storm - Die Stadt",
-	"time" : { "$date": "2017-09-17T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"isCopyFrom" : { "$oid": "59a3c6c5a2049554a93fec43" },
-	"position" : 0,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59bf9921899d66316cf49492" },
-			"content" : {
-				"text" : "<p><img alt=\"Bildergebnis f&#xFC;r Theodor Storm\" src=\"https://www.welt.de/img/kultur/literarischewelt/mobile117690761/8542506557-ci102l-w1024/Hans-Theodor-Woldsen-Storm-3.jpg\" style=\"height:560px; margin-top:0px; width:573px\"></p>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; &#xA9; WeltN24 GmbH, 2017</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : ""
+	{
+		"_id": {
+			"$oid": "59a3c755a2049554a93fec52"
 		},
-		{
-			"_id" : { "$oid": "59bf9921899d66316cf49491" },
-			"content" : {
-				"text" : "<p><strong>Am grauen Strand, am grauen Meer<br>\r\nUnd seitab liegt die Stadt;<br>\r\nDer Nebel dr&#xFC;ckt die D&#xE4;cher schwer,<br>\r\nUnd durch die Stille braust das Meer<br>\r\nEint&#xF6;nig um die Stadt.</strong></p>\r\n\r\n<p><strong>Es rauscht kein Wald, es schl&#xE4;gt im Mai<br>\r\nKein Vogel ohn Unterla&#xDF;;<br>\r\nDie Wandergans mit hartem Schrei<br>\r\nNur fliegt in Herbstesnacht vorbei,<br>\r\nAm Strande weht das Gras.</strong></p>\r\n\r\n<p><strong>Doch h&#xE4;ngt mein ganzes Herz an dir,<br>\r\nDu graue Stadt am Meer;<br>\r\nDer Jugend Zauber f&#xFC;r und f&#xFC;r<br>\r\nRuht l&#xE4;chelnd doch auf dir, auf dir,<br>\r\nDu graue Stadt am Meer.</strong></p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Theodor Storm - Die Stadt"
+		"updatedAt": {
+			"$date": "2017-09-21T14:28:56.651Z"
 		},
-		{
-			"_id" : { "$oid": "59bf9921899d66316cf49490" },
-			"content" : {
-				"text" : "<p>1. Beschreibt die &#xE4;u&#xDF;ere Form des Gedichts.</p>\r\n\r\n<p>2. Suche treffende &#xDC;berschriften f&#xFC;r die einzelnen Strophen.</p>\r\n\r\n<p>3. Wie unterscheiden sich die Strophen inhaltlich voneinander?</p>\r\n\r\n<p>4. Worin liegt der H&#xF6;hepunkt des Gedichts?</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Aufgabe"
-		}
-	]
-},
-{
-	"_id" : { "$oid": "59a662bea2049554a93fed41" },
-	"updatedAt" : { "$date": "2017-08-30T14:02:46.838Z" },
-	"createdAt" : { "$date": "2017-08-30T07:01:18.866Z" },
-	"courseId" : { "$oid": "59a3cd61a2049554a93fec68" },
-	"name" : "Kurzgeschichte: Wolfgang Borchert - Die Kirschen",
-	"time" : { "$date": "2017-08-29T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"position" : 1,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59a6c586a2049554a93fed91" },
-			"content" : {
-				"text" : "<p><a href=\"http://de.wikipedia.org/wiki/Tr%C3%BCmmerliteratur\">Wikipedia</a>: Die <strong>Tr&#xFC;mmerliteratur</strong> (auch <strong>Literatur der <a href=\"https://de.wikipedia.org/wiki/Stunde_Null\" title=\"Stunde Null\">Stunde Null</a></strong>, Kriegs- oder Heimkehrerliteratur) ist eine deutsche <a href=\"https://de.wikipedia.org/wiki/Epoche_%28Literatur%29\" title=\"Epoche (Literatur)\">Literaturepoche</a>. Sie bl&#xFC;hte in <a href=\"https://de.wikipedia.org/wiki/Deutschland_1945_bis_1949\" title=\"Deutschland 1945 bis 1949\">Deutschland</a> unmittelbar nach dem <a href=\"https://de.wikipedia.org/wiki/Zweiter_Weltkrieg\" title=\"Zweiter Weltkrieg\">Zweiten Weltkrieg</a> und trat Anfang der 1950er Jahre gegen&#xFC;ber anspruchsvolleren neueren Formen, etwa von <a href=\"https://de.wikipedia.org/wiki/Arno_Schmidt\" title=\"Arno Schmidt\">Arno Schmidt</a>, <a href=\"https://de.wikipedia.org/wiki/G%C3%BCnter_Grass\" title=\"G&#xFC;nter Grass\">G&#xFC;nter Grass</a>, <a href=\"https://de.wikipedia.org/wiki/Peter_R%C3%BChmkorf\" title=\"Peter R&#xFC;hmkorf\">Peter R&#xFC;hmkorf</a> und <a href=\"https://de.wikipedia.org/wiki/Uwe_Johnson\" title=\"Uwe Johnson\">Uwe Johnson</a>, zur&#xFC;ck.</p>\r\n\r\n<p>Die Tr&#xFC;mmerliteraten klagten eine radikal neue Literatur ein. Sie versuchten ausdr&#xFC;cklich, sich inhaltlich und formal von den vorhergehenden Str&#xF6;mungen abzuheben. Die <a href=\"https://de.wikipedia.org/wiki/Sprache_des_Nationalsozialismus\" title=\"Sprache des Nationalsozialismus\">Sprache des Nationalsozialismus</a> sollte durch einen Reinigungsprozess ganz neu aufgebaut werden. Ebenso lehnte man die <a href=\"https://de.wikipedia.org/wiki/Kalligrafie\" title=\"Kalligrafie\">Kalligrafie</a> als literarische Sch&#xF6;nschreiberei ab, der Ausdruck von Ideologie und Gef&#xFC;hl wurde tabuisiert. Die neue Literatur sollte realistisch, unpsychologisch und wahrhaftig sein, sie erhob also ein Wahrheitspostulat. Sie sollte das Geschehene und das Existierende genau erfassen. Ein magischer Realismus wurde gefordert, der hinter der Wirklichkeit aber auch die Irrealit&#xE4;t erblickt. Damit war auch eine Forderung an die Autoren ausgesprochen: Ein Autor, der in diesem neuen Sinne schreiben will, muss sich in der Literatur und in der Realit&#xE4;t engagieren und den <a href=\"https://de.wikipedia.org/wiki/Elfenbeinturm\" title=\"Elfenbeinturm\">Elfenbeinturm</a> verlassen.</p>\r\n\r\n<p>Trotzdem wurde vielfach auf Formen &#xE4;lterer Epochen wie der <a href=\"https://de.wikipedia.org/wiki/Romantik\" title=\"Romantik\">Romantik</a>, des <a href=\"https://de.wikipedia.org/wiki/Expressionismus_%28Literatur%29\" title=\"Expressionismus (Literatur)\">Expressionismus</a> und der <a href=\"https://de.wikipedia.org/wiki/Neue_Sachlichkeit_%28Literatur%29\" title=\"Neue Sachlichkeit (Literatur)\">Neuen Sachlichkeit</a> zur&#xFC;ckgegriffen. Traditionelle lyrische Formen wie das <a href=\"https://de.wikipedia.org/wiki/Sonett\" title=\"Sonett\">Sonett</a> wurden ebenso durchaus noch benutzt. Die stilistischen Mittel, die benutzt wurden, waren die <a href=\"https://de.wikipedia.org/wiki/Lakonisch\" title=\"Lakonisch\">lakonische</a> Sprache, die die zertr&#xFC;mmerte und kahle Welt beschrieb, aber nicht bewertete, sowie eine <a href=\"https://de.wikipedia.org/wiki/Epeisodion\" title=\"Epeisodion\">episodenhafte</a> Beschr&#xE4;nkung des Raums, der Erz&#xE4;hlzeit und der Personen. Weiteres wichtiges Stilmittel war die <a href=\"https://de.wikipedia.org/wiki/Repetitio\" title=\"Repetitio\">Wiederholung</a>.</p>\r\n\r\n<p>Inhaltlich besch&#xE4;ftigte sich die Tr&#xFC;mmerliteratur mit gewollt kargen und direkten Beobachtungen des notvollen Lebens in den Ruinenst&#xE4;dten, in Fl&#xFC;chtlingslagern. Ein weiteres Thema war das Schicksal isolierter und herumirrender Menschen, die vor den Tr&#xFC;mmern ihrer Heimat und ihres Besitzes, und auch vor den Tr&#xFC;mmern ihrer Wertevorstellungen standen und damit umgehen mussten. Viele Menschen f&#xFC;hlten sich von der Heimkehrer-Thematik angesprochen, Geschichten der aus dem Krieg oder den Gefangenenlagern Heimkehrenden, die sich pl&#xF6;tzlich in einer Welt wiederfanden, die keinen Platz mehr f&#xFC;r sie hatte. Ebenso stand die Frage nach der Schuld und <a href=\"https://de.wikipedia.org/wiki/Kollektivschuld\" title=\"Kollektivschuld\">Kollektivschuld</a> an Krieg und <a href=\"https://de.wikipedia.org/wiki/Holocaust\" title=\"Holocaust\">Holocaust</a> im Vordergrund. Dies war keine einfache Frage, da viele der Autoren selbst als Soldaten am Krieg beteiligt waren und nun ihre eigene Rolle &#xFC;berpr&#xFC;fen mussten. Die Tr&#xFC;mmerliteratur &#xFC;bte Kritik an der politischen und gesellschaftlichen Restauration Deutschlands.</p>\r\n\r\n<p>Verp&#xF6;nt und als literarische Feindbilder angesehen waren Agitationsliteratur sowie <a href=\"https://de.wikipedia.org/wiki/Propaganda\" title=\"Propaganda\">Propaganda</a>, Literaturklassiker, das Stilmittel des R&#xFC;ckgriffs auf die <a href=\"https://de.wikipedia.org/wiki/Antike\" title=\"Antike\">Antike</a>, literarische Kalligrafie, <a href=\"https://de.wikipedia.org/wiki/Pathos\" title=\"Pathos\">pathetische</a>, &#xFC;berschw&#xE4;ngliche Literatur, stilistischer <a href=\"https://de.wikipedia.org/wiki/Eskapismus\" title=\"Eskapismus\">Eskapismus</a> sowie der &#xE4;ltere Rationalismus des 19. Jahrhunderts und dessen rein rationale Beschreibung.</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Zur Trümmerliteratur allgemein:"
+		"createdAt": {
+			"$date": "2017-06-07T09:51:29.861Z"
 		},
-		{
-			"_id" : { "$oid": "59a6c586a2049554a93fed90" },
-			"content" : {
-				"text" : "<p>Nebenan klirrte ein Glas. Jetzt isst er die Kirschen auf, die f&#xFC;r mich sind dachte er. Dabei habe ich das Fieber. Sie hat die Kirschen extra vors Fenster gestellt, damit sie ganz kalt sind. Jetzt hat er das Glas hingeschmissen. Und ich hab das Fieber. Der Kranke stand auf. Er schob sich die Wand entlang. Dann sah er durch die T&#xFC;r, dass sein Vater auf der Erde sa&#xDF;. Er hatte die ganze Hand voll Kirschsaft. Alles voll Kirschen, dachte der Kranke, alles voll. Kirschen. Dabei sollte ich sie essen. Ich hab doch das Fieber. Er hat die ganze. Hand voll Kirschsaft. Die waren sicher sch&#xF6;n kalt. Sie hat sie doch extra vors Fenster gestellt F&#xFC;r das Fieber. Und er isst mir die ganzen Kirschen auf. Jetzt sitzt er auf der Erde und hat die ganze Hand davon voll. Und ich hab das Fieber. Und er hat den kalten Kirschsaft auf der Hand. Den sch&#xF6;nen kalten Kirschsaft. Er war bestimmt ganz kalt. Er stand doch extra vorm Fenster. F&#xFC;r das Fieber. Er hielt sich am T&#xFC;rdr&#xFC;cker. Als der quietschte, sah der Vater auf. Junge, du musst doch zu Bett. Mit dem Fieber, Junge. Du musst sofort zu Bett. Alles voll Kirschen, fl&#xFC;sterte der Kranke. Er sah auf die Hand. Alles voll Kirschen.<br>\r\nDu musst sofort zu Bett, Junge. Der Vater versuchte aufzustehen und verzog das Gesicht. Es tropfte von seiner Hand. Alles Kirschen, fl&#xFC;sterte der Kranke. Alles meine Kirschen. Waren sie kalt? fragte er laut. Ja? Sie waren doch sicher sch&#xF6;n kalt, wie? Sie hat sie doch extra vors Fenster gestellt, damit sie ganz kalt sind. Damit sie ganz kalt sind.<br>\r\nDer Vater sah ihn hilflos von unten an. Er l&#xE4;chelte etwas. Ich komme nicht wieder hoch, l&#xE4;chelte er und verzog das Gesicht. Das ist doch zu dumm, ich komme buchst&#xE4;blich nicht wieder hoch. Der Kranke hielt sich an der T&#xFC;r. Die bewegte sich leise hin und her von seinem Schwanken. Waren sie sch&#xF6;n kalt? fl&#xFC;sterte er, ja? Ich bin n&#xE4;mlich hingefallen, sagte der Vater. Aber es ist wohl nur der Schreck. Ich bin ganz lahm, l&#xE4;chelte er. Das kommt von dem Schreck. Es geht gleich wieder. Dann bring ich dich zu Bett. Du musst ganz schnell zu Bett. Der Kranke sah auf die Hand.<br>\r\nAch, das ist nicht so schlimm. Das ist nur ein kleiner Schnitt. Das h&#xF6;rt gleich auf. Das kommt von der Tasse, winkte der Vater ab. Er sah hoch und verzog das Gesicht. Hoffentlich schimpft sie nicht. Sie mochte gerade diese Tasse so gern. Jetzt hab ich sie kaputt gemacht. Ausgerechnet diese Tasse, die sie so gern mochte. Ich wollte sie aussp&#xFC;len, da bin ich ausgerutscht. Ich wollte sie nur ein bisschen kalt aussp&#xFC;len und deine Kirschen da hinein tun. Aus dem Glas trinkt es sich so schlecht im Bett. Das wei&#xDF; ich noch. Daraus trinkt es sich ganz schlecht im Bett. Der Kranke sah auf die Hand. Die Kirschen, fl&#xFC;sterte er, meine Kirschen? Der Vater versuchte noch einmal, hochzukommen. Die bring ich dir gleich, sagte er. Gleich, Junge. Geh schnell zu Bett mit deinem Fieber. Ich bring sie dir gleich. Sie stehen noch vorm Fenster, damit sie sch&#xF6;n kalt sind. Ich bring sie dir sofort. Der Kranke schob sich an der Wand zur&#xFC;ck zu seinem Bett. Als der Vater mit den Kirschen kam, hatte er den Kopf tief unter die Decke gesteckt.</p>\r\n\r\n<p><img alt=\"\" src=\"/files/file?path=courses/59a3cd61a2049554a93fec68/Kirschen.jpg\" style=\"height:277px; width:277px\"></p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Ein Beispiel: Die Kirschen"
+		"courseId": {
+			"$oid": "59a3c657a2049554a93fec3a"
 		},
-		{
-			"_id" : { "$oid": "59a6c586a2049554a93fed8f" },
-			"component" : "resources",
-			"hidden" : false,
-			"title" : ""
-		}
-	],
-	"__v" : 0
-},
-{
-	"_id" : { "$oid": "59a3cf10a2049554a93fec72" },
-	"updatedAt" : { "$date": "2017-08-30T14:05:49.053Z" },
-	"createdAt" : { "$date": "2017-06-09T09:32:52.462Z" },
-	"courseId" : { "$oid": "59a3cd61a2049554a93fec68" },
-	"name" : "Kurzgeschichte: Julia Franck - Die Streuselschnecke",
-	"time" : { "$date": "2017-08-29T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"isCopyFrom" : { "$oid": "593a6b44a5896d0515fbf42e" },
-	"position" : 2,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59a6c63da2049554a93fed97" },
-			"content" : {
-				"text" : "<p>Der Anruf kam, als ich vierzehn war. Ich wohnte seit einem Jahr nicht mehr bei meiner Mutter und meinen Schwestern, sondern bei Freunden in Berlin. Eine fremde Stimme meldete sich, der Mann nannte seinen Namen, sagte mir, er lebe in Berlin, und fragte, ob ich ihn kennenlernen wolle. Ich z&#xF6;gerte, ich war mir nicht sicher. Zwar hatte ich schon viel &#xFC;ber solche Treffen geh&#xF6;rt und mir oft vorgestellt, wie so etwas w&#xE4;re, aber als es so weit war, empfand ich eher Unbehagen. Wir verabredeten uns. Er trug Jeans, Jacke und Hose. Ich hatte mich geschminkt. Er f&#xFC;hrte mich ins Caf&#xE9; Richter am Hindemithplatz, und wir gingen ins Kino, ein Film von Rohmer. Unsympathisch war er nicht, eher sch&#xFC;chtern. Er nahm mich mit ins Restaurant und stellte mich seinen Freunden vor. Ein feines, ironisches L&#xE4;cheln zog er zwischen sich und die anderen Menschen. Ich ahnte, was das L&#xE4;cheln verriet. Einige Male durfte ich ihn bei seiner Arbeit besuchen. Er schrieb Drehb&#xFC;cher und f&#xFC;hrte Regie bei Filmen. Ich fragte mich, ob er mir Geld geben w&#xFC;rde, wenn wir unstreffen, aber er gab mir keins, und ich traute mich nicht, danach zu fragen. Schlimm war das nicht, schlie&#xDF;lich kannte ich ihn kaum, was sollte ich da schon verlangen? Au&#xDF;erdem konnte ich f&#xFC;r mich selbst sorgen, ich ging zur Schule und putzen und arbeitete als Kinderm&#xE4;dchen. Bald w&#xFC;rde ich alt genug sein, um als Kellnerin zu arbeiten, und vielleicht wurde ja auch noch eines Tages etwas Richtiges aus mir. Zwei Jahre sp&#xE4;ter, der Mann und ich waren uns noch immer etwas fremd, sagte er mir, er sei krank. Er starb ein Jahr lang, ich besuchte ihn im Krankenhaus und fragte, was er sich w&#xFC;nsche. Er sagte mir, er habe Angst vor dem Tod und wolle es so schnell wie m&#xF6;glich hinter sich bringen. Er fragte mich, ob ich ihm Morphium besorgen k&#xF6;nne. Ich dachte nach, ich hatte einige Freunde, die Drogen nahmen, aber keinen, der sich mit Morphium auskannte. Auch war ich mir nicht sicher, ob die im Krankenhaus herausfinden wollten und w&#xFC;rden, woher es kam. Ich verga&#xDF; seine Bitte. Manchmal brachte ich ihm Blumen. Er fragte nach dem Morphium, und ich fragte ihn, ob er sich Kuchen w&#xFC;nsche, schlie&#xDF;lich wusste ich, wie gerne er Torte a&#xDF;. Er sagte, die einfachen Dinge seien ihm jetzt die liebsten &#x2013; er wolle nur Streuselschnecken, nichts sonst. Ich ging nach Hause und buk Streuselschnecken, zwei Bleche voll. Sie waren noch warm, als ich sie ins Krankenhaus brachte. Er sagte, er h&#xE4;tte gerne mit mir gelebt, es zumindest gern versucht, er habe immer gedacht, daf&#xFC;r sei noch Zeit, eines Tages &#x2013; aber jetzt sei es zu sp&#xE4;t. Kurz nach meinem siebzehnten Geburtstag war er tot. Meine kleine Schwester kam nach Berlin, wir gingen gerneinsam zur Beerdigung. Meine Mutter kam nicht.Ich nehme an, sie war mit anderem besch&#xE4;ftigt, au&#xDF;erdem hatte sie meinen Vater zuwenig gekannt und nicht geliebt.</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Die Streuselschnecke"
+		"name": "Das (menschliche) Auge",
+		"time": {
+			"$date": "2017-09-20T22:00:00Z"
 		},
-		{
-			"_id" : { "$oid": "59a6c63da2049554a93fed96" },
-			"content" : {
-				"text" : "<p><a href=\"http://de.wikipedia.org/wiki/Julia_Franck#Leben\">Wikipedia:</a> Julia Franck wurde 1970 zusammen mit ihrer Zwillingsschwester in <a href=\"https://de.wikipedia.org/wiki/Berlin-Lichtenberg\" title=\"Berlin-Lichtenberg\">Berlin-Lichtenberg</a> geboren. Ihre Mutter ist die Schauspielerin Anna Franck, ihr Vater der Fernsehregisseur J&#xFC;rgen Sehmisch. 1978 reiste Anna Franck mit ihren vier T&#xF6;chtern &#xFC;ber das <a href=\"https://de.wikipedia.org/wiki/Notaufnahmelager_Marienfelde\" title=\"Notaufnahmelager Marienfelde\">Notaufnahmelager Marienfelde</a> in die <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Bundesrepublik_Deutschland\" title=\"Bundesrepublik Deutschland\">Bundesrepublik Deutschland</a> aus. Nach neun Monaten im Notaufnahmelager zog die Familie 1979 nach Schleswig-Holstein in die N&#xE4;he von <a href=\"https://de.wikipedia.org/wiki/Rendsburg\" title=\"Rendsburg\">Rendsburg</a>. Dort besuchte Julia Franck von der vierten bis zur siebten Klasse die <a href=\"https://de.wikipedia.org/wiki/Waldorfschule\" title=\"Waldorfschule\">Freie Waldorfschule</a>. Im Jahr 1983 zog Julia Franck alleine zur&#xFC;ck nach Berlin, wo sie 1991 ihr Abitur machte. In der Folge begann sie ein Jura-Studium, entschied sich aber nach einem mehrmonatigen Aufenthalt in San Francisco f&#xFC;r ein Studium der Altamerikanistik, Philosophie und Neueren Deutschen Literatur an der <a href=\"https://de.wikipedia.org/wiki/Freie_Universit%C3%A4t_Berlin\" title=\"Freie Universit&#xE4;t Berlin\">Freien Universit&#xE4;t Berlin</a>. W&#xE4;hrend ihrer Schul- und Studienzeit arbeitete Julia Franck unter anderem als Putzfrau, Kinderm&#xE4;dchen, Hilfsschwester, Phonotypistin, Kellnerin, Hilfskraft an der FU Berlin sowie als freie Journalistin f&#xFC;r den H&#xF6;rfunk (<a href=\"https://de.wikipedia.org/wiki/Sender_Freies_Berlin\" title=\"Sender Freies Berlin\">Sender Freies Berlin</a>) und den Berliner <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Tagesspiegel\" title=\"Tagesspiegel\">Tagesspiegel</a>. Weitere Auslandsaufenthalte f&#xFC;hrten sie in die <a href=\"https://de.wikipedia.org/wiki/Vereinigte_Staaten\" title=\"Vereinigte Staaten\">Vereinigten Staaten</a>, nach <a href=\"https://de.wikipedia.org/wiki/Mexiko\" title=\"Mexiko\">Mexiko</a> und <a href=\"https://de.wikipedia.org/wiki/Guatemala\" title=\"Guatemala\">Guatemala</a>.</p>\r\n\r\n<p>F&#xFC;r ihre Texte und B&#xFC;cher erhielt Julia Franck zahlreiche Auszeichnungen, Preise und Stipendien. 1998 erhielt sie das <a href=\"https://de.wikipedia.org/wiki/Alfred-D%C3%B6blin-Stipendium\" title=\"Alfred-D&#xF6;blin-Stipendium\">Alfred-D&#xF6;blin-Stipendium</a> der Akademie der K&#xFC;nste, 2004 erhielt sie den <a href=\"https://de.wikipedia.org/wiki/Marie-Luise-Kaschnitz-Preis\" title=\"Marie-Luise-Kaschnitz-Preis\">Marie-Luise-Kaschnitz-Preis</a>, das Jahr 2005 verbrachte sie als Stipendiatin in der <a href=\"https://de.wikipedia.org/wiki/Deutsche_Akademie_Rom_Villa_Massimo\" title=\"Deutsche Akademie Rom Villa Massimo\">Deutschen Akademie Rom Villa Massimo</a>. Im September 2007 erhielt sie f&#xFC;r ihren Roman <em><a href=\"https://de.wikipedia.org/wiki/Die_Mittagsfrau\" title=\"Die Mittagsfrau\">Die Mittagsfrau</a></em> den <a href=\"https://de.wikipedia.org/wiki/Deutscher_Buchpreis\" title=\"Deutscher Buchpreis\">Deutschen Buchpreis</a>. Seit 2001 ist sie Mitglied im <a href=\"https://de.wikipedia.org/wiki/PEN-Zentrum_Deutschland\" title=\"PEN-Zentrum Deutschland\">PEN-Zentrum Deutschland</a>. Julia Franck &#xFC;bernimmt immer wieder Lehrauftr&#xE4;ge, zuletzt als Gastprofessorin am <a href=\"https://de.wikipedia.org/wiki/Deutsches_Literaturinstitut_Leipzig\" title=\"Deutsches Literaturinstitut Leipzig\">Deutschen Literaturinstitut</a> in Leipzig.</p>\r\n\r\n<p>Vor ihrer literarischen Laufbahn wirkte Julia Franck als Nebendarstellerin in verschiedenen Filmen mit, unter anderem 1974 neben <a href=\"https://de.wikipedia.org/wiki/Nina_Hagen\" title=\"Nina Hagen\">Nina Hagen</a> und <a href=\"https://de.wikipedia.org/wiki/K%C3%A4the_Reichel\" title=\"K&#xE4;the Reichel\">K&#xE4;the Reichel</a> im DDR-Fernsehfilm <em>Heute ist Freitag</em><a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-5\">[5]</a> sowie 1993 neben <a href=\"https://de.wikipedia.org/wiki/Bruno_Ganz\" title=\"Bruno Ganz\">Bruno Ganz</a> und <a href=\"https://de.wikipedia.org/wiki/Lotte_Loebinger\" title=\"Lotte Loebinger\">Lotte Loebinger</a> im Kinofilm <em>Heller Tag</em> von Andr&#xE9; Nitzschke.</p>\r\n\r\n<p>Julia Franck verfasste Ausstellungs- und Katalogtexte zu Werken zeitgen&#xF6;ssischer K&#xFC;nstler, darunter <a href=\"https://de.wikipedia.org/wiki/Thomas_Demand\" title=\"Thomas Demand\">Thomas Demand</a>, <a href=\"https://de.wikipedia.org/wiki/Peter_Krauskopf\" title=\"Peter Krauskopf\">Peter Krauskopf</a>, <a href=\"https://de.wikipedia.org/wiki/Friedemann_Grieshaber\" title=\"Friedemann Grieshaber\">Friedemann Grieshaber</a> und <a href=\"https://de.wikipedia.org/wiki/Gerhard_Richter\" title=\"Gerhard Richter\">Gerhard Richter</a>. Am 3. Februar 2012 hielt sie die Festrede f&#xFC;r <a href=\"https://de.wikipedia.org/wiki/Gerhard_Richter\" title=\"Gerhard Richter\">Gerhard Richter</a> anl&#xE4;sslich der gro&#xDF;en europ&#xE4;ischen Retrospektive zu Ehren seines 80. Geburtstags.<a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-7\">[7]</a> Als Beitrag zur Ausstellung &#x201E;Vermisst &#x2013; Der Turm der blauen Pferde von Franz Marc&#x201C; im Haus am Waldsee, Berlin (3. M&#xE4;rz bis 5. Juni 2017), die ansonsten Beitr&#xE4;ge bildender K&#xFC;nstler wie <a href=\"https://de.wikipedia.org/wiki/Norbert_Bisky\" title=\"Norbert Bisky\">Norbert Bisky</a>, <a href=\"https://de.wikipedia.org/wiki/Christian_Jankowski\" title=\"Christian Jankowski\">Christian Jankowski</a>, <a href=\"https://de.wikipedia.org/wiki/Via_Lewandowsky\" title=\"Via Lewandowsky\">Via Lewandowsky</a>, <a href=\"https://de.wikipedia.org/wiki/Tobias_Rehberger\" title=\"Tobias Rehberger\">Tobias Rehberger</a> u.a. beinhaltete, verfasste Julia Franck den experimentellen Prosatext &#x201E;Blaues Licht. Fragmente einer erhofften Begegnung&#x201C;, in dem sie sich mit der unentdeckten Liebesgeschichte zwischen Else Lasker-Sch&#xFC;ler und ihrem K&#xFC;nstlerfreund Franz Marc besch&#xE4;ftigt<a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-9\">[9]</a>.<a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-10\">[10]</a></p>\r\n\r\n<p>Julia Franck ist die Enkelin der Bildhauerin <a href=\"https://de.wikipedia.org/wiki/Ingeborg_Hunzinger\" title=\"Ingeborg Hunzinger\">Ingeborg Hunzinger</a> und Ururenkelin des Malers <a href=\"https://de.wikipedia.org/wiki/Philipp_Franck\" title=\"Philipp Franck\">Philipp Franck</a>. Sie lebt mit ihren beiden Kindern in Berlin.</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Zur Autorin: Julia Franck"
-		}
-	]
-},
-{
-	"_id" : { "$oid": "59a3e4bba2049554a93fec94" },
-	"updatedAt" : { "$date": "2017-08-28T12:49:29.178Z" },
-	"createdAt" : { "$date": "2017-06-08T07:47:47.137Z" },
-	"courseId" : { "$oid": "59a3ce58a2049554a93fec6e" },
-	"name" : "Nachbarstaaten Deutschlands",
-	"time" : { "$date": "2017-08-27T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"isCopyFrom" : { "$oid": "59a3c6dba2049554a93fec44" },
-	"position" : 4,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59a41159a2049554a93fecdd" },
-			"content" : {
-				"text" : "<div class=\"ckeditor-html5-video\" style=\"text-align: center;\">\r\n<video autoplay=\"autoplay\" controls=\"controls\" src=\"/files/file?path=courses/59a3ce58a2049554a93fec6e/Nachbarstaaten Deutschlands.mp4\">&#xA0;</video>\r\n</div>\r\n\r\n<p>&#xA0;</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Einführung in das Thema"
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
 		},
-		{
-			"_id" : { "$oid": "59a41159a2049554a93fecdc" },
-			"content" : {
-				"text" : "<p>1. Benennt alle Nachbarstaaten Deutschlands und deren Hauptst&#xE4;dte.</p>\r\n\r\n<p>2. Sucht heraus, wie viele Einwohner die Nachbaarstaaten Deutschlands haben.</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Aufgabe "
-		}
-	]
-},
-{
-	"_id" : { "$oid": "59a529eba2049554a93fecff" },
-	"updatedAt" : { "$date": "2017-09-15T06:30:42.903Z" },
-	"createdAt" : { "$date": "2017-08-29T08:46:35.309Z" },
-	"courseId" : { "$oid": "59a3c948a2049554a93fec5f" },
-	"name" : "Strahlengang im menschlichen Auge",
-	"time" : { "$date": "2017-09-05T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"position" : 0,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59afdcb71f513506904e1d32" },
-			"content" : {
-				"text" : "<p>Immer wenn man sich &#xFC;ber den Aufbau und die generelle Funktion des menschlichen Auges austauschen m&#xF6;chte, ist es &#xFC;blich, ein vereinfachtes, schematisches Modell des Auges zu verwenden.&#xA0;<a href=\"http://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">F&#xFC;r Eure Klasse findet Ihr das hier im Biologiekurs</a>.</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Das \"reduzierte\" Auge"
+		"__v": 0,
+		"isCopyFrom": {
+			"$oid": "5937cca1a5896d0515fbf2b2"
 		},
-		{
-			"_id" : { "$oid": "59afdcb71f513506904e1d31" },
-			"content" : {
-				"text" : "<p>Aus Sicht der geometrischen Optik besteht das Auge aus einem&#xA0;Linsensystem&#xA0;zweier Sammellinsen &#x2013; erstens der gew&#xF6;lbten Hornhautschicht und zweitens der durch einen Ringmuskel verformbaren Augenlinse. Das von den Linsen erzeugte Bild verl&#xE4;uft entlang der Netzhaut. Dort befinden sich Sinneszellen (St&#xE4;bchen und Z&#xE4;pfchen), welche die einfallenden Lichtstrahlen absorbieren und entsprechende Signale &#xFC;ber den Sehnerv geb&#xFC;ndelt ans Gehirn weiterleiten.</p>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p><img alt=\"\" src=\"./Strahlengang im menschlichen Auge - Schul-Cloud_files/file\"><img alt=\"Strahlengang im menschlichen Auge (ideales Modell)\" src=\"/files/file?path=courses/59a3c948a2049554a93fec5f/augeabb_web.png\" style=\"height:359px; width:800px\"></p>\r\n"
+		"position": 0,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59c39e88d69d413e2ff0bcce"
+				},
+				"content": {
+					"text": "<p><img alt=\"\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/auge.png\"></p>\r\n\r\n<p>(Quelle:&#xA0;https://de.serlo.org/biologie/biologie-menschen/sinne-menschen/bau-funktion-auges)</p>\r\n\r\n<p><a href=\"http://de.wikipedia.org/wiki/Reduziertes_Auge\">Wikipedia</a>: Das&#xA0;<strong>Reduzierte Auge</strong>, auch&#xA0;<em>Normalauge</em>&#xA0;genannt, ist ein schematisch vereinfachtes Modell des durchschnittlichen menschlichen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Wirbeltierauge\" title=\"Wirbeltierauge\">Auges</a>&#xA0;in der physiologischen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Optik\" title=\"Optik\">Optik</a>&#xA0;(engl.&#xA0;<em>reduced schematic eye</em>&#xA0;oder auch&#xA0;<em>collapsed dioptric system of the eye</em>). Es wurde von dem schwedischen Mediziner&#xA0;<a href=\"https://de.wikipedia.org/wiki/Allvar_Gullstrand\" title=\"Allvar Gullstrand\">Allvar Gullstrand</a>&#xA0;entwickelt.</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Aufbau des Auges (reduzierte Form)"
 			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Strahlengang im menschlichen Auge (ideales Modell)"
-		},
-		{
-			"_id" : { "$oid": "59afdcb71f513506904e1d30" },
-			"content" : {
-				"text" : "<p>Der Einfallswinkel der geometrischen Lichtstrahlen eines Objekts im Blickfeld kann durch Positionswechsel, Kopf- oder Augenbewegungen vorgenommen werden.&#xA0;<a href=\"http://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">Diese sind sehr sch&#xF6;n in unserem Biologiekurs f&#xFC;r Euch dargestellt.</a>&#xA0;</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Blickwinkel und Augenbewegungen"
-		}
-	],
-	"__v" : 0
-},
-{
-	"_id" : { "$oid": "59a3cad2a2049554a93fec64" },
-	"updatedAt" : { "$date": "2017-11-16T19:52:02.200Z" },
-	"createdAt" : { "$date": "2017-05-24T11:14:54.621Z" },
-	"courseId" : { "$oid": "59a3cabaa2049554a93fec60" },
-	"name" : "Wahrscheinlichkeitsrechnung",
-	"time" : { "$date": "2017-08-27T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"hidden" : false,
-	"isCopyFrom" : { "$oid": "59256b2e64d87543e48310d6" },
-	"position" : 1,
-	"materialIds" : [
-		{ "$oid": "59b6bdc75c9ec20c6f083659" },
-		{ "$oid": "59b6bf5e5c9ec20c6f08365a" }
-	],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59a405e2a2049554a93fecb8" },
-			"content" : {
-				"resources" : [
-					{
-						"url" : "https://de.serlo.org/mathe/stochastik/relative-haeufigkeit-wahrscheinlichkeit/wahrscheinlichkeit-1753",
-						"title" : "Wahrscheinlichkeit",
-						"description" : "Die Wahrscheinlichkeit stellt ein Maß für die Sicherheit oder Unsicherheit eines Ereignisses in einem Zufallsexperiment dar. Jedem Ereignis eines Zufallsexperimentes wird eine reelle Zahl zwischen 0 und 1 zugeordnet, die man als die Wahrscheinlichkeit des Ereignisses bezeichnet. Für die ...",
-						"client" : "serlo"
-					}
-				]
-			},
-			"component" : "resources",
-			"hidden" : false,
-			"title" : ""
-		},
-		{
-			"_id" : { "$oid": "59a405e2a2049554a93fecb7" },
-			"content" : {
-				"materialId" : "DUvsJVHF"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : "Glücksrad"
-		},
-		{
-			"_id" : { "$oid": "59a405e2a2049554a93fecb6" },
-			"content" : {
-				"materialId" : "UQxtWgVz"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : "Würfel-Spiel"
-		},
-		{
-			"_id" : { "$oid": "59a405e2a2049554a93fecb5" },
-			"content" : {
-				"resources" : [
-					{
-						"url" : "https://de.serlo.org/mathe/stochastik/bedingte-wahrscheinlichkeit-unabhaengigkeit/bedingte-wahrscheinlichkeit/bedingte-wahrscheinlichkeit",
-						"title" : "Bedingte Wahrscheinlichkeit",
-						"description" : "Die (bedingte) Wahrscheinlichkeit von A unter der Bedingung B gibt an, wie wahrscheinlich A ist, falls sicher ist, dass B schon eingetreten ist. Man schreibt { mathrm P}_ mathrm B left( mathrm A right) oder mathrm P left( mathrm A left| mathrm B right. right) für die ...",
-						"client" : "serlo"
-					}
-				]
-			},
-			"component" : "resources",
-			"hidden" : false,
-			"title" : ""
-		},
-		{
-			"_id" : { "$oid": "59a405e2a2049554a93fecb4" },
-			"content" : {
-				"materialId" : "jaz8F8hZ"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : ""
-		}
-	]
-},
-{
-	"_id" : { "$oid": "59a3e47ba2049554a93fec8f" },
-	"updatedAt" : { "$date": "2017-11-16T19:52:24.173Z" },
-	"createdAt" : { "$date": "2017-06-07T09:34:51.795Z" },
-	"courseId" : { "$oid": "59a3cabaa2049554a93fec60" },
-	"name" : "Strecken- und Winkelsymmetralen",
-	"time" : { "$date": "2017-11-15T23:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"hidden" : false,
-	"isCopyFrom" : { "$oid": "59a3c69aa2049554a93fec41" },
-	"position" : 2,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59a40809a2049554a93fecc3" },
-			"content" : {
-				"text" : "<p><img alt=\"\" src=\"/files/file?path=courses/59a3cabaa2049554a93fec60/Achsen-Symmetrie.jpg\" style=\"height:200px; width:500px\"></p>\r\n\r\n<p>Quelle: Bettermarks.com</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Einführung"
-		},
-		{
-			"_id" : { "$oid": "59a40809a2049554a93fecc2" },
-			"content" : {
-				"resources" : [
-					{
-						"url" : "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/achsensymmetrie",
-						"title" : "Achsensymmetrie",
-						"description" : "Eine Figur heißt achsensymmetrisch, wenn sie durch die Achsenspiegelung an ihrer/n Symmetrieachse(n) auf sich selbst abgebildet wird. Die Symmetrieachse kann dabei auch als Faltkante gesehen werden, durch die die Figur in zwei deckungsgleiche Stücke aufgeteilt wird. Anstelle von ...",
-						"client" : "serlo"
-					}
-				]
-			},
-			"component" : "resources",
-			"hidden" : false,
-			"title" : "Achsensymmetrie"
-		},
-		{
-			"_id" : { "$oid": "59a40809a2049554a93fecc1" },
-			"content" : {
-				"resources" : [
-					{
-						"url" : "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/punktsymmetrie",
-						"title" : "Punktsymmetrie",
-						"description" : "Eine Figur heißt punktsymmetrisch, wenn sie durch die Spiegelung an einem Punkt, dem sogenannten Symmetriepunkt oder Symmetriezentrum, auf sich selbst abgebiildet wird. Es handelt sich um eine Drehung der Figur um 180°.punktsymmetrische Figuren Die jeweils rot gekennzeichneten Punkte sind ...",
-						"client" : "serlo"
-					}
-				]
-			},
-			"component" : "resources",
-			"hidden" : false,
-			"title" : "Punktsymmetrie"
-		},
-		{
-			"_id" : { "$oid": "59a40809a2049554a93fecc0" },
-			"content" : {
-				"materialId" : "xGeXaeqE"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : "Hausaufgabe"
-		}
-	]
-},
-{
-	"_id" : { "$oid": "59a3cfb8a2049554a93fec73" },
-	"updatedAt" : { "$date": "2017-11-16T19:52:02.195Z" },
-	"createdAt" : { "$date": "2017-06-09T11:31:45.310Z" },
-	"courseId" : { "$oid": "59a3cabaa2049554a93fec60" },
-	"name" : "Potenzen und ihre Bedeutung im Alltag",
-	"time" : { "$date": "2017-08-27T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"isCopyFrom" : { "$oid": "593a8721a5896d0515fbf476" },
-	"position" : 0,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid": "59a404d4a2049554a93fecb3" },
-			"content" : {
-				"resources" : [
-					{
-						"url" : "https://de.serlo.org/mathe/terme-gleichungen/potenzen-wurzeln-logarithmen/potenzen/potenzen",
-						"title" : "Potenzen",
-						"description" : "Das Potenzieren ist eine verkürzte Schreibweise für das mehrmalige Multiplizieren einer Zahl mit sich selbst. Man schreibt bespielsweise 2 cdot2 cdot2 als 2^3. Der Exponent bzw. die Hochzahl, also die 3, beschreibt, wie oft eine Zahl mit sich selbst multipliziert wird. Generell hat ...",
-						"client" : "serlo"
-					}
-				]
-			},
-			"component" : "resources",
-			"hidden" : false,
-			"title" : ""
-		},
-		{
-			"_id" : { "$oid": "59a404d4a2049554a93fecb2" },
-			"content" : {
-				"text" : "<div class=\"ckeditor-html5-video\" style=\"text-align: center;\">\r\n<video autoplay=\"autoplay\" controls=\"controls\" src=\"/files/file?path=courses/59a3cabaa2049554a93fec60/Video-Potenzen.mp4\">&#xA0;</video>\r\n</div>\r\n\r\n<p>&#xA0;</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Anstieg von Werten in Potenzen"
-		},
-		{
-			"_id" : { "$oid": "59a404d4a2049554a93fecb1" },
-			"content" : {
-				"materialId" : "HPMCpAy7"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : "Wende dein Wissen an!"
-		},
-		{
-			"_id" : { "$oid": "59a404d4a2049554a93fecb0" },
-			"content" : {
-				"materialId" : "CAeZRdgX"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : ""
-		},
-		{
-			"_id" : { "$oid": "59a404d4a2049554a93fecaf" },
-			"content" : {
-				"materialId" : "k6dqVR2J"
-			},
-			"component" : "geoGebra",
-			"hidden" : false,
-			"title" : ""
-		}
-	]
-},
-{
-	"_id" : { "$oid": "59a3c755a2049554a93fec52" },
-	"updatedAt" : { "$date": "2017-09-21T14:28:56.651Z" },
-	"createdAt" : { "$date": "2017-06-07T09:51:29.861Z" },
-	"courseId" : { "$oid": "59a3c657a2049554a93fec3a" },
-	"name" : "Das (menschliche) Auge",
-	"time" : { "$date": "2017-09-20T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"__v" : 0,
-	"isCopyFrom" : { "$oid": "5937cca1a5896d0515fbf2b2" },
-	"position" : 0,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"_id" : { "$oid":  "59c39e88d69d413e2ff0bcce" },
-			"content" : {
-				"text" : "<p><img alt=\"\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/auge.png\"></p>\r\n\r\n<p>(Quelle:&#xA0;https://de.serlo.org/biologie/biologie-menschen/sinne-menschen/bau-funktion-auges)</p>\r\n\r\n<p><a href=\"http://de.wikipedia.org/wiki/Reduziertes_Auge\">Wikipedia</a>: Das&#xA0;<strong>Reduzierte Auge</strong>, auch&#xA0;<em>Normalauge</em>&#xA0;genannt, ist ein schematisch vereinfachtes Modell des durchschnittlichen menschlichen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Wirbeltierauge\" title=\"Wirbeltierauge\">Auges</a>&#xA0;in der physiologischen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Optik\" title=\"Optik\">Optik</a>&#xA0;(engl.&#xA0;<em>reduced schematic eye</em>&#xA0;oder auch&#xA0;<em>collapsed dioptric system of the eye</em>). Es wurde von dem schwedischen Mediziner&#xA0;<a href=\"https://de.wikipedia.org/wiki/Allvar_Gullstrand\" title=\"Allvar Gullstrand\">Allvar Gullstrand</a>&#xA0;entwickelt.</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Aufbau des Auges (reduzierte Form)"
-		},
-		{
-			"_id" : { "$oid": "59c39e88d69d413e2ff0bccd" },
-			"content" : {
-				"text" : "<p><strong>Grundlagen der Augenbewegung&#xA0;</strong>(<a href=\"http://de.wikipedia.org/wiki/Augenbewegung\">Wikipedia</a>)</p>\r\n\r\n<p>Drei Drehachsen sind bei Augenbewegungen besonders hervorzuheben: die&#xA0;<em>z-Achse</em>, die senkrecht durch das Auge verl&#xE4;uft, die&#xA0;<em>x-Achse</em>, die waagerecht verl&#xE4;uft &#x2013; beide liegen frontoparallel in der&#xA0;<em>Ebene von Listing</em>&#xA0;(benannt nach dem deutschen Mathematiker&#xA0;<a href=\"https://de.wikipedia.org/wiki/Johann_Benedict_Listing\" title=\"Johann Benedict Listing\">Johann Benedict Listing</a>) &#x2013;, und die&#xA0;<em>y-Achse</em>&#xA0;(auch&#xA0;<em><a href=\"https://de.wikipedia.org/wiki/Anthropometrie\" title=\"Anthropometrie\">Sagittalachse</a></em>), die im Drehpunkt die Lotrechte auf diese Ebene bildet.</p>\r\n\r\n<ul>\r\n\t<li>Drehbewegungen eines&#xA0;<em>einzelnen</em>&#xA0;Auges nennt man&#xA0;<em>Duktionen</em>. Hierbei unterscheidet man&#xA0;<em>Adduktion</em>&#xA0;(Bewegung zur Nase hin),&#xA0;<em>Abduktion</em>&#xA0;(Bewegung zur Schl&#xE4;fe),&#xA0;<em>Supraduktion</em>&#xA0;oder&#xA0;<em>Elevation</em>&#xA0;(Bewegung nach oben) und&#xA0;<em>Infraduktion</em>&#xA0;oder&#xA0;<em>Depression</em>&#xA0;(Bewegung nach unten). Eine Verrollung, also eine Drehung um die y-Achse, wird&#xA0;<em>Inzykloduktion</em>&#xA0;genannt, wenn sie mit dem oberen Umfang der Hornhaut zur Nase hin erfolgt, hingegen&#xA0;<em>Exzykloduktion</em>, wenn diese Bewegung zur Schl&#xE4;fe hin vollzogen wird. Die sechs &#xE4;u&#xDF;eren Augenmuskeln erf&#xFC;llen hierbei neben ihren Hauptfunktionen in Abh&#xE4;ngigkeit von der momentanen Blickrichtung weitere, mehr oder weniger ausgepr&#xE4;gte Teilfunktionen.</li>\r\n</ul>\r\n\r\n<ul>\r\n\t<li>Anatomische Darstellung der Muskelbeteiligungen w&#xE4;hrend der jeweiligen Drehbewegung aus der Prim&#xE4;rposition heraus</li>\r\n</ul>\r\n\r\n<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t<tbody>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<p><strong>Bewegungstypen des menschlichen Auges</strong></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_abductors_arrow.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Eye_movements_abductors_arrow.jpg/131px-Eye_movements_abductors_arrow.jpg\"></a></p>\r\n\r\n\t\t\t<p>Abduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_adductors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Eye_movements_adductors.jpg/131px-Eye_movements_adductors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Adduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_depressors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Eye_movements_depressors.jpg/131px-Eye_movements_depressors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Senkung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_elevators.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Eye_movements_elevators.jpg/131px-Eye_movements_elevators.jpg\"></a></p>\r\n\r\n\t\t\t<p>Hebung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_medial_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Eye_movements_medial_rot.jpg/131px-Eye_movements_medial_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Au&#xDF;enrollung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_lateral_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Eye_movements_lateral_rot.jpg/131px-Eye_movements_lateral_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Innenrollung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<div style=\"background:#eeeeee; border:1px solid #cccccc; padding:5px 10px\"><a href=\"/files/file?path=courses/59a3c657a2049554a93fec3a/3D Ansicht Auge.html\" target=\"_blank\">Bewegungen des Auges (3D) interaktiv</a>&#xA0;(Sketchfap free model)</div>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t\t\t\t<tbody>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td colspan=\"3\">&#xA0;</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\r\n\t\t\t<p>&#xA0;</p>\r\n\r\n\t\t\t<p>Durch Augenbewegungen ist eine vergleichsweise schnelle &#xC4;nderung des Einfallswinkels betrachteter Objekte m&#xF6;glich. <a href=\"/courses/5937c029a5896d0515fbf270/topics/5937ccc7a5896d0515fbf2b7\">Siehe dazu den Abschnitt in Physik.</a></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t</tbody>\r\n</table>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;</p>\r\n"
-			},
-			"component" : "text",
-			"hidden" : false,
-			"title" : "Bewegung des menschlichen Auges (3D-Modell)"
-		}
-	],
-	"shareToken" : "Hkm6HluqW",
-	"hidden" : false
-},
-{
-	"_id" : { "$oid": "59a6c215a2049554a93fed79" },
-	"updatedAt" : { "$date": "2017-10-19T11:57:05.249Z" },
-	"createdAt" : { "$date": "2017-08-30T13:48:05.547Z" },
-	"courseId" : { "$oid": "59a3c657a2049554a93fec3a" },
-	"name" : "Das Nervensystem",
-	"time" : { "$date": "2017-09-10T22:00:00.000Z" },
-	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"position" : 0,
-	"materialIds" : [],
-	"contents" : [
-		{
-			"title" : "Einleitung",
-			"hidden" : false,
-			"component" : "text",
-			"content" : {
-				"text" : "<p><a href=\"http://de.wikipedia.org/wiki/Nervensystem\">Wikipedia:</a> Das <strong>Nervensystem</strong> (lat.: <em><em>Systema nervosum</em></em>) sind die <a href=\"http://de.wikipedia.org/wiki/Nervenzelle\" title=\"Nervenzelle\">Nervenzellen</a> und <a href=\"https://de.wikipedia.org/wiki/Gliazelle\" title=\"Gliazelle\">Gliazellen</a> eines Organismus im gemeinsamen Zusammenhang. Dieses <a href=\"https://de.wikipedia.org/wiki/Organsystem\" title=\"Organsystem\">Organsystem</a> der <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Eumetazoa\" title=\"Eumetazoa\">Eumetazoa</a> &#xFC;bernimmt die Aufgabe, Ver&#xE4;nderungen der &#xE4;u&#xDF;eren Umwelt und inneren Umgebung eines Organismus als Signal aufzunehmen, aufeinander zu beziehen und mit fr&#xFC;heren zu vergleichen, um eventuell Ver&#xE4;nderungen des Organismus als Reaktionen zu veranlassen, mit denen eine bessere Anpassung an wechselnde Umgebungsbedingungen m&#xF6;glich wird. Damit realisiert das Nervensystem eines vielzelligen tierischen Lebewesens dessen <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Reizbarkeit\" title=\"Reizbarkeit\">Reizbarkeit</a> und <a href=\"https://de.wikipedia.org/wiki/Erregung_%28Physiologie%29\" title=\"Erregung (Physiologie)\">Erregbarkeit</a> als Grundeigenschaften seines <a href=\"https://de.wikipedia.org/wiki/Leben\" title=\"Leben\">Lebens</a>.</p>\r\n"
-			},
-			"_id" : { "$oid": "59b6c0f25c9ec20c6f08365f" }
-		},
-		{
-			"title" : "",
-			"hidden" : false,
-			"component" : "resources",
-			"content" : {
-				"resources" : [
-					{
-						"url" : "https://de.serlo.org/biologie/biologie-menschen/nervensystem/auswirkungen-aufs-nervensystem-fremdstoffen-erkrankungen/erkrankungen-menschlichen-nervensystems",
-						"title" : "Erkrankungen des menschlichen Nervensystems",
-						"description" : "Störungen des menschlichen Nervensystems äußern sich in verschiedenen Formen von Erkrankungen.Wenn Gehirn und Nerven krank sind Es gibts zahlreiche neurologische Erkrankungen, einge sind sehr selten, andere durchaus weiter verbreitet. Man unterteilt sie grob in Störungen des zentralen ...",
-						"client" : "serlo"
-					}
-				]
-			},
-			"_id" : { "$oid": "59b6c0f25c9ec20c6f08365e" }
-		},
-		{
-			"title" : "Aufbau des menschlichen Nervensystems",
-			"hidden" : false,
-			"component" : "text",
-			"content" : {
-				"text" : "<p><img alt=\"\" src=\"/files/file?path=courses/59a3c657a2049554a93fec3a/Das menschliche Nervensystem.png\" style=\"height:596px; width:518px\"></p>\r\n\r\n<p>&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; &#xA0; &#xA0; &#xA0; &#xA0; &#xA0; &#xA0;&#xA9; Wikipedia, 2017</p>\r\n"
-			},
-			"_id" : { "$oid": "59b6c0f25c9ec20c6f08365d" }
-		}
-	],
-	"__v" : 0,
-	"hidden" : false,
-	"shareToken" : "BkKMQz8aZ"
-},
-{
-	"_id": {
-		"$oid": "5fa3a449a9c31a26f4d1d363"
-	},
-	"materialIds": [],
-	"hidden": true,
-	"isCopyFrom": null,
-	"position": 0,
-	"courseId": {
-		"$oid": "5fa3a393a9c31a26f4d1d327"
-	},
-	"name": "Herz",
-	"contents": [
-		{
-			"_id": {
-				"$oid": "5fa3a449a9c31a26f4d1d364"
-			},
-			"title": "TEXT",
-			"hidden": false,
-			"component": "text",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"text": "<p>some text</p>"
+			{
+				"_id": {
+					"$oid": "59c39e88d69d413e2ff0bccd"
+				},
+				"content": {
+					"text": "<p><strong>Grundlagen der Augenbewegung&#xA0;</strong>(<a href=\"http://de.wikipedia.org/wiki/Augenbewegung\">Wikipedia</a>)</p>\r\n\r\n<p>Drei Drehachsen sind bei Augenbewegungen besonders hervorzuheben: die&#xA0;<em>z-Achse</em>, die senkrecht durch das Auge verl&#xE4;uft, die&#xA0;<em>x-Achse</em>, die waagerecht verl&#xE4;uft &#x2013; beide liegen frontoparallel in der&#xA0;<em>Ebene von Listing</em>&#xA0;(benannt nach dem deutschen Mathematiker&#xA0;<a href=\"https://de.wikipedia.org/wiki/Johann_Benedict_Listing\" title=\"Johann Benedict Listing\">Johann Benedict Listing</a>) &#x2013;, und die&#xA0;<em>y-Achse</em>&#xA0;(auch&#xA0;<em><a href=\"https://de.wikipedia.org/wiki/Anthropometrie\" title=\"Anthropometrie\">Sagittalachse</a></em>), die im Drehpunkt die Lotrechte auf diese Ebene bildet.</p>\r\n\r\n<ul>\r\n\t<li>Drehbewegungen eines&#xA0;<em>einzelnen</em>&#xA0;Auges nennt man&#xA0;<em>Duktionen</em>. Hierbei unterscheidet man&#xA0;<em>Adduktion</em>&#xA0;(Bewegung zur Nase hin),&#xA0;<em>Abduktion</em>&#xA0;(Bewegung zur Schl&#xE4;fe),&#xA0;<em>Supraduktion</em>&#xA0;oder&#xA0;<em>Elevation</em>&#xA0;(Bewegung nach oben) und&#xA0;<em>Infraduktion</em>&#xA0;oder&#xA0;<em>Depression</em>&#xA0;(Bewegung nach unten). Eine Verrollung, also eine Drehung um die y-Achse, wird&#xA0;<em>Inzykloduktion</em>&#xA0;genannt, wenn sie mit dem oberen Umfang der Hornhaut zur Nase hin erfolgt, hingegen&#xA0;<em>Exzykloduktion</em>, wenn diese Bewegung zur Schl&#xE4;fe hin vollzogen wird. Die sechs &#xE4;u&#xDF;eren Augenmuskeln erf&#xFC;llen hierbei neben ihren Hauptfunktionen in Abh&#xE4;ngigkeit von der momentanen Blickrichtung weitere, mehr oder weniger ausgepr&#xE4;gte Teilfunktionen.</li>\r\n</ul>\r\n\r\n<ul>\r\n\t<li>Anatomische Darstellung der Muskelbeteiligungen w&#xE4;hrend der jeweiligen Drehbewegung aus der Prim&#xE4;rposition heraus</li>\r\n</ul>\r\n\r\n<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t<tbody>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<p><strong>Bewegungstypen des menschlichen Auges</strong></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_abductors_arrow.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Eye_movements_abductors_arrow.jpg/131px-Eye_movements_abductors_arrow.jpg\"></a></p>\r\n\r\n\t\t\t<p>Abduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_adductors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Eye_movements_adductors.jpg/131px-Eye_movements_adductors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Adduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_depressors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Eye_movements_depressors.jpg/131px-Eye_movements_depressors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Senkung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_elevators.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Eye_movements_elevators.jpg/131px-Eye_movements_elevators.jpg\"></a></p>\r\n\r\n\t\t\t<p>Hebung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_medial_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Eye_movements_medial_rot.jpg/131px-Eye_movements_medial_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Au&#xDF;enrollung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_lateral_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Eye_movements_lateral_rot.jpg/131px-Eye_movements_lateral_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Innenrollung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<div style=\"background:#eeeeee; border:1px solid #cccccc; padding:5px 10px\"><a href=\"/files/file?path=courses/59a3c657a2049554a93fec3a/3D Ansicht Auge.html\" target=\"_blank\">Bewegungen des Auges (3D) interaktiv</a>&#xA0;(Sketchfap free model)</div>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t\t\t\t<tbody>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td colspan=\"3\">&#xA0;</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\r\n\t\t\t<p>&#xA0;</p>\r\n\r\n\t\t\t<p>Durch Augenbewegungen ist eine vergleichsweise schnelle &#xC4;nderung des Einfallswinkels betrachteter Objekte m&#xF6;glich. <a href=\"/courses/5937c029a5896d0515fbf270/topics/5937ccc7a5896d0515fbf2b7\">Siehe dazu den Abschnitt in Physik.</a></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t</tbody>\r\n</table>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Bewegung des menschlichen Auges (3D-Modell)"
 			}
+		],
+		"shareToken": "Hkm6HluqW",
+		"hidden": false
+	},
+	{
+		"_id": {
+			"$oid": "59a3cad2a2049554a93fec64"
 		},
-		{
-			"_id": {
-				"$oid": "5fa3a449a9c31a26f4d1d365"
-			},
-			"title": "GeoGebra",
-			"hidden": false,
-			"component": "geoGebra",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"materialId": "ucxngdjf"
-			}
+		"updatedAt": {
+			"$date": "2017-11-16T19:52:02.200Z"
 		},
-		{
-			"_id": {
-				"$oid": "5fa3a449a9c31a26f4d1d366"
-			},
-			"title": "Material",
-			"hidden": false,
-			"component": "resources",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"resources": [
-					{
-						"url": "http://www.heynkes.de/biologie/",
-						"title": "Heynkes Biologie",
-						"description": "",
-						"client": "Schul-Cloud"
-					}
-				]
-			}
+		"createdAt": {
+			"$date": "2017-05-24T11:14:54.621Z"
 		},
-		{
-			"_id": {
-				"$oid": "5fa3a449a9c31a26f4d1d367"
-			},
-			"title": "Etherpad",
-			"hidden": false,
-			"component": "Etherpad",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"title": "3ed874daa424a938da325d30",
-				"description": "Etherpad description",
-				"url": "https://schul-cloud.org/etherpad/pbc4du"
-			}
-		}
-	],
-	"time": {
-		"$date": "2020-11-04T23:00:00Z"
-	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"createdAt": {
-		"$date": "2020-11-05T07:05:45.915Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:05:45.915Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3a502a9c31a26f4d1d449"
-	},
-	"materialIds": [],
-	"hidden": true,
-	"isCopyFrom": null,
-	"position": 0,
-	"courseId": {
-		"$oid": "5fa3a481a9c31a26f4d1d3e1"
-	},
-	"name": "Herz",
-	"contents": [
-		{
-			"_id": {
-				"$oid": "5fa3a502a9c31a26f4d1d44a"
-			},
-			"title": "TEXT",
-			"hidden": false,
-			"component": "text",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"text": "<p>some text</p>"
-			}
+		"courseId": {
+			"$oid": "59a3cabaa2049554a93fec60"
 		},
-		{
-			"_id": {
-				"$oid": "5fa3a502a9c31a26f4d1d44b"
-			},
-			"title": "GeoGebra",
-			"hidden": false,
-			"component": "geoGebra",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"materialId": "ucxngdjf"
-			}
+		"name": "Wahrscheinlichkeitsrechnung",
+		"time": {
+			"$date": "2017-08-27T22:00:00Z"
 		},
-		{
-			"_id": {
-				"$oid": "5fa3a502a9c31a26f4d1d44c"
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"__v": 0,
+		"hidden": false,
+		"isCopyFrom": {
+			"$oid": "59256b2e64d87543e48310d6"
+		},
+		"position": 1,
+		"materialIds": [
+			{
+				"$oid": "59b6bdc75c9ec20c6f083659"
 			},
-			"title": "Material",
-			"hidden": false,
-			"component": "resources",
-			"user": {
-				"$oid": "5fa2c71bb229544f2c6966d9"
-			},
-			"content": {
-				"resources": [
-					{
-						"url": "http://www.heynkes.de/biologie/",
-						"title": "Heynkes Biologie",
-						"description": "",
-						"client": "Schul-Cloud"
-					}
-				]
+			{
+				"$oid": "59b6bf5e5c9ec20c6f08365a"
 			}
-		}
-	],
-	"time": {
-		"$date": "2020-11-04T23:00:00Z"
+		],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59a405e2a2049554a93fecb8"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "https://de.serlo.org/mathe/stochastik/relative-haeufigkeit-wahrscheinlichkeit/wahrscheinlichkeit-1753",
+							"title": "Wahrscheinlichkeit",
+							"description": "Die Wahrscheinlichkeit stellt ein Maß für die Sicherheit oder Unsicherheit eines Ereignisses in einem Zufallsexperiment dar. Jedem Ereignis eines Zufallsexperimentes wird eine reelle Zahl zwischen 0 und 1 zugeordnet, die man als die Wahrscheinlichkeit des Ereignisses bezeichnet. Für die ...",
+							"client": "serlo"
+						}
+					]
+				},
+				"component": "resources",
+				"hidden": false,
+				"title": ""
+			},
+			{
+				"_id": {
+					"$oid": "59a405e2a2049554a93fecb7"
+				},
+				"content": {
+					"materialId": "DUvsJVHF"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": "Glücksrad"
+			},
+			{
+				"_id": {
+					"$oid": "59a405e2a2049554a93fecb6"
+				},
+				"content": {
+					"materialId": "UQxtWgVz"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": "Würfel-Spiel"
+			},
+			{
+				"_id": {
+					"$oid": "59a405e2a2049554a93fecb5"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "https://de.serlo.org/mathe/stochastik/bedingte-wahrscheinlichkeit-unabhaengigkeit/bedingte-wahrscheinlichkeit/bedingte-wahrscheinlichkeit",
+							"title": "Bedingte Wahrscheinlichkeit",
+							"description": "Die (bedingte) Wahrscheinlichkeit von A unter der Bedingung B gibt an, wie wahrscheinlich A ist, falls sicher ist, dass B schon eingetreten ist. Man schreibt { mathrm P}_ mathrm B left( mathrm A right) oder mathrm P left( mathrm A left| mathrm B right. right) für die ...",
+							"client": "serlo"
+						}
+					]
+				},
+				"component": "resources",
+				"hidden": false,
+				"title": ""
+			},
+			{
+				"_id": {
+					"$oid": "59a405e2a2049554a93fecb4"
+				},
+				"content": {
+					"materialId": "jaz8F8hZ"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": ""
+			}
+		]
 	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
+	{
+		"_id": {
+			"$oid": "59a3cf10a2049554a93fec72"
+		},
+		"updatedAt": {
+			"$date": "2017-08-30T14:05:49.053Z"
+		},
+		"createdAt": {
+			"$date": "2017-06-09T09:32:52.462Z"
+		},
+		"courseId": {
+			"$oid": "59a3cd61a2049554a93fec68"
+		},
+		"name": "Kurzgeschichte: Julia Franck - Die Streuselschnecke",
+		"time": {
+			"$date": "2017-08-29T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"__v": 0,
+		"isCopyFrom": {
+			"$oid": "593a6b44a5896d0515fbf42e"
+		},
+		"position": 2,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59a6c63da2049554a93fed97"
+				},
+				"content": {
+					"text": "<p>Der Anruf kam, als ich vierzehn war. Ich wohnte seit einem Jahr nicht mehr bei meiner Mutter und meinen Schwestern, sondern bei Freunden in Berlin. Eine fremde Stimme meldete sich, der Mann nannte seinen Namen, sagte mir, er lebe in Berlin, und fragte, ob ich ihn kennenlernen wolle. Ich z&#xF6;gerte, ich war mir nicht sicher. Zwar hatte ich schon viel &#xFC;ber solche Treffen geh&#xF6;rt und mir oft vorgestellt, wie so etwas w&#xE4;re, aber als es so weit war, empfand ich eher Unbehagen. Wir verabredeten uns. Er trug Jeans, Jacke und Hose. Ich hatte mich geschminkt. Er f&#xFC;hrte mich ins Caf&#xE9; Richter am Hindemithplatz, und wir gingen ins Kino, ein Film von Rohmer. Unsympathisch war er nicht, eher sch&#xFC;chtern. Er nahm mich mit ins Restaurant und stellte mich seinen Freunden vor. Ein feines, ironisches L&#xE4;cheln zog er zwischen sich und die anderen Menschen. Ich ahnte, was das L&#xE4;cheln verriet. Einige Male durfte ich ihn bei seiner Arbeit besuchen. Er schrieb Drehb&#xFC;cher und f&#xFC;hrte Regie bei Filmen. Ich fragte mich, ob er mir Geld geben w&#xFC;rde, wenn wir unstreffen, aber er gab mir keins, und ich traute mich nicht, danach zu fragen. Schlimm war das nicht, schlie&#xDF;lich kannte ich ihn kaum, was sollte ich da schon verlangen? Au&#xDF;erdem konnte ich f&#xFC;r mich selbst sorgen, ich ging zur Schule und putzen und arbeitete als Kinderm&#xE4;dchen. Bald w&#xFC;rde ich alt genug sein, um als Kellnerin zu arbeiten, und vielleicht wurde ja auch noch eines Tages etwas Richtiges aus mir. Zwei Jahre sp&#xE4;ter, der Mann und ich waren uns noch immer etwas fremd, sagte er mir, er sei krank. Er starb ein Jahr lang, ich besuchte ihn im Krankenhaus und fragte, was er sich w&#xFC;nsche. Er sagte mir, er habe Angst vor dem Tod und wolle es so schnell wie m&#xF6;glich hinter sich bringen. Er fragte mich, ob ich ihm Morphium besorgen k&#xF6;nne. Ich dachte nach, ich hatte einige Freunde, die Drogen nahmen, aber keinen, der sich mit Morphium auskannte. Auch war ich mir nicht sicher, ob die im Krankenhaus herausfinden wollten und w&#xFC;rden, woher es kam. Ich verga&#xDF; seine Bitte. Manchmal brachte ich ihm Blumen. Er fragte nach dem Morphium, und ich fragte ihn, ob er sich Kuchen w&#xFC;nsche, schlie&#xDF;lich wusste ich, wie gerne er Torte a&#xDF;. Er sagte, die einfachen Dinge seien ihm jetzt die liebsten &#x2013; er wolle nur Streuselschnecken, nichts sonst. Ich ging nach Hause und buk Streuselschnecken, zwei Bleche voll. Sie waren noch warm, als ich sie ins Krankenhaus brachte. Er sagte, er h&#xE4;tte gerne mit mir gelebt, es zumindest gern versucht, er habe immer gedacht, daf&#xFC;r sei noch Zeit, eines Tages &#x2013; aber jetzt sei es zu sp&#xE4;t. Kurz nach meinem siebzehnten Geburtstag war er tot. Meine kleine Schwester kam nach Berlin, wir gingen gerneinsam zur Beerdigung. Meine Mutter kam nicht.Ich nehme an, sie war mit anderem besch&#xE4;ftigt, au&#xDF;erdem hatte sie meinen Vater zuwenig gekannt und nicht geliebt.</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Die Streuselschnecke"
+			},
+			{
+				"_id": {
+					"$oid": "59a6c63da2049554a93fed96"
+				},
+				"content": {
+					"text": "<p><a href=\"http://de.wikipedia.org/wiki/Julia_Franck#Leben\">Wikipedia:</a> Julia Franck wurde 1970 zusammen mit ihrer Zwillingsschwester in <a href=\"https://de.wikipedia.org/wiki/Berlin-Lichtenberg\" title=\"Berlin-Lichtenberg\">Berlin-Lichtenberg</a> geboren. Ihre Mutter ist die Schauspielerin Anna Franck, ihr Vater der Fernsehregisseur J&#xFC;rgen Sehmisch. 1978 reiste Anna Franck mit ihren vier T&#xF6;chtern &#xFC;ber das <a href=\"https://de.wikipedia.org/wiki/Notaufnahmelager_Marienfelde\" title=\"Notaufnahmelager Marienfelde\">Notaufnahmelager Marienfelde</a> in die <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Bundesrepublik_Deutschland\" title=\"Bundesrepublik Deutschland\">Bundesrepublik Deutschland</a> aus. Nach neun Monaten im Notaufnahmelager zog die Familie 1979 nach Schleswig-Holstein in die N&#xE4;he von <a href=\"https://de.wikipedia.org/wiki/Rendsburg\" title=\"Rendsburg\">Rendsburg</a>. Dort besuchte Julia Franck von der vierten bis zur siebten Klasse die <a href=\"https://de.wikipedia.org/wiki/Waldorfschule\" title=\"Waldorfschule\">Freie Waldorfschule</a>. Im Jahr 1983 zog Julia Franck alleine zur&#xFC;ck nach Berlin, wo sie 1991 ihr Abitur machte. In der Folge begann sie ein Jura-Studium, entschied sich aber nach einem mehrmonatigen Aufenthalt in San Francisco f&#xFC;r ein Studium der Altamerikanistik, Philosophie und Neueren Deutschen Literatur an der <a href=\"https://de.wikipedia.org/wiki/Freie_Universit%C3%A4t_Berlin\" title=\"Freie Universit&#xE4;t Berlin\">Freien Universit&#xE4;t Berlin</a>. W&#xE4;hrend ihrer Schul- und Studienzeit arbeitete Julia Franck unter anderem als Putzfrau, Kinderm&#xE4;dchen, Hilfsschwester, Phonotypistin, Kellnerin, Hilfskraft an der FU Berlin sowie als freie Journalistin f&#xFC;r den H&#xF6;rfunk (<a href=\"https://de.wikipedia.org/wiki/Sender_Freies_Berlin\" title=\"Sender Freies Berlin\">Sender Freies Berlin</a>) und den Berliner <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Tagesspiegel\" title=\"Tagesspiegel\">Tagesspiegel</a>. Weitere Auslandsaufenthalte f&#xFC;hrten sie in die <a href=\"https://de.wikipedia.org/wiki/Vereinigte_Staaten\" title=\"Vereinigte Staaten\">Vereinigten Staaten</a>, nach <a href=\"https://de.wikipedia.org/wiki/Mexiko\" title=\"Mexiko\">Mexiko</a> und <a href=\"https://de.wikipedia.org/wiki/Guatemala\" title=\"Guatemala\">Guatemala</a>.</p>\r\n\r\n<p>F&#xFC;r ihre Texte und B&#xFC;cher erhielt Julia Franck zahlreiche Auszeichnungen, Preise und Stipendien. 1998 erhielt sie das <a href=\"https://de.wikipedia.org/wiki/Alfred-D%C3%B6blin-Stipendium\" title=\"Alfred-D&#xF6;blin-Stipendium\">Alfred-D&#xF6;blin-Stipendium</a> der Akademie der K&#xFC;nste, 2004 erhielt sie den <a href=\"https://de.wikipedia.org/wiki/Marie-Luise-Kaschnitz-Preis\" title=\"Marie-Luise-Kaschnitz-Preis\">Marie-Luise-Kaschnitz-Preis</a>, das Jahr 2005 verbrachte sie als Stipendiatin in der <a href=\"https://de.wikipedia.org/wiki/Deutsche_Akademie_Rom_Villa_Massimo\" title=\"Deutsche Akademie Rom Villa Massimo\">Deutschen Akademie Rom Villa Massimo</a>. Im September 2007 erhielt sie f&#xFC;r ihren Roman <em><a href=\"https://de.wikipedia.org/wiki/Die_Mittagsfrau\" title=\"Die Mittagsfrau\">Die Mittagsfrau</a></em> den <a href=\"https://de.wikipedia.org/wiki/Deutscher_Buchpreis\" title=\"Deutscher Buchpreis\">Deutschen Buchpreis</a>. Seit 2001 ist sie Mitglied im <a href=\"https://de.wikipedia.org/wiki/PEN-Zentrum_Deutschland\" title=\"PEN-Zentrum Deutschland\">PEN-Zentrum Deutschland</a>. Julia Franck &#xFC;bernimmt immer wieder Lehrauftr&#xE4;ge, zuletzt als Gastprofessorin am <a href=\"https://de.wikipedia.org/wiki/Deutsches_Literaturinstitut_Leipzig\" title=\"Deutsches Literaturinstitut Leipzig\">Deutschen Literaturinstitut</a> in Leipzig.</p>\r\n\r\n<p>Vor ihrer literarischen Laufbahn wirkte Julia Franck als Nebendarstellerin in verschiedenen Filmen mit, unter anderem 1974 neben <a href=\"https://de.wikipedia.org/wiki/Nina_Hagen\" title=\"Nina Hagen\">Nina Hagen</a> und <a href=\"https://de.wikipedia.org/wiki/K%C3%A4the_Reichel\" title=\"K&#xE4;the Reichel\">K&#xE4;the Reichel</a> im DDR-Fernsehfilm <em>Heute ist Freitag</em><a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-5\">[5]</a> sowie 1993 neben <a href=\"https://de.wikipedia.org/wiki/Bruno_Ganz\" title=\"Bruno Ganz\">Bruno Ganz</a> und <a href=\"https://de.wikipedia.org/wiki/Lotte_Loebinger\" title=\"Lotte Loebinger\">Lotte Loebinger</a> im Kinofilm <em>Heller Tag</em> von Andr&#xE9; Nitzschke.</p>\r\n\r\n<p>Julia Franck verfasste Ausstellungs- und Katalogtexte zu Werken zeitgen&#xF6;ssischer K&#xFC;nstler, darunter <a href=\"https://de.wikipedia.org/wiki/Thomas_Demand\" title=\"Thomas Demand\">Thomas Demand</a>, <a href=\"https://de.wikipedia.org/wiki/Peter_Krauskopf\" title=\"Peter Krauskopf\">Peter Krauskopf</a>, <a href=\"https://de.wikipedia.org/wiki/Friedemann_Grieshaber\" title=\"Friedemann Grieshaber\">Friedemann Grieshaber</a> und <a href=\"https://de.wikipedia.org/wiki/Gerhard_Richter\" title=\"Gerhard Richter\">Gerhard Richter</a>. Am 3. Februar 2012 hielt sie die Festrede f&#xFC;r <a href=\"https://de.wikipedia.org/wiki/Gerhard_Richter\" title=\"Gerhard Richter\">Gerhard Richter</a> anl&#xE4;sslich der gro&#xDF;en europ&#xE4;ischen Retrospektive zu Ehren seines 80. Geburtstags.<a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-7\">[7]</a> Als Beitrag zur Ausstellung &#x201E;Vermisst &#x2013; Der Turm der blauen Pferde von Franz Marc&#x201C; im Haus am Waldsee, Berlin (3. M&#xE4;rz bis 5. Juni 2017), die ansonsten Beitr&#xE4;ge bildender K&#xFC;nstler wie <a href=\"https://de.wikipedia.org/wiki/Norbert_Bisky\" title=\"Norbert Bisky\">Norbert Bisky</a>, <a href=\"https://de.wikipedia.org/wiki/Christian_Jankowski\" title=\"Christian Jankowski\">Christian Jankowski</a>, <a href=\"https://de.wikipedia.org/wiki/Via_Lewandowsky\" title=\"Via Lewandowsky\">Via Lewandowsky</a>, <a href=\"https://de.wikipedia.org/wiki/Tobias_Rehberger\" title=\"Tobias Rehberger\">Tobias Rehberger</a> u.a. beinhaltete, verfasste Julia Franck den experimentellen Prosatext &#x201E;Blaues Licht. Fragmente einer erhofften Begegnung&#x201C;, in dem sie sich mit der unentdeckten Liebesgeschichte zwischen Else Lasker-Sch&#xFC;ler und ihrem K&#xFC;nstlerfreund Franz Marc besch&#xE4;ftigt<a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-9\">[9]</a>.<a href=\"https://de.wikipedia.org/wiki/Julia_Franck#cite_note-10\">[10]</a></p>\r\n\r\n<p>Julia Franck ist die Enkelin der Bildhauerin <a href=\"https://de.wikipedia.org/wiki/Ingeborg_Hunzinger\" title=\"Ingeborg Hunzinger\">Ingeborg Hunzinger</a> und Ururenkelin des Malers <a href=\"https://de.wikipedia.org/wiki/Philipp_Franck\" title=\"Philipp Franck\">Philipp Franck</a>. Sie lebt mit ihren beiden Kindern in Berlin.</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Zur Autorin: Julia Franck"
+			}
+		]
 	},
-	"createdAt": {
-		"$date": "2020-11-05T07:08:50.055Z"
+	{
+		"_id": {
+			"$oid": "59a3cfb8a2049554a93fec73"
+		},
+		"updatedAt": {
+			"$date": "2017-11-16T19:52:02.195Z"
+		},
+		"createdAt": {
+			"$date": "2017-06-09T11:31:45.310Z"
+		},
+		"courseId": {
+			"$oid": "59a3cabaa2049554a93fec60"
+		},
+		"name": "Potenzen und ihre Bedeutung im Alltag",
+		"time": {
+			"$date": "2017-08-27T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"__v": 0,
+		"isCopyFrom": {
+			"$oid": "593a8721a5896d0515fbf476"
+		},
+		"position": 0,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59a404d4a2049554a93fecb3"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "https://de.serlo.org/mathe/terme-gleichungen/potenzen-wurzeln-logarithmen/potenzen/potenzen",
+							"title": "Potenzen",
+							"description": "Das Potenzieren ist eine verkürzte Schreibweise für das mehrmalige Multiplizieren einer Zahl mit sich selbst. Man schreibt bespielsweise 2 cdot2 cdot2 als 2^3. Der Exponent bzw. die Hochzahl, also die 3, beschreibt, wie oft eine Zahl mit sich selbst multipliziert wird. Generell hat ...",
+							"client": "serlo"
+						}
+					]
+				},
+				"component": "resources",
+				"hidden": false,
+				"title": ""
+			},
+			{
+				"_id": {
+					"$oid": "59a404d4a2049554a93fecb2"
+				},
+				"content": {
+					"text": "<div class=\"ckeditor-html5-video\" style=\"text-align: center;\">\r\n<video autoplay=\"autoplay\" controls=\"controls\" src=\"/files/file?path=courses/59a3cabaa2049554a93fec60/Video-Potenzen.mp4\">&#xA0;</video>\r\n</div>\r\n\r\n<p>&#xA0;</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Anstieg von Werten in Potenzen"
+			},
+			{
+				"_id": {
+					"$oid": "59a404d4a2049554a93fecb1"
+				},
+				"content": {
+					"materialId": "HPMCpAy7"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": "Wende dein Wissen an!"
+			},
+			{
+				"_id": {
+					"$oid": "59a404d4a2049554a93fecb0"
+				},
+				"content": {
+					"materialId": "CAeZRdgX"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": ""
+			},
+			{
+				"_id": {
+					"$oid": "59a404d4a2049554a93fecaf"
+				},
+				"content": {
+					"materialId": "k6dqVR2J"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": ""
+			}
+		]
 	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:08:50.055Z"
+	{
+		"_id": {
+			"$oid": "59a3e47ba2049554a93fec8f"
+		},
+		"updatedAt": {
+			"$date": "2017-11-16T19:52:24.173Z"
+		},
+		"createdAt": {
+			"$date": "2017-06-07T09:34:51.795Z"
+		},
+		"courseId": {
+			"$oid": "59a3cabaa2049554a93fec60"
+		},
+		"name": "Strecken- und Winkelsymmetralen",
+		"time": {
+			"$date": "2017-11-15T23:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"__v": 0,
+		"hidden": false,
+		"isCopyFrom": {
+			"$oid": "59a3c69aa2049554a93fec41"
+		},
+		"position": 2,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59a40809a2049554a93fecc3"
+				},
+				"content": {
+					"text": "<p><img alt=\"\" src=\"/files/file?path=courses/59a3cabaa2049554a93fec60/Achsen-Symmetrie.jpg\" style=\"height:200px; width:500px\"></p>\r\n\r\n<p>Quelle: Bettermarks.com</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Einführung"
+			},
+			{
+				"_id": {
+					"$oid": "59a40809a2049554a93fecc2"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/achsensymmetrie",
+							"title": "Achsensymmetrie",
+							"description": "Eine Figur heißt achsensymmetrisch, wenn sie durch die Achsenspiegelung an ihrer/n Symmetrieachse(n) auf sich selbst abgebildet wird. Die Symmetrieachse kann dabei auch als Faltkante gesehen werden, durch die die Figur in zwei deckungsgleiche Stücke aufgeteilt wird. Anstelle von ...",
+							"client": "serlo"
+						}
+					]
+				},
+				"component": "resources",
+				"hidden": false,
+				"title": "Achsensymmetrie"
+			},
+			{
+				"_id": {
+					"$oid": "59a40809a2049554a93fecc1"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/punktsymmetrie",
+							"title": "Punktsymmetrie",
+							"description": "Eine Figur heißt punktsymmetrisch, wenn sie durch die Spiegelung an einem Punkt, dem sogenannten Symmetriepunkt oder Symmetriezentrum, auf sich selbst abgebiildet wird. Es handelt sich um eine Drehung der Figur um 180°.punktsymmetrische Figuren Die jeweils rot gekennzeichneten Punkte sind ...",
+							"client": "serlo"
+						}
+					]
+				},
+				"component": "resources",
+				"hidden": false,
+				"title": "Punktsymmetrie"
+			},
+			{
+				"_id": {
+					"$oid": "59a40809a2049554a93fecc0"
+				},
+				"content": {
+					"materialId": "xGeXaeqE"
+				},
+				"component": "geoGebra",
+				"hidden": false,
+				"title": "Hausaufgabe"
+			}
+		]
 	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3a847a9c31a26f4d1d4a7"
+	{
+		"_id": {
+			"$oid": "59a3e4a4a2049554a93fec93"
+		},
+		"updatedAt": {
+			"$date": "2017-09-18T10:00:01.877Z"
+		},
+		"createdAt": {
+			"$date": "2017-06-08T07:52:47.496Z"
+		},
+		"courseId": {
+			"$oid": "59a3cd61a2049554a93fec68"
+		},
+		"name": "Gedichtanalyse: Theodor Storm - Die Stadt",
+		"time": {
+			"$date": "2017-09-17T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"__v": 0,
+		"isCopyFrom": {
+			"$oid": "59a3c6c5a2049554a93fec43"
+		},
+		"position": 0,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59bf9921899d66316cf49492"
+				},
+				"content": {
+					"text": "<p><img alt=\"Bildergebnis f&#xFC;r Theodor Storm\" src=\"https://www.welt.de/img/kultur/literarischewelt/mobile117690761/8542506557-ci102l-w1024/Hans-Theodor-Woldsen-Storm-3.jpg\" style=\"height:560px; margin-top:0px; width:573px\"></p>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; &#xA9; WeltN24 GmbH, 2017</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": ""
+			},
+			{
+				"_id": {
+					"$oid": "59bf9921899d66316cf49491"
+				},
+				"content": {
+					"text": "<p><strong>Am grauen Strand, am grauen Meer<br>\r\nUnd seitab liegt die Stadt;<br>\r\nDer Nebel dr&#xFC;ckt die D&#xE4;cher schwer,<br>\r\nUnd durch die Stille braust das Meer<br>\r\nEint&#xF6;nig um die Stadt.</strong></p>\r\n\r\n<p><strong>Es rauscht kein Wald, es schl&#xE4;gt im Mai<br>\r\nKein Vogel ohn Unterla&#xDF;;<br>\r\nDie Wandergans mit hartem Schrei<br>\r\nNur fliegt in Herbstesnacht vorbei,<br>\r\nAm Strande weht das Gras.</strong></p>\r\n\r\n<p><strong>Doch h&#xE4;ngt mein ganzes Herz an dir,<br>\r\nDu graue Stadt am Meer;<br>\r\nDer Jugend Zauber f&#xFC;r und f&#xFC;r<br>\r\nRuht l&#xE4;chelnd doch auf dir, auf dir,<br>\r\nDu graue Stadt am Meer.</strong></p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Theodor Storm - Die Stadt"
+			},
+			{
+				"_id": {
+					"$oid": "59bf9921899d66316cf49490"
+				},
+				"content": {
+					"text": "<p>1. Beschreibt die &#xE4;u&#xDF;ere Form des Gedichts.</p>\r\n\r\n<p>2. Suche treffende &#xDC;berschriften f&#xFC;r die einzelnen Strophen.</p>\r\n\r\n<p>3. Wie unterscheiden sich die Strophen inhaltlich voneinander?</p>\r\n\r\n<p>4. Worin liegt der H&#xF6;hepunkt des Gedichts?</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Aufgabe"
+			}
+		]
 	},
-	"materialIds": [],
-	"hidden": true,
-	"isCopyFrom": null,
-	"position": 0,
-	"courseId": {
-		"$oid": "5fa3a5e5a9c31a26f4d1d47e"
+	{
+		"_id": {
+			"$oid": "59a3e4bba2049554a93fec94"
+		},
+		"updatedAt": {
+			"$date": "2017-08-28T12:49:29.178Z"
+		},
+		"createdAt": {
+			"$date": "2017-06-08T07:47:47.137Z"
+		},
+		"courseId": {
+			"$oid": "59a3ce58a2049554a93fec6e"
+		},
+		"name": "Nachbarstaaten Deutschlands",
+		"time": {
+			"$date": "2017-08-27T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"__v": 0,
+		"isCopyFrom": {
+			"$oid": "59a3c6dba2049554a93fec44"
+		},
+		"position": 4,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59a41159a2049554a93fecdd"
+				},
+				"content": {
+					"text": "<div class=\"ckeditor-html5-video\" style=\"text-align: center;\">\r\n<video autoplay=\"autoplay\" controls=\"controls\" src=\"/files/file?path=courses/59a3ce58a2049554a93fec6e/Nachbarstaaten Deutschlands.mp4\">&#xA0;</video>\r\n</div>\r\n\r\n<p>&#xA0;</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Einführung in das Thema"
+			},
+			{
+				"_id": {
+					"$oid": "59a41159a2049554a93fecdc"
+				},
+				"content": {
+					"text": "<p>1. Benennt alle Nachbarstaaten Deutschlands und deren Hauptst&#xE4;dte.</p>\r\n\r\n<p>2. Sucht heraus, wie viele Einwohner die Nachbaarstaaten Deutschlands haben.</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Aufgabe "
+			}
+		]
 	},
-	"name": "Sun",
-	"contents": [],
-	"time": {
-		"$date": "2020-11-04T23:00:00Z"
+	{
+		"_id": {
+			"$oid": "59a529eba2049554a93fecff"
+		},
+		"updatedAt": {
+			"$date": "2017-09-15T06:30:42.903Z"
+		},
+		"createdAt": {
+			"$date": "2017-08-29T08:46:35.309Z"
+		},
+		"courseId": {
+			"$oid": "59a3c948a2049554a93fec5f"
+		},
+		"name": "Strahlengang im menschlichen Auge",
+		"time": {
+			"$date": "2017-09-05T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"position": 0,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59afdcb71f513506904e1d32"
+				},
+				"content": {
+					"text": "<p>Immer wenn man sich &#xFC;ber den Aufbau und die generelle Funktion des menschlichen Auges austauschen m&#xF6;chte, ist es &#xFC;blich, ein vereinfachtes, schematisches Modell des Auges zu verwenden.&#xA0;<a href=\"http://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">F&#xFC;r Eure Klasse findet Ihr das hier im Biologiekurs</a>.</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Das \"reduzierte\" Auge"
+			},
+			{
+				"_id": {
+					"$oid": "59afdcb71f513506904e1d31"
+				},
+				"content": {
+					"text": "<p>Aus Sicht der geometrischen Optik besteht das Auge aus einem&#xA0;Linsensystem&#xA0;zweier Sammellinsen &#x2013; erstens der gew&#xF6;lbten Hornhautschicht und zweitens der durch einen Ringmuskel verformbaren Augenlinse. Das von den Linsen erzeugte Bild verl&#xE4;uft entlang der Netzhaut. Dort befinden sich Sinneszellen (St&#xE4;bchen und Z&#xE4;pfchen), welche die einfallenden Lichtstrahlen absorbieren und entsprechende Signale &#xFC;ber den Sehnerv geb&#xFC;ndelt ans Gehirn weiterleiten.</p>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p><img alt=\"\" src=\"./Strahlengang im menschlichen Auge - Schul-Cloud_files/file\"><img alt=\"Strahlengang im menschlichen Auge (ideales Modell)\" src=\"/files/file?path=courses/59a3c948a2049554a93fec5f/augeabb_web.png\" style=\"height:359px; width:800px\"></p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Strahlengang im menschlichen Auge (ideales Modell)"
+			},
+			{
+				"_id": {
+					"$oid": "59afdcb71f513506904e1d30"
+				},
+				"content": {
+					"text": "<p>Der Einfallswinkel der geometrischen Lichtstrahlen eines Objekts im Blickfeld kann durch Positionswechsel, Kopf- oder Augenbewegungen vorgenommen werden.&#xA0;<a href=\"http://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">Diese sind sehr sch&#xF6;n in unserem Biologiekurs f&#xFC;r Euch dargestellt.</a>&#xA0;</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Blickwinkel und Augenbewegungen"
+			}
+		],
+		"__v": 0
 	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
+	{
+		"_id": {
+			"$oid": "59a662bea2049554a93fed41"
+		},
+		"updatedAt": {
+			"$date": "2017-08-30T14:02:46.838Z"
+		},
+		"createdAt": {
+			"$date": "2017-08-30T07:01:18.866Z"
+		},
+		"courseId": {
+			"$oid": "59a3cd61a2049554a93fec68"
+		},
+		"name": "Kurzgeschichte: Wolfgang Borchert - Die Kirschen",
+		"time": {
+			"$date": "2017-08-29T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"position": 1,
+		"materialIds": [],
+		"contents": [
+			{
+				"_id": {
+					"$oid": "59a6c586a2049554a93fed91"
+				},
+				"content": {
+					"text": "<p><a href=\"http://de.wikipedia.org/wiki/Tr%C3%BCmmerliteratur\">Wikipedia</a>: Die <strong>Tr&#xFC;mmerliteratur</strong> (auch <strong>Literatur der <a href=\"https://de.wikipedia.org/wiki/Stunde_Null\" title=\"Stunde Null\">Stunde Null</a></strong>, Kriegs- oder Heimkehrerliteratur) ist eine deutsche <a href=\"https://de.wikipedia.org/wiki/Epoche_%28Literatur%29\" title=\"Epoche (Literatur)\">Literaturepoche</a>. Sie bl&#xFC;hte in <a href=\"https://de.wikipedia.org/wiki/Deutschland_1945_bis_1949\" title=\"Deutschland 1945 bis 1949\">Deutschland</a> unmittelbar nach dem <a href=\"https://de.wikipedia.org/wiki/Zweiter_Weltkrieg\" title=\"Zweiter Weltkrieg\">Zweiten Weltkrieg</a> und trat Anfang der 1950er Jahre gegen&#xFC;ber anspruchsvolleren neueren Formen, etwa von <a href=\"https://de.wikipedia.org/wiki/Arno_Schmidt\" title=\"Arno Schmidt\">Arno Schmidt</a>, <a href=\"https://de.wikipedia.org/wiki/G%C3%BCnter_Grass\" title=\"G&#xFC;nter Grass\">G&#xFC;nter Grass</a>, <a href=\"https://de.wikipedia.org/wiki/Peter_R%C3%BChmkorf\" title=\"Peter R&#xFC;hmkorf\">Peter R&#xFC;hmkorf</a> und <a href=\"https://de.wikipedia.org/wiki/Uwe_Johnson\" title=\"Uwe Johnson\">Uwe Johnson</a>, zur&#xFC;ck.</p>\r\n\r\n<p>Die Tr&#xFC;mmerliteraten klagten eine radikal neue Literatur ein. Sie versuchten ausdr&#xFC;cklich, sich inhaltlich und formal von den vorhergehenden Str&#xF6;mungen abzuheben. Die <a href=\"https://de.wikipedia.org/wiki/Sprache_des_Nationalsozialismus\" title=\"Sprache des Nationalsozialismus\">Sprache des Nationalsozialismus</a> sollte durch einen Reinigungsprozess ganz neu aufgebaut werden. Ebenso lehnte man die <a href=\"https://de.wikipedia.org/wiki/Kalligrafie\" title=\"Kalligrafie\">Kalligrafie</a> als literarische Sch&#xF6;nschreiberei ab, der Ausdruck von Ideologie und Gef&#xFC;hl wurde tabuisiert. Die neue Literatur sollte realistisch, unpsychologisch und wahrhaftig sein, sie erhob also ein Wahrheitspostulat. Sie sollte das Geschehene und das Existierende genau erfassen. Ein magischer Realismus wurde gefordert, der hinter der Wirklichkeit aber auch die Irrealit&#xE4;t erblickt. Damit war auch eine Forderung an die Autoren ausgesprochen: Ein Autor, der in diesem neuen Sinne schreiben will, muss sich in der Literatur und in der Realit&#xE4;t engagieren und den <a href=\"https://de.wikipedia.org/wiki/Elfenbeinturm\" title=\"Elfenbeinturm\">Elfenbeinturm</a> verlassen.</p>\r\n\r\n<p>Trotzdem wurde vielfach auf Formen &#xE4;lterer Epochen wie der <a href=\"https://de.wikipedia.org/wiki/Romantik\" title=\"Romantik\">Romantik</a>, des <a href=\"https://de.wikipedia.org/wiki/Expressionismus_%28Literatur%29\" title=\"Expressionismus (Literatur)\">Expressionismus</a> und der <a href=\"https://de.wikipedia.org/wiki/Neue_Sachlichkeit_%28Literatur%29\" title=\"Neue Sachlichkeit (Literatur)\">Neuen Sachlichkeit</a> zur&#xFC;ckgegriffen. Traditionelle lyrische Formen wie das <a href=\"https://de.wikipedia.org/wiki/Sonett\" title=\"Sonett\">Sonett</a> wurden ebenso durchaus noch benutzt. Die stilistischen Mittel, die benutzt wurden, waren die <a href=\"https://de.wikipedia.org/wiki/Lakonisch\" title=\"Lakonisch\">lakonische</a> Sprache, die die zertr&#xFC;mmerte und kahle Welt beschrieb, aber nicht bewertete, sowie eine <a href=\"https://de.wikipedia.org/wiki/Epeisodion\" title=\"Epeisodion\">episodenhafte</a> Beschr&#xE4;nkung des Raums, der Erz&#xE4;hlzeit und der Personen. Weiteres wichtiges Stilmittel war die <a href=\"https://de.wikipedia.org/wiki/Repetitio\" title=\"Repetitio\">Wiederholung</a>.</p>\r\n\r\n<p>Inhaltlich besch&#xE4;ftigte sich die Tr&#xFC;mmerliteratur mit gewollt kargen und direkten Beobachtungen des notvollen Lebens in den Ruinenst&#xE4;dten, in Fl&#xFC;chtlingslagern. Ein weiteres Thema war das Schicksal isolierter und herumirrender Menschen, die vor den Tr&#xFC;mmern ihrer Heimat und ihres Besitzes, und auch vor den Tr&#xFC;mmern ihrer Wertevorstellungen standen und damit umgehen mussten. Viele Menschen f&#xFC;hlten sich von der Heimkehrer-Thematik angesprochen, Geschichten der aus dem Krieg oder den Gefangenenlagern Heimkehrenden, die sich pl&#xF6;tzlich in einer Welt wiederfanden, die keinen Platz mehr f&#xFC;r sie hatte. Ebenso stand die Frage nach der Schuld und <a href=\"https://de.wikipedia.org/wiki/Kollektivschuld\" title=\"Kollektivschuld\">Kollektivschuld</a> an Krieg und <a href=\"https://de.wikipedia.org/wiki/Holocaust\" title=\"Holocaust\">Holocaust</a> im Vordergrund. Dies war keine einfache Frage, da viele der Autoren selbst als Soldaten am Krieg beteiligt waren und nun ihre eigene Rolle &#xFC;berpr&#xFC;fen mussten. Die Tr&#xFC;mmerliteratur &#xFC;bte Kritik an der politischen und gesellschaftlichen Restauration Deutschlands.</p>\r\n\r\n<p>Verp&#xF6;nt und als literarische Feindbilder angesehen waren Agitationsliteratur sowie <a href=\"https://de.wikipedia.org/wiki/Propaganda\" title=\"Propaganda\">Propaganda</a>, Literaturklassiker, das Stilmittel des R&#xFC;ckgriffs auf die <a href=\"https://de.wikipedia.org/wiki/Antike\" title=\"Antike\">Antike</a>, literarische Kalligrafie, <a href=\"https://de.wikipedia.org/wiki/Pathos\" title=\"Pathos\">pathetische</a>, &#xFC;berschw&#xE4;ngliche Literatur, stilistischer <a href=\"https://de.wikipedia.org/wiki/Eskapismus\" title=\"Eskapismus\">Eskapismus</a> sowie der &#xE4;ltere Rationalismus des 19. Jahrhunderts und dessen rein rationale Beschreibung.</p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Zur Trümmerliteratur allgemein:"
+			},
+			{
+				"_id": {
+					"$oid": "59a6c586a2049554a93fed90"
+				},
+				"content": {
+					"text": "<p>Nebenan klirrte ein Glas. Jetzt isst er die Kirschen auf, die f&#xFC;r mich sind dachte er. Dabei habe ich das Fieber. Sie hat die Kirschen extra vors Fenster gestellt, damit sie ganz kalt sind. Jetzt hat er das Glas hingeschmissen. Und ich hab das Fieber. Der Kranke stand auf. Er schob sich die Wand entlang. Dann sah er durch die T&#xFC;r, dass sein Vater auf der Erde sa&#xDF;. Er hatte die ganze Hand voll Kirschsaft. Alles voll Kirschen, dachte der Kranke, alles voll. Kirschen. Dabei sollte ich sie essen. Ich hab doch das Fieber. Er hat die ganze. Hand voll Kirschsaft. Die waren sicher sch&#xF6;n kalt. Sie hat sie doch extra vors Fenster gestellt F&#xFC;r das Fieber. Und er isst mir die ganzen Kirschen auf. Jetzt sitzt er auf der Erde und hat die ganze Hand davon voll. Und ich hab das Fieber. Und er hat den kalten Kirschsaft auf der Hand. Den sch&#xF6;nen kalten Kirschsaft. Er war bestimmt ganz kalt. Er stand doch extra vorm Fenster. F&#xFC;r das Fieber. Er hielt sich am T&#xFC;rdr&#xFC;cker. Als der quietschte, sah der Vater auf. Junge, du musst doch zu Bett. Mit dem Fieber, Junge. Du musst sofort zu Bett. Alles voll Kirschen, fl&#xFC;sterte der Kranke. Er sah auf die Hand. Alles voll Kirschen.<br>\r\nDu musst sofort zu Bett, Junge. Der Vater versuchte aufzustehen und verzog das Gesicht. Es tropfte von seiner Hand. Alles Kirschen, fl&#xFC;sterte der Kranke. Alles meine Kirschen. Waren sie kalt? fragte er laut. Ja? Sie waren doch sicher sch&#xF6;n kalt, wie? Sie hat sie doch extra vors Fenster gestellt, damit sie ganz kalt sind. Damit sie ganz kalt sind.<br>\r\nDer Vater sah ihn hilflos von unten an. Er l&#xE4;chelte etwas. Ich komme nicht wieder hoch, l&#xE4;chelte er und verzog das Gesicht. Das ist doch zu dumm, ich komme buchst&#xE4;blich nicht wieder hoch. Der Kranke hielt sich an der T&#xFC;r. Die bewegte sich leise hin und her von seinem Schwanken. Waren sie sch&#xF6;n kalt? fl&#xFC;sterte er, ja? Ich bin n&#xE4;mlich hingefallen, sagte der Vater. Aber es ist wohl nur der Schreck. Ich bin ganz lahm, l&#xE4;chelte er. Das kommt von dem Schreck. Es geht gleich wieder. Dann bring ich dich zu Bett. Du musst ganz schnell zu Bett. Der Kranke sah auf die Hand.<br>\r\nAch, das ist nicht so schlimm. Das ist nur ein kleiner Schnitt. Das h&#xF6;rt gleich auf. Das kommt von der Tasse, winkte der Vater ab. Er sah hoch und verzog das Gesicht. Hoffentlich schimpft sie nicht. Sie mochte gerade diese Tasse so gern. Jetzt hab ich sie kaputt gemacht. Ausgerechnet diese Tasse, die sie so gern mochte. Ich wollte sie aussp&#xFC;len, da bin ich ausgerutscht. Ich wollte sie nur ein bisschen kalt aussp&#xFC;len und deine Kirschen da hinein tun. Aus dem Glas trinkt es sich so schlecht im Bett. Das wei&#xDF; ich noch. Daraus trinkt es sich ganz schlecht im Bett. Der Kranke sah auf die Hand. Die Kirschen, fl&#xFC;sterte er, meine Kirschen? Der Vater versuchte noch einmal, hochzukommen. Die bring ich dir gleich, sagte er. Gleich, Junge. Geh schnell zu Bett mit deinem Fieber. Ich bring sie dir gleich. Sie stehen noch vorm Fenster, damit sie sch&#xF6;n kalt sind. Ich bring sie dir sofort. Der Kranke schob sich an der Wand zur&#xFC;ck zu seinem Bett. Als der Vater mit den Kirschen kam, hatte er den Kopf tief unter die Decke gesteckt.</p>\r\n\r\n<p><img alt=\"\" src=\"/files/file?path=courses/59a3cd61a2049554a93fec68/Kirschen.jpg\" style=\"height:277px; width:277px\"></p>\r\n"
+				},
+				"component": "text",
+				"hidden": false,
+				"title": "Ein Beispiel: Die Kirschen"
+			},
+			{
+				"_id": {
+					"$oid": "59a6c586a2049554a93fed8f"
+				},
+				"component": "resources",
+				"hidden": false,
+				"title": ""
+			}
+		],
+		"__v": 0
 	},
-	"createdAt": {
-		"$date": "2020-11-05T07:22:47.23Z"
+	{
+		"_id": {
+			"$oid": "59a6c215a2049554a93fed79"
+		},
+		"updatedAt": {
+			"$date": "2017-10-19T11:57:05.249Z"
+		},
+		"createdAt": {
+			"$date": "2017-08-30T13:48:05.547Z"
+		},
+		"courseId": {
+			"$oid": "59a3c657a2049554a93fec3a"
+		},
+		"name": "Das Nervensystem",
+		"time": {
+			"$date": "2017-09-10T22:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"position": 0,
+		"materialIds": [],
+		"contents": [
+			{
+				"title": "Einleitung",
+				"hidden": false,
+				"component": "text",
+				"content": {
+					"text": "<p><a href=\"http://de.wikipedia.org/wiki/Nervensystem\">Wikipedia:</a> Das <strong>Nervensystem</strong> (lat.: <em><em>Systema nervosum</em></em>) sind die <a href=\"http://de.wikipedia.org/wiki/Nervenzelle\" title=\"Nervenzelle\">Nervenzellen</a> und <a href=\"https://de.wikipedia.org/wiki/Gliazelle\" title=\"Gliazelle\">Gliazellen</a> eines Organismus im gemeinsamen Zusammenhang. Dieses <a href=\"https://de.wikipedia.org/wiki/Organsystem\" title=\"Organsystem\">Organsystem</a> der <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Eumetazoa\" title=\"Eumetazoa\">Eumetazoa</a> &#xFC;bernimmt die Aufgabe, Ver&#xE4;nderungen der &#xE4;u&#xDF;eren Umwelt und inneren Umgebung eines Organismus als Signal aufzunehmen, aufeinander zu beziehen und mit fr&#xFC;heren zu vergleichen, um eventuell Ver&#xE4;nderungen des Organismus als Reaktionen zu veranlassen, mit denen eine bessere Anpassung an wechselnde Umgebungsbedingungen m&#xF6;glich wird. Damit realisiert das Nervensystem eines vielzelligen tierischen Lebewesens dessen <a class=\"mw-redirect\" href=\"https://de.wikipedia.org/wiki/Reizbarkeit\" title=\"Reizbarkeit\">Reizbarkeit</a> und <a href=\"https://de.wikipedia.org/wiki/Erregung_%28Physiologie%29\" title=\"Erregung (Physiologie)\">Erregbarkeit</a> als Grundeigenschaften seines <a href=\"https://de.wikipedia.org/wiki/Leben\" title=\"Leben\">Lebens</a>.</p>\r\n"
+				},
+				"_id": {
+					"$oid": "59b6c0f25c9ec20c6f08365f"
+				}
+			},
+			{
+				"title": "",
+				"hidden": false,
+				"component": "resources",
+				"content": {
+					"resources": [
+						{
+							"url": "https://de.serlo.org/biologie/biologie-menschen/nervensystem/auswirkungen-aufs-nervensystem-fremdstoffen-erkrankungen/erkrankungen-menschlichen-nervensystems",
+							"title": "Erkrankungen des menschlichen Nervensystems",
+							"description": "Störungen des menschlichen Nervensystems äußern sich in verschiedenen Formen von Erkrankungen.Wenn Gehirn und Nerven krank sind Es gibts zahlreiche neurologische Erkrankungen, einge sind sehr selten, andere durchaus weiter verbreitet. Man unterteilt sie grob in Störungen des zentralen ...",
+							"client": "serlo"
+						}
+					]
+				},
+				"_id": {
+					"$oid": "59b6c0f25c9ec20c6f08365e"
+				}
+			},
+			{
+				"title": "Aufbau des menschlichen Nervensystems",
+				"hidden": false,
+				"component": "text",
+				"content": {
+					"text": "<p><img alt=\"\" src=\"/files/file?path=courses/59a3c657a2049554a93fec3a/Das menschliche Nervensystem.png\" style=\"height:596px; width:518px\"></p>\r\n\r\n<p>&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; &#xA0; &#xA0; &#xA0; &#xA0; &#xA0; &#xA0;&#xA9; Wikipedia, 2017</p>\r\n"
+				},
+				"_id": {
+					"$oid": "59b6c0f25c9ec20c6f08365d"
+				}
+			}
+		],
+		"__v": 0,
+		"hidden": false,
+		"shareToken": "BkKMQz8aZ"
 	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:22:47.23Z"
+	{
+		"_id": {
+			"$oid": "5fa3a449a9c31a26f4d1d363"
+		},
+		"materialIds": [],
+		"hidden": true,
+		"isCopyFrom": null,
+		"position": 0,
+		"courseId": {
+			"$oid": "5fa3a393a9c31a26f4d1d327"
+		},
+		"name": "Herz",
+		"contents": [
+			{
+				"_id": {
+					"$oid": "5fa3a449a9c31a26f4d1d364"
+				},
+				"title": "TEXT",
+				"hidden": false,
+				"component": "text",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"text": "<p>some text</p>"
+				}
+			},
+			{
+				"_id": {
+					"$oid": "5fa3a449a9c31a26f4d1d365"
+				},
+				"title": "GeoGebra",
+				"hidden": false,
+				"component": "geoGebra",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"materialId": "ucxngdjf"
+				}
+			},
+			{
+				"_id": {
+					"$oid": "5fa3a449a9c31a26f4d1d366"
+				},
+				"title": "Material",
+				"hidden": false,
+				"component": "resources",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "http://www.heynkes.de/biologie/",
+							"title": "Heynkes Biologie",
+							"description": "",
+							"client": "Schul-Cloud"
+						}
+					]
+				}
+			},
+			{
+				"_id": {
+					"$oid": "5fa3a449a9c31a26f4d1d367"
+				},
+				"title": "Etherpad",
+				"hidden": false,
+				"component": "Etherpad",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"title": "3ed874daa424a938da325d30",
+					"description": "Etherpad description",
+					"url": "https://schul-cloud.org/etherpad/pbc4du"
+				}
+			}
+		],
+		"time": {
+			"$date": "2020-11-04T23:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"createdAt": {
+			"$date": "2020-11-05T07:05:45.915Z"
+		},
+		"updatedAt": {
+			"$date": "2020-11-05T07:05:45.915Z"
+		},
+		"__v": 0
 	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	{
+		"_id": {
+			"$oid": "5fa3a502a9c31a26f4d1d449"
+		},
+		"materialIds": [],
+		"hidden": true,
+		"isCopyFrom": null,
+		"position": 0,
+		"courseId": {
+			"$oid": "5fa3a481a9c31a26f4d1d3e1"
+		},
+		"name": "Herz",
+		"contents": [
+			{
+				"_id": {
+					"$oid": "5fa3a502a9c31a26f4d1d44a"
+				},
+				"title": "TEXT",
+				"hidden": false,
+				"component": "text",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"text": "<p>some text</p>"
+				}
+			},
+			{
+				"_id": {
+					"$oid": "5fa3a502a9c31a26f4d1d44b"
+				},
+				"title": "GeoGebra",
+				"hidden": false,
+				"component": "geoGebra",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"materialId": "ucxngdjf"
+				}
+			},
+			{
+				"_id": {
+					"$oid": "5fa3a502a9c31a26f4d1d44c"
+				},
+				"title": "Material",
+				"hidden": false,
+				"component": "resources",
+				"user": {
+					"$oid": "5fa2c71bb229544f2c6966d9"
+				},
+				"content": {
+					"resources": [
+						{
+							"url": "http://www.heynkes.de/biologie/",
+							"title": "Heynkes Biologie",
+							"description": "",
+							"client": "Schul-Cloud"
+						}
+					]
+				}
+			}
+		],
+		"time": {
+			"$date": "2020-11-04T23:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"createdAt": {
+			"$date": "2020-11-05T07:08:50.055Z"
+		},
+		"updatedAt": {
+			"$date": "2020-11-05T07:08:50.055Z"
+		},
+		"__v": 0
 	},
-	"materialIds": [],
-	"hidden": false,
-	"isCopyFrom": null,
-	"position": 0,
-	"courseId": {
-		"$oid": "5fa3abffa9c31a26f4d1d518"
+	{
+		"_id": {
+			"$oid": "5fa3a847a9c31a26f4d1d4a7"
+		},
+		"materialIds": [],
+		"hidden": true,
+		"isCopyFrom": null,
+		"position": 0,
+		"courseId": {
+			"$oid": "5fa3a5e5a9c31a26f4d1d47e"
+		},
+		"name": "Sun",
+		"contents": [],
+		"time": {
+			"$date": "2020-11-04T23:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"createdAt": {
+			"$date": "2020-11-05T07:22:47.230Z"
+		},
+		"updatedAt": {
+			"$date": "2020-11-05T07:22:47.230Z"
+		},
+		"__v": 0
 	},
-	"name": "Statistic",
-	"contents": [],
-	"time": {
-		"$date": "2020-11-04T23:00:00Z"
+	{
+		"_id": {
+			"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+		},
+		"materialIds": [],
+		"hidden": false,
+		"isCopyFrom": null,
+		"position": 0,
+		"courseId": {
+			"$oid": "5fa3abffa9c31a26f4d1d518"
+		},
+		"name": "Statistic",
+		"contents": [],
+		"time": {
+			"$date": "2020-11-04T23:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"createdAt": {
+			"$date": "2020-11-05T07:39:56.232Z"
+		},
+		"updatedAt": {
+			"$date": "2020-11-05T07:40:02.360Z"
+		},
+		"__v": 0
 	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"createdAt": {
-		"$date": "2020-11-05T07:39:56.232Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T07:40:02.36Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5fa3defca9c31a26f4d1dc18"
-	},
-	"materialIds": [],
-	"hidden": true,
-	"isCopyFrom": null,
-	"position": 0,
-	"courseId": {
-		"$oid": "5fa3deb9a9c31a26f4d1dbd2"
-	},
-	"name": "Grammatik",
-	"contents": [],
-	"time": {
-		"$date": "2020-11-04T23:00:00Z"
-	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"createdAt": {
-		"$date": "2020-11-05T11:16:12.973Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-05T11:16:12.973Z"
-	},
-	"__v": 0
-}
+	{
+		"_id": {
+			"$oid": "5fa3defca9c31a26f4d1dc18"
+		},
+		"materialIds": [],
+		"hidden": true,
+		"isCopyFrom": null,
+		"position": 0,
+		"courseId": {
+			"$oid": "5fa3deb9a9c31a26f4d1dbd2"
+		},
+		"name": "Grammatik",
+		"contents": [],
+		"time": {
+			"$date": "2020-11-04T23:00:00Z"
+		},
+		"date": {
+			"$date": "1999-12-31T23:00:00Z"
+		},
+		"createdAt": {
+			"$date": "2020-11-05T11:16:12.973Z"
+		},
+		"updatedAt": {
+			"$date": "2020-11-05T11:16:12.973Z"
+		},
+		"__v": 0
+	}
 ]
