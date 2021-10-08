@@ -1,6 +1,5 @@
 import { Controller, Get, Patch, Param, Body } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { DashboardUc } from '../uc/dashboard.uc';
 

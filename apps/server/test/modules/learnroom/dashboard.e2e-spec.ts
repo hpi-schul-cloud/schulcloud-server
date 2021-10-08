@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -70,6 +70,28 @@ describe('Dashboard Controller (e2e)', () => {
 			};
 			const resonse = await request(app.getHttpServer()).patch(`/dashboard/${dashboard.id}/moveElement`).send(params);
 			expect(resonse.status).toEqual(200);
+		});
+
+		it('should fail with incomplete input', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: new GridElement(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+						),
+					},
+				],
+			});
+			await dashboardRepo.persistAndFlush(dashboard);
+
+			const params = {
+				from: { x: 1, y: 3 },
+				to: { x: 4 },
+			};
+			const resonse = await request(app.getHttpServer()).patch(`/dashboard/${dashboard.id}/moveElement`).send(params);
+			expect(resonse.status).toEqual(400);
 		});
 	});
 });

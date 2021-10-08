@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DashboardEntity, EntityId, ICurrentUser, GridPosition } from '@shared/domain';
+import { DashboardEntity, EntityId, GridPosition } from '@shared/domain';
 import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
 
 @Injectable()
