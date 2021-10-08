@@ -27,7 +27,7 @@ export class DashboardModelMapper {
 		const model = existing || new DashboardGridElementModel(elementWithPosition.gridElement.getId());
 		model.xPos = elementWithPosition.pos.x;
 		model.yPos = elementWithPosition.pos.y;
-		// model.reference = new DefaultGridReference(gridElement.getMetadata().title); // should be replaced with model reference
+
 		const existingReference = await em.findOne(
 			DefaultGridReferenceModel,
 			elementWithPosition.gridElement.getMetadata().id
@@ -56,13 +56,3 @@ export class DashboardModelMapper {
 		return modelEntity;
 	}
 }
-
-/* const mappedElements = await Promise.all(
-	entity
-		.getGrid()
-		.map((elementWithPosition) => DashboardModelMapper.mapGridElementToModel(elementWithPosition, modelEntity, em))
-);
-wrap(modelEntity).assign({
-	gridElements: new Collection<DashboardGridElementModel>(modelEntity),
-	mappedElements,
-}); */
