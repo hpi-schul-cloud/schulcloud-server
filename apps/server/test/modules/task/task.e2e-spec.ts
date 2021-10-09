@@ -209,7 +209,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(2);
 		});
 
-		it('[FIND] /tasks should not return private tasks', async () => {
+		it('[FIND] /tasks should also return private tasks', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
 			const parent = courseFactory.build({ name: 'course #1', teachers: [teacher] });
@@ -223,7 +223,7 @@ describe('Task Controller (e2e)', () => {
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
 
-			expect(paginatedResult.total).toEqual(0);
+			expect(paginatedResult.total).toEqual(1);
 		});
 
 		it('[FIND] /tasks should return nothing from parents where the user has only read permissions', async () => {

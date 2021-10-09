@@ -2,7 +2,7 @@ import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 
-interface LessonProperties {
+interface ILessonProperties {
 	hidden?: boolean;
 	course: Course;
 }
@@ -15,7 +15,7 @@ export class Lesson extends BaseEntityWithTimestamps {
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
-	constructor(props: LessonProperties) {
+	constructor(props: ILessonProperties) {
 		super();
 		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;

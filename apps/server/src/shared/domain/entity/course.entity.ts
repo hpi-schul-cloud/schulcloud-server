@@ -66,9 +66,8 @@ export class Course extends BaseEntityWithTimestamps {
 		return this.students.length;
 	}
 
-	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {
+	getDescriptions(): { name: string; description: string; color: string } {
 		return {
-			id: this.id,
 			name: this.name,
 			description: this.description,
 			color: this.color,

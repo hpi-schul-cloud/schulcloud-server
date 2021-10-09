@@ -1,33 +1,21 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { EntityId } from '../types';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
+import { User } from './user.entity';
 
 interface ITaskProperties {
 	name: string;
 	dueDate?: Date;
 	private?: boolean;
+	teacher?: User;
 	parent?: Course;
 	lesson?: Lesson;
 	submissions?: Submission[];
 }
 
-export interface IParentDescriptionsProperties {
-	id: EntityId;
-	name: string;
-	color: string;
-	description?: string;
-}
-
-export interface ITaskParent {
-	id: EntityId;
-
-	hasWritePermission(userId: EntityId): boolean;
-	getDescriptions(): IParentDescriptionsProperties;
-	getNumberOfStudents(): number;
-}
+export type TaskParentDescriptions = { name: string; description: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
 export class Task extends BaseEntityWithTimestamps {
@@ -39,6 +27,9 @@ export class Task extends BaseEntityWithTimestamps {
 
 	@Property()
 	private = true;
+
+	@ManyToOne('User', { fieldName: 'teacherId' })
+	teacher?: User;
 
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	parent?: Course;
@@ -54,11 +45,26 @@ export class Task extends BaseEntityWithTimestamps {
 		return !!this.private;
 	}
 
+	getDescriptions(): TaskParentDescriptions {
+		let descriptions: TaskParentDescriptions;
+		if (this.parent) {
+			descriptions = this.parent.getDescriptions();
+		} else {
+			descriptions = {
+				name: '',
+				description: '',
+				color: '#ACACAC',
+			};
+		}
+		return descriptions;
+	}
+
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;
+		this.teacher = props.teacher;
 		this.parent = props.parent;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);

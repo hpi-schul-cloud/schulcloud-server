@@ -11,39 +11,37 @@ export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	/**
-	 * Find all tasks by their parents.
+	 * Find all tasks by their parents which can be any of
+	 * - a teacher who owns the task
+	 * - a list of courses
+	 * - a list of lessons
 	 *
-	 * @param parentIds ids of parent entities
+	 * @param parentIds parentIds for teacher, courses and lesson
+	 * @param filters filters
 	 * @param options pagination, sorting
 	 * @returns
 	 */
-	async findAll(parentIds: EntityId[], options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
-		const visibleLessons = await this.findVisibleLessons(parentIds);
-
+	async findAllByParentIds(
+		parentIds: {
+			teacherId?: EntityId;
+			courseIds?: EntityId[];
+			lessonIds?: EntityId[];
+		},
+		filters?: { draft?: boolean; afterDueDateOrNone?: Date },
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
-		scope.byParentIds(parentIds);
-		scope.byLessonsOrNone(visibleLessons.map((o) => o.id));
 
-		const countedTaskList = await this.findTasksAndCount(scope.query, options);
-		return countedTaskList;
-	}
+		const { teacherId, courseIds, lessonIds } = parentIds;
+		scope.byParentIds(teacherId, courseIds, lessonIds);
 
-	/**
-	 * Find all currently active tasks by their parent ids.
-	 *
-	 * @param parentIds ids of parent entities
-	 * @param options pagination, sorting
-	 * @returns
-	 */
-	async findAllCurrent(parentIds: EntityId[], options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
-		const visibleLessons = await this.findVisibleLessons(parentIds);
-		const dueDate = this.getDefaultMaxDueDate();
+		if (filters?.draft !== undefined) {
+			scope.byDraft(filters.draft);
+		}
 
-		const scope = new TaskScope();
-		scope.byParentIds(parentIds);
-		scope.byPublic();
-		scope.byLessonsOrNone(visibleLessons.map((o) => o.id));
-		scope.afterDueDateOrNone(dueDate);
+		if (filters?.afterDueDateOrNone !== undefined) {
+			scope.afterDueDateOrNone(filters.afterDueDateOrNone);
+		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
 		return countedTaskList;
@@ -58,22 +56,5 @@ export class TaskRepo {
 		});
 		await this.em.populate(taskEntities, ['parent', 'lesson', 'submissions']);
 		return [taskEntities, count];
-	}
-
-	// TODO move to lesson repo
-	private async findVisibleLessons(parentIds: EntityId[]): Promise<Lesson[]> {
-		const lessons = await this.em.find(Lesson, {
-			course: { $in: parentIds },
-			hidden: false,
-		});
-		return lessons;
-	}
-
-	private getDefaultMaxDueDate(): Date {
-		// TODO: date sounds like domain logic if this go out, after it student and teacher has only different order logic
-		// that also sound like it should manage over scope helper in uc.
-		const oneWeekAgo = new Date();
-		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-		return oneWeekAgo;
 	}
 }

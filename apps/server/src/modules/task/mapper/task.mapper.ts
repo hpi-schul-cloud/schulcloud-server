@@ -19,7 +19,7 @@ export class TaskMapper {
 		};
 
 		if (task.parent !== undefined) {
-			const parentData = task.parent.getDescriptions();
+			const parentData = task.getDescriptions();
 			dto.courseName = parentData.name;
 			dto.displayColor = parentData.color;
 		}

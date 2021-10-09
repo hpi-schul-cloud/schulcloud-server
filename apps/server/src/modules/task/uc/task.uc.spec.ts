@@ -3,26 +3,27 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
 
-import { EntityId, ICurrentUser, Submission, Task } from '@shared/domain';
+import { EntityId, ICurrentUser, Lesson, Submission, Task } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Collection } from '@mikro-orm/core';
 
 import { userFactory } from '@shared/domain/factory';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { courseFactory } from '@shared/domain/factory/course.factory';
+import { LessonRepo } from '@shared/repo';
 import { TaskRepo } from '../repo';
 
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
-// TODO: courseGroups test completly missing
-// TODO: how work this stuff with lessons
-// TODO: how work this stuff with ignoredTask
+// TODO: add courseGroups tests
+// TODO: what about ignoredTask?
 
-describe('TaskService', () => {
+describe('TaskUC', () => {
 	let module: TestingModule;
 	let service: TaskUC;
 	let taskRepo: TaskRepo;
+	let lessonRepo: LessonRepo;
 	let authorizationService: TaskAuthorizationService;
 
 	beforeEach(async () => {
@@ -33,11 +34,16 @@ describe('TaskService', () => {
 				{
 					provide: TaskRepo,
 					useValue: {
-						findAll() {
+						findAllByParentIds() {
 							throw new Error('Please write a mock for TaskRepo.findAll');
 						},
-						findAllCurrent() {
-							throw new Error('Please write a mock for TaskRepo.findAllCurrent');
+					},
+				},
+				{
+					provide: LessonRepo,
+					useValue: {
+						findAllByCourseIds() {
+							throw new Error('Please write a mock for LessonRepo.findAllByCourseIds');
 						},
 					},
 				},
@@ -54,6 +60,7 @@ describe('TaskService', () => {
 
 		service = module.get(TaskUC);
 		taskRepo = module.get(TaskRepo);
+		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(TaskAuthorizationService);
 	});
 
@@ -62,15 +69,18 @@ describe('TaskService', () => {
 	});
 
 	const setTaskRepoMock = {
-		findAllCurrent: (data: Task[] = []) => {
-			const spy = jest.spyOn(taskRepo, 'findAllCurrent').mockImplementation(() => {
+		findAllByParentIds: (data: Task[] = []) => {
+			const spy = jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => {
 				return Promise.resolve([data, data.length]);
 			});
 			return spy;
 		},
-		findAll: (data: Task[] = []) => {
-			const spy = jest.spyOn(taskRepo, 'findAll').mockImplementation(() => {
-				return Promise.resolve([data, data.length]);
+	};
+
+	const setLessonRepoMock = {
+		findAllByCourseIds: (data: Lesson[] = []) => {
+			const spy = jest.spyOn(lessonRepo, 'findAllByCourseIds').mockImplementation(() => {
+				return Promise.resolve(data);
 			});
 			return spy;
 		},
@@ -91,8 +101,8 @@ describe('TaskService', () => {
 
 	describe('findAll', () => {
 		const findAllMock = () => {
-			const spy1 = setTaskRepoMock.findAll();
-			const spy2 = setTaskRepoMock.findAllCurrent();
+			const spy1 = setTaskRepoMock.findAllByParentIds();
+			const spy2 = setLessonRepoMock.findAllByCourseIds();
 			const spy3 = setAuthorizationServiceMock.getPermittedCourses();
 
 			const mockRestore = () => {
@@ -155,8 +165,8 @@ describe('TaskService', () => {
 		});
 
 		it('should get parent ids for student role', async () => {
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([]);
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([]);
 
 			const paginationQuery = new PaginationQuery();
@@ -165,14 +175,14 @@ describe('TaskService', () => {
 			const expectedParams = [currentUser.userId, TaskParentPermission.read];
 			expect(spyGetPermittedCourses).toHaveBeenCalledWith(...expectedParams);
 
-			spyTaskRepoFindAll.mockRestore();
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
 		it('should return a counted result', async () => {
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([]);
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([]);
 
 			const paginationQuery = new PaginationQuery();
@@ -180,26 +190,36 @@ describe('TaskService', () => {
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(count).toEqual(0);
 
-			spyTaskRepoFindAll.mockRestore();
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
 		it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
+			const course = courseFactory.build();
+			const lesson = new Lesson({ course, hidden: false });
+			Object.assign(lesson, { _id: new ObjectId() });
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses(parentIds);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
-			const expectedParams = [
-				parentIds,
-				{ order: { dueDate: 'asc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
-			];
-			expect(spyTaskRepoFindAllCurrent).toHaveBeenCalledWith(...expectedParams);
+			expect(spyTaskRepoFindAllByParentIds).toHaveBeenCalledTimes(1);
+			expect(spyTaskRepoFindAllByParentIds.mock.calls[0][0]).toEqual({ courseIds: parentIds, lessonIds: [lesson.id] });
+			expect(spyTaskRepoFindAllByParentIds.mock.calls[0][1]?.draft).toEqual(false);
+			expect(spyTaskRepoFindAllByParentIds.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
+			expect(spyTaskRepoFindAllByParentIds.mock.calls[0][2]).toEqual({
+				order: { dueDate: 'asc' },
+				pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit },
+			});
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			expect(spyLessonRepoFindAllByCourseIds).toHaveBeenCalledWith(parentIds, { hidden: false });
+
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -207,7 +227,8 @@ describe('TaskService', () => {
 			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: false, parent: course });
 
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -215,7 +236,8 @@ describe('TaskService', () => {
 			expect(result[0]).toEqual({ task, status: { submitted: 0, maxSubmissions: 1, graded: 0, isDraft: false } });
 			expect(result[0].task.parent).toBeDefined();
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -225,7 +247,8 @@ describe('TaskService', () => {
 			const task2 = new Task({ name: 'task #2', private: false, parent: course });
 			const task3 = new Task({ name: 'task #2', private: false, parent: course });
 
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task1, task2, task3]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task1, task2, task3]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -233,7 +256,8 @@ describe('TaskService', () => {
 			expect(count).toEqual(3);
 			expect(result.length).toEqual(3);
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -245,7 +269,8 @@ describe('TaskService', () => {
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -259,7 +284,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 		it('should only count the submissions of the given user', async () => {
@@ -273,7 +299,8 @@ describe('TaskService', () => {
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
 
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -287,7 +314,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -300,7 +328,8 @@ describe('TaskService', () => {
 			task.submissions = new Collection<Submission>(task, [submission]);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -315,7 +344,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 			spyGraded.mockRestore();
 		});
@@ -333,7 +363,8 @@ describe('TaskService', () => {
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -347,7 +378,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 	});
@@ -361,8 +393,8 @@ describe('TaskService', () => {
 		});
 
 		it('should get parent ids for teacher role', async () => {
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([]);
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([]);
 
 			const paginationQuery = new PaginationQuery();
@@ -371,14 +403,14 @@ describe('TaskService', () => {
 			const expectedParams = [currentUser.userId, TaskParentPermission.write];
 			expect(spyGetPermittedCourses).toHaveBeenCalledWith(...expectedParams);
 
-			spyTaskRepoFindAll.mockRestore();
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
 		it('should return a counted result', async () => {
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([]);
-			const spyTaskRepoFindAllCurrent = setTaskRepoMock.findAllCurrent([]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([]);
 
 			const paginationQuery = new PaginationQuery();
@@ -386,26 +418,33 @@ describe('TaskService', () => {
 			expect(Array.isArray(result)).toBeTruthy();
 			expect(count).toEqual(0);
 
-			spyTaskRepoFindAll.mockRestore();
-			spyTaskRepoFindAllCurrent.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
 		it('should find all tasks by permitted parent ids ordered by newest first', async () => {
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
+			const course = courseFactory.build();
+			const lesson = new Lesson({ course, hidden: false });
+			Object.assign(lesson, { _id: new ObjectId() });
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses(parentIds);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
 			const expectedParams = [
-				parentIds,
-				{ order: { createdAt: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
+				{ teacherId: currentUser.userId, courseIds: parentIds, lessonIds: [lesson.id] },
+				undefined,
+				{ order: { dueDate: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
 			];
-			expect(spyTaskRepoFindAll).toHaveBeenCalledWith(...expectedParams);
 
-			spyTaskRepoFindAll.mockRestore();
+			expect(spyTaskRepoFindAllByParentIds).toHaveBeenCalledWith(...expectedParams);
+
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -413,7 +452,8 @@ describe('TaskService', () => {
 			const course = courseFactory.build();
 			const task = new Task({ name: 'task #1', private: true, parent: course });
 
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -424,7 +464,8 @@ describe('TaskService', () => {
 			});
 			expect(result[0].task.parent).toBeDefined();
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -434,7 +475,8 @@ describe('TaskService', () => {
 			const task2 = new Task({ name: 'task #2', private: false, parent: course });
 			const task3 = new Task({ name: 'task #2', private: false, parent: course });
 
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task1, task2, task3]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task1, task2, task3]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -442,7 +484,8 @@ describe('TaskService', () => {
 			expect(count).toEqual(3);
 			expect(result.length).toEqual(3);
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -454,7 +497,8 @@ describe('TaskService', () => {
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -468,7 +512,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -483,7 +528,8 @@ describe('TaskService', () => {
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
 
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -497,7 +543,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -510,7 +557,8 @@ describe('TaskService', () => {
 			task.submissions = new Collection<Submission>(task, [submission]);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -525,7 +573,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 			spyGraded.mockRestore();
 		});
@@ -543,7 +592,8 @@ describe('TaskService', () => {
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -557,7 +607,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -576,7 +627,8 @@ describe('TaskService', () => {
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission3, 'isGraded').mockImplementation(() => true);
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -590,7 +642,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 
@@ -606,7 +659,8 @@ describe('TaskService', () => {
 			const submission3 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2, submission3]);
 
-			const spyTaskRepoFindAll = setTaskRepoMock.findAll([task]);
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
@@ -620,7 +674,8 @@ describe('TaskService', () => {
 				isDraft: false,
 			});
 
-			spyTaskRepoFindAll.mockRestore();
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
 			spyGetPermittedCourses.mockRestore();
 		});
 	});

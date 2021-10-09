@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Lesson, SortOrder, School, Submission, Task } from '@shared/domain';
+import { Lesson, SortOrder, Submission, Task } from '@shared/domain';
 import { userFactory } from '@shared/domain/factory';
 import { courseFactory } from '@shared/domain/factory/course.factory';
 
@@ -30,296 +30,445 @@ describe('TaskRepo', () => {
 		await em.getDriver().dropCollections();
 	});
 
-	describe('findAll', () => {
-		it('should return task of teachers course', async () => {
-			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+	describe('findAllByParentIds', () => {
+		describe('find by teacher', () => {
+			it('should find tasks by teacherId', async () => {
+				const teacher1 = userFactory.build();
+				const teacher2 = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher: teacher1 });
+				const task2 = new Task({ name: 'task #2', teacher: teacher2 });
 
-			await em.persistAndFlush([task]);
-			em.clear();
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
 
-			const [result, total] = await repo.findAll([course.id]);
-			expect(total).toEqual(1);
-			expect(result[0].name).toEqual(task.name);
-		});
-
-		it('should not return task that are not requested', async () => {
-			const course1 = courseFactory.build({ name: 'course #1' });
-			const task1 = new Task({ name: 'task #1', private: false, parent: course1 });
-			const course2 = courseFactory.build({ name: 'course #2' });
-			const task2 = new Task({ name: 'task #2', private: false, parent: course2 });
-
-			await em.persistAndFlush([task1, task2]);
-			em.clear();
-
-			const [result, total] = await repo.findAll([course1.id]);
-			expect(total).toEqual(1);
-			expect(result).toHaveLength(1);
-			expect(result[0].id).toEqual(task1.id);
-		});
-
-		it('should not return private task of course', async () => {
-			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: true, parent: course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			const [result, total] = await repo.findAll([course.id]);
-			expect(total).toEqual(0);
-			expect(result).toHaveLength(0);
-		});
-
-		it('should return task in a visible lesson of the users course', async () => {
-			const course = courseFactory.build();
-			const lesson = new Lesson({ course, hidden: false });
-			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			const [result, total] = await repo.findAll([course.id]);
-			expect(total).toEqual(1);
-			expect(result).toHaveLength(1);
-		});
-
-		it('should not return task from a hidden lesson', async () => {
-			const course = courseFactory.build();
-			const lesson = new Lesson({ course, hidden: true });
-			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			const [result, total] = await repo.findAll([course.id]);
-			expect(total).toEqual(0);
-			expect(result).toHaveLength(0);
-		});
-
-		it('should not return task in a lesson when hidden is null', async () => {
-			const course = courseFactory.build();
-			const lesson = new Lesson({ course });
-			const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
-			// @ts-expect-error: Test case
-			lesson.hidden = null;
-
-			await em.persistAndFlush([lesson, task]);
-			em.clear();
-
-			const [result, total] = await repo.findAll([course.id]);
-			expect(total).toEqual(0);
-			expect(result).toHaveLength(0);
-		});
-
-		it('should return task if lesson is null', async () => {
-			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
-			// @ts-expect-error: Test case - in database null exist
-			task.lesson = null;
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			const [result, total] = await repo.findAll([course.id]);
-			expect(total).toEqual(1);
-			expect(result).toHaveLength(1);
-		});
-
-		it.skip('should not return task in a lesson of a different course', async () => {});
-	});
-
-	describe('findAllCurrent', () => {
-		describe('return value', () => {
-			it('should populate the parent', async () => {
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher1.id });
+				expect(total).toEqual(1);
+				expect(result[0].name).toEqual(task1.name);
+			});
+			it('should not find tasks with a course assigned', async () => {
+				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: false, parent: course });
+				const task = new Task({ name: 'task #1', teacher, parent: course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(1);
-				expect(result[0]).toHaveProperty('parent');
-				expect(result[0].parent?.id).toEqual(course.id);
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
-			it('should populate the lesson', async () => {
+			it('should not find tasks with a lesson assigned', async () => {
+				const teacher = userFactory.build();
 				const course = courseFactory.build();
 				const lesson = new Lesson({ course, hidden: false });
-				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
+				const task = new Task({ name: 'task #1', teacher, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const [result, total] = await repo.findAllCurrent([course.id]);
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+		});
+		describe('find by courses', () => {
+			it('should find tasks by course ids', async () => {
+				const teacher = userFactory.build();
+				const course1 = courseFactory.build();
+				const course2 = courseFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, parent: course1 });
+				const task2 = new Task({ name: 'task #2', teacher, parent: course2 });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course2.id] });
 				expect(total).toEqual(1);
-				expect(result[0]).toHaveProperty('lesson');
-				expect(result[0].lesson?.id).toEqual(lesson.id);
+				expect(result[0].name).toEqual(task2.name);
+			});
+			it('should not find tasks with no course assigned', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, parent: course });
+				const task2 = new Task({ name: 'task #2', teacher });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
+				expect(total).toEqual(1);
+				expect(result[0].name).toEqual(task1.name);
+			});
+			it('should not find tasks with a lesson assigned', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = new Lesson({ course, hidden: false });
+				const task = new Task({ name: 'task #1', teacher, parent: course, lesson });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+		});
+		describe('find by lessons', () => {
+			it('should find tasks by lesson ids', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const lesson1 = new Lesson({ course, hidden: false });
+				const lesson2 = new Lesson({ course, hidden: false });
+				const task1 = new Task({ name: 'task #1', teacher, parent: course, lesson: lesson1 });
+				const task2 = new Task({ name: 'task #2', teacher, parent: course, lesson: lesson2 });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson1.id] });
+				expect(total).toEqual(1);
+				expect(result[0].name).toEqual(task1.name);
+			});
+			it('should not find tasks with no lesson assigned', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = new Lesson({ course, hidden: false });
+				const task1 = new Task({ name: 'task #1', teacher, parent: course, lesson });
+				const task2 = new Task({ name: 'task #2', teacher, parent: course });
+				const task3 = new Task({ name: 'task #3', teacher });
+
+				await em.persistAndFlush([task1, task2, task3]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
+				expect(total).toEqual(1);
+				expect(result[0].name).toEqual(task1.name);
+			});
+		});
+		describe('find by teacher and courses', () => {
+			it('should find tasks by teacher and courses', async () => {
+				const teacher1 = userFactory.build();
+				const teacher2 = userFactory.build();
+				const course1 = courseFactory.build();
+				const course2 = courseFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher: teacher1 });
+				const task2 = new Task({ name: 'task #2', teacher: teacher2 });
+				const task3 = new Task({ name: 'task #3', teacher: teacher1, parent: course1 });
+				const task4 = new Task({ name: 'task #4', teacher: teacher1, parent: course2 });
+				const task5 = new Task({ name: 'task #5', teacher: teacher2, parent: course1 });
+				const task6 = new Task({ name: 'task #6', teacher: teacher2, parent: course2 });
+
+				await em.persistAndFlush([task1, task2, task3, task4, task5, task6]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher1.id, courseIds: [course2.id] });
+				expect(total).toEqual(3);
+				const taskNames = result.map((o) => o.name);
+				expect(taskNames.includes(task1.name)).toBe(true);
+				expect(taskNames.includes(task4.name)).toBe(true);
+				expect(taskNames.includes(task6.name)).toBe(true);
+			});
+			it('should not find tasks with a lesson assigned', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = new Lesson({ course, hidden: false });
+				const task = new Task({ name: 'task #1', teacher, parent: course, lesson });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id, courseIds: [course.id] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+		});
+		describe('find by teacher and lessons', () => {
+			it('should find tasks by teacher and lessons', async () => {
+				const teacher1 = userFactory.build();
+				const teacher2 = userFactory.build();
+				const course = courseFactory.build();
+				const lesson1 = new Lesson({ course, hidden: false });
+				const lesson2 = new Lesson({ course, hidden: false });
+				const task1 = new Task({ name: 'task #1', teacher: teacher1 });
+				const task2 = new Task({ name: 'task #2', teacher: teacher2 });
+				const task3 = new Task({ name: 'task #3', teacher: teacher1, parent: course, lesson: lesson1 });
+				const task4 = new Task({ name: 'task #4', teacher: teacher1, parent: course, lesson: lesson2 });
+				const task5 = new Task({ name: 'task #5', teacher: teacher2, parent: course, lesson: lesson1 });
+				const task6 = new Task({ name: 'task #6', teacher: teacher2, parent: course, lesson: lesson2 });
+
+				await em.persistAndFlush([task1, task2, task3, task4, task5, task6]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher2.id, lessonIds: [lesson1.id] });
+				expect(total).toEqual(3);
+				const taskNames = result.map((o) => o.name);
+				expect(taskNames.includes(task2.name)).toBe(true);
+				expect(taskNames.includes(task3.name)).toBe(true);
+				expect(taskNames.includes(task5.name)).toBe(true);
+			});
+		});
+		describe('find by courses and lessons', () => {
+			it('should find tasks by courses and lessons', async () => {
+				const teacher = userFactory.build();
+				const course1 = courseFactory.build({ name: 'course #1' });
+				const course2 = courseFactory.build({ name: 'course #2' });
+				const lesson = new Lesson({ course: course2, hidden: false });
+				const task1 = new Task({ name: 'task #1', teacher, parent: course1 });
+				const task2 = new Task({ name: 'task #2', teacher, parent: course2, lesson });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({
+					courseIds: [course1.id, course2.id],
+					lessonIds: [lesson.id],
+				});
+				expect(total).toEqual(2);
+				const taskNames = result.map((o) => o.name);
+				expect(taskNames.includes(task1.name)).toBe(true);
+				expect(taskNames.includes(task2.name)).toBe(true);
+			});
+		});
+		describe('find by empty ids', () => {
+			it('should find no tasks when no ids are given at all', async () => {
+				const teacher = userFactory.build();
+				const task = new Task({ name: 'task #1', teacher });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({});
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+			it('should find no tasks when course ids are empty', async () => {
+				const teacher = userFactory.build();
+				const task = new Task({ name: 'task #1', teacher });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+			it('should find no tasks when lesson ids are empty', async () => {
+				const teacher = userFactory.build();
+				const task = new Task({ name: 'task #1', teacher });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ lessonIds: [] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
+		});
+		describe('filters', () => {
+			it('should filter tasks by draft status = true', async () => {
+				const teacher = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, private: true });
+				const task2 = new Task({ name: 'task #2', teacher, private: false });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, { draft: true });
+				expect(total).toEqual(1);
+				expect(result[0].id).toEqual(task1.id);
+			});
+			it('should filter tasks by draft status = false', async () => {
+				const teacher = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, private: true });
+				const task2 = new Task({ name: 'task #2', teacher, private: false });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, { draft: false });
+				expect(total).toEqual(1);
+				expect(result[0].id).toEqual(task2.id);
+			});
+			it('should return tasks with both status when no filter is applied', async () => {
+				const teacher = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, private: true });
+				const task2 = new Task({ name: 'task #2', teacher, private: false });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id });
+				expect(total).toEqual(2);
+				const taskNames = result.map((o) => o.name);
+				expect(taskNames.includes(task1.name)).toBe(true);
+				expect(taskNames.includes(task2.name)).toBe(true);
+			});
+			it('should filter tasks by dueDate after a given date', async () => {
+				const teacher = userFactory.build();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+				const dueDate2 = new Date();
+				const task1 = new Task({ name: 'task #1', teacher, dueDate: dueDate1 });
+				const task2 = new Task({ name: 'task #2', teacher, dueDate: dueDate2 });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const oneWeekInMilliseconds = 6.048e8;
+
+				const [result, total] = await repo.findAllByParentIds(
+					{ teacherId: teacher.id },
+					{ afterDueDateOrNone: new Date(Date.now() - oneWeekInMilliseconds) }
+				);
+				expect(total).toEqual(1);
+				expect(result[0].id).toEqual(task2.id);
+			});
+			it('should return tasks if they have no dueDate', async () => {
+				const teacher = userFactory.build();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+				const dueDate2 = new Date();
+				const task1 = new Task({ name: 'task #1', teacher, dueDate: dueDate1 });
+				const task2 = new Task({ name: 'task #2', teacher, dueDate: dueDate2 });
+				const task3 = new Task({ name: 'task #3', teacher, dueDate: undefined });
+
+				await em.persistAndFlush([task1, task2, task3]);
+				em.clear();
+
+				const oneWeekInMilliseconds = 6.048e8;
+
+				const [result, total] = await repo.findAllByParentIds(
+					{ teacherId: teacher.id },
+					{ afterDueDateOrNone: new Date(Date.now() - oneWeekInMilliseconds) }
+				);
+				expect(total).toEqual(2);
+				const taskNames = result.map((o) => o.name);
+				expect(taskNames.includes(task2.name)).toBe(true);
+				expect(taskNames.includes(task3.name)).toBe(true);
+			});
+			it('should return tasks with any dueDate if no filter is applied', async () => {
+				const teacher = userFactory.build();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+				const dueDate2 = new Date();
+				const task1 = new Task({ name: 'task #1', teacher, dueDate: dueDate1 });
+				const task2 = new Task({ name: 'task #2', teacher, dueDate: dueDate2 });
+				const task3 = new Task({ name: 'task #3', teacher, dueDate: undefined });
+
+				await em.persistAndFlush([task1, task2, task3]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id });
+				expect(total).toEqual(3);
+				const taskNames = result.map((o) => o.name);
+				expect(taskNames.includes(task1.name)).toBe(true);
+				expect(taskNames.includes(task2.name)).toBe(true);
+				expect(taskNames.includes(task3.name)).toBe(true);
+			});
+		});
+		describe('order', () => {
+			it('should order by dueDate asc', async () => {
+				const teacher = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = new Task({ name: 'task #2', teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = new Task({ name: 'task #3', teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = new Task({ name: 'task #4', teacher, dueDate: undefined });
+
+				await em.persistAndFlush([task1, task2, task3, task4]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, undefined, {
+					order: { dueDate: SortOrder.asc },
+				});
+				expect(total).toEqual(4);
+				expect(result[0].id).toEqual(task4.id);
+				expect(result[1].id).toEqual(task3.id);
+				expect(result[2].id).toEqual(task1.id);
+				expect(result[3].id).toEqual(task2.id);
+			});
+			it('should order by dueDate desc', async () => {
+				const teacher = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = new Task({ name: 'task #2', teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = new Task({ name: 'task #3', teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = new Task({ name: 'task #4', teacher, dueDate: undefined });
+
+				await em.persistAndFlush([task1, task2, task3, task4]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, undefined, {
+					order: { dueDate: SortOrder.desc },
+				});
+				expect(total).toEqual(4);
+				expect(result[0].id).toEqual(task2.id);
+				expect(result[1].id).toEqual(task1.id);
+				expect(result[2].id).toEqual(task3.id);
+				expect(result[3].id).toEqual(task4.id);
+			});
+		});
+		describe('pagination', () => {
+			it('should skip and limit to the given number of records', async () => {
+				const teacher = userFactory.build();
+				const task1 = new Task({ name: 'task #1', teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = new Task({ name: 'task #2', teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = new Task({ name: 'task #3', teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = new Task({ name: 'task #4', teacher, dueDate: undefined });
+
+				await em.persistAndFlush([task1, task2, task3, task4]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, undefined, {
+					order: { dueDate: SortOrder.desc },
+					pagination: { skip: 1, limit: 2 },
+				});
+				expect(total).toEqual(4); // note: this is the total count
+				expect(result[0].id).toEqual(task1.id);
+				expect(result[1].id).toEqual(task3.id);
+			});
+		});
+		describe('return value', () => {
+			it('should populate the parent', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const task = new Task({ name: 'task #1', teacher, parent: course });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
+				expect(total).toEqual(1);
+
+				expect(result[0].parent?.name).toEqual(course.name);
+			});
+			it('should populate the lesson', async () => {
+				const teacher = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = new Lesson({ course, hidden: false });
+				const task = new Task({ name: 'task #1', teacher, parent: course, lesson });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
+				expect(total).toEqual(1);
+				expect(result[0].lesson?.hidden).toEqual(false);
 			});
 			it('should populate the list of submissions', async () => {
+				const teacher = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: false, parent: course });
+				const task = new Task({ name: 'task #1', teacher, parent: course });
 				task.submissions.add(new Submission({ task, student, comment: 'my solution to the task #1' }));
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const [result, total] = await repo.findAllCurrent([course.id]);
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
 				expect(total).toEqual(1);
-				expect(result[0]).toHaveProperty('submissions');
 				expect(result[0].submissions.length).toEqual(task.submissions.length);
 				expect(result[0].submissions[0].id).toEqual(task.submissions[0].id);
+				expect(result[0].submissions[0].createdAt).toEqual(task.submissions[0].createdAt);
 			});
-			it('should return the expected properties', async () => {
-				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: false, parent: course });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(1);
-				expect(result[0]).toHaveProperty('name');
-				expect(result[0]).toHaveProperty('dueDate');
-				expect(result[0]).toHaveProperty('parent');
-			});
-			it('should return a paginated result', async () => {
-				const course = courseFactory.build();
-				const task1 = new Task({ name: 'task #1', private: false, parent: course });
-				const task2 = new Task({ name: 'task #2', private: false, parent: course });
-				const task3 = new Task({ name: 'task #3', private: false, parent: course });
-				const task4 = new Task({ name: 'task #4', private: false, parent: course });
-
-				await em.persistAndFlush([task1, task2, task3, task4]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id], {
-					pagination: { limit: 2, skip: 0 },
-				});
-				expect(result.length).toEqual(2);
-				expect(total).toEqual(4);
-			});
-			it('should be sorted with earlier duedates first', async () => {
-				const course = courseFactory.build();
-				const dueDate1 = new Date(Date.now() + 500);
-				const dueDate2 = new Date(Date.now() - 500);
-				const task1 = new Task({ name: 'task #1', private: false, parent: course, dueDate: dueDate1 });
-				const task2 = new Task({ name: 'task #2', private: false, parent: course, dueDate: dueDate2 });
-
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id], {
-					order: { dueDate: SortOrder.asc },
-				});
-				expect(total).toEqual(2);
-				expect(result[0].id).toEqual(task2.id);
-				expect(result[1].id).toEqual(task1.id);
-			});
-			it('should not return private tasks', async () => {
-				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: true, parent: course });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(0);
-				expect(result.length).toEqual(0);
-			});
-		});
-		describe('open tasks in courses', () => {
-			it('should return task of students course', async () => {
-				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: false, parent: course });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(1);
-				expect(result).toHaveLength(1);
-			});
-			it('should not return other tasks', async () => {
-				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: false, parent: course });
-				const otherCourse = new Course({ name: 'course #2', school: new School({ name: 'school #1' }) });
-				const otherTask = new Task({ name: 'task #2', private: false, parent: otherCourse });
-
-				await em.persistAndFlush([task, otherTask]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(1);
-				expect(result).toHaveLength(1);
-			});
-			it('should not return private task of course', async () => {
-				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', private: true, parent: course });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(0);
-				expect(result).toHaveLength(0);
-			});
-			it('should filter tasks that are more than one week overdue', async () => {
-				const course = courseFactory.build();
-				const threeWeeksinMilliseconds = 1.814e9;
-				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
-				const dueDate2 = new Date();
-				const task1 = new Task({ name: 'task #1', private: false, parent: course, dueDate: dueDate1 });
-				const task2 = new Task({ name: 'task #2', private: false, parent: course, dueDate: dueDate2 });
-
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(1);
-				expect(result).toHaveLength(1);
-			});
-		});
-		describe('open tasks in lessons', () => {
-			it('should return task in a visible lesson of the users course', async () => {
-				const course = courseFactory.build();
-				const lesson = new Lesson({ course, hidden: false });
-				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(1);
-				expect(result).toHaveLength(1);
-			});
-			it('should not return task in a hidden lesson', async () => {
-				const course = courseFactory.build();
-				const lesson = new Lesson({ course, hidden: true });
-				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(0);
-				expect(result).toHaveLength(0);
-			});
-			it('should not return task in a lesson where hidden is null', async () => {
-				const course = courseFactory.build();
-				const lesson = new Lesson({ course });
-				const task = new Task({ name: 'task #1', private: false, parent: course, lesson });
-				// @ts-expect-error: Test case - we have null values in the database
-				lesson.hidden = null;
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const [result, total] = await repo.findAllCurrent([course.id]);
-				expect(total).toEqual(0);
-				expect(result).toHaveLength(0);
-			});
-			it.skip('should not return task in a lesson of a different task', async () => {});
 		});
 	});
 });

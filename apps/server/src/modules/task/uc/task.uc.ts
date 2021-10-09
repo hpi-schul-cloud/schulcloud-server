@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, Task, TaskWithStatusVo } from '@shared/domain';
 
+import { LessonRepo } from '@shared/repo';
 import { TaskRepo } from '../repo';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
@@ -10,7 +11,11 @@ export enum TaskDashBoardPermission {
 }
 @Injectable()
 export class TaskUC {
-	constructor(private readonly taskRepo: TaskRepo, private readonly authorizationService: TaskAuthorizationService) {}
+	constructor(
+		private readonly taskRepo: TaskRepo,
+		private readonly lessonRepo: LessonRepo,
+		private readonly authorizationService: TaskAuthorizationService
+	) {}
 
 	// TODO replace curentUser with userId. this requires that permissions are loaded inside the use case by authorization service
 	async findAll(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -29,11 +34,20 @@ export class TaskUC {
 
 	private async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
+		const visibleLessons = await this.lessonRepo.findAllByCourseIds(parentIds, { hidden: false });
+		const dueDate = this.getDefaultMaxDueDate();
 
-		const [tasks, total] = await this.taskRepo.findAllCurrent(parentIds, {
-			pagination,
-			order: { dueDate: SortOrder.asc },
-		});
+		const [tasks, total] = await this.taskRepo.findAllByParentIds(
+			{
+				courseIds: parentIds,
+				lessonIds: visibleLessons.map((o) => o.id),
+			},
+			{ draft: false, afterDueDateOrNone: dueDate },
+			{
+				pagination,
+				order: { dueDate: SortOrder.asc },
+			}
+		);
 
 		const computedTasks = tasks.map((task) => this.computeTaskStatusForStudent(task, userId));
 
@@ -42,11 +56,20 @@ export class TaskUC {
 
 	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
+		const visibleLessons = await this.lessonRepo.findAllByCourseIds(parentIds, { hidden: false });
 
-		const [tasks, total] = await this.taskRepo.findAll(parentIds, {
-			pagination,
-			order: { createdAt: SortOrder.desc },
-		});
+		const [tasks, total] = await this.taskRepo.findAllByParentIds(
+			{
+				teacherId: userId,
+				courseIds: parentIds,
+				lessonIds: visibleLessons.map((o) => o.id),
+			},
+			undefined,
+			{
+				pagination,
+				order: { dueDate: SortOrder.desc },
+			}
+		);
 
 		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task));
 
@@ -90,5 +113,11 @@ export class TaskUC {
 		const valueObject = new TaskWithStatusVo(task, { submitted, maxSubmissions, graded, isDraft });
 
 		return valueObject;
+	}
+
+	private getDefaultMaxDueDate(): Date {
+		const oneWeekAgo = new Date();
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+		return oneWeekAgo;
 	}
 }

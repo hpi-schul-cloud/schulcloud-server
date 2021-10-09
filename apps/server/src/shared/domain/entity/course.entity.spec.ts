@@ -44,10 +44,9 @@ describe('CourseEntity', () => {
 			const result = course.getDescriptions();
 
 			expect(result).toHaveProperty('color');
-			expect(result).toHaveProperty('id');
 			expect(result).toHaveProperty('description');
 			expect(result).toHaveProperty('name');
-			expect(Object.keys(result).length).toEqual(4);
+			expect(Object.keys(result).length).toEqual(3);
 		});
 
 		it('should work and passing default informations if only required values exist', () => {
@@ -59,7 +58,6 @@ describe('CourseEntity', () => {
 				description: DEFAULT.description,
 				name: DEFAULT.name,
 				color: DEFAULT.color,
-				id: course.id,
 			});
 		});
 
@@ -76,7 +74,6 @@ describe('CourseEntity', () => {
 				name,
 				description,
 				color,
-				id: course.id,
 			});
 		});
 	});
