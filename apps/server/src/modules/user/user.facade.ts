@@ -2,7 +2,7 @@
 // TODO add tests to improve coverage
 
 import { Injectable } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 
 import { UserUC } from './uc/user.uc';
 import { ResolvedUser } from './controller/dto';
@@ -11,8 +11,8 @@ import { ResolvedUser } from './controller/dto';
 export class UserFacade {
 	constructor(private readonly userUC: UserUC) {}
 
-	async resolveUser(currentUser: ICurrentUser): Promise<ResolvedUser> {
-		const resolvedUser = await this.userUC.getUserWithPermissions(currentUser);
+	async resolveUser(userId: EntityId): Promise<ResolvedUser> {
+		const resolvedUser = await this.userUC.getUserWithPermissions(userId);
 		return resolvedUser;
 	}
 }
