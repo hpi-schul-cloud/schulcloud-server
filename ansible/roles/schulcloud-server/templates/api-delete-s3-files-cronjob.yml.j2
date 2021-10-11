@@ -20,10 +20,17 @@ spec:
           - name: delete-s3-files-cronjob
             image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
             envFrom:
-            - configMapRef: 
-	        name: api-configmap
+            - configMapRef:
+	              name: api-configmap
             - secretRef:
                 name: api-secret
             command: ['npm','run']
             args: ['nest:start:console files remove-deleted-files 7']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
