@@ -1,6 +1,9 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { EntityId } from '../types/entity-id';
 
+const defaultColumns = 6;
+const defaultRows = 6;
+
 export type GridElementReferenceMetadata = {
 	id: string;
 	title: string;
@@ -73,25 +76,25 @@ export type DashboardProps = { colums?: number; rows?: number; grid: GridElement
 export class DashboardEntity {
 	id: EntityId;
 
-	colums: number;
+	columns: number;
 
 	rows: number;
 
 	grid: Map<number, IGridElement>;
 
 	private gridIndexFromPosition(pos: GridPosition): number {
-		return this.colums * pos.y + pos.x;
+		return this.columns * pos.y + pos.x;
 	}
 
 	private positionFromGridIndex(index: number): GridPosition {
-		const y = Math.floor(index / this.colums);
-		const x = index % this.colums;
+		const y = Math.floor(index / this.columns);
+		const x = index % this.columns;
 		return { x, y };
 	}
 
 	constructor(id: string, props: DashboardProps) {
-		this.colums = props.colums || 5;
-		this.rows = props.rows || 5;
+		this.columns = props.colums || defaultColumns;
+		this.rows = props.rows || defaultRows;
 		this.grid = new Map<number, IGridElement>();
 		props.grid.forEach((element) => {
 			this.grid.set(this.gridIndexFromPosition(element.pos), element.gridElement);
