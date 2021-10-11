@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+  name: delete-s3-files-cronjob
+spec:
+  schedule: "@hourly"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: delete-s3-files-cronjob
+            image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+            envFrom:
+            - secretRef:
+                name: api-secret
+            command: ['npm','run']
+            args: ['nest:start:console files remove-deleted-files 7']
+          restartPolicy: OnFailure

@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleModule } from 'nestjs-console';
 import { LoggerModule } from '../../../core/logger/logger.module';
-import { DeleteFilesController } from './delete-files.controller';
+import { DeleteFilesConsole } from './delete-files.console';
 import { DeleteFilesUc } from '../uc';
 import { FilesRepo, FileStorageRepo } from '../repo';
 
 describe('DeleteFilesController', () => {
-	let controller: DeleteFilesController;
+	let console: DeleteFilesConsole;
 	let deleteFilesUc: DeleteFilesUc;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ConsoleModule, LoggerModule],
-			controllers: [DeleteFilesController],
+			imports: [LoggerModule],
+			controllers: [DeleteFilesConsole],
 			providers: [
 				{
 					provide: DeleteFilesUc,
@@ -31,19 +30,19 @@ describe('DeleteFilesController', () => {
 			],
 		}).compile();
 
-		controller = module.get<DeleteFilesController>(DeleteFilesController);
+		console = module.get<DeleteFilesConsole>(DeleteFilesConsole);
 		deleteFilesUc = module.get<DeleteFilesUc>(DeleteFilesUc);
 	});
 
 	it('should be defined', () => {
-		expect(controller).toBeDefined();
+		expect(console).toBeDefined();
 	});
 
 	describe('removeDeletedFilesData', () => {
 		it('should call removeDeletedFilesData use case with removedSince date', async () => {
 			const removedSinceDays = 7;
 			const deleteFilesUcSpy = jest.spyOn(deleteFilesUc, 'removeDeletedFilesData');
-			await controller.removeDeletedFilesData(7);
+			await console.removeDeletedFilesData(7);
 			expect(deleteFilesUcSpy).toHaveBeenCalledTimes(1);
 			const useCaseArg = deleteFilesUcSpy.mock.calls[0][0];
 			const dateDifferenceInDays = new Date(new Date().getTime() - useCaseArg.getTime()).getDate() - 1;

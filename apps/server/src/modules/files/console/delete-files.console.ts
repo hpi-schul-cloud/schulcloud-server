@@ -2,17 +2,24 @@ import { Console, Command } from 'nestjs-console';
 import { Logger } from '../../../core/logger/logger.service';
 import { DeleteFilesUc } from '../uc';
 
-@Console()
-export class DeleteFilesController {
+@Console({ command: 'files', description: 'file deletion console' })
+export class DeleteFilesConsole {
 	private logger: Logger;
 
 	constructor(private deleteFilesUc: DeleteFilesUc) {
-		this.logger = new Logger(DeleteFilesController.name);
+		this.logger = new Logger(DeleteFilesConsole.name);
 	}
 
 	@Command({
 		command: 'remove-deleted-files <days>',
-		description: 'cleanup job to remove file data of deleted files that have been removed for <days> days.',
+		options: [
+			{
+				flags: '-d, --days <days>',
+				required: false,
+				description: 'removed files that where marked for deletion <days> days ago',
+			},
+		],
+		description: 'cleanup job to remove files that were marked for deletion <days> days ago',
 	})
 	async removeDeletedFilesData(removedSinceDays: number): Promise<void> {
 		const removedSince = new Date();
