@@ -21,7 +21,7 @@ describe('dashboard repo', () => {
 
 	it('should persist a plain dashboard', async () => {
 		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [] });
-		repo.persist(dashboard);
+		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(dashboard).toEqual(result);
@@ -31,21 +31,67 @@ describe('dashboard repo', () => {
 	it('should persist dashboard with gridElements', async () => {
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
-				new GridElement(new ObjectId().toString(), 1, 2, new DefaultGridReference(new ObjectId().toString(), 'Mathe')),
+				{
+					pos: { x: 1, y: 3 },
+					gridElement: new GridElement(
+						new ObjectId().toString(),
+						new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+					),
+				},
 			],
 		});
-		repo.persist(dashboard);
+		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(dashboard.id).toEqual(result.id);
 		expect(dashboard).toEqual(result);
 	});
 
+	describe('persistAndFlush', () => {
+		it('should persist dashboard with gridElements', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: new GridElement(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+						),
+					},
+				],
+			});
+			await repo.persistAndFlush(dashboard);
+			const result = await repo.getDashboardById(dashboard.id);
+			expect(dashboard.id).toEqual(result.id);
+			expect(dashboard).toEqual(result);
+		});
+
+		it('should be idempotent', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: new GridElement(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+						),
+					},
+				],
+			});
+			await repo.persistAndFlush(dashboard);
+			await repo.persistAndFlush(dashboard);
+
+			const result = await repo.getDashboardById(dashboard.id);
+			expect(dashboard.id).toEqual(result.id);
+			expect(dashboard).toEqual(result);
+		});
+	});
+
 	describe('temporary getUsersDashboard fake implementation', () => {
 		it('returns a dashboard', async () => {
 			const result = await repo.getUsersDashboard();
 			expect(result instanceof DashboardEntity).toEqual(true);
-			expect(result.grid.length).toBeGreaterThan(0);
+			expect(result.getGrid().length).toBeGreaterThan(0);
 		});
 
 		it('always returns the same dashboard', async () => {
