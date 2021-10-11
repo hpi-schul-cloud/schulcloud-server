@@ -459,5 +459,52 @@ describe('Task Controller (e2e)', () => {
 
 			expect(paginatedResult.total).toEqual(0);
 		});
+
+		it('should not return a task of a course that has no lesson and is not published', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const parent = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+			// @ts-expect-error expected value null in db
+			const task = new Task({ name: 'task #1', private: false, parent, dueDate: null, availableDate: nextDay });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should return a task of a course that has no lesson and is not limited', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const parent = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			// @ts-expect-error expected value null in db
+			const task = new Task({ name: 'task #1', private: false, parent, dueDate: null });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+
+			expect(paginatedResult.total).toEqual(1);
+		});
 	});
 });
