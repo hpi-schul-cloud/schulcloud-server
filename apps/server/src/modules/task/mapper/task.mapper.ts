@@ -8,6 +8,7 @@ export class TaskMapper {
 
 		dto.id = task.id;
 		dto.name = task.name;
+		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;

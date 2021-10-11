@@ -13,6 +13,7 @@ const createExpectedResponse = (
 	const expected = new TaskResponse();
 	expected.id = task.id;
 	expected.name = task.name;
+	expected.availableDate = task.availableDate;
 	expected.duedate = task.dueDate;
 	expected.createdAt = task.createdAt;
 	expected.updatedAt = task.updatedAt;

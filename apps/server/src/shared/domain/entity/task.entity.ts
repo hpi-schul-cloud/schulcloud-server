@@ -23,6 +23,9 @@ export class Task extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Property()
+	availableDate?: Date;
+
+	@Property()
 	dueDate?: Date;
 
 	@Property()

@@ -8,6 +8,9 @@ export class TaskResponse {
 	name: string;
 
 	@ApiProperty()
+	availableDate?: Date;
+
+	@ApiProperty()
 	duedate?: Date;
 
 	@ApiPropertyOptional()
