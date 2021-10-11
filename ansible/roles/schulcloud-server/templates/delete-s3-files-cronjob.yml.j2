@@ -4,10 +4,15 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api
-  name: delete-s3-files-cronjob
+    cronjob: delete-s3-files
+  name: api-delete-s3-files-cronjob
 spec:
+  concurrencyPolicy: Forbid
   schedule: "@hourly"
   jobTemplate:
+    labels:
+      app: api
+      cronjob: delete-s3-files
     spec:
       template:
         spec:
@@ -15,6 +20,8 @@ spec:
           - name: delete-s3-files-cronjob
             image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
             envFrom:
+            - configMapRef: 
+	        name: api-configmap
             - secretRef:
                 name: api-secret
             command: ['npm','run']
