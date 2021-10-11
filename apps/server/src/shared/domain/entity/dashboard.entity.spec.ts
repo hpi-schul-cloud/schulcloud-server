@@ -97,5 +97,24 @@ describe('dashboard entity', () => {
 			const callMove = () => dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(callMove).toThrow(BadRequestException);
 		});
+
+		it('when the new position is out of bounds, it should throw badrequest', () => {
+			const gridElement = {
+				getId: () => 'gridelementid',
+				getMetadata: () => ({
+					id: 'someId',
+					title: 'Calendar-Dashboard',
+					shortTitle: 'CAL',
+					displayColor: '#FFFFFF',
+				}),
+			};
+			const dashboard = new DashboardEntity('someid', {
+				colums: 3,
+				rows: 3,
+				grid: [{ pos: { x: 0, y: 2 }, gridElement }],
+			});
+			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 });
+			expect(callMove).toThrow(BadRequestException);
+		});
 	});
 });

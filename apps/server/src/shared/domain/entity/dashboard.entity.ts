@@ -83,6 +83,9 @@ export class DashboardEntity {
 	grid: Map<number, IGridElement>;
 
 	private gridIndexFromPosition(pos: GridPosition): number {
+		if (pos.x > this.columns || pos.y > this.rows) {
+			throw new BadRequestException('dashboard element position is outside the grid.');
+		}
 		return this.columns * pos.y + pos.x;
 	}
 
