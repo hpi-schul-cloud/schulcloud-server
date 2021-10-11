@@ -1,4 +1,8 @@
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { EntityId } from '../types/entity-id';
+
+const defaultColumns = 6;
+const defaultRows = 6;
 
 export type GridElementReferenceMetadata = {
 	id: string;
@@ -38,33 +42,21 @@ export class DefaultGridReference implements IGridElementReference {
 export interface IGridElement {
 	getId: () => EntityId;
 
-	getPosition: () => { x: number; y: number };
-
 	getMetadata: () => GridElementReferenceMetadata;
 }
 
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	constructor(id: EntityId, x: number, y: number, reference: IGridElementReference) {
+	constructor(id: EntityId, reference: IGridElementReference) {
 		this.id = id;
-		this.xPos = x;
-		this.yPos = y;
 		this.reference = reference;
 	}
 
 	reference: IGridElementReference;
 
-	xPos: number;
-
-	yPos: number;
-
 	getId(): EntityId {
 		return this.id;
-	}
-
-	getPosition(): { x: number; y: number } {
-		return { x: this.xPos, y: this.yPos };
 	}
 
 	getMetadata(): GridElementReferenceMetadata {
@@ -72,15 +64,44 @@ export class GridElement implements IGridElement {
 	}
 }
 
-export type DashboardProps = { grid: IGridElement[] };
+export type GridPosition = { x: number; y: number };
+
+export type GridElementWithPosition = {
+	gridElement: IGridElement;
+	pos: GridPosition;
+};
+
+export type DashboardProps = { colums?: number; rows?: number; grid: GridElementWithPosition[] };
 
 export class DashboardEntity {
 	id: EntityId;
 
-	grid: IGridElement[];
+	columns: number;
+
+	rows: number;
+
+	grid: Map<number, IGridElement>;
+
+	private gridIndexFromPosition(pos: GridPosition): number {
+		if (pos.x > this.columns || pos.y > this.rows) {
+			throw new BadRequestException('dashboard element position is outside the grid.');
+		}
+		return this.columns * pos.y + pos.x;
+	}
+
+	private positionFromGridIndex(index: number): GridPosition {
+		const y = Math.floor(index / this.columns);
+		const x = index % this.columns;
+		return { x, y };
+	}
 
 	constructor(id: string, props: DashboardProps) {
-		this.grid = props.grid || [];
+		this.columns = props.colums || defaultColumns;
+		this.rows = props.rows || defaultRows;
+		this.grid = new Map<number, IGridElement>();
+		props.grid.forEach((element) => {
+			this.grid.set(this.gridIndexFromPosition(element.pos), element.gridElement);
+		});
 		this.id = id;
 		Object.assign(this, {});
 	}
@@ -89,7 +110,31 @@ export class DashboardEntity {
 		return this.id;
 	}
 
-	getGrid(): IGridElement[] {
-		return this.grid;
+	getGrid(): GridElementWithPosition[] {
+		const result = [...this.grid.keys()].map((key) => {
+			const position = this.positionFromGridIndex(key);
+			const value = this.grid.get(key) as IGridElement;
+			return {
+				pos: position,
+				gridElement: value,
+			};
+		});
+		return result;
+	}
+
+	moveElement(from: GridPosition, to: GridPosition): GridElementWithPosition {
+		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
+		if (elementToMove) {
+			if (this.grid.get(this.gridIndexFromPosition(to))) {
+				throw new BadRequestException('target position already taken');
+			}
+			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
+			this.grid.delete(this.gridIndexFromPosition(from));
+			return {
+				pos: to,
+				gridElement: elementToMove,
+			};
+		}
+		throw new NotFoundException('no element at origin position');
 	}
 }
