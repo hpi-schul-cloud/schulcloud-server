@@ -1,0 +1,21 @@
+---
+name: e2e courses and topics
+
+on:
+  push:
+    branches-ignore:
+      - dependabot/**
+
+jobs:
+  wait_for_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 3 min
+        run: sleep 180s
+        shell: bash
+  tag-courses_and_topics:
+    needs: wait_for_image
+    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e.yml
+    with:
+      branch_name: ${GITHUB_REF#refs/*/}
+      e2e_tag: courses_and_topics
