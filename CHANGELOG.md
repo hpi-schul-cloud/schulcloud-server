@@ -25,6 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Security
 
+- BC-386 - added CREATE tests for consentVersionService
 - BC-297 - fixed set-value dependency vulnerabilities
 - BC-377 - fixed axios dependency vulnerabilities
 
