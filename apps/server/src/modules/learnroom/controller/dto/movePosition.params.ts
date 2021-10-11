@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ValidateNested, IsNumber, IsPositive } from 'class-validator';
+import { ValidateNested, IsNumber, Min } from 'class-validator';
 
 /**
  * DTO for Updating a news document.
@@ -8,11 +8,11 @@ import { ValidateNested, IsNumber, IsPositive } from 'class-validator';
 
 export class MoveElementPosition {
 	@IsNumber()
-	@IsPositive()
+	@Min(0)
 	x: number;
 
 	@IsNumber()
-	@IsPositive()
+	@Min(0)
 	y: number;
 }
 
