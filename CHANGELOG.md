@@ -11,6 +11,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+## [26.12.0] - 2021-10-12
+
+### Added
+
+- BC-388 - add simple script for end sjw
+- BC-319 - add route to change the position of a course dashboard element
 - BC-343 - run unstable e2e tests on label `run unstable tests` 
 
 ### Changed
@@ -25,6 +33,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Security
 
+- BC-386 - added CREATE tests for consentVersionService
 - BC-297 - fixed set-value dependency vulnerabilities
 - BC-377 - fixed axios dependency vulnerabilities
 
