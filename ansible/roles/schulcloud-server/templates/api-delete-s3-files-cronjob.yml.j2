@@ -24,8 +24,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
-            command: ['npm']
-            args: ['run nest:start:console files remove-deleted-files --days 7']
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:console files remove-deleted-files --days 7']
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
