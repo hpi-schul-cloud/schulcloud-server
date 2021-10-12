@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-388 - add simple script for end sjw
+- BC-319 - add route to change the position of a course dashboard element
 - BC-343 - run unstable e2e tests on label `run unstable tests` 
 
 ### Changed
