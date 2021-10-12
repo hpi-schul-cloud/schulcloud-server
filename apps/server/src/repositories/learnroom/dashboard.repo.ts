@@ -1,27 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, DashboardEntity, DefaultGridReference, GridElement, DashboardProps } from '@shared/domain';
+import { EntityId, DashboardEntity, DefaultGridReference, GridElement, GridElementWithPosition } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 export interface IDashboardRepo {
 	getUsersDashboard(): Promise<DashboardEntity>;
+	getDashboardById(id: EntityId): Promise<DashboardEntity>;
+	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
 }
 
 @Injectable()
 export class DashboardRepo implements IDashboardRepo {
 	constructor(protected readonly em: EntityManager) {}
 
-	create(dashboardProps: DashboardProps): DashboardEntity {
-		// todo: implementation, testing, etc
-		// this should create a modelentity and get an id from mongo
-		return new DashboardEntity('thisisalsofake', dashboardProps);
+	// ToDo: refactor this to be in an abstract class (see baseRepo)
+	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
+		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
+		this.em.persist(modelEntity);
+		return entity;
 	}
 
-	// ToDo: refactor this to be in an abstract class (see baseRepo)
-	persist(entity: DashboardEntity): DashboardEntity {
-		const modelEntity = DashboardModelMapper.mapToModel(entity);
-		this.em.persist(modelEntity);
+	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
+		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
+		await this.em.persistAndFlush(modelEntity);
 		return entity;
 	}
 
@@ -37,17 +39,17 @@ export class DashboardRepo implements IDashboardRepo {
 		if (dashboardModel) {
 			return DashboardModelMapper.mapToEntity(dashboardModel);
 		}
-		const gridArray: GridElement[] = [];
-		const diagonalSize = 5;
+		const gridArray: GridElementWithPosition[] = [];
+		const diagonalSize = 4;
 		for (let i = 0; i < diagonalSize; i += 1) {
 			const elementReference = new DefaultGridReference(new ObjectId().toString(), 'exampletitle');
-			gridArray.push(
-				new GridElement(new ObjectId().toString(), Math.floor(Math.random() * 6 + 1), i + 1, elementReference)
-			);
+			gridArray.push({
+				pos: { x: Math.floor(Math.random() * 4 + 1), y: i + 1 },
+				gridElement: new GridElement(new ObjectId().toString(), elementReference),
+			});
 		}
 		const dashboard = new DashboardEntity(hardcodedTestDashboardId, { grid: gridArray });
-		this.persist(dashboard);
-		await this.em.flush();
+		await this.persistAndFlush(dashboard);
 
 		return dashboard;
 	}
