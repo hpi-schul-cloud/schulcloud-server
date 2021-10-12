@@ -21,9 +21,9 @@ spec:
             image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
             envFrom:
             - configMapRef:
-              name: api-configmap
+                name: api-configmap
             - secretRef:
-              name: api-secret
+                name: api-secret
             command: ['npm','run']
             args: ['nest:start:console files remove-deleted-files 7']
             resources:
