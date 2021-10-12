@@ -224,6 +224,7 @@ describe('Task Controller (e2e)', () => {
 			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
 
 			expect(paginatedResult.total).toEqual(1);
+			expect(paginatedResult.data[0].status.isDraft).toEqual(true);
 		});
 
 		it('[FIND] /tasks should return nothing from parents where the user has only read permissions', async () => {
@@ -470,8 +471,7 @@ describe('Task Controller (e2e)', () => {
 			});
 
 			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-			// @ts-expect-error expected value null in db
-			const task = new Task({ name: 'task #1', private: false, parent, dueDate: null, availableDate: nextDay });
+			const task = new Task({ name: 'task #1', private: true, parent, availableDate: nextDay });
 
 			await em.persistAndFlush([task]);
 			em.clear();

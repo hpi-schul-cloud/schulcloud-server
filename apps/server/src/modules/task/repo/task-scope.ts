@@ -21,27 +21,9 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byParentIds(teacherId?: EntityId, courseIds?: EntityId[], lessonIds?: EntityId[]): TaskScope {
-		const parentIdScope = new TaskScope('$or');
-
-		if (teacherId) {
-			parentIdScope.byTeacherId(teacherId);
-		}
-
-		if (courseIds) {
-			parentIdScope.byCourseIds(courseIds);
-		}
-
-		if (lessonIds) {
-			parentIdScope.byLessonIds(lessonIds);
-		}
-
-		this.addQuery(parentIdScope.query);
-		return this;
-	}
-
 	byDraft(isDraft: boolean): TaskScope {
-		this.addQuery({ private: { $eq: isDraft } });
+		// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
+		this.addQuery({ $or: [{ private: { $exists: false } }, { private: { $eq: isDraft } }] });
 		return this;
 	}
 

@@ -32,8 +32,21 @@ export class TaskRepo {
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 
-		const { teacherId, courseIds, lessonIds } = parentIds;
-		scope.byParentIds(teacherId, courseIds, lessonIds);
+		const parentIdScope = new TaskScope('$or');
+
+		if (parentIds.teacherId) {
+			parentIdScope.byTeacherId(parentIds.teacherId);
+		}
+
+		if (parentIds.courseIds) {
+			parentIdScope.byCourseIds(parentIds.courseIds);
+		}
+
+		if (parentIds.lessonIds) {
+			parentIdScope.byLessonIds(parentIds.lessonIds);
+		}
+
+		scope.addQuery(parentIdScope.query);
 
 		if (filters?.draft !== undefined) {
 			scope.byDraft(filters.draft);

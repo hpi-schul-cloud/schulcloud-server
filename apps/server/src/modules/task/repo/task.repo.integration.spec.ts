@@ -289,6 +289,26 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(1);
 				expect(result[0].id).toEqual(task2.id);
 			});
+			// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
+			it('should filter tasks by draft status = undefined as false', async () => {
+				const teacher = userFactory.build();
+				const task = new Task({ name: 'task #1', teacher });
+				Object.assign(task, { private: undefined });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				// unset private using a raw query because it's impossible using the ORM
+				await em
+					.getDriver()
+					.getConnection()
+					.getCollection('homeworks')
+					.updateOne({ _id: task._id }, { $unset: { private: '' } });
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, { draft: false });
+				expect(total).toEqual(1);
+				expect(result[0].id).toEqual(task.id);
+			});
 			it('should return tasks with both status when no filter is applied', async () => {
 				const teacher = userFactory.build();
 				const task1 = new Task({ name: 'task #1', teacher, private: true });
