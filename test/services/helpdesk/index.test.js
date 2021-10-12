@@ -155,7 +155,7 @@ describe('helpdesk service', function test() {
 		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);
 	});
 
-	it.only('POST /helpdesk to schoolcloud with wish should be send additionally to default email if federal state email is provided and supportType is specified', async () => {
+	it('POST /helpdesk to schoolcloud with wish should be send additionally to default email if federal state email is provided and supportType is specified', async () => {
 		const postBody = {
 			type: 'contactHPI',
 			supportType: 'wish',
