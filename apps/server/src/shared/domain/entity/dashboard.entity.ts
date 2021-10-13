@@ -42,25 +42,47 @@ export class DefaultGridReference implements IGridElementReference {
 export interface IGridElement {
 	getId: () => EntityId;
 
-	getMetadata: () => GridElementReferenceMetadata;
+	getContent: () => GridElementContent;
+
+	isGroup(): boolean;
 }
+
+export type GridElementContent = {
+	referencedId?: string;
+	title: string;
+	shortTitle: string;
+	displayColor: string;
+	group?: GridElementReferenceMetadata[];
+};
 
 export class GridElement implements IGridElement {
 	id: EntityId;
 
 	constructor(id: EntityId, reference: IGridElementReference) {
 		this.id = id;
-		this.reference = reference;
+		this.references = [reference];
 	}
 
-	reference: IGridElementReference;
+	references: IGridElementReference[];
 
 	getId(): EntityId {
 		return this.id;
 	}
 
-	getMetadata(): GridElementReferenceMetadata {
-		return this.reference.getMetadata();
+	getContent(): GridElementContent {
+		if (!this.isGroup()) {
+			const { id: referencedId, ...data } = this.references[0].getMetadata();
+			const metadata = {
+				referencedId,
+				...data,
+			};
+			return metadata;
+		}
+		throw new Error('not implemented yet');
+	}
+
+	isGroup(): boolean {
+		return this.references.length > 1;
 	}
 }
 

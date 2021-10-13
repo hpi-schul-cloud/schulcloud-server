@@ -28,15 +28,16 @@ export class DashboardModelMapper {
 		model.xPos = elementWithPosition.pos.x;
 		model.yPos = elementWithPosition.pos.y;
 
-		const existingReference = await em.findOne(
-			DefaultGridReferenceModel,
-			elementWithPosition.gridElement.getMetadata().id
-		);
-		const reference =
-			existingReference || new DefaultGridReferenceModel(elementWithPosition.gridElement.getMetadata().id);
-		reference.color = elementWithPosition.gridElement.getMetadata().displayColor;
-		reference.title = elementWithPosition.gridElement.getMetadata().title;
-		model.reference = wrap(reference).toReference();
+		const elementContent = elementWithPosition.gridElement.getContent();
+		// element is not a group
+		if (elementContent.referencedId) {
+			const existingReference = await em.findOne(DefaultGridReferenceModel, elementContent.referencedId);
+			const reference = existingReference || new DefaultGridReferenceModel(elementContent.referencedId);
+			reference.color = elementWithPosition.gridElement.getContent().displayColor;
+			reference.title = elementWithPosition.gridElement.getContent().title;
+			model.reference = wrap(reference).toReference();
+		}
+		// todo: handle group
 
 		model.dashboard = wrap(dashboard).toReference();
 		return model;
