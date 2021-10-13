@@ -12,7 +12,7 @@ function createStorageProviderClient(provider: StorageProvider): S3Client {
 		tls: true,
 		credentials: {
 			accessKeyId: provider.accessKeyId,
-			secretAccessKey: provider.accessKey,
+			secretAccessKey: provider.secretAccessKey,
 		},
 	});
 }
