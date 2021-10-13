@@ -23,7 +23,9 @@ export class TaskScope extends Scope<Task> {
 
 	byDraft(isDraft: boolean): TaskScope {
 		// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
-		this.addQuery({ $or: [{ private: { $exists: false } }, { private: { $eq: isDraft } }] });
+		// additionally handle undefined and null as false
+		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+		this.addQuery(query);
 		return this;
 	}
 

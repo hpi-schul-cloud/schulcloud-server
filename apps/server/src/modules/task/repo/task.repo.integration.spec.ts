@@ -289,11 +289,22 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(1);
 				expect(result[0].id).toEqual(task2.id);
 			});
+			it('should filter tasks by draft status = null as false', async () => {
+				const teacher = userFactory.build();
+				const task = new Task({ name: 'task #1', teacher });
+				Object.assign(task, { private: null });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ teacherId: teacher.id }, { draft: false });
+				expect(total).toEqual(1);
+				expect(result[0].id).toEqual(task.id);
+			});
 			// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
 			it('should filter tasks by draft status = undefined as false', async () => {
 				const teacher = userFactory.build();
 				const task = new Task({ name: 'task #1', teacher });
-				Object.assign(task, { private: undefined });
 
 				await em.persistAndFlush([task]);
 				em.clear();
