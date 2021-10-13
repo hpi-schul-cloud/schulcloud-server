@@ -55,7 +55,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -77,7 +77,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),

@@ -12,7 +12,7 @@ const gridReference = {
 describe('dashboardElement', () => {
 	describe('isGroup', () => {
 		it('element with single reference should not be a group', () => {
-			const dashboardElement = new GridElement('id', gridReference);
+			const dashboardElement = GridElement.FromSingleReference('id', gridReference);
 
 			expect(dashboardElement.isGroup()).toEqual(false);
 		});

@@ -33,7 +33,7 @@ describe('dashboard repo', () => {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: new GridElement(
+					gridElement: GridElement.FromSingleReference(
 						new ObjectId().toString(),
 						new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 					),
@@ -53,7 +53,7 @@ describe('dashboard repo', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -71,7 +71,7 @@ describe('dashboard repo', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),

@@ -52,7 +52,10 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: new GridElement('elementId', new DefaultGridReference('referenceId', 'Mathe')),
+								gridElement: GridElement.FromSingleReference(
+									'elementId',
+									new DefaultGridReference('referenceId', 'Mathe')
+								),
 							},
 						],
 					});
@@ -70,7 +73,10 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: new GridElement('elementId', new DefaultGridReference('referenceId', 'Mathe')),
+								gridElement: GridElement.FromSingleReference(
+									'elementId',
+									new DefaultGridReference('referenceId', 'Mathe')
+								),
 							},
 						],
 					});

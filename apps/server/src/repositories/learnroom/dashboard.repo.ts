@@ -45,7 +45,7 @@ export class DashboardRepo implements IDashboardRepo {
 			const elementReference = new DefaultGridReference(new ObjectId().toString(), 'exampletitle');
 			gridArray.push({
 				pos: { x: Math.floor(Math.random() * 4 + 1), y: i + 1 },
-				gridElement: new GridElement(new ObjectId().toString(), elementReference),
+				gridElement: GridElement.FromSingleReference(new ObjectId().toString(), elementReference),
 			});
 		}
 		const dashboard = new DashboardEntity(hardcodedTestDashboardId, { grid: gridArray });

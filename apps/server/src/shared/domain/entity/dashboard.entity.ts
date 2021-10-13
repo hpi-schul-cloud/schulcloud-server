@@ -58,9 +58,17 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	constructor(id: EntityId, reference: IGridElementReference) {
+	private constructor(id: EntityId, references: IGridElementReference[]) {
 		this.id = id;
-		this.references = [reference];
+		this.references = references;
+	}
+
+	static FromSingleReference(id: EntityId, reference: IGridElementReference): GridElement {
+		return new GridElement(id, [reference]);
+	}
+
+	static FromReferenceGroup(id: EntityId, group: IGridElementReference[]): GridElement {
+		return new GridElement(id, group);
 	}
 
 	references: IGridElementReference[];

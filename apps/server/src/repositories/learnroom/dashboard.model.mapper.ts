@@ -10,7 +10,10 @@ export class DashboardModelMapper {
 				const loaded = await e.reference.load();
 				const result = {
 					pos: { x: e.xPos, y: e.yPos },
-					gridElement: new GridElement(e.id, new DefaultGridReference(loaded.id, loaded.title, loaded.color)),
+					gridElement: GridElement.FromSingleReference(
+						e.id,
+						new DefaultGridReference(loaded.id, loaded.title, loaded.color)
+					),
 				};
 				return result;
 			})
