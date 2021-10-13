@@ -27,5 +27,6 @@ export class DeleteFilesConsole {
 		removedSince.setDate(removedSince.getDate() - removedSinceDays);
 
 		await this.deleteFilesUc.removeDeletedFilesData(removedSince);
+		this.logger.log('cleanup job finished');
 	}
 }

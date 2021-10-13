@@ -27,6 +27,5 @@ export class DeleteFilesUc {
 				this.logger.error(err);
 			}
 		}
-		this.logger.log('cleanup job finished');
 	}
 }

@@ -2,7 +2,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { BaseFile, File, Directory, StorageProvider } from '@shared/domain';
+import { BaseFile, File } from '@shared/domain';
 import { FilesRepo } from './files.repo';
 
 interface FileData {

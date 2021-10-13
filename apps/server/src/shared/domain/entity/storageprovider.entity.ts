@@ -1,6 +1,14 @@
+import { decrypt } from 'crypto-js/aes';
+import Utf8 from 'crypto-js/enc-utf8';
+
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
+function decryptAccessKey(secretAccessKey: string): string {
+	const S3_KEY = Configuration.get('S3_KEY') as string;
+	return decrypt(secretAccessKey, S3_KEY).toString(Utf8);
+}
 interface IStorageProviderProperties {
 	endpointUrl: string;
 	accessKeyId: string;
@@ -21,6 +29,10 @@ export class StorageProvider extends BaseEntityWithTimestamps {
 
 	@Property()
 	region?: string;
+
+	get accessKey() {
+		return decryptAccessKey(this.secretAccessKey);
+	}
 
 	constructor(props: IStorageProviderProperties) {
 		super();
