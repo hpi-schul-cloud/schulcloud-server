@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { DurationLoggingInterceptor } from '@shared/common';
-import { Logger } from '@src/core/logger/logger.service';
+import { Logger } from '@src/core/logger';
 import { createTestModule } from './test/create-test.module';
 
 describe('DurationLoggingInterceptor', () => {

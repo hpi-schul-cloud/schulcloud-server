@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErr
 import * as _ from 'lodash';
 import { Response } from 'express';
 import { BusinessError, ApiValidationError } from '@shared/common';
-import { Logger } from '@src/core/logger/logger.service';
+import { Logger, ILogger } from '@src/core/logger';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
 import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
@@ -61,7 +61,7 @@ function createErrorResponseForFeathersError(error: FeathersError) {
 	return new ErrorResponse(snakeType, startTitle, message, code);
 }
 
-const createErrorResponse = (error: unknown, logger: Logger): ErrorResponse => {
+const createErrorResponse = (error: unknown, logger: ILogger): ErrorResponse => {
 	try {
 		if (error instanceof Error) {
 			if (isFeathersError(error)) {
@@ -86,7 +86,7 @@ const createErrorResponse = (error: unknown, logger: Logger): ErrorResponse => {
 	}
 };
 
-const writeValidationErrors = (error: ApiValidationError, logger: Logger) => {
+const writeValidationErrors = (error: ApiValidationError, logger: ILogger) => {
 	const errorMsg = error.validationErrors.map(
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
@@ -94,7 +94,7 @@ const writeValidationErrors = (error: ApiValidationError, logger: Logger) => {
 	logger.error(errorMsg, error.stack, 'API Validation Error');
 };
 
-const writeErrorLog = (error: unknown, logger: Logger): void => {
+const writeErrorLog = (error: unknown, logger: ILogger): void => {
 	if (error instanceof Error) {
 		if (isFeathersError(error)) {
 			logger.error(error, error.stack, 'Feathers Error');
@@ -116,7 +116,7 @@ const writeErrorLog = (error: unknown, logger: Logger): void => {
 
 @Catch()
 export class GlobalErrorFilter<T = unknown> implements ExceptionFilter<T> {
-	private static readonly logger = new Logger('Error');
+	private static readonly logger: ILogger = new Logger('Error');
 
 	// eslint-disable-next-line class-methods-use-this
 	catch(error: T, host: ArgumentsHost): void {
