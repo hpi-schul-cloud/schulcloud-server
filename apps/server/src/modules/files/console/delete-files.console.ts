@@ -15,13 +15,14 @@ export class DeleteFilesConsole {
 		options: [
 			{
 				flags: '-d, --days <days>',
-				required: false,
-				description: 'removed files that where marked for deletion <days> days ago',
+				required: true,
+				description: 'removed files that were marked for deletion <days> days ago',
 			},
 		],
 		description: 'cleanup job to remove files that were marked for deletion <days> days ago',
 	})
 	async removeDeletedFilesData(removedSinceDays: number): Promise<void> {
+		this.logger.log(`cleanup job will remove files that were marked for deletion ${removedSinceDays} days ago`);
 		const removedSince = new Date();
 		removedSince.setDate(removedSince.getDate() - removedSinceDays);
 

@@ -15,6 +15,7 @@ export class DeleteFilesUc {
 	 */
 	async removeDeletedFilesData(removedSince: Date): Promise<void> {
 		const filesForDeletion = await this.filesRepo.getExpiredFiles(removedSince);
+		this.logger.log(`${filesForDeletion.length} files will be deleted`);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const file of filesForDeletion) {
 			try {
@@ -26,5 +27,6 @@ export class DeleteFilesUc {
 				this.logger.error(err);
 			}
 		}
+		this.logger.log('cleanup job finished');
 	}
 }
