@@ -16,7 +16,7 @@ describe('dashboard uc', () => {
 				{
 					provide: DashboardUc,
 					useValue: {
-						getUsersDashboard() {
+						getUsersDashboard(): Promise<DashboardEntity> {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
@@ -41,6 +41,29 @@ describe('dashboard uc', () => {
 
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
+
+		it.todo(
+			'should return a dashboard with a group' /* , async () => {
+			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
+				const dashboard = new DashboardEntity('someid', {
+					grid: [
+						{
+							pos: { x: 1, y: 3 },
+							gridElement: GridElement.FromReferenceGroup('elementId', [
+								new DefaultGridReference('firstId', 'Math'),
+								new DefaultGridReference('secondId', 'German'),
+							]),
+						},
+					],
+				});
+				return Promise.resolve(dashboard);
+			});
+
+			const response = await controller.findForUser();
+			expect(response instanceof DashboardResponse).toEqual(true);
+			expect(response.gridElements[0]).toHaveProperty('group');
+		} */
+		);
 	});
 
 	describe('moveElement', () => {
