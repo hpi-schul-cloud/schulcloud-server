@@ -11,6 +11,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+## [26.12.0] - 2021-10-12
+
+### Added
+
 - BC-388 - add simple script for end sjw
 - BC-319 - add route to change the position of a course dashboard element
 - BC-343 - run unstable e2e tests on label `run unstable tests`
@@ -24,6 +30,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-331 - BC-354 - rename ansible variables for OnePassword
 - BC-269 - check in firstLogin that students can only pass with existing birthdate
 - BC-154 - remove lesson entity from task repository
+- BC-231 - upgraded nestjs@7 to nestjs@8
 
 ### Fixed
 
