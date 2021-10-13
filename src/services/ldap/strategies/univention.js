@@ -19,7 +19,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			});
 		}
 		const options = {
-			filter: `(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))${ignoredSchools})`,
+			filter: `(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))(objectClass=ucsschoolOrganizationalUnit)${ignoredSchools})`,
 			scope: 'sub',
 			attributes: [],
 		};
