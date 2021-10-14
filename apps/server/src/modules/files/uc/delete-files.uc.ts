@@ -20,7 +20,7 @@ export class DeleteFilesUc {
 		for (const file of filesForDeletion) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				if (!file.isDirectory) await this.fileStorageRepo.deleteFile(file as File);
+				if (file instanceof File) await this.fileStorageRepo.deleteFile(file);
 				// eslint-disable-next-line no-await-in-loop
 				await this.filesRepo.deleteFile(file);
 			} catch (err) {

@@ -48,6 +48,7 @@ describe('FilesRepo', () => {
 			const expiredDate = new Date();
 			const file = fileFactory.build({ deletedAt: expiredDate });
 			await em.persistAndFlush(file);
+			em.clear();
 			const backupPeriodThreshold = new Date();
 
 			const result = await repo.getExpiredFiles(backupPeriodThreshold);

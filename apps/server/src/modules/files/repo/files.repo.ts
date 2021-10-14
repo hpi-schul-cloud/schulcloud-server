@@ -8,10 +8,10 @@ export class FilesRepo extends BaseRepo<BaseFile> {
 
 	async getExpiredFiles(backupPeriodThreshold: Date): Promise<BaseFile[]> {
 		const expiredFilesQuery = { deletedAt: { $lt: backupPeriodThreshold } };
-		const regularFiles = await this.em.find(File, expiredFilesQuery);
+		const files = await this.em.find(BaseFile, expiredFilesQuery);
+		const regularFiles = files.filter((file) => file instanceof File);
 		await this.em.populate(regularFiles, this.propertiesToPopulate);
-		const directories = await this.em.find(Directory, expiredFilesQuery);
-		return [...regularFiles, ...directories];
+		return files;
 	}
 
 	deleteFile(file: BaseFile): Promise<void> {
