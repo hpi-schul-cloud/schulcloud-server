@@ -13,7 +13,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	 */
 	getSchools() {
 		let ignoredSchools = '';
-		if (this.config.providerOptions.ignoreSchools !== undefined) {
+		if (Array.isArray(this.config.providerOptions.ignoreSchools)) {
 			this.config.providerOptions.ignoreSchools.forEach((schoolOu) => {
 				ignoredSchools += `(!(ou=${schoolOu}))`;
 			});
