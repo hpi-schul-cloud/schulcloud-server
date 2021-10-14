@@ -58,6 +58,7 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
+	// do we still need this as we implemented the From.. "contstructors" below?
 	private constructor(id: EntityId, references: IGridElementReference[]) {
 		this.id = id;
 		this.references = references;
@@ -86,7 +87,14 @@ export class GridElement implements IGridElement {
 			};
 			return metadata;
 		}
-		throw new Error('not implemented yet');
+		const groupData = this.references.map((reference) => reference.getMetadata());
+		const groupMetadata = {
+			title: 'exampleTitle',
+			shortTitle: 'exampleShortTitle',
+			displayColor: 'exampleColor',
+			group: groupData,
+		};
+		return groupMetadata;
 	}
 
 	isGroup(): boolean {

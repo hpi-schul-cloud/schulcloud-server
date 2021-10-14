@@ -15,6 +15,9 @@ export class DashboardMapper {
 			elementDTO.title = data.title;
 			elementDTO.shortTitle = data.shortTitle;
 			elementDTO.displayColor = data.displayColor;
+			if (data.group) {
+				elementDTO.groupElements = data.group;
+			}
 
 			const { pos } = elementWithPosition;
 			elementDTO.xPosition = pos.x;

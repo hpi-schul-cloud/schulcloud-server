@@ -42,8 +42,7 @@ describe('dashboard uc', () => {
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 
-		it.todo(
-			'should return a dashboard with a group' /* , async () => {
+		it('should return a dashboard with a group', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
 				const dashboard = new DashboardEntity('someid', {
 					grid: [
@@ -62,8 +61,7 @@ describe('dashboard uc', () => {
 			const response = await controller.findForUser();
 			expect(response instanceof DashboardResponse).toEqual(true);
 			expect(response.gridElements[0]).toHaveProperty('group');
-		} */
-		);
+		});
 	});
 
 	describe('moveElement', () => {
