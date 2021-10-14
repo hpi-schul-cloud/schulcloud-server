@@ -2,7 +2,7 @@ import { GridElement } from './dashboard.entity';
 
 const gridReference = {
 	getMetadata: () => ({
-		id: 'someId',
+		id: 'referenceId',
 		title: 'Calendar-Dashboard',
 		shortTitle: 'CAL',
 		displayColor: '#FFFFFF',
@@ -17,10 +17,21 @@ describe('dashboardElement', () => {
 			expect(dashboardElement.isGroup()).toEqual(false);
 		});
 
-		it.todo('element with multiple references should be a group');
+		it('element with multiple references should be a group', () => {
+			const element = GridElement.FromReferenceGroup('id', [gridReference, gridReference]);
+
+			expect(element.isGroup()).toEqual(true);
+		});
 	});
 
-	describe('getMetadata', () => {
-		it.todo('');
+	describe('getContent', () => {
+		describe('when Element has a single reference', () => {
+			it('should return the metadata of that element', () => {
+				const element = GridElement.FromSingleReference('id', gridReference);
+				const content = element.getContent();
+				expect(content.referencedId).toEqual('referenceId');
+				expect(content.title).toEqual('Calendar-Dashboard');
+			});
+		});
 	});
 });
