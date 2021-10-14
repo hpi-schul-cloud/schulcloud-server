@@ -3,10 +3,6 @@ import { EmptyResultQuery } from './query/empty-result.query';
 
 type EmptyResultQueryType = typeof EmptyResultQuery;
 
-export function isDefined<T>(input: T): boolean {
-	return input !== null && input !== undefined;
-}
-
 type ScopeOperator = '$and' | '$or';
 
 export class Scope<T> {
