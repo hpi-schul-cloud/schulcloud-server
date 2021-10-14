@@ -1,0 +1,10 @@
+{
+	"_id": {
+        "$oid": "616837a590c1146b50a2ac51"
+    },
+    "title": "Math",
+    "color": "#f23f76",
+    "gridelement": {
+        "$oid": "616837a590c1146b50a2ac50"
+    }
+}
