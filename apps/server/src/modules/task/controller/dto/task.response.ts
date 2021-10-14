@@ -1,10 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller';
 
 /**
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
 	@ApiProperty()
+	@DecodeHtmlEntities()
 	name: string;
 
 	@ApiProperty()
@@ -14,6 +16,7 @@ export class TaskResponse {
 	duedate?: Date;
 
 	@ApiPropertyOptional()
+	@DecodeHtmlEntities()
 	courseName?: string;
 
 	@ApiPropertyOptional()

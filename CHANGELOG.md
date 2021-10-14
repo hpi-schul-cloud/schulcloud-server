@@ -11,6 +11,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-394 - send email wishes from federal states also to ticketsystem
+- BC-391 - display special characters properly
+
 ### Changed
 
 ## [26.12.0] - 2021-10-12
@@ -24,8 +27,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- BC-25  - sort database seeds ascending by date of creation (_id, createdAt)
-- BC-25  - move logic of npm run setup into console application and add management application with same behavior
+- BC-25 - sort database seeds ascending by date of creation (\_id, createdAt)
+- BC-25 - move logic of npm run setup into console application and add management application with same behavior
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
 - BC-269 - check in firstLogin that students can only pass with existing birthdate
@@ -49,6 +52,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
+
 - BC-111 wait for mongodb to spin up in deployment
 
 - BC-370 - fixed file directory creation
