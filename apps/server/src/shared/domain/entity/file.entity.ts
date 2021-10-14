@@ -12,7 +12,7 @@ interface IFileProperties {
 }
 
 @Entity({ tableName: 'files', discriminatorColumn: 'isDirectory' })
-export class BaseFile extends BaseEntityWithTimestamps {
+export abstract class BaseFile extends BaseEntityWithTimestamps {
 	@Property()
 	deletedAt?: Date;
 

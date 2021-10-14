@@ -1,38 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { BaseFile, File } from '@shared/domain';
+import { fileFactory } from '@shared/domain/factory';
 import { FilesRepo } from './files.repo';
-
-interface FileData {
-	isDirectory?: false;
-	storageFileName?: string;
-	bucket?: string;
-	deletedAt?: Date;
-}
 
 describe('FilesRepo', () => {
 	let repo: FilesRepo;
 	let em: EntityManager;
 	let module: TestingModule;
-
-	const createTestFile = async ({
-		isDirectory = false,
-		storageFileName = 'storageFileName',
-		bucket = 'test-bucket',
-		deletedAt = undefined,
-	}: FileData = {}): Promise<File> => {
-		const file = em.create(File, {
-			isDirectory,
-			storageFileName,
-			bucket,
-			deletedAt,
-			storageProvider: new ObjectId().toHexString(),
-		});
-		await em.persistAndFlush(file);
-		return file;
-	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -69,7 +46,8 @@ describe('FilesRepo', () => {
 
 		it('should return expired file', async () => {
 			const expiredDate = new Date();
-			const file = await createTestFile({ deletedAt: expiredDate });
+			const file = fileFactory.build({ deletedAt: expiredDate });
+			await em.persistAndFlush(file);
 			const backupPeriodThreshold = new Date();
 
 			const result = await repo.getExpiredFiles(backupPeriodThreshold);
@@ -78,7 +56,8 @@ describe('FilesRepo', () => {
 		});
 
 		it('should not return files, which are not deleted', async () => {
-			await createTestFile({ deletedAt: undefined });
+			const file = fileFactory.build({ deletedAt: undefined });
+			await em.persistAndFlush(file);
 			const backupPeriodThreshold = new Date();
 
 			const result = await repo.getExpiredFiles(backupPeriodThreshold);
@@ -87,7 +66,8 @@ describe('FilesRepo', () => {
 
 		it('should not return files, which are deleted too recently', async () => {
 			const backupPeriodThreshold = new Date();
-			await createTestFile({ deletedAt: new Date() });
+			const file = fileFactory.build({ deletedAt: new Date() });
+			await em.persistAndFlush(file);
 
 			const result = await repo.getExpiredFiles(backupPeriodThreshold);
 			expect(result.length).toEqual(0);
@@ -96,7 +76,8 @@ describe('FilesRepo', () => {
 
 	describe('deleteFile', () => {
 		it('should delete the given file', async () => {
-			const file = await createTestFile();
+			const file = fileFactory.build();
+			await em.persistAndFlush(file);
 
 			await repo.deleteFile(file);
 
