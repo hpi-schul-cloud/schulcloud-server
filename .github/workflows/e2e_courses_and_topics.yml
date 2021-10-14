@@ -15,7 +15,7 @@ jobs:
         shell: bash
   tag-courses_and_topics:
     needs: wait_for_image
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e.yml
+    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e.yml@main
     with:
-      branch_name: ${GITHUB_REF#refs/*/}
+      ref: ${{ github.ref }}
       e2e_tag: courses_and_topics
