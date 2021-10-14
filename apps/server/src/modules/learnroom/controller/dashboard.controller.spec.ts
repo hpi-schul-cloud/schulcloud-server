@@ -60,7 +60,7 @@ describe('dashboard uc', () => {
 
 			const response = await controller.findForUser();
 			expect(response instanceof DashboardResponse).toEqual(true);
-			expect(response.gridElements[0]).toHaveProperty('group');
+			expect(response.gridElements[0]).toHaveProperty('groupElements');
 		});
 	});
 

@@ -7,13 +7,13 @@ export class DashboardModelMapper {
 		await modelEntity.gridElements.init();
 		const grid: GridElementWithPosition[] = await Promise.all(
 			Array.from(modelEntity.gridElements).map(async (e) => {
-				const loaded = await e.reference.load();
+				await e.references.init();
+				const references = Array.from(e.references).map(
+					(ref) => new DefaultGridReference(ref.id, ref.title, ref.color)
+				);
 				const result = {
 					pos: { x: e.xPos, y: e.yPos },
-					gridElement: GridElement.FromSingleReference(
-						e.id,
-						new DefaultGridReference(loaded.id, loaded.title, loaded.color)
-					),
+					gridElement: GridElement.FromReferenceGroup(e.id, references),
 				};
 				return result;
 			})
@@ -27,23 +27,35 @@ export class DashboardModelMapper {
 		em: EntityManager
 	): Promise<DashboardGridElementModel> {
 		const existing = await em.findOne(DashboardGridElementModel, elementWithPosition.gridElement.getId());
-		const model = existing || new DashboardGridElementModel(elementWithPosition.gridElement.getId());
-		model.xPos = elementWithPosition.pos.x;
-		model.yPos = elementWithPosition.pos.y;
+		const elementModel = existing || new DashboardGridElementModel(elementWithPosition.gridElement.getId());
+		elementModel.xPos = elementWithPosition.pos.x;
+		elementModel.yPos = elementWithPosition.pos.y;
 
 		const elementContent = elementWithPosition.gridElement.getContent();
-		// element is not a group
+
 		if (elementContent.referencedId) {
 			const existingReference = await em.findOne(DefaultGridReferenceModel, elementContent.referencedId);
 			const reference = existingReference || new DefaultGridReferenceModel(elementContent.referencedId);
-			reference.color = elementWithPosition.gridElement.getContent().displayColor;
-			reference.title = elementWithPosition.gridElement.getContent().title;
-			model.reference = wrap(reference).toReference();
+			reference.color = elementContent.displayColor;
+			reference.title = elementContent.title;
+			reference.gridelement = wrap(elementModel).toReference();
+			elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, [reference]);
+		} else if (elementContent.group) {
+			const referenceArray = await Promise.all(
+				elementContent.group.map(async (groupElement) => {
+					const existingReference = await em.findOne(DefaultGridReferenceModel, groupElement.id);
+					const reference = existingReference || new DefaultGridReferenceModel(groupElement.id);
+					reference.color = groupElement.displayColor;
+					reference.title = groupElement.title;
+					reference.gridelement = wrap(elementModel).toReference();
+					return reference;
+				})
+			);
+			elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, referenceArray);
 		}
-		// todo: handle group
 
-		model.dashboard = wrap(dashboard).toReference();
-		return model;
+		elementModel.dashboard = wrap(dashboard).toReference();
+		return elementModel;
 	}
 
 	static async mapToModel(entity: DashboardEntity, em: EntityManager): Promise<DashboardModelEntity> {
