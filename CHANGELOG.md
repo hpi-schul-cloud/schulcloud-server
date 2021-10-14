@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-394 - send email wishes from federal states also to ticketsystem
 
+### Fixed
+
+- BC-436 - Fix univention LDAP strategy
+
 ### Changed
 
 ## [26.12.0] - 2021-10-12
