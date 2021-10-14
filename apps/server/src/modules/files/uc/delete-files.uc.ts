@@ -15,17 +15,21 @@ export class DeleteFilesUc {
 	 */
 	async removeDeletedFilesData(removedSince: Date): Promise<void> {
 		const filesForDeletion = await this.filesRepo.getExpiredFiles(removedSince);
-		this.logger.log(`${filesForDeletion.length} files will be deleted`);
+		const numberOfFiles = filesForDeletion.length;
+		this.logger.log(`${numberOfFiles} files will be deleted`);
+		let numberOfErrors = 0;
 		// eslint-disable-next-line no-restricted-syntax
 		for (const file of filesForDeletion) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
 				if (file instanceof File) await this.fileStorageRepo.deleteFile(file);
 				// eslint-disable-next-line no-await-in-loop
-				await this.filesRepo.deleteFile(file);
+				await this.filesRepo.removeAndFlush(file);
 			} catch (err) {
+				numberOfErrors += 1;
 				this.logger.error(err);
 			}
 		}
+		this.logger.log(`${numberOfFiles - numberOfErrors} out of ${numberOfFiles} files were successfully deleted`);
 	}
 }

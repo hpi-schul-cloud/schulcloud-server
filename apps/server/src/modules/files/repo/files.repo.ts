@@ -13,8 +13,4 @@ export class FilesRepo extends BaseRepo<BaseFile> {
 		await this.em.populate(regularFiles, this.propertiesToPopulate);
 		return files;
 	}
-
-	deleteFile(file: BaseFile): Promise<void> {
-		return this.em.removeAndFlush(file);
-	}
 }
