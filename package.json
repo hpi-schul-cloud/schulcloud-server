@@ -126,7 +126,7 @@
 		"feathers-swagger": "^1.1.0",
 		"file-type": "^16.2.0",
 		"freeport": "^1.0.5",
-		"html-entities": "^2.1.0",
+		"html-entities": "^2.3.2",
 		"jose": "^1.28.1",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
