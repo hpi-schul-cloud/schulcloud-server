@@ -78,6 +78,17 @@ export class GridElement implements IGridElement {
 		return this.id;
 	}
 
+	getReferences(): GridElementReferenceMetadata[] {
+		return this.references.map((reference) => reference.getMetadata());
+	}
+
+	addReferences(
+		firstElement: GridElementReferenceMetadata[],
+		secondElement: GridElementReferenceMetadata[]
+	): GridElementReferenceMetadata[] {
+		return firstElement.concat(secondElement);
+	}
+
 	getContent(): GridElementContent {
 		if (!this.isGroup()) {
 			const { id: referencedId, ...data } = this.references[0].getMetadata();
