@@ -68,7 +68,6 @@ export class NewsController {
 	 * Update properties of a news.
 	 */
 	@Patch(':id')
-	@ApiBody({ type: NewsResponse })
 	async update(
 		@Param('id', ParseObjectIdPipe) newsId: string,
 		@CurrentUser() currentUser: ICurrentUser,
