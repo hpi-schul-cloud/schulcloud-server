@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-394 - send email wishes from federal states also to ticketsystem
+- BC-391 - display special characters properly
 
 ### Changed
 
