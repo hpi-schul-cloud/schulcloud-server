@@ -10,10 +10,10 @@ interface IStorageProviderProperties {
 	region?: string;
 }
 
-const encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY'));
-
 @Entity({ tableName: 'storageproviders' })
 export class StorageProvider extends BaseEntityWithTimestamps {
+	private static encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY'));
+
 	@Property()
 	endpointUrl!: string;
 
@@ -27,7 +27,7 @@ export class StorageProvider extends BaseEntityWithTimestamps {
 	region?: string;
 
 	get secretAccessKey(): string {
-		return encryptionService.decrypt(this._secretAccessKey);
+		return StorageProvider.encryptionService.decrypt(this._secretAccessKey);
 	}
 
 	constructor(props: IStorageProviderProperties) {
