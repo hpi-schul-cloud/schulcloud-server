@@ -30,7 +30,7 @@ describe('DeleteFileUC', () => {
 						getExpiredFiles() {
 							return Promise.resolve(exampleFiles);
 						},
-						deleteFile() {
+						removeAndFlush() {
 							return Promise.resolve();
 						},
 					},
@@ -38,7 +38,7 @@ describe('DeleteFileUC', () => {
 				{
 					provide: FileStorageRepo,
 					useValue: {
-						removeAndFlush() {
+						deleteFile() {
 							return Promise.resolve();
 						},
 					},
@@ -67,7 +67,7 @@ describe('DeleteFileUC', () => {
 		});
 
 		it('should delete all file storage data that are expired', async () => {
-			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'removeAndFlush');
+			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
 			await service.removeDeletedFilesData(new Date());
 			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
 			// eslint-disable-next-line no-restricted-syntax

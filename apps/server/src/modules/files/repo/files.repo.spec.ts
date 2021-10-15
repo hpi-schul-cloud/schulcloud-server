@@ -53,7 +53,7 @@ describe('FilesRepo', () => {
 
 			const result = await repo.getExpiredFiles(backupPeriodThreshold);
 			expect(result.length).toEqual(1);
-			expect(result[0]).toEqual(file);
+			expect(result[0].id).toEqual(file.id);
 		});
 
 		it('should not return files, which are not deleted', async () => {
