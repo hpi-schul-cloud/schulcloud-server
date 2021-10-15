@@ -21,6 +21,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-487 - update mongodb-memory-server from 6.9.6 to 7.4.4
+
 ## [26.12.0] - 2021-10-12
 
 ### Added
