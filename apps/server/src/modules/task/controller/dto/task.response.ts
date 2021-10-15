@@ -1,17 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse, DecodeHtmlEntities } from '@shared/controller';
 
 /**
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
 	@ApiProperty()
+	@DecodeHtmlEntities()
 	name: string;
 
 	@ApiProperty()
 	duedate?: Date;
 
 	@ApiPropertyOptional()
+	@DecodeHtmlEntities()
 	courseName?: string;
 
 	@ApiPropertyOptional()
@@ -43,4 +45,3 @@ export class TaskListResponse extends PaginationResponse<TaskResponse[]> {
 	@ApiProperty({ type: [TaskResponse] })
 	data: TaskResponse[];
 }
-

@@ -5,8 +5,7 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import * as moment from 'moment';
-
-import { EntityId, News } from '@shared/domain';;
+import { EntityId, News } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
