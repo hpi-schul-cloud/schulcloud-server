@@ -649,9 +649,12 @@
 			"description": "Email address used for reporting a problem"
 		},
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
-			"type": "string",
-			"default": "ticketsystem@schul-cloud.org",
-			"description": "Email address used for reporting a wish"
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": ["ticketsystem@schul-cloud.org"],
+			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
 			"type": "boolean",

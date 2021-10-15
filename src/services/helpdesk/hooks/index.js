@@ -101,10 +101,8 @@ const feedback = () => async (hook) => {
 			if (data.supportType === 'problem') {
 				emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
 			} else {
-				emails.push(Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS'));
-				if (Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS') !== 'ticketsystem@schul-cloud.org') {
-					emails.push('ticketsystem@schul-cloud.org');
-				}
+				const wishEmails = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
+				wishEmails.forEach((mail) => emails.push(mail));
 			}
 		} else {
 			emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
