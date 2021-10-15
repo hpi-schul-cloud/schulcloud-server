@@ -76,5 +76,18 @@ describe('DeleteFileUC', () => {
 				expect(deleteFileStorageSpy).toHaveBeenCalledWith(file);
 			}
 		});
+
+		it('should continue after a file could not be deleted', async () => {
+			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
+			deleteFileStorageSpy.mockImplementationOnce(() => {
+				throw new Error();
+			});
+			await service.removeDeletedFilesData(new Date());
+			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
+			// eslint-disable-next-line no-restricted-syntax
+			for (const file of exampleFiles) {
+				expect(deleteFileStorageSpy).toHaveBeenCalledWith(file);
+			}
+		});
 	});
 });
