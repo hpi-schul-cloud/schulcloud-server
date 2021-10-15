@@ -34,4 +34,26 @@ describe('dashboardElement', () => {
 			});
 		});
 	});
+
+	describe('addReferences', () => {
+		describe('when Element has a single reference', () => {
+			it('should append references', () => {
+				const element = GridElement.FromSingleReference('id', gridReference);
+				const referenceList = [
+					{
+						getMetadata: () => ({
+							id: 'anotherReferenceId',
+							title: 'Team-Dashboard',
+							shortTitle: 'TEA',
+							displayColor: '#000000',
+						}),
+					},
+				];
+				element.addReferences(referenceList);
+				const result = element.getReferences();
+				expect(result.length).toEqual(2);
+				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
+			});
+		});
+	});
 });

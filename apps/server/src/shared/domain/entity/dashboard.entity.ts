@@ -83,12 +83,9 @@ export class GridElement implements IGridElement {
 		return this.references;
 	}
 
-	/* addReferences(
-		firstElement: IGridElementReference[],
-		secondElement: IGridElementReference[]
-	): IGridElementReference[] {
-		return firstElement.concat(secondElement);
-	} */
+	addReferences(anotherReference: IGridElementReference[]): void {
+		this.references = this.references.concat(anotherReference);
+	}
 
 	getContent(): GridElementContent {
 		if (!this.isGroup()) {
