@@ -11,13 +11,14 @@ const createMikroOrmModule = async (options: MikroOrmModuleSyncOptions): Promise
 		providers: [
 			{
 				provide: MongoMemoryServer,
-				useFactory: () => {
-					return new MongoMemoryServer();
+				useFactory: async () => {
+					const mongo = await MongoMemoryServer.create();
+					return mongo;
 				},
 			},
 		],
-		useFactory: async (mongod: MongoMemoryServer) => {
-			const clientUrl = await mongod.getUri();
+		useFactory: (mongo: MongoMemoryServer) => {
+			const clientUrl = mongo.getUri();
 			return {
 				...options,
 				type: 'mongo',
