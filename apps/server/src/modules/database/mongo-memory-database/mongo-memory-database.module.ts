@@ -1,12 +1,12 @@
 import { MikroORM } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoDatabaseModuleOptions } from '../types';
 
-const createMikroOrmModule = async (options: MikroOrmModuleSyncOptions): Promise<DynamicModule> => {
+const createMikroOrmModule = async (options: MikroOrmModuleAsyncOptions): Promise<DynamicModule> => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
 		providers: [
 			{
@@ -17,7 +17,8 @@ const createMikroOrmModule = async (options: MikroOrmModuleSyncOptions): Promise
 				},
 			},
 		],
-		useFactory: (mongo: MongoMemoryServer) => {
+		useFactory: async (mongo: MongoMemoryServer) => {
+			await mongo.ensureInstance();
 			const clientUrl = mongo.getUri();
 			return {
 				...options,
