@@ -1,24 +1,48 @@
 import { Collection, wrap, EntityManager } from '@mikro-orm/core';
-import { DashboardEntity, GridElement, GridElementWithPosition, DefaultGridReference } from '@shared/domain';
+import {
+	DashboardEntity,
+	GridElement,
+	GridElementWithPosition,
+	DefaultGridReference,
+	IGridElementReference,
+} from '@shared/domain';
 import { DashboardGridElementModel, DashboardModelEntity, DefaultGridReferenceModel } from './dashboard.model.entity';
 
 export class DashboardModelMapper {
+	static mapReferenceToEntity(modelEntity: DefaultGridReferenceModel): DefaultGridReference {
+		return new DefaultGridReference(modelEntity.id, modelEntity.title, modelEntity.color);
+	}
+
+	static async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
+		await modelEntity.references.init();
+		const references = Array.from(modelEntity.references).map((ref) => DashboardModelMapper.mapReferenceToEntity(ref));
+		const result = {
+			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
+			gridElement: GridElement.FromReferenceGroup(modelEntity.id, references),
+		};
+		return result;
+	}
+
 	static async mapToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
 		await modelEntity.gridElements.init();
 		const grid: GridElementWithPosition[] = await Promise.all(
-			Array.from(modelEntity.gridElements).map(async (e) => {
-				await e.references.init();
-				const references = Array.from(e.references).map(
-					(ref) => new DefaultGridReference(ref.id, ref.title, ref.color)
-				);
-				const result = {
-					pos: { x: e.xPos, y: e.yPos },
-					gridElement: GridElement.FromReferenceGroup(e.id, references),
-				};
-				return result;
-			})
+			Array.from(modelEntity.gridElements).map(async (e) => DashboardModelMapper.mapElementToEntity(e))
 		);
 		return new DashboardEntity(modelEntity.id, { grid });
+	}
+
+	static async mapReferenceToModel(
+		reference: IGridElementReference,
+		element: DashboardGridElementModel,
+		em: EntityManager
+	): Promise<DefaultGridReferenceModel> {
+		const metadata = reference.getMetadata();
+		const existingReference = await em.findOne(DefaultGridReferenceModel, metadata.id);
+		const result = existingReference || new DefaultGridReferenceModel(metadata.id);
+		result.color = metadata.displayColor;
+		result.title = metadata.title;
+		result.gridelement = wrap(element).toReference();
+		return result;
 	}
 
 	static async mapGridElementToModel(
@@ -31,28 +55,12 @@ export class DashboardModelMapper {
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
 
-		const elementContent = elementWithPosition.gridElement.getContent();
-
-		if (elementContent.referencedId) {
-			const existingReference = await em.findOne(DefaultGridReferenceModel, elementContent.referencedId);
-			const reference = existingReference || new DefaultGridReferenceModel(elementContent.referencedId);
-			reference.color = elementContent.displayColor;
-			reference.title = elementContent.title;
-			reference.gridelement = wrap(elementModel).toReference();
-			elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, [reference]);
-		} else if (elementContent.group) {
-			const referenceArray = await Promise.all(
-				elementContent.group.map(async (groupElement) => {
-					const existingReference = await em.findOne(DefaultGridReferenceModel, groupElement.id);
-					const reference = existingReference || new DefaultGridReferenceModel(groupElement.id);
-					reference.color = groupElement.displayColor;
-					reference.title = groupElement.title;
-					reference.gridelement = wrap(elementModel).toReference();
-					return reference;
-				})
-			);
-			elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, referenceArray);
-		}
+		const references = await Promise.all(
+			elementWithPosition.gridElement
+				.getReferences()
+				.map((ref) => DashboardModelMapper.mapReferenceToModel(ref, elementModel, em))
+		);
+		elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, references);
 
 		elementModel.dashboard = wrap(dashboard).toReference();
 		return elementModel;

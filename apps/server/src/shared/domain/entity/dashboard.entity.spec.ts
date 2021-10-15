@@ -10,6 +10,7 @@ const gridElementMock = {
 		displayColor: '#FFFFFF',
 	}),
 	isGroup: () => false,
+	getReferences: () => [],
 };
 
 describe('dashboard entity', () => {

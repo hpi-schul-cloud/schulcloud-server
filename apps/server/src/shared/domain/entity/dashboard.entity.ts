@@ -45,6 +45,8 @@ export interface IGridElement {
 	getContent: () => GridElementContent;
 
 	isGroup(): boolean;
+
+	getReferences(): IGridElementReference[];
 }
 
 export type GridElementContent = {
