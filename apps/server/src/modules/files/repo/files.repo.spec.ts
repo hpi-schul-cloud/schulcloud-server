@@ -74,18 +74,4 @@ describe('FilesRepo', () => {
 			expect(result.length).toEqual(0);
 		});
 	});
-
-	describe('deleteFile', () => {
-		it('should delete the given file', async () => {
-			const file = fileFactory.build();
-			await em.persistAndFlush(file);
-
-			await repo.deleteFile(file);
-
-			const searchedFile = await em.findOne(File, file._id);
-
-			// eslint-disable-next-line @typescript-eslint/unbound-method
-			expect(searchedFile).toBeNull;
-		});
-	});
 });

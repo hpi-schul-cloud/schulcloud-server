@@ -11,7 +11,7 @@ interface IFileProperties {
 	creator?: User;
 }
 
-@Entity({ tableName: 'files', discriminatorColumn: 'isDirectory', abstract: true })
+@Entity({ collection: 'files', discriminatorColumn: 'isDirectory', abstract: true })
 export abstract class BaseFile extends BaseEntityWithTimestamps {
 	@Property()
 	deletedAt?: Date;
@@ -23,10 +23,10 @@ export abstract class BaseFile extends BaseEntityWithTimestamps {
 	creator?: User;
 }
 
-@Entity({ discriminatorValue: 'true' })
+@Entity({ collection: 'files', discriminatorValue: 'true' })
 export class Directory extends BaseFile {}
 
-@Entity({ discriminatorValue: 'false' })
+@Entity({ collection: 'files', discriminatorValue: 'false' })
 export class File extends BaseFile {
 	@Property()
 	storageFileName: string;
