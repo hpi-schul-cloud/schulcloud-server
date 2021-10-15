@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-436 - Fix univention LDAP strategy
+- BC-21 - Remove generics from DTOs, because generics can not be used to generate OpenApi properly
 
 ### Changed
 
