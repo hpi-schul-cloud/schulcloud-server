@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '@src/core/logger/logger.module';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { fileFactory } from '@shared/domain/factory';
 import { DeleteFilesUc } from './delete-files.uc';
 
 import { FilesRepo, FileStorageRepo } from '../repo';
@@ -10,14 +10,7 @@ describe('DeleteFileUC', () => {
 	let filesRepo: FilesRepo;
 	let fileStorageRepo: FileStorageRepo;
 
-	const exampleFiles = [
-		{
-			_id: new ObjectId().toString(),
-		},
-		{
-			_id: new ObjectId().toString(),
-		},
-	];
+	const exampleFiles = [fileFactory.build(), fileFactory.build()];
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
