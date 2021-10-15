@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '@src/core/logger/logger.module';
-import { fileFactory } from '@shared/domain/factory';
+import { File, StorageProvider } from '@shared/domain/entity';
 import { DeleteFilesUc } from './delete-files.uc';
 
 import { FilesRepo, FileStorageRepo } from '../repo';
@@ -10,7 +10,15 @@ describe('DeleteFileUC', () => {
 	let filesRepo: FilesRepo;
 	let fileStorageRepo: FileStorageRepo;
 
-	const exampleFiles = [fileFactory.build(), fileFactory.build()];
+	const exampleStorageProvider = new StorageProvider({
+		endpointUrl: 'endpointUrl',
+		accessKeyId: 'accessKey',
+		secretAccessKey: 'secret',
+	});
+	const exampleFiles = [
+		new File({ storageProvider: exampleStorageProvider, storageFileName: 'file1', bucket: 'bucket' }),
+		new File({ storageProvider: exampleStorageProvider, storageFileName: 'file1', bucket: 'bucket' }),
+	];
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
