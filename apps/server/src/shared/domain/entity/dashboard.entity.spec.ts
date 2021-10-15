@@ -1,5 +1,32 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { DashboardEntity } from './dashboard.entity';
+import { DashboardEntity, IGridElementReference } from './dashboard.entity';
+
+const getReferenceMock = (id: string) => ({
+	getMetadata: () => ({
+		id,
+		title: 'Reference',
+		shortTitle: 'Re',
+		displayColor: '#FFFFFF',
+	}),
+});
+
+const getElementMock = (mockId: string, referenceIds: string[]) => {
+	let references = referenceIds.map((id) => getReferenceMock(id));
+	return {
+		getId: () => mockId,
+		getContent: () => ({
+			referencedId: referenceIds[0],
+			title: 'Reference',
+			shortTitle: 'Re',
+			displayColor: '#FFFFFF',
+		}),
+		isGroup: () => false,
+		getReferences: () => references,
+		addReferences: (newreferences: IGridElementReference[]) => {
+			references = references.concat(newreferences);
+		},
+	};
+};
 
 const gridElementMock = {
 	getId: () => 'gridelementid',
@@ -10,7 +37,10 @@ const gridElementMock = {
 		displayColor: '#FFFFFF',
 	}),
 	isGroup: () => false,
-	getReferences: () => [],
+	getReferences: () => {
+		throw new Error('please implement mock function');
+	},
+	addReferences: (references: IGridElementReference[]) => {},
 };
 
 describe('dashboard entity', () => {
@@ -69,15 +99,19 @@ describe('dashboard entity', () => {
 			expect(callMove).toThrow(NotFoundException);
 		});
 
-		it('when the new position is taken, it should throw badrequest', () => {
+		it('when the new position is taken, it should merge the elements into a group', () => {
+			const movedElement = getElementMock('tomove', ['ref02']);
+			const targetElement = getElementMock('target', ['ref01']);
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
-					{ pos: { x: 1, y: 2 }, gridElement: gridElementMock },
-					{ pos: { x: 3, y: 3 }, gridElement: gridElementMock },
+					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
+					{ pos: { x: 3, y: 3 }, gridElement: targetElement },
 				],
 			});
-			const callMove = () => dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
-			expect(callMove).toThrow(BadRequestException);
+			const spy = jest.spyOn(targetElement, 'addReferences');
+			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
+			expect(spy).toHaveBeenLastCalledWith(movedElement.getReferences());
+			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
 		});
 
 		it('when the new position is out of bounds, it should throw badrequest', () => {

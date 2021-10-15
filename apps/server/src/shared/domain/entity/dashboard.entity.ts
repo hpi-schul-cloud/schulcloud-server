@@ -47,6 +47,8 @@ export interface IGridElement {
 	isGroup(): boolean;
 
 	getReferences(): IGridElementReference[];
+
+	addReferences(anotherReference: IGridElementReference[]): void;
 }
 
 export type GridElementContent = {
@@ -172,14 +174,17 @@ export class DashboardEntity {
 	moveElement(from: GridPosition, to: GridPosition): GridElementWithPosition {
 		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
 		if (elementToMove) {
-			if (this.grid.get(this.gridIndexFromPosition(to))) {
-				throw new BadRequestException('target position already taken');
+			const targetElement = this.grid.get(this.gridIndexFromPosition(to));
+			if (targetElement) {
+				targetElement.addReferences(elementToMove.getReferences());
+			} else {
+				this.grid.set(this.gridIndexFromPosition(to), elementToMove);
 			}
 			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
 			this.grid.delete(this.gridIndexFromPosition(from));
 			return {
 				pos: to,
-				gridElement: elementToMove,
+				gridElement: targetElement || elementToMove,
 			};
 		}
 		throw new NotFoundException('no element at origin position');
