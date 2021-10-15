@@ -58,7 +58,6 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	// do we still need this as we implemented the From.. "contstructors" below?
 	private constructor(id: EntityId, references: IGridElementReference[]) {
 		this.id = id;
 		this.references = references;
@@ -78,16 +77,16 @@ export class GridElement implements IGridElement {
 		return this.id;
 	}
 
-	getReferences(): GridElementReferenceMetadata[] {
-		return this.references.map((reference) => reference.getMetadata());
+	getReferences(): IGridElementReference[] {
+		return this.references;
 	}
 
-	addReferences(
-		firstElement: GridElementReferenceMetadata[],
-		secondElement: GridElementReferenceMetadata[]
-	): GridElementReferenceMetadata[] {
+	/* addReferences(
+		firstElement: IGridElementReference[],
+		secondElement: IGridElementReference[]
+	): IGridElementReference[] {
 		return firstElement.concat(secondElement);
-	}
+	} */
 
 	getContent(): GridElementContent {
 		if (!this.isGroup()) {
