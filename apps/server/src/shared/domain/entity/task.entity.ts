@@ -11,7 +11,7 @@ interface ITaskProperties {
 	dueDate?: Date;
 	private?: boolean;
 	teacher?: User;
-	parent?: Course;
+	course?: Course;
 	lesson?: Lesson;
 	submissions?: Submission[];
 }
@@ -36,7 +36,7 @@ export class Task extends BaseEntityWithTimestamps {
 	teacher?: User;
 
 	@ManyToOne('Course', { fieldName: 'courseId' })
-	parent?: Course;
+	course?: Course;
 
 	@ManyToOne('Lesson', { fieldName: 'lessonId' })
 	lesson?: Lesson; // In database exist also null, but it can not set.
@@ -51,8 +51,12 @@ export class Task extends BaseEntityWithTimestamps {
 
 	getDescriptions(): TaskParentDescriptions {
 		let descriptions: TaskParentDescriptions;
-		if (this.parent) {
-			descriptions = this.parent.getDescriptions();
+		if (this.course) {
+			descriptions = {
+				name: this.course.name,
+				description: this.course.description,
+				color: this.course.color,
+			};
 		} else {
 			descriptions = {
 				name: '',
@@ -70,7 +74,7 @@ export class Task extends BaseEntityWithTimestamps {
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;
 		this.teacher = props.teacher;
-		this.parent = props.parent;
+		this.course = props.course;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 	}

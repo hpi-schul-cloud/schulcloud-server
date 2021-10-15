@@ -33,13 +33,13 @@ export class TaskUC {
 	}
 
 	private async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
-		const visibleLessons = await this.lessonRepo.findAllByCourseIds(parentIds, { hidden: false });
+		const courseIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
+		const visibleLessons = await this.lessonRepo.findAllByCourseIds(courseIds, { hidden: false });
 		const dueDate = this.getDefaultMaxDueDate();
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
-				courseIds: parentIds,
+				courseIds,
 				lessonIds: visibleLessons.map((o) => o.id),
 			},
 			{ draft: false, afterDueDateOrNone: dueDate },
@@ -55,13 +55,13 @@ export class TaskUC {
 	}
 
 	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const parentIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
-		const visibleLessons = await this.lessonRepo.findAllByCourseIds(parentIds, { hidden: false });
+		const courseIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
+		const visibleLessons = await this.lessonRepo.findAllByCourseIds(courseIds, { hidden: false });
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				teacherId: userId,
-				courseIds: parentIds,
+				courseIds,
 				lessonIds: visibleLessons.map((o) => o.id),
 			},
 			undefined,
@@ -107,7 +107,7 @@ export class TaskUC {
 
 		// unique by studentId
 		const graded = [...new Set(gradedStudentIds)].length;
-		const maxSubmissions = task.parent ? task.parent.getNumberOfStudents() : 0;
+		const maxSubmissions = task.course ? task.course.getNumberOfStudents() : 0;
 		const isDraft = task.isDraft();
 
 		const valueObject = new TaskWithStatusVo(task, { submitted, maxSubmissions, graded, isDraft });

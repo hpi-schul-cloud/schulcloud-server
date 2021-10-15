@@ -19,11 +19,9 @@ export class TaskMapper {
 			isDraft: status.isDraft,
 		};
 
-		if (task.parent !== undefined) {
-			const parentData = task.getDescriptions();
-			dto.courseName = parentData.name;
-			dto.displayColor = parentData.color;
-		}
+		const taskDesc = task.getDescriptions();
+		dto.courseName = taskDesc.name;
+		dto.displayColor = taskDesc.color;
 
 		return dto;
 	}

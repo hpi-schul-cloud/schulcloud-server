@@ -44,15 +44,15 @@ describe('task.mapper', () => {
 		await module.close();
 	});
 
-	it('should map if parent and fullfilled status exist', () => {
-		const parent = new Course({
+	it('should map if course and fullfilled status exist', () => {
+		const course = new Course({
 			name: 'course #1',
 			school: new School({ name: 'school #1' }),
 			description: 'a short description for course #1',
 		});
-		const task = new Task({ name: 'task #1', private: false, parent });
-		const parentDescriptions = parent.getDescriptions();
-		const maxSubmissions = parent.getNumberOfStudents();
+		const task = new Task({ name: 'task #1', private: false, course });
+		const taskDescriptions = task.getDescriptions();
+		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
@@ -62,20 +62,20 @@ describe('task.mapper', () => {
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, parentDescriptions);
+		const expected = createExpectedResponse(task, status, taskDescriptions);
 
 		expect(result).toStrictEqual(expected);
 	});
 
-	it('should filter not necessary informations from status', () => {
-		const parent = new Course({
+	it('should filter unnecessary information from status', () => {
+		const course = new Course({
 			name: 'course #1',
 			school: new School({ name: 'school #1' }),
 			description: 'a short description for course #1',
 		});
-		const task = new Task({ name: 'task #1', private: false, parent });
-		const parentDescriptions = parent.getDescriptions();
-		const maxSubmissions = parent.getNumberOfStudents();
+		const task = new Task({ name: 'task #1', private: false, course });
+		const taskDescriptions = task.getDescriptions();
+		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
@@ -86,23 +86,23 @@ describe('task.mapper', () => {
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, parentDescriptions);
+		const expected = createExpectedResponse(task, status, taskDescriptions);
 
 		expect(result).toStrictEqual(expected);
 	});
 
 	it('should filter not necessary informations from task', () => {
-		const parent = new Course({
+		const course = new Course({
 			name: 'course #1',
 			school: new School({ name: 'school #1' }),
 			description: 'a short description for course #1',
 		});
-		const task = new Task({ name: 'task #1', private: false, parent });
+		const task = new Task({ name: 'task #1', private: false, course });
 		// @ts-expect-error test-case
 		task.key = 1;
 
-		const parentDescriptions = parent.getDescriptions();
-		const maxSubmissions = parent.getNumberOfStudents();
+		const taskDescriptions = task.getDescriptions();
+		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
@@ -112,14 +112,19 @@ describe('task.mapper', () => {
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, parentDescriptions);
+		const expected = createExpectedResponse(task, status, taskDescriptions);
 
 		expect(result).toStrictEqual(expected);
 	});
 
-	it('should not set parent meta informations if it does not exist in task.', () => {
-		// task has no parent
-		const task = new Task({ name: 'test task#1' });
+	it('should set default course information if it does not exist in task.', () => {
+		// task has no course
+		const task = new Task({ name: 'task #1' });
+		const taskDefaultDescriptions = {
+			name: '',
+			description: '',
+			color: '#ACACAC',
+		};
 
 		const status = {
 			graded: 0,
@@ -129,7 +134,7 @@ describe('task.mapper', () => {
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status);
+		const expected = createExpectedResponse(task, status, taskDefaultDescriptions);
 
 		expect(result).toStrictEqual(expected);
 	});

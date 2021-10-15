@@ -4,14 +4,14 @@ import { Scope } from '@shared/repo';
 export class TaskScope extends Scope<Task> {
 	byTeacherId(userId: EntityId): TaskScope {
 		this.addQuery({
-			$and: [{ teacher: userId }, { parent: null }, { lesson: null }],
+			$and: [{ teacher: userId }, { course: null }, { lesson: null }],
 		});
 		return this;
 	}
 
 	byCourseIds(courseIds: EntityId[]): TaskScope {
 		this.addQuery({
-			$and: [{ parent: { $in: courseIds } }, { lesson: null }],
+			$and: [{ course: { $in: courseIds } }, { lesson: null }],
 		});
 		return this;
 	}

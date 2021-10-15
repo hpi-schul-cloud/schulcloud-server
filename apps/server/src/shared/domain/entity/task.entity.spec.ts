@@ -38,13 +38,18 @@ describe('Task Entity', () => {
 	});
 
 	describe('getDescriptions', () => {
-		it('should return the descriptions of the parent if set', () => {
+		it('should return the descriptions of the course if set', () => {
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', parent: course });
-			expect(task.getDescriptions()).toEqual(course.getDescriptions());
+			const task = new Task({ name: 'task #1', course });
+			const courseDescriptions = {
+				name: course.name,
+				description: course.description,
+				color: course.color,
+			};
+			expect(task.getDescriptions()).toEqual(courseDescriptions);
 		});
 
-		it('should return defaults if the parent is not set', () => {
+		it('should return defaults if the course is not set', () => {
 			const task = new Task({ name: 'task #1' });
 			expect(task.getDescriptions()).toEqual({
 				name: '',

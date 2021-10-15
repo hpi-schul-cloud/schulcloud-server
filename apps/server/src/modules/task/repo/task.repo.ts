@@ -67,7 +67,7 @@ export class TaskRepo {
 			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap,
 		});
-		await this.em.populate(taskEntities, ['parent', 'lesson', 'submissions']);
+		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 		return [taskEntities, count];
 	}
 }

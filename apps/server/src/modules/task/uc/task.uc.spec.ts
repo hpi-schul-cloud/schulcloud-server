@@ -223,9 +223,9 @@ describe('TaskUC', () => {
 			spyGetPermittedCourses.mockRestore();
 		});
 
-		it('should return well formed task with parent and status', async () => {
+		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -234,7 +234,7 @@ describe('TaskUC', () => {
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser, paginationQuery);
 			expect(result[0]).toEqual({ task, status: { submitted: 0, maxSubmissions: 1, graded: 0, isDraft: false } });
-			expect(result[0].task.parent).toBeDefined();
+			expect(result[0].task.course).toBeDefined();
 
 			spyTaskRepoFindAllByParentIds.mockRestore();
 			spyLessonRepoFindAllByCourseIds.mockRestore();
@@ -243,9 +243,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.build();
-			const task1 = new Task({ name: 'task #1', private: false, parent: course });
-			const task2 = new Task({ name: 'task #2', private: false, parent: course });
-			const task3 = new Task({ name: 'task #2', private: false, parent: course });
+			const task1 = new Task({ name: 'task #1', private: false, course });
+			const task2 = new Task({ name: 'task #2', private: false, course });
+			const task3 = new Task({ name: 'task #2', private: false, course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task1, task2, task3]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -265,7 +265,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = currentUser.userId;
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
@@ -294,7 +294,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
@@ -323,7 +323,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = currentUser.userId;
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
@@ -356,7 +356,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
@@ -448,9 +448,9 @@ describe('TaskUC', () => {
 			spyGetPermittedCourses.mockRestore();
 		});
 
-		it('should return well formed task with parent and status', async () => {
+		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: true, parent: course });
+			const task = new Task({ name: 'task #1', private: true, course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -462,7 +462,7 @@ describe('TaskUC', () => {
 				task,
 				status: { submitted: 0, maxSubmissions: course.getNumberOfStudents(), graded: 0, isDraft: true },
 			});
-			expect(result[0].task.parent).toBeDefined();
+			expect(result[0].task.course).toBeDefined();
 
 			spyTaskRepoFindAllByParentIds.mockRestore();
 			spyLessonRepoFindAllByCourseIds.mockRestore();
@@ -471,9 +471,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.build();
-			const task1 = new Task({ name: 'task #1', private: false, parent: course });
-			const task2 = new Task({ name: 'task #2', private: false, parent: course });
-			const task3 = new Task({ name: 'task #2', private: false, parent: course });
+			const task1 = new Task({ name: 'task #1', private: false, course });
+			const task2 = new Task({ name: 'task #2', private: false, course });
+			const task3 = new Task({ name: 'task #2', private: false, course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task1, task2, task3]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -493,7 +493,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
@@ -523,7 +523,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
@@ -552,7 +552,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			student.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
@@ -585,7 +585,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
@@ -618,7 +618,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
 			const submission3 = new Submission({ task, student: student2, comment: 'submission #3' });
@@ -653,7 +653,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, parent: course });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
 			const submission2 = new Submission({ task, student: student1, comment: 'submission #2' });
 			const submission3 = new Submission({ task, student: student2, comment: 'submission #2' });
