@@ -14,7 +14,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-394 - send email wishes from federal states also to ticketsystem
 - BC-391 - display special characters properly
 
+### Fixed
+
+- BC-436 - Fix univention LDAP strategy
+
 ### Changed
+
+- BC-487 - update mongodb-memory-server from 6.9.6 to 7.4.4
 
 ## [26.12.0] - 2021-10-12
 
