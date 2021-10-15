@@ -12,7 +12,9 @@ interface IStorageProviderProperties {
 
 @Entity({ tableName: 'storageproviders' })
 export class StorageProvider extends BaseEntityWithTimestamps {
-	private static encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY'));
+	private static encryptionService = Configuration.has('S3_KEY')
+		? new SymetricKeyEncryptionService(Configuration.get('S3_KEY'))
+		: undefined;
 
 	@Property()
 	endpointUrl!: string;
@@ -27,6 +29,9 @@ export class StorageProvider extends BaseEntityWithTimestamps {
 	region?: string;
 
 	get secretAccessKey(): string {
+		if (!StorageProvider.encryptionService) {
+			throw new Error('Encryption service could not be created because no S3_KEY was specified.');
+		}
 		return StorageProvider.encryptionService.decrypt(this._secretAccessKey);
 	}
 
