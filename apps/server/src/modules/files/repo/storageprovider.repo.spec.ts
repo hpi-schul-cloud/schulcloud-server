@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
@@ -6,12 +6,11 @@ import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 
-import { File, StorageProvider } from '@shared/domain';
 import { fileFactory } from '@shared/domain/factory';
-import { FilesRepo, FileStorageRepo } from '.';
+import { FileStorageRepo } from '.';
 
 describe('FileStorageRepo', () => {
-	let repo: FilesRepo;
+	let repo: FileStorageRepo;
 	let em: EntityManager;
 	let module: TestingModule;
 	let s3Mock: AwsClientStub<S3Client>;

@@ -38,7 +38,7 @@ describe('DeleteFileUC', () => {
 				{
 					provide: FileStorageRepo,
 					useValue: {
-						deleteFile() {
+						removeAndFlush() {
 							return Promise.resolve();
 						},
 					},
@@ -57,7 +57,7 @@ describe('DeleteFileUC', () => {
 
 	describe('removeDeletedFilesData', () => {
 		it('should delete all file database documents that are expired', async () => {
-			const deleteFileSpy = jest.spyOn(filesRepo, 'deleteFile');
+			const deleteFileSpy = jest.spyOn(filesRepo, 'removeAndFlush');
 			await service.removeDeletedFilesData(new Date());
 			expect(deleteFileSpy).toHaveBeenCalledTimes(exampleFiles.length);
 			// eslint-disable-next-line no-restricted-syntax
@@ -67,7 +67,7 @@ describe('DeleteFileUC', () => {
 		});
 
 		it('should delete all file storage data that are expired', async () => {
-			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
+			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'removeAndFlush');
 			await service.removeDeletedFilesData(new Date());
 			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
 			// eslint-disable-next-line no-restricted-syntax
