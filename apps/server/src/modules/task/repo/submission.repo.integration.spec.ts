@@ -90,7 +90,7 @@ describe('submission repo', () => {
 			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
 			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			const courseGroup = em.create(CourseGroup, { courseId: course._id, students: [student1, student2] });
-			const task = new Task({ name: 'task #1', parent: course });
+			const task = new Task({ name: 'task #1', course });
 			const submission = new Submission({ student: student1, comment: '', task });
 			submission.courseGroup = courseGroup;
 

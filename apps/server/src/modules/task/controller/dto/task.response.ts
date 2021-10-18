@@ -10,6 +10,9 @@ export class TaskResponse {
 	name: string;
 
 	@ApiProperty()
+	availableDate?: Date;
+
+	@ApiProperty()
 	duedate?: Date;
 
 	@ApiPropertyOptional()
@@ -33,6 +36,7 @@ export class TaskResponse {
 		submitted?: number;
 		maxSubmissions?: number;
 		graded?: number;
+		isDraft: boolean;
 	};
 }
 

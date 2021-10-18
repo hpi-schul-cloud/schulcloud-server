@@ -52,7 +52,7 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
-	describe('As user with write permissions in parents', () => {
+	describe('As user with write permissions in courses', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
@@ -127,8 +127,8 @@ describe('Task Controller (e2e)', () => {
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
-			const parent = courseFactory.build({ teachers: [teacher] });
-			const task = new Task({ name: 'task #1', private: false, parent });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const task = new Task({ name: 'task #1', private: false, course });
 			await em.persistAndFlush([task]);
 			em.clear();
 
@@ -147,8 +147,8 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = courseFactory.build({ teachers: [teacher] });
-			const task = new Task({ name: 'task #1', private: false, parent });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission = new Submission({ student, comment: '', task });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
@@ -163,18 +163,19 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0].status).toEqual({
 				submitted: 1,
-				maxSubmissions: parent.getNumberOfStudents(),
+				maxSubmissions: course.getNumberOfStudents(),
 				graded: 0,
+				isDraft: false,
 			});
 		});
 
 		it('[FIND] /tasks return a list of tasks', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent = courseFactory.build({ teachers: [teacher] });
-			const task1 = new Task({ name: 'task #1', private: false, parent });
-			const task2 = new Task({ name: 'task #2', private: false, parent });
-			const task3 = new Task({ name: 'task #3', private: false, parent });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const task1 = new Task({ name: 'task #1', private: false, course });
+			const task2 = new Task({ name: 'task #2', private: false, course });
+			const task3 = new Task({ name: 'task #3', private: false, course });
 
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
@@ -187,16 +188,16 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(3);
 		});
 
-		it('[FIND] /tasks return a list of tasks from multiple parents', async () => {
+		it('[FIND] /tasks return a list of tasks from multiple courses', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-			const parent2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
-			const parent3 = courseFactory.build({ name: 'course #3', teachers: [teacher] });
-			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
-			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
+			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
+			const course3 = courseFactory.build({ name: 'course #3', teachers: [teacher] });
+			const task1 = new Task({ name: 'task #1', private: false, course: course1 });
+			const task2 = new Task({ name: 'task #2', private: false, course: course2 });
 
-			await em.persistAndFlush([task1, task2, parent3]);
+			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
 
 			modifyCurrentUserId(currentUser, teacher);
@@ -207,11 +208,11 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(2);
 		});
 
-		it('[FIND] /tasks should not return private tasks', async () => {
+		it('[FIND] /tasks should also return private tasks', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-			const task = new Task({ name: 'task #1', private: true, parent });
+			const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+			const task = new Task({ name: 'task #1', private: true, course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -221,14 +222,15 @@ describe('Task Controller (e2e)', () => {
 			const response = await request(app.getHttpServer()).get('/tasks');
 			const paginatedResult = response.body as TaskListResponse;
 
-			expect(paginatedResult.total).toEqual(0);
+			expect(paginatedResult.total).toEqual(1);
+			expect(paginatedResult.data[0].status.isDraft).toEqual(true);
 		});
 
-		it('[FIND] /tasks should return nothing from parents where the user has only read permissions', async () => {
+		it('[FIND] /tasks should return nothing from courses where the user has only read permissions', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
-			const parent = courseFactory.build({ name: 'course #1', students: [teacher] });
-			const task = new Task({ name: 'task #1', private: false, parent });
+			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
+			const task = new Task({ name: 'task #1', private: false, course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -242,7 +244,7 @@ describe('Task Controller (e2e)', () => {
 		});
 	});
 
-	describe('As user with read permissions in parents', () => {
+	describe('As user with read permissions in courses', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
@@ -324,12 +326,12 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = courseFactory.build({
+			const course = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = new Task({ name: 'task #1', private: false, parent });
+			const task = new Task({ name: 'task #1', private: false, course });
 			const submission = new Submission({ student, comment: '', task });
 			task.submissions = new Collection<Submission>(task, [submission]);
 
@@ -349,6 +351,7 @@ describe('Task Controller (e2e)', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				graded: 0,
+				isDraft: false,
 			});
 		});
 
@@ -356,14 +359,14 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = courseFactory.build({
+			const course = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher],
 				students: [student],
 			});
-			const task1 = new Task({ name: 'task #1', private: false, parent });
-			const task2 = new Task({ name: 'task #2', private: false, parent });
-			const task3 = new Task({ name: 'task #3', private: false, parent });
+			const task1 = new Task({ name: 'task #1', private: false, course });
+			const task2 = new Task({ name: 'task #2', private: false, course });
+			const task3 = new Task({ name: 'task #3', private: false, course });
 
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
@@ -376,29 +379,29 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(3);
 		});
 
-		it('[FIND] /tasks return a list of tasks from multiple parents', async () => {
+		it('[FIND] /tasks return a list of tasks from multiple courses', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent1 = courseFactory.build({
+			const course1 = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher],
 				students: [student],
 			});
-			const parent2 = courseFactory.build({
+			const course2 = courseFactory.build({
 				name: 'course #2',
 				teachers: [teacher],
 				students: [student],
 			});
-			const parent3 = courseFactory.build({
+			const course3 = courseFactory.build({
 				name: 'course #3',
 				teachers: [teacher],
 				students: [student],
 			});
-			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
-			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
+			const task1 = new Task({ name: 'task #1', private: false, course: course1 });
+			const task2 = new Task({ name: 'task #2', private: false, course: course2 });
 
-			await em.persistAndFlush([task1, task2, parent3]);
+			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
 
 			modifyCurrentUserId(currentUser, student);
@@ -413,12 +416,12 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
 			await em.persistAndFlush([teacher, student]);
-			const parent = courseFactory.build({
+			const course = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = new Task({ name: 'task #1', private: true, parent });
+			const task = new Task({ name: 'task #1', private: true, course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -435,16 +438,16 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			const subTeacher = userFactory.build({ firstName: 'Hanna', lastName: 'Heinrich' });
 			await em.persistAndFlush([teacher, subTeacher]);
-			const parent1 = courseFactory.build({
+			const course1 = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher],
 			});
-			const parent2 = courseFactory.build({
+			const course2 = courseFactory.build({
 				name: 'course #2',
 				substitutionTeachers: [subTeacher],
 			});
-			const task1 = new Task({ name: 'task #1', private: false, parent: parent1 });
-			const task2 = new Task({ name: 'task #2', private: false, parent: parent2 });
+			const task1 = new Task({ name: 'task #1', private: false, course: course1 });
+			const task2 = new Task({ name: 'task #2', private: false, course: course2 });
 
 			await em.persistAndFlush([task1, task2]);
 			em.clear();
@@ -455,6 +458,52 @@ describe('Task Controller (e2e)', () => {
 			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should not return a task of a course that has no lesson and is not published', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+			const task = new Task({ name: 'task #1', private: true, course, availableDate: nextDay });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should return a task of a course that has no lesson and is not limited', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			// @ts-expect-error expected value null in db
+			const task = new Task({ name: 'task #1', private: false, course, dueDate: null });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+
+			expect(paginatedResult.total).toEqual(1);
 		});
 	});
 });
