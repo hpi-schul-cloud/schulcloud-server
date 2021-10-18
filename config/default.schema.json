@@ -649,11 +649,8 @@
 			"description": "Email address used for reporting a problem"
 		},
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
-			"type": "array",
-			"items": {
-				"type": "string"
-			},
-			"default": ["ticketsystem@schul-cloud.org", "schul-cloud2@bildungsserver.berlin-brandenburg.de"],
+			"type": "string",
+			"default": "ticketsystem@schul-cloud.org",
 			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {

@@ -101,7 +101,7 @@ const feedback = () => async (hook) => {
 			if (data.supportType === 'problem') {
 				emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
 			} else {
-				const wishEmails = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
+				const wishEmails = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS').split(',');
 				wishEmails.forEach((mail) => emails.push(mail));
 			}
 		} else {
