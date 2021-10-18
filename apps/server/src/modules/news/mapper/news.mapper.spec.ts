@@ -1,10 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseNews, INewsProperties, News, School, SchoolNews, Team, TeamNews, User } from '@shared/domain';
 import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTarget } from '@shared/domain/types/news.types';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { schoolFactory } from '@shared/domain/factory/school.factory';
 import { userFactory } from '@shared/domain/factory';
+import { setupEntities } from '@src/modules/database';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
@@ -102,16 +101,8 @@ const getExpectedNewsResponse = (
 };
 
 describe('NewsMapper', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	describe('mapToResponse', () => {
