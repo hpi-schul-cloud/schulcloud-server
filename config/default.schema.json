@@ -653,7 +653,7 @@
 			"items": {
 				"type": "string"
 			},
-			"default": ["ticketsystem@schul-cloud.org"],
+			"default": ["ticketsystem@schul-cloud.org", "schul-cloud2@bildungsserver.berlin-brandenburg.de"],
 			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
