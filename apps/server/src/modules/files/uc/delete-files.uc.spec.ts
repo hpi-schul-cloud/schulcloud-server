@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerModule } from '@src/core/logger/logger.module';
 import { Logger } from '@src/core/logger';
 import { File, StorageProvider } from '@shared/domain/entity';
 import { DeleteFilesUc } from './delete-files.uc';

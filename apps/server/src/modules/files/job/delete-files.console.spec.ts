@@ -4,7 +4,6 @@ import { LoggerModule } from '../../../core/logger/logger.module';
 import { DeleteFilesConsole } from './delete-files.console';
 import { DeleteFilesUc } from '../uc';
 import { FilesRepo, FileStorageRepo } from '../repo';
-import { moveMessagePortToContext } from 'worker_threads';
 
 describe('DeleteFilesController', () => {
 	let console: DeleteFilesConsole;
