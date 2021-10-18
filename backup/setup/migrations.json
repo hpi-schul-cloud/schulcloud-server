@@ -39,7 +39,7 @@
 		"state": "up",
 		"name": "addStartAndEndDateToYearCollection",
 		"createdAt": {
-			"$date": "2019-07-17T08:12:18.48Z0"
+			"$date": "2019-07-17T08:12:18.480Z"
 		},
 		"__v": 0
 	},
