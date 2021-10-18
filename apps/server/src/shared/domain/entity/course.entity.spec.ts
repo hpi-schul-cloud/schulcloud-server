@@ -1,5 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { setupEntities } from '@src/modules/database';
 import { userFactory } from '../factory';
 import { courseFactory } from '../factory/course.factory';
 import { schoolFactory } from '../factory/school.factory';
@@ -12,16 +11,8 @@ const DEFAULT = {
 };
 
 describe('CourseEntity', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {
@@ -37,47 +28,14 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getDescriptions', () => {
-		it('should return the right properties', () => {
-			const course = courseFactory.build();
+	describe('defaults', () => {
+		it('should return defaults values', () => {
+			const school = schoolFactory.build();
+			const course = new Course({ school });
 
-			const result = course.getDescriptions();
-
-			expect(result).toHaveProperty('color');
-			expect(result).toHaveProperty('id');
-			expect(result).toHaveProperty('description');
-			expect(result).toHaveProperty('name');
-			expect(Object.keys(result).length).toEqual(4);
-		});
-
-		it('should work and passing default informations if only required values exist', () => {
-			const course = new Course({ school: schoolFactory.build() });
-
-			const result = course.getDescriptions();
-
-			expect(result).toEqual({
-				description: DEFAULT.description,
-				name: DEFAULT.name,
-				color: DEFAULT.color,
-				id: course.id,
-			});
-		});
-
-		it('should return values if they are set', () => {
-			const name = 'A1';
-			const description = 'Happy hour.';
-			const color = 'FFFFFF';
-
-			const course = courseFactory.build({ name, description, color });
-
-			const result = course.getDescriptions();
-
-			expect(result).toEqual({
-				name,
-				description,
-				color,
-				id: course.id,
-			});
+			expect(course.name).toEqual(DEFAULT.name);
+			expect(course.description).toEqual(DEFAULT.description);
+			expect(course.color).toEqual(DEFAULT.color);
 		});
 	});
 

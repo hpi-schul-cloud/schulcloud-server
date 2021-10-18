@@ -1,23 +1,25 @@
 import { MikroORM } from '@mikro-orm/core';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { MongoDatabaseModuleOptions } from '../types';
+import { MongoMemoryServer } from 'mongodb-memory-server-global-4.2';
+import { MongoDatabaseModuleOptions } from './types';
 
-const createMikroOrmModule = async (options: MikroOrmModuleSyncOptions): Promise<DynamicModule> => {
+const createMikroOrmModule = async (options: MikroOrmModuleAsyncOptions): Promise<DynamicModule> => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
 		providers: [
 			{
 				provide: MongoMemoryServer,
-				useFactory: () => {
-					return new MongoMemoryServer();
+				useFactory: async () => {
+					const mongo = await MongoMemoryServer.create();
+					return mongo;
 				},
 			},
 		],
-		useFactory: async (mongod: MongoMemoryServer) => {
-			const clientUrl = await mongod.getUri();
+		useFactory: async (mongo: MongoMemoryServer) => {
+			await mongo.ensureInstance();
+			const clientUrl = mongo.getUri();
 			return {
 				...options,
 				type: 'mongo',
