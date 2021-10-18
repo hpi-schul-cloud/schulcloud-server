@@ -1,21 +1,12 @@
 import { User, Role } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { Test, TestingModule } from '@nestjs/testing';
 import { schoolFactory } from '@shared/domain/factory/school.factory';
+import { setupEntities } from '@src/modules/database';
 import { ResolvedUserMapper } from './ResolvedUser.mapper';
 import { ResolvedUser } from '../controller/dto';
 
 describe('ResolvedUserMapper', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	it('should has mapToResponse static method', () => {

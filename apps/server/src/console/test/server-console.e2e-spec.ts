@@ -2,14 +2,14 @@ import { INestApplicationContext } from '@nestjs/common';
 
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '@src/console/console.module';
-import { ConsoleWriter } from '@src/console/console-writer/console-writer.service';
+import { ConsoleWriterService } from '@shared/infra/console';
 import { execute, TestBootstrapConsole } from './bootstrap.console';
 
 describe('ServerConsole (e2e)', () => {
 	let app: INestApplicationContext;
 	let bootstrap: BootstrapConsole;
 	let consoleService: ConsoleService;
-	let consoleWriter: ConsoleWriter;
+	let consoleWriter: ConsoleWriterService;
 	let logMock: jest.SpyInstance;
 	beforeEach(async () => {
 		bootstrap = new TestBootstrapConsole({
@@ -19,7 +19,7 @@ describe('ServerConsole (e2e)', () => {
 		app = await bootstrap.init();
 		await app.init();
 		consoleService = app.get<ConsoleService>(ConsoleService);
-		consoleWriter = app.get<ConsoleWriter>(ConsoleWriter);
+		consoleWriter = app.get<ConsoleWriterService>(ConsoleWriterService);
 		logMock = jest.spyOn(consoleWriter, 'info').mockImplementation();
 	});
 

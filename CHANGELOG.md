@@ -11,7 +11,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-394 - send email wishes from federal states also to ticketsystem
+- BC-391 - display special characters properly
+
+### Fixed
+
+- BC-436 - Fix univention LDAP strategy
+
 ### Changed
+
+- BC-487 - update mongodb-memory-server from 6.9.6 to 7.4.4
+- BC-490 - setup entities for tests without needing a database
 
 ## [26.12.0] - 2021-10-12
 
@@ -19,15 +29,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-388 - add simple script for end sjw
 - BC-319 - add route to change the position of a course dashboard element
-- BC-343 - run unstable e2e tests on label `run unstable tests` 
+- BC-343 - run unstable e2e tests on label `run unstable tests`
 
 ### Changed
 
-- BC-25  - sort database seeds ascending by date of creation (_id, createdAt)
-- BC-25  - move logic of npm run setup into console application and add management application with same behavior 
+- BC-25 - sort database seeds ascending by date of creation (\_id, createdAt)
+- BC-25 - move logic of npm run setup into console application and add management application with same behavior
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
-- BC-269 - check in firstLogin that students can only pass with existing birthdate 
+- BC-269 - check in firstLogin that students can only pass with existing birthdate
+- BC-231 - upgraded nestjs@7 to nestjs@8
 
 ### Fixed
 
@@ -41,14 +52,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- BC-121 - run add bucket to files migration in parallel 
+- BC-121 - run add bucket to files migration in parallel
 
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
+
 - BC-111 wait for mongodb to spin up in deployment
 
-- BC-370 - fixed file directory creation 
+- BC-370 - fixed file directory creation
 
 ## [26.11.1] - 2021-09-29
 
