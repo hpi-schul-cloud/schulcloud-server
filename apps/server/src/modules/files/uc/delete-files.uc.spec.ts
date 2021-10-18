@@ -24,7 +24,6 @@ describe('DeleteFileUC', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule],
 			providers: [
 				DeleteFilesUc,
 				{
@@ -46,10 +45,18 @@ describe('DeleteFileUC', () => {
 						},
 					},
 				},
+				{
+					provide: Logger,
+					useValue: {
+						setContext() {},
+						log() {},
+						error() {},
+					},
+				},
 			],
 		}).compile();
 
-		logger = await module.resolve<Logger>(Logger);
+		logger = module.get(Logger);
 		service = module.get(DeleteFilesUc);
 		filesRepo = module.get(FilesRepo);
 		fileStorageRepo = module.get(FileStorageRepo);

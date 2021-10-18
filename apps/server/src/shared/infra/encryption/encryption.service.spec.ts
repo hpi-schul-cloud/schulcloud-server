@@ -13,8 +13,10 @@ describe('SymetricKeyEncryptionService', () => {
 
 	it('encrypts the input with AES', () => {
 		// If the test fails because the encryption algorithm has been changed, do not forget to migrate encrypted values from the database accordingly.
-		const aesEncryption = CryptoJs.AES.encrypt(testInput, encryptionKey).toString();
-		expect(encryptionService.encrypt(testInput)).toEqual(aesEncryption);
+		const encryptedValue = encryptionService.encrypt(testInput);
+		const aesDecryptionResult = CryptoJs.AES.decrypt(encryptedValue, encryptionKey).toString(CryptoJs.enc.Utf8);
+		// Due to different IV and salt values, the encrypted values cannot be compared directly
+		expect(aesDecryptionResult).toEqual(testInput);
 	});
 
 	it('decrypts the encrypted input', () => {

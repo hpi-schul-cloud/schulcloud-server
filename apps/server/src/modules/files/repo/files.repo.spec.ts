@@ -50,7 +50,7 @@ describe('FilesRepo', () => {
 			em.clear();
 			const cleanupThreshold = new Date();
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			expect(file.deletedAt! < cleanupThreshold).toBeTruthy();
+			expect(file.deletedAt!.getTime()).toBeGreaterThan(cleanupThreshold.getTime());
 
 			const result = await repo.getFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(1);
@@ -71,7 +71,7 @@ describe('FilesRepo', () => {
 			const file = fileFactory.build({ deletedAt: new Date() });
 			await em.persistAndFlush(file);
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			expect(file.deletedAt! > cleanupThreshold).toBeTruthy();
+			expect(file.deletedAt!.getTime()).toBeLessThan(cleanupThreshold.getTime());
 
 			const result = await repo.getFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
