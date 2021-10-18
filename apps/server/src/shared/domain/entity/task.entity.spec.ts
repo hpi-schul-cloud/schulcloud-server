@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { Task } from './task.entity';
 import { courseFactory } from '../factory';
+import { Lesson } from './lesson.entity';
 
 describe('Task Entity', () => {
 	let module: TestingModule;
@@ -38,23 +39,36 @@ describe('Task Entity', () => {
 	});
 
 	describe('getDescriptions', () => {
-		it('should return the descriptions of the course if set', () => {
-			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', course });
-			const courseDescriptions = {
-				name: course.name,
-				description: course.description,
-				color: course.color,
-			};
-			expect(task.getDescriptions()).toEqual(courseDescriptions);
+		describe('when a course is set', () => {
+			it('should return the name and color of the course', () => {
+				const course = courseFactory.build();
+				const task = new Task({ name: 'task #1', course });
+				expect(task.getDescriptions().name).toEqual(course.name);
+				expect(task.getDescriptions().color).toEqual(course.color);
+			});
+
+			describe('when a lesson is set', () => {
+				it('should return the lesson name as description', () => {
+					const course = courseFactory.build();
+					const lesson = new Lesson({ name: 'lesson #1', course });
+					const task = new Task({ name: 'task #1', course, lesson });
+					expect(task.getDescriptions().description).toEqual(lesson.name);
+				});
+			});
+			describe('when no lesson is set', () => {
+				it('should return an empty string as description', () => {
+					const course = courseFactory.build();
+					const task = new Task({ name: 'task #1', course });
+					expect(task.getDescriptions().description).toEqual('');
+				});
+			});
 		});
 
-		it('should return defaults if the course is not set', () => {
-			const task = new Task({ name: 'task #1' });
-			expect(task.getDescriptions()).toEqual({
-				name: '',
-				description: '',
-				color: '#ACACAC',
+		describe('when no course is set', () => {
+			it('should return the default name and color', () => {
+				const task = new Task({ name: 'task #1' });
+				expect(task.getDescriptions().name).toEqual('');
+				expect(task.getDescriptions().color).toEqual('#ACACAC');
 			});
 		});
 	});

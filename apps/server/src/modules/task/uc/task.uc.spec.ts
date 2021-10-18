@@ -198,7 +198,7 @@ describe('TaskUC', () => {
 		it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
 			const course = courseFactory.build();
-			const lesson = new Lesson({ course, hidden: false });
+			const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
 			Object.assign(lesson, { _id: new ObjectId() });
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
@@ -427,7 +427,7 @@ describe('TaskUC', () => {
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
 			const course = courseFactory.build();
-			const lesson = new Lesson({ course, hidden: false });
+			const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
 			Object.assign(lesson, { _id: new ObjectId() });
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses(parentIds);

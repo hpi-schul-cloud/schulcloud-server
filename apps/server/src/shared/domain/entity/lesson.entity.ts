@@ -3,12 +3,16 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 
 interface ILessonProperties {
+	name: string;
 	hidden?: boolean;
 	course: Course;
 }
 
 @Entity({ tableName: 'lessons' })
 export class Lesson extends BaseEntityWithTimestamps {
+	@Property()
+	name: string;
+
 	@Property()
 	hidden = false;
 
@@ -17,6 +21,7 @@ export class Lesson extends BaseEntityWithTimestamps {
 
 	constructor(props: ILessonProperties) {
 		super();
+		this.name = props.name;
 		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;
 	}

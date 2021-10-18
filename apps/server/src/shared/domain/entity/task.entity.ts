@@ -54,7 +54,7 @@ export class Task extends BaseEntityWithTimestamps {
 		if (this.course) {
 			descriptions = {
 				name: this.course.name,
-				description: this.course.description,
+				description: this.lesson ? this.lesson.name : '',
 				color: this.course.color,
 			};
 		} else {
