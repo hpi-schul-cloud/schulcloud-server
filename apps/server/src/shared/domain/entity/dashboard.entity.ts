@@ -42,25 +42,74 @@ export class DefaultGridReference implements IGridElementReference {
 export interface IGridElement {
 	getId: () => EntityId;
 
-	getMetadata: () => GridElementReferenceMetadata;
+	getContent: () => GridElementContent;
+
+	isGroup(): boolean;
+
+	getReferences(): IGridElementReference[];
+
+	addReferences(anotherReference: IGridElementReference[]): void;
 }
+
+export type GridElementContent = {
+	referencedId?: string;
+	title: string;
+	shortTitle: string;
+	displayColor: string;
+	group?: GridElementReferenceMetadata[];
+};
 
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	constructor(id: EntityId, reference: IGridElementReference) {
+	private constructor(id: EntityId, references: IGridElementReference[]) {
 		this.id = id;
-		this.reference = reference;
+		this.references = references;
 	}
 
-	reference: IGridElementReference;
+	static FromSingleReference(id: EntityId, reference: IGridElementReference): GridElement {
+		return new GridElement(id, [reference]);
+	}
+
+	static FromReferenceGroup(id: EntityId, group: IGridElementReference[]): GridElement {
+		return new GridElement(id, group);
+	}
+
+	references: IGridElementReference[];
 
 	getId(): EntityId {
 		return this.id;
 	}
 
-	getMetadata(): GridElementReferenceMetadata {
-		return this.reference.getMetadata();
+	getReferences(): IGridElementReference[] {
+		return this.references;
+	}
+
+	addReferences(anotherReference: IGridElementReference[]): void {
+		this.references = this.references.concat(anotherReference);
+	}
+
+	getContent(): GridElementContent {
+		if (!this.isGroup()) {
+			const { id: referencedId, ...data } = this.references[0].getMetadata();
+			const metadata = {
+				referencedId,
+				...data,
+			};
+			return metadata;
+		}
+		const groupData = this.references.map((reference) => reference.getMetadata());
+		const groupMetadata = {
+			title: 'exampleTitle',
+			shortTitle: 'exampleShortTitle',
+			displayColor: 'exampleColor',
+			group: groupData,
+		};
+		return groupMetadata;
+	}
+
+	isGroup(): boolean {
+		return this.references.length > 1;
 	}
 }
 
@@ -124,17 +173,22 @@ export class DashboardEntity {
 
 	moveElement(from: GridPosition, to: GridPosition): GridElementWithPosition {
 		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
-		if (elementToMove) {
-			if (this.grid.get(this.gridIndexFromPosition(to))) {
-				throw new BadRequestException('target position already taken');
-			}
-			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
-			this.grid.delete(this.gridIndexFromPosition(from));
-			return {
-				pos: to,
-				gridElement: elementToMove,
-			};
+		if (!elementToMove) {
+			throw new NotFoundException('no element at origin position');
 		}
-		throw new NotFoundException('no element at origin position');
+
+		const targetElement = this.grid.get(this.gridIndexFromPosition(to));
+		if (targetElement) {
+			targetElement.addReferences(elementToMove.getReferences());
+		} else {
+			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
+		}
+		this.grid.delete(this.gridIndexFromPosition(from));
+
+		const resultElement = this.grid.get(this.gridIndexFromPosition(to)) as IGridElement;
+		return {
+			pos: to,
+			gridElement: resultElement,
+		};
 	}
 }
