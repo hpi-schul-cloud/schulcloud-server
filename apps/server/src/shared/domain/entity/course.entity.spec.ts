@@ -1,5 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { setupEntities } from '@src/modules/database';
 import { userFactory } from '../factory';
 import { courseFactory } from '../factory/course.factory';
 import { schoolFactory } from '../factory/school.factory';
@@ -12,16 +11,8 @@ const DEFAULT = {
 };
 
 describe('CourseEntity', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {
