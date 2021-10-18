@@ -1,8 +1,10 @@
+import * as moment from 'moment';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '../../../core/logger/logger.module';
 import { DeleteFilesConsole } from './delete-files.console';
 import { DeleteFilesUc } from '../uc';
 import { FilesRepo, FileStorageRepo } from '../repo';
+import { moveMessagePortToContext } from 'worker_threads';
 
 describe('DeleteFilesController', () => {
 	let console: DeleteFilesConsole;
@@ -42,11 +44,11 @@ describe('DeleteFilesController', () => {
 		it('should call removeDeletedFilesData use case with removedSince date', async () => {
 			const removedSinceDays = 7;
 			const deleteFilesUcSpy = jest.spyOn(deleteFilesUc, 'removeDeletedFilesData');
-			await console.removeDeletedFilesData(7);
+			await console.removeDeletedFilesData(removedSinceDays);
 			expect(deleteFilesUcSpy).toHaveBeenCalledTimes(1);
 			const useCaseArg = deleteFilesUcSpy.mock.calls[0][0];
-			const dateDifferenceInDays = new Date(new Date().getTime() - useCaseArg.getTime()).getDate() - 1;
-			expect(dateDifferenceInDays).toEqual(removedSinceDays);
+			const timeDifference = moment.duration(new Date().getTime() - useCaseArg.getTime());
+			expect(timeDifference.asDays()).toBeCloseTo(removedSinceDays);
 		});
 	});
 });

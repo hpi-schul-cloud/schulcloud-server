@@ -8,7 +8,7 @@ metadata:
   name: api-delete-s3-files-cronjob
 spec:
   concurrencyPolicy: Forbid
-  schedule: "{{ SERVER_FILE_DELETION_CRONJOB_SCHEDULE|default("0 */12 * * *", true) }}"
+  schedule: "{{ SERVER_FILE_DELETION_CRONJOB_SCHEDULE|default("@hourly", true) }}"
   jobTemplate:
     labels:
       app: api
