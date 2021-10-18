@@ -25,9 +25,19 @@ export class DashboardModelMapper {
 
 	static async mapToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
 		await modelEntity.gridElements.init();
-		const grid: GridElementWithPosition[] = await Promise.all(
-			Array.from(modelEntity.gridElements).map(async (e) => DashboardModelMapper.mapElementToEntity(e))
+		const grid: GridElementWithPosition[] = [];
+		// ----------------------
+		// temporary solution, look at how remove orphaned elements on persist
+		await Promise.all(
+			Array.from(modelEntity.gridElements).map(async (e) => {
+				const element = await DashboardModelMapper.mapElementToEntity(e);
+				if (element.gridElement.getReferences().length > 0) {
+					grid.push(element);
+				}
+				return Promise.resolve();
+			})
 		);
+		// ----------------------
 		return new DashboardEntity(modelEntity.id, { grid });
 	}
 
