@@ -2,7 +2,7 @@ import { Entity, Property, ManyToOne, OneToMany, Collection, IdentifiedReference
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-@Entity()
+@Entity({ tableName: 'dashboarddefaultreference' })
 export class DefaultGridReferenceModel extends BaseEntityWithTimestamps {
 	constructor(id: string) {
 		super();
@@ -15,9 +15,13 @@ export class DefaultGridReferenceModel extends BaseEntityWithTimestamps {
 
 	@Property()
 	color: string;
+
+	// not really happy with this, but didnt find a better solution yet to connect the gridelement with multiple references.
+	@ManyToOne('DashboardGridElementModel', { wrappedReference: true })
+	gridelement: IdentifiedReference<DashboardGridElementModel>;
 }
 
-@Entity()
+@Entity({ tableName: 'dashboardelement' })
 export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	constructor(id: string) {
 		super();
@@ -32,14 +36,14 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	yPos: number;
 
 	// todo: put in references to useful things like courses via polymorphic inheritance (see news)
-	@ManyToOne('DefaultGridReferenceModel', { wrappedReference: true })
-	reference: IdentifiedReference<DefaultGridReferenceModel>;
+	@OneToMany('DefaultGridReferenceModel', 'gridelement')
+	references: Collection<DefaultGridReferenceModel> = new Collection<DefaultGridReferenceModel>(this);
 
 	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
 	dashboard: IdentifiedReference<DashboardModelEntity>;
 }
 
-@Entity()
+@Entity({ tableName: 'dashboard' })
 export class DashboardModelEntity extends BaseEntityWithTimestamps {
 	constructor(id: string) {
 		super();
