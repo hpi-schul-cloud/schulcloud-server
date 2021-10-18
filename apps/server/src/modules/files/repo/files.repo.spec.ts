@@ -39,19 +39,20 @@ describe('FilesRepo', () => {
 		});
 	});
 
-	describe('getExpiredFiles', () => {
+	describe('getFilesForCleanup', () => {
 		beforeEach(async () => {
 			await em.nativeDelete(File, {});
 		});
 
-		it('should return expired file', async () => {
-			const expiredDate = new Date();
-			const file = fileFactory.build({ deletedAt: expiredDate });
+		it('should return files marked for cleanup', async () => {
+			const file = fileFactory.build({ deletedAt: new Date() });
 			await em.persistAndFlush(file);
 			em.clear();
-			const backupPeriodThreshold = new Date();
+			const cleanupThreshold = new Date();
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			expect(file.deletedAt! < cleanupThreshold).toBeTruthy();
 
-			const result = await repo.getExpiredFiles(backupPeriodThreshold);
+			const result = await repo.getFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
 		});
@@ -59,18 +60,20 @@ describe('FilesRepo', () => {
 		it('should not return files, which are not deleted', async () => {
 			const file = fileFactory.build({ deletedAt: undefined });
 			await em.persistAndFlush(file);
-			const backupPeriodThreshold = new Date();
+			const cleanupThreshold = new Date();
 
-			const result = await repo.getExpiredFiles(backupPeriodThreshold);
+			const result = await repo.getFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
 		});
 
 		it('should not return files, which are deleted too recently', async () => {
-			const backupPeriodThreshold = new Date();
+			const cleanupThreshold = new Date();
 			const file = fileFactory.build({ deletedAt: new Date() });
 			await em.persistAndFlush(file);
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			expect(file.deletedAt! > cleanupThreshold).toBeTruthy();
 
-			const result = await repo.getExpiredFiles(backupPeriodThreshold);
+			const result = await repo.getFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
 		});
 	});

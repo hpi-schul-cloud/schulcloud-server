@@ -11,7 +11,7 @@ export class DeleteFilesConsole {
 	}
 
 	@Command({
-		command: 'remove-deleted-files <days>',
+		command: 'cleanup-job <days>',
 		description: 'cleanup job to remove files that were marked for deletion <days> days ago',
 	})
 	async removeDeletedFilesData(removedSinceDays: number): Promise<void> {

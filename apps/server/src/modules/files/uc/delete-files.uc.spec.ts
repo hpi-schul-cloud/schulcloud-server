@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '@src/core/logger/logger.module';
+import { Logger } from '@src/core/logger';
 import { File, StorageProvider } from '@shared/domain/entity';
 import { DeleteFilesUc } from './delete-files.uc';
 
@@ -9,6 +10,7 @@ describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;
 	let filesRepo: FilesRepo;
 	let fileStorageRepo: FileStorageRepo;
+	let logger: Logger;
 
 	const exampleStorageProvider = new StorageProvider({
 		endpointUrl: 'endpointUrl',
@@ -28,7 +30,7 @@ describe('DeleteFileUC', () => {
 				{
 					provide: FilesRepo,
 					useValue: {
-						getExpiredFiles() {
+						getFilesForCleanup() {
 							return Promise.resolve(exampleFiles);
 						},
 						removeAndFlush() {
@@ -47,9 +49,10 @@ describe('DeleteFileUC', () => {
 			],
 		}).compile();
 
-		service = module.get<DeleteFilesUc>(DeleteFilesUc);
-		filesRepo = module.get<FilesRepo>(FilesRepo);
-		fileStorageRepo = module.get<FileStorageRepo>(FileStorageRepo);
+		logger = await module.resolve<Logger>(Logger);
+		service = module.get(DeleteFilesUc);
+		filesRepo = module.get(FilesRepo);
+		fileStorageRepo = module.get(FileStorageRepo);
 	});
 
 	it('should be defined', () => {
@@ -57,7 +60,7 @@ describe('DeleteFileUC', () => {
 	});
 
 	describe('removeDeletedFilesData', () => {
-		it('should delete all file database documents that are expired', async () => {
+		it('should delete all file database documents that are marked for cleanup', async () => {
 			const deleteFileSpy = jest.spyOn(filesRepo, 'removeAndFlush');
 			await service.removeDeletedFilesData(new Date());
 			expect(deleteFileSpy).toHaveBeenCalledTimes(exampleFiles.length);
@@ -67,7 +70,7 @@ describe('DeleteFileUC', () => {
 			}
 		});
 
-		it('should delete all file storage data that are expired', async () => {
+		it('should delete all file storage data that are marked for cleanup', async () => {
 			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
 			await service.removeDeletedFilesData(new Date());
 			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
@@ -78,11 +81,13 @@ describe('DeleteFileUC', () => {
 		});
 
 		it('should continue after a file could not be deleted', async () => {
+			const errorLogSpy = jest.spyOn(logger, 'error');
 			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
 			deleteFileStorageSpy.mockImplementationOnce(() => {
 				throw new Error();
 			});
 			await service.removeDeletedFilesData(new Date());
+			expect(errorLogSpy).toHaveBeenCalled();
 			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
 			// eslint-disable-next-line no-restricted-syntax
 			for (const file of exampleFiles) {

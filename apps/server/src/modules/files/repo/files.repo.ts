@@ -6,9 +6,9 @@ import { BaseFile, File, Directory } from '@shared/domain';
 export class FilesRepo extends BaseRepo<BaseFile> {
 	propertiesToPopulate = ['storageProvider'];
 
-	async getExpiredFiles(backupPeriodThreshold: Date): Promise<BaseFile[]> {
-		const expiredFilesQuery = { deletedAt: { $lt: backupPeriodThreshold } };
-		const files = await this.em.find(BaseFile, expiredFilesQuery);
+	async getFilesForCleanup(cleanupThreshold: Date): Promise<BaseFile[]> {
+		const filesForCleanupQuery = { deletedAt: { $lte: cleanupThreshold } };
+		const files = await this.em.find(BaseFile, filesForCleanupQuery);
 		const regularFiles = files.filter((file) => file instanceof File);
 		await this.em.populate(regularFiles, this.propertiesToPopulate);
 		return files;
