@@ -3,6 +3,7 @@ import { Course, CourseNews, INewsProperties, News, School, SchoolNews, Team, Te
 import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTarget } from '@shared/domain/types/news.types';
 import { schoolFactory } from '@shared/domain/factory/school.factory';
 import { userFactory } from '@shared/domain/factory';
+import { setupEntities } from '@src/modules/database';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
@@ -13,7 +14,6 @@ import {
 	UserInfoResponse,
 } from '../controller/dto';
 import { TargetInfoResponse } from '../controller/dto/target-info.response';
-import { setupEntities } from '@src/modules/database';
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
