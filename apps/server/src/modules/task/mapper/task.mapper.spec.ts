@@ -1,6 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Task, School } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { setupEntities } from '@src/modules/database';
 import { TaskResponse } from '../controller/dto';
 
 import { TaskMapper } from './task.mapper';
@@ -32,16 +31,8 @@ const createExpectedResponse = (
 };
 
 describe('task.mapper', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	it('should map if course and fullfilled status exist', () => {
