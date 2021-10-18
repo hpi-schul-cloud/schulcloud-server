@@ -1,17 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { setupEntities } from '@src/modules/database';
 import { User } from './user.entity';
 import { schoolFactory } from '../factory';
 
 describe('User Entity', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({ imports: [MongoMemoryDatabaseModule.forRoot()] }).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {
