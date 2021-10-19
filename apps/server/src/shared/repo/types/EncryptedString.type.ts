@@ -7,7 +7,16 @@ import { SymetricKeyEncryptionService } from '../../infra/encryption';
  */
 export class EncryptedStringType extends Type<string, string> {
 	// TODO modularize service?
-	private static encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY'));
+	private encryptionService: SymetricKeyEncryptionService;
+
+	constructor(customKey?: string) {
+		super();
+		if (customKey) {
+			this.encryptionService = new SymetricKeyEncryptionService(customKey);
+		} else {
+			this.encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY'));
+		}
+	}
 
 	convertToDatabaseValue(value: string | undefined, platform: Platform): string {
 		// keep nullish values
@@ -19,7 +28,7 @@ export class EncryptedStringType extends Type<string, string> {
 		if (value?.length === 0) {
 			return '';
 		}
-		const encryptedString = EncryptedStringType.encryptionService.encrypt(value);
+		const encryptedString = this.encryptionService.encrypt(value);
 
 		if (!encryptedString) {
 			throw ValidationError.invalidType(EncryptedStringType, value, 'JS');
@@ -40,7 +49,7 @@ export class EncryptedStringType extends Type<string, string> {
 		}
 
 		// decrypt only non-empty strings
-		const decryptedString: string = EncryptedStringType.encryptionService.decrypt(value);
+		const decryptedString: string = this.encryptionService.decrypt(value);
 
 		if (!decryptedString) {
 			throw ValidationError.invalidType(EncryptedStringType, value, 'database');

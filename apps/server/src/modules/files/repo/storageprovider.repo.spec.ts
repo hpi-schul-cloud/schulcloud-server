@@ -3,8 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 
 import { fileFactory, storageProviderFactory } from '@shared/domain/factory';
 import { Platform } from '@mikro-orm/core';
@@ -16,16 +14,12 @@ describe('FileStorageRepo', () => {
 	let em: EntityManager;
 	let module: TestingModule;
 	let s3Mock: AwsClientStub<S3Client>;
-	let configBefore: IConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [FileStorageRepo],
 		}).compile();
-
-		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-		Configuration.set('S3_KEY', 'abcdefghijklmnop');
 
 		repo = module.get(FileStorageRepo);
 		em = module.get(EntityManager);
@@ -38,7 +32,6 @@ describe('FileStorageRepo', () => {
 	afterAll(async () => {
 		await module.close();
 		s3Mock.restore();
-		Configuration.reset(configBefore);
 	});
 
 	describe('defined', () => {

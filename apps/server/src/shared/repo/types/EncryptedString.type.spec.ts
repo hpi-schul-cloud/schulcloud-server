@@ -2,9 +2,10 @@ import { Platform } from '@mikro-orm/core';
 import { EncryptedStringType } from './EncryptedString.type';
 
 describe('EncryptedString type', () => {
-	const serializer = new EncryptedStringType();
+	const S3_KEY = 'custom_cipher_key';
+	const serializer = new EncryptedStringType(S3_KEY);
 	const text = 'sample text input';
-	const textEncrypted = 'U2FsdGVkX19ZeUf83UCV1i0t19aDHueGq2xkeFbsjKbuO6siCDd53kvLKObL7E5r';
+	const textEncrypted = 'U2FsdGVkX18XgTi2IeaC/EA6vE9N4bf/0oDEz7WuIH8RGMcVm1Yw7I+2PHGBTAxF'; // depends on S3_KEY
 
 	describe('When convertToDatabaseValue', () => {
 		it('should pass null value', () => {
