@@ -1,7 +1,7 @@
 import { StorageProvider } from '../entity/storageprovider.entity';
 
 export const storageProviderFactory = {
-	build: (props?: { endpointUrl?: string; accessKeyId?: string; secretAccessKeyId?: string }): StorageProvider => {
+	build: (props?: Partial<StorageProvider>): StorageProvider => {
 		const storageProvider = new StorageProvider({
 			endpointUrl: 'http://localhost',
 			accessKeyId: 'accessKeyId',

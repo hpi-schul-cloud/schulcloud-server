@@ -1,18 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { StorageProvider, File } from '@shared/domain';
+import { StorageProvider, File, EntityId } from '@shared/domain';
 
-function createStorageProviderClient(provider: StorageProvider): S3Client {
+function createStorageProviderClient(storageProvider: StorageProvider): S3Client {
 	return new S3Client({
-		endpoint: provider.endpointUrl,
+		endpoint: storageProvider.endpointUrl,
 		forcePathStyle: true,
-		region: provider.region,
+		region: storageProvider.region,
 		tls: true,
 		credentials: {
-			accessKeyId: provider.accessKeyId,
-			secretAccessKey: provider.secretAccessKey,
+			accessKeyId: storageProvider.accessKeyId,
+			secretAccessKey: storageProvider.secretAccessKey,
 		},
 	});
 }
@@ -24,5 +25,10 @@ export class FileStorageRepo extends BaseRepo<StorageProvider> {
 		const storageProviderClient = createStorageProviderClient(storageProvider);
 		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 		await storageProviderClient.send(deletionCommand);
+	}
+
+	async findOneById(id: EntityId): Promise<StorageProvider> {
+		const storageProvider = await this.em.findOneOrFail(StorageProvider, id);
+		return storageProvider;
 	}
 }
