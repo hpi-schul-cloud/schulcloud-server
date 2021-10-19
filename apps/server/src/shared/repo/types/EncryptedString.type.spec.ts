@@ -4,7 +4,7 @@ import { EncryptedStringType } from './EncryptedString.type';
 describe('EncryptedString type', () => {
 	const serializer = new EncryptedStringType();
 	const text = 'sample text input';
-	const textEncrypted = 'U2FsdGVkX19f3ahtkMU8/Sma2NLiDhv6Pqdcoh0Co7EPwTiluyDZgR+6mtq6FeWR';
+	const textEncrypted = 'U2FsdGVkX19ZeUf83UCV1i0t19aDHueGq2xkeFbsjKbuO6siCDd53kvLKObL7E5r';
 
 	describe('When convertToDatabaseValue', () => {
 		it('should pass null value', () => {
