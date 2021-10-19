@@ -1,5 +1,3 @@
-import * as CryptoJs from 'crypto-js';
-
 import { SymetricKeyEncryptionService } from './encryption.service';
 
 describe('SymetricKeyEncryptionService', () => {
@@ -11,16 +9,13 @@ describe('SymetricKeyEncryptionService', () => {
 		expect(encryptionService.encrypt(testInput)).not.toEqual(testInput);
 	});
 
-	it('encrypts the input with AES', () => {
-		// If the test fails because the encryption algorithm has been changed, do not forget to migrate encrypted values from the database accordingly.
+	it('should decrypt prior encrypted values', () => {
+		// If the test fails because the encryption algorithm has been changed,
+		// do not forget to migrate encrypted values from the database accordingly!
 		const encryptedValue = encryptionService.encrypt(testInput);
-		const aesDecryptionResult = CryptoJs.AES.decrypt(encryptedValue, encryptionKey).toString(CryptoJs.enc.Utf8);
+		expect(encryptedValue.length).toEqual(44);
+		const decryptionResult = encryptionService.decrypt(encryptedValue);
 		// Due to different IV and salt values, the encrypted values cannot be compared directly
-		expect(aesDecryptionResult).toEqual(testInput);
-	});
-
-	it('decrypts the encrypted input', () => {
-		const encryptedValue = encryptionService.encrypt(testInput);
-		expect(encryptionService.decrypt(encryptedValue)).toEqual(testInput);
+		expect(decryptionResult).toEqual(testInput);
 	});
 });

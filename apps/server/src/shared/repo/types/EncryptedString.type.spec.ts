@@ -21,7 +21,7 @@ describe('EncryptedString type', () => {
 		});
 		it('should encrypt not-empty string value', () => {
 			const result = serializer.convertToDatabaseValue(text, undefined as unknown as Platform);
-			// TODO why does the encrypted string not stay same?
+			// result is always different but with same length
 			expect(result.length).toEqual(textEncrypted.length);
 		});
 	});
