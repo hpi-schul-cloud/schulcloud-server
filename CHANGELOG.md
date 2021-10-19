@@ -11,8 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-394 - send email wishes from federal states also to ticketsystem
+- BC-394 - send email wishes to additionally needed addresses
 - BC-391 - display special characters properly
+- BC-339 - creation of groups in the courses dashboard
+- BC-339 - add elements to groups in the courses dashboard
 
 ### Fixed
 

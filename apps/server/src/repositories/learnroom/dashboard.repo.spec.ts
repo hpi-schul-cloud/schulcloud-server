@@ -33,7 +33,7 @@ describe('dashboard repo', () => {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: new GridElement(
+					gridElement: GridElement.FromSingleReference(
 						new ObjectId().toString(),
 						new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 					),
@@ -47,13 +47,39 @@ describe('dashboard repo', () => {
 		expect(dashboard).toEqual(result);
 	});
 
+	it('should persist dashboard with gridElement group', async () => {
+		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			grid: [
+				{
+					pos: { x: 1, y: 3 },
+					gridElement: GridElement.FromReferenceGroup(new ObjectId().toString(), [
+						new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
+						new DefaultGridReference(new ObjectId().toString(), 'German'),
+					]),
+				},
+			],
+		});
+		await repo.persist(dashboard);
+		await em.flush();
+		const result = await repo.getDashboardById(dashboard.id);
+		expect(dashboard.id).toEqual(result.id);
+		const elementContent = dashboard.getGrid()[0].gridElement.getContent();
+		expect(elementContent.group).toBeDefined();
+		// if check for typescript only. has been asserted before
+		if (elementContent.group) {
+			expect(elementContent.group[0].title).toEqual('Mathe');
+			expect(elementContent.group[1].title).toEqual('German');
+		}
+		expect(dashboard).toEqual(result);
+	});
+
 	describe('persistAndFlush', () => {
 		it('should persist dashboard with gridElements', async () => {
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -71,7 +97,7 @@ describe('dashboard repo', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),

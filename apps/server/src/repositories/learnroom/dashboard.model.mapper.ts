@@ -1,21 +1,58 @@
 import { Collection, wrap, EntityManager } from '@mikro-orm/core';
-import { DashboardEntity, GridElement, GridElementWithPosition, DefaultGridReference } from '@shared/domain';
+import {
+	DashboardEntity,
+	GridElement,
+	GridElementWithPosition,
+	DefaultGridReference,
+	IGridElementReference,
+} from '@shared/domain';
 import { DashboardGridElementModel, DashboardModelEntity, DefaultGridReferenceModel } from './dashboard.model.entity';
 
 export class DashboardModelMapper {
+	static mapReferenceToEntity(modelEntity: DefaultGridReferenceModel): DefaultGridReference {
+		return new DefaultGridReference(modelEntity.id, modelEntity.title, modelEntity.color);
+	}
+
+	static async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
+		await modelEntity.references.init();
+		const references = Array.from(modelEntity.references).map((ref) => DashboardModelMapper.mapReferenceToEntity(ref));
+		const result = {
+			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
+			gridElement: GridElement.FromReferenceGroup(modelEntity.id, references),
+		};
+		return result;
+	}
+
 	static async mapToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
 		await modelEntity.gridElements.init();
-		const grid: GridElementWithPosition[] = await Promise.all(
+		const grid: GridElementWithPosition[] = [];
+		// ----------------------
+		// temporary solution, look at how remove orphaned elements on persist
+		await Promise.all(
 			Array.from(modelEntity.gridElements).map(async (e) => {
-				const loaded = await e.reference.load();
-				const result = {
-					pos: { x: e.xPos, y: e.yPos },
-					gridElement: new GridElement(e.id, new DefaultGridReference(loaded.id, loaded.title, loaded.color)),
-				};
-				return result;
+				const element = await DashboardModelMapper.mapElementToEntity(e);
+				if (element.gridElement.getReferences().length > 0) {
+					grid.push(element);
+				}
+				return Promise.resolve();
 			})
 		);
+		// ----------------------
 		return new DashboardEntity(modelEntity.id, { grid });
+	}
+
+	static async mapReferenceToModel(
+		reference: IGridElementReference,
+		element: DashboardGridElementModel,
+		em: EntityManager
+	): Promise<DefaultGridReferenceModel> {
+		const metadata = reference.getMetadata();
+		const existingReference = await em.findOne(DefaultGridReferenceModel, metadata.id);
+		const result = existingReference || new DefaultGridReferenceModel(metadata.id);
+		result.color = metadata.displayColor;
+		result.title = metadata.title;
+		result.gridelement = wrap(element).toReference();
+		return result;
 	}
 
 	static async mapGridElementToModel(
@@ -24,22 +61,19 @@ export class DashboardModelMapper {
 		em: EntityManager
 	): Promise<DashboardGridElementModel> {
 		const existing = await em.findOne(DashboardGridElementModel, elementWithPosition.gridElement.getId());
-		const model = existing || new DashboardGridElementModel(elementWithPosition.gridElement.getId());
-		model.xPos = elementWithPosition.pos.x;
-		model.yPos = elementWithPosition.pos.y;
+		const elementModel = existing || new DashboardGridElementModel(elementWithPosition.gridElement.getId());
+		elementModel.xPos = elementWithPosition.pos.x;
+		elementModel.yPos = elementWithPosition.pos.y;
 
-		const existingReference = await em.findOne(
-			DefaultGridReferenceModel,
-			elementWithPosition.gridElement.getMetadata().id
+		const references = await Promise.all(
+			elementWithPosition.gridElement
+				.getReferences()
+				.map((ref) => DashboardModelMapper.mapReferenceToModel(ref, elementModel, em))
 		);
-		const reference =
-			existingReference || new DefaultGridReferenceModel(elementWithPosition.gridElement.getMetadata().id);
-		reference.color = elementWithPosition.gridElement.getMetadata().displayColor;
-		reference.title = elementWithPosition.gridElement.getMetadata().title;
-		model.reference = wrap(reference).toReference();
+		elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, references);
 
-		model.dashboard = wrap(dashboard).toReference();
-		return model;
+		elementModel.dashboard = wrap(dashboard).toReference();
+		return elementModel;
 	}
 
 	static async mapToModel(entity: DashboardEntity, em: EntityManager): Promise<DashboardModelEntity> {
