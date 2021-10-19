@@ -1,19 +1,54 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { DashboardEntity } from './dashboard.entity';
+import { DashboardEntity, IGridElementReference } from './dashboard.entity';
+
+const getReferenceMock = (id: string) => ({
+	getMetadata: () => ({
+		id,
+		title: 'Reference',
+		shortTitle: 'Re',
+		displayColor: '#FFFFFF',
+	}),
+});
+
+const getElementMock = (mockId: string, referenceIds: string[]) => {
+	let references = referenceIds.map((id) => getReferenceMock(id));
+	return {
+		getId: () => mockId,
+		getContent: () => ({
+			referencedId: referenceIds[0],
+			title: 'Reference',
+			shortTitle: 'Re',
+			displayColor: '#FFFFFF',
+		}),
+		isGroup: () => false,
+		getReferences: () => references,
+		addReferences: (newreferences: IGridElementReference[]) => {
+			references = references.concat(newreferences);
+		},
+	};
+};
+
+const gridElementMock = {
+	getId: () => 'gridelementid',
+	getContent: () => ({
+		referencedId: 'referenceId',
+		title: 'Mathe 3d',
+		shortTitle: 'Ma',
+		displayColor: '#FFFFFF',
+	}),
+	isGroup: () => false,
+	getReferences: () => {
+		throw new Error('please implement mock function');
+	},
+	addReferences: (references: IGridElementReference[]) => {},
+};
 
 describe('dashboard entity', () => {
 	describe('constructor', () => {
 		it('should create dashboard with prefilled Grid', () => {
-			const gridElement = {
-				getId: () => 'gridelementid',
-				getMetadata: () => ({
-					id: 'someId',
-					title: 'Mathe 3d',
-					shortTitle: 'Ma',
-					displayColor: '#FFFFFF',
-				}),
-			};
-			const dashboard = new DashboardEntity('someid', { grid: [{ pos: { x: 1, y: 2 }, gridElement }] });
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: gridElementMock }],
+			});
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
@@ -33,22 +68,15 @@ describe('dashboard entity', () => {
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
-			const gridElement = {
-				getId: () => 'gridelementid',
-				getMetadata: () => ({
-					id: 'someId',
-					title: 'Calendar-Dashboard',
-					shortTitle: 'CAL',
-					displayColor: '#FFFFFF',
-				}),
-			};
-			const dashboard = new DashboardEntity('someid', { grid: [{ pos: { x: 1, y: 2 }, gridElement }] });
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: gridElementMock }],
+			});
 			const testGrid = dashboard.getGrid();
 
-			expect(testGrid[0].gridElement.getMetadata().id).toEqual('someId');
-			expect(testGrid[0].gridElement.getMetadata().title).toEqual('Calendar-Dashboard');
-			expect(testGrid[0].gridElement.getMetadata().shortTitle).toEqual('CAL');
-			expect(testGrid[0].gridElement.getMetadata().displayColor).toEqual('#FFFFFF');
+			expect(testGrid[0].gridElement.getContent().referencedId).toEqual('referenceId');
+			expect(testGrid[0].gridElement.getContent().title).toEqual('Mathe 3d');
+			expect(testGrid[0].gridElement.getContent().shortTitle).toEqual('Ma');
+			expect(testGrid[0].gridElement.getContent().displayColor).toEqual('#FFFFFF');
 		});
 
 		// it.todo('when elements are returned, they should include positions', () => {});
@@ -56,16 +84,9 @@ describe('dashboard entity', () => {
 
 	describe('moveElement', () => {
 		it('should move existing element to a new position', () => {
-			const gridElement = {
-				getId: () => 'gridelementid',
-				getMetadata: () => ({
-					id: 'someId',
-					title: 'Calendar-Dashboard',
-					shortTitle: 'CAL',
-					displayColor: '#FFFFFF',
-				}),
-			};
-			const dashboard = new DashboardEntity('someid', { grid: [{ pos: { x: 1, y: 2 }, gridElement }] });
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: gridElementMock }],
+			});
 			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
 			const grid = dashboard.getGrid();
@@ -78,40 +99,26 @@ describe('dashboard entity', () => {
 			expect(callMove).toThrow(NotFoundException);
 		});
 
-		it('when the new position is taken, it should throw badrequest', () => {
-			const gridElement = {
-				getId: () => 'gridelementid',
-				getMetadata: () => ({
-					id: 'someId',
-					title: 'Calendar-Dashboard',
-					shortTitle: 'CAL',
-					displayColor: '#FFFFFF',
-				}),
-			};
+		it('when the new position is taken, it should merge the elements into a group', () => {
+			const movedElement = getElementMock('tomove', ['ref02']);
+			const targetElement = getElementMock('target', ['ref01']);
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
-					{ pos: { x: 1, y: 2 }, gridElement },
-					{ pos: { x: 3, y: 3 }, gridElement },
+					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
+					{ pos: { x: 3, y: 3 }, gridElement: targetElement },
 				],
 			});
-			const callMove = () => dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
-			expect(callMove).toThrow(BadRequestException);
+			const spy = jest.spyOn(targetElement, 'addReferences');
+			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
+			expect(spy).toHaveBeenLastCalledWith(movedElement.getReferences());
+			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
 		});
 
 		it('when the new position is out of bounds, it should throw badrequest', () => {
-			const gridElement = {
-				getId: () => 'gridelementid',
-				getMetadata: () => ({
-					id: 'someId',
-					title: 'Calendar-Dashboard',
-					shortTitle: 'CAL',
-					displayColor: '#FFFFFF',
-				}),
-			};
 			const dashboard = new DashboardEntity('someid', {
 				colums: 3,
 				rows: 3,
-				grid: [{ pos: { x: 0, y: 2 }, gridElement }],
+				grid: [{ pos: { x: 0, y: 2 }, gridElement: gridElementMock }],
 			});
 			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 });
 			expect(callMove).toThrow(BadRequestException);
