@@ -837,5 +837,417 @@
 		"$date": "2021-10-04T09:02:42.797Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec5d6ea23507ba0600e94"
+	},
+	"fileIds": [],
+	"courseId": null,
+	"lessonId": null,
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task without course",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:19:00Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2021-10-19T13:19:18.604Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:19:18.604Z"
+	},
+	"__v": 0,
+	"publicSubmissions": false,
+	"teamSubmissions": false
+},
+{
+	"_id": {
+		"$oid": "616ec676ea23507ba0601617"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec623ea23507ba0601261"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task in hidden lesson where the task is visible",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:21:58.842Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2021-10-19T13:21:58.874Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:21:58.874Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec695ea23507ba06017bb"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec623ea23507ba0601261"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task in hidden lesson where the task is a draft",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:22:29.729Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2021-10-19T13:22:29.756Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:22:29.756Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec75dea23507ba0601d30"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task that include one submission that is over date",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:25:49.065Z"
+	},
+	"dueDate": {
+		"$date": "2021-10-19T16:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:25:49.09Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:25:49.09Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec792ea23507ba0601ed4"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task with submission that is still open",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:26:42.798Z"
+	},
+	"dueDate": {
+		"$date": "2023-10-19T13:26:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:26:42.818Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:26:42.818Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec7bcea23507ba0602079"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task with fullfilled submissions and over date",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:27:24.099Z"
+	},
+	"dueDate": {
+		"$date": "2021-10-19T16:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:27:24.122Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:27:24.122Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec7e1ea23507ba060221d"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task with fullfilled submissions that is open",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:28:01.728Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2021-10-19T13:28:01.749Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:28:01.749Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec811ea23507ba06023c2"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "615ac1a94ab618538c42a619"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task in visible lesson that is not published",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2023-10-19T13:28:00Z"
+	},
+	"dueDate": {
+		"$date": "2023-11-19T14:28:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:28:49.563Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:28:49.563Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec837ea23507ba0602647"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task that include one graded submissions and is over date",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:29:27.575Z"
+	},
+	"dueDate": {
+		"$date": "2021-10-19T16:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:29:27.594Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:29:27.594Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec85aea23507ba06027ec"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task that include one graded submissions and is still open",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:30:02.272Z"
+	},
+	"dueDate": {
+		"$date": "2023-10-19T13:29:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:30:02.291Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:30:02.291Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec887ea23507ba0602990"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task that has fullfilled graded submissions and is over date",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:30:47.318Z"
+	},
+	"dueDate": {
+		"$date": "2021-10-19T16:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:30:47.339Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:30:47.339Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec89eea23507ba0602b35"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"lessonId": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task that has fullfilled graded submissions and is still open",
+	"description": "",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2021-10-19T13:31:10.161Z"
+	},
+	"dueDate": {
+		"$date": "2023-10-19T16:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:31:10.18Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:31:10.18Z"
+	},
+	"__v": 0
 }]
 

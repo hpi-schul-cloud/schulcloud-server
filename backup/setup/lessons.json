@@ -945,11 +945,11 @@
 	"courseId": {
 		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
-	"name": "Lesson 1",
+	"name": "Lesson visible",
 	"contents": [
 		{
 			"_id": {
-				"$oid": "615ac1a94ab618538c42a61a"
+				"$oid": "616ec638ea23507ba06013af"
 			},
 			"title": "Text Title",
 			"hidden": false,
@@ -963,7 +963,7 @@
 		}
 	],
 	"time": {
-		"$date": "2021-10-03T22:00:00Z"
+		"$date": "2021-10-18T22:00:00Z"
 	},
 	"date": {
 		"$date": "1999-12-31T23:00:00Z"
@@ -972,7 +972,61 @@
 		"$date": "2021-10-04T08:56:09.637Z"
 	},
 	"updatedAt": {
-		"$date": "2021-10-04T08:56:14.023Z"
+		"$date": "2021-10-19T13:20:56.789Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec623ea23507ba0601261"
+	},
+	"materialIds": [],
+	"hidden": true,
+	"isCopyFrom": null,
+	"position": 1,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"name": "Lesson hidden",
+	"contents": [],
+	"time": {
+		"$date": "2021-10-18T22:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:20:35.81Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:20:35.81Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "616ec6e8ea23507ba06018f4"
+	},
+	"materialIds": [],
+	"hidden": false,
+	"isCopyFrom": null,
+	"position": 2,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"name": "lesson that include task with submissions and grades",
+	"contents": [],
+	"time": {
+		"$date": "2021-10-18T22:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-10-19T13:23:52.893Z"
+	},
+	"updatedAt": {
+		"$date": "2021-10-19T13:23:55.813Z"
 	},
 	"__v": 0
 }]
