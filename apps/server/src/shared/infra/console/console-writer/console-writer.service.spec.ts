@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConsoleWriter } from './console-writer.service';
+import { ConsoleWriterService } from './console-writer.service';
 
-describe('ConsoleWriter', () => {
-	let service: ConsoleWriter;
+describe('ConsoleWriterService', () => {
+	let service: ConsoleWriterService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [ConsoleWriter],
+			providers: [ConsoleWriterService],
 		}).compile();
 
-		service = module.get<ConsoleWriter>(ConsoleWriter);
+		service = module.get<ConsoleWriterService>(ConsoleWriterService);
 	});
 
 	it('should be defined', () => {
@@ -17,7 +17,8 @@ describe('ConsoleWriter', () => {
 	});
 	describe('when using info on console writer', () => {
 		it('should call spinner info with same input text', () => {
-			const spinnerSpy = jest.spyOn(service.spinner, 'info');
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			const spinnerSpy = jest.spyOn(service['spinner'], 'info');
 			const someRandomText = 'random text';
 			service.info(someRandomText);
 			expect(spinnerSpy).toHaveBeenCalledWith(someRandomText);

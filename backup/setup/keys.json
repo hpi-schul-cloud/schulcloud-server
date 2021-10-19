@@ -1,8 +1,9 @@
-[{
-	"_id": {
-		"$oid": "5fa2c5887b4e43c8ea1a1c52"
-	},
-	"name": "example",
-	"key": "example"
-}]
-
+[
+	{
+		"_id": {
+			"$oid": "5fa2c5887b4e43c8ea1a1c52"
+		},
+		"name": "example",
+		"key": "example"
+	}
+]

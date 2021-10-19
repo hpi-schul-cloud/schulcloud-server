@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConsoleModule } from 'nestjs-console';
-import { ServerModule } from '@src/server.module';
+import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
+import { ManagementModule } from '../modules/management/management.module';
 import { ServerConsole } from './server.console';
-import { ConsoleWriter } from './console-writer/console-writer.service';
 
 @Module({
-	imports: [ServerModule, ConsoleModule],
+	imports: [ManagementModule, ConsoleModule, ConsoleWriterModule],
 	providers: [
-		ConsoleWriter,
 		/** add console services as providers */
 		ServerConsole,
 	],

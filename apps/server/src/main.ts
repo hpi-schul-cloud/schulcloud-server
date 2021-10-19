@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -65,6 +67,17 @@ async function bootstrap() {
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	rootExpress.listen(3030);
+	const port = 3030;
+	rootExpress.listen(port);
+
+	console.log('#################################');
+	console.log(`### Start Server              ###`);
+	console.log(`### Port: ${port}                ###`);
+	console.log(`### Mounts                    ###`);
+	console.log(`### /api/v1 --> feathers      ###`);
+	console.log(`### /api/v3 --> nest          ###`);
+	console.log(`### /api    --> feathers      ###`);
+	console.log(`### /       --> feathers      ###`);
+	console.log('#################################');
 }
 void bootstrap();
