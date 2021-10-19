@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-391 - display special characters properly
 - BC-339 - creation of groups in the courses dashboard
 - BC-339 - add elements to groups in the courses dashboard
+- BC-6   - Show prepared tasks (drafts) for teachers
 
 ### Fixed
 
@@ -33,7 +34,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-388 - add simple script for end sjw
 - BC-319 - add route to change the position of a course dashboard element
 - BC-343 - run unstable e2e tests on label `run unstable tests`
-- BC-6   - Show prepared tasks (drafts) for teachers
 
 ### Changed
 
