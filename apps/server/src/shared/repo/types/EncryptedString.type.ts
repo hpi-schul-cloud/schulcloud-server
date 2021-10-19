@@ -30,10 +30,6 @@ export class EncryptedStringType extends Type<string, string> {
 		}
 		const encryptedString = this.encryptionService.encrypt(value);
 
-		if (!encryptedString) {
-			throw ValidationError.invalidType(EncryptedStringType, value, 'JS');
-		}
-
 		return encryptedString;
 	}
 
@@ -50,10 +46,6 @@ export class EncryptedStringType extends Type<string, string> {
 
 		// decrypt only non-empty strings
 		const decryptedString: string = this.encryptionService.decrypt(value);
-
-		if (!decryptedString) {
-			throw ValidationError.invalidType(EncryptedStringType, value, 'database');
-		}
 
 		return decryptedString;
 	}
