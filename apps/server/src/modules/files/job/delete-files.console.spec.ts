@@ -3,7 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '../../../core/logger/logger.module';
 import { DeleteFilesConsole } from './delete-files.console';
 import { DeleteFilesUc } from '../uc';
-import { FilesRepo, FileStorageRepo } from '../repo';
+import { FilesRepo } from '../repo';
+import { FileStorageAdapter } from '@shared/infra/filestorage';
 
 describe('DeleteFilesController', () => {
 	let console: DeleteFilesConsole;
@@ -25,7 +26,7 @@ describe('DeleteFilesController', () => {
 					useValue: {},
 				},
 				{
-					provide: FileStorageRepo,
+					provide: FileStorageAdapter,
 					useValue: {},
 				},
 			],

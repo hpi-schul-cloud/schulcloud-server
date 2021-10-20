@@ -3,12 +3,13 @@ import { Logger } from '@src/core/logger';
 import { File, StorageProvider } from '@shared/domain/entity';
 import { DeleteFilesUc } from './delete-files.uc';
 
-import { FilesRepo, FileStorageRepo } from '../repo';
+import { FilesRepo } from '../repo';
+import { FileStorageAdapter } from '@shared/infra/filestorage';
 
 describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;
 	let filesRepo: FilesRepo;
-	let fileStorageRepo: FileStorageRepo;
+	let fileStorageAdapter: FileStorageAdapter;
 	let logger: Logger;
 
 	const exampleStorageProvider = new StorageProvider({
@@ -37,7 +38,7 @@ describe('DeleteFileUC', () => {
 					},
 				},
 				{
-					provide: FileStorageRepo,
+					provide: FileStorageAdapter,
 					useValue: {
 						deleteFile() {
 							return Promise.resolve();
@@ -58,7 +59,7 @@ describe('DeleteFileUC', () => {
 		logger = module.get(Logger);
 		service = module.get(DeleteFilesUc);
 		filesRepo = module.get(FilesRepo);
-		fileStorageRepo = module.get(FileStorageRepo);
+		fileStorageAdapter = module.get(FileStorageAdapter);
 	});
 
 	it('should be defined', () => {
@@ -77,7 +78,7 @@ describe('DeleteFileUC', () => {
 		});
 
 		it('should delete all file storage data that are marked for cleanup', async () => {
-			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
+			const deleteFileStorageSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
 			await service.removeDeletedFilesData(new Date());
 			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
 			// eslint-disable-next-line no-restricted-syntax
@@ -88,7 +89,7 @@ describe('DeleteFileUC', () => {
 
 		it('should continue after a file could not be deleted', async () => {
 			const errorLogSpy = jest.spyOn(logger, 'error');
-			const deleteFileStorageSpy = jest.spyOn(fileStorageRepo, 'deleteFile');
+			const deleteFileStorageSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
 			deleteFileStorageSpy.mockImplementationOnce(() => {
 				throw new Error();
 			});
