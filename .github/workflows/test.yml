@@ -41,7 +41,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: 16.11.1
+          node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.6.0
         with:
@@ -64,7 +64,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: 16.11.1
+          node-version: ${{ env.NODE_VERSION }}
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:lint
