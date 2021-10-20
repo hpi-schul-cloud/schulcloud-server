@@ -15,7 +15,8 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "lts/*"
+		"node": "16.11.1",
+		"npm": "8.0.0"
 	},
 	"scripts": {
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
