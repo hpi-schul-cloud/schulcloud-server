@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { File, StorageProvider } from '@shared/domain/entity';
-import { DeleteFilesUc } from './delete-files.uc';
-
-import { FilesRepo } from '../repo';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { DeleteFilesUc } from './delete-files.uc';
+import { FilesRepo } from '../repo';
 
 describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;
