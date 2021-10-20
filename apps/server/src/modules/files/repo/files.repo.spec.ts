@@ -53,7 +53,7 @@ describe('FilesRepo', () => {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			expect(file.deletedAt!.getTime()).toBeLessThanOrEqual(cleanupThreshold.getTime());
 
-			const result = await repo.getFilesForCleanup(cleanupThreshold);
+			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
 		});
@@ -64,7 +64,7 @@ describe('FilesRepo', () => {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			em.clear();
 
-			const result = await repo.getFilesForCleanup(cleanupThreshold);
+			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
 		});
@@ -75,7 +75,7 @@ describe('FilesRepo', () => {
 			const cleanupThreshold = new Date();
 			em.clear();
 
-			const result = await repo.getFilesForCleanup(cleanupThreshold);
+			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
 		});
 
@@ -87,7 +87,7 @@ describe('FilesRepo', () => {
 			expect(file.deletedAt!.getTime()).toBeGreaterThan(cleanupThreshold.getTime());
 			em.clear();
 
-			const result = await repo.getFilesForCleanup(cleanupThreshold);
+			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
 		});
 	});
