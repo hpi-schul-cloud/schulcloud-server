@@ -4,6 +4,7 @@ import { SymetricKeyEncryptionService } from './encryption.service';
 export interface EncryptionModuleOptions {
 	SymmetricCipherKey: string;
 }
+
 @Module({})
 export class EncryptionModule {
 	static forRoot(options: EncryptionModuleOptions): DynamicModule {

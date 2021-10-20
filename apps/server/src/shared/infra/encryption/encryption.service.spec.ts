@@ -14,6 +14,7 @@ describe('SymetricKeyEncryptionService', () => {
 		// do not forget to migrate encrypted values from the database accordingly!
 		const encryptedValue = encryptionService.encrypt(testInput);
 		expect(encryptedValue.length).toEqual(44);
+		expect(encryptedValue).not.toEqual(testInput);
 		const decryptionResult = encryptionService.decrypt(encryptedValue);
 		// Due to different IV and salt values, the encrypted values cannot be compared directly
 		expect(decryptionResult).toEqual(testInput);
