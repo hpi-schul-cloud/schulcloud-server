@@ -30,8 +30,7 @@ describe('TaskRepo', () => {
 		await em.getDriver().dropCollections();
 	});
 
-	// TODO: split private methode test from findOpenByParentIds
-	describe('findOpenByParentIds', () => {
+	describe('findAllByParentIds', () => {
 		describe('where current user is a teacher', () => {
 			it('should find tasks by teacherId', async () => {
 				const teacher1 = userFactory.build();

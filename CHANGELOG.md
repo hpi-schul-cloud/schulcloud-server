@@ -15,7 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- BC-13 - filter archived task and dont show it by open task
+- BC-13 - filter archived tasks and dont return it by task.findAll uc
 
 ## [26.13.0] - 2021-10-19
 
