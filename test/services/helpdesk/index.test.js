@@ -153,7 +153,7 @@ describe('helpdesk service', function test() {
 		expect(mailService.create.args[0][0].email).to.equal('ticketsystem@schul-cloud.org');
 	});
 
-	it('POST /helpdesk to schoolcloud with wish should be send additionally to default email if federal state email is provided and supportType is specified', async () => {
+	it('POST /helpdesk to schoolcloud with wish should be send to all mentioned emails if supportType is specified', async () => {
 		const postBody = {
 			type: 'contactHPI',
 			supportType: 'wish',
@@ -164,7 +164,7 @@ describe('helpdesk service', function test() {
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
-		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de');
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de,ticketsystem@schul-cloud.org');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.args.length).to.equal(2);
 		expect(mailService.create.args[0][0].email).to.equal('nbc-wunsch@netz-21.de');

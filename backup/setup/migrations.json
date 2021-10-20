@@ -1093,5 +1093,16 @@
 			"$date": "2021-09-15T09:51:11.740Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "616d3b9dedb0421a94ab5d21"
+		},
+		"state": "up",
+		"name": "drop-invalid-dashboard-collections",
+		"createdAt": {
+			"$date": "2021-10-18T09:17:17.853Z"
+		},
+		"__v": 0
 	}
 ]
