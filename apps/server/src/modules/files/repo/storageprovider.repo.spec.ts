@@ -4,8 +4,9 @@ import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
 import { storageProviderFactory } from '@shared/domain/factory';
 import { Platform } from '@mikro-orm/core';
+import { EncryptedStringType } from '@shared/repo/types/EncryptedString.type';
+import { StorageProvider } from '@shared/domain';
 import { StorageProviderRepo } from '.';
-import { EncryptedStringType } from '../../../shared/repo/types/EncryptedString.type';
 
 describe('StorageProviderRepo', () => {
 	let repo: StorageProviderRepo;
@@ -46,18 +47,19 @@ describe('StorageProviderRepo', () => {
 		// fetch plain json from db
 		const { id } = storageProvider;
 		const driver = em.getDriver();
-		const result = await driver.findOne('StorageProvider', { _id: id });
+		const result = (await driver.findOne('StorageProvider', { _id: id })) as StorageProvider;
 
 		// secretAccessKey should be encrypted in persistence
+		expect(result.secretAccessKey).not.toEqual(secretAccessKey);
 		const decryptedSecretAccessKey = encryptedStringType.convertToJSValue(
-			result?.secretAccessKey,
+			result.secretAccessKey,
 			undefined as unknown as Platform
 		);
 		expect(decryptedSecretAccessKey).toEqual(secretAccessKey);
 
 		em.clear();
 
-		// load via repo should decrypt the type
+		// load via repo should decrypt the type transparently
 		const storageProviderFromPersistence = await repo.findOneById(id);
 		expect(storageProviderFromPersistence.secretAccessKey).toEqual(secretAccessKey);
 	});
