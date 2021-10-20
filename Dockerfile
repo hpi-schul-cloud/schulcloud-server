@@ -1,5 +1,5 @@
 # if node version is changed, also adapt .nvmrc file
-FROM docker.io/library/node:16.11.1-alpine
+FROM docker.io/library/node:16-alpine
 ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python
 WORKDIR /schulcloud-server
