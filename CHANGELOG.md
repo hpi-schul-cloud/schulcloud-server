@@ -11,9 +11,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-6   - Show prepared tasks (drafts) for teachers
+
 ### Fixed
 
 ### Changed
+
+- BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
 
 ## [26.13.0] - 2021-10-19
 
@@ -23,7 +27,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-391 - display special characters properly
 - BC-339 - creation of groups in the courses dashboard
 - BC-339 - add elements to groups in the courses dashboard
-- BC-6   - Show prepared tasks (drafts) for teachers
 
 ### Fixed
 
@@ -33,7 +36,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-487 - update mongodb-memory-server from 6.9.6 to 7.4.4
 - BC-490 - setup entities for tests without needing a database
-- BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
 
 ## [26.12.0] - 2021-10-12
 
