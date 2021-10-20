@@ -1,22 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PaginationResponse<T> {
-	constructor(data: T, total: number, skip?: number, limit?: number) {
-		this.data = data;
+export abstract class PaginationResponse<T> {
+	constructor(total: number, skip?: number, limit?: number) {
 		this.total = total;
 		this.skip = skip;
 		this.limit = limit;
 	}
 
 	@ApiProperty()
-	data: T;
+	abstract data: T;
 
-	@ApiProperty()
+	@ApiProperty({ type: 'number' })
 	total: number;
 
-	@ApiProperty()
+	@ApiProperty({ type: 'number' })
 	skip?: number;
 
-	@ApiProperty()
+	@ApiProperty({ type: 'number' })
 	limit?: number;
 }
