@@ -28,7 +28,7 @@ describe('DeleteFileUC', () => {
 				{
 					provide: FilesRepo,
 					useValue: {
-						getFilesForCleanup() {
+						findAllFilesForCleanup() {
 							return Promise.resolve(exampleFiles);
 						},
 						removeAndFlush() {
