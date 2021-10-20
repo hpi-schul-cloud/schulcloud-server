@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PaginationResponse } from '@shared/controller';
 import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { SchoolInfoResponse } from './school-info.response';
 import { TargetInfoResponse } from './target-info.response';
@@ -89,4 +90,14 @@ export class NewsResponse {
 		description: 'List of permissions the current user has for the News entity',
 	})
 	permissions: string[];
+}
+
+export class NewsListResponse extends PaginationResponse<NewsResponse[]> {
+	constructor(data: NewsResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [NewsResponse] })
+	data: NewsResponse[];
 }

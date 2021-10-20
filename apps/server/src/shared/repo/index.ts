@@ -6,3 +6,4 @@
 
 export * from './query';
 export { Scope } from './scope';
+export * from './lesson';

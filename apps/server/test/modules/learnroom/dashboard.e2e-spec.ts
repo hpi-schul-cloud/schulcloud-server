@@ -55,7 +55,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -72,12 +72,76 @@ describe('Dashboard Controller (e2e)', () => {
 			expect(resonse.status).toEqual(200);
 		});
 
+		it('should create groups', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: GridElement.FromSingleReference(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Quantumphysics')
+						),
+					},
+					{
+						pos: { x: 2, y: 2 },
+						gridElement: GridElement.FromSingleReference(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'Astrophysics')
+						),
+					},
+				],
+			});
+			await dashboardRepo.persistAndFlush(dashboard);
+
+			const params = {
+				from: { x: 1, y: 3 },
+				to: { x: 2, y: 2 },
+			};
+			const response = await request(app.getHttpServer()).patch(`/dashboard/${dashboard.id}/moveElement`).send(params);
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.gridElements.length).toEqual(1);
+			expect(body.gridElements[0]).toHaveProperty('groupElements');
+		});
+
+		it('should add element to group', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 2, y: 2 },
+						gridElement: GridElement.FromSingleReference(
+							new ObjectId().toString(),
+							new DefaultGridReference(new ObjectId().toString(), 'mannequinization')
+						),
+					},
+					{
+						pos: { x: 3, y: 3 },
+						gridElement: GridElement.FromReferenceGroup(new ObjectId().toString(), [
+							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
+							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
+						]),
+					},
+				],
+			});
+			await dashboardRepo.persistAndFlush(dashboard);
+
+			const params = {
+				from: { x: 2, y: 2 },
+				to: { x: 3, y: 3 },
+			};
+			const response = await request(app.getHttpServer()).patch(`/dashboard/${dashboard.id}/moveElement`).send(params);
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.gridElements.length).toEqual(1);
+			expect(body.gridElements[0]).toHaveProperty('groupElements');
+		});
+
 		it('should fail with incomplete input', async () => {
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: new GridElement(
+						gridElement: GridElement.FromSingleReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),

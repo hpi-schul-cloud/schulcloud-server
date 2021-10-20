@@ -12,12 +12,24 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-121 - add console script to delete soft-deleted files
-- BC-394 - send email wishes from federal states also to ticketsystem
+
+### Fixed
+
+### Changed
+
+## [26.13.0] - 2021-10-19
+
+### Added
+
+- BC-394 - send email wishes to additionally needed addresses
 - BC-391 - display special characters properly
+- BC-339 - creation of groups in the courses dashboard
+- BC-339 - add elements to groups in the courses dashboard
 
 ### Fixed
 
 - BC-436 - Fix univention LDAP strategy
+- BC-21 - Remove generics from DTOs, because generics can not be used to generate OpenApi properly
 
 ### Changed
 
@@ -31,6 +43,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-388 - add simple script for end sjw
 - BC-319 - add route to change the position of a course dashboard element
 - BC-343 - run unstable e2e tests on label `run unstable tests`
+- BC-6   - Show prepared tasks (drafts) for teachers
 
 ### Changed
 
@@ -39,6 +52,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
 - BC-269 - check in firstLogin that students can only pass with existing birthdate
+- BC-154 - remove lesson entity from task repository
 - BC-231 - upgraded nestjs@7 to nestjs@8
 
 ### Fixed
