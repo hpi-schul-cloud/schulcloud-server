@@ -4,20 +4,31 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { BaseFile, File } from '@shared/domain';
 import { fileFactory } from '@shared/domain/factory';
+import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { FilesRepo } from './files.repo';
 
 describe('FilesRepo', () => {
 	let repo: FilesRepo;
+	let fileStorageAdapter: FileStorageAdapter;
 	let em: EntityManager;
 	let module: TestingModule;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [FilesRepo],
+			providers: [
+				FilesRepo,
+				{
+					provide: FileStorageAdapter,
+					useValue: {
+						deleteFile: () => {},
+					},
+				},
+			],
 		}).compile();
 
 		repo = module.get(FilesRepo);
+		fileStorageAdapter = module.get(FileStorageAdapter);
 		em = module.get(EntityManager);
 	});
 
@@ -89,6 +100,30 @@ describe('FilesRepo', () => {
 
 			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
+		});
+	});
+
+	describe('deleteFile', () => {
+		it('should delete the file representation in the database', async () => {
+			const file = fileFactory.build();
+			await em.persistAndFlush(file);
+
+			await repo.deleteFile(file);
+
+			const fileAfterDeletion = await em.findOne(File, file.id);
+			expect(fileAfterDeletion).toBeNull();
+		});
+
+		it('should delete the file in the storage provider', async () => {
+			const fileStorageAdapterSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
+
+			const file = fileFactory.build();
+			await em.persistAndFlush(file);
+
+			await repo.deleteFile(file);
+
+			expect(fileStorageAdapterSpy).toBeCalledTimes(1);
+			expect(fileStorageAdapterSpy).toBeCalledWith(file);
 		});
 	});
 });
