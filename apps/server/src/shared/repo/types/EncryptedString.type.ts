@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Type, Platform, ValidationError } from '@mikro-orm/core';
+import { Type, Platform } from '@mikro-orm/core';
 import { SymetricKeyEncryptionService } from '../../infra/encryption';
 
 /**

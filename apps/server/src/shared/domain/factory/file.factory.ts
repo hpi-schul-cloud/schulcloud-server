@@ -1,10 +1,9 @@
 import { File } from '../entity/file.entity';
-import type { User } from '../entity/user.entity';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
 
 export const fileFactory = {
-	build: (props?: { storageFileName?: string; bucket?: string; deletedAt?: Date; creator?: User }): File => {
+	build: (props?: Partial<File>): File => {
 		const file = new File({
 			storageFileName: 'storageFileName',
 			bucket: 'test-bucket',
