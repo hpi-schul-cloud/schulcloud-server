@@ -50,7 +50,7 @@ describe('FilesRepo', () => {
 		});
 	});
 
-	describe('getFilesForCleanup', () => {
+	describe('findAllFilesForCleanup', () => {
 		afterEach(async () => {
 			await em.nativeDelete(File, {});
 		});
