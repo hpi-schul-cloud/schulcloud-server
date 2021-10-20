@@ -11,8 +11,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-6   - Show prepared tasks (drafts) for teachers
-
 ### Fixed
 
 ### Changed
@@ -27,6 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-391 - display special characters properly
 - BC-339 - creation of groups in the courses dashboard
 - BC-339 - add elements to groups in the courses dashboard
+- BC-6   - Show prepared tasks (drafts) for teachers
 
 ### Fixed
 
