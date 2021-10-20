@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
-import { File } from '@shared/domain';
-import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { FilesRepo } from '../repo';
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private fileStorageAdapter: FileStorageAdapter, private logger: Logger) {
+	constructor(private filesRepo: FilesRepo, private logger: Logger) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
