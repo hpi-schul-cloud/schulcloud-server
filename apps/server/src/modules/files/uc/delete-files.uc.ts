@@ -18,7 +18,7 @@ export class DeleteFilesUc {
 		const filesForDeletion = await this.filesRepo.getFilesForCleanup(removedSince);
 		const numberOfFiles = filesForDeletion.length;
 		this.logger.log(`${numberOfFiles} files will be deleted`);
-		let numberOfErrors = 0;
+		const failingFileIds: string[] = [];
 		// eslint-disable-next-line no-restricted-syntax
 		for (const file of filesForDeletion) {
 			try {
@@ -27,10 +27,13 @@ export class DeleteFilesUc {
 				// eslint-disable-next-line no-await-in-loop
 				await this.filesRepo.removeAndFlush(file);
 			} catch (err) {
-				numberOfErrors += 1;
+				failingFileIds.push(file.id);
 				this.logger.error(err);
 			}
 		}
-		this.logger.log(`${numberOfFiles - numberOfErrors} out of ${numberOfFiles} files were successfully deleted`);
+		this.logger.log(`${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted`);
+		if (failingFileIds.length > 0) {
+			this.logger.log('the following files could not be deleted:', failingFileIds);
+		}
 	}
 }
