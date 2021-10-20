@@ -15,7 +15,7 @@ export class DeleteFilesUc {
 	 * @param removedSince
 	 */
 	async removeDeletedFilesData(removedSince: Date): Promise<void> {
-		const filesForDeletion = await this.filesRepo.getFilesForCleanup(removedSince);
+		const filesForDeletion = await this.filesRepo.findAllFilesForCleanup(removedSince);
 		const numberOfFiles = filesForDeletion.length;
 		this.logger.log(`${numberOfFiles} files will be deleted`);
 		let numberOfErrors = 0;
