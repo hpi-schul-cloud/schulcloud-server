@@ -11,6 +11,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Fixed
+
+### Changed
+
+## [26.13.0] - 2021-10-19
+
+### Added
+
 - BC-394 - send email wishes to additionally needed addresses
 - BC-391 - display special characters properly
 - BC-339 - creation of groups in the courses dashboard
