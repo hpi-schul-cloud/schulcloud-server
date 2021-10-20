@@ -1,37 +1,29 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 
-import { fileFactory, storageProviderFactory } from '@shared/domain/factory';
+import { storageProviderFactory } from '@shared/domain/factory';
 import { Platform } from '@mikro-orm/core';
-import { FileStorageRepo } from '.';
+import { StorageProviderRepo } from '.';
 import { EncryptedStringType } from '../../../shared/repo/types/EncryptedString.type';
 
-describe('FileStorageRepo', () => {
-	let repo: FileStorageRepo;
+describe('StorageProviderRepo', () => {
+	let repo: StorageProviderRepo;
 	let em: EntityManager;
 	let module: TestingModule;
-	let s3Mock: AwsClientStub<S3Client>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [FileStorageRepo],
+			providers: [StorageProviderRepo],
 		}).compile();
 
-		repo = module.get(FileStorageRepo);
+		repo = module.get(StorageProviderRepo);
 		em = module.get(EntityManager);
-	});
-
-	beforeEach(() => {
-		s3Mock = mockClient(S3Client);
 	});
 
 	afterAll(async () => {
 		await module.close();
-		s3Mock.restore();
 	});
 
 	describe('defined', () => {
@@ -44,49 +36,29 @@ describe('FileStorageRepo', () => {
 		});
 	});
 
-	describe('deleteFile', () => {
-		it('should send deletion command to storage provider client', async () => {
-			const bucket = 'bucket';
-			const storageFileName = 'storageFileName';
+	it('should encrypt property secretAccessKey in persistence', async () => {
+		const secretAccessKey = 'toBeEncrypted';
+		const encryptedStringType = new EncryptedStringType();
 
-			const file = fileFactory.build({ bucket, storageFileName });
+		const storageProvider = storageProviderFactory.build({ secretAccessKey });
+		await repo.persistAndFlush(storageProvider);
 
-			await repo.deleteFile(file);
+		// fetch plain json from db
+		const { id } = storageProvider;
+		const driver = em.getDriver();
+		const result = await driver.findOne('StorageProvider', { _id: id });
 
-			expect(s3Mock.send.callCount).toEqual(1);
+		// secretAccessKey should be encrypted in persistence
+		const decryptedSecretAccessKey = encryptedStringType.convertToJSValue(
+			result?.secretAccessKey,
+			undefined as unknown as Platform
+		);
+		expect(decryptedSecretAccessKey).toEqual(secretAccessKey);
 
-			const callArgs = s3Mock.send.firstCall.args;
-			expect(callArgs.length).toEqual(1);
+		em.clear();
 
-			const callArg = callArgs[0] as DeleteObjectCommand;
-			expect(callArg.input.Bucket).toEqual(bucket);
-			expect(callArg.input.Key).toEqual(storageFileName);
-		});
-
-		it('should encrypt property secretAccessKey in persistence', async () => {
-			const secretAccessKey = 'toBeEncrypted';
-			const encryptedStringType = new EncryptedStringType();
-
-			const storageProvider = storageProviderFactory.build({ secretAccessKey });
-			await repo.persistAndFlush(storageProvider);
-
-			// fetch plain json from db
-			const { id } = storageProvider;
-			const driver = em.getDriver();
-			const result = await driver.findOne('StorageProvider', { _id: id });
-
-			// secretAccessKey should be encrypted in persistence
-			const decryptedSecretAccessKey = encryptedStringType.convertToJSValue(
-				result?.secretAccessKey,
-				undefined as unknown as Platform
-			);
-			expect(decryptedSecretAccessKey).toEqual(secretAccessKey);
-
-			em.clear();
-
-			// load via repo should decrypt the type
-			const storageProviderFromPersistence = await repo.findOneById(id);
-			expect(storageProviderFromPersistence.secretAccessKey).toEqual(secretAccessKey);
-		});
+		// load via repo should decrypt the type
+		const storageProviderFromPersistence = await repo.findOneById(id);
+		expect(storageProviderFromPersistence.secretAccessKey).toEqual(secretAccessKey);
 	});
 });

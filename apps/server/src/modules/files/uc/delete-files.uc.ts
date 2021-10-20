@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { File } from '@shared/domain';
-import { FilesRepo, FileStorageRepo } from '../repo';
+import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { FilesRepo } from '../repo';
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private fileStorageRepo: FileStorageRepo, private logger: Logger) {
+	constructor(private filesRepo: FilesRepo, private fileStorageAdapter: FileStorageAdapter, private logger: Logger) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
@@ -22,7 +23,7 @@ export class DeleteFilesUc {
 		for (const file of filesForDeletion) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				if (file instanceof File) await this.fileStorageRepo.deleteFile(file);
+				if (file instanceof File) await this.fileStorageAdapter.deleteFile(file);
 				// eslint-disable-next-line no-await-in-loop
 				await this.filesRepo.removeAndFlush(file);
 			} catch (err) {
