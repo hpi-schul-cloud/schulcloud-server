@@ -15,6 +15,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-379 - updated the engine version to node 16 and npm 8
+
 ## [26.13.0] - 2021-10-19
 
 ### Added
