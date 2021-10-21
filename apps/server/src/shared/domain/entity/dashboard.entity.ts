@@ -40,6 +40,8 @@ export class DefaultGridReference implements IGridElementReference {
 }
 
 export interface IGridElement {
+	hasId(): boolean;
+
 	getId: () => EntityId;
 
 	getContent: () => GridElementContent;
@@ -62,20 +64,28 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	private constructor(id: EntityId, references: IGridElementReference[]) {
-		this.id = id;
-		this.references = references;
+	private constructor(props: { id?: EntityId; references: IGridElementReference[] }) {
+		if (props.id) this.id = props.id;
+		this.references = props.references;
 	}
 
-	static FromSingleReference(id: EntityId, reference: IGridElementReference): GridElement {
-		return new GridElement(id, [reference]);
+	static FromPersistedReference(id: EntityId, reference: IGridElementReference): GridElement {
+		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromReferenceGroup(id: EntityId, group: IGridElementReference[]): GridElement {
-		return new GridElement(id, group);
+	static FromPersistedGroup(id: EntityId, group: IGridElementReference[]): GridElement {
+		return new GridElement({ id, references: group });
+	}
+
+	static FromSingleReference(reference: IGridElementReference): GridElement {
+		return new GridElement({ references: [reference] });
 	}
 
 	references: IGridElementReference[];
+
+	hasId(): boolean {
+		return !!this.id;
+	}
 
 	getId(): EntityId {
 		return this.id;

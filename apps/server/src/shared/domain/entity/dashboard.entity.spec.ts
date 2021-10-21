@@ -13,6 +13,7 @@ const getReferenceMock = (id: string) => ({
 const getElementMock = (mockId: string, referenceIds: string[]) => {
 	let references = referenceIds.map((id) => getReferenceMock(id));
 	return {
+		hasId: () => true,
 		getId: () => mockId,
 		getContent: () => ({
 			referencedId: referenceIds[0],
@@ -29,6 +30,7 @@ const getElementMock = (mockId: string, referenceIds: string[]) => {
 };
 
 const gridElementMock = {
+	hasId: () => true,
 	getId: () => 'gridelementid',
 	getContent: () => ({
 		referencedId: 'referenceId',

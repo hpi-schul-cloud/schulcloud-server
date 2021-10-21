@@ -55,7 +55,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -77,14 +77,14 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Quantumphysics')
 						),
 					},
 					{
 						pos: { x: 2, y: 2 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Astrophysics')
 						),
@@ -109,14 +109,14 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 2, y: 2 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'mannequinization')
 						),
 					},
 					{
 						pos: { x: 3, y: 3 },
-						gridElement: GridElement.FromReferenceGroup(new ObjectId().toString(), [
+						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
 							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
 							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
 						]),
@@ -141,7 +141,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),

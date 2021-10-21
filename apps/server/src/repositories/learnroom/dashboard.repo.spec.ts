@@ -33,7 +33,7 @@ describe('dashboard repo', () => {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromSingleReference(
+					gridElement: GridElement.FromPersistedReference(
 						new ObjectId().toString(),
 						new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 					),
@@ -52,7 +52,7 @@ describe('dashboard repo', () => {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromReferenceGroup(new ObjectId().toString(), [
+					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
 						new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
 						new DefaultGridReference(new ObjectId().toString(), 'German'),
 					]),
@@ -79,7 +79,7 @@ describe('dashboard repo', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -97,7 +97,7 @@ describe('dashboard repo', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromSingleReference(
+						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
 							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
 						),
@@ -110,6 +110,22 @@ describe('dashboard repo', () => {
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(dashboard.id).toEqual(result.id);
 			expect(dashboard).toEqual(result);
+		});
+
+		it('should persist dashboard with element without id', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: GridElement.FromSingleReference(new DefaultGridReference(new ObjectId().toString(), 'Mathe')),
+					},
+				],
+			});
+			await repo.persistAndFlush(dashboard);
+
+			const result = await repo.getDashboardById(dashboard.id);
+			expect(result.id).toEqual(result.id);
+			expect(typeof result.getGrid()[0].gridElement.getId()).toEqual('string');
 		});
 	});
 
