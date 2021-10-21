@@ -14,12 +14,15 @@ describe('DeleteFileUC', () => {
 		accessKeyId: 'accessKey',
 		secretAccessKey: 'secret',
 	});
+
 	const exampleFiles = [
 		new File({ storageProvider: exampleStorageProvider, storageFileName: 'file1', bucket: 'bucket' }),
 		new File({ storageProvider: exampleStorageProvider, storageFileName: 'file1', bucket: 'bucket' }),
 	];
 
 	beforeEach(async () => {
+		exampleFiles[0].id = 'failed_removal_id';
+		exampleFiles[1].id = 'other_id';
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				DeleteFilesUc,
@@ -73,6 +76,7 @@ describe('DeleteFileUC', () => {
 			});
 			await uc.removeDeletedFilesData(new Date());
 			expect(errorLogSpy).toHaveBeenCalled();
+			expect(errorLogSpy).toHaveBeenCalledWith('the following files could not be deleted:', ['failed_removal_id']);
 			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
 			// eslint-disable-next-line no-restricted-syntax
 			for (const file of exampleFiles) {

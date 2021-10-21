@@ -29,7 +29,7 @@ export class DeleteFilesUc {
 		}
 		this.logger.log(`${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted`);
 		if (failingFileIds.length > 0) {
-			this.logger.log('the following files could not be deleted:', failingFileIds);
+			this.logger.error('the following files could not be deleted:', failingFileIds);
 		}
 	}
 }
