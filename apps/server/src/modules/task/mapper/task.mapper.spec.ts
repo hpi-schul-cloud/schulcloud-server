@@ -13,7 +13,7 @@ const createExpectedResponse = (
 		isDraft: boolean;
 		isSubstitutionTeacher: boolean;
 	},
-	parent?: { name: string; color: string }
+	parent?: { name: string; color: string; description: string }
 ): TaskResponse => {
 	const expected = new TaskResponse();
 	expected.id = task.id;
@@ -32,6 +32,7 @@ const createExpectedResponse = (
 	if (parent !== undefined) {
 		expected.courseName = parent.name;
 		expected.displayColor = parent.color;
+		expected.description = parent.description;
 	}
 
 	return expected;
