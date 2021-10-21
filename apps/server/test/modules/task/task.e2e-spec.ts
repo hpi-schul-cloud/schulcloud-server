@@ -141,6 +141,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0]).toHaveProperty('status');
 			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
 			expect(paginatedResult.data[0]).toHaveProperty('name');
+			expect(paginatedResult.data[0]).toHaveProperty('description');
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {

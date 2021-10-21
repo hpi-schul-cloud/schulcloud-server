@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-13 - filter archived tasks and dont return it by task.findAll uc
+- BC-501 - return lesson name as task description for more detailed informations
 
 ## [26.13.0] - 2021-10-19
 
