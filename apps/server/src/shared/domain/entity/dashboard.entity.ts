@@ -49,6 +49,8 @@ export interface IGridElement {
 	getReferences(): IGridElementReference[];
 
 	addReferences(anotherReference: IGridElementReference[]): void;
+
+	getGroupName(): string;
 }
 
 export type GridElementContent = {
@@ -110,6 +112,15 @@ export class GridElement implements IGridElement {
 
 	isGroup(): boolean {
 		return this.references.length > 1;
+	}
+
+	getGroupName(): string {
+		if (this.isGroup()) {
+			return this.getContent().title;
+		}
+
+		// what should be returned when its no group? is it even necessary?
+		return '';
 	}
 }
 

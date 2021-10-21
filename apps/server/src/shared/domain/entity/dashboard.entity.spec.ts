@@ -25,6 +25,7 @@ const getElementMock = (mockId: string, referenceIds: string[]) => {
 		addReferences: (newreferences: IGridElementReference[]) => {
 			references = references.concat(newreferences);
 		},
+		getGroupName: () => '',
 	};
 };
 
@@ -41,6 +42,7 @@ const gridElementMock = {
 		throw new Error('please implement mock function');
 	},
 	addReferences: (references: IGridElementReference[]) => {},
+	getGroupName: () => '',
 };
 
 describe('dashboard entity', () => {

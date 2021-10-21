@@ -87,4 +87,22 @@ describe('dashboardElement', () => {
 			});
 		});
 	});
+
+	describe('getGroupName', () => {
+		describe('when Element has a single reference', () => {
+			it('should return empty group name', () => {
+				const element = GridElement.FromSingleReference('id', gridReference);
+				const result = element.getGroupName();
+				expect(result).toEqual('');
+			});
+		});
+
+		describe('when Element has multiple references', () => {
+			it('should return the correct group name', () => {
+				const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
+				const result = element.getGroupName();
+				expect(result).toEqual('exampleTitle');
+			});
+		});
+	});
 });
