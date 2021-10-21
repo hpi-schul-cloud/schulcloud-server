@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-526 - files deleted via directory deletion will be deleted with the deletion concept
+
 ### Fixed
 
 ### Changed

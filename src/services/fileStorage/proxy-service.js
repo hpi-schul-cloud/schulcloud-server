@@ -659,9 +659,9 @@ const directoryService = {
 				if (!file) {
 					return Promise.resolve({});
 				}
-				return FileModel.find({ parent: _id }).remove().lean().exec();
+				return FileModel.find({ parent: _id }).delete().lean().exec();
 			})
-			.then(() => fileInstance.remove().lean().exec())
+			.then(() => fileInstance.delete().lean().exec())
 			.catch((err) => new Forbidden(err));
 	},
 };
