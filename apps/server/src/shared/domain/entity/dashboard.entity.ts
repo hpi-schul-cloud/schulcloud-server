@@ -114,6 +114,7 @@ export class GridElement implements IGridElement {
 }
 
 export type GridPosition = { x: number; y: number };
+export type GridPositionWithGroupIndex = { x: number; y: number; groupIndex?: number };
 
 export type GridElementWithPosition = {
 	gridElement: IGridElement;
@@ -171,7 +172,7 @@ export class DashboardEntity {
 		return result;
 	}
 
-	moveElement(from: GridPosition, to: GridPosition): GridElementWithPosition {
+	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
 		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
 		if (!elementToMove) {
 			throw new NotFoundException('no element at origin position');
