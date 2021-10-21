@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DashboardEntity, EntityId, GridPosition } from '@shared/domain';
+import { DashboardEntity, EntityId, GridPosition, GridElement } from '@shared/domain';
 import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
 
 @Injectable()
@@ -22,4 +22,6 @@ export class DashboardUc {
 		await this.dashboardRepo.persistAndFlush(dashboard);
 		return dashboard;
 	}
+
+	// async renameGroup(gridelementId: EntityId, params: string): Promise<GridElement> {}
 }

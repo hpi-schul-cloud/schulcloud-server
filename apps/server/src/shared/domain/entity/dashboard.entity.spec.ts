@@ -10,7 +10,7 @@ const getReferenceMock = (id: string) => ({
 	}),
 });
 
-const getElementMock = (mockId: string, referenceIds: string[]) => {
+const getElementMock = (mockId: string, title: string, referenceIds: string[]) => {
 	let references = referenceIds.map((id) => getReferenceMock(id));
 	return {
 		getId: () => mockId,
@@ -26,6 +26,9 @@ const getElementMock = (mockId: string, referenceIds: string[]) => {
 			references = references.concat(newreferences);
 		},
 		getGroupName: () => '',
+		setGroupName: (newGroupName: string) => {
+			title = newGroupName;
+		},
 	};
 };
 
@@ -43,6 +46,7 @@ const gridElementMock = {
 	},
 	addReferences: (references: IGridElementReference[]) => {},
 	getGroupName: () => '',
+	setGroupName: (newGroupName: string) => {},
 };
 
 describe('dashboard entity', () => {
@@ -102,8 +106,8 @@ describe('dashboard entity', () => {
 		});
 
 		it('when the new position is taken, it should merge the elements into a group', () => {
-			const movedElement = getElementMock('tomove', ['ref02']);
-			const targetElement = getElementMock('target', ['ref01']);
+			const movedElement = getElementMock('tomove', 'title1', ['ref02']);
+			const targetElement = getElementMock('target', 'title2', ['ref01']);
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
 					{ pos: { x: 1, y: 2 }, gridElement: movedElement },

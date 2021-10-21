@@ -105,4 +105,14 @@ describe('dashboardElement', () => {
 			});
 		});
 	});
+
+	describe('setGroupName', () => {
+		describe('when new group name is set', () => {
+			it('should contain the new name as title', () => {
+				const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
+				element.setGroupName('newTitle');
+				expect(element.title).toEqual('newTitle');
+			});
+		});
+	});
 });

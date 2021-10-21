@@ -3,7 +3,7 @@ import { Authenticate } from '@src/modules/authentication/decorator/auth.decorat
 import { ParseObjectIdPipe } from '@shared/controller';
 import { DashboardUc } from '../uc/dashboard.uc';
 
-import { DashboardResponse, MoveElementParams } from './dto';
+import { DashboardResponse, MoveElementParams, UpdateGroupNameParams } from './dto';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
 
 @Authenticate('jwt')
@@ -28,4 +28,11 @@ export class DashboardController {
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
+	/*
+	@Patch(':id/element')
+	async renameGroupName(
+		@Param('id', ParseObjectIdPipe) gridelementId: string,
+		@Body() params: UpdateGroupNameParams
+	): Promise<GridElementResponse> {}
+*/
 }

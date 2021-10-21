@@ -64,6 +64,8 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
+	title: string;
+
 	private constructor(id: EntityId, references: IGridElementReference[]) {
 		this.id = id;
 		this.references = references;
@@ -121,6 +123,10 @@ export class GridElement implements IGridElement {
 
 		// what should be returned when its no group? is it even necessary?
 		return '';
+	}
+
+	setGroupName(newGroupName: string): void {
+		this.title = newGroupName;
 	}
 }
 
