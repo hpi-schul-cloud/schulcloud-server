@@ -31,7 +31,7 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllByParentIds', () => {
-		describe('where current user is a teacher', () => {
+		describe('when user is a teacher', () => {
 			it('should find tasks by teacherId', async () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();

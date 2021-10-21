@@ -261,7 +261,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
@@ -546,7 +546,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
