@@ -28,11 +28,14 @@ export class DashboardController {
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
-	/*
+
 	@Patch(':id/element')
 	async renameGroupName(
-		@Param('id', ParseObjectIdPipe) gridelementId: string,
+		@Param('id', ParseObjectIdPipe) dashboardId: string,
 		@Body() params: UpdateGroupNameParams
-	): Promise<GridElementResponse> {}
-*/
+	): Promise<DashboardResponse> {
+		const dashboard = await this.dashboardUc.renameGroup(dashboardId, params.position, params.title);
+		const dto = DashboardMapper.mapToResponse(dashboard);
+		return dto;
+	}
 }

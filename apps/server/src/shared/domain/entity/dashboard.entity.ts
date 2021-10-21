@@ -51,6 +51,8 @@ export interface IGridElement {
 	addReferences(anotherReference: IGridElementReference[]): void;
 
 	getGroupName(): string;
+
+	setGroupName(newGroupName: string): void;
 }
 
 export type GridElementContent = {
@@ -207,5 +209,13 @@ export class DashboardEntity {
 			pos: to,
 			gridElement: resultElement,
 		};
+	}
+
+	getElement(position: GridPosition): IGridElement {
+		const element = this.grid.get(this.gridIndexFromPosition(position));
+		if (!element) {
+			throw new NotFoundException('no element at grid position');
+		}
+		return element;
 	}
 }

@@ -22,6 +22,9 @@ describe('dashboard uc', () => {
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						renameGroupNameOfGridElement(dashboardId: EntityId, position: GridPosition, title: string) {
+							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
+						},
 					},
 				},
 			],
@@ -104,6 +107,56 @@ describe('dashboard uc', () => {
 					return Promise.resolve(dashboard);
 				});
 			const response = await controller.moveElement('dashboardId', { from: { x: 1, y: 2 }, to: { x: 2, y: 1 } });
+			expect(response instanceof DashboardResponse).toEqual(true);
+		});
+	});
+
+	describe('renameGroupName', () => {
+		it('should call uc', async () => {
+			const spy = jest
+				.spyOn(uc, 'renameGroupNameOfGridElement')
+				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
+					const dashboard = new DashboardEntity(dashboardId, {
+						grid: [
+							{
+								pos: position,
+								gridElement: GridElement.FromReferenceGroup('elementId', [
+									new DefaultGridReference('referenceId1', 'Math'),
+									new DefaultGridReference('referenceId2', 'German'),
+								]),
+							},
+						],
+					});
+					return Promise.resolve(dashboard);
+				});
+			await controller.renameGroupName('dashboardId', {
+				position: { x: 3, y: 4 },
+				title: 'groupTitle',
+			});
+			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+		});
+
+		it('should return a dashboard', async () => {
+			jest
+				.spyOn(uc, 'renameGroupNameOfGridElement')
+				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
+					const dashboard = new DashboardEntity(dashboardId, {
+						grid: [
+							{
+								pos: position,
+								gridElement: GridElement.FromReferenceGroup('elementId', [
+									new DefaultGridReference('referenceId1', 'Math'),
+									new DefaultGridReference('referenceId2', 'German'),
+								]),
+							},
+						],
+					});
+					return Promise.resolve(dashboard);
+				});
+			const response = await controller.renameGroupName('dashboardId', {
+				position: { x: 3, y: 4 },
+				title: 'groupTitle',
+			});
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 	});
