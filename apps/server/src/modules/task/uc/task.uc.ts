@@ -71,7 +71,7 @@ export class TaskUC {
 			}
 		);
 
-		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task));
+		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task, userId));
 
 		return [computedTasks, total];
 	}
@@ -88,13 +88,20 @@ export class TaskUC {
 		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
 		const maxSubmissions = 1;
 		const isDraft = task.isDraft();
+		const isSubstitutionTeacher = task.isSubstitutionTeacher(userId); // TODO: isDraft and isSubmissionTeacher should optional
 
-		const valueObject = new TaskWithStatusVo(task, { submitted, maxSubmissions, graded, isDraft });
+		const valueObject = new TaskWithStatusVo(task, {
+			isSubstitutionTeacher,
+			submitted,
+			maxSubmissions,
+			graded,
+			isDraft,
+		});
 
 		return valueObject;
 	}
 
-	private computeTaskStatusForTeacher(task: Task): TaskWithStatusVo {
+	private computeTaskStatusForTeacher(task: Task, userId: EntityId): TaskWithStatusVo {
 		const submittedStudentIds = task.submissions.getItems().map((submission) => submission.student.id);
 
 		// unique by studentId
@@ -109,8 +116,15 @@ export class TaskUC {
 		const graded = [...new Set(gradedStudentIds)].length;
 		const maxSubmissions = task.course ? task.course.getNumberOfStudents() : 0;
 		const isDraft = task.isDraft();
+		const isSubstitutionTeacher = task.isSubstitutionTeacher(userId);
 
-		const valueObject = new TaskWithStatusVo(task, { submitted, maxSubmissions, graded, isDraft });
+		const valueObject = new TaskWithStatusVo(task, {
+			isSubstitutionTeacher,
+			submitted,
+			maxSubmissions,
+			graded,
+			isDraft,
+		});
 
 		return valueObject;
 	}

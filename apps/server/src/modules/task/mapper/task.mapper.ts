@@ -17,6 +17,7 @@ export class TaskMapper {
 			maxSubmissions: status.maxSubmissions,
 			graded: status.graded,
 			isDraft: status.isDraft,
+			isSubstitutionTeacher: status.isSubstitutionTeacher,
 		};
 
 		const taskDesc = task.getDescriptions();

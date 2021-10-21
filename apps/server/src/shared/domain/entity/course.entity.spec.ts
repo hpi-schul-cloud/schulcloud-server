@@ -1,7 +1,7 @@
 import { setupEntities } from '@src/modules/database';
-import { userFactory } from '../factory';
-import { courseFactory } from '../factory/course.factory';
-import { schoolFactory } from '../factory/school.factory';
+
+import { userFactory, courseFactory, schoolFactory } from '../factory';
+
 import { Course } from './course.entity';
 
 const DEFAULT = {
@@ -57,6 +57,38 @@ describe('CourseEntity', () => {
 			const number = course.getNumberOfStudents();
 
 			expect(number).toEqual(0);
+		});
+	});
+
+	describe('isSubstitutionTeacher', () => {
+		it('should return true if it is a substitution teacher', () => {
+			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
+			teacher.id = '0123456789ab'; // id is override in the creation process
+			const course = courseFactory.build({ substitutionTeachers: [teacher] });
+
+			const boolean = course.isSubstitutionTeacher(teacher.id);
+
+			expect(boolean).toEqual(true);
+		});
+
+		it('should return false if it is a normal teacher', () => {
+			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
+			teacher.id = '0123456789ab'; // id is override in the creation process
+			const course = courseFactory.build({ teachers: [teacher] });
+
+			const boolean = course.isSubstitutionTeacher(teacher.id);
+
+			expect(boolean).toEqual(false);
+		});
+
+		it('should return false if it is a normal and a substitution teacher', () => {
+			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
+			teacher.id = '0123456789ab'; // id is override in the creation process
+			const course = courseFactory.build({ substitutionTeachers: [teacher], teachers: [teacher] });
+
+			const boolean = course.isSubstitutionTeacher(teacher.id);
+
+			expect(boolean).toEqual(false);
 		});
 	});
 });

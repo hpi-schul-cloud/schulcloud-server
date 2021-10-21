@@ -166,7 +166,25 @@ describe('Task Controller (e2e)', () => {
 				maxSubmissions: course.getNumberOfStudents(),
 				graded: 0,
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
+		});
+
+		it('[FIND] /tasks retun a status flag in task if the teacher is only a substitution teacher.', async () => {
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const course = courseFactory.build({ substitutionTeachers: [teacher] });
+			const task = new Task({ name: 'task #1', private: false, course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.data[0].status.isSubstitutionTeacher).toEqual(true);
 		});
 
 		it('[FIND] /tasks return a list of tasks', async () => {
@@ -352,6 +370,7 @@ describe('Task Controller (e2e)', () => {
 				maxSubmissions: 1,
 				graded: 0,
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 		});
 

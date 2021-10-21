@@ -37,6 +37,7 @@ export class TaskResponse {
 		maxSubmissions?: number;
 		graded?: number;
 		isDraft: boolean;
+		isSubstitutionTeacher: boolean;
 	};
 }
 
