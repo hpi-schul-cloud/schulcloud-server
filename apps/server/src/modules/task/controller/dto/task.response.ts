@@ -20,6 +20,10 @@ export class TaskResponse {
 	courseName?: string;
 
 	@ApiPropertyOptional()
+	@DecodeHtmlEntities()
+	description?: string;
+
+	@ApiPropertyOptional()
 	displayColor?: string;
 
 	@ApiProperty()
