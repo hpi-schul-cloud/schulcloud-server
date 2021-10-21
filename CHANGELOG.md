@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
+- BC-501 - return lesson name as task description for more detailed informations
 
 ## [26.13.0] - 2021-10-19
 
