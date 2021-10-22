@@ -87,15 +87,15 @@ export class TaskUC {
 		const submitted = studentSubmissions.length > 0 ? 1 : 0;
 		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
 		const maxSubmissions = 1;
-		const isDraft = task.isDraft();
-		const isSubstitutionTeacher = task.isSubstitutionTeacher(userId); // TODO: isDraft and isSubmissionTeacher should optional
+		const isDraft = false;
+		const isSubstitutionTeacher = false;
 
 		const valueObject = new TaskWithStatusVo(task, {
-			isSubstitutionTeacher,
 			submitted,
 			maxSubmissions,
 			graded,
 			isDraft,
+			isSubstitutionTeacher,
 		});
 
 		return valueObject;

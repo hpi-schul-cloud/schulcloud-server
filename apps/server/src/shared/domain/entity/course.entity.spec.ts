@@ -62,33 +62,47 @@ describe('CourseEntity', () => {
 
 	describe('isSubstitutionTeacher', () => {
 		it('should return true if it is a substitution teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			teacher.id = '0123456789ab'; // id is override in the creation process
-			const course = courseFactory.build({ substitutionTeachers: [teacher] });
+			const teacher = userFactory.build();
+			// id is override in the creation process but must set otherwise it not exist
+			teacher.id = '0123456789ab';
+			const course = courseFactory.build({ teachers: [], substitutionTeachers: [teacher] });
 
 			const boolean = course.isSubstitutionTeacher(teacher.id);
 
-			expect(boolean).toEqual(true);
+			expect(boolean).toBe(true);
 		});
 
 		it('should return false if it is a normal teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			teacher.id = '0123456789ab'; // id is override in the creation process
-			const course = courseFactory.build({ teachers: [teacher] });
+			const teacher = userFactory.build();
+			// id is override in the creation process but must set otherwise it not exist
+			teacher.id = '0123456789ab';
+			const course = courseFactory.build({ teachers: [teacher], substitutionTeachers: [] });
 
 			const boolean = course.isSubstitutionTeacher(teacher.id);
 
-			expect(boolean).toEqual(false);
+			expect(boolean).toBe(false);
 		});
 
 		it('should return false if it is a normal and a substitution teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			teacher.id = '0123456789ab'; // id is override in the creation process
-			const course = courseFactory.build({ substitutionTeachers: [teacher], teachers: [teacher] });
+			const teacher = userFactory.build();
+			// id is override in the creation process but must set otherwise it not exist
+			teacher.id = '0123456789ab';
+			const course = courseFactory.build({ teachers: [teacher], substitutionTeachers: [teacher] });
 
 			const boolean = course.isSubstitutionTeacher(teacher.id);
 
-			expect(boolean).toEqual(false);
+			expect(boolean).toBe(false);
+		});
+
+		it('should return false if it is a normal and a substitution teacher', () => {
+			const teacher = userFactory.build();
+			// id is override in the creation process but must set otherwise it not exist
+			teacher.id = '0123456789ab';
+			const course = courseFactory.build({ teachers: [], substitutionTeachers: [] });
+
+			const boolean = course.isSubstitutionTeacher(teacher.id);
+
+			expect(boolean).toBe(false);
 		});
 	});
 });

@@ -494,7 +494,7 @@ describe('TaskUC', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(userData.currentUser, paginationQuery);
-			expect(result[0].status.isSubstitutionTeacher).toBeTruthy();
+			expect(result[0].status.isSubstitutionTeacher).toBe(true);
 
 			spyTaskRepoFindAllByParentIds.mockRestore();
 			spyLessonRepoFindAllByCourseIds.mockRestore();
