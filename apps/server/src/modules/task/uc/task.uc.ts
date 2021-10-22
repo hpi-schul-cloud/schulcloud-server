@@ -82,49 +82,18 @@ export class TaskUC {
 	}
 
 	private computeTaskStatusForStudent(task: Task, userId: EntityId): TaskWithStatusVo {
-		const studentSubmissions = task.submissions.getItems().filter((submission) => submission.student.id === userId);
-
-		const submitted = studentSubmissions.length > 0 ? 1 : 0;
-		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
-		const maxSubmissions = 1;
-		const isDraft = false;
-		const isSubstitutionTeacher = false;
-
-		const valueObject = new TaskWithStatusVo(task, {
-			submitted,
-			maxSubmissions,
-			graded,
-			isDraft,
-			isSubstitutionTeacher,
-		});
+		// it is possible to add a virtual status prop to task and say task.createStatusForAStudent(userId); => set task.status and use this status over task.status.
+		// then we do not need the vo and we can use task.status in mapper.
+		// For ts is maybe possible for work with initlized flag.
+		const status = task.createStudentStatusForUser(userId);
+		const valueObject = new TaskWithStatusVo(task, status);
 
 		return valueObject;
 	}
 
 	private computeTaskStatusForTeacher(task: Task, userId: EntityId): TaskWithStatusVo {
-		const submittedStudentIds = task.submissions.getItems().map((submission) => submission.student.id);
-
-		// unique by studentId
-		const submitted = [...new Set(submittedStudentIds)].length;
-
-		const gradedStudentIds = task.submissions
-			.getItems()
-			.filter((submission) => submission.isGraded())
-			.map((submission) => submission.student.id);
-
-		// unique by studentId
-		const graded = [...new Set(gradedStudentIds)].length;
-		const maxSubmissions = task.course ? task.course.getNumberOfStudents() : 0;
-		const isDraft = task.isDraft();
-		const isSubstitutionTeacher = task.isSubstitutionTeacher(userId);
-
-		const valueObject = new TaskWithStatusVo(task, {
-			isSubstitutionTeacher,
-			submitted,
-			maxSubmissions,
-			graded,
-			isDraft,
-		});
+		const status = task.createTeacherStatusForUser(userId);
+		const valueObject = new TaskWithStatusVo(task, status);
 
 		return valueObject;
 	}

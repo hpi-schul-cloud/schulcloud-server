@@ -20,6 +20,14 @@ interface ITaskProperties {
 	closed?: User[];
 }
 
+export interface ITaskStatus {
+	submitted: number;
+	maxSubmissions: number;
+	graded: number;
+	isDraft: boolean;
+	isSubstitutionTeacher: boolean;
+}
+
 export type TaskParentDescriptions = { name: string; description: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
@@ -52,18 +60,133 @@ export class Task extends BaseEntityWithTimestamps {
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	closed = new Collection<User>(this);
 
+	constructor(props: ITaskProperties) {
+		super();
+		this.name = props.name;
+		this.availableDate = props.availableDate;
+		this.dueDate = props.dueDate;
+		if (props.private !== undefined) this.private = props.private;
+		this.teacher = props.teacher;
+		this.course = props.course;
+		this.lesson = props.lesson;
+		this.submissions.set(props.submissions || []);
+		// TODO: is replaced with boolean in future
+		this.closed.set(props.closed || []);
+	}
+
 	isDraft(): boolean {
 		// private can be undefined in the database
 		return !!this.private;
 	}
 
+	private getSubmissionItems(): Submission[] {
+		// TODO: load/init check?
+		return this.submissions.getItems();
+	}
+
+	// can not undefined one parent should exist all the time User parent for nothing
+	// course+lesson, course only, coursgroup
+	private getParent(): Course | undefined {
+		// TODO: load/init check?
+		return this.course;
+	}
+
+	getSubmittedUserIds(): EntityId[] {
+		const submittedUserIds = this.getSubmissionItems().map((submission) => submission.getStudentId());
+
+		return submittedUserIds;
+	}
+
+	getNumberOfSubmittedUsers(): number {
+		const submittedUserIds = this.getSubmittedUserIds();
+		const submitted = [...new Set(submittedUserIds)].length;
+		return submitted;
+	}
+
+	getGradedUserIds(): EntityId[] {
+		// Should we return entities? Is it a private method?
+		const gradedUserIds = this.getSubmissionItems()
+			.filter((submission) => submission.isGraded())
+			.map((submission) => submission.getStudentId());
+
+		return gradedUserIds;
+	}
+
+	getNumberOfGradedUsers(): number {
+		const gradedUserIds = this.getGradedUserIds();
+		const graded = [...new Set(gradedUserIds)].length;
+		return graded;
+	}
+
+	// attention based on this parent use this.getParent() instant
+	getMaxSubmissions(): number {
+		// hack until parents are defined
+		return this.course ? this.course.getNumberOfStudents() : 0;
+	}
+
+	/*
 	isSubstitutionTeacher(userId: EntityId): boolean {
-		if (!this.course) {
+		if (!this.course || !userId) {
 			return false;
 		}
 		// TODO: check if it is loaded if not load it ...isInitialized() is only work for collections, await ...init() also
-		const isSubstitutionTeacher = this.course.isSubstitutionTeacher(userId);
+		const isSubstitutionTeacher = this.course.getSubstitutionTeacherIds().includes(userId);
+
 		return isSubstitutionTeacher;
+	}
+	*/
+
+	createTeacherStatusForUser(userId: EntityId): ITaskStatus {
+		const submitted = this.getNumberOfSubmittedUsers();
+		const graded = this.getNumberOfGradedUsers();
+		const maxSubmissions = this.getMaxSubmissions();
+		const isDraft = this.isDraft();
+		// only point that need the parameter
+		// const isSubstitutionTeacher = this.isSubstitutionTeacher(userId);
+		// work with getParent()
+		let isSubstitutionTeacher = false;
+		if (this.course) {
+			isSubstitutionTeacher = this.course.getSubstitutionTeacherIds().includes(userId);
+		}
+
+		const status = {
+			submitted,
+			graded,
+			maxSubmissions,
+			isDraft,
+			isSubstitutionTeacher,
+		};
+
+		return status;
+	}
+
+	// ..+ById ?
+	isSubmittedForUser(userId: EntityId): boolean {
+		const submitted = this.getSubmittedUserIds().some((id) => userId === id);
+		return submitted;
+	}
+
+	isGradedForUser(userId: EntityId): boolean {
+		const graded = this.getGradedUserIds().some((id) => userId === id);
+		return graded;
+	}
+
+	createStudentStatusForUser(userId: EntityId): ITaskStatus {
+		const submitted = this.isSubmittedForUser(userId);
+		const graded = this.isGradedForUser(userId);
+		const maxSubmissions = 1;
+		const isDraft = this.isDraft();
+		const isSubstitutionTeacher = false;
+
+		const status = {
+			submitted: submitted ? 1 : 0,
+			graded: graded ? 1 : 0,
+			maxSubmissions,
+			isDraft,
+			isSubstitutionTeacher,
+		};
+
+		return status;
 	}
 
 	getDescriptions(): TaskParentDescriptions {
@@ -81,20 +204,7 @@ export class Task extends BaseEntityWithTimestamps {
 				color: '#ACACAC',
 			};
 		}
-		return descriptions;
-	}
 
-	constructor(props: ITaskProperties) {
-		super();
-		this.name = props.name;
-		this.availableDate = props.availableDate;
-		this.dueDate = props.dueDate;
-		if (props.private !== undefined) this.private = props.private;
-		this.teacher = props.teacher;
-		this.course = props.course;
-		this.lesson = props.lesson;
-		this.submissions.set(props.submissions || []);
-		// TODO: is replaced with boolean in future
-		this.closed.set(props.closed || []);
+		return descriptions;
 	}
 }

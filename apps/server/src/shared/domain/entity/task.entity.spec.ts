@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { Task } from './task.entity';
-import { courseFactory, userFactory } from '../factory';
+import { courseFactory } from '../factory';
 import { Lesson } from './lesson.entity';
 
 describe('Task Entity', () => {
@@ -70,37 +70,6 @@ describe('Task Entity', () => {
 				expect(task.getDescriptions().name).toEqual('');
 				expect(task.getDescriptions().color).toEqual('#ACACAC');
 			});
-		});
-	});
-
-	describe('isSubstitutionTeacher', () => {
-		it('should return true if it is a substitution teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			const course = courseFactory.build({ substitutionTeachers: [teacher] });
-			const task = new Task({ name: 'task #1', course });
-
-			const boolean = task.isSubstitutionTeacher(teacher.id);
-
-			expect(boolean).toEqual(true);
-		});
-
-		it('should return false if it is a normal teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			const course = courseFactory.build({ teachers: [teacher] });
-			const task = new Task({ name: 'task #1', course });
-
-			const boolean = task.isSubstitutionTeacher(teacher.id);
-
-			expect(boolean).toEqual(false);
-		});
-
-		it('should return false if it no course exist', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			const task = new Task({ name: 'task #1' });
-
-			const boolean = task.isSubstitutionTeacher(teacher.id);
-
-			expect(boolean).toEqual(false);
 		});
 	});
 });
