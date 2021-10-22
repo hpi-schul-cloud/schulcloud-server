@@ -54,11 +54,13 @@ describe('dashboardElement', () => {
 		describe('when Element has multiple references', () => {
 			it('should return the metadata of all those elements', () => {
 				const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
+				element.setGroupName('groupTitle');
 				const content = element.getContent();
 				expect(content.group?.length).toEqual(2);
 				if (content.group) {
 					expect(content.group[0].shortTitle).toEqual('CAL');
 					expect(content.group[1].shortTitle).toEqual('TEA');
+					expect(content.title).toEqual('groupTitle');
 				}
 			});
 		});
@@ -84,24 +86,6 @@ describe('dashboardElement', () => {
 				expect(result.length).toEqual(3);
 				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
 				expect(result[2].getMetadata().title).toEqual('Homework-Dashboard');
-			});
-		});
-	});
-
-	describe('getGroupName', () => {
-		describe('when Element has a single reference', () => {
-			it('should return empty group name', () => {
-				const element = GridElement.FromSingleReference('id', gridReference);
-				const result = element.getGroupName();
-				expect(result).toEqual('');
-			});
-		});
-
-		describe('when Element has multiple references', () => {
-			it('should return the correct group name', () => {
-				const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
-				const result = element.getGroupName();
-				expect(result).toEqual('exampleTitle');
 			});
 		});
 	});

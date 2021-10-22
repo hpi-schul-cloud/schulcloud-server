@@ -50,8 +50,6 @@ export interface IGridElement {
 
 	addReferences(anotherReference: IGridElementReference[]): void;
 
-	getGroupName(): string;
-
 	setGroupName(newGroupName: string): void;
 }
 
@@ -106,7 +104,7 @@ export class GridElement implements IGridElement {
 		}
 		const groupData = this.references.map((reference) => reference.getMetadata());
 		const groupMetadata = {
-			title: 'exampleTitle',
+			title: this.title,
 			shortTitle: 'exampleShortTitle',
 			displayColor: 'exampleColor',
 			group: groupData,
@@ -116,15 +114,6 @@ export class GridElement implements IGridElement {
 
 	isGroup(): boolean {
 		return this.references.length > 1;
-	}
-
-	getGroupName(): string {
-		if (this.isGroup()) {
-			return this.getContent().title;
-		}
-
-		// what should be returned when its no group? is it even necessary?
-		return '';
 	}
 
 	setGroupName(newGroupName: string): void {

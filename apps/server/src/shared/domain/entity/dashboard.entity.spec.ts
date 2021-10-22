@@ -1,5 +1,5 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { DashboardEntity, IGridElementReference } from './dashboard.entity';
+import { DashboardEntity, IGridElement, IGridElementReference } from './dashboard.entity';
 
 const getReferenceMock = (id: string) => ({
 	getMetadata: () => ({
@@ -128,6 +128,17 @@ describe('dashboard entity', () => {
 			});
 			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 });
 			expect(callMove).toThrow(BadRequestException);
+		});
+	});
+
+	describe('getElement', () => {
+		it('getElement should return correct value', () => {
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 0, y: 2 }, gridElement: gridElementMock }],
+			});
+			const testElement = dashboard.getElement({ x: 0, y: 2 });
+			// wasnt able to test for 'IGridElement' here, need more help with it
+			expect(testElement).toBeDefined();
 		});
 	});
 });
