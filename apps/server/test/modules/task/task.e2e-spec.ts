@@ -5,11 +5,10 @@ import { Request } from 'express';
 import { MikroORM, EntityManager, Collection } from '@mikro-orm/core';
 
 import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
-import { PaginationResponse } from '@shared/controller';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@src/modules/user/utils';
-import { TaskResponse } from '@src/modules/task/controller/dto';
+import { TaskListResponse } from '@src/modules/task/controller/dto';
 import { courseFactory, userFactory } from '@shared/domain/factory';
 
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
@@ -97,7 +96,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks can open it', async () => {
 			const response = await request(app.getHttpServer()).get('/tasks').set('Accept', 'application/json');
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -110,7 +109,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks should allow to modified pagination and set correct limit', async () => {
 			const response = await request(app.getHttpServer()).get('/tasks').query({ limit: 100, skip: 100 });
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -136,12 +135,13 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0]).toHaveProperty('status');
 			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
 			expect(paginatedResult.data[0]).toHaveProperty('name');
+			expect(paginatedResult.data[0]).toHaveProperty('description');
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
@@ -159,7 +159,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0].status).toEqual({
@@ -184,7 +184,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(3);
 		});
@@ -204,7 +204,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(2);
 		});
@@ -221,7 +221,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(1);
 			expect(paginatedResult.data[0].status.isDraft).toEqual(true);
@@ -239,7 +239,29 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, teacher);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should not return closed tasks', async () => {
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+			});
+
+			const task = new Task({ name: 'task #1', private: false, course, closed: [teacher] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
@@ -294,7 +316,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks can open it', async () => {
 			const response = await request(app.getHttpServer()).get('/tasks');
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -307,7 +329,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks should allow to modified pagination and set correct limit', async () => {
 			const response = await request(app.getHttpServer()).get('/tasks').query({ limit: 100, skip: 100 });
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -342,7 +364,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0]).toHaveProperty('status');
@@ -375,7 +397,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(3);
 		});
@@ -408,7 +430,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(2);
 		});
@@ -430,7 +452,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
@@ -456,7 +478,7 @@ describe('Task Controller (e2e)', () => {
 			// modifyCurrentUserId?
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
@@ -479,7 +501,7 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
@@ -502,9 +524,31 @@ describe('Task Controller (e2e)', () => {
 			modifyCurrentUserId(currentUser, student);
 
 			const response = await request(app.getHttpServer()).get('/tasks');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(1);
+		});
+
+		it('should not return closed tasks', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			const task = new Task({ name: 'task #1', private: false, course, closed: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
 		});
 	});
 });
