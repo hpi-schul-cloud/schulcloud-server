@@ -23,7 +23,11 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	async renameGroup(dashboardId: EntityId, position: GridPosition, params: string): Promise<DashboardEntity> {
+	async renameGroupOnDashboard(
+		dashboardId: EntityId,
+		position: GridPosition,
+		params: string
+	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		const gridElement = dashboard.getElement(position);
 		gridElement.setGroupName(params);

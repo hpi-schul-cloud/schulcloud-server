@@ -30,11 +30,11 @@ export class DashboardController {
 	}
 
 	@Patch(':id/element')
-	async renameGroupName(
+	async renameGroup(
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
 		@Body() params: UpdateGroupNameParams
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.renameGroup(dashboardId, params.position, params.title);
+		const dashboard = await this.dashboardUc.renameGroupOnDashboard(dashboardId, params.position, params.title);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
