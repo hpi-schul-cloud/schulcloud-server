@@ -25,5 +25,6 @@
 	"RABBITMQ_URI": "amqp://guest:guest@localhost",
 	"FEATURE_SYNCER_CONSUMER_ENABLE": true,
 	"SYNC_LOG_LEVEL": "info",
-	"SYNC_QUEUE_NAME": "test_ldap_queue"
+	"SYNC_QUEUE_NAME": "test_ldap_queue",
+	"S3_KEY": "abcdefghijklmnop"
 }
