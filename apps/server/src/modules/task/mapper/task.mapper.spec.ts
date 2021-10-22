@@ -1,4 +1,5 @@
-import { Course, Task, School } from '@shared/domain';
+import { Task } from '@shared/domain';
+import { courseFactory } from '@shared/domain/factory';
 import { setupEntities } from '@src/modules/database';
 import { TaskResponse } from '../controller/dto';
 
@@ -36,11 +37,7 @@ describe('task.mapper', () => {
 	});
 
 	it('should map if course and fullfilled status exist', () => {
-		const course = new Course({
-			name: 'course #1',
-			school: new School({ name: 'school #1' }),
-			description: 'a short description for course #1',
-		});
+		const course = courseFactory.build();
 		const task = new Task({ name: 'task #1', private: false, course });
 		const taskDescriptions = task.getDescriptions();
 		const maxSubmissions = course.getNumberOfStudents();
@@ -59,11 +56,7 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter unnecessary information from status', () => {
-		const course = new Course({
-			name: 'course #1',
-			school: new School({ name: 'school #1' }),
-			description: 'a short description for course #1',
-		});
+		const course = courseFactory.build();
 		const task = new Task({ name: 'task #1', private: false, course });
 		const taskDescriptions = task.getDescriptions();
 		const maxSubmissions = course.getNumberOfStudents();
@@ -83,11 +76,7 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter not necessary informations from task', () => {
-		const course = new Course({
-			name: 'course #1',
-			school: new School({ name: 'school #1' }),
-			description: 'a short description for course #1',
-		});
+		const course = courseFactory.build();
 		const task = new Task({ name: 'task #1', private: false, course });
 		// @ts-expect-error test-case
 		task.key = 1;

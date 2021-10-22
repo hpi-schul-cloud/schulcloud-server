@@ -1,3 +1,5 @@
 export * from './course.factory';
+export * from './lesson.factory';
 export * from './school.factory';
+export * from './task.factory';
 export * from './user.factory';

@@ -4,9 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroup, Submission, Task, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
-import { userFactory } from '@shared/domain/factory';
+import { userFactory, courseFactory } from '@shared/domain/factory';
 
-import { courseFactory } from '@shared/domain/factory/course.factory';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {

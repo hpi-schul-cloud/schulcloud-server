@@ -1,7 +1,5 @@
 import { setupEntities } from '@src/modules/database';
-import { userFactory } from '../factory';
-import { courseFactory } from '../factory/course.factory';
-import { schoolFactory } from '../factory/school.factory';
+import { userFactory, courseFactory, schoolFactory } from '../factory';
 import { Course } from './course.entity';
 
 const DEFAULT = {

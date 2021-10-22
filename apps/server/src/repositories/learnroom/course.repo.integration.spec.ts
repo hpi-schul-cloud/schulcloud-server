@@ -4,8 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
 import { EntityId, Course } from '@shared/domain';
-import { userFactory } from '@shared/domain/factory';
-import { courseFactory } from '@shared/domain/factory/course.factory';
+import { userFactory, courseFactory } from '@shared/domain/factory';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {

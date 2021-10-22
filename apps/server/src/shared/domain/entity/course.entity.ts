@@ -1,10 +1,9 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
-import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
 
-interface ICourseProperties {
+export interface ICourseProperties {
 	name?: string;
 	description?: string;
 	school: School;

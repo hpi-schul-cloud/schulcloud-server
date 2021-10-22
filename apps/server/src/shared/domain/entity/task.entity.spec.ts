@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { Task } from './task.entity';
-import { courseFactory } from '../factory';
-import { Lesson } from './lesson.entity';
+import { courseFactory, lessonFactory } from '../factory';
 
 describe('Task Entity', () => {
 	let module: TestingModule;
@@ -50,7 +49,7 @@ describe('Task Entity', () => {
 			describe('when a lesson is set', () => {
 				it('should return the lesson name as description', () => {
 					const course = courseFactory.build();
-					const lesson = new Lesson({ name: 'lesson #1', course });
+					const lesson = lessonFactory.build({ course });
 					const task = new Task({ name: 'task #1', course, lesson });
 					expect(task.getDescriptions().description).toEqual(lesson.name);
 				});

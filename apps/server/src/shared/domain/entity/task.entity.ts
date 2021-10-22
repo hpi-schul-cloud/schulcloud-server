@@ -5,7 +5,7 @@ import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
 
-interface ITaskProperties {
+export interface ITaskProperties {
 	name: string;
 	availableDate?: Date;
 	dueDate?: Date;

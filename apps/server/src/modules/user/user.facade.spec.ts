@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { Role, User } from '@shared/domain';
-import { schoolFactory } from '@shared/domain/factory/school.factory';
+import { userFactory } from '@shared/domain/factory';
 import { UserUC } from './uc';
 import { UserFacade } from './user.facade';
 import { ResolvedUserMapper } from './mapper';
@@ -46,9 +45,7 @@ describe('UserFacade', () => {
 			const { currentUser } = createCurrentTestUser();
 
 			const serviceSpy = jest.spyOn(service, 'getUserWithPermissions').mockImplementation(() => {
-				const school = schoolFactory.build();
-				const roles = [new Role({ name: 'name' })] as Role[];
-				const user = new User({ email: 'email', roles, school });
+				const user = userFactory.build();
 
 				const resolvedUser = ResolvedUserMapper.mapToResponse(user);
 				return Promise.resolve(resolvedUser);

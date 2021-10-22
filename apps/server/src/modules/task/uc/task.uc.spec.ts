@@ -4,12 +4,11 @@ import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
 
 import { EntityId, ICurrentUser, Lesson, Submission, Task } from '@shared/domain';
+import { userFactory, courseFactory, lessonFactory } from '@shared/domain/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Collection } from '@mikro-orm/core';
 
-import { userFactory } from '@shared/domain/factory';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { courseFactory } from '@shared/domain/factory/course.factory';
 import { LessonRepo } from '@shared/repo';
 import { TaskRepo } from '../repo';
 
@@ -198,7 +197,7 @@ describe('TaskUC', () => {
 		it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
 			const course = courseFactory.build();
-			const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
+			const lesson = lessonFactory.build({ course, hidden: false });
 			Object.assign(lesson, { _id: new ObjectId() });
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
@@ -427,7 +426,7 @@ describe('TaskUC', () => {
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
 			const course = courseFactory.build();
-			const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
+			const lesson = lessonFactory.build({ course, hidden: false });
 			Object.assign(lesson, { _id: new ObjectId() });
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
 			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses(parentIds);

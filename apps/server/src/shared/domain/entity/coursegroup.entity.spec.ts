@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '@src/modules/database';
-import { courseFactory } from '../factory/course.factory';
+import { courseFactory } from '../factory';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseEntity', () => {

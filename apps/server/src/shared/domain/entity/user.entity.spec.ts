@@ -1,6 +1,6 @@
 import { setupEntities } from '@src/modules/database';
 import { User } from './user.entity';
-import { schoolFactory } from '../factory';
+import { userFactory } from '../factory';
 
 describe('User Entity', () => {
 	beforeAll(async () => {
@@ -15,7 +15,7 @@ describe('User Entity', () => {
 		});
 
 		it('should create a user by passing required properties', () => {
-			const user = new User({ email: 'john.doe@example.com', school: schoolFactory.build(), roles: [] });
+			const user = userFactory.build();
 			expect(user instanceof User).toEqual(true);
 		});
 	});

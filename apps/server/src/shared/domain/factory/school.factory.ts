@@ -1,11 +1,6 @@
-import { School } from '../entity/school.entity';
+import { School, ISchoolProperties } from '../entity/school.entity';
+import { BaseFactory } from './base.factory';
 
-export const schoolFactory = {
-	build: (props?: { name?: string }): School => {
-		const school = new School({
-			name: 'school #1',
-			...props,
-		});
-		return school;
-	},
-};
+export const schoolFactory = BaseFactory.define<School, ISchoolProperties>(School, ({ sequence }) => {
+	return { name: `school #${sequence}` };
+});
