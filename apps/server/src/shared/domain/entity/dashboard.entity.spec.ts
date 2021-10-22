@@ -22,6 +22,7 @@ const getElementMock = (mockId: string, referenceIds: string[]) => {
 			displayColor: '#FFFFFF',
 		}),
 		isGroup: () => false,
+		removeReference: () => {},
 		getReferences: () => references,
 		addReferences: (newreferences: IGridElementReference[]) => {
 			references = references.concat(newreferences);
@@ -98,6 +99,17 @@ describe('dashboard entity', () => {
 			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(spy).toHaveBeenLastCalledWith(movedElement.getReferences());
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
+		});
+
+		it('should ungroup a reference from a group', () => {
+			const element = getElementMock('element', ['ref01', 'ref02', 'ref03']);
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
+			});
+			const spy = jest.spyOn(element, 'removeReference');
+			dashboard.moveElement({ x: 1, y: 2, groupIndex: 1 }, { x: 3, y: 3 });
+			expect(spy).toHaveBeenCalledWith(1);
+			expect(dashboard.getGrid().length).toEqual(2);
 		});
 
 		it('when the new position is out of bounds, it should throw badrequest', () => {

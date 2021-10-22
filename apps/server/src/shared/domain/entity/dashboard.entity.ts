@@ -48,6 +48,8 @@ export interface IGridElement {
 
 	isGroup(): boolean;
 
+	removeReference(index: number): void;
+
 	getReferences(): IGridElementReference[];
 
 	addReferences(anotherReference: IGridElementReference[]): void;
@@ -97,6 +99,16 @@ export class GridElement implements IGridElement {
 
 	getReferences(): IGridElementReference[] {
 		return this.references;
+	}
+
+	removeReference(index: number): void {
+		if (!this.isGroup()) {
+			throw new BadRequestException('this element is not a group.');
+		}
+		if (this.references.length <= index) {
+			throw new BadRequestException('group index out of bounds.');
+		}
+		this.references.splice(index, 1);
 	}
 
 	addReferences(anotherReference: IGridElementReference[]): void {
@@ -189,7 +201,7 @@ export class DashboardEntity {
 	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
 		const referencesToMove = this.getReferencesFromPosition(from);
 		const resultElement = this.addReferencesToPosition(referencesToMove, to);
-		this.grid.delete(this.gridIndexFromPosition(from));
+		this.removeFromPosition(from);
 		return {
 			pos: to,
 			gridElement: resultElement,
@@ -201,7 +213,24 @@ export class DashboardEntity {
 		if (!elementToMove) {
 			throw new NotFoundException('no element at origin position');
 		}
-		return elementToMove.getReferences();
+		let references = elementToMove.getReferences();
+		if (position.groupIndex) {
+			const referenceForIndex = references[position.groupIndex];
+			references = [referenceForIndex];
+		}
+		return references;
+	}
+
+	private removeFromPosition(position: GridPositionWithGroupIndex): void {
+		const element = this.grid.get(this.gridIndexFromPosition(position));
+		if (!element) {
+			throw new NotFoundException('no element at origin position');
+		}
+		if (position.groupIndex) {
+			element.removeReference(position.groupIndex);
+		} else {
+			this.grid.delete(this.gridIndexFromPosition(position));
+		}
 	}
 
 	private addReferencesToPosition(references: IGridElementReference[], position: GridPosition): IGridElement {

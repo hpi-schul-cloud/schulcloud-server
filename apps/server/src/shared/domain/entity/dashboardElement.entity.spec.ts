@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { GridElement } from './dashboard.entity';
 
 const gridReference = {
@@ -27,15 +28,15 @@ const additionalGridReference = {
 	}),
 };
 
-describe('constructors', () => {
-	describe('fromSingleReference', () => {
-		const dashboardElement = GridElement.FromSingleReference(gridReference);
-		expect(dashboardElement instanceof GridElement);
-		expect(dashboardElement.hasId()).toEqual(false);
-	});
-});
-
 describe('dashboardElement', () => {
+	describe('constructors', () => {
+		describe('fromSingleReference', () => {
+			const dashboardElement = GridElement.FromSingleReference(gridReference);
+			expect(dashboardElement instanceof GridElement);
+			expect(dashboardElement.hasId()).toEqual(false);
+		});
+	});
+
 	describe('isGroup', () => {
 		it('element with single reference should not be a group', () => {
 			const dashboardElement = GridElement.FromPersistedReference('id', gridReference);
@@ -69,6 +70,27 @@ describe('dashboardElement', () => {
 					expect(content.group[1].shortTitle).toEqual('TEA');
 				}
 			});
+		});
+	});
+
+	describe('removeReference', () => {
+		it('should remove a single reference', () => {
+			const element = GridElement.FromReferences([gridReference, anotherGridReference]);
+			element.removeReference(1);
+			expect(element.getReferences().length).toEqual(1);
+			expect(element.getReferences()[0].getMetadata().id).toEqual('referenceId');
+		});
+
+		it('should throw if not group', () => {
+			const element = GridElement.FromSingleReference(gridReference);
+			const callFunction = () => element.removeReference(0);
+			expect(callFunction).toThrow(BadRequestException);
+		});
+
+		it('should throw for index out of bounds', () => {
+			const element = GridElement.FromReferences([gridReference, anotherGridReference]);
+			const callFunction = () => element.removeReference(2);
+			expect(callFunction).toThrow(BadRequestException);
 		});
 	});
 
