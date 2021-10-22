@@ -81,6 +81,10 @@ export class GridElement implements IGridElement {
 		return new GridElement({ references: [reference] });
 	}
 
+	static FromReferences(references: IGridElementReference[]): GridElement {
+		return new GridElement({ references });
+	}
+
 	references: IGridElementReference[];
 
 	hasId(): boolean {
@@ -183,23 +187,31 @@ export class DashboardEntity {
 	}
 
 	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
-		const elementToMove = this.grid.get(this.gridIndexFromPosition(from));
-		if (!elementToMove) {
-			throw new NotFoundException('no element at origin position');
-		}
-
-		const targetElement = this.grid.get(this.gridIndexFromPosition(to));
-		if (targetElement) {
-			targetElement.addReferences(elementToMove.getReferences());
-		} else {
-			this.grid.set(this.gridIndexFromPosition(to), elementToMove);
-		}
+		const referencesToMove = this.getReferencesFromPosition(from);
+		const resultElement = this.addReferencesToPosition(referencesToMove, to);
 		this.grid.delete(this.gridIndexFromPosition(from));
-
-		const resultElement = this.grid.get(this.gridIndexFromPosition(to)) as IGridElement;
 		return {
 			pos: to,
 			gridElement: resultElement,
 		};
+	}
+
+	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElementReference[] {
+		const elementToMove = this.grid.get(this.gridIndexFromPosition(position));
+		if (!elementToMove) {
+			throw new NotFoundException('no element at origin position');
+		}
+		return elementToMove.getReferences();
+	}
+
+	private addReferencesToPosition(references: IGridElementReference[], position: GridPosition): IGridElement {
+		let targetElement = this.grid.get(this.gridIndexFromPosition(position));
+		if (targetElement) {
+			targetElement.addReferences(references);
+		} else {
+			targetElement = GridElement.FromReferences(references);
+			this.grid.set(this.gridIndexFromPosition(position), targetElement);
+		}
+		return targetElement;
 	}
 }

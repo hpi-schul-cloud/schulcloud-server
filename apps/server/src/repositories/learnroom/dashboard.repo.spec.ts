@@ -73,6 +73,30 @@ describe('dashboard repo', () => {
 		expect(dashboard).toEqual(result);
 	});
 
+	it('should persist changes', async () => {
+		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			grid: [
+				{
+					pos: { x: 1, y: 3 },
+					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+						new DefaultGridReference(new ObjectId().toString(), 'Math'),
+					]),
+				},
+				{
+					pos: { x: 1, y: 4 },
+					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+						new DefaultGridReference(new ObjectId().toString(), 'German'),
+					]),
+				},
+			],
+		});
+		await repo.persistAndFlush(dashboard);
+		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
+		await repo.persistAndFlush(dashboard);
+		const result = await repo.getDashboardById(dashboard.id);
+		expect(result.getGrid().length).toEqual(1);
+	});
+
 	describe('persistAndFlush', () => {
 		it('should persist dashboard with gridElements', async () => {
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
