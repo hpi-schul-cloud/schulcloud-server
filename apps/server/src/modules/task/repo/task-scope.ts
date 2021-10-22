@@ -2,23 +2,47 @@ import { EntityId, Task } from '@shared/domain';
 import { Scope } from '@shared/repo';
 
 export class TaskScope extends Scope<Task> {
-	byParentIds(parentIds: EntityId[]): TaskScope {
-		this.addQuery({ parent: { $in: parentIds } });
+	// TODO: parameter > isClosed: boolean
+	byClosed(userId?: EntityId): TaskScope {
+		this.addQuery({ closed: { $ne: userId } });
+
 		return this;
 	}
 
-	byPublic(): TaskScope {
-		this.addQuery({ private: { $ne: true } });
+	byTeacherId(teacherId: EntityId): TaskScope {
+		this.addQuery({
+			$and: [{ teacher: teacherId }, { course: null }, { lesson: null }],
+		});
+
 		return this;
 	}
 
-	byLessonsOrNone(lessonIds: EntityId[]): TaskScope {
-		this.addQuery({ $or: [{ lesson: { $in: lessonIds } }, { lesson: null }] });
+	byCourseIds(courseIds: EntityId[]): TaskScope {
+		this.addQuery({
+			$and: [{ course: { $in: courseIds } }, { lesson: null }],
+		});
+
+		return this;
+	}
+
+	byLessonIds(lessonIds: EntityId[]): TaskScope {
+		this.addQuery({ lesson: { $in: lessonIds } });
+
+		return this;
+	}
+
+	byDraft(isDraft: boolean): TaskScope {
+		// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
+		// additionally handle undefined and null as false
+		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+		this.addQuery(query);
+
 		return this;
 	}
 
 	afterDueDateOrNone(dueDate: Date): TaskScope {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
+
 		return this;
 	}
 }

@@ -1,5 +1,4 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
-import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
@@ -25,10 +24,10 @@ const DEFAULT = {
 
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
-	@Property({ default: DEFAULT.name })
+	@Property()
 	name: string = DEFAULT.name;
 
-	@Property({ default: DEFAULT.description })
+	@Property()
 	description: string = DEFAULT.description;
 
 	@Index()
@@ -48,7 +47,7 @@ export class Course extends BaseEntityWithTimestamps {
 	substitutionTeachers = new Collection<User>(this);
 
 	// TODO: string color format
-	@Property({ default: DEFAULT.color })
+	@Property()
 	color: string = DEFAULT.color;
 
 	constructor(props: ICourseProperties) {
@@ -64,14 +63,5 @@ export class Course extends BaseEntityWithTimestamps {
 
 	getNumberOfStudents(): number {
 		return this.students.length;
-	}
-
-	getDescriptions(): { color: string; id: EntityId; name: string; description: string } {
-		return {
-			id: this.id,
-			name: this.name,
-			description: this.description,
-			color: this.color,
-		};
 	}
 }
