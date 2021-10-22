@@ -22,7 +22,7 @@ describe('dashboard uc', () => {
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
-						renameGroupNameOfGridElement(dashboardId: EntityId, position: GridPosition, title: string) {
+						renameGroupOnDashboard(dashboardId: EntityId, position: GridPosition, title: string) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
 					},
@@ -114,7 +114,7 @@ describe('dashboard uc', () => {
 	describe('renameGroupName', () => {
 		it('should call uc', async () => {
 			const spy = jest
-				.spyOn(uc, 'renameGroupNameOfGridElement')
+				.spyOn(uc, 'renameGroupOnDashboard')
 				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
 					const dashboard = new DashboardEntity(dashboardId, {
 						grid: [
@@ -138,7 +138,7 @@ describe('dashboard uc', () => {
 
 		it('should return a dashboard', async () => {
 			jest
-				.spyOn(uc, 'renameGroupNameOfGridElement')
+				.spyOn(uc, 'renameGroupOnDashboard')
 				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
 					const dashboard = new DashboardEntity(dashboardId, {
 						grid: [

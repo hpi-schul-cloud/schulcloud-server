@@ -2,10 +2,18 @@ import { EntityId, Task } from '@shared/domain';
 import { Scope } from '@shared/repo';
 
 export class TaskScope extends Scope<Task> {
-	byTeacherId(userId: EntityId): TaskScope {
+	// TODO: parameter > isClosed: boolean
+	byClosed(userId?: EntityId): TaskScope {
+		this.addQuery({ closed: { $ne: userId } });
+
+		return this;
+	}
+
+	byTeacherId(teacherId: EntityId): TaskScope {
 		this.addQuery({
-			$and: [{ teacher: userId }, { course: null }, { lesson: null }],
+			$and: [{ teacher: teacherId }, { course: null }, { lesson: null }],
 		});
+
 		return this;
 	}
 
@@ -13,11 +21,13 @@ export class TaskScope extends Scope<Task> {
 		this.addQuery({
 			$and: [{ course: { $in: courseIds } }, { lesson: null }],
 		});
+
 		return this;
 	}
 
 	byLessonIds(lessonIds: EntityId[]): TaskScope {
 		this.addQuery({ lesson: { $in: lessonIds } });
+
 		return this;
 	}
 
@@ -26,11 +36,13 @@ export class TaskScope extends Scope<Task> {
 		// additionally handle undefined and null as false
 		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
 		this.addQuery(query);
+
 		return this;
 	}
 
 	afterDueDateOrNone(dueDate: Date): TaskScope {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
+
 		return this;
 	}
 }

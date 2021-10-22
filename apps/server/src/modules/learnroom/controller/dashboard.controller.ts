@@ -36,7 +36,7 @@ export class DashboardController {
 		@Query('y') y: number,
 		@Body() params: UpdateGroupParams
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.renameGroup(dashboardId, params.position, params.title);
+		const dashboard = await this.dashboardUc.renameGroupOnDashboard(dashboardId, params.position, params.title);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}

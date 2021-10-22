@@ -22,6 +22,7 @@ export class TaskMapper {
 		const taskDesc = task.getDescriptions();
 		dto.courseName = taskDesc.name;
 		dto.displayColor = taskDesc.color;
+		dto.description = taskDesc.description;
 
 		return dto;
 	}
