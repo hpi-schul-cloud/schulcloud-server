@@ -648,21 +648,22 @@ const directoryService = {
 	 * @param id, params
 	 * @returns {Promise}
 	 */
-	remove(id, { query, payload }) {
+	async remove(id, { query, payload }) {
 		const { userId } = payload;
 		const { _id } = query;
-		const fileInstance = FileModel.findOne({ _id });
 
-		return canDelete(userId, _id)
-			.then(() => fileInstance.exec())
-			.then((file) => {
-				if (!file) {
-					return Promise.resolve({});
-				}
-				return FileModel.find({ parent: _id }).delete().lean().exec();
-			})
-			.then(() => fileInstance.delete().lean().exec())
-			.catch((err) => new Forbidden(err));
+		// check permissions
+		try {
+			await canDelete(userId, _id);
+		} catch (err) {
+			throw new Forbidden();
+		}
+
+		// delete child elements
+		await FileModel.delete({ parent: _id }).lean().exec();
+
+		// delete directory
+		await FileModel.deleteById(_id).lean().exec();
 	},
 };
 
