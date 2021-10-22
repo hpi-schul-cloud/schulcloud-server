@@ -15,17 +15,11 @@ export class ElementPosition {
 	@Min(0)
 	y: number;
 }
-export class UpdateGroupNameParams {
+export class UpdateGroupParams {
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional({
 		description: 'Title of the Group grid element',
 	})
 	title: string;
-
-	@ValidateNested()
-	@ApiProperty({
-		description: 'Position of the grid element',
-	})
-	position: ElementPosition;
 }

@@ -1,9 +1,9 @@
-import { Controller, Get, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { DashboardUc } from '../uc/dashboard.uc';
 
-import { DashboardResponse, MoveElementParams, UpdateGroupNameParams } from './dto';
+import { DashboardResponse, MoveElementParams, UpdateGroupParams } from './dto';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
 
 @Authenticate('jwt')
@@ -30,9 +30,11 @@ export class DashboardController {
 	}
 
 	@Patch(':id/element')
-	async renameGroupName(
+	async updateGroup(
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
-		@Body() params: UpdateGroupNameParams
+		@Query('x') x: number,
+		@Query('y') y: number,
+		@Body() params: UpdateGroupParams
 	): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.renameGroup(dashboardId, params.position, params.title);
 		const dto = DashboardMapper.mapToResponse(dashboard);

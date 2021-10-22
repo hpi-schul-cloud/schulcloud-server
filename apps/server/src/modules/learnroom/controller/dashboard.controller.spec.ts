@@ -129,7 +129,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			await controller.renameGroupName('dashboardId', {
+			await controller.updateGroup('dashboardId', {
 				position: { x: 3, y: 4 },
 				title: 'groupTitle',
 			});
@@ -153,7 +153,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const response = await controller.renameGroupName('dashboardId', {
+			const response = await controller.updateGroup('dashboardId', {
 				position: { x: 3, y: 4 },
 				title: 'groupTitle',
 			});
