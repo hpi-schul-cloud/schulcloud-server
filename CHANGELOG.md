@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-155 - add substitution teacher flag to task
+- BC-121 - add console script to delete soft-deleted files
 
 ### Fixed
 
