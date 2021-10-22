@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property } from '@mikro-orm/core';
 
 import { EntityId } from '../types';
 
@@ -17,6 +17,7 @@ interface ITaskProperties {
 	course?: Course;
 	lesson?: Lesson;
 	submissions?: Submission[];
+	closed?: User[];
 }
 
 export type TaskParentDescriptions = { name: string; description: string; color: string };
@@ -46,6 +47,10 @@ export class Task extends BaseEntityWithTimestamps {
 
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
+
+	// TODO: is mapped to boolean in future
+	@ManyToMany('User', undefined, { fieldName: 'archived' })
+	closed = new Collection<User>(this);
 
 	isDraft(): boolean {
 		// private can be undefined in the database
@@ -89,5 +94,7 @@ export class Task extends BaseEntityWithTimestamps {
 		this.course = props.course;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
+		// TODO: is replaced with boolean in future
+		this.closed.set(props.closed || []);
 	}
 }

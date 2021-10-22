@@ -42,7 +42,7 @@ export class TaskUC {
 				courseIds,
 				lessonIds: visibleLessons.map((o) => o.id),
 			},
-			{ draft: false, afterDueDateOrNone: dueDate },
+			{ draft: false, afterDueDateOrNone: dueDate, closed: userId },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
@@ -64,7 +64,7 @@ export class TaskUC {
 				courseIds,
 				lessonIds: visibleLessons.map((o) => o.id),
 			},
-			undefined,
+			{ closed: userId },
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },
