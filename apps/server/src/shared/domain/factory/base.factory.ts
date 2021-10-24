@@ -70,9 +70,7 @@ export class BaseFactory<T, U, I = any> {
 	 * @returns a new factory
 	 */
 	afterBuild(afterBuildFn: HookFn<U>): this {
-		// eslint-disable-next-line @typescript-eslint/dot-notation
-		const newPropsFactory = this.propsFactory['clone']();
-		newPropsFactory.afterBuild(afterBuildFn);
+		const newPropsFactory = this.propsFactory.afterBuild(afterBuildFn);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
@@ -96,9 +94,7 @@ export class BaseFactory<T, U, I = any> {
 	 * @returns a new factory
 	 */
 	transient(transient: Partial<I>): this {
-		// eslint-disable-next-line @typescript-eslint/dot-notation
-		const newPropsFactory = this.propsFactory['clone']();
-		newPropsFactory.transient(transient);
+		const newPropsFactory = this.propsFactory.transient(transient);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
