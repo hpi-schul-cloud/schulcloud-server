@@ -3,6 +3,7 @@ export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './dashboard.entity';
 export * from './file.entity';
+export * from './storageprovider.entity';
 export * from './lesson.entity';
 export * from './news.entity';
 export * from './role.entity';

@@ -11,9 +11,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-121 - add console script to delete soft-deleted files
+
 ### Fixed
 
 ### Changed
+
+- BC-13 - filter archived tasks and dont return it by task.findAll uc
+- BC-501 - return lesson name as task description for more detailed informations
 
 ## [26.13.2] - 2021-10-22
 
@@ -33,6 +38,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-436 - Fix univention LDAP strategy
+- BC-21 - Remove generics from DTOs, because generics can not be used to generate OpenApi properly
 
 ### Changed
 
