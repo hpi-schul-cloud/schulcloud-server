@@ -1,17 +1,13 @@
-import { File } from '../entity/file.entity';
+import { File, IFileProperties } from '../entity/file.entity';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
+import { BaseFactory } from './base.factory';
 
-export const fileFactory = {
-	build: (props?: Partial<File>): File => {
-		const file = new File({
-			storageFileName: 'storageFileName',
-			bucket: 'test-bucket',
-			deletedAt: undefined,
-			storageProvider: storageProviderFactory.build(),
-			creator: userFactory.build(),
-			...props,
-		});
-		return file;
-	},
-};
+export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
+	return {
+		storageFileName: `storageFileName-${sequence}`,
+		bucket: 'test-bucket',
+		storageProvider: storageProviderFactory.build(),
+		creator: userFactory.build(),
+	};
+});
