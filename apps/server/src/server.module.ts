@@ -12,6 +12,8 @@ import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
+import { FilesModule } from './modules/files/files.module';
+
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
 
 @Module({
@@ -26,6 +28,7 @@ import { LearnroomModule } from './modules/learnroom/learnroom.module';
 			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
+		FilesModule,
 
 		MikroOrmModule.forRoot({
 			type: 'mongo',

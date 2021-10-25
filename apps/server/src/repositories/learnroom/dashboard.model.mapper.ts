@@ -2,6 +2,7 @@ import { Collection, wrap, EntityManager } from '@mikro-orm/core';
 import {
 	DashboardEntity,
 	GridElement,
+	IGridElement,
 	GridElementWithPosition,
 	DefaultGridReference,
 	IGridElementReference,
@@ -14,17 +15,21 @@ export class DashboardModelMapper {
 	}
 
 	static async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
-		await modelEntity.references.init();
+		if (!modelEntity.references.isInitialized()) {
+			await modelEntity.references.init();
+		}
 		const references = Array.from(modelEntity.references).map((ref) => DashboardModelMapper.mapReferenceToEntity(ref));
 		const result = {
 			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
-			gridElement: GridElement.FromReferenceGroup(modelEntity.id, references),
+			gridElement: GridElement.FromPersistedGroup(modelEntity.id, modelEntity.title, references),
 		};
 		return result;
 	}
 
 	static async mapToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
-		await modelEntity.gridElements.init();
+		if (!modelEntity.gridElements.isInitialized()) {
+			await modelEntity.gridElements.init();
+		}
 		const grid: GridElementWithPosition[] = [];
 		// ----------------------
 		// temporary solution, look at how remove orphaned elements on persist
@@ -55,20 +60,33 @@ export class DashboardModelMapper {
 		return result;
 	}
 
+	private static async instantiateGridElementModel(
+		gridElement: IGridElement,
+		em: EntityManager
+	): Promise<DashboardGridElementModel> {
+		if (!gridElement.hasId()) {
+			return new DashboardGridElementModel();
+		}
+		const existing = await em.findOne(DashboardGridElementModel, gridElement.getId());
+		return existing || new DashboardGridElementModel(gridElement.getId());
+	}
+
 	static async mapGridElementToModel(
 		elementWithPosition: GridElementWithPosition,
 		dashboard: DashboardModelEntity,
 		em: EntityManager
 	): Promise<DashboardGridElementModel> {
-		const existing = await em.findOne(DashboardGridElementModel, elementWithPosition.gridElement.getId());
-		const elementModel = existing || new DashboardGridElementModel(elementWithPosition.gridElement.getId());
+		const { gridElement } = elementWithPosition;
+		const elementModel = await DashboardModelMapper.instantiateGridElementModel(gridElement, em);
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
 
+		if (gridElement.isGroup()) {
+			elementModel.title = gridElement.getContent().title;
+		}
+
 		const references = await Promise.all(
-			elementWithPosition.gridElement
-				.getReferences()
-				.map((ref) => DashboardModelMapper.mapReferenceToModel(ref, elementModel, em))
+			gridElement.getReferences().map((ref) => DashboardModelMapper.mapReferenceToModel(ref, elementModel, em))
 		);
 		elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, references);
 

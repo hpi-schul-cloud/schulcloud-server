@@ -141,6 +141,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0]).toHaveProperty('status');
 			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
 			expect(paginatedResult.data[0]).toHaveProperty('name');
+			expect(paginatedResult.data[0]).toHaveProperty('description');
 		});
 
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
@@ -231,6 +232,28 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
 			const task = new Task({ name: 'task #1', private: false, course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should not return closed tasks', async () => {
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+			});
+
+			const task = new Task({ name: 'task #1', private: false, course, closed: [teacher] });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -504,6 +527,28 @@ describe('Task Controller (e2e)', () => {
 			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(1);
+		});
+
+		it('should not return closed tasks', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			const task = new Task({ name: 'task #1', private: false, course, closed: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
 		});
 	});
 });

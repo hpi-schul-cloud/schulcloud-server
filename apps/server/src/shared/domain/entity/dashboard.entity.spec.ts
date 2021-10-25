@@ -10,44 +10,35 @@ const getReferenceMock = (id: string) => ({
 	}),
 });
 
-const getElementMock = (mockId: string, referenceIds: string[]) => {
+const getElementMock = (mockId: string, title: string, referenceIds: string[]) => {
 	let references = referenceIds.map((id) => getReferenceMock(id));
 	return {
+		hasId: () => true,
 		getId: () => mockId,
 		getContent: () => ({
 			referencedId: referenceIds[0],
-			title: 'Reference',
-			shortTitle: 'Re',
+			title,
+			shortTitle: title.substr(0, 2),
 			displayColor: '#FFFFFF',
 		}),
 		isGroup: () => false,
+		removeReference: () => {},
 		getReferences: () => references,
 		addReferences: (newreferences: IGridElementReference[]) => {
 			references = references.concat(newreferences);
 		},
+		getGroupName: () => '',
+		setGroupName: (newGroupName: string) => {
+			title = newGroupName;
+		},
 	};
-};
-
-const gridElementMock = {
-	getId: () => 'gridelementid',
-	getContent: () => ({
-		referencedId: 'referenceId',
-		title: 'Mathe 3d',
-		shortTitle: 'Ma',
-		displayColor: '#FFFFFF',
-	}),
-	isGroup: () => false,
-	getReferences: () => {
-		throw new Error('please implement mock function');
-	},
-	addReferences: (references: IGridElementReference[]) => {},
 };
 
 describe('dashboard entity', () => {
 	describe('constructor', () => {
 		it('should create dashboard with prefilled Grid', () => {
 			const dashboard = new DashboardEntity('someid', {
-				grid: [{ pos: { x: 1, y: 2 }, gridElement: gridElementMock }],
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
 			});
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
@@ -69,13 +60,13 @@ describe('dashboard entity', () => {
 
 		it('when testGrid contains element, getGrid should return that element', () => {
 			const dashboard = new DashboardEntity('someid', {
-				grid: [{ pos: { x: 1, y: 2 }, gridElement: gridElementMock }],
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
 			});
 			const testGrid = dashboard.getGrid();
 
 			expect(testGrid[0].gridElement.getContent().referencedId).toEqual('referenceId');
-			expect(testGrid[0].gridElement.getContent().title).toEqual('Mathe 3d');
-			expect(testGrid[0].gridElement.getContent().shortTitle).toEqual('Ma');
+			expect(testGrid[0].gridElement.getContent().title).toEqual('title');
+			expect(testGrid[0].gridElement.getContent().shortTitle).toEqual('ti');
 			expect(testGrid[0].gridElement.getContent().displayColor).toEqual('#FFFFFF');
 		});
 
@@ -85,7 +76,7 @@ describe('dashboard entity', () => {
 	describe('moveElement', () => {
 		it('should move existing element to a new position', () => {
 			const dashboard = new DashboardEntity('someid', {
-				grid: [{ pos: { x: 1, y: 2 }, gridElement: gridElementMock }],
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
 			});
 			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
@@ -100,8 +91,8 @@ describe('dashboard entity', () => {
 		});
 
 		it('when the new position is taken, it should merge the elements into a group', () => {
-			const movedElement = getElementMock('tomove', ['ref02']);
-			const targetElement = getElementMock('target', ['ref01']);
+			const movedElement = getElementMock('tomove', 'title1', ['ref02']);
+			const targetElement = getElementMock('target', 'title2', ['ref01']);
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
 					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
@@ -114,14 +105,52 @@ describe('dashboard entity', () => {
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
 		});
 
+		it('should ungroup a reference from a group', () => {
+			const element = getElementMock('element', 'title', ['ref01', 'ref02', 'ref03']);
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
+			});
+			const spy = jest.spyOn(element, 'removeReference');
+			dashboard.moveElement({ x: 1, y: 2, groupIndex: 1 }, { x: 3, y: 3 });
+			expect(spy).toHaveBeenCalledWith(1);
+			expect(dashboard.getGrid().length).toEqual(2);
+		});
+
 		it('when the new position is out of bounds, it should throw badrequest', () => {
 			const dashboard = new DashboardEntity('someid', {
 				colums: 3,
 				rows: 3,
-				grid: [{ pos: { x: 0, y: 2 }, gridElement: gridElementMock }],
+				grid: [{ pos: { x: 0, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
 			});
 			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 });
 			expect(callMove).toThrow(BadRequestException);
+		});
+	});
+
+	describe('getElement', () => {
+		it('getElement should return correct value', () => {
+			const dashboard = new DashboardEntity('someid', {
+				grid: [{ pos: { x: 0, y: 2 }, gridElement: getElementMock('elementId', 'Mathe 3d', ['referenceId']) }],
+			});
+			const testElement = dashboard.getElement({ x: 0, y: 2 });
+			const result = testElement.getContent();
+			expect(testElement).toHaveProperty('getId');
+			expect(testElement).toHaveProperty('getContent');
+			expect(testElement).toHaveProperty('isGroup');
+			expect(testElement).toHaveProperty('getReferences');
+			expect(testElement).toHaveProperty('addReferences');
+			expect(testElement).toHaveProperty('getGroupName');
+			expect(testElement).toHaveProperty('setGroupName');
+			expect(result.referencedId).toEqual('referenceId');
+			expect(result.title).toEqual('Mathe 3d');
+			expect(result.shortTitle).toEqual('Ma');
+			expect(result.displayColor).toEqual('#FFFFFF');
+		});
+
+		it('when no element at request position, it should throw notFound', () => {
+			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const callGetElement = () => dashboard.getElement({ x: 0, y: 2 });
+			expect(callGetElement).toThrow(NotFoundException);
 		});
 	});
 });
