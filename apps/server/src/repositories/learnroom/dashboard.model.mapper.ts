@@ -68,7 +68,6 @@ export class DashboardModelMapper {
 			return new DashboardGridElementModel();
 		}
 		const existing = await em.findOne(DashboardGridElementModel, gridElement.getId());
-		if (existing) return existing;
 		return existing || new DashboardGridElementModel(gridElement.getId());
 	}
 

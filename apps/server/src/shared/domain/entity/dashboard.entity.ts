@@ -68,11 +68,16 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
+<<<<<<< HEAD
 	title: string;
 
 	private constructor(props: { id?: EntityId; title?: string; references: IGridElementReference[] }) {
 		if (props.id) this.id = props.id;
 		if (props.title) this.title = props.title;
+=======
+	private constructor(props: { id?: EntityId; references: IGridElementReference[] }) {
+		if (props.id) this.id = props.id;
+>>>>>>> main
 		this.references = props.references;
 	}
 
@@ -80,16 +85,26 @@ export class GridElement implements IGridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
+<<<<<<< HEAD
 	static FromPersistedGroup(id: EntityId, title: string, group: IGridElementReference[]): GridElement {
 		return new GridElement({ id, title, references: group });
+=======
+	static FromPersistedGroup(id: EntityId, group: IGridElementReference[]): GridElement {
+		return new GridElement({ id, references: group });
+>>>>>>> main
 	}
 
 	static FromSingleReference(reference: IGridElementReference): GridElement {
 		return new GridElement({ references: [reference] });
 	}
 
+<<<<<<< HEAD
 	static FromGroup(title: string, references: IGridElementReference[]): GridElement {
 		return new GridElement({ title, references });
+=======
+	static FromReferences(references: IGridElementReference[]): GridElement {
+		return new GridElement({ references });
+>>>>>>> main
 	}
 
 	references: IGridElementReference[];
