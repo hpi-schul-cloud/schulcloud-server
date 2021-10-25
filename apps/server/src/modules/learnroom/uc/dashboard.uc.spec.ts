@@ -89,4 +89,50 @@ describe('dashboard uc', () => {
 			expect(spy).toHaveBeenCalledWith(result);
 		});
 	});
+
+	describe('renameGroupOnDashboard', () => {
+		it('should update title of existing element', async () => {
+			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
+				const dashboard = new DashboardEntity(id, {
+					grid: [
+						{
+							pos: { x: 3, y: 4 },
+							gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+								new DefaultGridReference('referenceId1', 'Math'),
+								new DefaultGridReference('referenceId2', 'German'),
+							]),
+						},
+					],
+				});
+				return Promise.resolve(dashboard);
+			});
+			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+			const gridElement = result.getElement({ x: 3, y: 4 });
+			const resultTitle = gridElement.getContent().title;
+			expect(resultTitle).toEqual('groupTitle');
+		});
+
+		it('should persist the change', async () => {
+			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
+				if (id === 'dashboardId')
+					return Promise.resolve(
+						new DashboardEntity(id, {
+							grid: [
+								{
+									pos: { x: 3, y: 4 },
+									gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+										new DefaultGridReference('referenceId1', 'Math'),
+										new DefaultGridReference('referenceId2', 'German'),
+									]),
+								},
+							],
+						})
+					);
+				throw new Error('not found');
+			});
+			const spy = jest.spyOn(repo, 'persistAndFlush');
+			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+			expect(spy).toHaveBeenCalledWith(result);
+		});
+	});
 });
