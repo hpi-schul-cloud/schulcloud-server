@@ -111,7 +111,7 @@ describe('dashboard uc', () => {
 		});
 	});
 
-	describe('updateGroup', () => {
+	describe('patchGroup', () => {
 		it('should call uc', async () => {
 			const spy = jest
 				.spyOn(uc, 'renameGroupOnDashboard')
@@ -129,7 +129,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			await controller.updateGroup('dashboardId', 3, 4, { title: 'groupTitle' });
+			await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' });
 			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle');
 		});
 
@@ -150,7 +150,7 @@ describe('dashboard uc', () => {
 					});
 					return Promise.resolve(dashboard);
 				});
-			const response = await controller.updateGroup('dashboardId', 3, 4, { title: 'groupTitle' });
+			const response = await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' });
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 	});

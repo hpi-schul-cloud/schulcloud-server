@@ -4,7 +4,7 @@ import { Authenticate } from '@src/modules/authentication/decorator/auth.decorat
 import { ParseObjectIdPipe } from '@shared/controller';
 import { DashboardUc } from '../uc/dashboard.uc';
 
-import { DashboardResponse, MoveElementParams, UpdateGroupParams } from './dto';
+import { DashboardResponse, MoveElementParams, PatchGroupParams } from './dto';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
 
 @ApiTags('Dashboard')
@@ -32,11 +32,11 @@ export class DashboardController {
 	}
 
 	@Patch(':id/element')
-	async updateGroup(
+	async patchGroup(
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
 		@Query('x') x: number,
 		@Query('y') y: number,
-		@Body() params: UpdateGroupParams
+		@Body() params: PatchGroupParams
 	): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.renameGroupOnDashboard(dashboardId, { x, y }, params.title);
 		const dto = DashboardMapper.mapToResponse(dashboard);

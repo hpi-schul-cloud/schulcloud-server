@@ -103,9 +103,10 @@ export class GridElement implements IGridElement {
 			return metadata;
 		}
 		const groupData = this.references.map((reference) => reference.getMetadata());
+		const checkShortTitle = this.title ? this.title.substr(0, 2) : 'exampleTitle';
 		const groupMetadata = {
 			title: this.title,
-			shortTitle: 'exampleShortTitle',
+			shortTitle: checkShortTitle,
 			displayColor: 'exampleColor',
 			group: groupData,
 		};
