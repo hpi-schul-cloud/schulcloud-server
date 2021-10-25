@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 
-import { EntityId, IFindOptions, Lesson, Task } from '@shared/domain';
+import { EntityId, IFindOptions, Task } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 
 import { TaskScope } from './task-scope';
@@ -27,7 +27,7 @@ export class TaskRepo {
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date },
+		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: EntityId },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -48,6 +48,10 @@ export class TaskRepo {
 
 		scope.addQuery(parentIdScope.query);
 
+		if (filters?.closed) {
+			scope.byClosed(filters.closed);
+		}
+
 		if (filters?.draft !== undefined) {
 			scope.byDraft(filters.draft);
 		}
@@ -67,6 +71,7 @@ export class TaskRepo {
 			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap,
 		});
+
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 		return [taskEntities, count];
 	}
