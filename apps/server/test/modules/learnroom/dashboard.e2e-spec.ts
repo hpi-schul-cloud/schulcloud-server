@@ -116,7 +116,7 @@ describe('Dashboard Controller (e2e)', () => {
 					},
 					{
 						pos: { x: 3, y: 3 },
-						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
 							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
 							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
 						]),
@@ -141,7 +141,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
-						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
 							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
 							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
 						]),
