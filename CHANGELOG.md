@@ -10,6 +10,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+ 
+- BC-489 - create a migration to add federal state to systems (ldap)  
 
 ### Fixed
 
