@@ -117,6 +117,9 @@ export class GridElement implements IGridElement {
 	}
 
 	setGroupName(newGroupName: string): void {
+		if (!this.isGroup()) {
+			return;
+		}
 		this.title = newGroupName;
 	}
 }

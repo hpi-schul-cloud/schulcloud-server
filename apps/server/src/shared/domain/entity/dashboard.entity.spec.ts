@@ -137,8 +137,18 @@ describe('dashboard entity', () => {
 				grid: [{ pos: { x: 0, y: 2 }, gridElement: gridElementMock }],
 			});
 			const testElement = dashboard.getElement({ x: 0, y: 2 });
-			// wasnt able to test for 'IGridElement' here, need more help with it
-			expect(testElement).toBeDefined();
+			const result = testElement.getContent();
+			expect(testElement).toHaveProperty('getId');
+			expect(testElement).toHaveProperty('getContent');
+			expect(testElement).toHaveProperty('isGroup');
+			expect(testElement).toHaveProperty('getReferences');
+			expect(testElement).toHaveProperty('addReferences');
+			expect(testElement).toHaveProperty('getGroupName');
+			expect(testElement).toHaveProperty('setGroupName');
+			expect(result.referencedId).toEqual('referenceId');
+			expect(result.title).toEqual('Mathe 3d');
+			expect(result.shortTitle).toEqual('Ma');
+			expect(result.displayColor).toEqual('#FFFFFF');
 		});
 	});
 });

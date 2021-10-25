@@ -98,5 +98,13 @@ describe('dashboardElement', () => {
 				expect(element.title).toEqual('newTitle');
 			});
 		});
+		describe('when element is no group', () => {
+			it('setGroupName should not change title', () => {
+				const element = GridElement.FromSingleReference('id', gridReference);
+				element.setGroupName('newTitle');
+				expect(element.isGroup()).toEqual(false);
+				expect(element.title).toBeUndefined();
+			});
+		});
 	});
 });
