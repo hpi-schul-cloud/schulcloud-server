@@ -12,7 +12,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-121 - add console script to delete soft-deleted files
-- BC-369 - add more LDAP systems to the init deployment,
+- BC-495 - ungroup elements from groups in the course dashboard
+- BC-369 - add more LDAP systems to the init deployment
 
 ### Fixed
 
