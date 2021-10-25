@@ -1,5 +1,5 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { DashboardEntity, IGridElement, IGridElementReference } from './dashboard.entity';
+import { DashboardEntity, IGridElementReference } from './dashboard.entity';
 
 const getReferenceMock = (id: string) => ({
 	getMetadata: () => ({

@@ -111,7 +111,7 @@ describe('dashboard uc', () => {
 		});
 	});
 
-	describe('renameGroupName', () => {
+	describe('updateGroup', () => {
 		it('should call uc', async () => {
 			const spy = jest
 				.spyOn(uc, 'renameGroupOnDashboard')
