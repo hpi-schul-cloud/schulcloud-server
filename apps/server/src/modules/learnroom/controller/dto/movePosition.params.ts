@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ValidateNested, IsNumber, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
 
 /**
  * DTO for Updating a news document.
@@ -9,11 +9,19 @@ import { ValidateNested, IsNumber, Min } from 'class-validator';
 export class MoveElementPosition {
 	@IsNumber()
 	@Min(0)
+	@ApiProperty()
 	x: number;
 
 	@IsNumber()
 	@Min(0)
+	@ApiProperty()
 	y: number;
+
+	@IsNumber()
+	@Min(0)
+	@IsOptional()
+	@ApiPropertyOptional({ description: 'used to identify a position within a group.' })
+	groupIndex?: number;
 }
 
 export class MoveElementParams {

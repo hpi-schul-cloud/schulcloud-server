@@ -10,14 +10,14 @@ const generateHardcodedTestDashboard = () => {
 
 	gridArray.push({
 		pos: { x: 1, y: 3 },
-		gridElement: GridElement.FromSingleReference(
+		gridElement: GridElement.FromPersistedReference(
 			new ObjectId().toString(),
 			new DefaultGridReference(new ObjectId().toString(), 'Math')
 		),
 	});
 	gridArray.push({
 		pos: { x: 1, y: 4 },
-		gridElement: GridElement.FromReferenceGroup(new ObjectId().toString(), [
+		gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
 			new DefaultGridReference(new ObjectId().toString(), 'Physics'),
 			new DefaultGridReference(new ObjectId().toString(), 'Biology'),
 			new DefaultGridReference(new ObjectId().toString(), 'Chemistry'),
@@ -25,21 +25,21 @@ const generateHardcodedTestDashboard = () => {
 	});
 	gridArray.push({
 		pos: { x: 2, y: 1 },
-		gridElement: GridElement.FromSingleReference(
+		gridElement: GridElement.FromPersistedReference(
 			new ObjectId().toString(),
 			new DefaultGridReference(new ObjectId().toString(), 'English')
 		),
 	});
 	gridArray.push({
 		pos: { x: 3, y: 1 },
-		gridElement: GridElement.FromSingleReference(
+		gridElement: GridElement.FromPersistedReference(
 			new ObjectId().toString(),
 			new DefaultGridReference(new ObjectId().toString(), 'German')
 		),
 	});
 	gridArray.push({
 		pos: { x: 4, y: 1 },
-		gridElement: GridElement.FromSingleReference(
+		gridElement: GridElement.FromPersistedReference(
 			new ObjectId().toString(),
 			new DefaultGridReference(new ObjectId().toString(), 'Greek')
 		),
@@ -63,13 +63,13 @@ export class DashboardRepo implements IDashboardRepo {
 	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
 		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
 		this.em.persist(modelEntity);
-		return entity;
+		return DashboardModelMapper.mapToEntity(modelEntity);
 	}
 
 	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
 		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
 		await this.em.persistAndFlush(modelEntity);
-		return entity;
+		return DashboardModelMapper.mapToEntity(modelEntity);
 	}
 
 	async getDashboardById(id: EntityId): Promise<DashboardEntity> {
