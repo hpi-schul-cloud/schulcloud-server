@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-121 - add console script to delete soft-deleted files
+- BC-495 - ungroup elements from groups in the course dashboard
 
 ### Fixed
 
@@ -20,6 +21,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-527 - cleanup legacy code for filestorage deletion concept
 - BC-13 - filter archived tasks and dont return it by task.findAll uc
 - BC-501 - return lesson name as task description for more detailed informations
+
+## [26.13.2] - 2021-10-22
+
+### Changed
+
+- BC-379 - hard-code node 14 and npm 6
 
 ## [26.13.0] - 2021-10-19
 
@@ -47,7 +54,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-388 - add simple script for end sjw
 - BC-319 - add route to change the position of a course dashboard element
 - BC-343 - run unstable e2e tests on label `run unstable tests`
-- BC-6   - Show prepared tasks (drafts) for teachers
+- BC-6 - Show prepared tasks (drafts) for teachers
 
 ### Changed
 
