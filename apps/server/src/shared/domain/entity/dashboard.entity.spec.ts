@@ -146,5 +146,11 @@ describe('dashboard entity', () => {
 			expect(result.shortTitle).toEqual('Ma');
 			expect(result.displayColor).toEqual('#FFFFFF');
 		});
+
+		it('when no element at request position, it should throw notFound', () => {
+			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const callGetElement = () => dashboard.getElement({ x: 0, y: 2 });
+			expect(callGetElement).toThrow(NotFoundException);
+		});
 	});
 });
