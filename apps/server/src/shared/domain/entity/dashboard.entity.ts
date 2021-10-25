@@ -198,6 +198,14 @@ export class DashboardEntity {
 		return result;
 	}
 
+	getElement(position: GridPosition): IGridElement {
+		const element = this.grid.get(this.gridIndexFromPosition(position));
+		if (!element) {
+			throw new NotFoundException('no element at origin position');
+		}
+		return element;
+	}
+
 	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
 		const referencesToMove = this.getReferencesFromPosition(from);
 		const resultElement = this.addReferencesToPosition(referencesToMove, to);
@@ -209,10 +217,7 @@ export class DashboardEntity {
 	}
 
 	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElementReference[] {
-		const elementToMove = this.grid.get(this.gridIndexFromPosition(position));
-		if (!elementToMove) {
-			throw new NotFoundException('no element at origin position');
-		}
+		const elementToMove = this.getElement(position);
 		let references = elementToMove.getReferences();
 
 		if (typeof position.groupIndex === 'number') {
@@ -223,10 +228,7 @@ export class DashboardEntity {
 	}
 
 	private removeFromPosition(position: GridPositionWithGroupIndex): void {
-		const element = this.grid.get(this.gridIndexFromPosition(position));
-		if (!element) {
-			throw new NotFoundException('no element at origin position');
-		}
+		const element = this.getElement(position);
 		if (typeof position.groupIndex === 'number') {
 			element.removeReference(position.groupIndex);
 		} else {
