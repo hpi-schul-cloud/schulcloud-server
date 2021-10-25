@@ -24,8 +24,6 @@
 		"test": "npm run nest:test && npm run feathers:test",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup && npm run mocha-inspect",
-		"backup": "node ./backup.js -b export",
-		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
 		"setup": "npm run nest:start:console -- database seed",
 		"build": "npm run nest:build",
 		"copy-files": "copyfiles src/**/*.yaml build",
