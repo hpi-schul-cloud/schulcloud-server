@@ -95,6 +95,7 @@ describe('dashboard repo', () => {
 		await repo.persistAndFlush(dashboard);
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(result.getGrid().length).toEqual(1);
+		expect(result.getGrid()[0].gridElement.getReferences().length).toEqual(2);
 	});
 
 	describe('persistAndFlush', () => {

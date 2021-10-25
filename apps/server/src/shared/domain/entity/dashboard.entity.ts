@@ -105,7 +105,7 @@ export class GridElement implements IGridElement {
 		if (!this.isGroup()) {
 			throw new BadRequestException('this element is not a group.');
 		}
-		if (this.references.length <= index) {
+		if (index > 0 && this.references.length <= index) {
 			throw new BadRequestException('group index out of bounds.');
 		}
 		this.references.splice(index, 1);
