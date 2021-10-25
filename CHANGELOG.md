@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-391 - display special characters properly
 - BC-339 - creation of groups in the courses dashboard
 - BC-339 - add elements to groups in the courses dashboard
+- BC-174 - Improve test data generation with factories
 
 ### Fixed
 
