@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import * as path from 'path';
+import path from 'path';
 import { FileSystemAdapter } from './file-system.adapter';
 
 describe('FileSystemAdapter', () => {
