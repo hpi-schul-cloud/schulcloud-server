@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-process-env */
 
 const ENVIRONMENTS = {
@@ -28,11 +27,9 @@ let defaultDbUrl = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
-		console.log('use test db url', defaultDbUrl);
 		break;
 	default:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
-		console.log('use default db url', defaultDbUrl);
 }
 
 const globals = {
