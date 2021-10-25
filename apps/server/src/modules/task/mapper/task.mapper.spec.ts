@@ -1,5 +1,5 @@
 import { Task } from '@shared/domain';
-import { courseFactory } from '@shared/domain/factory';
+import { taskFactory } from '@shared/domain/factory';
 import { setupEntities } from '@src/modules/database';
 import { TaskResponse } from '../controller/dto';
 
@@ -37,14 +37,12 @@ describe('task.mapper', () => {
 	});
 
 	it('should map if course and fullfilled status exist', () => {
-		const course = courseFactory.build();
-		const task = new Task({ name: 'task #1', private: false, course });
+		const task = taskFactory.draft(false).build();
 		const taskDescriptions = task.getDescriptions();
-		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
-			maxSubmissions,
+			maxSubmissions: 0,
 			submitted: 0,
 			isDraft: false,
 		};
@@ -56,14 +54,12 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter unnecessary information from status', () => {
-		const course = courseFactory.build();
-		const task = new Task({ name: 'task #1', private: false, course });
+		const task = taskFactory.draft(false).build();
 		const taskDescriptions = task.getDescriptions();
-		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
-			maxSubmissions,
+			maxSubmissions: 0,
 			submitted: 0,
 			isDraft: false,
 			additionalKey: '123',
@@ -76,17 +72,15 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter not necessary informations from task', () => {
-		const course = courseFactory.build();
-		const task = new Task({ name: 'task #1', private: false, course });
+		const task = taskFactory.draft(false).build();
 		// @ts-expect-error test-case
 		task.key = 1;
 
 		const taskDescriptions = task.getDescriptions();
-		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
-			maxSubmissions,
+			maxSubmissions: 0,
 			submitted: 0,
 			isDraft: false,
 		};
@@ -99,7 +93,7 @@ describe('task.mapper', () => {
 
 	it('should set default course information if it does not exist in task.', () => {
 		// task has no course
-		const task = new Task({ name: 'task #1' });
+		const task = taskFactory.build();
 		const taskDefaultDescriptions = {
 			name: '',
 			description: '',

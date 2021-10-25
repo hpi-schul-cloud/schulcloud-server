@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
-import { EntityId, Course } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { userFactory, courseFactory } from '@shared/domain/factory';
 import { CourseRepo } from './course.repo';
 
@@ -32,7 +32,7 @@ describe('course repo', () => {
 	});
 
 	afterEach(async () => {
-		await em.nativeDelete(Course, {});
+		await em.getDriver().dropCollections();
 	});
 
 	it('should be defined', () => {
@@ -42,7 +42,7 @@ describe('course repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
-			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			const course = courseFactory.build({ students: [student] });
 
 			await em.persistAndFlush(course);
@@ -83,7 +83,7 @@ describe('course repo', () => {
 		});
 
 		it('should return course of teachers', async () => {
-			const teacher = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const teacher = userFactory.build();
 			await em.persistAndFlush(teacher);
 			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
@@ -98,7 +98,7 @@ describe('course repo', () => {
 		});
 
 		it('should return course of students', async () => {
-			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			const course1 = courseFactory.build({ name: 'course #1', students: [student] });
 			const course2 = courseFactory.build({ name: 'course #2', students: [student] });
 
@@ -112,7 +112,7 @@ describe('course repo', () => {
 		});
 
 		it('should return course of substitution teachers', async () => {
-			const subTeacher = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const subTeacher = userFactory.build();
 			await em.persistAndFlush(subTeacher);
 			const course1 = courseFactory.build({ name: 'course #1', substitutionTeachers: [subTeacher] });
 			const course2 = courseFactory.build({ name: 'course #2', substitutionTeachers: [subTeacher] });
@@ -127,7 +127,7 @@ describe('course repo', () => {
 		});
 
 		it('should handle mixed roles in courses', async () => {
-			const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const user = userFactory.build();
 			await em.persistAndFlush(user);
 			const course1 = courseFactory.build({ name: 'course #1', students: [user] });
 			const course2 = courseFactory.build({ name: 'course #2', teachers: [user] });
@@ -143,8 +143,8 @@ describe('course repo', () => {
 		});
 
 		it('should only return courses where the user is a member of it', async () => {
-			const user = userFactory.build({ firstName: 'John', lastName: 'Doe' });
-			const otherUser = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const user = userFactory.build();
+			const otherUser = userFactory.build();
 			await em.persistAndFlush([user, otherUser]);
 			const courses = [
 				courseFactory.build({ name: 'course #1', students: [user] }),

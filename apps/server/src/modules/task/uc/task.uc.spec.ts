@@ -3,10 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
 
-import { EntityId, ICurrentUser, Lesson, Submission, Task } from '@shared/domain';
-import { userFactory, courseFactory, lessonFactory } from '@shared/domain/factory';
+import { EntityId, ICurrentUser, Lesson, Task } from '@shared/domain';
+import { userFactory, courseFactory, lessonFactory, taskFactory, submissionFactory } from '@shared/domain/factory';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Collection } from '@mikro-orm/core';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { LessonRepo } from '@shared/repo';
@@ -224,7 +223,7 @@ describe('TaskUC', () => {
 
 		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
+			const task = taskFactory.draft(false).build({ course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -242,9 +241,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.build();
-			const task1 = new Task({ name: 'task #1', private: false, course });
-			const task2 = new Task({ name: 'task #2', private: false, course });
-			const task3 = new Task({ name: 'task #2', private: false, course });
+			const task1 = taskFactory.draft(false).build({ course });
+			const task2 = taskFactory.draft(false).build({ course });
+			const task3 = taskFactory.draft(false).build({ course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task1, task2, task3]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -261,12 +260,11 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute submitted status for task', async () => {
-			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			student.id = currentUser.userId;
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
-			task.submissions = new Collection<Submission>(task, [submission]);
+			const task = taskFactory.draft(false).build({ course });
+			task.submissions.add(submissionFactory.build({ task, student }));
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -288,15 +286,14 @@ describe('TaskUC', () => {
 			spyGetPermittedCourses.mockRestore();
 		});
 		it('should only count the submissions of the given user', async () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build();
 			student1.id = currentUser.userId;
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
-			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
-			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
+			const task = taskFactory.draft(false).build({ course });
+			task.submissions.add(submissionFactory.build({ task, student: student1 }));
+			task.submissions.add(submissionFactory.build({ task, student: student2 }));
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -319,12 +316,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			student.id = currentUser.userId;
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
-			task.submissions = new Collection<Submission>(task, [submission]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission = submissionFactory.build({ task, student });
+			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
@@ -350,15 +347,15 @@ describe('TaskUC', () => {
 		});
 
 		it('should only count the graded submissions of the given user', async () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build();
 			student1.id = currentUser.userId;
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
-			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
-			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
+			task.submissions.add(submission1, submission2);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
@@ -449,7 +446,7 @@ describe('TaskUC', () => {
 
 		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: true, course });
+			const task = taskFactory.build({ course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -470,9 +467,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.build();
-			const task1 = new Task({ name: 'task #1', private: false, course });
-			const task2 = new Task({ name: 'task #2', private: false, course });
-			const task3 = new Task({ name: 'task #2', private: false, course });
+			const task1 = taskFactory.draft(false).build({ course });
+			const task2 = taskFactory.draft(false).build({ course });
+			const task3 = taskFactory.draft(false).build({ course });
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task1, task2, task3]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -489,12 +486,11 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute submitted status for task', async () => {
-			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			student.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
-			task.submissions = new Collection<Submission>(task, [submission]);
+			const task = taskFactory.draft(false).build({ course });
+			task.submissions.add(submissionFactory.build({ task, student }));
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -517,15 +513,15 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of submissions', async () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build();
 			student1.id = new ObjectId().toHexString();
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
-			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
-			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
+			task.submissions.add(submission1, submission2);
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
@@ -548,12 +544,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student = userFactory.build();
 			student.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission = new Submission({ task, student, comment: 'my solution to the task #1' });
-			task.submissions = new Collection<Submission>(task, [submission]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission = submissionFactory.build({ task, student });
+			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
@@ -579,15 +575,15 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of graded submissions', async () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build();
 			student1.id = currentUser.userId;
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
-			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
-			task.submissions = new Collection<Submission>(task, [submission1, submission2]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
+			task.submissions.add(submission1, submission2);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
@@ -612,16 +608,17 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of graded submissions', async () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build();
 			student1.id = currentUser.userId;
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
-			const submission2 = new Submission({ task, student: student2, comment: 'submission #2' });
-			const submission3 = new Submission({ task, student: student2, comment: 'submission #3' });
-			task.submissions = new Collection<Submission>(task, [submission1, submission2, submission3]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
+			const submission3 = submissionFactory.build({ task, student: student2 });
+
+			task.submissions.add(submission1, submission2, submission3);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
@@ -647,16 +644,17 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of submissions', async () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
+			const student1 = userFactory.build();
 			student1.id = new ObjectId().toHexString();
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = new Task({ name: 'task #1', private: false, course });
-			const submission1 = new Submission({ task, student: student1, comment: 'submission #1' });
-			const submission2 = new Submission({ task, student: student1, comment: 'submission #2' });
-			const submission3 = new Submission({ task, student: student2, comment: 'submission #2' });
-			task.submissions = new Collection<Submission>(task, [submission1, submission2, submission3]);
+			const task = taskFactory.draft(false).build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student1 });
+			const submission3 = submissionFactory.build({ task, student: student2 });
+
+			task.submissions.add(submission1, submission2, submission3);
 
 			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
 			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
