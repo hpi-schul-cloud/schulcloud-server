@@ -214,7 +214,8 @@ export class DashboardEntity {
 			throw new NotFoundException('no element at origin position');
 		}
 		let references = elementToMove.getReferences();
-		if (position.groupIndex) {
+
+		if (typeof position.groupIndex === 'number') {
 			const referenceForIndex = references[position.groupIndex];
 			references = [referenceForIndex];
 		}
@@ -226,7 +227,7 @@ export class DashboardEntity {
 		if (!element) {
 			throw new NotFoundException('no element at origin position');
 		}
-		if (position.groupIndex) {
+		if (typeof position.groupIndex === 'number') {
 			element.removeReference(position.groupIndex);
 		} else {
 			this.grid.delete(this.gridIndexFromPosition(position));
