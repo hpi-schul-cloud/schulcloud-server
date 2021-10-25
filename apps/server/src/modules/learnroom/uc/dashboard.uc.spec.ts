@@ -52,7 +52,7 @@ describe('dashboard uc', () => {
 					grid: [
 						{
 							pos: { x: 1, y: 2 },
-							gridElement: GridElement.FromSingleReference(
+							gridElement: GridElement.FromPersistedReference(
 								'elementId',
 								new DefaultGridReference('referenceId', 'Mathe')
 							),
@@ -74,7 +74,7 @@ describe('dashboard uc', () => {
 							grid: [
 								{
 									pos: { x: 1, y: 2 },
-									gridElement: GridElement.FromSingleReference(
+									gridElement: GridElement.FromPersistedReference(
 										'elementId',
 										new DefaultGridReference('referenceId', 'Mathe')
 									),
@@ -97,7 +97,7 @@ describe('dashboard uc', () => {
 					grid: [
 						{
 							pos: { x: 3, y: 4 },
-							gridElement: GridElement.FromReferenceGroup('elementId', [
+							gridElement: GridElement.FromPersistedGroup('elementId', [
 								new DefaultGridReference('referenceId1', 'Math'),
 								new DefaultGridReference('referenceId2', 'German'),
 							]),
@@ -120,7 +120,7 @@ describe('dashboard uc', () => {
 							grid: [
 								{
 									pos: { x: 3, y: 4 },
-									gridElement: GridElement.FromReferenceGroup('elementId', [
+									gridElement: GridElement.FromPersistedGroup('elementId', [
 										new DefaultGridReference('referenceId1', 'Math'),
 										new DefaultGridReference('referenceId2', 'German'),
 									]),
