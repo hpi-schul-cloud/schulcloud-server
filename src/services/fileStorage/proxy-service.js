@@ -659,11 +659,8 @@ const directoryService = {
 			throw new Forbidden();
 		}
 
-		// delete child elements
-		await FileModel.delete({ parent: _id }).lean().exec();
-
-		// delete directory
-		await FileModel.deleteById(_id).lean().exec();
+		await filesRepo.removeDirectoryContent(_id);
+		await filesRepo.removeFileById(_id);
 	},
 };
 

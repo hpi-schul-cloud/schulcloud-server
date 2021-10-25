@@ -36,6 +36,16 @@ const getPersonalFilesByUserId = async (userId) => {
 
 const removeFileById = async (id) => FileModel.deleteById(id).lean().exec();
 
+const removeDirectoryContent = async (id) => {
+	const file = await getFileById(id);
+	if (!file.isDirectory) {
+		throw new AssertionError(
+			`removeDirectoryContent can only be called with a valid id of a directory. But ${id} is not a directory.`
+		);
+	}
+	return FileModel.delete({ parent: id }).lean().exec();
+};
+
 /**
  * @param {BSON|BSONString} userId
  * @return {boolean} success
@@ -96,4 +106,5 @@ module.exports = {
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 	removeFileById,
+	removeDirectoryContent,
 };
