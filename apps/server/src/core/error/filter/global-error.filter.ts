@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { Response } from 'express';
 import { BusinessError, ApiValidationError } from '@shared/common';
 import { Logger, ILogger } from '@src/core/logger';

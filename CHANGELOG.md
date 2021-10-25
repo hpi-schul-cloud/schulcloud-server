@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-13 - filter archived tasks and dont return it by task.findAll uc
 - BC-501 - return lesson name as task description for more detailed informations
+- BC-578 - enable `esModuleInterop` in typescript configuration
 
 ## [26.13.2] - 2021-10-22
 
