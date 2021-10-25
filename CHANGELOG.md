@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-121 - add console script to delete soft-deleted files
 - BC-495 - ungroup elements from groups in the course dashboard
+- BC-496 - naming of groups in the course dashboard
 
 ### Fixed
 
