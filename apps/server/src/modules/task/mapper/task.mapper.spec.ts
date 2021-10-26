@@ -6,7 +6,13 @@ import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
-	status: { graded: number; maxSubmissions: number; submitted: number; isDraft: boolean },
+	status: {
+		graded: number;
+		maxSubmissions: number;
+		submitted: number;
+		isDraft: boolean;
+		isSubstitutionTeacher: boolean;
+	},
 	parent?: { name: string; color: string; description: string }
 ): TaskResponse => {
 	const expected = new TaskResponse();
@@ -21,6 +27,7 @@ const createExpectedResponse = (
 		maxSubmissions: status.maxSubmissions,
 		submitted: status.submitted,
 		isDraft: status.isDraft,
+		isSubstitutionTeacher: status.isSubstitutionTeacher,
 	};
 	if (parent !== undefined) {
 		expected.courseName = parent.name;
@@ -51,6 +58,7 @@ describe('task.mapper', () => {
 			maxSubmissions,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
@@ -74,6 +82,7 @@ describe('task.mapper', () => {
 			maxSubmissions,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 			additionalKey: '123',
 		};
 
@@ -101,6 +110,7 @@ describe('task.mapper', () => {
 			maxSubmissions,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
@@ -123,6 +133,7 @@ describe('task.mapper', () => {
 			maxSubmissions: 10,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });

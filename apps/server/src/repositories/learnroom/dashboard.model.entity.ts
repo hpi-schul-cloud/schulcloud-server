@@ -32,6 +32,9 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	}
 
 	@Property()
+	title: string;
+
+	@Property()
 	xPos: number;
 
 	@Property()

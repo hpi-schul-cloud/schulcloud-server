@@ -20,7 +20,8 @@ data:
         mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
     done
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-    mongo $DATABASE__URL --eval 'db.systems.insert({
+    mongo $DATABASE__URL --eval 'db.systems.insert([
+    {
       "alias" : "Zentrales IServ",
       "ldapConfig" : {
         "active" : true,
@@ -33,8 +34,81 @@ data:
           "userAttributeNameMapping" : {},
           "roleAttributeNameMapping" : {},
           "classAttributeNameMapping" : {}
+        }
+      },
+      "type" : "ldap"
+    },
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne0",
+      "ldapConfig" : {
+        "active" : true,
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne0,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 0",
+          "userPathAdditions" : "ou=users",
+          "classPathAdditions" : "ou=groups",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "description" : "description",
+            "dn" : "dn",
+            "uniqueMember" : "member"
+          }
+        }
       }
     },
-    "type" : "ldap"
-    });'
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne1",
+      "ldapConfig" : {
+        "active" : true,
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne1,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 1",
+          "userPathAdditions" : "ou=users",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "dn" : "dn"
+          }
+        }
+      }
+    }]);'
     npm run syncIndexes

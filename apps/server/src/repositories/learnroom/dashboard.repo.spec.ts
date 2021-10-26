@@ -52,7 +52,7 @@ describe('dashboard repo', () => {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'testgroup', [
 						new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
 						new DefaultGridReference(new ObjectId().toString(), 'German'),
 					]),
@@ -70,6 +70,7 @@ describe('dashboard repo', () => {
 			expect(elementContent.group[0].title).toEqual('Mathe');
 			expect(elementContent.group[1].title).toEqual('German');
 		}
+		expect(elementContent.title).toEqual('testgroup');
 		expect(dashboard).toEqual(result);
 	});
 
@@ -78,15 +79,17 @@ describe('dashboard repo', () => {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
-						new DefaultGridReference(new ObjectId().toString(), 'Math'),
-					]),
+					gridElement: GridElement.FromPersistedReference(
+						new ObjectId().toString(),
+						new DefaultGridReference(new ObjectId().toString(), 'Math')
+					),
 				},
 				{
 					pos: { x: 1, y: 4 },
-					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
-						new DefaultGridReference(new ObjectId().toString(), 'German'),
-					]),
+					gridElement: GridElement.FromPersistedReference(
+						new ObjectId().toString(),
+						new DefaultGridReference(new ObjectId().toString(), 'German')
+					),
 				},
 			],
 		});
