@@ -29,8 +29,8 @@ describe('dashboard uc', () => {
 			],
 		}).compile();
 
-		service = module.get<DashboardUc>(DashboardUc);
-		repo = module.get<IDashboardRepo>('DASHBOARD_REPO');
+		service = module.get(DashboardUc);
+		repo = module.get('DASHBOARD_REPO');
 	});
 
 	describe('getUsersDashboard', () => {

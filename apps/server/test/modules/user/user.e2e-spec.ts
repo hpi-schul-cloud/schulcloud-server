@@ -28,7 +28,7 @@ describe('User Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get<MikroORM>(MikroORM);
+		orm = app.get(MikroORM);
 	});
 
 	afterEach(async () => {

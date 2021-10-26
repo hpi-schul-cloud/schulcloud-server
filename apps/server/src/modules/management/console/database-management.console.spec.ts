@@ -37,8 +37,8 @@ describe('DatabaseManagementConsole', () => {
 			],
 		}).compile();
 
-		service = module.get<DatabaseManagementConsole>(DatabaseManagementConsole);
-		consoleWriter = module.get<ConsoleWriterService>(ConsoleWriterService);
+		service = module.get(DatabaseManagementConsole);
+		consoleWriter = module.get(ConsoleWriterService);
 	});
 
 	afterAll(async () => {

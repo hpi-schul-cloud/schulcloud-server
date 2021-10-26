@@ -10,7 +10,7 @@ describe('BsonConverter', () => {
 			providers: [BsonConverter],
 		}).compile();
 
-		converter = module.get<BsonConverter>(BsonConverter);
+		converter = module.get(BsonConverter);
 	});
 
 	it('should be defined', () => {
