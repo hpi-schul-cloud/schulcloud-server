@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-121 - add console script to delete soft-deleted files
 - BC-495 - ungroup elements from groups in the course dashboard
 - BC-496 - naming of groups in the course dashboard
+- BC-174 - Improve test data generation with factories
 
 ### Fixed
 
@@ -38,7 +39,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-391 - display special characters properly
 - BC-339 - creation of groups in the courses dashboard
 - BC-339 - add elements to groups in the courses dashboard
-- BC-174 - Improve test data generation with factories
 
 ### Fixed
 
