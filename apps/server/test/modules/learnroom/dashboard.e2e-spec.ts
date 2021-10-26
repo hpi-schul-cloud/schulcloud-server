@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -116,7 +116,7 @@ describe('Dashboard Controller (e2e)', () => {
 					},
 					{
 						pos: { x: 3, y: 3 },
-						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
 							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
 							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
 						]),
@@ -141,7 +141,7 @@ describe('Dashboard Controller (e2e)', () => {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
-						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), [
+						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
 							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
 							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
 						]),
@@ -180,6 +180,34 @@ describe('Dashboard Controller (e2e)', () => {
 			};
 			const resonse = await request(app.getHttpServer()).patch(`/dashboard/${dashboard.id}/moveElement`).send(params);
 			expect(resonse.status).toEqual(400);
+		});
+	});
+
+	describe('PATCH /:id/element', () => {
+		it('should be able to rename group', async () => {
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 3, y: 3 },
+						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
+							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
+							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
+						]),
+					},
+				],
+			});
+			await dashboardRepo.persistAndFlush(dashboard);
+
+			const params = {
+				title: 'COURSESILOVE',
+			};
+			const response = await request(app.getHttpServer())
+				.patch(`/dashboard/${dashboard.id}/element?x=3&y=3`)
+				.send(params);
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.gridElements.length).toEqual(1);
+			expect(body.gridElements[0].title).toEqual('COURSESILOVE');
 		});
 	});
 });

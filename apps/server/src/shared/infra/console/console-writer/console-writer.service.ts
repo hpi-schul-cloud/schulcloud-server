@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { createSpinner } from 'nestjs-console';
-import * as ora from 'ora';
+import ora from 'ora';
 
 @Injectable()
 /**
