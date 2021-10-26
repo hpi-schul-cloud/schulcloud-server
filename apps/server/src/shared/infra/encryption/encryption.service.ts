@@ -1,4 +1,4 @@
-import * as CryptoJs from 'crypto-js';
+import CryptoJs from 'crypto-js';
 
 import { Inject, Injectable } from '@nestjs/common';
 

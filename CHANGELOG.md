@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-121 - add console script to delete soft-deleted files
 - BC-495 - ungroup elements from groups in the course dashboard
+- BC-496 - naming of groups in the course dashboard
 
 ### Fixed
 
@@ -22,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-527 - cleanup legacy code for filestorage deletion concept
 - BC-13 - filter archived tasks and dont return it by task.findAll uc
 - BC-501 - return lesson name as task description for more detailed informations
+- BC-578 - enable `esModuleInterop` in typescript configuration
 
 ## [26.13.2] - 2021-10-22
 
