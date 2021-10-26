@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { LoggerModule } from '../../../core/logger/logger.module';
