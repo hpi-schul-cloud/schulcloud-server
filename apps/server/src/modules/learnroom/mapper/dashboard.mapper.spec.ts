@@ -7,7 +7,7 @@ describe('dashboard mapper', () => {
 		const gridArray: GridElementWithPosition[] = [
 			{
 				pos: { x: 1, y: 3 },
-				gridElement: GridElement.FromSingleReference('elementId', new DefaultGridReference('referenceId', 'Mathe')),
+				gridElement: GridElement.FromPersistedReference('elementId', new DefaultGridReference('referenceId', 'Mathe')),
 			},
 		];
 		const entity = new DashboardEntity('someid', { grid: gridArray });
