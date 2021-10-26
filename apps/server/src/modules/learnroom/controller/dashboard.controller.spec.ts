@@ -22,6 +22,9 @@ describe('dashboard uc', () => {
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						renameGroupOnDashboard(dashboardId: EntityId, position: GridPosition, title: string) {
+							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
+						},
 					},
 				},
 			],
@@ -48,7 +51,7 @@ describe('dashboard uc', () => {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
-							gridElement: GridElement.FromReferenceGroup('elementId', [
+							gridElement: GridElement.FromPersistedGroup('elementId', 'groupTitle', [
 								new DefaultGridReference('firstId', 'Math'),
 								new DefaultGridReference('secondId', 'German'),
 							]),
@@ -73,7 +76,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromSingleReference(
+								gridElement: GridElement.FromPersistedReference(
 									'elementId',
 									new DefaultGridReference('referenceId', 'Mathe')
 								),
@@ -94,7 +97,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromSingleReference(
+								gridElement: GridElement.FromPersistedReference(
 									'elementId',
 									new DefaultGridReference('referenceId', 'Mathe')
 								),
@@ -104,6 +107,50 @@ describe('dashboard uc', () => {
 					return Promise.resolve(dashboard);
 				});
 			const response = await controller.moveElement('dashboardId', { from: { x: 1, y: 2 }, to: { x: 2, y: 1 } });
+			expect(response instanceof DashboardResponse).toEqual(true);
+		});
+	});
+
+	describe('patchGroup', () => {
+		it('should call uc', async () => {
+			const spy = jest
+				.spyOn(uc, 'renameGroupOnDashboard')
+				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
+					const dashboard = new DashboardEntity(dashboardId, {
+						grid: [
+							{
+								pos: position,
+								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+									new DefaultGridReference('referenceId1', 'Math'),
+									new DefaultGridReference('referenceId2', 'German'),
+								]),
+							},
+						],
+					});
+					return Promise.resolve(dashboard);
+				});
+			await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' });
+			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+		});
+
+		it('should return a dashboard', async () => {
+			jest
+				.spyOn(uc, 'renameGroupOnDashboard')
+				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
+					const dashboard = new DashboardEntity(dashboardId, {
+						grid: [
+							{
+								pos: position,
+								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+									new DefaultGridReference('referenceId1', 'Math'),
+									new DefaultGridReference('referenceId2', 'German'),
+								]),
+							},
+						],
+					});
+					return Promise.resolve(dashboard);
+				});
+			const response = await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' });
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 	});

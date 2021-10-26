@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM, EntityManager, Collection } from '@mikro-orm/core';
 
@@ -232,6 +232,28 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
 			const task = new Task({ name: 'task #1', private: false, course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should not return closed tasks', async () => {
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+			});
+
+			const task = new Task({ name: 'task #1', private: false, course, closed: [teacher] });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -505,6 +527,28 @@ describe('Task Controller (e2e)', () => {
 			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(1);
+		});
+
+		it('should not return closed tasks', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			const task = new Task({ name: 'task #1', private: false, course, closed: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
 		});
 	});
 });

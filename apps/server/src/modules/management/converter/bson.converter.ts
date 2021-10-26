@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as BSON from 'bson';
+import BSON from 'bson';
 
 @Injectable()
 export class BsonConverter {
