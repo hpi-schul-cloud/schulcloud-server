@@ -21,7 +21,7 @@ export class DashboardModelMapper {
 		const references = Array.from(modelEntity.references).map((ref) => DashboardModelMapper.mapReferenceToEntity(ref));
 		const result = {
 			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
-			gridElement: GridElement.FromPersistedGroup(modelEntity.id, references),
+			gridElement: GridElement.FromPersistedGroup(modelEntity.id, modelEntity.title, references),
 		};
 		return result;
 	}
@@ -80,6 +80,10 @@ export class DashboardModelMapper {
 		const elementModel = await DashboardModelMapper.instantiateGridElementModel(gridElement, em);
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
+
+		if (gridElement.isGroup()) {
+			elementModel.title = gridElement.getContent().title;
+		}
 
 		const references = await Promise.all(
 			gridElement.getReferences().map((ref) => DashboardModelMapper.mapReferenceToModel(ref, elementModel, em))
