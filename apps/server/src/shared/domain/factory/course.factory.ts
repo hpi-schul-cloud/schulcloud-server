@@ -1,6 +1,5 @@
-import { School } from '../entity/school.entity';
-import { Course } from '../entity/course.entity';
-import { User } from '../entity/user.entity';
+import { School, Course, User } from '../entity';
+
 import { schoolFactory } from './school.factory';
 
 export const courseFactory = {
@@ -20,6 +19,7 @@ export const courseFactory = {
 			school: schoolFactory.build(),
 			...(props || {}),
 		});
+
 		return course;
 	},
 };

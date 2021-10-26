@@ -28,6 +28,4 @@ describe('ResolvedUserMapper', () => {
 		const result = ResolvedUserMapper.mapToResponse(user);
 		expect(result instanceof ResolvedUser).toBe(true);
 	});
-
-	it.todo('should work with partial user input');
 });
