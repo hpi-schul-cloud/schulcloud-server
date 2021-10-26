@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import * as express from 'express';
+import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 
 // register source-map-support for debugging

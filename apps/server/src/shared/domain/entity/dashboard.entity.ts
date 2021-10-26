@@ -53,6 +53,8 @@ export interface IGridElement {
 	getReferences(): IGridElementReference[];
 
 	addReferences(anotherReference: IGridElementReference[]): void;
+
+	setGroupName(newGroupName: string): void;
 }
 
 export type GridElementContent = {
@@ -66,8 +68,11 @@ export type GridElementContent = {
 export class GridElement implements IGridElement {
 	id: EntityId;
 
-	private constructor(props: { id?: EntityId; references: IGridElementReference[] }) {
+	title: string;
+
+	private constructor(props: { id?: EntityId; title?: string; references: IGridElementReference[] }) {
 		if (props.id) this.id = props.id;
+		if (props.title) this.title = props.title;
 		this.references = props.references;
 	}
 
@@ -75,16 +80,16 @@ export class GridElement implements IGridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromPersistedGroup(id: EntityId, group: IGridElementReference[]): GridElement {
-		return new GridElement({ id, references: group });
+	static FromPersistedGroup(id: EntityId, title: string, group: IGridElementReference[]): GridElement {
+		return new GridElement({ id, title, references: group });
 	}
 
 	static FromSingleReference(reference: IGridElementReference): GridElement {
 		return new GridElement({ references: [reference] });
 	}
 
-	static FromReferences(references: IGridElementReference[]): GridElement {
-		return new GridElement({ references });
+	static FromGroup(title: string, references: IGridElementReference[]): GridElement {
+		return new GridElement({ title, references });
 	}
 
 	references: IGridElementReference[];
@@ -125,9 +130,10 @@ export class GridElement implements IGridElement {
 			return metadata;
 		}
 		const groupData = this.references.map((reference) => reference.getMetadata());
+		const checkShortTitle = this.title ? this.title.substr(0, 2) : 'exampleTitle';
 		const groupMetadata = {
-			title: 'exampleTitle',
-			shortTitle: 'exampleShortTitle',
+			title: this.title,
+			shortTitle: checkShortTitle,
 			displayColor: 'exampleColor',
 			group: groupData,
 		};
@@ -136,6 +142,13 @@ export class GridElement implements IGridElement {
 
 	isGroup(): boolean {
 		return this.references.length > 1;
+	}
+
+	setGroupName(newGroupName: string): void {
+		if (!this.isGroup()) {
+			return;
+		}
+		this.title = newGroupName;
 	}
 }
 
@@ -201,14 +214,14 @@ export class DashboardEntity {
 	getElement(position: GridPosition): IGridElement {
 		const element = this.grid.get(this.gridIndexFromPosition(position));
 		if (!element) {
-			throw new NotFoundException('no element at origin position');
+			throw new NotFoundException('no element at grid position');
 		}
 		return element;
 	}
 
 	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
-		const referencesToMove = this.getReferencesFromPosition(from);
-		const resultElement = this.addReferencesToPosition(referencesToMove, to);
+		const elementToMove = this.getReferencesFromPosition(from);
+		const resultElement = this.mergeElementIntoPosition(elementToMove, to);
 		this.removeFromPosition(from);
 		return {
 			pos: to,
@@ -216,15 +229,16 @@ export class DashboardEntity {
 		};
 	}
 
-	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElementReference[] {
+	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElement {
 		const elementToMove = this.getElement(position);
-		let references = elementToMove.getReferences();
 
-		if (typeof position.groupIndex === 'number') {
+		if (typeof position.groupIndex === 'number' && elementToMove.isGroup()) {
+			const references = elementToMove.getReferences();
 			const referenceForIndex = references[position.groupIndex];
-			references = [referenceForIndex];
+			return GridElement.FromSingleReference(referenceForIndex);
 		}
-		return references;
+
+		return elementToMove;
 	}
 
 	private removeFromPosition(position: GridPositionWithGroupIndex): void {
@@ -236,14 +250,13 @@ export class DashboardEntity {
 		}
 	}
 
-	private addReferencesToPosition(references: IGridElementReference[], position: GridPosition): IGridElement {
-		let targetElement = this.grid.get(this.gridIndexFromPosition(position));
+	private mergeElementIntoPosition(element: IGridElement, position: GridPosition): IGridElement {
+		const targetElement = this.grid.get(this.gridIndexFromPosition(position));
 		if (targetElement) {
-			targetElement.addReferences(references);
-		} else {
-			targetElement = GridElement.FromReferences(references);
-			this.grid.set(this.gridIndexFromPosition(position), targetElement);
+			targetElement.addReferences(element.getReferences());
+			return targetElement;
 		}
-		return targetElement;
+		this.grid.set(this.gridIndexFromPosition(position), element);
+		return element;
 	}
 }

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { MikroORM } from '@mikro-orm/core';
 import { ManagementModule } from '../../../src/modules/management/management.module';
 
