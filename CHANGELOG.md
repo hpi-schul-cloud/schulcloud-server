@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
+- BC-155 - add substitution teacher flag to task
 - BC-121 - add console script to delete soft-deleted files
 - BC-495 - ungroup elements from groups in the course dashboard
 - BC-496 - naming of groups in the course dashboard

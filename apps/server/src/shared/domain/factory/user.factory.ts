@@ -1,4 +1,5 @@
-import { User } from '../entity/user.entity';
+import { User } from '../entity';
+
 import { schoolFactory } from './school.factory';
 
 export const userFactory = {
@@ -11,6 +12,7 @@ export const userFactory = {
 			school: schoolFactory.build(),
 			...props,
 		});
+
 		return user;
 	},
 };
