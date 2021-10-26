@@ -219,7 +219,7 @@ The basic structure of the repo integration test:
               ],
              providers: [NewsRepo],                                     (1.2)
       }).compile();
-      repo = testModule.get(NewsRepo);                        (2)
+      repo = testModule.get(NewsRepo);                                  (2)
       orm = testModule.get(MikroORM);
       em = testModule.get(EntityManager);
     })
@@ -285,7 +285,7 @@ The database calls are mocked and spyied. So we can check how and with which par
 			],
 		}).compile();
 
-		service = module.get(NewsUc);                           (4)
+		service = module.get(NewsUc);                                    (4)
 		repo = module.get(NewsRepo);
 ```
 
@@ -379,7 +379,7 @@ are correctly mounted and available at a specific path.
 
 		app = module.createNestApplication();                           (5)
 		await app.init();
-		orm = module.get(MikroORM);                           (6)
+		orm = module.get(MikroORM);                                     (6)
 		em = module.get(EntityManager);
 	});
 ```
