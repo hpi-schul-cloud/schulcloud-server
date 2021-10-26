@@ -3,7 +3,7 @@ const { filesRepo } = require('.');
 
 const { FileModel } = require('./db');
 
-const { NotFound, AssertionError } = require('../../../errors');
+const { NotFound } = require('../../../errors');
 
 const {
 	getFileById,
@@ -12,7 +12,6 @@ const {
 	getPersonalFilesByUserId,
 	removePersonalFilesByUserId,
 	removeFileById,
-	removeDirectoryContent,
 } = require('./files.repo');
 
 const getFileOrDeletedFileById = async (id) => FileModel.findOneWithDeleted({ _id: id });
