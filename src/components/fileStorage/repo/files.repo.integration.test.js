@@ -60,52 +60,64 @@ describe('files.repo.integration.test', () => {
 	});
 
 	describe('removeFileById', () => {
-		it('should mark the given file for deletion', async () => {
-			const fileOwnerId = generateObjectId();
-			const file = await fileTestUtils.create({ owner: fileOwnerId });
+		describe('when given a regular file', () => {
+			it('should mark the given file for deletion', async () => {
+				const fileOwnerId = generateObjectId();
+				const file = await fileTestUtils.create({ owner: fileOwnerId });
+				const fileBeforeDeletion = await FileModel.findOneWithDeleted({ _id: file._id });
+				expect(fileBeforeDeletion.deleted).to.be.false;
+				expect(fileBeforeDeletion.deletedAt).to.be.undefined;
 
-			await removeFileById(file._id);
+				await removeFileById(file._id);
 
-			const fileAfterDeletion = await FileModel.findOneDeleted({ _id: file._id });
-			expect(fileAfterDeletion.deleted).to.be.true;
-			expect(fileAfterDeletion).to.have.property('deletedAt');
-		});
-
-		it('should prevent deleted files to be found via regular search queries', async () => {
-			const fileOwnerId = generateObjectId();
-			const file = await fileTestUtils.create({ owner: fileOwnerId });
-
-			await removeFileById(file._id);
-
-			const fileAfterDeletion = await FileModel.findOne({ _id: file._id });
-			expect(fileAfterDeletion).to.be.null;
-		});
-	});
-
-	describe('removeDirectoryContent', () => {
-		it('should remove the content of the given directory', async () => {
-			const fileOwnerId = generateObjectId();
-			const directory = await fileTestUtils.create({ owner: fileOwnerId, isDirectory: true });
-			const files = await Promise.all([
-				fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
-				fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
-				fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
-			]);
-
-			await removeDirectoryContent(directory._id);
-
-			for (const file of files) {
-				// eslint-disable-next-line no-await-in-loop
-				const fileAfterDeletion = await FileModel.findOneDeleted({ _id: file._id });
+				const fileAfterDeletion = await FileModel.findOneWithDeleted({ _id: file._id });
 				expect(fileAfterDeletion.deleted).to.be.true;
-			}
+				expect(fileAfterDeletion).to.have.property('deletedAt');
+				const expectedTimeDifferenceInSeconds = 5;
+				expect(new Date().getTime() - fileAfterDeletion.deletedAt.getTime()).to.be.lessThan(
+					expectedTimeDifferenceInSeconds * 1000,
+					`The time difference between the deletedAt date and now should be less than ${expectedTimeDifferenceInSeconds}s`
+				);
+			});
+
+			it('should prevent deleted files to be found via regular search queries', async () => {
+				const fileOwnerId = generateObjectId();
+				const file = await fileTestUtils.create({ owner: fileOwnerId });
+
+				await removeFileById(file._id);
+
+				const fileAfterDeletion = await FileModel.findOne({ _id: file._id });
+				expect(fileAfterDeletion).to.be.null;
+			});
 		});
 
-		it('should throw an error if the given file is not a directory', async () => {
-			const fileOwnerId = generateObjectId();
-			const regularFile = await fileTestUtils.create({ owner: fileOwnerId, isDirectory: false });
+		describe('when given a directory', () => {
+			it('should also remove the content of the given directory', async () => {
+				const fileOwnerId = generateObjectId();
+				const directory = await fileTestUtils.create({ owner: fileOwnerId, isDirectory: true });
+				const files = await Promise.all([
+					fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
+					fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
+					fileTestUtils.create({ owner: fileOwnerId, parent: directory._id }),
+				]);
+				for (const file of files) {
+					// eslint-disable-next-line no-await-in-loop
+					const fileBeforeDeletion = await FileModel.findOneWithDeleted({ _id: file._id });
+					expect(fileBeforeDeletion.deleted).to.be.false;
+				}
+				const directoryBeforeDeletion = await FileModel.findOneWithDeleted({ _id: directory._id });
+				expect(directoryBeforeDeletion.deleted).to.be.false;
 
-			await expect(removeDirectoryContent(regularFile._id)).to.be.rejectedWith(AssertionError);
+				await removeFileById(directory._id);
+
+				for (const file of files) {
+					// eslint-disable-next-line no-await-in-loop
+					const fileAfterDeletion = await FileModel.findOneWithDeleted({ _id: file._id });
+					expect(fileAfterDeletion.deleted).to.be.true;
+				}
+				const directoryAfterDeletion = await FileModel.findOneWithDeleted({ _id: directory._id });
+				expect(directoryAfterDeletion.deleted).to.be.true;
+			});
 		});
 	});
 

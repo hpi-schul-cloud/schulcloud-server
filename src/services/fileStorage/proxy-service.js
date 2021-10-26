@@ -659,7 +659,6 @@ const directoryService = {
 			throw new Forbidden();
 		}
 
-		await filesRepo.removeDirectoryContent(_id);
 		await filesRepo.removeFileById(_id);
 	},
 };

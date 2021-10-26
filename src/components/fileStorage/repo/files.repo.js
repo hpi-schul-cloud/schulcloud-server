@@ -34,16 +34,12 @@ const getPersonalFilesByUserId = async (userId) => {
 	return FileModel.find(personalFileSearchQuery(userId)).lean().exec();
 };
 
-const removeFileById = async (id) => FileModel.deleteById(id).lean().exec();
-
-const removeDirectoryContent = async (id) => {
+const removeFileById = async (id) => {
 	const file = await getFileById(id);
-	if (!file.isDirectory) {
-		throw new AssertionError(
-			`removeDirectoryContent can only be called with a valid id of a directory. But ${id} is not a directory.`
-		);
+	if (file.isDirectory) {
+		await FileModel.delete({ parent: id }).lean().exec();
 	}
-	return FileModel.delete({ parent: id }).lean().exec();
+	FileModel.deleteById(id).lean().exec();
 };
 
 /**
@@ -106,5 +102,4 @@ module.exports = {
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 	removeFileById,
-	removeDirectoryContent,
 };
