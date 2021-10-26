@@ -5,6 +5,7 @@ interface ITaskStatus {
 	maxSubmissions: number;
 	graded: number;
 	isDraft: boolean;
+	isSubstitutionTeacher: boolean;
 }
 
 export class TaskWithStatusVo {

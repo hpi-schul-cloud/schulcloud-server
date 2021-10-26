@@ -1,4 +1,4 @@
-import { School } from '../entity/school.entity';
+import { School } from '../entity';
 
 export const schoolFactory = {
 	build: (props?: { name?: string }): School => {
@@ -6,6 +6,7 @@ export const schoolFactory = {
 			name: 'school #1',
 			...props,
 		});
+
 		return school;
 	},
 };
