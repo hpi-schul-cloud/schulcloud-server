@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-369 - add more LDAP systems to the init deployment
+
 ### Changed
 
 ## [26.14.0] - 2021-10-26
@@ -21,7 +23,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-121 - add console script to delete soft-deleted files
 - BC-495 - ungroup elements from groups in the course dashboard
 - BC-496 - naming of groups in the course dashboard
-- BC-369 - add more LDAP systems to the init deployment
 
 ### Changed
 
