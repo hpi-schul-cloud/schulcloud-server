@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongoose').Types;
-const { alert } = require('../src/logger');
-
+const { alert, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const federalStateModel = require('../src/services/federalState/model');
 const systemModel = require('../src/services/system/model');
@@ -11,22 +10,20 @@ const schoolModel = mongoose.model('schools_20211021', schoolSchema, 'schools');
 
 const getFederalStateFromSchool = async (systemId) => {
 	// is this ldap configured to more than 1 school?
-	const schoolsBySystem = await schoolModel
+	const federalStates = await schoolModel
 		.aggregate([{ $match: { systems: { $in: [ObjectId(systemId)] } } }, { $group: { _id: '$federalState' } }])
 		.exec();
 
-	if (schoolsBySystem.length === 0) {
-		alert(`LDAP system ${systemId} is not associated to any school`);
-		return null;
+	if (federalStates.length === 0) {
+		error(`LDAP system ${systemId} is not associated to any school`);
 	}
-	if (schoolsBySystem.length > 1) {
-		alert(`LDAP system ${systemId} used in multiple schools from different federal states`);
-		return null;
+	if (federalStates.length > 1) {
+		error(`LDAP system ${systemId} used in multiple schools from different federal states`);
 	}
-	return schoolsBySystem[0]._id;
+	return federalStates[0]._id;
 };
 
-const getFederalState = async (federalStates) =>
+const getFederalStates = async (federalStates) =>
 	federalStateModel
 		.find({ abbreviation: { $in: federalStates } })
 		.select('_id')
@@ -37,22 +34,19 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		const [{ _id: brandenburg }, { _id: lowersaxony }, { _id: thuringia }] = await getFederalState(['BB', 'NI', 'TH']);
+		const [{ _id: brandenburg }, { _id: lowersaxony }] = await getFederalStates(['BB', 'NI']);
 
 		const systemsData = await systemModel
 			.find({
-				type: { $in: ['ldap', 'iserv', 'tsp-base', 'tsp-school'] },
+				type: { $in: ['ldap', 'iserv'] },
 				'ldapConfig.federalState': { $eq: null },
 			})
 			.lean()
 			.exec();
 
 		for (const system of systemsData) {
-			const newLdapConfig = { ...system.ldapConfig };
-
-			if (system.type === 'tsp' || system.type === 'tsp-school') {
-				newLdapConfig.federalState = thuringia;
-			} else if (system.ldapConfig && system.ldapConfig.provider) {
+			if (system.ldapConfig && system.ldapConfig.provider) {
+				const newLdapConfig = { ...system.ldapConfig };
 				switch (system.ldapConfig.provider) {
 					case 'univention':
 						newLdapConfig.federalState = brandenburg;
@@ -67,17 +61,16 @@ module.exports = {
 						newLdapConfig.federalState = await getFederalStateFromSchool(system._id);
 						break;
 				}
+				// eslint-disable-next-line no-await-in-loop
+				await systemModel.updateOne(
+					{
+						_id: system._id,
+					},
+					{
+						ldapConfig: newLdapConfig,
+					}
+				);
 			}
-
-			// eslint-disable-next-line no-await-in-loop
-			await systemModel.updateOne(
-				{
-					_id: system._id,
-				},
-				{
-					ldapConfig: newLdapConfig,
-				}
-			);
 		}
 		alert('Finished adding federal states to "systems"');
 		await close();
