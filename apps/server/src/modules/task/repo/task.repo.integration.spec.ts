@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Task } from '@shared/domain';
+import { SortOrder } from '@shared/domain';
 import { userFactory, courseFactory, lessonFactory, taskFactory, submissionFactory } from '@shared/domain/factory';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
