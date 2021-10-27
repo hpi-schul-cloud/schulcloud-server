@@ -45,7 +45,7 @@ describe('BaseFactory', () => {
 			expect(user).toBeInstanceOf(User);
 		});
 
-		it('should override properties', () => {
+		it('should override default properties', () => {
 			const factory = BaseFactory.define<User, IUserProperties>(User, () => {
 				return { email: 'joe@example.com', roles: ['member'] };
 			});
