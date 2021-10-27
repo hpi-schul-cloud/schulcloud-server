@@ -1,5 +1,3 @@
-import { DeepPartial } from 'fishery';
-import moment from 'moment';
 import { BaseFactory } from './base.factory';
 import { SchoolNews, CourseNews, TeamNews, INewsProperties } from '../entity/news.entity';
 import { courseFactory } from './course.factory';
@@ -7,18 +5,7 @@ import { schoolFactory } from './school.factory';
 import { teamFactory } from './team.factory';
 import { userFactory } from './user.factory';
 
-const displayAtParams = (unpublished: boolean): DeepPartial<INewsProperties> => {
-	const displayAt = unpublished ? moment().add(1, 'days').toDate() : moment().subtract(1, 'days').toDate();
-	return { displayAt };
-};
-
-class SchoolNewsFactory extends BaseFactory<SchoolNews, INewsProperties> {
-	unpublished(unpublished = true) {
-		return this.params(displayAtParams(unpublished));
-	}
-}
-
-export const schoolNewsFactory = SchoolNewsFactory.define(SchoolNews, ({ sequence }) => {
+export const schoolNewsFactory = BaseFactory.define<SchoolNews, INewsProperties>(SchoolNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
@@ -29,13 +16,7 @@ export const schoolNewsFactory = SchoolNewsFactory.define(SchoolNews, ({ sequenc
 	};
 });
 
-class CourseNewsFactory extends BaseFactory<CourseNews, INewsProperties> {
-	unpublished(unpublished = true) {
-		return this.params(displayAtParams(unpublished));
-	}
-}
-
-export const courseNewsFactory = CourseNewsFactory.define(CourseNews, ({ sequence }) => {
+export const courseNewsFactory = BaseFactory.define<CourseNews, INewsProperties>(CourseNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
@@ -46,13 +27,7 @@ export const courseNewsFactory = CourseNewsFactory.define(CourseNews, ({ sequenc
 	};
 });
 
-class TeamNewsFactory extends BaseFactory<TeamNews, INewsProperties> {
-	unpublished(unpublished = true) {
-		return this.params(displayAtParams(unpublished));
-	}
-}
-
-export const teamNewsFactory = TeamNewsFactory.define(TeamNews, ({ sequence }) => {
+export const teamNewsFactory = BaseFactory.define<TeamNews, INewsProperties>(TeamNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
