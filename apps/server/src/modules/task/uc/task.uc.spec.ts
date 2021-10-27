@@ -242,7 +242,10 @@ describe('TaskUC', () => {
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser, paginationQuery);
-			expect(result[0]).toEqual({ task, status: { submitted: 0, maxSubmissions: 1, graded: 0, isDraft: false } });
+			expect(result[0]).toEqual({
+				task,
+				status: { submitted: 0, maxSubmissions: 1, graded: 0, isDraft: false, isSubstitutionTeacher: false },
+			});
 			expect(result[0].task.course).toBeDefined();
 
 			mockRestore();
@@ -282,6 +285,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -308,6 +312,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -334,6 +339,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -364,6 +370,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -450,11 +457,36 @@ describe('TaskUC', () => {
 			const [result] = await service.findAll(currentUser, paginationQuery);
 			expect(result[0]).toEqual({
 				task,
-				status: { submitted: 0, maxSubmissions: course.getNumberOfStudents(), graded: 0, isDraft: true },
+				status: {
+					submitted: 0,
+					maxSubmissions: course.getNumberOfStudents(),
+					graded: 0,
+					isDraft: true,
+					isSubstitutionTeacher: false,
+				},
 			});
 			expect(result[0].task.course).toBeDefined();
 
 			mockRestore();
+		});
+
+		it('should mark substitution teacher in status', async () => {
+			const perm = [TaskDashBoardPermission.teacherDashboard];
+			const userData = createCurrentTestUser(perm);
+			const course = courseFactory.build({ substitutionTeachers: [userData.user] });
+			const task = new Task({ name: 'task #1', private: false, course });
+
+			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
+			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
+			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
+
+			const paginationQuery = new PaginationQuery();
+			const [result] = await service.findAll(userData.currentUser, paginationQuery);
+			expect(result[0].status.isSubstitutionTeacher).toBe(true);
+
+			spyTaskRepoFindAllByParentIds.mockRestore();
+			spyLessonRepoFindAllByCourseIds.mockRestore();
+			spyGetPermittedCourses.mockRestore();
 		});
 
 		it('should find a list of tasks', async () => {
@@ -491,6 +523,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -518,6 +551,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -544,6 +578,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -574,6 +609,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -606,6 +642,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();
@@ -635,6 +672,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 
 			mockRestore();

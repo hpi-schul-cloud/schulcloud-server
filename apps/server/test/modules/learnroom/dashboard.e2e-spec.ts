@@ -33,8 +33,8 @@ describe('Dashboard Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get<MikroORM>(MikroORM);
-		dashboardRepo = app.get<IDashboardRepo>('DASHBOARD_REPO');
+		orm = app.get(MikroORM);
+		dashboardRepo = app.get('DASHBOARD_REPO');
 	});
 
 	afterEach(async () => {

@@ -1,4 +1,7 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
+
+import { EntityId } from '../types';
+
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
@@ -63,5 +66,14 @@ export class Course extends BaseEntityWithTimestamps {
 
 	getNumberOfStudents(): number {
 		return this.students.length;
+	}
+
+	isSubstitutionTeacher(userId: EntityId): boolean {
+		const teacherIds = this.teachers.getIdentifiers('id');
+		const substitutionIds = this.substitutionTeachers.getIdentifiers('id');
+
+		const isSubstitutionTeacher = !teacherIds.includes(userId) && substitutionIds.includes(userId);
+
+		return isSubstitutionTeacher;
 	}
 }

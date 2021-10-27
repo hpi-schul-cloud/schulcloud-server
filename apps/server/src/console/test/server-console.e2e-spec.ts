@@ -18,8 +18,8 @@ describe('ServerConsole (e2e)', () => {
 		});
 		app = await bootstrap.init();
 		await app.init();
-		consoleService = app.get<ConsoleService>(ConsoleService);
-		consoleWriter = app.get<ConsoleWriterService>(ConsoleWriterService);
+		consoleService = app.get(ConsoleService);
+		consoleWriter = app.get(ConsoleWriterService);
 		logMock = jest.spyOn(consoleWriter, 'info').mockImplementation();
 	});
 

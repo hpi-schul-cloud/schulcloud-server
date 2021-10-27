@@ -6,6 +6,7 @@ import { RoleUC } from './role.uc';
 import { UserRepo } from '../repo';
 
 @Injectable()
+// TODO: this is a domain service and must move to right place. It combine the repo roles and users
 export class UserUC {
 	constructor(private readonly userRepo: UserRepo, private readonly roleUC: RoleUC) {}
 

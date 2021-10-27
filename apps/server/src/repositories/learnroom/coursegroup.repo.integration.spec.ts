@@ -22,7 +22,7 @@ describe('course group repo', () => {
 			providers: [CourseGroupRepo],
 		}).compile();
 		repo = module.get(CourseGroupRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {

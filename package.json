@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.13.2",
+	"version": "26.14.0",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -22,10 +22,8 @@
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
-		"feathers:test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
-		"feathers:test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
-		"backup": "node ./backup.js -b export",
-		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
+		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run coverage",
+		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup && npm run mocha-inspect",
 		"setup": "npm run nest:start:console -- database seed",
 		"build": "npm run nest:build",
 		"copy-files": "copyfiles src/**/*.yaml build",

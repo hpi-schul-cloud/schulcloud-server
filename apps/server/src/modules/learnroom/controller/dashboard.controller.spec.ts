@@ -30,8 +30,8 @@ describe('dashboard uc', () => {
 			],
 		}).compile();
 
-		uc = module.get<DashboardUc>(DashboardUc);
-		controller = module.get<DashboardController>(DashboardController);
+		uc = module.get(DashboardUc);
+		controller = module.get(DashboardController);
 	});
 
 	describe('getUsersDashboard', () => {
