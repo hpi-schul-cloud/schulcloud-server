@@ -30,19 +30,11 @@ export class DashboardModelMapper {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
-		const grid: GridElementWithPosition[] = [];
-		// ----------------------
-		// temporary solution, look at how remove orphaned elements on persist
-		await Promise.all(
+		const grid = await Promise.all(
 			Array.from(modelEntity.gridElements).map(async (e) => {
-				const element = await DashboardModelMapper.mapElementToEntity(e);
-				if (element.gridElement.getReferences().length > 0) {
-					grid.push(element);
-				}
-				return Promise.resolve();
+				return DashboardModelMapper.mapElementToEntity(e);
 			})
 		);
-		// ----------------------
 		return new DashboardEntity(modelEntity.id, { grid });
 	}
 
@@ -103,7 +95,21 @@ export class DashboardModelMapper {
 				.map((elementWithPosition) => DashboardModelMapper.mapGridElementToModel(elementWithPosition, modelEntity, em))
 		);
 
-		modelEntity.gridElements = new Collection<DashboardGridElementModel>(modelEntity, mappedElements);
+		if (!modelEntity.gridElements.isInitialized()) {
+			await modelEntity.gridElements.init();
+		}
+
+		Array.from(modelEntity.gridElements).forEach((el) => {
+			if (!mappedElements.includes(el)) {
+				modelEntity.gridElements.remove(el);
+			}
+		});
+
+		mappedElements.forEach((el) => {
+			if (!modelEntity.gridElements.contains(el)) {
+				modelEntity.gridElements.add(el);
+			}
+		});
 
 		return modelEntity;
 	}
