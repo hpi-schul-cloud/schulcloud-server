@@ -15,7 +15,7 @@ describe('DatabaseManagementConsole (e2e)', () => {
 		});
 		app = await console.init();
 		await app.init();
-		consoleService = app.get<ConsoleService>(ConsoleService);
+		consoleService = app.get(ConsoleService);
 	});
 
 	afterAll(async () => {

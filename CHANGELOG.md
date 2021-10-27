@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-379 - updated the engine version to node 16 and npm 8
+- BC-477 remove generics from test-module getter
 
 ## [26.14.0] - 2021-10-26
 

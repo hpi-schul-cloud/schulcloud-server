@@ -15,7 +15,7 @@ describe('DatabaseManagementService', () => {
 			providers: [DatabaseManagementService],
 		}).compile();
 
-		service = module.get<DatabaseManagementService>(DatabaseManagementService);
+		service = module.get(DatabaseManagementService);
 	});
 
 	afterAll(async () => {

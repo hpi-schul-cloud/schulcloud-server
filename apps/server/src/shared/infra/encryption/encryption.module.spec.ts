@@ -9,7 +9,7 @@ describe('EncryptionModule', () => {
 		module = await Test.createTestingModule({
 			imports: [EncryptionModule.forRoot({ SymmetricCipherKey: 'sampleEncryptionKey' })],
 		}).compile();
-		service = module.get<SymetricKeyEncryptionService>(SymetricKeyEncryptionService);
+		service = module.get(SymetricKeyEncryptionService);
 	});
 
 	afterAll(async () => {
