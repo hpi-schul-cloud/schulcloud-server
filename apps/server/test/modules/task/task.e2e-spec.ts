@@ -128,7 +128,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const teacher = userFactory.build();
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			await em.persistAndFlush([task]);
 			em.clear();
 
@@ -149,7 +149,7 @@ describe('Task Controller (e2e)', () => {
 			const student = userFactory.build();
 			await em.persistAndFlush([teacher, student]);
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
 			await em.persistAndFlush([task]);
@@ -173,9 +173,9 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const task1 = taskFactory.private(false).build({ course });
+			const task2 = taskFactory.private(false).build({ course });
+			const task3 = taskFactory.private(false).build({ course });
 
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
@@ -194,8 +194,8 @@ describe('Task Controller (e2e)', () => {
 			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
 			const course3 = courseFactory.build({ name: 'course #3', teachers: [teacher] });
-			const task1 = taskFactory.draft(false).build({ course: course1 });
-			const task2 = taskFactory.draft(false).build({ course: course2 });
+			const task1 = taskFactory.private(false).build({ course: course1 });
+			const task2 = taskFactory.private(false).build({ course: course2 });
 
 			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
@@ -212,7 +212,7 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-			const task = taskFactory.draft(true).build({ course });
+			const task = taskFactory.private(true).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -230,7 +230,7 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -252,7 +252,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 			});
 
-			const task = taskFactory.draft(false).build({ course, closed: [teacher] });
+			const task = taskFactory.private(false).build({ course, closed: [teacher] });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -353,7 +353,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
 			await em.persistAndFlush([task]);
@@ -385,9 +385,9 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const task1 = taskFactory.private(false).build({ course });
+			const task2 = taskFactory.private(false).build({ course });
+			const task3 = taskFactory.private(false).build({ course });
 
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
@@ -419,8 +419,8 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task1 = taskFactory.draft(false).build({ course: course1 });
-			const task2 = taskFactory.draft(false).build({ course: course2 });
+			const task1 = taskFactory.private(false).build({ course: course1 });
+			const task2 = taskFactory.private(false).build({ course: course2 });
 
 			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
@@ -442,7 +442,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft(true).build({ course });
+			const task = taskFactory.private(true).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -467,8 +467,8 @@ describe('Task Controller (e2e)', () => {
 				name: 'course #2',
 				substitutionTeachers: [subTeacher],
 			});
-			const task1 = taskFactory.draft(false).build({ course: course1 });
-			const task2 = taskFactory.draft(false).build({ course: course2 });
+			const task1 = taskFactory.private(false).build({ course: course1 });
+			const task2 = taskFactory.private(false).build({ course: course2 });
 
 			await em.persistAndFlush([task1, task2]);
 			em.clear();
@@ -491,7 +491,7 @@ describe('Task Controller (e2e)', () => {
 			});
 
 			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-			const task = taskFactory.draft(true).build({ course, availableDate: nextDay });
+			const task = taskFactory.private(true).build({ course, availableDate: nextDay });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -514,7 +514,7 @@ describe('Task Controller (e2e)', () => {
 			});
 
 			// @ts-expect-error expected value null in db
-			const task = taskFactory.draft(false).build({ course, dueDate: null });
+			const task = taskFactory.private(false).build({ course, dueDate: null });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -536,7 +536,7 @@ describe('Task Controller (e2e)', () => {
 				students: [student],
 			});
 
-			const task = taskFactory.draft(false).build({ course, closed: [student] });
+			const task = taskFactory.private(false).build({ course, closed: [student] });
 
 			await em.persistAndFlush([task]);
 			em.clear();

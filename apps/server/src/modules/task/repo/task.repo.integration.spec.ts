@@ -281,8 +281,8 @@ describe('TaskRepo', () => {
 		describe('filters', () => {
 			it('should filter tasks by draft status = true', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.draft(true).build({ teacher });
-				const task2 = taskFactory.draft(false).build({ teacher });
+				const task1 = taskFactory.private(true).build({ teacher });
+				const task2 = taskFactory.private(false).build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -294,8 +294,8 @@ describe('TaskRepo', () => {
 
 			it('should filter tasks by draft status = false', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.draft(true).build({ teacher });
-				const task2 = taskFactory.draft(false).build({ teacher });
+				const task1 = taskFactory.private(true).build({ teacher });
+				const task2 = taskFactory.private(false).build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -340,8 +340,8 @@ describe('TaskRepo', () => {
 
 			it('should return tasks with both status when no filter is applied', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.draft(true).build({ teacher });
-				const task2 = taskFactory.draft(false).build({ teacher });
+				const task1 = taskFactory.private(true).build({ teacher });
+				const task2 = taskFactory.private(false).build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();

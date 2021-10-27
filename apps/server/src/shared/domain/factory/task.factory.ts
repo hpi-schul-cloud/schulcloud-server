@@ -1,9 +1,12 @@
+import { DeepPartial } from 'fishery';
 import { Task, ITaskProperties } from '../entity/task.entity';
 import { BaseFactory } from './base.factory';
 
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {
-	draft(flag = true): this {
-		return this.params({ private: flag });
+	private(flag = true): this {
+		const params: DeepPartial<ITaskProperties> = { private: flag };
+		if (flag === true) params.course = undefined;
+		return this.params(params);
 	}
 }
 

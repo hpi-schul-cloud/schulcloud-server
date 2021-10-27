@@ -236,7 +236,7 @@ describe('TaskUC', () => {
 
 		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 
 			const mockRestore = mockAll([task]);
 
@@ -250,9 +250,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.build();
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const task1 = taskFactory.private(false).build({ course });
+			const task2 = taskFactory.private(false).build({ course });
+			const task3 = taskFactory.private(false).build({ course });
 
 			const mockRestore = mockAll([task1, task2, task3]);
 
@@ -268,7 +268,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build();
 			student.id = currentUser.userId;
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
 			const mockRestore = mockAll([task]);
@@ -293,7 +293,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			task.submissions.add(submissionFactory.build({ task, student: student1 }));
 			task.submissions.add(submissionFactory.build({ task, student: student2 }));
 
@@ -317,7 +317,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build();
 			student.id = currentUser.userId;
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission = submissionFactory.build({ task, student });
 			task.submissions.add(submission);
 
@@ -346,7 +346,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
 			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
@@ -459,9 +459,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.build();
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const task1 = taskFactory.private(false).build({ course });
+			const task2 = taskFactory.private(false).build({ course });
+			const task3 = taskFactory.private(false).build({ course });
 
 			const mockRestore = mockAll([task1, task2, task3]);
 
@@ -477,7 +477,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build();
 			student.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
 			const mockRestore = mockAll([task]);
@@ -502,7 +502,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
 			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
@@ -527,7 +527,7 @@ describe('TaskUC', () => {
 			const student = userFactory.build();
 			student.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission = submissionFactory.build({ task, student });
 			task.submissions.add(submission);
 
@@ -556,7 +556,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
 			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
@@ -585,7 +585,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
 			const submission2 = submissionFactory.build({ task, student: student2 });
 			const submission3 = submissionFactory.build({ task, student: student2 });
@@ -617,7 +617,7 @@ describe('TaskUC', () => {
 			const student2 = userFactory.build();
 			student2.id = new ObjectId().toHexString();
 			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.private(false).build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
 			const submission2 = submissionFactory.build({ task, student: student1 });
 			const submission3 = submissionFactory.build({ task, student: student2 });

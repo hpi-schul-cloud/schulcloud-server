@@ -38,7 +38,7 @@ describe('task.mapper', () => {
 	});
 
 	it('should map if course and fullfilled status exist', () => {
-		const task = taskFactory.draft(false).build();
+		const task = taskFactory.private(false).build();
 		const taskDescriptions = task.getDescriptions();
 
 		const status = {
@@ -55,7 +55,7 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter unnecessary information from status', () => {
-		const task = taskFactory.draft(false).build();
+		const task = taskFactory.private(false).build();
 		const taskDescriptions = task.getDescriptions();
 
 		const status = {
@@ -73,7 +73,7 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter not necessary informations from task', () => {
-		const task = taskFactory.draft(false).build();
+		const task = taskFactory.private(false).build();
 		// @ts-expect-error test-case
 		task.key = 1;
 
