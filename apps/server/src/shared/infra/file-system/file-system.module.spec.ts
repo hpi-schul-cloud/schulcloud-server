@@ -10,7 +10,7 @@ describe('FileSystemModule', () => {
 		module = await Test.createTestingModule({
 			imports: [FileSystemModule],
 		}).compile();
-		adapter = module.get<FileSystemAdapter>(FileSystemAdapter);
+		adapter = module.get(FileSystemAdapter);
 	});
 
 	afterAll(async () => {

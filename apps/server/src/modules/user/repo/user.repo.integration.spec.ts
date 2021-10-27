@@ -17,7 +17,7 @@ describe('user repo', () => {
 			providers: [UserRepo],
 		}).compile();
 		repo = module.get(UserRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {

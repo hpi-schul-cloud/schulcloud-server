@@ -39,8 +39,8 @@ describe('AuthorizationService', () => {
 			],
 		}).compile();
 
-		service = module.get<AuthorizationService>(AuthorizationService);
-		authProvider = module.get<FeathersAuthProvider>(FeathersAuthProvider);
+		service = module.get(AuthorizationService);
+		authProvider = module.get(FeathersAuthProvider);
 	});
 
 	it('should be defined', () => {
