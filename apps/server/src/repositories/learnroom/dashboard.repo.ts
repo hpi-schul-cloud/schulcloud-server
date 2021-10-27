@@ -61,27 +61,27 @@ export class DashboardRepo implements IDashboardRepo {
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
 	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
-		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
+		const modelEntity = await DashboardModelMapper.mapDashboardToModel(entity, this.em);
 		this.em.persist(modelEntity);
-		return DashboardModelMapper.mapToEntity(modelEntity);
+		return DashboardModelMapper.mapDashboardToEntity(modelEntity);
 	}
 
 	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
-		const modelEntity = await DashboardModelMapper.mapToModel(entity, this.em);
+		const modelEntity = await DashboardModelMapper.mapDashboardToModel(entity, this.em);
 		await this.em.persistAndFlush(modelEntity);
-		return DashboardModelMapper.mapToEntity(modelEntity);
+		return DashboardModelMapper.mapDashboardToEntity(modelEntity);
 	}
 
 	async getDashboardById(id: EntityId): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
-		const dashboard = await DashboardModelMapper.mapToEntity(dashboardModel);
+		const dashboard = await DashboardModelMapper.mapDashboardToEntity(dashboardModel);
 		return dashboard;
 	}
 
 	async getUsersDashboard(): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOne(DashboardModelEntity, hardcodedTestDashboardId);
 		if (dashboardModel) {
-			return DashboardModelMapper.mapToEntity(dashboardModel);
+			return DashboardModelMapper.mapDashboardToEntity(dashboardModel);
 		}
 
 		const dashboard = generateHardcodedTestDashboard();

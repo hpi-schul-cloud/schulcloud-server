@@ -26,7 +26,7 @@ export class DashboardModelMapper {
 		return result;
 	}
 
-	static async mapToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
+	static async mapDashboardToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
@@ -94,7 +94,7 @@ export class DashboardModelMapper {
 		return elementModel;
 	}
 
-	static async mapToModel(entity: DashboardEntity, em: EntityManager): Promise<DashboardModelEntity> {
+	static async mapDashboardToModel(entity: DashboardEntity, em: EntityManager): Promise<DashboardModelEntity> {
 		const existing = await em.findOne(DashboardModelEntity, entity.getId());
 		const modelEntity = existing || new DashboardModelEntity(entity.getId());
 		const mappedElements = await Promise.all(
