@@ -1,6 +1,5 @@
 import { Task } from '@shared/domain';
-import { taskFactory } from '@shared/domain/factory';
-import { setupEntities } from '@src/modules/database';
+import { taskFactory, setupEntities } from '@shared/testing';
 import { TaskResponse } from '../controller/dto';
 
 import { TaskMapper } from './task.mapper';

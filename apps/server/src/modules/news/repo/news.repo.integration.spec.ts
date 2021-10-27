@@ -1,10 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
-import { News, SortOrder } from '@shared/domain';
+import { NewsTargetModel, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
-import { courseNewsFactory, schoolNewsFactory, teamNewsFactory } from '@shared/domain/factory';
+import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanUpCollections } from '@shared/testing';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {
@@ -22,11 +21,12 @@ describe('NewsRepo', () => {
 		em = module.get(EntityManager);
 	});
 
-	beforeEach(async () => {
-		await em.nativeDelete(News, {});
-	});
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(async () => {
+		await cleanUpCollections(em);
 	});
 
 	describe('defined', () => {

@@ -4,7 +4,7 @@ import { createCurrentTestUser } from '@src/modules/user/utils';
 import { PaginationQuery } from '@shared/controller';
 
 import { EntityId, ICurrentUser, Lesson, Task } from '@shared/domain';
-import { userFactory, courseFactory, lessonFactory, taskFactory, submissionFactory } from '@shared/domain/factory';
+import { userFactory, courseFactory, lessonFactory, taskFactory, submissionFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';

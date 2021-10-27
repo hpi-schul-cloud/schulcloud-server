@@ -1,6 +1,5 @@
-import { setupEntities } from '@src/modules/database';
+import { userFactory, setupEntities } from '@shared/testing';
 import { User } from './user.entity';
-import { userFactory } from '../factory';
 
 describe('User Entity', () => {
 	beforeAll(async () => {

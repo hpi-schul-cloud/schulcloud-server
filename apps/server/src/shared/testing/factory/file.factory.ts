@@ -1,4 +1,4 @@
-import { File, IFileProperties } from '../entity/file.entity';
+import { File, IFileProperties } from '@shared/domain';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
 import { BaseFactory } from './base.factory';

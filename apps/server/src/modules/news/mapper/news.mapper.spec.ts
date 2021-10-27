@@ -1,8 +1,20 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseNews, INewsProperties, News, School, SchoolNews, Team, TeamNews, User } from '@shared/domain';
-import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTarget } from '@shared/domain/types/news.types';
-import { courseFactory, schoolFactory, userFactory } from '@shared/domain/factory';
-import { setupEntities } from '@src/modules/database';
+import {
+	CourseNews,
+	INewsProperties,
+	News,
+	School,
+	SchoolNews,
+	Team,
+	TeamNews,
+	User,
+	NewsTargetModel,
+	INewsScope,
+	ICreateNews,
+	IUpdateNews,
+	NewsTarget,
+} from '@shared/domain';
+import { courseFactory, schoolFactory, userFactory, setupEntities } from '@shared/testing';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,

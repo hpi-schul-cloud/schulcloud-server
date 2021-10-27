@@ -1,6 +1,5 @@
 import { Collection } from '@mikro-orm/core';
-import { setupEntities } from '@src/modules/database';
-import { userFactory, taskFactory, submissionFactory, fileFactory } from '../factory';
+import { userFactory, taskFactory, submissionFactory, fileFactory, setupEntities } from '@shared/testing';
 import { File } from './file.entity';
 
 const buildSubmission = () => {

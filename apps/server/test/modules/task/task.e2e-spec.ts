@@ -9,7 +9,7 @@ import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@src/modules/user/utils';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { courseFactory, userFactory, taskFactory, submissionFactory } from '@shared/domain/factory';
+import { courseFactory, userFactory, taskFactory, submissionFactory } from '@shared/testing';
 
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.user.id = user.id;

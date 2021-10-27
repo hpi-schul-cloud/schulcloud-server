@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
-import { EntityId } from '@shared/domain';
 import { UnauthorizedException } from '@nestjs/common';
+import { EntityId, NewsTargetModel } from '@shared/domain';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { userFactory } from '@shared/domain/factory';
+import { userFactory } from '@shared/testing';
 import { UserUC } from './uc';
 import { UserFacade } from './user.facade';
 import { ResolvedUserMapper } from './mapper';

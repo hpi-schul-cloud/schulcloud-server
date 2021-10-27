@@ -1,4 +1,4 @@
-import { School, ISchoolProperties } from '../entity/school.entity';
+import { School, ISchoolProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 export const schoolFactory = BaseFactory.define<School, ISchoolProperties>(School, ({ sequence }) => {

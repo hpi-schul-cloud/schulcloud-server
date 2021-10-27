@@ -1,5 +1,4 @@
-import { userFactory, roleFactory } from '@shared/domain/factory';
-import { setupEntities } from '@src/modules/database';
+import { userFactory, roleFactory, setupEntities } from '@shared/testing';
 import { ResolvedUserMapper } from './ResolvedUser.mapper';
 import { ResolvedUser } from '../controller/dto';
 

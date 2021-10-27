@@ -1,4 +1,4 @@
-import { setupEntities } from '@src/modules/database';
+import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'mongodb';
 import { BaseEntity } from './base.entity';
 

@@ -1,5 +1,5 @@
+import { Submission, ISubmissionProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
-import { Submission, ISubmissionProperties } from '../entity/submission.entity';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 

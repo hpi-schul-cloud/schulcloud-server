@@ -1,7 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain';
-import { userFactory, courseFactory, lessonFactory, taskFactory, submissionFactory } from '@shared/domain/factory';
+import {
+	userFactory,
+	courseFactory,
+	lessonFactory,
+	taskFactory,
+	submissionFactory,
+	cleanUpCollections,
+} from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
@@ -26,7 +33,7 @@ describe('TaskRepo', () => {
 	});
 
 	afterEach(async () => {
-		await em.getDriver().dropCollections();
+		await cleanUpCollections(em);
 	});
 
 	describe('findAllByParentIds', () => {

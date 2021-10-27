@@ -1,5 +1,5 @@
 import { DeepPartial } from 'fishery';
-import { Task, ITaskProperties } from '../entity/task.entity';
+import { Task, ITaskProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {

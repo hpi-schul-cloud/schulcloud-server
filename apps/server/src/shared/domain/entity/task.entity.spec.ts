@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { courseFactory, lessonFactory, taskFactory } from '../factory';
+import { courseFactory, lessonFactory, taskFactory } from '@shared/testing';
 
 describe('Task Entity', () => {
 	let module: TestingModule;

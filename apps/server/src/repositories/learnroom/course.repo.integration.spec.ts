@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
 import { EntityId } from '@shared/domain';
-import { userFactory, courseFactory } from '@shared/domain/factory';
+import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -32,7 +32,7 @@ describe('course repo', () => {
 	});
 
 	afterEach(async () => {
-		await em.getDriver().dropCollections();
+		await cleanUpCollections(em);
 	});
 
 	it('should be defined', () => {

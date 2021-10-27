@@ -1,5 +1,4 @@
-import { setupEntities } from '@src/modules/database';
-import { userFactory, courseFactory, schoolFactory } from '../factory';
+import { userFactory, courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { Course } from './course.entity';
 
 const DEFAULT = {

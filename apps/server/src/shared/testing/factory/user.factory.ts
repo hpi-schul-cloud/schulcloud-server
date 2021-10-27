@@ -1,5 +1,5 @@
+import { User, IUserProperties } from '@shared/domain';
 import { schoolFactory } from './school.factory';
-import { User, IUserProperties } from '../entity/user.entity';
 import { BaseFactory } from './base.factory';
 
 export const userFactory = BaseFactory.define<User, IUserProperties>(User, ({ sequence }) => {
