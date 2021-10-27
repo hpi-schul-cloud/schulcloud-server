@@ -13,7 +13,7 @@ describe('jwt strategy', () => {
 		const redisClientMock = RedisMock.createClient();
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		redis.setRedisClient(redisClientMock);
-		adapter = module.get<JwtValidationAdapter>(JwtValidationAdapter);
+		adapter = module.get(JwtValidationAdapter);
 	});
 
 	it('should be defined', () => {

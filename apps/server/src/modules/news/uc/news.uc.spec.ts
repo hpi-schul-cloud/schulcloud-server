@@ -86,8 +86,8 @@ describe('NewsUc', () => {
 			],
 		}).compile();
 
-		service = module.get<NewsUc>(NewsUc);
-		repo = module.get<NewsRepo>(NewsRepo);
+		service = module.get(NewsUc);
+		repo = module.get(NewsRepo);
 	});
 
 	it('should be defined', () => {

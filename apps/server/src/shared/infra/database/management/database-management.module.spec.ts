@@ -11,7 +11,7 @@ describe('DatabaseManagementModule', () => {
 		module = await Test.createTestingModule({
 			imports: [DatabaseManagementModule, MongoMemoryDatabaseModule.forRoot()],
 		}).compile();
-		service = module.get<DatabaseManagementService>(DatabaseManagementService);
+		service = module.get(DatabaseManagementService);
 	});
 
 	afterAll(async () => {

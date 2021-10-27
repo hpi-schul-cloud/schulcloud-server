@@ -16,6 +16,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+BC-477 remove generics from test-module getter
+
 ## [26.14.0] - 2021-10-26
 
 ### Added

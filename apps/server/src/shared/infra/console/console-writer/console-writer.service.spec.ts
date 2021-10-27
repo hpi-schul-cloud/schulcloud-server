@@ -9,7 +9,7 @@ describe('ConsoleWriterService', () => {
 			providers: [ConsoleWriterService],
 		}).compile();
 
-		service = module.get<ConsoleWriterService>(ConsoleWriterService);
+		service = module.get(ConsoleWriterService);
 	});
 
 	it('should be defined', () => {

@@ -16,7 +16,7 @@ describe('role repo', () => {
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
