@@ -166,15 +166,15 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	createStudentStatusForUser(userId: EntityId): ITaskStatus {
-		const submitted = this.isSubmittedForUser(userId);
-		const graded = this.isGradedForUser(userId);
+		const isSubmitted = this.isSubmittedForUser(userId);
+		const isGraded = this.isGradedForUser(userId);
 		const maxSubmissions = 1;
 		const isDraft = this.isDraft();
 		const isSubstitutionTeacher = false;
 
 		const status = {
-			submitted: submitted ? 1 : 0,
-			graded: graded ? 1 : 0,
+			submitted: isSubmitted ? 1 : 0,
+			graded: isGraded ? 1 : 0,
 			maxSubmissions,
 			isDraft,
 			isSubstitutionTeacher,
