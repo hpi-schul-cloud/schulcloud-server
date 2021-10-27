@@ -8,10 +8,13 @@ export interface RocketChatOptions {
 	adminId?: string;
 	adminToken?: string;
 }
+
+type GenericData = Record<string, any>;
+
 export class RocketChatError extends Error {
 	private statusCode: number;
 
-	private response: Record<string, any>;
+	private response: GenericData;
 
 	// rocketchat specific error type
 	private errorType: string;
@@ -19,15 +22,16 @@ export class RocketChatError extends Error {
 	constructor(e: any) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		super(e.response.statusText);
+
+		// Set the prototype explicitly.
+		Object.setPrototypeOf(this, RocketChatError.prototype);
+
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 		this.statusCode = e.response.statusCode;
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 		this.response = e.response.data;
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 		this.errorType = e.response.data.errorType;
-
-		// Set the prototype explicitly.
-		Object.setPrototypeOf(this, RocketChatError.prototype);
 	}
 }
 
@@ -45,80 +49,80 @@ export class RocketChatService {
 		private readonly httpService: HttpService
 	) {}
 
-	public async me(authToken: string, userId: string): Promise<Record<string, any>> {
+	public async me(authToken: string, userId: string): Promise<GenericData> {
 		return this.get('/api/v1/me', authToken, userId);
 	}
 
-	public async setUserStatus(authToken: string, userId: string, status: string): Promise<Record<string, any>> {
+	public async setUserStatus(authToken: string, userId: string, status: string): Promise<GenericData> {
 		return this.post('/api/v1/users.setStatus', authToken, userId, {
 			message: '',
 			status,
 		});
 	}
 
-	public async createUserToken(userId: string): Promise<Record<string, any>> {
+	public async createUserToken(userId: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/users.createToken', {
 			userId,
 		});
 	}
 
-	public async logoutUser(authToken: string, userId: string): Promise<Record<string, any>> {
+	public async logoutUser(authToken: string, userId: string): Promise<GenericData> {
 		return this.post('/api/v1/logout', authToken, userId, {});
 	}
 
-	public async getUserList(queryString: string): Promise<Record<string, any>> {
+	public async getUserList(queryString: string): Promise<GenericData> {
 		return this.getAsAdmin(`/api/v1/users.list?${queryString}`);
 	}
 
-	public async unarchiveGroup(groupName: string): Promise<Record<string, any>> {
+	public async unarchiveGroup(groupName: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/groups.unarchive', {
 			roomName: groupName,
 		});
 	}
 
-	public async archiveGroup(groupName: string): Promise<Record<string, any>> {
+	public async archiveGroup(groupName: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/groups.archive', {
 			roomName: groupName,
 		});
 	}
 
-	public async kickUserFromGroup(groupName: string, userId: string): Promise<Record<string, any>> {
+	public async kickUserFromGroup(groupName: string, userId: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/groups.kick', {
 			roomName: groupName,
 			userId,
 		});
 	}
 
-	public async inviteUserToGroup(groupName: string, userId: string): Promise<Record<string, any>> {
+	public async inviteUserToGroup(groupName: string, userId: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/groups.invite', {
 			roomName: groupName,
 			userId,
 		});
 	}
 
-	public async addGroupModerator(groupName: string, userId: string): Promise<Record<string, any>> {
+	public async addGroupModerator(groupName: string, userId: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/groups.addModerator', {
 			roomName: groupName,
 			userId,
 		});
 	}
 
-	public async removeGroupModerator(groupName: string, userId: string): Promise<Record<string, any>> {
+	public async removeGroupModerator(groupName: string, userId: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/groups.removeModerator', {
 			roomName: groupName,
 			userId,
 		});
 	}
 
-	public async getGroupModerators(groupName: string): Promise<Record<string, any>> {
+	public async getGroupModerators(groupName: string): Promise<GenericData> {
 		return this.getAsAdmin(`/api/v1/groups.moderators?roomName=${groupName}`);
 	}
 
-	public async getGroupMembers(groupName: string): Promise<Record<string, any>> {
+	public async getGroupMembers(groupName: string): Promise<GenericData> {
 		return this.getAsAdmin(`/api/v1/groups.members?roomName=${groupName}`);
 	}
 
-	public async createGroup(name: string, members: string[]): Promise<Record<string, any>> {
+	public async createGroup(name: string, members: string[]): Promise<GenericData> {
 		// group.name is only used
 		return this.postAsAdmin('/api/v1/groups.create', {
 			name,
@@ -126,7 +130,7 @@ export class RocketChatService {
 		});
 	}
 
-	public async deleteGroup(groupName: string): Promise<Record<string, any>> {
+	public async deleteGroup(groupName: string): Promise<GenericData> {
 		// group.name is only used
 		return this.postAsAdmin('/api/v1/groups.delete', {
 			roomName: groupName,
@@ -138,7 +142,7 @@ export class RocketChatService {
 		password: string,
 		username: string,
 		name: string
-	): Promise<Record<string, any>> {
+	): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/users.create', {
 			email,
 			password,
@@ -148,25 +152,23 @@ export class RocketChatService {
 		});
 	}
 
-	public async deleteUser(username: string): Promise<Record<string, any>> {
+	public async deleteUser(username: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/users.delete', {
 			username,
 		});
 	}
 
-	private async postAsAdmin(path: string, body: Record<string, any>): Promise<Record<string, any>> {
+	private async postAsAdmin(path: string, body: GenericData): Promise<GenericData> {
 		const adminIdAndToken = await this.getAdminIdAndToken();
 		return this.post(path, adminIdAndToken.token, adminIdAndToken.id, body);
 	}
 
-	private async getAsAdmin(path: string): Promise<Record<string, any>> {
+	private async getAsAdmin(path: string): Promise<GenericData> {
 		const adminIdAndToken = await this.getAdminIdAndToken();
 		return this.get(path, adminIdAndToken.token, adminIdAndToken.id);
 	}
 
-	private async get(path: string, authToken: string, userId: string): Promise<Record<string, any>> {
-		this.validateRocketChatConfig();
-
+	private async get(path: string, authToken: string, userId: string): Promise<GenericData> {
 		const response = await this.httpService
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			.get(`${this.options.uri}${path}`, {
@@ -181,15 +183,16 @@ export class RocketChatService {
 				})
 			)
 			.toPromise();
-		return response.data as Record<string, any>;
+		// @ts-ignore
+		return response.data as GenericData;
 	}
 
 	private async post(
 		path: string,
 		authToken: string,
 		userId: string,
-		body: Record<string, any>
-	): Promise<Record<string, any>> {
+		body: GenericData
+	): Promise<GenericData> {
 		const response = await this.httpService
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			.post(`${this.options.uri}${path}`, body, {
@@ -204,7 +207,8 @@ export class RocketChatService {
 				})
 			)
 			.toPromise();
-		return response.data as Record<string, any>;
+		// @ts-ignore
+		return response.data as GenericData;
 	}
 
 	private async getAdminIdAndToken(): Promise<AdminIdAndToken> {
@@ -233,6 +237,7 @@ export class RocketChatService {
 			.toPromise();
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		// @ts-ignore
 		const responseJson = response.data;
 		this.adminIdAndToken = {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
