@@ -7,9 +7,8 @@ import { MikroORM, EntityManager } from '@mikro-orm/core';
 import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '@src/modules/user/utils';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { courseFactory, userFactory, taskFactory, submissionFactory } from '@shared/testing';
+import { courseFactory, userFactory, taskFactory, submissionFactory, createCurrentTestUser } from '@shared/testing';
 
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.user.id = user.id;

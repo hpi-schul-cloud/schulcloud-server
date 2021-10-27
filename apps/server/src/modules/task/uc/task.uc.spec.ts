@@ -1,17 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { createCurrentTestUser } from '@src/modules/user/utils';
-import { PaginationQuery } from '@shared/controller';
-
-import { EntityId, ICurrentUser, Lesson, Task } from '@shared/domain';
-import { userFactory, courseFactory, lessonFactory, taskFactory, submissionFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 
+import { PaginationQuery } from '@shared/controller';
+import { EntityId, ICurrentUser, Lesson, Task } from '@shared/domain';
+import {
+	userFactory,
+	courseFactory,
+	lessonFactory,
+	taskFactory,
+	submissionFactory,
+	createCurrentTestUser,
+} from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { LessonRepo } from '@shared/repo';
-
 import { TaskRepo } from '../repo';
-
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
