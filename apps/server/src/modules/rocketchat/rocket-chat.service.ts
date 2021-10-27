@@ -137,12 +137,7 @@ export class RocketChatService {
 		});
 	}
 
-	public async createUser(
-		email: string,
-		password: string,
-		username: string,
-		name: string
-	): Promise<GenericData> {
+	public async createUser(email: string, password: string, username: string, name: string): Promise<GenericData> {
 		return this.postAsAdmin('/api/v1/users.create', {
 			email,
 			password,
@@ -183,16 +178,10 @@ export class RocketChatService {
 				})
 			)
 			.toPromise();
-		// @ts-ignore
-		return response.data as GenericData;
+		return response?.data as GenericData;
 	}
 
-	private async post(
-		path: string,
-		authToken: string,
-		userId: string,
-		body: GenericData
-	): Promise<GenericData> {
+	private async post(path: string, authToken: string, userId: string, body: GenericData): Promise<GenericData> {
 		const response = await this.httpService
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			.post(`${this.options.uri}${path}`, body, {
@@ -207,8 +196,7 @@ export class RocketChatService {
 				})
 			)
 			.toPromise();
-		// @ts-ignore
-		return response.data as GenericData;
+		return response?.data as GenericData;
 	}
 
 	private async getAdminIdAndToken(): Promise<AdminIdAndToken> {
@@ -237,8 +225,7 @@ export class RocketChatService {
 			.toPromise();
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		// @ts-ignore
-		const responseJson = response.data;
+		const responseJson = response?.data;
 		this.adminIdAndToken = {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			id: responseJson.data.userId as string,
