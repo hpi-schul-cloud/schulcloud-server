@@ -102,6 +102,7 @@ export class DashboardModelMapper {
 		Array.from(modelEntity.gridElements).forEach((el) => {
 			if (!mappedElements.includes(el)) {
 				modelEntity.gridElements.remove(el);
+				em.remove(el);
 			}
 		});
 
