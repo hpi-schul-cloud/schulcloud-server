@@ -28,6 +28,17 @@ export interface ITaskStatus {
 	isSubstitutionTeacher: boolean;
 }
 
+export class TaskWithStatusVo {
+	task!: Task;
+
+	status!: ITaskStatus;
+
+	constructor(task: Task, status: ITaskStatus) {
+		this.task = task;
+		this.status = status;
+	}
+}
+
 export type TaskParentDescriptions = { name: string; description: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
@@ -80,15 +91,8 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	private getSubmissionItems(): Submission[] {
-		// TODO: load/init check?
+		// TODO: load/init check until mikro-orm base entity is extended
 		return this.submissions.getItems();
-	}
-
-	// can not undefined one parent should exist all the time User parent for nothing
-	// course+lesson, course only, coursgroup
-	private getParent(): Course | undefined {
-		// TODO: load/init check?
-		return this.course;
 	}
 
 	getSubmittedUserIds(): EntityId[] {
@@ -100,11 +104,11 @@ export class Task extends BaseEntityWithTimestamps {
 	getNumberOfSubmittedUsers(): number {
 		const submittedUserIds = this.getSubmittedUserIds();
 		const submitted = [...new Set(submittedUserIds)].length;
+
 		return submitted;
 	}
 
 	getGradedUserIds(): EntityId[] {
-		// Should we return entities? Is it a private method?
 		const gradedUserIds = this.getSubmissionItems()
 			.filter((submission) => submission.isGraded())
 			.map((submission) => submission.getStudentId());
@@ -115,6 +119,7 @@ export class Task extends BaseEntityWithTimestamps {
 	getNumberOfGradedUsers(): number {
 		const gradedUserIds = this.getGradedUserIds();
 		const graded = [...new Set(gradedUserIds)].length;
+
 		return graded;
 	}
 
@@ -123,18 +128,6 @@ export class Task extends BaseEntityWithTimestamps {
 		// hack until parents are defined
 		return this.course ? this.course.getNumberOfStudents() : 0;
 	}
-
-	/*
-	isSubstitutionTeacher(userId: EntityId): boolean {
-		if (!this.course || !userId) {
-			return false;
-		}
-		// TODO: check if it is loaded if not load it ...isInitialized() is only work for collections, await ...init() also
-		const isSubstitutionTeacher = this.course.getSubstitutionTeacherIds().includes(userId);
-
-		return isSubstitutionTeacher;
-	}
-	*/
 
 	createTeacherStatusForUser(userId: EntityId): ITaskStatus {
 		const submitted = this.getNumberOfSubmittedUsers();
@@ -160,14 +153,15 @@ export class Task extends BaseEntityWithTimestamps {
 		return status;
 	}
 
-	// ..+ById ?
 	isSubmittedForUser(userId: EntityId): boolean {
 		const submitted = this.getSubmittedUserIds().some((id) => userId === id);
+
 		return submitted;
 	}
 
 	isGradedForUser(userId: EntityId): boolean {
 		const graded = this.getGradedUserIds().some((id) => userId === id);
+
 		return graded;
 	}
 
@@ -189,6 +183,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return status;
 	}
 
+	// TODO: based on the parent relationship
 	getDescriptions(): TaskParentDescriptions {
 		let descriptions: TaskParentDescriptions;
 		if (this.course) {

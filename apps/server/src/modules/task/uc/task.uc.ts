@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, Task, TaskWithStatusVo } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo } from '@shared/domain';
 
 import { LessonRepo } from '@shared/repo';
 import { TaskRepo } from '../repo';
@@ -49,9 +49,12 @@ export class TaskUC {
 			}
 		);
 
-		const computedTasks = tasks.map((task) => this.computeTaskStatusForStudent(task, userId));
+		const taskWithStatusVos = tasks.map((task) => {
+			const status = task.createStudentStatusForUser(userId);
+			return new TaskWithStatusVo(task, status);
+		});
 
-		return [computedTasks, total];
+		return [taskWithStatusVos, total];
 	}
 
 	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -71,9 +74,12 @@ export class TaskUC {
 			}
 		);
 
-		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task, userId));
+		const taskWithStatusVos = tasks.map((task) => {
+			const status = task.createTeacherStatusForUser(userId);
+			return new TaskWithStatusVo(task, status);
+		});
 
-		return [computedTasks, total];
+		return [taskWithStatusVos, total];
 	}
 
 	private hasTaskDashboardPermission(currentUser: ICurrentUser, permission: TaskDashBoardPermission): boolean {
@@ -81,23 +87,7 @@ export class TaskUC {
 		return hasPermission;
 	}
 
-	private computeTaskStatusForStudent(task: Task, userId: EntityId): TaskWithStatusVo {
-		// it is possible to add a virtual status prop to task and say task.createStatusForAStudent(userId); => set task.status and use this status over task.status.
-		// then we do not need the vo and we can use task.status in mapper.
-		// For ts is maybe possible for work with initlized flag.
-		const status = task.createStudentStatusForUser(userId);
-		const valueObject = new TaskWithStatusVo(task, status);
-
-		return valueObject;
-	}
-
-	private computeTaskStatusForTeacher(task: Task, userId: EntityId): TaskWithStatusVo {
-		const status = task.createTeacherStatusForUser(userId);
-		const valueObject = new TaskWithStatusVo(task, status);
-
-		return valueObject;
-	}
-
+	// It is more a util method or domain logic in context of findAllForStudent timeframe
 	private getDefaultMaxDueDate(): Date {
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
