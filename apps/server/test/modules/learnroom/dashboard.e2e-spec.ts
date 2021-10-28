@@ -7,7 +7,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '@src/modules/user/utils';
+import { createCurrentTestUser } from '@shared/testing';
 import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
 import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
 

@@ -4,8 +4,7 @@ on: [push]
 
 env:
   MONGODB_VERSION: 4.2
-  NODE_VERSION: '14'
-        
+  NODE_VERSION: '16'
 jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest

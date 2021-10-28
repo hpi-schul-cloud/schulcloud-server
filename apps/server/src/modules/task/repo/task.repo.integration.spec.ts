@@ -1,8 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Lesson, SortOrder, Submission, Task } from '@shared/domain';
-import { userFactory } from '@shared/domain/factory';
-import { courseFactory } from '@shared/domain/factory/course.factory';
+import { SortOrder } from '@shared/domain';
+import {
+	userFactory,
+	courseFactory,
+	lessonFactory,
+	taskFactory,
+	submissionFactory,
+	cleanUpCollections,
+} from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
@@ -27,7 +33,7 @@ describe('TaskRepo', () => {
 	});
 
 	afterEach(async () => {
-		await em.getDriver().dropCollections();
+		await cleanUpCollections(em);
 	});
 
 	describe('findAllByParentIds', () => {
@@ -35,8 +41,8 @@ describe('TaskRepo', () => {
 			it('should find tasks by teacherId', async () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher: teacher1 });
-				const task2 = new Task({ name: 'task #2', teacher: teacher2 });
+				const task1 = taskFactory.build({ teacher: teacher1 });
+				const task2 = taskFactory.build({ teacher: teacher2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -49,7 +55,7 @@ describe('TaskRepo', () => {
 			it('should not find tasks with a course assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', teacher, course });
+				const task = taskFactory.build({ teacher, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -62,8 +68,8 @@ describe('TaskRepo', () => {
 			it('should not find tasks with a lesson assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task = new Task({ name: 'task #1', teacher, lesson });
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ teacher, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -79,8 +85,8 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course1 = courseFactory.build();
 				const course2 = courseFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, course: course1 });
-				const task2 = new Task({ name: 'task #2', teacher, course: course2 });
+				const task1 = taskFactory.build({ teacher, course: course1 });
+				const task2 = taskFactory.build({ teacher, course: course2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -93,8 +99,8 @@ describe('TaskRepo', () => {
 			it('should not find tasks with no course assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, course });
-				const task2 = new Task({ name: 'task #2', teacher });
+				const task1 = taskFactory.build({ teacher, course });
+				const task2 = taskFactory.build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -107,8 +113,8 @@ describe('TaskRepo', () => {
 			it('should not find tasks with a lesson assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task = new Task({ name: 'task #1', teacher, course, lesson });
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ teacher, course, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -123,10 +129,10 @@ describe('TaskRepo', () => {
 			it('should find tasks by lesson ids', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const lesson1 = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const lesson2 = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task1 = new Task({ name: 'task #1', teacher, course, lesson: lesson1 });
-				const task2 = new Task({ name: 'task #2', teacher, course, lesson: lesson2 });
+				const lesson1 = lessonFactory.build({ course, hidden: false });
+				const lesson2 = lessonFactory.build({ course, hidden: false });
+				const task1 = taskFactory.build({ teacher, course, lesson: lesson1 });
+				const task2 = taskFactory.build({ teacher, course, lesson: lesson2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -139,10 +145,10 @@ describe('TaskRepo', () => {
 			it('should not find tasks with no lesson assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task1 = new Task({ name: 'task #1', teacher, course, lesson });
-				const task2 = new Task({ name: 'task #2', teacher, course });
-				const task3 = new Task({ name: 'task #3', teacher });
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task1 = taskFactory.build({ teacher, course, lesson });
+				const task2 = taskFactory.build({ teacher, course });
+				const task3 = taskFactory.build({ teacher });
 
 				await em.persistAndFlush([task1, task2, task3]);
 				em.clear();
@@ -159,12 +165,12 @@ describe('TaskRepo', () => {
 				const teacher2 = userFactory.build();
 				const course1 = courseFactory.build();
 				const course2 = courseFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher: teacher1 });
-				const task2 = new Task({ name: 'task #2', teacher: teacher2 });
-				const task3 = new Task({ name: 'task #3', teacher: teacher1, course: course1 });
-				const task4 = new Task({ name: 'task #4', teacher: teacher1, course: course2 });
-				const task5 = new Task({ name: 'task #5', teacher: teacher2, course: course1 });
-				const task6 = new Task({ name: 'task #6', teacher: teacher2, course: course2 });
+				const task1 = taskFactory.build({ teacher: teacher1 });
+				const task2 = taskFactory.build({ teacher: teacher2 });
+				const task3 = taskFactory.build({ teacher: teacher1, course: course1 });
+				const task4 = taskFactory.build({ teacher: teacher1, course: course2 });
+				const task5 = taskFactory.build({ teacher: teacher2, course: course1 });
+				const task6 = taskFactory.build({ teacher: teacher2, course: course2 });
 
 				await em.persistAndFlush([task1, task2, task3, task4, task5, task6]);
 				em.clear();
@@ -180,8 +186,8 @@ describe('TaskRepo', () => {
 			it('should not find tasks with a lesson assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task = new Task({ name: 'task #1', teacher, course, lesson });
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ teacher, course, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -197,14 +203,14 @@ describe('TaskRepo', () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();
 				const course = courseFactory.build();
-				const lesson1 = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const lesson2 = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task1 = new Task({ name: 'task #1', teacher: teacher1 });
-				const task2 = new Task({ name: 'task #2', teacher: teacher2 });
-				const task3 = new Task({ name: 'task #3', teacher: teacher1, course, lesson: lesson1 });
-				const task4 = new Task({ name: 'task #4', teacher: teacher1, course, lesson: lesson2 });
-				const task5 = new Task({ name: 'task #5', teacher: teacher2, course, lesson: lesson1 });
-				const task6 = new Task({ name: 'task #6', teacher: teacher2, course, lesson: lesson2 });
+				const lesson1 = lessonFactory.build({ course, hidden: false });
+				const lesson2 = lessonFactory.build({ course, hidden: false });
+				const task1 = taskFactory.build({ teacher: teacher1 });
+				const task2 = taskFactory.build({ teacher: teacher2 });
+				const task3 = taskFactory.build({ teacher: teacher1, course, lesson: lesson1 });
+				const task4 = taskFactory.build({ teacher: teacher1, course, lesson: lesson2 });
+				const task5 = taskFactory.build({ teacher: teacher2, course, lesson: lesson1 });
+				const task6 = taskFactory.build({ teacher: teacher2, course, lesson: lesson2 });
 
 				await em.persistAndFlush([task1, task2, task3, task4, task5, task6]);
 				em.clear();
@@ -223,9 +229,9 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course1 = courseFactory.build({ name: 'course #1' });
 				const course2 = courseFactory.build({ name: 'course #2' });
-				const lesson = new Lesson({ name: 'lesson #1', course: course2, hidden: false });
-				const task1 = new Task({ name: 'task #1', teacher, course: course1 });
-				const task2 = new Task({ name: 'task #2', teacher, course: course2, lesson });
+				const lesson = lessonFactory.build({ course: course2, hidden: false });
+				const task1 = taskFactory.build({ teacher, course: course1 });
+				const task2 = taskFactory.build({ teacher, course: course2, lesson });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -244,7 +250,7 @@ describe('TaskRepo', () => {
 		describe('find by empty ids', () => {
 			it('should find no tasks when no ids are given at all', async () => {
 				const teacher = userFactory.build();
-				const task = new Task({ name: 'task #1', teacher });
+				const task = taskFactory.build({ teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -256,7 +262,7 @@ describe('TaskRepo', () => {
 
 			it('should find no tasks when course ids are empty', async () => {
 				const teacher = userFactory.build();
-				const task = new Task({ name: 'task #1', teacher });
+				const task = taskFactory.build({ teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -268,7 +274,7 @@ describe('TaskRepo', () => {
 
 			it('should find no tasks when lesson ids are empty', async () => {
 				const teacher = userFactory.build();
-				const task = new Task({ name: 'task #1', teacher });
+				const task = taskFactory.build({ teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -282,8 +288,8 @@ describe('TaskRepo', () => {
 		describe('filters', () => {
 			it('should filter tasks by draft status = true', async () => {
 				const teacher = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, private: true });
-				const task2 = new Task({ name: 'task #2', teacher, private: false });
+				const task1 = taskFactory.draft(true).build({ teacher });
+				const task2 = taskFactory.draft(false).build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -295,8 +301,8 @@ describe('TaskRepo', () => {
 
 			it('should filter tasks by draft status = false', async () => {
 				const teacher = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, private: true });
-				const task2 = new Task({ name: 'task #2', teacher, private: false });
+				const task1 = taskFactory.draft(true).build({ teacher });
+				const task2 = taskFactory.draft(false).build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -308,7 +314,7 @@ describe('TaskRepo', () => {
 
 			it('should filter tasks by draft status = null as false', async () => {
 				const teacher = userFactory.build();
-				const task = new Task({ name: 'task #1', teacher });
+				const task = taskFactory.build({ teacher });
 				Object.assign(task, { private: null });
 
 				await em.persistAndFlush([task]);
@@ -322,7 +328,7 @@ describe('TaskRepo', () => {
 			// TODO: FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
 			it('should filter tasks by draft status = undefined as false', async () => {
 				const teacher = userFactory.build();
-				const task = new Task({ name: 'task #1', teacher });
+				const task = taskFactory.build({ teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -341,8 +347,8 @@ describe('TaskRepo', () => {
 
 			it('should return tasks with both status when no filter is applied', async () => {
 				const teacher = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, private: true });
-				const task2 = new Task({ name: 'task #2', teacher, private: false });
+				const task1 = taskFactory.draft(true).build({ teacher });
+				const task2 = taskFactory.draft(false).build({ teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -359,8 +365,8 @@ describe('TaskRepo', () => {
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
-				const task1 = new Task({ name: 'task #1', teacher, dueDate: dueDate1 });
-				const task2 = new Task({ name: 'task #2', teacher, dueDate: dueDate2 });
+				const task1 = taskFactory.build({ teacher, dueDate: dueDate1 });
+				const task2 = taskFactory.build({ teacher, dueDate: dueDate2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -380,9 +386,9 @@ describe('TaskRepo', () => {
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
-				const task1 = new Task({ name: 'task #1', teacher, dueDate: dueDate1 });
-				const task2 = new Task({ name: 'task #2', teacher, dueDate: dueDate2 });
-				const task3 = new Task({ name: 'task #3', teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ teacher, dueDate: dueDate1 });
+				const task2 = taskFactory.build({ teacher, dueDate: dueDate2 });
+				const task3 = taskFactory.build({ teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3]);
 				em.clear();
@@ -404,9 +410,9 @@ describe('TaskRepo', () => {
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
-				const task1 = new Task({ name: 'task #1', teacher, dueDate: dueDate1 });
-				const task2 = new Task({ name: 'task #2', teacher, dueDate: dueDate2 });
-				const task3 = new Task({ name: 'task #3', teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ teacher, dueDate: dueDate1 });
+				const task2 = taskFactory.build({ teacher, dueDate: dueDate2 });
+				const task3 = taskFactory.build({ teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3]);
 				em.clear();
@@ -423,10 +429,10 @@ describe('TaskRepo', () => {
 		describe('order', () => {
 			it('should order by dueDate asc', async () => {
 				const teacher = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, dueDate: new Date(Date.now() + 2000) });
-				const task2 = new Task({ name: 'task #2', teacher, dueDate: new Date(Date.now() + 3000) });
-				const task3 = new Task({ name: 'task #3', teacher, dueDate: new Date(Date.now() + 1000) });
-				const task4 = new Task({ name: 'task #4', teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = taskFactory.build({ teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3, task4]);
 				em.clear();
@@ -443,10 +449,10 @@ describe('TaskRepo', () => {
 
 			it('should order by dueDate desc', async () => {
 				const teacher = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, dueDate: new Date(Date.now() + 2000) });
-				const task2 = new Task({ name: 'task #2', teacher, dueDate: new Date(Date.now() + 3000) });
-				const task3 = new Task({ name: 'task #3', teacher, dueDate: new Date(Date.now() + 1000) });
-				const task4 = new Task({ name: 'task #4', teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = taskFactory.build({ teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3, task4]);
 				em.clear();
@@ -465,10 +471,10 @@ describe('TaskRepo', () => {
 		describe('pagination', () => {
 			it('should skip and limit to the given number of records', async () => {
 				const teacher = userFactory.build();
-				const task1 = new Task({ name: 'task #1', teacher, dueDate: new Date(Date.now() + 2000) });
-				const task2 = new Task({ name: 'task #2', teacher, dueDate: new Date(Date.now() + 3000) });
-				const task3 = new Task({ name: 'task #3', teacher, dueDate: new Date(Date.now() + 1000) });
-				const task4 = new Task({ name: 'task #4', teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = taskFactory.build({ teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3, task4]);
 				em.clear();
@@ -487,7 +493,7 @@ describe('TaskRepo', () => {
 			it('should populate the course', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', teacher, course });
+				const task = taskFactory.build({ teacher, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -501,8 +507,8 @@ describe('TaskRepo', () => {
 			it('should populate the lesson', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const lesson = new Lesson({ name: 'lesson #1', course, hidden: false });
-				const task = new Task({ name: 'task #1', teacher, course, lesson });
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ teacher, course, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -516,8 +522,8 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build();
-				const task = new Task({ name: 'task #1', teacher, course });
-				task.submissions.add(new Submission({ task, student, comment: 'my solution to the task #1' }));
+				const task = taskFactory.build({ teacher, course });
+				task.submissions.add(submissionFactory.build({ task, student }));
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -534,7 +540,7 @@ describe('TaskRepo', () => {
 			it('should not find task where the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
-				const task = new Task({ name: 'task #1', teacher: creator, course, closed: [creator] });
+				const task = taskFactory.build({ teacher: creator, course, closed: [creator] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -548,7 +554,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
-				const task = new Task({ name: 'task #1', teacher: creator, course, closed: [teacher] });
+				const task = taskFactory.build({ teacher: creator, course, closed: [teacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -562,7 +568,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
-				const task = new Task({ name: 'task #1', teacher: creator, course, closed: [substitutionTeacher] });
+				const task = taskFactory.build({ teacher: creator, course, closed: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -576,7 +582,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
-				const task = new Task({ name: 'task #1', teacher: creator, course, closed: [student] });
+				const task = taskFactory.build({ teacher: creator, course, closed: [student] });
 
 				await em.persistAndFlush([task]);
 				em.clear();

@@ -1,5 +1,4 @@
-import { News } from '@shared/domain';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { News, NewsTargetModel } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NewsScope } from '@src/modules/news/repo/news-scope';
 import { NewsTargetFilter } from '@src/modules/news/repo/news-target-filter';
