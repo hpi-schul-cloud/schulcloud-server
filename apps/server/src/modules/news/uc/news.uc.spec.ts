@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UnauthorizedException } from '@nestjs/common';
-import { NewsTargetModel, ICreateNews } from '@shared/domain/types/news.types';
+import { NewsTargetModel, ICreateNews } from '@shared/domain';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { NewsRepo } from '../repo/news.repo';

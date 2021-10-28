@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 
-import { storageProviderFactory } from '@shared/domain/factory';
+import { storageProviderFactory } from '@shared/testing';
 import { Platform } from '@mikro-orm/core';
 import { EncryptedStringType } from '@shared/repo/types/EncryptedString.type';
 import { StorageProvider } from '@shared/domain';
