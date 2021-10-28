@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/testing/database';
 import { userFactory, createCurrentTestUser } from '@shared/testing';
 import { UserUC } from './uc';
 import { UserFacade } from './user.facade';

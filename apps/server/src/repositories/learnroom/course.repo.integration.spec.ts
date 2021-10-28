@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/testing/database';
 
 import { EntityId } from '@shared/domain';
 import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';

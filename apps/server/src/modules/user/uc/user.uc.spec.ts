@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/testing/database';
 import { IPermissionsAndRoles } from '@shared/domain';
 import { createCurrentTestUser } from '@shared/testing';
 import { UserRepo } from '../repo';

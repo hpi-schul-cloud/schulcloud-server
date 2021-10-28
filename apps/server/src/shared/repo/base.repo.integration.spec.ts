@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Entity } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/testing/database';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from './base.repo';
 

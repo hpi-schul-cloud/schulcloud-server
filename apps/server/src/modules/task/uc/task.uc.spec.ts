@@ -11,7 +11,7 @@ import {
 	submissionFactory,
 	createCurrentTestUser,
 } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/testing/database';
 import { LessonRepo } from '@shared/repo';
 import { TaskRepo } from '../repo';
 import { TaskUC, TaskDashBoardPermission } from './task.uc';

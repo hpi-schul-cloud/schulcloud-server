@@ -12,8 +12,8 @@ import { Logger } from '@nestjs/common';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { enableOpenApiDocs } from './shared/controller/swagger';
-import { Mail } from './modules/mail/mail.interface';
-import { MailService } from './modules/mail/mail.service';
+import { Mail } from './shared/infra/mail/mail.interface';
+import { MailService } from './shared/infra/mail/mail.service';
 
 async function bootstrap() {
 	sourceMapInstall();

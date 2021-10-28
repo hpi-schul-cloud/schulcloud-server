@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/testing/database';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 
