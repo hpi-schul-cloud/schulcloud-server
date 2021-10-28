@@ -15,8 +15,8 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "14",
-		"npm": "6"
+		"node": "16",
+		"npm": "8"
 	},
 	"scripts": {
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
@@ -185,7 +185,7 @@
 		"@types/express": "^4.17.11",
 		"@types/jest": "^27.0.2",
 		"@types/lodash": "^4.14.170",
-		"@types/node": "^14.14.31",
+		"@types/node": "^16.11.6",
 		"@types/passport-jwt": "^3.0.5",
 		"@types/passport-local": "^1.0.33",
 		"@types/rimraf": "^3.0.2",
