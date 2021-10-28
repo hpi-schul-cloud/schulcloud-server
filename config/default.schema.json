@@ -405,7 +405,7 @@
 		},
 		"ROCKET_CHAT_URI": {
 			"type": "string",
-			"format" : "uri",
+			"default" : null,
 			"description": "rocketchat base uri"
 		},
 		"ROCKET_CHAT_ADMIN_ID": {

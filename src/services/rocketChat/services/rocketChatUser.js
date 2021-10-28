@@ -45,13 +45,14 @@ class RocketChatUser {
 				let rcUser;
 				if (rcUserList.users.length) {
 					rcUser = rcUserList.users[0];
-					return userModel.updateOne(
+					await userModel.updateOne(
 						{
 							rcId: rcUser._id,
 						},
 						{ userId, username: rcUser.username, rcId: rcUser._id },
 						{ upsert: true }
 					);
+					return userModel.findOne({ rcId: rcUser._id }).lean().exec();
 				}
 				const name = [user.firstName, user.lastName].join(' ');
 				const username = await this.generateUserName(user);

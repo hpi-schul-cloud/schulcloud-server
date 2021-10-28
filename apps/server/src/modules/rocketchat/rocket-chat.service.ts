@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { HttpService, Inject, Injectable } from '@nestjs/common';
 import { catchError } from 'rxjs/operators';
 
