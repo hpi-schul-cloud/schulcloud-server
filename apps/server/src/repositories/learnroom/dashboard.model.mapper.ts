@@ -95,20 +95,10 @@ export class DashboardModelMapper {
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity, em))
 		);
 
-		if (!modelEntity.gridElements.isInitialized()) {
-			await modelEntity.gridElements.init();
-		}
-
 		Array.from(modelEntity.gridElements).forEach((el) => {
 			if (!mappedElements.includes(el)) {
 				modelEntity.gridElements.remove(el);
 				em.remove(el);
-			}
-		});
-
-		mappedElements.forEach((el) => {
-			if (!modelEntity.gridElements.contains(el)) {
-				modelEntity.gridElements.add(el);
 			}
 		});
 
