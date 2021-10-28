@@ -3,9 +3,9 @@ import { Task, ITaskProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {
-	private(flag = true): this {
-		const params: DeepPartial<ITaskProperties> = { private: flag };
-		if (flag === true) params.course = undefined;
+	draft(isDraft = true): this {
+		const params: DeepPartial<ITaskProperties> = { private: isDraft };
+		if (isDraft === true) params.course = undefined;
 		return this.params(params);
 	}
 }

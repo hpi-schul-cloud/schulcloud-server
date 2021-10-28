@@ -12,7 +12,7 @@ describe('Task Entity', () => {
 		});
 
 		it('should return false if private = false', () => {
-			const task = taskFactory.private(false).build();
+			const task = taskFactory.draft(false).build();
 			expect(task.isDraft()).toEqual(false);
 		});
 
