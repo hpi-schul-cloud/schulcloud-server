@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { BaseFile, File } from '@shared/domain';
-import { fileFactory } from '@shared/domain/factory';
+import { fileFactory } from '@shared/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { FilesRepo } from './files.repo';
 

@@ -1,7 +1,4 @@
-import { setupEntities } from '@src/modules/database';
-
-import { userFactory, courseFactory, schoolFactory } from '../factory';
-
+import { userFactory, courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { Course } from './course.entity';
 
 const DEFAULT = {
@@ -41,8 +38,8 @@ describe('CourseEntity', () => {
 
 	describe('getStudents', () => {
 		it('should count the number of assigned students', () => {
-			const student1 = userFactory.build({ firstName: 'John', lastName: 'Doe' });
-			const student2 = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student1 = userFactory.build();
+			const student2 = userFactory.build();
 			const course = courseFactory.build({ students: [student1, student2] });
 
 			const number = course.getNumberOfStudents();
@@ -51,7 +48,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return 0 if no student is assigned', () => {
-			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			const teacher = userFactory.build();
 			const course = courseFactory.build({ teachers: [teacher], students: [] });
 
 			const number = course.getNumberOfStudents();

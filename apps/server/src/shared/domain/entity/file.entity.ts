@@ -3,7 +3,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { StorageProvider } from './storageprovider.entity';
 import type { User } from './user.entity';
 
-interface IFileProperties {
+export interface IFileProperties {
 	deletedAt?: Date;
 	storageFileName: string;
 	bucket: string;

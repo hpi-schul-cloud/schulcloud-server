@@ -21,7 +21,7 @@ describe('NewsController', () => {
 			],
 		}).compile();
 
-		controller = module.get<NewsController>(NewsController);
+		controller = module.get(NewsController);
 	});
 
 	it('should be defined', () => {

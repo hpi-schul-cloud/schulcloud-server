@@ -14,8 +14,8 @@ describe('DatabaseManagementModule', () => {
 		module = await Test.createTestingModule({
 			imports: [FileSystemModule, MongoMemoryDatabaseModule.forRoot(), ManagementModule],
 		}).compile();
-		service = module.get<DatabaseManagementUc>(DatabaseManagementUc);
-		controller = module.get<DatabaseManagementController>(DatabaseManagementController);
+		service = module.get(DatabaseManagementUc);
+		controller = module.get(DatabaseManagementController);
 	});
 
 	afterAll(async () => {

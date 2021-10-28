@@ -2,7 +2,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { EncryptedStringType } from '@shared/repo/types/EncryptedString.type';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-interface IStorageProviderProperties {
+export interface IStorageProviderProperties {
 	endpointUrl: string;
 	accessKeyId: string;
 	secretAccessKey: string;

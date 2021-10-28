@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { userFactory } from '@shared/domain/factory';
+import { userFactory } from '@shared/testing';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -17,7 +17,7 @@ describe('user repo', () => {
 			providers: [UserRepo],
 		}).compile();
 		repo = module.get(UserRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
