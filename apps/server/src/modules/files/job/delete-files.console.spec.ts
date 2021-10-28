@@ -32,8 +32,8 @@ describe('DeleteFilesController', () => {
 			],
 		}).compile();
 
-		console = module.get<DeleteFilesConsole>(DeleteFilesConsole);
-		deleteFilesUc = module.get<DeleteFilesUc>(DeleteFilesUc);
+		console = module.get(DeleteFilesConsole);
+		deleteFilesUc = module.get(DeleteFilesUc);
 	});
 
 	it('should be defined', () => {

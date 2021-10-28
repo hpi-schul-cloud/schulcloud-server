@@ -2,7 +2,7 @@ import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 
-interface ILessonProperties {
+export interface ILessonProperties {
 	name: string;
 	hidden?: boolean;
 	course: Course;

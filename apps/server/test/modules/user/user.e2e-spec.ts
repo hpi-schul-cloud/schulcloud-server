@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '@src/modules/user/utils';
+import { createCurrentTestUser } from '@shared/testing';
 
 describe('User Controller (e2e)', () => {
 	let app: INestApplication;
@@ -28,7 +28,7 @@ describe('User Controller (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
-		orm = app.get<MikroORM>(MikroORM);
+		orm = app.get(MikroORM);
 	});
 
 	afterEach(async () => {

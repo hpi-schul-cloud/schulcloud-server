@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { EntityId, CourseGroup, Course } from '@shared/domain';
-import { courseFactory } from '@shared/domain/factory/course.factory';
+import { courseFactory, courseGroupFactory } from '@shared/testing';
 import { CourseGroupRepo } from './coursegroup.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -22,7 +22,7 @@ describe('course group repo', () => {
 			providers: [CourseGroupRepo],
 		}).compile();
 		repo = module.get(CourseGroupRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
@@ -41,13 +41,11 @@ describe('course group repo', () => {
 
 	describe('findByCourses', () => {
 		it('should return the right types', async () => {
-			const course = courseFactory.build();
-			await em.persistAndFlush(course);
-			const courseGroup = new CourseGroup({ course });
+			const courseGroup = courseGroupFactory.build();
 			await em.persistAndFlush(courseGroup);
 			em.clear();
 
-			const [result, count] = await repo.findByCourseIds([course.id]);
+			const [result, count] = await repo.findByCourseIds([courseGroup.course.id]);
 
 			expect(result).toBeInstanceOf(Array);
 			expect(typeof count).toEqual('number');
@@ -55,13 +53,11 @@ describe('course group repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const course = courseFactory.build();
-			await em.persistAndFlush(course);
-			const courseGroup = new CourseGroup({ course });
+			const courseGroup = courseGroupFactory.build();
 			await em.persistAndFlush(courseGroup);
 			em.clear();
 
-			const [result] = await repo.findByCourseIds([course.id]);
+			const [result] = await repo.findByCourseIds([courseGroup.course.id]);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = ['_id', 'course', 'updatedAt', 'createdAt', 'students'].sort();

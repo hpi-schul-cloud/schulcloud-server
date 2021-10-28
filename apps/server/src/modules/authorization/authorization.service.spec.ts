@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
-import { EntityId } from '@shared/domain';
 import { UnauthorizedException } from '@nestjs/common';
+import { EntityId, NewsTargetModel } from '@shared/domain';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
@@ -39,8 +38,8 @@ describe('AuthorizationService', () => {
 			],
 		}).compile();
 
-		service = module.get<AuthorizationService>(AuthorizationService);
-		authProvider = module.get<FeathersAuthProvider>(FeathersAuthProvider);
+		service = module.get(AuthorizationService);
+		authProvider = module.get(FeathersAuthProvider);
 	});
 
 	it('should be defined', () => {

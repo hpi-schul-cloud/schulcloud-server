@@ -29,7 +29,7 @@ describe('DatabaseManagementController', () => {
 			],
 		}).compile();
 
-		controller = module.get<DatabaseManagementController>(DatabaseManagementController);
+		controller = module.get(DatabaseManagementController);
 	});
 
 	it('should be defined', () => {
