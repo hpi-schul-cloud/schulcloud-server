@@ -57,31 +57,31 @@ export interface IDashboardRepo {
 
 @Injectable()
 export class DashboardRepo implements IDashboardRepo {
-	constructor(protected readonly em: EntityManager) {}
+	constructor(protected readonly em: EntityManager, protected readonly mapper: DashboardModelMapper) {}
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
 	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
-		const modelEntity = await DashboardModelMapper.mapDashboardToModel(entity, this.em);
+		const modelEntity = await this.mapper.mapDashboardToModel(entity, this.em);
 		this.em.persist(modelEntity);
-		return DashboardModelMapper.mapDashboardToEntity(modelEntity);
+		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
 	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
-		const modelEntity = await DashboardModelMapper.mapDashboardToModel(entity, this.em);
+		const modelEntity = await this.mapper.mapDashboardToModel(entity, this.em);
 		await this.em.persistAndFlush(modelEntity);
-		return DashboardModelMapper.mapDashboardToEntity(modelEntity);
+		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
 	async getDashboardById(id: EntityId): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
-		const dashboard = await DashboardModelMapper.mapDashboardToEntity(dashboardModel);
+		const dashboard = await this.mapper.mapDashboardToEntity(dashboardModel);
 		return dashboard;
 	}
 
 	async getUsersDashboard(): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOne(DashboardModelEntity, hardcodedTestDashboardId);
 		if (dashboardModel) {
-			return DashboardModelMapper.mapDashboardToEntity(dashboardModel);
+			return this.mapper.mapDashboardToEntity(dashboardModel);
 		}
 
 		const dashboard = generateHardcodedTestDashboard();

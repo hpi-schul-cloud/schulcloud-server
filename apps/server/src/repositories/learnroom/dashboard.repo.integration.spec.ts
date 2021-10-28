@@ -4,6 +4,7 @@ import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/doma
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { DashboardGridElementModel } from './dashboard.model.entity';
 import { DashboardRepo } from './dashboard.repo';
+import { DashboardModelMapper } from './dashboard.model.mapper';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;
@@ -13,7 +14,7 @@ describe('dashboard repo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [DashboardRepo],
+			providers: [DashboardRepo, DashboardModelMapper],
 		}).compile();
 
 		repo = module.get(DashboardRepo);
