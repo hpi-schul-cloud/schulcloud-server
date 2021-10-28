@@ -61,13 +61,13 @@ export class DashboardRepo implements IDashboardRepo {
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
 	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
-		const modelEntity = await this.mapper.mapDashboardToModel(entity, this.em);
+		const modelEntity = await this.mapper.mapDashboardToModel(entity);
 		this.em.persist(modelEntity);
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
 	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
-		const modelEntity = await this.mapper.mapDashboardToModel(entity, this.em);
+		const modelEntity = await this.mapper.mapDashboardToModel(entity);
 		await this.em.persistAndFlush(modelEntity);
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}

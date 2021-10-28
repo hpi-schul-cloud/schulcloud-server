@@ -41,7 +41,7 @@ describe('dashboard model mapper', () => {
 				],
 			});
 
-			const mapped = await mapper.mapDashboardToModel(dashboard, em);
+			const mapped = await mapper.mapDashboardToModel(dashboard);
 
 			expect(mapped instanceof DashboardModelEntity).toEqual(true);
 			expect(mapped.gridElements.length).toEqual(2);
@@ -77,7 +77,7 @@ describe('dashboard model mapper', () => {
 				],
 			});
 
-			const mapped = await mapper.mapDashboardToModel(dashboard, em);
+			const mapped = await mapper.mapDashboardToModel(dashboard);
 			expect(mapped.gridElements.length).toEqual(2);
 			const containsElement = Array.from(mapped.gridElements).some((el) => el.id === elementId);
 			expect(containsElement).toEqual(true);

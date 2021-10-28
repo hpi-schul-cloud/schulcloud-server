@@ -12,6 +12,8 @@ import { DashboardGridElementModel, DashboardModelEntity, DefaultGridReferenceMo
 
 @Injectable()
 export class DashboardModelMapper {
+	constructor(protected readonly em: EntityManager) {}
+
 	mapReferenceToEntity(modelEntity: DefaultGridReferenceModel): DefaultGridReference {
 		return new DefaultGridReference(modelEntity.id, modelEntity.title, modelEntity.color);
 	}
@@ -42,11 +44,10 @@ export class DashboardModelMapper {
 
 	async mapReferenceToModel(
 		reference: IGridElementReference,
-		element: DashboardGridElementModel,
-		em: EntityManager
+		element: DashboardGridElementModel
 	): Promise<DefaultGridReferenceModel> {
 		const metadata = reference.getMetadata();
-		const existingReference = await em.findOne(DefaultGridReferenceModel, metadata.id);
+		const existingReference = await this.em.findOne(DefaultGridReferenceModel, metadata.id);
 		const result = existingReference || new DefaultGridReferenceModel(metadata.id);
 		result.color = metadata.displayColor;
 		result.title = metadata.title;
@@ -54,24 +55,20 @@ export class DashboardModelMapper {
 		return result;
 	}
 
-	private async instantiateGridElementModel(
-		gridElement: IGridElement,
-		em: EntityManager
-	): Promise<DashboardGridElementModel> {
+	private async instantiateGridElementModel(gridElement: IGridElement): Promise<DashboardGridElementModel> {
 		if (!gridElement.hasId()) {
 			return new DashboardGridElementModel();
 		}
-		const existing = await em.findOne(DashboardGridElementModel, gridElement.getId());
+		const existing = await this.em.findOne(DashboardGridElementModel, gridElement.getId());
 		return existing || new DashboardGridElementModel(gridElement.getId());
 	}
 
 	async mapGridElementToModel(
 		elementWithPosition: GridElementWithPosition,
-		dashboard: DashboardModelEntity,
-		em: EntityManager
+		dashboard: DashboardModelEntity
 	): Promise<DashboardGridElementModel> {
 		const { gridElement } = elementWithPosition;
-		const elementModel = await this.instantiateGridElementModel(gridElement, em);
+		const elementModel = await this.instantiateGridElementModel(gridElement);
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
 
@@ -80,7 +77,7 @@ export class DashboardModelMapper {
 		}
 
 		const references = await Promise.all(
-			gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref, elementModel, em))
+			gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref, elementModel))
 		);
 		elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, references);
 
@@ -88,17 +85,17 @@ export class DashboardModelMapper {
 		return elementModel;
 	}
 
-	async mapDashboardToModel(entity: DashboardEntity, em: EntityManager): Promise<DashboardModelEntity> {
-		const existing = await em.findOne(DashboardModelEntity, entity.getId());
+	async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
+		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
 		const modelEntity = existing || new DashboardModelEntity(entity.getId());
 		const mappedElements = await Promise.all(
-			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity, em))
+			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
 		);
 
 		Array.from(modelEntity.gridElements).forEach((el) => {
 			if (!mappedElements.includes(el)) {
 				modelEntity.gridElements.remove(el);
-				em.remove(el);
+				this.em.remove(el);
 			}
 		});
 
