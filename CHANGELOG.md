@@ -19,8 +19,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-379 - updated the engine version to node 16 and npm 8
-- BC-477 remove generics from test-module getter
+- BC-477 - remove generics from test-module getter
 - BC-469 - defined docker base image
+- BC-543 - move status logic to task entity
 
 ## [26.14.0] - 2021-10-26
 
