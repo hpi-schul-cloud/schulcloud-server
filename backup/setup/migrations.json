@@ -1063,9 +1063,9 @@
 	},
 	{
 		"_id": {
-			"$oid": "617aa93def171f1fec1c5907"
+			"$oid": "6135ddcc5f897a9ebc280acb"
 		},
-		"state": "down",
+		"state": "up",
 		"name": "add-years-edit-to-superhero",
 		"createdAt": {
 			"$date": "2021-09-06T09:22:20.403Z"
@@ -1074,9 +1074,9 @@
 	},
 	{
 		"_id": {
-			"$oid": "617aa93def171f1fec1c5908"
+			"$oid": "613600604c0817422cf71e56"
 		},
-		"state": "down",
+		"state": "up",
 		"name": "addBucketToFiles",
 		"createdAt": {
 			"$date": "2021-09-06T11:49:52.986Z"
@@ -1085,9 +1085,9 @@
 	},
 	{
 		"_id": {
-			"$oid": "617aa93def171f1fec1c5909"
+			"$oid": "6141c20fd4f5180b4499a151"
 		},
-		"state": "down",
+		"state": "up",
 		"name": "adjust-course-colors",
 		"createdAt": {
 			"$date": "2021-09-15T09:51:11.740Z"
@@ -1096,9 +1096,9 @@
 	},
 	{
 		"_id": {
-			"$oid": "617aa93def171f1fec1c590a"
+			"$oid": "616d3b9dedb0421a94ab5d21"
 		},
-		"state": "down",
+		"state": "up",
 		"name": "drop-invalid-dashboard-collections",
 		"createdAt": {
 			"$date": "2021-10-18T09:17:17.853Z"
@@ -1107,9 +1107,9 @@
 	},
 	{
 		"_id": {
-			"$oid": "617aa93def171f1fec1c590f"
+			"$oid": "617bb1f9817c1e6d64389230"
 		},
-		"state": "down",
+		"state": "up",
 		"name": "reset-dashboard-collections",
 		"createdAt": {
 			"$date": "2021-10-28T13:44:29.843Z"
