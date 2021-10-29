@@ -73,7 +73,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	getStudentId(): EntityId {
-		const { id } = this.student;
-		return id;
+		return this.student.id;
 	}
 }
