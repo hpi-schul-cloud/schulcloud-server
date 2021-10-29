@@ -7,12 +7,6 @@ pullapprove_conditions:
   - condition: "'- [ ]' not in body"
     unmet_status: failure
     explanation: 'Please finish all the required checklist tasks'
-#- condition: "'Travis*' in statuses.succeeded" # Not working yet
-#  unmet_status: failure
-#  explanation: "Tests must pass before review starts"
-#- condition: "'stickler*' in statuses.succeeded"
-#  unmet_status: failure
-#  explanation: "Linter must pass before review starts"
 
 notifications:
   - when: pull_request.opened
@@ -24,10 +18,9 @@ notifications:
       our Review-Guidelines https://docs.hpi-schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  sc-admins:
+  general:
     reviews:
       required: 1 # 1 approval from this group are required
     reviewers:
       teams:
-        - sc-admins
-        - CoreDevs
+        - general
