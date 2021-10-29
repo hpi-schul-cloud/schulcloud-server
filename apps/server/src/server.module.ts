@@ -15,6 +15,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { FilesModule } from './modules/files/files.module';
 
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
+import { RocketChatModule } from './modules/rocketchat/rocket-chat.module';
 
 @Module({
 	imports: [
@@ -29,6 +30,13 @@ import { LearnroomModule } from './modules/learnroom/learnroom.module';
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
 		FilesModule,
+		RocketChatModule.forRoot({
+			uri: Configuration.get('ROCKET_CHAT_URI') as string,
+			adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
+			adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
+			adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
+			adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+		}),
 
 		MikroOrmModule.forRoot({
 			type: 'mongo',
