@@ -90,15 +90,14 @@ export class Task extends BaseEntityWithTimestamps {
 		return !!this.private;
 	}
 
-	private getSubmissionItems(): Submission[] {
+	private getSubmissionsItems(): Submission[] {
 		// TODO: load/init check until mikro-orm base entity is extended
 		const submissions = this.submissions.getItems();
-		// return submissions;
-		return [];
+		return submissions;
 	}
 
 	getSubmittedUserIds(): EntityId[] {
-		const submissions = this.getSubmissionItems();
+		const submissions = this.getSubmissionsItems();
 		const submittedUserIds = submissions.map((submission) => submission.getStudentId());
 
 		return submittedUserIds;
@@ -112,7 +111,7 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	getGradedUserIds(): EntityId[] {
-		const gradedUserIds = this.getSubmissionItems()
+		const gradedUserIds = this.getSubmissionsItems()
 			.filter((submission) => submission.isGraded())
 			.map((submission) => submission.getStudentId());
 
@@ -129,7 +128,9 @@ export class Task extends BaseEntityWithTimestamps {
 	// attention based on this parent use this.getParent() instant
 	getMaxSubmissions(): number {
 		// hack until parents are defined
-		return this.course ? this.course.getNumberOfStudents() : 0;
+		const numberOfStudents = this.course ? this.course.getNumberOfStudents() : 0;
+
+		return numberOfStudents;
 	}
 
 	createTeacherStatusForUser(userId: EntityId): ITaskStatus {
