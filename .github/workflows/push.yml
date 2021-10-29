@@ -77,3 +77,11 @@ jobs:
     uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@mamut_e2e
     with:
       ref: ${{ github.ref }}
+
+  e2e-succsed:
+    runs-on: ubuntu-latest
+    needs:
+      - end-to-end-tests
+    steps:
+      - run: echo "Succseed"
+    
