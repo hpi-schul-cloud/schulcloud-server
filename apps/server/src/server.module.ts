@@ -3,7 +3,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MailModule } from '@shared/infra/mail/mail.module';
+import { MailModule } from '@shared/infra/mail';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
