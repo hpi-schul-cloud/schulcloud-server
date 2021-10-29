@@ -92,11 +92,14 @@ export class Task extends BaseEntityWithTimestamps {
 
 	private getSubmissionItems(): Submission[] {
 		// TODO: load/init check until mikro-orm base entity is extended
-		return this.submissions.getItems();
+		const submissions = this.submissions.getItems();
+		// return submissions;
+		return [];
 	}
 
 	getSubmittedUserIds(): EntityId[] {
-		const submittedUserIds = this.getSubmissionItems().map((submission) => submission.getStudentId());
+		const submissions = this.getSubmissionItems();
+		const submittedUserIds = submissions.map((submission) => submission.getStudentId());
 
 		return submittedUserIds;
 	}
@@ -178,6 +181,8 @@ export class Task extends BaseEntityWithTimestamps {
 			maxSubmissions,
 			isDraft,
 			isSubstitutionTeacher,
+			// TODO: visibility of parent is missed ..but isSubstitutionTeacher and this is not really a part from task,
+			// for this we must add parent relationship
 		};
 
 		return status;

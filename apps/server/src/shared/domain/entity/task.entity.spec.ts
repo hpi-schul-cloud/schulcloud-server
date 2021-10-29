@@ -1,4 +1,13 @@
-import { courseFactory, lessonFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	taskFactory,
+	userFactory,
+	submissionFactory,
+	setupEntities,
+} from '@shared/testing';
+
+import { Task } from './task.entity';
 
 describe('Task Entity', () => {
 	beforeAll(async () => {
@@ -30,148 +39,146 @@ describe('Task Entity', () => {
 
 	describe('getSubmittedUserIds', () => {
 		it('should use save private getSubmissionItems methode to fetch submissions', () => {
+			const task = taskFactory.build();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionItems').mockImplementation(() => {});
 
+			task.getSubmittedUserIds();
+
+			expect(spy).toHaveBeenCalled();
 		});
 
-		it('should return a list of submitted userIds' () => {
+		it.todo('should validate if data are loaded');
 
-		});
+		describe('when submissions are loaded', () => {
+			it('should return a list of submitted userIds', () => {
+				const student = userFactory.build();
+				student.id = '0123456789ab';
 
-		it('should work for multiple submissions' () => {
+				const submission = submissionFactory.build({ student });
+				// const task = taskFactory.build();
+				const task = new Task({ name: '#1' });
+				task.submissions.add(submission);
 
+				const result = task.getSubmittedUserIds();
+
+				expect(result).toEqual([student.id]);
+			});
+
+			it('should work for multiple submissions', () => {
+				const student1 = userFactory.build();
+				student1.id = '0123456789ab';
+
+				const student2 = userFactory.build();
+				student2.id = '0123456789cd';
+
+				const submission1 = submissionFactory.build({ student: student1 });
+				const submission2 = submissionFactory.build({ student: student2 });
+				const task = taskFactory.build();
+				task.submissions.add(submission1, submission2);
+
+				const result = task.getSubmittedUserIds();
+
+				expect(result).toEqual([student1.id, student2.id]);
+			});
+
+			it('should work for a user that have multiple submissions', () => {
+				const student = userFactory.build();
+				student.id = '0123456789ab';
+
+				const submission1 = submissionFactory.build({ student });
+				const submission2 = submissionFactory.build({ student });
+				const task = taskFactory.build();
+				task.submissions.add(submission1, submission2);
+
+				const result = task.getSubmittedUserIds();
+
+				expect(result).toEqual([student.id, student.id]);
+			});
 		});
 	});
 
 	describe('getNumberOfSubmittedUsers', () => {
-		it('should count userids correctly' () => {
+		it('should call getSubmittedUserIds', () => {
+			
+		})
+
+		it('should count users correctly', () => {
 
 		});
 
-		it('should count a userId one time' () => {
-
-		});
+		it('should count a userId one time', () => {});
 	});
 
 	describe('getGradedUserIds', () => {
-		it('should use save private getSubmissionItems methode to fetch submissions', () => {
+		it('should use save private getSubmissionItems methode to fetch submissions', () => {});
 
-		});
+		it('should only work for graded submissions', () => {});
 
-		it('should only work for graded submissions', () => {
+		it('should return a list of graded userIds', () => {});
 
-		})
-
-		it('should return a list of graded userIds' () => {
-
-		});
-
-		it('should work for multiple graded submissions ' () => {
-
-		});
+		it('should work for multiple graded submissions ', () => {});
 	});
 
 	describe('getNumberOfGradedUsers', () => {
-		it('should count userids correctly' () => {
+		it('should count userids correctly', () => {});
 
-		});
-
-		it('should count a userId one time' () => {
-
-		});
+		it('should count a userId one time', () => {});
 	});
 
 	describe('getMaxSubmissions', () => {
 		describe('when no parent exist', () => {
-			it('should return 0', () => {
-
-			});
+			it('should return 0', () => {});
 		});
 
 		describe('when parent is a course', () => {
-			it('should call course.getNumberOfStudents and return the result', () => {
-
-			});
+			it('should call course.getNumberOfStudents and return the result', () => {});
 		});
 	});
 
 	describe('createTeacherStatusForUser', () => {
 		describe('when parent is a course', () => {
-			it('should call getSubstitutionTeacherIds and return true if userId is part of it.', () => {
+			it('should call getSubstitutionTeacherIds and return true if userId is part of it.', () => {});
 
-			});
-
-			it('should call getSubstitutionTeacherIds and return false if userId not is part of it', () => {
-
-			});
+			it('should call getSubstitutionTeacherIds and return false if userId not is part of it', () => {});
 		});
 
-		it('should call getNumberOfSubmittedUsers and return the result as submitted property', () => {
+		it('should call getNumberOfSubmittedUsers and return the result as submitted property', () => {});
 
-		});
+		it('should call getNumberOfGradedUsers and return the result as graded property', () => {});
 
-		it('should call getNumberOfGradedUsers and return the result as graded property', () => {
+		it('should call getMaxSubmissions and return the result as maxSubmissions property', () => {});
 
-		});
-
-		it('should call getMaxSubmissions and return the result as maxSubmissions property', () => {
-
-		});
-
-		it('should call isDraft and return the result as isDraft property', () => {
-
-		});
+		it('should call isDraft and return the result as isDraft property', () => {});
 	});
 
 	describe('isSubmittedForUser', () => {
-		it('should call getNumberOfSubmittedUsers and return true if userId is part of it.', () => {
+		it('should call getNumberOfSubmittedUsers and return true if userId is part of it.', () => {});
 
-		});
-
-		it('should call getNumberOfSubmittedUsers and return false if userId is not part of it.', () => {
-
-		});
+		it('should call getNumberOfSubmittedUsers and return false if userId is not part of it.', () => {});
 	});
 
 	describe('isGradedForUser', () => {
-		it('should call getGradedUserIds and return true if userId is part of it.', () => {
+		it('should call getGradedUserIds and return true if userId is part of it.', () => {});
 
-		});
-
-		it('should call getGradedUserIds and return false if userId is not part of it.', () => {
-
-		});
+		it('should call getGradedUserIds and return false if userId is not part of it.', () => {});
 	});
 
 	describe('createStudentStatusForUser', () => {
-		it('should call isSubmittedForUser and return 1 instant of true for submitted property', () => {
+		it('should call isSubmittedForUser and return 1 instant of true for submitted property', () => {});
 
-		});
+		it('should call isSubmittedForUser and return 0 instant of false for submitted property', () => {});
 
-		it('should call isSubmittedForUser and return 0 instant of false for submitted property', () => {
+		it('should call isGradedForUser and return 1 instant of true for graded property', () => {});
 
-		});
+		it('should call isGradedForUser and return 0 instant of false for graded property', () => {});
 
-		it('should call isGradedForUser and return 1 instant of true for graded property', () => {
+		it('should return 1 for maxSubmissions', () => {});
 
-		});
+		it('should call isDraft and return the result as isDraft property', () => {});
 
-		it('should call isGradedForUser and return 0 instant of false for graded property', () => {
-
-		});
-
-		it('should return 1 for maxSubmissions', () => {
-
-		});
-
-		it('should call isDraft and return the result as isDraft property', () => {
-
-		});
-
-		it('should return false for isSubstitutionTeacher', () => {
-
-		});
+		it('should return false for isSubstitutionTeacher', () => {});
 	});
-
 
 	describe('getDescriptions', () => {
 		describe('when a course is set', () => {
@@ -205,37 +212,6 @@ describe('Task Entity', () => {
 				expect(task.getDescriptions().name).toEqual('');
 				expect(task.getDescriptions().color).toEqual('#ACACAC');
 			});
-		});
-	});
-
-	describe('isSubstitutionTeacher', () => {
-		it('should return true if it is a substitution teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			const course = courseFactory.build({ substitutionTeachers: [teacher] });
-			const task = taskFactory.build({ name: 'task #1', course });
-
-			const boolean = task.isSubstitutionTeacher(teacher.id);
-
-			expect(boolean).toEqual(true);
-		});
-
-		it('should return false if it is a normal teacher', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.build({ name: 'task #1', course });
-
-			const boolean = task.isSubstitutionTeacher(teacher.id);
-
-			expect(boolean).toEqual(false);
-		});
-
-		it('should return false if it no course exist', () => {
-			const teacher = userFactory.build({ firstName: 'sub', lastName: 'teacher' });
-			const task = taskFactory.build({ name: 'task #1' });
-
-			const boolean = task.isSubstitutionTeacher(teacher.id);
-
-			expect(boolean).toEqual(false);
 		});
 	});
 });
