@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import * as path from 'path';
+import path from 'path';
 import { FileSystemAdapter } from './file-system.adapter';
 
 describe('FileSystemAdapter', () => {
@@ -9,7 +9,7 @@ describe('FileSystemAdapter', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [FileSystemAdapter],
 		}).compile();
-		adapter = module.get<FileSystemAdapter>(FileSystemAdapter);
+		adapter = module.get(FileSystemAdapter);
 	});
 
 	it('should be defined', () => {

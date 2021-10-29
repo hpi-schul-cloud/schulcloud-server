@@ -8,7 +8,7 @@ import type { User } from './user.entity';
 import type { File } from './file.entity';
 import type { Task } from './task.entity';
 
-interface ISubmissionProperties {
+export interface ISubmissionProperties {
 	task: Task;
 	student: User;
 	courseGroup?: CourseGroup[];

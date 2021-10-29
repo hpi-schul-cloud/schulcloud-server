@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.13.0",
+	"version": "26.14.0",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -15,16 +15,15 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "lts/*"
+		"node": "16",
+		"npm": "8"
 	},
 	"scripts": {
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
-		"feathers:test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
-		"feathers:test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
-		"backup": "node ./backup.js -b export",
-		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
+		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run coverage",
+		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup && npm run mocha-inspect",
 		"setup": "npm run nest:start:console -- database seed",
 		"build": "npm run nest:build",
 		"copy-files": "copyfiles src/**/*.yaml build",
@@ -186,7 +185,7 @@
 		"@types/express": "^4.17.11",
 		"@types/jest": "^27.0.2",
 		"@types/lodash": "^4.14.170",
-		"@types/node": "^14.14.31",
+		"@types/node": "^16.11.6",
 		"@types/passport-jwt": "^3.0.5",
 		"@types/passport-local": "^1.0.33",
 		"@types/rimraf": "^3.0.2",
@@ -209,6 +208,7 @@
 		"eslint-plugin-no-only-tests": "^2.6.0",
 		"eslint-plugin-prettier": "^3.3.1",
 		"eslint-plugin-promise": "^4.3.1",
+		"fishery": "^1.4.0",
 		"eslint": "^7.32.0",
 		"jest": "^27.2.3",
 		"jwt-decode": "^3.1.2",

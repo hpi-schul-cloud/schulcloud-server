@@ -1,5 +1,4 @@
-import { News } from '@shared/domain';
-import { ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types/news.types';
+import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain';
 import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';

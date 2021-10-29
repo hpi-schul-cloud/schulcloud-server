@@ -23,11 +23,16 @@ export class DefaultGridReferenceModel extends BaseEntityWithTimestamps {
 
 @Entity({ tableName: 'dashboardelement' })
 export class DashboardGridElementModel extends BaseEntityWithTimestamps {
-	constructor(id: string) {
+	constructor(id?: string) {
 		super();
-		this._id = ObjectId.createFromHexString(id);
-		this.id = id;
+		if (id) {
+			this._id = ObjectId.createFromHexString(id);
+			this.id = id;
+		}
 	}
+
+	@Property()
+	title: string;
 
 	@Property()
 	xPos: number;

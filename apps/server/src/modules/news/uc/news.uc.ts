@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, News, SortOrder } from '@shared/domain';
+import {
+	EntityId,
+	IFindOptions,
+	News,
+	SortOrder,
+	NewsTargetModel,
+	ICreateNews,
+	INewsScope,
+	IUpdateNews,
+} from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { Logger, ILogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { NewsTargetModel, ICreateNews, INewsScope, IUpdateNews } from '@shared/domain/types/news.types';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 

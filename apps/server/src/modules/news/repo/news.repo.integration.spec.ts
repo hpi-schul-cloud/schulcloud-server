@@ -1,10 +1,9 @@
-import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityId, News, SortOrder } from '@shared/domain';
+import { NewsTargetModel, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanUpCollections } from '@shared/testing';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {
@@ -22,12 +21,12 @@ describe('NewsRepo', () => {
 		em = module.get(EntityManager);
 	});
 
-	beforeEach(async () => {
-		await em.nativeDelete(News, {});
-	});
-
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(async () => {
+		await cleanUpCollections(em);
 	});
 
 	describe('defined', () => {
@@ -40,74 +39,34 @@ describe('NewsRepo', () => {
 		});
 	});
 
-	const newTestNews = (
-		schoolId: EntityId,
-		targetModel: NewsTargetModel,
-		targetId: EntityId,
-		unpublished = false
-	): News => {
-		const displayAt = unpublished ? moment().add(1, 'days').toDate() : moment().subtract(1, 'days').toDate();
-		const news = News.createInstance(targetModel, {
-			school: schoolId,
-			title: 'test course news',
-			content: 'content',
-			target: targetId,
-
-			displayAt,
-			creator: new ObjectId().toString(),
-		});
-		return news;
-	};
-
-	const createTestNews = async (
-		schoolId: string,
-		targetModel: NewsTargetModel,
-		targetId: EntityId,
-		unpublished = false
-	): Promise<News> => {
-		const news = newTestNews(schoolId, targetModel, targetId, unpublished);
-		await em.persistAndFlush(news);
-		return news;
-	};
-
-	const createMultipleTestNews = async (
-		schoolId: string,
-		targetModel: NewsTargetModel,
-		targetIds: EntityId[],
-		unpublished = false
-	) => {
-		const createdNews = targetIds.map((targetId) => {
-			const created = newTestNews(schoolId, targetModel, targetId, unpublished);
-			em.persist(created);
-			return created;
-		});
-		await em.flush();
-		return createdNews;
-	};
-
-	const schoolId = new ObjectId().toString();
-
 	describe('findAll', () => {
 		it('should return news for targets', async () => {
-			const courseId = new ObjectId().toString();
-			const news = await createTestNews(schoolId, NewsTargetModel.Course, courseId);
+			const news = courseNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
 			const target = {
 				targetModel: NewsTargetModel.Course,
-				targetIds: [courseId],
+				targetIds: [news.target.id],
 			};
 			const pagination = { skip: 0, limit: 20 };
+
 			const [result, count] = await repo.findAll([target], false, { pagination });
+
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
 
 		it('should return news for school', async () => {
-			const news = await createTestNews(schoolId, NewsTargetModel.School, schoolId);
+			const news = schoolNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
 			const pagination = { skip: 0, limit: 20 };
 			const target = {
 				targetModel: NewsTargetModel.School,
-				targetIds: [schoolId],
+				targetIds: [news.target.id],
 			};
 			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
@@ -116,11 +75,13 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return news for given target', async () => {
-			const courseId = new ObjectId().toString();
-			const news = await createTestNews(schoolId, NewsTargetModel.Course, courseId);
+			const news = courseNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
 			const target = {
 				targetModel: NewsTargetModel.Course,
-				targetIds: [courseId],
+				targetIds: [news.target.id],
 			};
 			const pagination = { skip: 0, limit: 20 };
 			const [result, count] = await repo.findAll([target], false, { pagination });
@@ -130,8 +91,11 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return news in requested order', async () => {
-			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
-			await createMultipleTestNews(schoolId, NewsTargetModel.Course, courseIds);
+			const newsList = courseNewsFactory.buildList(5);
+			await em.persistAndFlush(newsList);
+			em.clear();
+
+			const courseIds = newsList.map((o) => o.target.id);
 			const target = {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
@@ -147,10 +111,13 @@ describe('NewsRepo', () => {
 
 	describe('findOneById', () => {
 		it('should find a news entity by id', async () => {
-			const teamId = new ObjectId().toString();
-			const news = await createTestNews(schoolId, NewsTargetModel.Team, teamId);
+			const news = teamNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
 			const result = await repo.findOneById(news.id);
-			expect(result).toStrictEqual(news);
+			expect(result).toBeDefined();
+			expect(result.id).toEqual(news.id);
 		});
 
 		it('should throw an exception if not found', async () => {

@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { GridElement } from './dashboard.entity';
 
 const gridReference = {
@@ -28,15 +29,23 @@ const additionalGridReference = {
 };
 
 describe('dashboardElement', () => {
+	describe('constructors', () => {
+		describe('fromSingleReference', () => {
+			const dashboardElement = GridElement.FromSingleReference(gridReference);
+			expect(dashboardElement instanceof GridElement);
+			expect(dashboardElement.hasId()).toEqual(false);
+		});
+	});
+
 	describe('isGroup', () => {
 		it('element with single reference should not be a group', () => {
-			const dashboardElement = GridElement.FromSingleReference('id', gridReference);
+			const dashboardElement = GridElement.FromPersistedReference('id', gridReference);
 
 			expect(dashboardElement.isGroup()).toEqual(false);
 		});
 
 		it('element with multiple references should be a group', () => {
-			const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
+			const element = GridElement.FromPersistedGroup('id', 'title', [gridReference, anotherGridReference]);
 
 			expect(element.isGroup()).toEqual(true);
 		});
@@ -45,7 +54,7 @@ describe('dashboardElement', () => {
 	describe('getContent', () => {
 		describe('when Element has a single reference', () => {
 			it('should return the metadata of that element', () => {
-				const element = GridElement.FromSingleReference('id', gridReference);
+				const element = GridElement.FromPersistedReference('id', gridReference);
 				const content = element.getContent();
 				expect(content.referencedId).toEqual('referenceId');
 				expect(content.title).toEqual('Calendar-Dashboard');
@@ -53,21 +62,43 @@ describe('dashboardElement', () => {
 		});
 		describe('when Element has multiple references', () => {
 			it('should return the metadata of all those elements', () => {
-				const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
+				const element = GridElement.FromPersistedGroup('id', 'groupTitle', [gridReference, anotherGridReference]);
 				const content = element.getContent();
 				expect(content.group?.length).toEqual(2);
 				if (content.group) {
 					expect(content.group[0].shortTitle).toEqual('CAL');
 					expect(content.group[1].shortTitle).toEqual('TEA');
+					expect(content.title).toEqual('groupTitle');
 				}
 			});
+		});
+	});
+
+	describe('removeReference', () => {
+		it('should remove a single reference', () => {
+			const element = GridElement.FromGroup('title', [gridReference, anotherGridReference]);
+			element.removeReference(1);
+			expect(element.getReferences().length).toEqual(1);
+			expect(element.getReferences()[0].getMetadata().id).toEqual('referenceId');
+		});
+
+		it('should throw if not group', () => {
+			const element = GridElement.FromSingleReference(gridReference);
+			const callFunction = () => element.removeReference(0);
+			expect(callFunction).toThrow(BadRequestException);
+		});
+
+		it('should throw for index out of bounds', () => {
+			const element = GridElement.FromGroup('title', [gridReference, anotherGridReference]);
+			const callFunction = () => element.removeReference(2);
+			expect(callFunction).toThrow(BadRequestException);
 		});
 	});
 
 	describe('addReferences', () => {
 		describe('when Element has a single reference', () => {
 			it('should append references', () => {
-				const element = GridElement.FromSingleReference('id', gridReference);
+				const element = GridElement.FromPersistedReference('id', gridReference);
 				const referenceList = [anotherGridReference];
 				element.addReferences(referenceList);
 				const result = element.getReferences();
@@ -77,13 +108,31 @@ describe('dashboardElement', () => {
 		});
 		describe('when Element has multiple references', () => {
 			it('should append all references', () => {
-				const element = GridElement.FromReferenceGroup('id', [gridReference, anotherGridReference]);
+				const element = GridElement.FromPersistedGroup('id', 'title', [gridReference, anotherGridReference]);
 				const referenceList = [additionalGridReference];
 				element.addReferences(referenceList);
 				const result = element.getReferences();
 				expect(result.length).toEqual(3);
 				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
 				expect(result[2].getMetadata().title).toEqual('Homework-Dashboard');
+			});
+		});
+	});
+
+	describe('setGroupName', () => {
+		describe('when new group name is set', () => {
+			it('should contain the new name as title', () => {
+				const element = GridElement.FromPersistedGroup('id', 'oldTitle', [gridReference, anotherGridReference]);
+				element.setGroupName('newTitle');
+				expect(element.title).toEqual('newTitle');
+			});
+		});
+		describe('when element is no group', () => {
+			it('setGroupName should not change title', () => {
+				const element = GridElement.FromPersistedReference('id', gridReference);
+				element.setGroupName('newTitle');
+				expect(element.isGroup()).toEqual(false);
+				expect(element.title).toBeUndefined();
 			});
 		});
 	});
