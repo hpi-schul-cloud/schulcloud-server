@@ -9,6 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { Logger } from '@nestjs/common';
+import { RocketChatService } from './modules/rocketchat/rocket-chat.service';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { enableOpenApiDocs } from './shared/controller/swagger';
@@ -47,6 +48,8 @@ async function bootstrap() {
 			await mailService.send(data);
 		},
 	};
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
 
 	// mount instances
 	const rootExpress = express();

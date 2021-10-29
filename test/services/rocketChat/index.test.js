@@ -7,8 +7,6 @@ const mockery = require('mockery');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-const rcMockServer = require('./rocketChatMockServer');
-
 const { expect } = chai;
 
 describe('rocket.chat user service', () => {
@@ -19,13 +17,19 @@ describe('rocket.chat user service', () => {
 	let rocketChatUserService;
 
 	before(async () => {
-		const rcMock = await rcMockServer({});
+		app = await appPromise;
+		// const rcMock = await rcMockServer({});
+		const rocketChatService = {
+			getUserList: () => ({ users: [{ _id: 'someId', username: 'someUsername' }] }),
+		};
 		mockery.enable({
 			warnOnUnregistered: false,
 		});
 
 		// ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID
-		mockery.registerMock('../../../config/globals', { ROCKET_CHAT_URI: rcMock.url });
+		// mockery.registerMock('../../../config/globals', { ROCKET_CHAT_URI: rcMock.url });
+		// const rocketChatService = { getUserList: sinon.spy() };
+		app.services['nest-rocket-chat'] = rocketChatService;
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];
