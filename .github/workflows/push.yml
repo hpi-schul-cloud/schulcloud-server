@@ -72,7 +72,6 @@ jobs:
 
   end-to-end-tests:
     needs:
-      - build_and_push
       - branch_name
     uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@mamut_e2e
     with:
