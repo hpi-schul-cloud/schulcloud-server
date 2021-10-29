@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { DashboardGridElementModel } from './dashboard.model.entity';
 import { DashboardRepo } from './dashboard.repo';
 import { DashboardModelMapper } from './dashboard.model.mapper';
