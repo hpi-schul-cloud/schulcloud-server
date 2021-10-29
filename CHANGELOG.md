@@ -19,7 +19,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-379 - updated the engine version to node 16 and npm 8
-- BC-477 - remove generics from test-module getter
+- BC-477 remove generics from test-module getter
+- BC-507 - remove orphaned GridElements from database
 - BC-469 - defined docker base image
 - BC-543 - move status logic to task entity
 

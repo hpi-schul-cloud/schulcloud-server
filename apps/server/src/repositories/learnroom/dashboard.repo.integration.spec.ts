@@ -2,7 +2,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { DashboardGridElementModel } from './dashboard.model.entity';
 import { DashboardRepo } from './dashboard.repo';
+import { DashboardModelMapper } from './dashboard.model.mapper';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;
@@ -12,7 +14,7 @@ describe('dashboard repo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [DashboardRepo],
+			providers: [DashboardRepo, DashboardModelMapper],
 		}).compile();
 
 		repo = module.get(DashboardRepo);
@@ -99,6 +101,35 @@ describe('dashboard repo', () => {
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(result.getGrid().length).toEqual(1);
 		expect(result.getGrid()[0].gridElement.getReferences().length).toEqual(2);
+	});
+
+	it('should remove orphaned gridelements', async () => {
+		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			grid: [
+				{
+					pos: { x: 1, y: 3 },
+					gridElement: GridElement.FromPersistedReference(
+						new ObjectId().toString(),
+						new DefaultGridReference(new ObjectId().toString(), 'Math')
+					),
+				},
+				{
+					pos: { x: 1, y: 4 },
+					gridElement: GridElement.FromPersistedReference(
+						new ObjectId().toString(),
+						new DefaultGridReference(new ObjectId().toString(), 'German')
+					),
+				},
+			],
+		});
+		const element = dashboard.getElement({ x: 1, y: 3 });
+		await repo.persistAndFlush(dashboard);
+		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
+		await repo.persistAndFlush(dashboard);
+
+		const findOrphan = () => em.findOneOrFail(DashboardGridElementModel, element.getId());
+
+		await expect(findOrphan).rejects.toThrow();
 	});
 
 	describe('persistAndFlush', () => {
