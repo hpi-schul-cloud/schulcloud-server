@@ -302,7 +302,7 @@ class Add {
 		} = await this._collectUserAndLinkData({ email, role, teamId });
 		// invite into teams per email should not work for registered students
 		if (user.roles[0].name === 'student') {
-			throw new BadRequest('Invited user is a student');
+			throw new BadRequest('User can not be invited.');
 		}
 		const { invitedUserIds } = team;
 		// eslint-disable-next-line no-param-reassign
