@@ -2,7 +2,6 @@ import { Injectable, Scope, Inject, ImATeapotException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { Application } from '@feathersjs/express';
-import { EntityId } from '@shared/domain';
 
 export interface FeathersService {
 	/**
@@ -11,7 +10,7 @@ export interface FeathersService {
 	 * @param params
 	 * @deprecated Access legacy eathers service get method
 	 */
-	get(id: EntityId, params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
+	get(id: string, params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
 	/**
 	 *
 	 * @param params
