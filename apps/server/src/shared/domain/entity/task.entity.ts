@@ -1,11 +1,14 @@
 import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property } from '@mikro-orm/core';
+
+import { EntityId } from '../types';
+
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
 
-interface ITaskProperties {
+export interface ITaskProperties {
 	name: string;
 	availableDate?: Date;
 	dueDate?: Date;
@@ -52,6 +55,15 @@ export class Task extends BaseEntityWithTimestamps {
 	isDraft(): boolean {
 		// private can be undefined in the database
 		return !!this.private;
+	}
+
+	isSubstitutionTeacher(userId: EntityId): boolean {
+		if (!this.course) {
+			return false;
+		}
+		// TODO: check if it is loaded if not load it ...isInitialized() is only work for collections, await ...init() also
+		const isSubstitutionTeacher = this.course.isSubstitutionTeacher(userId);
+		return isSubstitutionTeacher;
 	}
 
 	getDescriptions(): TaskParentDescriptions {

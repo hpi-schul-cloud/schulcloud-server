@@ -1,12 +1,18 @@
-import { Course, Task, School } from '@shared/domain';
-import { setupEntities } from '@src/modules/database';
+import { Task } from '@shared/domain';
+import { taskFactory, setupEntities } from '@shared/testing';
 import { TaskResponse } from '../controller/dto';
 
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
-	status: { graded: number; maxSubmissions: number; submitted: number; isDraft: boolean },
+	status: {
+		graded: number;
+		maxSubmissions: number;
+		submitted: number;
+		isDraft: boolean;
+		isSubstitutionTeacher: boolean;
+	},
 	parent?: { name: string; color: string; description: string }
 ): TaskResponse => {
 	const expected = new TaskResponse();
@@ -21,6 +27,7 @@ const createExpectedResponse = (
 		maxSubmissions: status.maxSubmissions,
 		submitted: status.submitted,
 		isDraft: status.isDraft,
+		isSubstitutionTeacher: status.isSubstitutionTeacher,
 	};
 	if (parent !== undefined) {
 		expected.courseName = parent.name;
@@ -37,20 +44,15 @@ describe('task.mapper', () => {
 	});
 
 	it('should map if course and fullfilled status exist', () => {
-		const course = new Course({
-			name: 'course #1',
-			school: new School({ name: 'school #1' }),
-			description: 'a short description for course #1',
-		});
-		const task = new Task({ name: 'task #1', private: false, course });
+		const task = taskFactory.draft(false).build();
 		const taskDescriptions = task.getDescriptions();
-		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
-			maxSubmissions,
+			maxSubmissions: 0,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
@@ -60,20 +62,15 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter unnecessary information from status', () => {
-		const course = new Course({
-			name: 'course #1',
-			school: new School({ name: 'school #1' }),
-			description: 'a short description for course #1',
-		});
-		const task = new Task({ name: 'task #1', private: false, course });
+		const task = taskFactory.draft(false).build();
 		const taskDescriptions = task.getDescriptions();
-		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
-			maxSubmissions,
+			maxSubmissions: 0,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 			additionalKey: '123',
 		};
 
@@ -84,23 +81,18 @@ describe('task.mapper', () => {
 	});
 
 	it('should filter not necessary informations from task', () => {
-		const course = new Course({
-			name: 'course #1',
-			school: new School({ name: 'school #1' }),
-			description: 'a short description for course #1',
-		});
-		const task = new Task({ name: 'task #1', private: false, course });
+		const task = taskFactory.draft(false).build();
 		// @ts-expect-error test-case
 		task.key = 1;
 
 		const taskDescriptions = task.getDescriptions();
-		const maxSubmissions = course.getNumberOfStudents();
 
 		const status = {
 			graded: 0,
-			maxSubmissions,
+			maxSubmissions: 0,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });
@@ -111,7 +103,7 @@ describe('task.mapper', () => {
 
 	it('should set default course information if it does not exist in task.', () => {
 		// task has no course
-		const task = new Task({ name: 'task #1' });
+		const task = taskFactory.build();
 		const taskDefaultDescriptions = {
 			name: '',
 			description: '',
@@ -123,6 +115,7 @@ describe('task.mapper', () => {
 			maxSubmissions: 10,
 			submitted: 0,
 			isDraft: false,
+			isSubstitutionTeacher: false,
 		};
 
 		const result = TaskMapper.mapToResponse({ task, status });

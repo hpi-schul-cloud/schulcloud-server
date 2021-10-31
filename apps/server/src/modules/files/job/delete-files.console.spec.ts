@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { LoggerModule } from '../../../core/logger/logger.module';
@@ -32,8 +32,8 @@ describe('DeleteFilesController', () => {
 			],
 		}).compile();
 
-		console = module.get<DeleteFilesConsole>(DeleteFilesConsole);
-		deleteFilesUc = module.get<DeleteFilesUc>(DeleteFilesUc);
+		console = module.get(DeleteFilesConsole);
+		deleteFilesUc = module.get(DeleteFilesUc);
 	});
 
 	it('should be defined', () => {

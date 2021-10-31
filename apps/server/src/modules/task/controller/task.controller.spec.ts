@@ -32,12 +32,10 @@ describe('TaskController', () => {
 			controllers: [TaskController],
 		}).compile();
 
-		controller = module.get<TaskController>(TaskController);
+		controller = module.get(TaskController);
 	});
 
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
-
-	it.todo('write unit tests...');
 });

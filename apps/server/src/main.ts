@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import * as express from 'express';
+import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 
 // register source-map-support for debugging
@@ -9,11 +9,11 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { Logger } from '@nestjs/common';
+import { MailService, Mail } from '@shared/infra/mail';
+import { RocketChatService } from './modules/rocketchat/rocket-chat.service';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { enableOpenApiDocs } from './shared/controller/swagger';
-import { Mail } from './modules/mail/mail.interface';
-import { MailService } from './modules/mail/mail.service';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -47,6 +47,8 @@ async function bootstrap() {
 			await mailService.send(data);
 		},
 	};
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
 
 	// mount instances
 	const rootExpress = express();

@@ -2,7 +2,7 @@ import { NotFoundError, ValidationError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -16,7 +16,7 @@ describe('role repo', () => {
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {

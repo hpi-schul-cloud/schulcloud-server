@@ -9,7 +9,7 @@ describe('ConsoleWriterModule', () => {
 		module = await Test.createTestingModule({
 			imports: [ConsoleWriterService],
 		}).compile();
-		service = module.get<ConsoleWriterService>(ConsoleWriterService);
+		service = module.get(ConsoleWriterService);
 	});
 
 	afterAll(async () => {

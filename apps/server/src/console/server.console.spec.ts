@@ -12,8 +12,8 @@ describe('ServerConsole', () => {
 			imports: [ServerConsoleModule],
 		}).compile();
 
-		serverConsole = module.get<ServerConsole>(ServerConsole);
-		consoleWriter = module.get<ConsoleWriterService>(ConsoleWriterService);
+		serverConsole = module.get(ServerConsole);
+		consoleWriter = module.get(ConsoleWriterService);
 	});
 	afterAll(async () => {
 		await module.close();
