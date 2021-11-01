@@ -144,11 +144,11 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	getClasses(school) {
 		const { classAttributeNameMapping, classPathAdditions } = this.config.providerOptions;
 
-		if(
-			isNotEmptyString(classPathAdditions, true) && 
-			isNotEmptyString(classAttributeNameMapping.dn, true) && 
-			isNotEmptyString(classAttributeNameMapping.description, true) && 
-			isNotEmptyString(classAttributeNameMapping.uniqueMember, true) 
+		if (
+			isNotEmptyString(classPathAdditions, true) &&
+			isNotEmptyString(classAttributeNameMapping.dn, true) &&
+			isNotEmptyString(classAttributeNameMapping.description, true) &&
+			isNotEmptyString(classAttributeNameMapping.uniqueMember, true)
 		) {
 			const options = {
 				filter: `(${classAttributeNameMapping.description}=*)`,
