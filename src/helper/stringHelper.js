@@ -1,8 +1,8 @@
 const isNotEmptyString = (data, trim = false) => {
 	var result = false;
 	result = typeof data === 'string';
-	if(result) {
-		if(trim) {
+	if ( result ) {
+		if ( trim ) {
 			result = data.trim().length > 0 ;
 		}
 		else {
