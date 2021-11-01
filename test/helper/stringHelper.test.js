@@ -1,17 +1,17 @@
 const chai = require('chai');
-const { assert } = chai;
+const { expect  } = chai;
 
 const {	isNotEmptyString } = require('../../src/helper/stringHelper.js');
 
 describe('isNotEmptyString tests', () => {
 	describe('Test if string is not empty and trim is set to false', () => {
 		it('if the test string is undefine the result shoud be false', () => {
-			const testString = undefine;
+			const testString = undefined;
 		  expect(isNotEmptyString(testString)).to.equal(false);
 		});
     
 		it('if the test string is null the result shoud be false', () => {
-			const testString = Null;
+			const testString = null;
 		  expect(isNotEmptyString(testString)).to.equal(false);
 		});
     
@@ -43,12 +43,12 @@ describe('isNotEmptyString tests', () => {
   
 	describe('Test if string is not empty and trim is set to true', () => {
 		it('if the test string is undefine the result shoud be false', () => {
-			const testString = undefine;
+			const testString = undefined;
 		  expect(isNotEmptyString(testString, true)).to.equal(false);
 		});
     
 		it('if the test string is null the result shoud be false', () => {
-			const testString = Null;
+			const testString = null;
 		  expect(isNotEmptyString(testString, true)).to.equal(false);
 		});
     
