@@ -83,5 +83,5 @@ jobs:
     needs:
       - end-to-end-tests
     steps:
-      - run: echo "Test succseed"
+      - run: echo "Test was successful"
     
