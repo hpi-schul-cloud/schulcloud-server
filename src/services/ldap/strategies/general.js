@@ -1,4 +1,6 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const {	isNotEmptyString } = require('../../../helper/stringHelper.js');
+
 
 /**
  * General LDAP functionality
@@ -142,7 +144,11 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	getClasses(school) {
 		const { classAttributeNameMapping, classPathAdditions } = this.config.providerOptions;
 
-		if (classPathAdditions !== '') {
+		if( isNotEmptyString(classPathAdditions,true) && 
+		    isNotEmptyString(classAttributeNameMapping.dn) && 
+		    isNotEmptyString(classAttributeNameMapping.description) && 
+		    isNotEmptyString(classAttributeNameMapping.uniqueMember) 
+		  ) {
 			const options = {
 				filter: `(${classAttributeNameMapping.description}=*)`,
 				scope: 'sub',
