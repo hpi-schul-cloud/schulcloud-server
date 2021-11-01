@@ -3,6 +3,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ALL_ENTITIES } from '@shared/domain';
+import { MailModule } from '@shared/infra/mail';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
@@ -11,10 +12,10 @@ import { CoreModule } from './core/core.module';
 import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
 import { NewsModule } from './modules/news/news.module';
-import { MailModule } from './modules/mail/mail.module';
 import { FilesModule } from './modules/files/files.module';
 
 import { LearnroomModule } from './modules/learnroom/learnroom.module';
+import { RocketChatModule } from './modules/rocketchat/rocket-chat.module';
 
 @Module({
 	imports: [
@@ -29,6 +30,13 @@ import { LearnroomModule } from './modules/learnroom/learnroom.module';
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
 		FilesModule,
+		RocketChatModule.forRoot({
+			uri: Configuration.get('ROCKET_CHAT_URI') as string,
+			adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
+			adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
+			adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
+			adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
+		}),
 
 		MikroOrmModule.forRoot({
 			type: 'mongo',

@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
 import { NewsTargetModel, SortOrder } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanUpCollections } from '@shared/testing';
 import { NewsRepo } from './news.repo';
 

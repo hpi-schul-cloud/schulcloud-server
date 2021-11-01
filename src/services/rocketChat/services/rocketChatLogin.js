@@ -1,15 +1,7 @@
-const request = require('request-promise-native');
-
 const { Forbidden, BadRequest } = require('../../../errors');
-const { getRequestOptions } = require('../helpers');
 const { userModel } = require('../model');
 const docs = require('../docs');
 const logger = require('../../../logger');
-
-
-const setUserStatus = async (authenticationHeaders, status) => {
-	return request(getRequestOptions('/api/v1/users.setStatus', {message: '', status}, false, authenticationHeaders, 'POST'))
-}
 
 class RocketChatLogin {
 	constructor(options) {
@@ -26,17 +18,16 @@ class RocketChatLogin {
 		if (userId.toString() !== params.account.userId.toString()) {
 			return Promise.reject(new Forbidden('you may only log into your own rocketChat account'));
 		}
+		const service = this.app.service('/nest-rocket-chat');
 		try {
-			const rcAccount = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params);
+			const rcAccount = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId);
 
 			let { authToken } = rcAccount;
 			// user already logged in
-			if (authToken !== '') {
+			if (authToken !== '' && authToken !== undefined) {
 				try {
-					const res = await request(
-						getRequestOptions('/api/v1/me', {}, false, { authToken, userId: rcAccount.rcId }, 'GET')
-					);
- 					await setUserStatus({authToken, userId: rcAccount.rcId}, 'offline');
+					const res = service.me(authToken, rcAccount.rcId);
+					await service.setUserStatus(authToken, rcAccount.rcId, 'offline');
 					if (res.success) return { authToken };
 				} catch (err) {
 					logger.error(err);
@@ -45,11 +36,11 @@ class RocketChatLogin {
 			}
 
 			// log in user
-			const response = await request(getRequestOptions('/api/v1/users.createToken', { userId: rcAccount.rcId }, true));
+			const response = await service.createUserToken(rcAccount.rcId);
 			({ authToken } = response.data);
 			if (response.success === true && authToken !== undefined) {
-				await userModel.update({ username: rcAccount.username }, { authToken });
- 				await setUserStatus({authToken, userId: rcAccount.rcId}, 'offline');
+				await userModel.updateOne({ username: rcAccount.username }, { authToken });
+				await service.setUserStatus(authToken, rcAccount.rcId, 'offline');
 				return Promise.resolve({ authToken });
 			}
 			return Promise.reject(new BadRequest('False response data from rocketChat'));

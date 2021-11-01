@@ -16,11 +16,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-369 - add more LDAP systems to the init deployment
 - BC-174 - Improve test data generation with factories
+- BC-40  - rocketchat authentication via user+password
 
 ### Changed
 
+- BC-451 - move database, feathers, mail from modules to @shared/infra
 - BC-379 - updated the engine version to node 16 and npm 8
 - BC-477 remove generics from test-module getter
+- BC-507 - remove orphaned GridElements from database
+- BC-469 - defined docker base image
 
 ## [26.14.0] - 2021-10-26
 

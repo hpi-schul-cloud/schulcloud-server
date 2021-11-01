@@ -10,7 +10,7 @@ import {
 	cleanUpCollections,
 } from '@shared/testing';
 
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { TaskRepo } from './task.repo';
 
