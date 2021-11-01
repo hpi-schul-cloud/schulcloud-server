@@ -78,10 +78,10 @@ jobs:
     with:
       ref: ${{ github.ref }}
 
-  e2e-succsed:
+  test-succsed:
     runs-on: ubuntu-latest
     needs:
       - end-to-end-tests
     steps:
-      - run: echo "Succseed"
+      - run: echo "Test succseed"
     
