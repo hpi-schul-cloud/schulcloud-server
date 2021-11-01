@@ -1,6 +1,6 @@
  
 const isNotEmptyString = (data, trim = false) => {
-  const  result = false;
+  var result = false;
   result = typeof data === 'string';
   if(result) {
     if(trim) {
