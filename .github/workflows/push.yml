@@ -78,7 +78,7 @@ jobs:
     with:
       ref: ${{ github.ref }}
 
-  test-succsed:
+  test-successful:
     runs-on: ubuntu-latest
     needs:
       - end-to-end-tests
