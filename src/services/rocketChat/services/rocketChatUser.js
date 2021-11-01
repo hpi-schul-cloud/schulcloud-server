@@ -1,7 +1,5 @@
-const request = require('request-promise-native');
-
 const { Forbidden, BadRequest } = require('../../../errors');
-const { getRequestOptions, makeStringRCConform } = require('../helpers');
+const { makeStringRCConform } = require('../helpers');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const docs = require('../docs');
 const { userModel } = require('../model');
@@ -26,27 +24,11 @@ class RocketChatUser {
 		});
 	}
 
-	async handleEmailInUse(err, email, password) {
-		if (err && err.error && err.error.error && err.error.error.includes('is already in use :(')) {
-			// email already in use
-			const queryString = `query={"emails.address":"${email}"}`;
-			const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`, {}, true, undefined, 'GET'));
-			const updatePasswordBody = {
-				userId: rcUser.users[0]._id,
-				data: {
-					password,
-				},
-			};
-			return request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
-		}
-		throw new BadRequest('Can not write user informations to rocketChat.', err);
-	}
-
 	/**
 	 * creates an account, should only be called by getOrCreateRocketChatAccount
-	 * @param {object} data
+	 * @param userId sc-userid
 	 */
-	createRocketChatAccount(userId) {
+	getOrCreateRcUser(userId) {
 		if (userId === undefined) {
 			throw new BadRequest('Missing data value.');
 		}
@@ -58,29 +40,28 @@ class RocketChatUser {
 			.service('users')
 			.get(userId, internalParams)
 			.then(async (user) => {
-				const { email } = user;
-				const password = randomPass();
-				let username = await this.generateUserName(user);
+				const service = this.app.service('/nest-rocket-chat');
+				const rcUserList = await service.getUserList(`query={"emails.address":"${user.email}"}`);
+				let rcUser;
+				if (rcUserList.users.length) {
+					rcUser = rcUserList.users[0];
+					await userModel.updateOne(
+						{
+							rcId: rcUser._id,
+						},
+						{ userId, username: rcUser.username, rcId: rcUser._id },
+						{ upsert: true }
+					);
+					return userModel.findOne({ rcId: rcUser._id }).lean().exec();
+				}
 				const name = [user.firstName, user.lastName].join(' ');
-
-				const body = {
-					email,
-					password,
-					username,
-					name,
-					verified: true,
-				};
-
-				const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true)).catch(async (err) =>
-					this.handleEmailInUse(err, email, password)
-				);
-
-				const rcId = createdUser.user._id;
-				({ username } = createdUser.user);
+				const username = await this.generateUserName(user);
+				const password = randomPass();
+				rcUser = (await service.createUser(user.email, password, username, name)).user;
 				return userModel.create({
 					userId,
-					username,
-					rcId,
+					username: rcUser.username,
+					rcId: rcUser._id,
 				});
 			})
 			.catch((err) => {
@@ -105,7 +86,7 @@ class RocketChatUser {
 			}
 			let rcUser = await userModel.findOne({ userId });
 			if (!rcUser) {
-				rcUser = await this.createRocketChatAccount(userId);
+				rcUser = await this.getOrCreateRcUser(userId);
 			}
 			return {
 				username: rcUser.username,
@@ -121,20 +102,21 @@ class RocketChatUser {
 	 * react to a user being deleted
 	 * @param {*} context
 	 */
-	static onUserRemoved(context) {
-		RocketChatUser.deleteUser(context._id);
+	async onUserRemoved(context) {
+		this.deleteUser(context._id);
 	}
 
 	/**
 	 * removes the rocketChat user belonging to the schulcloud user given by Id
 	 * @param {*} userId Id of a team in the schulcloud
 	 */
-	static deleteUser(userId) {
+	async deleteUser(userId) {
 		return userModel
 			.findOne({ userId })
 			.then(async (user) => {
 				if (user) {
-					await request(getRequestOptions('/api/v1/users.delete', { username: user.username }, true));
+					const service = this.app.service('/nest-rocket-chat');
+					await service.deleteUser(user.username);
 					await userModel.deleteOne({ _id: user._id });
 				}
 				return true;
@@ -185,7 +167,8 @@ class RocketChatUser {
 	 * @listens users:removed
 	 */
 	registerEventListeners() {
-		this.app.service('users').on('removed', RocketChatUser.onUserRemoved.bind(this));
+		// this does not get called, "löschkonzept" broke that hook, but could be worse since sc-user and rc-user references eventually fix themselves
+		this.app.service('users').on('removed', this.onUserRemoved.bind(this));
 	}
 
 	setup(app) {

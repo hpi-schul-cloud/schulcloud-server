@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { BaseFile, File } from '@shared/domain';
 import { fileFactory } from '@shared/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
