@@ -1,5 +1,5 @@
  
-const isNotEmptyString = (data, trim=false) => {
+const isNotEmptyString = (data, trim = false) => {
   const  result = false;
   result = typeof data === 'string';
   if(result) {
