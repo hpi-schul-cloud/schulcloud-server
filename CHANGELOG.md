@@ -24,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-507 - remove orphaned GridElements from database
 - BC-469 - defined docker base image
 - BC-543 - move status logic to task entity
+- BC-402 - change e2e test include to reusable workflows
 
 ## [26.14.0] - 2021-10-26
 
