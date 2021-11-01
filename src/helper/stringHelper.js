@@ -12,3 +12,8 @@ const isNotEmptyString = (data, trim = false) => {
   }
   return result;
 };
+
+
+module.exports = {
+	isNotEmptyString,
+};
