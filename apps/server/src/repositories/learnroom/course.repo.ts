@@ -22,7 +22,7 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	/* it look like it is not used and can removed, it exist no index for this query at the moment */
+	/* It look like it is not used and can removed. Also no index is set for this query. */
 	async findAllByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllGroupTypes(userId);
