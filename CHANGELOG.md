@@ -24,6 +24,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-507 - remove orphaned GridElements from database
 - BC-469 - defined docker base image
 
+### Fixed
+
+- BC-404 - students from other schools can not be invited via email anymore
+
 ## [26.14.0] - 2021-10-26
 
 ### Added
