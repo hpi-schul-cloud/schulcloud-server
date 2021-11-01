@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
 
 import { EntityId } from '../types';
 
@@ -42,6 +42,7 @@ export class TaskWithStatusVo {
 export type TaskParentDescriptions = { name: string; description: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
+@Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'closed'] })
 export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
@@ -68,6 +69,7 @@ export class Task extends BaseEntityWithTimestamps {
 	submissions = new Collection<Submission>(this);
 
 	// TODO: is mapped to boolean in future
+	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	closed = new Collection<User>(this);
 
