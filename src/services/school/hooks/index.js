@@ -346,6 +346,7 @@ exports.before = {
 		validateOfficialSchoolNumber,
 		validateCounty,
 		iff(isProvider('external'), [preventSystemsChange]),
+		syncFederalState,
 	],
 	patch: [
 		globalHooks.ifNotLocal(hasEditPermissions),
