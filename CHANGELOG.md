@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-369 - add more LDAP systems to the init deployment
 - BC-174 - Improve test data generation with factories
 - BC-40  - rocketchat authentication via user+password
+- BC-532 - add index to course, lesson, task entity and fix permission issue
 
 ### Changed
 
@@ -23,7 +24,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-477 remove generics from test-module getter
 - BC-507 - remove orphaned GridElements from database
 - BC-469 - defined docker base image
+- BC-543 - move status logic to task entity
 - BC-402 - change e2e test include to reusable workflows
+
+### Fixed
+
+- BC-451 - fix timezone related test issues
 
 ## [26.14.0] - 2021-10-26
 

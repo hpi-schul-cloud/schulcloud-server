@@ -173,7 +173,7 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ substitutionTeachers: [teacher] });
-			const task = new Task({ name: 'task #1', private: false, course });
+			const task = taskFactory.draft(false).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();

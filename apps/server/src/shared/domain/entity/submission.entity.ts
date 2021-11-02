@@ -1,4 +1,7 @@
 import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
+
+import { EntityId } from '../types';
+
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
 import type { User } from './user.entity';
@@ -48,14 +51,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToMany('File', undefined, { fieldName: 'gradeFileIds' })
 	gradeFiles = new Collection<File>(this);
 
-	isGraded(): boolean {
-		const isGraded =
-			(typeof this.grade === 'number' && this.grade >= 0) ||
-			(typeof this.gradeComment === 'string' && this.gradeComment.length > 0) ||
-			(this.gradeFiles !== undefined && this.gradeFiles.length > 0);
-		return isGraded;
-	}
-
 	constructor(props: ISubmissionProperties) {
 		super();
 		this.student = props.student;
@@ -67,5 +62,17 @@ export class Submission extends BaseEntityWithTimestamps {
 
 		const { courseGroup, teamMembers, studentFiles, gradeFiles } = props;
 		Object.assign(this, { courseGroup, teamMembers, studentFiles, gradeFiles });
+	}
+
+	isGraded(): boolean {
+		const isGraded =
+			(typeof this.grade === 'number' && this.grade >= 0) ||
+			(typeof this.gradeComment === 'string' && this.gradeComment.length > 0) ||
+			(this.gradeFiles !== undefined && this.gradeFiles.length > 0);
+		return isGraded;
+	}
+
+	getStudentId(): EntityId {
+		return this.student.id;
 	}
 }
