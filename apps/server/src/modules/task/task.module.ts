@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { CourseRepo } from '@src/repositories';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 
-import { LessonRepo } from '@shared/repo';
 import { TaskController } from './controller/task.controller';
 import { TaskUC } from './uc';
 import { TaskRepo } from './repo';
