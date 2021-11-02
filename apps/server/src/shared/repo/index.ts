@@ -5,6 +5,7 @@
  */
 
 export * from './course';
+export * from './coursegroup';
 export * from './files';
 export * from './lesson';
 export * from './news';
