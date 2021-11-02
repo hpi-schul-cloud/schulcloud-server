@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+## [26.15.0] - 2021-11-02
+
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-369 - add more LDAP systems to the init deployment
 - BC-174 - Improve test data generation with factories
