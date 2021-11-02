@@ -25,6 +25,7 @@ const DEFAULT = {
 	description: '',
 };
 
+@Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property()
@@ -33,19 +34,16 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	description: string = DEFAULT.description;
 
-	@Index()
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@Index()
+	@Index({ name: 'findAllForStudent' })
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
-	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
 	teachers = new Collection<User>(this);
 
-	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
