@@ -26,6 +26,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-469 - defined docker base image
 - BC-402 - change e2e test include to reusable workflows
 
+### Fixed
+
+- BC-451 - fix timezone related test issues
+
 ## [26.14.0] - 2021-10-26
 
 ### Added
