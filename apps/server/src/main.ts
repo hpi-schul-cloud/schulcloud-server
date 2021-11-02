@@ -10,10 +10,10 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { Logger } from '@nestjs/common';
 import { MailService, Mail } from '@shared/infra/mail';
-import { RocketChatService } from './modules/rocketchat/rocket-chat.service';
+import { RocketChatService } from '@src/modules/rocketchat';
+import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { enableOpenApiDocs } from './shared/controller/swagger';
 
 async function bootstrap() {
 	sourceMapInstall();
