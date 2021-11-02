@@ -2,13 +2,6 @@ import { Collection } from '@mikro-orm/core';
 import { userFactory, taskFactory, submissionFactory, fileFactory, setupEntities } from '@shared/testing';
 import { File } from './file.entity';
 
-const buildSubmission = () => {
-	const student = userFactory.build();
-	const task = taskFactory.build();
-	const submission = submissionFactory.build({ task, student });
-	return submission;
-};
-
 describe('Submission entity', () => {
 	beforeAll(async () => {
 		await setupEntities();
@@ -16,23 +9,27 @@ describe('Submission entity', () => {
 
 	describe('isGraded', () => {
 		it('should be graded if grade percentage is set', () => {
-			const submission = buildSubmission();
-			submission.grade = 50;
+			const student = userFactory.build();
+			const task = taskFactory.build();
+			const submission = submissionFactory.build({ task, student, grade: 50 });
 
 			expect(submission.isGraded()).toEqual(true);
 		});
 
 		it('should be graded if grade comment is set', () => {
-			const submission = buildSubmission();
-			submission.gradeComment = 'well done!';
+			const student = userFactory.build();
+			const task = taskFactory.build();
+			const submission = submissionFactory.build({ task, student, gradeComment: 'well done!' });
 
 			expect(submission.isGraded()).toEqual(true);
 		});
 
 		it('should be graded if grade grade files have been associated', () => {
-			const submission = buildSubmission();
+			const student = userFactory.build();
+			const task = taskFactory.build();
 			const teacher = userFactory.build();
 			const file = fileFactory.build({ creator: teacher });
+			const submission = submissionFactory.build({ task, student });
 			submission.gradeFiles = new Collection<File>(submission, [file]);
 
 			expect(submission.isGraded()).toEqual(true);
