@@ -1,10 +1,10 @@
 import moment from 'moment';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { FilesRepo } from '@shared/repo';
 import { LoggerModule } from '../../../core/logger/logger.module';
 import { DeleteFilesConsole } from './delete-files.console';
 import { DeleteFilesUc } from '../uc';
-import { FilesRepo } from '../repo';
 
 describe('DeleteFilesController', () => {
 	let console: DeleteFilesConsole;
