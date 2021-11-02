@@ -13,7 +13,7 @@ const isNotEmptyString = (data, trim = false) => {
 		}
 	}
 	else {
-		retunr false;
+		return false;
 	}
 };
 
