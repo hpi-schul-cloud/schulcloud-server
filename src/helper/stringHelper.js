@@ -1,15 +1,18 @@
-const isNotEmptyString = (data, trim = false) => {
-	var result = false;
-	result = typeof data === 'string';
-	if ( result ) {
-		if ( trim ) {
-			result = data.trim().length > 0 ;
+const isNotEmptyString = ( data, trim = false ) => {
+	if ( typeof data === 'string' ) {
+		if ( ( trim && ( data.trim().length > 0 ) ) {
+			return true;
+		}
+		else if ( data.length > 0 ) {
+			return true;
 		}
 		else {
-			result = data.length > 0;
+			return false;
 		}
 	}
-	return result;
+	else {
+		retunr false;
+	}
 };
 
 module.exports = {
