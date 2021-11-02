@@ -55,8 +55,8 @@ describe('Task Entity', () => {
 				const student = userFactory.build();
 				student.id = '0123456789ab';
 
-				const submission = submissionFactory.build({ student });
 				const task = taskFactory.build();
+				const submission = submissionFactory.build({ student, task });
 				task.submissions.add(submission);
 
 				const result = task.getSubmittedUserIds();
@@ -71,9 +71,9 @@ describe('Task Entity', () => {
 				const student2 = userFactory.build();
 				student2.id = '0123456789cd';
 
-				const submission1 = submissionFactory.build({ student: student1 });
-				const submission2 = submissionFactory.build({ student: student2 });
 				const task = taskFactory.build();
+				const submission1 = submissionFactory.build({ student: student1, task });
+				const submission2 = submissionFactory.build({ student: student2, task });
 				task.submissions.add(submission1, submission2);
 
 				const result = task.getSubmittedUserIds();
@@ -85,9 +85,9 @@ describe('Task Entity', () => {
 				const student = userFactory.build();
 				student.id = '0123456789ab';
 
-				const submission1 = submissionFactory.build({ student });
-				const submission2 = submissionFactory.build({ student });
 				const task = taskFactory.build();
+				const submission1 = submissionFactory.build({ student, task });
+				const submission2 = submissionFactory.build({ student, task });
 				task.submissions.add(submission1, submission2);
 
 				const result = task.getSubmittedUserIds();
@@ -114,9 +114,9 @@ describe('Task Entity', () => {
 			const student2 = userFactory.build();
 			student2.id = '0123456789cd';
 
-			const submission1 = submissionFactory.build({ student: student1 });
-			const submission2 = submissionFactory.build({ student: student2 });
 			const task = taskFactory.build();
+			const submission1 = submissionFactory.build({ student: student1, task });
+			const submission2 = submissionFactory.build({ student: student2, task });
 			task.submissions.add(submission1, submission2);
 
 			const result = task.getNumberOfSubmittedUsers();
@@ -128,9 +128,9 @@ describe('Task Entity', () => {
 			const student = userFactory.build();
 			student.id = '0123456789ab';
 
-			const submission1 = submissionFactory.build({ student });
-			const submission2 = submissionFactory.build({ student });
 			const task = taskFactory.build();
+			const submission1 = submissionFactory.build({ student, task });
+			const submission2 = submissionFactory.build({ student, task });
 			task.submissions.add(submission1, submission2);
 
 			const result = task.getNumberOfSubmittedUsers();
@@ -155,8 +155,8 @@ describe('Task Entity', () => {
 				const student = userFactory.build();
 				student.id = '0123456789ab';
 
-				const submission = submissionFactory.graded().build({ student });
 				const task = taskFactory.build();
+				const submission = submissionFactory.graded().build({ student, task });
 				task.submissions.add(submission);
 
 				const result = task.getSubmittedUserIds();
@@ -168,8 +168,8 @@ describe('Task Entity', () => {
 				const student = userFactory.build();
 				student.id = '0123456789ab';
 
-				const submission = submissionFactory.build({ student });
 				const task = taskFactory.build();
+				const submission = submissionFactory.build({ student, task });
 				task.submissions.add(submission);
 
 				const result = task.getSubmittedUserIds();
@@ -184,9 +184,9 @@ describe('Task Entity', () => {
 				const student2 = userFactory.build();
 				student2.id = '0123456789cd';
 
-				const submission1 = submissionFactory.graded().build({ student: student1 });
-				const submission2 = submissionFactory.graded().build({ student: student2 });
 				const task = taskFactory.build();
+				const submission1 = submissionFactory.graded().build({ student: student1, task });
+				const submission2 = submissionFactory.graded().build({ student: student2, task });
 				task.submissions.add(submission1, submission2);
 
 				const result = task.getSubmittedUserIds();
@@ -198,9 +198,9 @@ describe('Task Entity', () => {
 				const student = userFactory.build();
 				student.id = '0123456789ab';
 
-				const submission1 = submissionFactory.graded().build({ student });
-				const submission2 = submissionFactory.graded().build({ student });
 				const task = taskFactory.build();
+				const submission1 = submissionFactory.graded().build({ student, task });
+				const submission2 = submissionFactory.graded().build({ student, task });
 				task.submissions.add(submission1, submission2);
 
 				const result = task.getSubmittedUserIds();
@@ -227,9 +227,9 @@ describe('Task Entity', () => {
 			const student2 = userFactory.build();
 			student2.id = '0123456789cd';
 
-			const submission1 = submissionFactory.graded().build({ student: student1 });
-			const submission2 = submissionFactory.graded().build({ student: student2 });
 			const task = taskFactory.build();
+			const submission1 = submissionFactory.graded().build({ student: student1, task });
+			const submission2 = submissionFactory.graded().build({ student: student2, task });
 			task.submissions.add(submission1, submission2);
 
 			const result = task.getNumberOfSubmittedUsers();
@@ -241,9 +241,9 @@ describe('Task Entity', () => {
 			const student = userFactory.build();
 			student.id = '0123456789ab';
 
-			const submission1 = submissionFactory.graded().build({ student });
-			const submission2 = submissionFactory.graded().build({ student });
 			const task = taskFactory.build();
+			const submission1 = submissionFactory.graded().build({ student, task });
+			const submission2 = submissionFactory.graded().build({ student, task });
 			task.submissions.add(submission1, submission2);
 
 			const result = task.getNumberOfSubmittedUsers();
@@ -380,8 +380,8 @@ describe('Task Entity', () => {
 		it('should call getNumberOfSubmittedUsers and return true if userId is part of it.', () => {
 			const student = userFactory.build();
 			student.id = '0123456789ab';
-			const submission = submissionFactory.build({ student });
 			const task = taskFactory.build();
+			const submission = submissionFactory.build({ student, task });
 			task.submissions.add(submission);
 
 			const spy = jest.spyOn(task, 'getSubmittedUserIds');
@@ -397,8 +397,8 @@ describe('Task Entity', () => {
 		it('should call getNumberOfSubmittedUsers and return false if userId is not part of it.', () => {
 			const student = userFactory.build();
 			student.id = '0123456789ab';
-			const submission = submissionFactory.build({ student });
 			const task = taskFactory.build();
+			const submission = submissionFactory.build({ student, task });
 			task.submissions.add(submission);
 
 			const spy = jest.spyOn(task, 'getSubmittedUserIds');
@@ -416,8 +416,9 @@ describe('Task Entity', () => {
 		it('should call getGradedUserIds and return true if userId is part of it.', () => {
 			const student = userFactory.build();
 			student.id = '0123456789ab';
-			const submission = submissionFactory.graded().build({ student });
 			const task = taskFactory.build();
+			const submission = submissionFactory.graded().build({ student, task });
+
 			task.submissions.add(submission);
 
 			const spy = jest.spyOn(task, 'getGradedUserIds');
@@ -433,8 +434,8 @@ describe('Task Entity', () => {
 		it('should call getGradedUserIds and return false if userId is not part of it.', () => {
 			const student = userFactory.build();
 			student.id = '0123456789ab';
-			const submission = submissionFactory.graded().build({ student });
 			const task = taskFactory.build();
+			const submission = submissionFactory.graded().build({ student, task });
 			task.submissions.add(submission);
 
 			const spy = jest.spyOn(task, 'getGradedUserIds');

@@ -69,6 +69,8 @@ export class Course extends BaseEntityWithTimestamps {
 	getSubstitutionTeacherIds(): EntityId[] {
 		const substitutionIds = this.substitutionTeachers.getIdentifiers('id');
 		// The result of getIdentifiers is a primary key type where we have no represent for it ((string | ObjectId) & IPrimaryKeyValue)[]
-		return substitutionIds.filter((id) => id).map((id) => id.toString());
+		const idsAsString = substitutionIds.map((id) => id.toString());
+
+		return idsAsString;
 	}
 }
