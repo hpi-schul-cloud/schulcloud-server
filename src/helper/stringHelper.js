@@ -1,3 +1,5 @@
+const { NotFound } = require('../errors');
+
 const isNotEmptyString = (data, trim = false) => {
 	if ( typeof data === 'string' ) {
 		if (( trim ) && ( data.trim().length > 0 )) {
