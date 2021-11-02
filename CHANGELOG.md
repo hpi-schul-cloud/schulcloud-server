@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-369 - add more LDAP systems to the init deployment
 - BC-174 - Improve test data generation with factories
 - BC-40  - rocketchat authentication via user+password
+- BC-532 - add index to course, lesson, task entity and fix permission issue
 
 ### Changed
 
