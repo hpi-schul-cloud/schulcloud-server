@@ -1,3 +1,4 @@
+
 const isNotEmptyString = (data, trim = false) => {
 	var result = false;
 	result = typeof data === 'string';
@@ -11,7 +12,6 @@ const isNotEmptyString = (data, trim = false) => {
 	}
 	return result;
 };
-
 
 module.exports = {
 	isNotEmptyString,
