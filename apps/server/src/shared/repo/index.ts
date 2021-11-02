@@ -7,3 +7,4 @@
 export * from './files';
 export * from './lesson';
 export * from './news';
+export * from './storageprovider';
