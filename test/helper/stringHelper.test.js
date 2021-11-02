@@ -40,7 +40,7 @@ describe('isNotEmptyString tests', () => {
 			expect(isNotEmptyString(testString)).to.equal(true);
 		});
 	});
-  
+
 	describe('Test if string is not empty and trim is set to true', () => {
 		it('if the test string is undefine the result shoud be false', () => {
 			const testString = undefined;
