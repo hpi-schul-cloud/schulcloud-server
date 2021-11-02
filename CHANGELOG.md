@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-451 - move repos to shared: files(-storage), news
 - BC-451 - move database, feathers, mail from modules to @shared/infra
 - BC-379 - updated the engine version to node 16 and npm 8
 - BC-477 remove generics from test-module getter
