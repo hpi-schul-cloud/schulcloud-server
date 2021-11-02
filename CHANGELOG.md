@@ -27,6 +27,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-543 - move status logic to task entity
 - BC-402 - change e2e test include to reusable workflows
 
+### Fixed
+
+- BC-451 - fix timezone related test issues
+
 ## [26.14.0] - 2021-10-26
 
 ### Added
