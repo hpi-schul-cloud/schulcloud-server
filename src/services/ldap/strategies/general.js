@@ -1,7 +1,6 @@
 const AbstractLDAPStrategy = require('./interface.js');
 const { isNotEmptyString } = require('../../../helper/stringHelper.js');
 
-
 /**
  * General LDAP functionality
  * @implements {AbstractLDAPStrategy}
