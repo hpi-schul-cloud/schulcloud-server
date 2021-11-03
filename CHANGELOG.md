@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-451 - move repos to shared: dashboard, files-storage, course, coursegroup and update imports
+
 ### Fixed
 
 - BC-526 - fix flaky file repository test
