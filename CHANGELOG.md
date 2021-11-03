@@ -15,6 +15,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-605 - sort references within groups alphabetically
+
 ### Fixed
 
 - BC-526 - fix flaky file repository test
