@@ -39,7 +39,7 @@ const removeFileById = async (id) => {
 	if (file.isDirectory) {
 		await FileModel.delete({ parent: id }).lean().exec();
 	}
-	FileModel.deleteById(id).lean().exec();
+	await FileModel.deleteById(id).lean().exec();
 };
 
 /**
