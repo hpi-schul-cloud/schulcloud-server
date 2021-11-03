@@ -4,7 +4,7 @@ import { CourseRepo, LessonRepo } from '@shared/repo';
 
 import { TaskController } from './controller/task.controller';
 import { TaskUC } from './uc';
-import { TaskRepo } from './repo';
+import { TaskRepo } from '@shared/repo';
 import { TaskAuthorizationService } from './uc/task.authorization.service';
 
 @Module({

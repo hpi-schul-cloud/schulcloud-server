@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 
-import { EntityId, IFindOptions, Task } from '@shared/domain';
-import { Counted } from '@shared/domain/types';
+import { EntityId, IFindOptions, Task, Counted } from '@shared/domain';
 
 import { TaskScope } from './task-scope';
 
