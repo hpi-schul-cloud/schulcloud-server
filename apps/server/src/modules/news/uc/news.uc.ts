@@ -12,7 +12,7 @@ import {
 import { Counted } from '@shared/domain/types';
 import { Logger, ILogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { NewsRepo, NewsTargetFilter } from '@shared/repo/news';
+import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 
