@@ -15,6 +15,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+### Fixed
+
+- BC-526 - fix flaky file repository test
+
 ## [26.15.0] - 2021-11-02
 
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
@@ -25,6 +29,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-451 - move repos to shared: files(-storage), news
 - BC-451 - move database, feathers, mail from modules to @shared/infra
 - BC-379 - updated the engine version to node 16 and npm 8
 - BC-477 remove generics from test-module getter
