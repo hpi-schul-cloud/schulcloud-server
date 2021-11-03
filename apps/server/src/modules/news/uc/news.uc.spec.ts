@@ -6,7 +6,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { NewsTargetModel, ICreateNews } from '@shared/domain';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { NewsRepo } from '../repo/news.repo';
+import { NewsRepo } from '@shared/repo';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
