@@ -107,8 +107,8 @@ data:
   ADMIN_TOGGLE_STUDENT_VISIBILITY: "enabled"
 {% endif %}
   FEATURE_ALERTS_STATUS_ENABLED: "{{ FEATURE_ALERTS_ENABLED|default("true", true) }}"
-  ALERT_STATUS_URL: "{{ ALERT_STATUS_URL|default("https://cachet-svc:8000", true) }}"
-  ALERT_STATUS_API_URL: "{{ ALERT_STATUS_URL|default("https://cachet-svc:8000", true) }}/api/v1"
+  ALERT_STATUS_URL: "{{ ALERT_STATUS_URL|default("http://cachet-svc:8000", true) }}"
+  ALERT_STATUS_API_URL: "{{ ALERT_STATUS_URL|default("http://cachet-svc:8000", true) }}/api/v1"
   FEATURE_MORGAN_LOG_ENABLED: "false"
   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: "{{ FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED|default("false", true) }}"
   FEATURE_S3_BUCKET_CORS: "{{ FEATURE_S3_BUCKET_CORS|default("false", true) }}"
