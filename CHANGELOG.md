@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+### Fixed
+
+- BC-526 - fix flaky file repository test
+
 ## [26.15.0] - 2021-11-02
 
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
