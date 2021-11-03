@@ -4,6 +4,6 @@
  * It is forbidden to reuse existing ones from different layers.
  */
 
-export * from './query';
-export { Scope } from './scope';
+export * from './files';
 export * from './lesson';
+export * from './news';

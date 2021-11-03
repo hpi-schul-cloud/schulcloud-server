@@ -10,6 +10,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+ 
+- BC-489 - create a migration to add federal state to systems (ldap)  
+
+### Changed
+
+### Fixed
+
+- BC-526 - fix flaky file repository test
+- BC-404 - students from other schools can not be invited via email anymore
+
+## [26.15.0] - 2021-11-02
 
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-369 - add more LDAP systems to the init deployment
@@ -19,16 +30,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-451 - move repos to shared: files(-storage), news
 - BC-451 - move database, feathers, mail from modules to @shared/infra
 - BC-379 - updated the engine version to node 16 and npm 8
 - BC-477 remove generics from test-module getter
 - BC-507 - remove orphaned GridElements from database
 - BC-469 - defined docker base image
+- BC-543 - move status logic to task entity
 - BC-402 - change e2e test include to reusable workflows
 
 ### Fixed
 
-- BC-404 - students from other schools can not be invited via email anymore
+- BC-451 - fix timezone related test issues
 
 ## [26.14.0] - 2021-10-26
 

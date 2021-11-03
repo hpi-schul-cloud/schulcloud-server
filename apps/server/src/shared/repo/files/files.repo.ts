@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { BaseRepo } from '@shared/repo/base.repo';
 import { BaseFile, File } from '@shared/domain';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { BaseRepo } from '../base.repo';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<BaseFile> {
