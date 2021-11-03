@@ -177,13 +177,17 @@ describe('LdapConfigService', () => {
 				provider: 'general',
 				providerOptions: { foo: 'bar' },
 			};
-			const schoolName = 'HPI Potsdam';
-			const system = LdapConfigService.constructSystem(config, { name: schoolName }, true);
+			const school = {
+				name: 'foo',
+				federalState: 'fiz',
+			};
+			const system = LdapConfigService.constructSystem(config, school, true);
 			expect(system.type).to.equal('ldap');
-			expect(system.alias).to.equal(schoolName);
-			expect(system.ldapConfig.providerOptions.schoolName).to.equal(schoolName);
+			expect(system.alias).to.equal(school.name);
+			expect(system.ldapConfig.providerOptions.schoolName).to.equal(school.name);
 			expect(system.ldapConfig.providerOptions.foo).to.equal('bar');
 			expect(system.ldapConfig.active).to.equal(true);
+			expect(system.ldapConfig.federalState).to.equal(school.federalState);
 		});
 
 		it('should not activate the system if activate=false', () => {

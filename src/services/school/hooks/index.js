@@ -301,6 +301,32 @@ const preventSystemsChange = async (context) => {
 	return context;
 };
 
+const syncFederalState = async (context) => {
+	if (context.data.federalState) {
+		const schoolBeforeUpdate = await context.app.service('/schools').get(context.id);
+		if (
+			schoolBeforeUpdate.systems.length > 0 &&
+			schoolBeforeUpdate.federalState.toString() !== context.data.federalState
+		) {
+			const schoolLdapSystem = await context.app.service('systems').find({
+				query: {
+					_id: { $in: schoolBeforeUpdate.systems },
+					'ldapConfig.federalState': { $ne: null },
+				},
+			});
+			if (schoolLdapSystem.total > 1) {
+				throw new Error('Bad LDAP config for school');
+			}
+			if (schoolLdapSystem.total === 1) {
+				await context.app
+					.service('/systems')
+					.patch(schoolLdapSystem.data[0]._id, { 'ldapConfig.federalState': context.data.federalState });
+			}
+		}
+	}
+	return context;
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [],
@@ -320,6 +346,7 @@ exports.before = {
 		validateOfficialSchoolNumber,
 		validateCounty,
 		iff(isProvider('external'), [preventSystemsChange]),
+		syncFederalState,
 	],
 	patch: [
 		globalHooks.ifNotLocal(hasEditPermissions),
@@ -328,6 +355,7 @@ exports.before = {
 		validateOfficialSchoolNumber,
 		validateCounty,
 		iff(isProvider('external'), [preventSystemsChange]),
+		syncFederalState,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
