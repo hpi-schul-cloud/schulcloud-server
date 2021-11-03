@@ -82,6 +82,32 @@ describe('dashboardElement', () => {
 					expect(content.title).toEqual('groupTitle');
 				}
 			});
+
+			it('should sort in a stable way', () => {
+				const first = {
+					getMetadata: () => ({
+						id: 'first',
+						title: 'title',
+						shortTitle: 'Tit',
+						displayColor: '#FFFFFF',
+					}),
+				};
+				const second = {
+					getMetadata: () => ({
+						id: 'second',
+						title: 'title',
+						shortTitle: 'Tit',
+						displayColor: '#FFFFFF',
+					}),
+				};
+				const element = GridElement.FromPersistedGroup('id', 'groupTitle', [first, second]);
+				const content = element.getContent();
+				expect(content.group?.length).toEqual(2);
+				if (content.group) {
+					expect(content.group[0].id).toEqual('first');
+					expect(content.group[1].id).toEqual('second');
+				}
+			});
 		});
 	});
 
