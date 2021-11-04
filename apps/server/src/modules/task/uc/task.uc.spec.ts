@@ -12,8 +12,7 @@ import {
 	createCurrentTestUser,
 } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { LessonRepo } from '@shared/repo';
-import { TaskRepo } from '../repo';
+import { LessonRepo, TaskRepo } from '@shared/repo';
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 

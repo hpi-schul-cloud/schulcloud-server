@@ -9,7 +9,7 @@ import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '@shared/testing';
 import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
-import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
+import { IDashboardRepo } from '@shared/repo';
 
 describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;

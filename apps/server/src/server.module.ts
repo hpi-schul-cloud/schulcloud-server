@@ -4,18 +4,16 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MailModule } from '@shared/infra/mail';
+import { RocketChatModule } from '@src/modules/rocketchat';
+import { LearnroomModule } from '@src/modules/learnroom';
+import { CoreModule } from '@src/core';
+import { TaskModule } from '@src/modules/task';
+import { UserModule } from '@src/modules/user';
+import { NewsModule } from '@src/modules/news';
+import { FilesModule } from '@src/modules/files';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
-
-import { CoreModule } from './core/core.module';
-import { TaskModule } from './modules/task/task.module';
-import { UserModule } from './modules/user/user.module';
-import { NewsModule } from './modules/news/news.module';
-import { FilesModule } from './modules/files/files.module';
-
-import { LearnroomModule } from './modules/learnroom/learnroom.module';
-import { RocketChatModule } from './modules/rocketchat/rocket-chat.module';
 
 @Module({
 	imports: [
