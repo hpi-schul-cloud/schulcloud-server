@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- BC-596 - enable strict property inizialization for typescript
+
 ## [26.16.0] - 2021-11-09
 
 ### Added
