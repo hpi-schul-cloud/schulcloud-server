@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { EntityId, Course, Counted } from '@shared/domain';
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope'; // TODO move to shared
 
 class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
@@ -22,6 +22,7 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	/* It look like it is not used and can removed. Also no index is set for this query. */
 	async findAllByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllGroupTypes(userId);

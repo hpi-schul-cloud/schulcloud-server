@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property, Index } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 
@@ -13,6 +13,7 @@ export class Lesson extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
+	@Index({ name: 'findAllByCourseIds' })
 	@Property()
 	hidden = false;
 

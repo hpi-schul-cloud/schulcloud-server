@@ -10,21 +10,40 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+ 
+- BC-489 - create a migration to add federal state to systems (ldap)  
+
+### Changed
+
+- BC-605 - sort references within groups alphabetically
+
+### Fixed
+
+- BC-526 - fix flaky file repository test
+
+## [26.15.0] - 2021-11-02
 
 - BC-570 - add auto deployment for status page
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-369 - add more LDAP systems to the init deployment
 - BC-174 - Improve test data generation with factories
 - BC-40  - rocketchat authentication via user+password
+- BC-532 - add index to course, lesson, task entity and fix permission issue
 
 ### Changed
 
+- BC-451 - move repos to shared: files(-storage), news
 - BC-451 - move database, feathers, mail from modules to @shared/infra
 - BC-379 - updated the engine version to node 16 and npm 8
 - BC-477 remove generics from test-module getter
 - BC-507 - remove orphaned GridElements from database
 - BC-469 - defined docker base image
+- BC-543 - move status logic to task entity
 - BC-402 - change e2e test include to reusable workflows
+
+### Fixed
+
+- BC-451 - fix timezone related test issues
 
 ## [26.14.0] - 2021-10-26
 

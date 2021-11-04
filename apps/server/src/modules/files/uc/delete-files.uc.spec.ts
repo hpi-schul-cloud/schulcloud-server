@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { File, StorageProvider } from '@shared/domain/entity';
+import { FilesRepo } from '@shared/repo';
 import { DeleteFilesUc } from './delete-files.uc';
-import { FilesRepo } from '../repo';
 
 describe('DeleteFileUC', () => {
 	let uc: DeleteFilesUc;
