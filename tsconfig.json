@@ -9,7 +9,7 @@
 		"strictBindCallApply": true,
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,
-		"strictPropertyInitialization": false,
+		"strictPropertyInitialization": true,
 		"noImplicitAny": false,
 		"target": "es2017",
 		"lib": [
