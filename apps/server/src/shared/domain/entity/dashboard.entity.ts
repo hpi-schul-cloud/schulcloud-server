@@ -70,10 +70,22 @@ export class GridElement implements IGridElement {
 
 	title: string;
 
+	private sortReferences = (a: IGridElementReference, b: IGridElementReference) => {
+		const titleA = a.getMetadata().title;
+		const titleB = b.getMetadata().title;
+		if (titleA < titleB) {
+			return -1;
+		}
+		if (titleA > titleB) {
+			return 1;
+		}
+		return 0;
+	};
+
 	private constructor(props: { id?: EntityId; title?: string; references: IGridElementReference[] }) {
 		if (props.id) this.id = props.id;
 		if (props.title) this.title = props.title;
-		this.references = props.references;
+		this.references = props.references.sort(this.sortReferences);
 	}
 
 	static FromPersistedReference(id: EntityId, reference: IGridElementReference): GridElement {
@@ -117,7 +129,7 @@ export class GridElement implements IGridElement {
 	}
 
 	addReferences(anotherReference: IGridElementReference[]): void {
-		this.references = this.references.concat(anotherReference);
+		this.references = this.references.concat(anotherReference).sort(this.sortReferences);
 	}
 
 	getContent(): GridElementContent {
