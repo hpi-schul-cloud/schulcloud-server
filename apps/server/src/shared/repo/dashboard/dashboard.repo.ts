@@ -26,7 +26,7 @@ const generateHardcodedTestDashboard = () => {
 		gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'Science', [
 			new DefaultGridReference(new ObjectId().toString(), 'Physics'),
 			new DefaultGridReference(new ObjectId().toString(), 'Biology'),
-			new DefaultGridReference(new ObjectId().toString(), 'Chemistry'),
+			new DefaultGridReference(new ObjectId().toString(), 'Programming'),
 		]),
 	});
 	gridArray.push({
