@@ -46,7 +46,7 @@ describe('dashboard repo', () => {
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(dashboard.id).toEqual(result.id);
-		expect(dashboard).toEqual(result);
+		expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
 	});
 
 	it('should persist dashboard with gridElement group', async () => {
@@ -55,8 +55,8 @@ describe('dashboard repo', () => {
 				{
 					pos: { x: 1, y: 3 },
 					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'testgroup', [
-						new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
 						new DefaultGridReference(new ObjectId().toString(), 'German'),
+						new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
 					]),
 				},
 			],
@@ -69,11 +69,11 @@ describe('dashboard repo', () => {
 		expect(elementContent.group).toBeDefined();
 		// if check for typescript only. has been asserted before
 		if (elementContent.group) {
-			expect(elementContent.group[0].title).toEqual('Mathe');
-			expect(elementContent.group[1].title).toEqual('German');
+			expect(elementContent.group[0].title).toEqual('German');
+			expect(elementContent.group[1].title).toEqual('Mathe');
 		}
 		expect(elementContent.title).toEqual('testgroup');
-		expect(dashboard).toEqual(result);
+		expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
 	});
 
 	it('should persist changes', async () => {
@@ -148,7 +148,7 @@ describe('dashboard repo', () => {
 			await repo.persistAndFlush(dashboard);
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(dashboard.id).toEqual(result.id);
-			expect(dashboard).toEqual(result);
+			expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
 		});
 
 		it('should be idempotent', async () => {
@@ -168,7 +168,7 @@ describe('dashboard repo', () => {
 
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(dashboard.id).toEqual(result.id);
-			expect(dashboard).toEqual(result);
+			expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
 		});
 
 		it('should persist dashboard with element without id', async () => {
@@ -200,7 +200,7 @@ describe('dashboard repo', () => {
 			// cant manipulate the dashboard, because the entity doesnt support changes yet
 			const secondDashboard = await repo.getUsersDashboard();
 			expect(firstDashboard.id).toEqual(secondDashboard.id);
-			expect(firstDashboard).toEqual(secondDashboard);
+			expect(JSON.stringify(firstDashboard)).toEqual(JSON.stringify(secondDashboard));
 		});
 	});
 });

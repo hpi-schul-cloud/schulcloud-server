@@ -2,7 +2,7 @@ import {
 	DashboardModelEntity,
 	DashboardGridElementModel,
 	DefaultGridReferenceModel,
-} from '@src/repositories/learnroom/dashboard.model.entity';
+} from '@shared/repo/dashboard/dashboard.model.entity'; // TODO remove external dependency
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { BaseFile, File, Directory } from './file.entity';
