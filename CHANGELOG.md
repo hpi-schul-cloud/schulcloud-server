@@ -21,6 +21,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - BC-526 - fix flaky file repository test
+- BC-404 - students from other schools can not be invited via email anymore
 
 ## [26.15.0] - 2021-11-02
 
