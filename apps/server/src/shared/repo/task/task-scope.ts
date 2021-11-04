@@ -1,5 +1,5 @@
 import { EntityId, Task } from '@shared/domain';
-import { Scope } from '@shared/repo/scope'; // TODO move this file to shared
+import { Scope } from '../scope';
 
 export class TaskScope extends Scope<Task> {
 	// TODO: parameter > isClosed: boolean

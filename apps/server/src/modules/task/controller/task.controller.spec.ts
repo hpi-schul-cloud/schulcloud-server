@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonRepo } from '@shared/repo';
-import { TaskRepo } from '../repo';
+import { LessonRepo, TaskRepo } from '@shared/repo';
 import { TaskUC } from '../uc';
 import { TaskAuthorizationService } from '../uc/task.authorization.service';
 import { TaskController } from './task.controller';

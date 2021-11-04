@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { EntityId, Course, Counted } from '@shared/domain';
-import { Scope } from '@shared/repo/scope'; // TODO move to shared
+import { Scope } from '../scope';
 
 class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
