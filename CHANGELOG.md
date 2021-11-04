@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [26.16.0]
+
+### Changed
+
+- BC-488 - Set federal state in LDAPSyncer by system
+
 ## [Unreleased]
 
 ### Added
