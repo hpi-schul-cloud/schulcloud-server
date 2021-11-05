@@ -481,7 +481,10 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 	if (get(hook, 'isSuperhero')) return Promise.resolve(hook);
 
 	// hasTeamPermission throw error if do not have the permission. Superhero is also test.
-	if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR')) {
+	if (
+		isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR') &&
+		!sessionUser.permissions.includes('LEAVE_TEAM')
+	) {
 		hasTeamPermission('RENAME_TEAM')(hook); // throw error if has not the permission
 	}
 	if (isUndefined(d.userIds)) {
@@ -784,7 +787,7 @@ exports.before = {
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,
-		hasTeamPermission('RENAME_TEAM'),
+		// hasTeamPermission('RENAME_TEAM'),
 	], // todo: filterToRelated(keys.data,'data')
 	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM')],
 };
