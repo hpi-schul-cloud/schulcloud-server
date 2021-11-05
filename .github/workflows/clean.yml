@@ -4,14 +4,22 @@ name: Clean Deployment
 on: delete
 
 jobs:
-  dispatch-clean:
-    if: github.event.ref_type == 'branch'
+  branch_name:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          repository: hpi-schul-cloud/dof_app_deploy
-          event-type: dev-clean
-          client-payload: '{"branch": "${{ github.event.ref }}" }'
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+        
+  deploy:
+    needs:
+      - branch_name
+    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/clean_workflow.yml@BC-589
+    with:
+      branch: ${{ needs.branch_name.outputs.branch }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
