@@ -16,9 +16,15 @@ const getFederalStateFromSchool = async (systemId) => {
 
 	if (federalStates.length === 0) {
 		error(`LDAP system ${systemId} is not associated to any school`);
+		return;
 	}
 	if (federalStates.length > 1) {
 		error(`LDAP system ${systemId} used in multiple schools from different federal states`);
+		return;
+	}
+	if (federalStates[0]._id === null) {
+		error(`LDAP system ${systemId} cannot be associated with a federal state`);
+		return;
 	}
 	return federalStates[0]._id;
 };
