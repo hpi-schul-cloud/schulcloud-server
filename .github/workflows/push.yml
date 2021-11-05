@@ -51,13 +51,14 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
-  dispatch:
+  deploy:
     needs:
       - build_and_push
       - branch_name
     uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@BC-589
     with:
       branch: ${{ needs.branch_name.outputs.branch }}
+      token: ${{ secrets.token }} 
 
   end-to-end-tests:
     needs:
