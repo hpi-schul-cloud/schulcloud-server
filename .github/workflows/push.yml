@@ -51,7 +51,7 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
 
-  deploy.test:
+  deploy:
     needs:
       - build_and_push
       - branch_name
