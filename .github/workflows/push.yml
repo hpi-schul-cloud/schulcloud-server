@@ -58,6 +58,7 @@ jobs:
     uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@BC-589
     with:
       branch: ${{ needs.branch_name.outputs.branch }}
+    secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
   end-to-end-tests:
