@@ -24,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-599 - fix email return
 - BC-526 - fix flaky file repository test
 - BC-404 - students from other schools can not be invited via email anymore
+- fixed autodeployment storageprovider initialization race condition
 
 ## [26.15.0] - 2021-11-02
 
