@@ -17,7 +17,7 @@ jobs:
   deploy:
     needs:
       - branch_name
-    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/clean_workflow.yml@BC-589
+    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/clean_workflow.yml@main
     with:
       branch: ${{ needs.branch_name.outputs.branch }}
     secrets:
