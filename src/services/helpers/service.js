@@ -50,9 +50,10 @@ module.exports = function setup(app) {
 			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
 				const mailService = app.service('/nest-mail');
 				mailService.send(mailContent);
+			} else {
+				// otherwise print email message object on console
+				logger.debug('E-Mail Message not sent (not in production mode):', mailContent);
 			}
-			// otherwise print email message object on console
-			return logger.debug('E-Mail Message not sent (not in production mode):', mailContent);
 		}
 	}
 

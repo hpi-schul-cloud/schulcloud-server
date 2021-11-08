@@ -147,6 +147,7 @@ describe('Test team extern add services', () => {
 	let params;
 	let owner;
 	let expert;
+	let student;
 	let addService;
 
 	before(async () => {
@@ -155,10 +156,11 @@ describe('Test team extern add services', () => {
 		addService.setup(app);
 		server = await app.listen();
 
-		[owner, teacher, expert] = await Promise.all([
+		[owner, teacher, expert, student] = await Promise.all([
 			createTestUser({ roles: ['teacher'] }),
 			createTestUser({ roles: ['teacher'] }),
 			createTestUser({ roles: ['expert'] }),
+			createTestUser({ roles: ['student'] }),
 		]);
 
 		const username = owner.email;
@@ -227,6 +229,22 @@ describe('Test team extern add services', () => {
 		const { _id: teamId } = await teamsHelper.create(owner);
 		const data = {
 			role: 'teamexpert',
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { invitedUserIds } = await teamsHelper.getById(teamId);
+		expect(invitedUserIds).to.be.an('array').with.lengthOf(0);
+	});
+
+	it('add student from other school shoult not work', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const { email } = student;
+		const data = {
+			role: 'student',
+			email,
 		};
 
 		const fakeParams = { ...params, query: {} };

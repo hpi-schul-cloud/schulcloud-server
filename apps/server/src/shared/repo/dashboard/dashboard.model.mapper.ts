@@ -7,8 +7,10 @@ import {
 	GridElementWithPosition,
 	DefaultGridReference,
 	IGridElementReference,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	DefaultGridReferenceModel,
 } from '@shared/domain';
-import { DashboardGridElementModel, DashboardModelEntity, DefaultGridReferenceModel } from './dashboard.model.entity';
 
 @Injectable()
 export class DashboardModelMapper {
