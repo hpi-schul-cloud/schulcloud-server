@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ErrorModule } from './error/error.module';
-import { LoggerModule } from './logger/logger.module';
-import { ValidationModule } from './validation/validation.module';
-import { InterceptorModule } from './interceptor/interceptor.module';
+import { ErrorModule } from './error';
+import { LoggerModule } from './logger';
+import { ValidationModule } from './validation';
+import { InterceptorModule } from './interceptor';
 
 /**
  * The core module configures the cross-functional application behaviour by customizing error handling providing and logging.

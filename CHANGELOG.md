@@ -10,6 +10,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+ 
+- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's  
+
+### Changed
+
+- BC-451 - move repos to shared: user, role
+- BC-451 - move repos to shared: dashboard, files-storage, course, coursegroup, task, submission and update imports
+- BC-605 - sort references within groups alphabetically
+
+### Fixed
+
+- BC-599 - fix email return
+- BC-526 - fix flaky file repository test
+- BC-404 - students from other schools can not be invited via email anymore
+- fixed autodeployment storageprovider initialization race condition
+
+## [26.15.0] - 2021-11-02
 
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-369 - add more LDAP systems to the init deployment
@@ -19,6 +36,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-451 - move repos to shared: files(-storage), news
 - BC-451 - move database, feathers, mail from modules to @shared/infra
 - BC-379 - updated the engine version to node 16 and npm 8
 - BC-477 remove generics from test-module getter

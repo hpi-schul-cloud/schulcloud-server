@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IDashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
+import { IDashboardRepo } from '@shared/repo';
 import { DashboardEntity, GridElement, DefaultGridReference, EntityId } from '@shared/domain';
 import { DashboardUc } from './dashboard.uc';
 

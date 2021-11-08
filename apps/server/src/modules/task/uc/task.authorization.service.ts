@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Course } from '@shared/domain';
-import { CourseRepo } from '@src/repositories';
+import { CourseRepo } from '@shared/repo';
 
 export enum TaskParentPermission {
 	read,
