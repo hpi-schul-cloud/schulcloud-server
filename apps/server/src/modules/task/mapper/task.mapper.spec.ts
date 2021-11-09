@@ -1,18 +1,12 @@
 import { Task } from '@shared/domain';
 import { taskFactory, setupEntities } from '@shared/testing';
-import { TaskResponse } from '../controller/dto';
+import { TaskResponse, TaskStatusResponse } from '../controller/dto';
 
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
-	status: {
-		graded: number;
-		maxSubmissions: number;
-		submitted: number;
-		isDraft: boolean;
-		isSubstitutionTeacher: boolean;
-	},
+	status: TaskStatusResponse,
 	parent?: { name: string; color: string; description: string }
 ): TaskResponse => {
 	const expected = new TaskResponse();
@@ -22,13 +16,13 @@ const createExpectedResponse = (
 	expected.duedate = task.dueDate;
 	expected.createdAt = task.createdAt;
 	expected.updatedAt = task.updatedAt;
-	expected.status = {
-		graded: status.graded,
-		maxSubmissions: status.maxSubmissions,
-		submitted: status.submitted,
-		isDraft: status.isDraft,
-		isSubstitutionTeacher: status.isSubstitutionTeacher,
-	};
+	const expectedStatus = new TaskStatusResponse();
+	expectedStatus.graded = status.graded;
+	expectedStatus.maxSubmissions = status.maxSubmissions;
+	expectedStatus.submitted = status.submitted;
+	expectedStatus.isDraft = status.isDraft;
+	expectedStatus.isSubstitutionTeacher = status.isSubstitutionTeacher;
+	expected.status = expectedStatus;
 	if (parent !== undefined) {
 		expected.courseName = parent.name;
 		expected.displayColor = parent.color;

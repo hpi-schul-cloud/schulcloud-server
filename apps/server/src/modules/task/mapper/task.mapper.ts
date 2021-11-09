@@ -1,5 +1,6 @@
 import { TaskWithStatusVo } from '@shared/domain';
 import { TaskResponse } from '../controller/dto';
+import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {
 	static mapToResponse(taskWithStatus: TaskWithStatusVo): TaskResponse {
@@ -12,13 +13,7 @@ export class TaskMapper {
 		dto.duedate = task.dueDate;
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;
-		dto.status = {
-			submitted: status.submitted,
-			maxSubmissions: status.maxSubmissions,
-			graded: status.graded,
-			isDraft: status.isDraft,
-			isSubstitutionTeacher: status.isSubstitutionTeacher,
-		};
+		dto.status = TaskStatusMapper.mapToResponse(status);
 
 		const taskDesc = task.getDescriptions();
 		dto.courseName = taskDesc.name;
