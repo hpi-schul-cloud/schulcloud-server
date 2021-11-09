@@ -10,6 +10,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [26.16.0] - 2021-11-09
+
+### Added
  
 - BC-489 - create a migration to add federal state to systems (ldap) and sync with school's  
 
