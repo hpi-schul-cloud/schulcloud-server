@@ -29,7 +29,10 @@ jobs:
           password: ${{ secrets.GHCR_DOCKER_TOKEN }}
           
       - name: test image exists
-        run: echo "IMAGE_EXISTS=$(docker manifest inspect $IMAGE > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
+        run: |
+         mkdir -p ~/.docker 
+         echo '{"experimental": "enabled"}' >> ~/.docker/config.json
+         echo "IMAGE_EXISTS=$(docker manifest inspect $IMAGE > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         if: ${{ env.IMAGE_EXISTS == 0 }}
