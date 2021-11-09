@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
+
 ## [26.16.0] - 2021-11-09
 
 ### Added
