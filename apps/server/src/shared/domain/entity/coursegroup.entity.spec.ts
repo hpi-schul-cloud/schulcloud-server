@@ -1,20 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { courseFactory } from '../factory/course.factory';
+import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseEntity', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

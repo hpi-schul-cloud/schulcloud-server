@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IPermissionsAndRoles } from '@shared/domain';
-import { createCurrentTestUser } from '../utils';
-import { UserRepo } from '../repo';
+import { createCurrentTestUser } from '@shared/testing';
+import { UserRepo } from '@shared/repo';
 import { UserUC } from './user.uc';
 import { RoleUC } from './role.uc';
 import { ResolvedUser } from '../controller/dto';

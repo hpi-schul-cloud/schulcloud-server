@@ -37,8 +37,8 @@ describe('DatabaseManagementConsole', () => {
 			],
 		}).compile();
 
-		service = module.get<DatabaseManagementConsole>(DatabaseManagementConsole);
-		consoleWriter = module.get<ConsoleWriterService>(ConsoleWriterService);
+		service = module.get(DatabaseManagementConsole);
+		consoleWriter = module.get(ConsoleWriterService);
 	});
 
 	afterAll(async () => {
@@ -56,6 +56,13 @@ describe('DatabaseManagementConsole', () => {
 		it('should export specific collection', async () => {
 			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
 			await service.exportCollections({ collection: 'singleCollection' });
+			const result = JSON.stringify(['singleCollection:4']);
+			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			consoleInfoSpy.mockReset();
+		});
+		it('should pass override flag to uc', async () => {
+			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
+			await service.exportCollections({ collection: 'singleCollection', override: true });
 			const result = JSON.stringify(['singleCollection:4']);
 			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
 			consoleInfoSpy.mockReset();

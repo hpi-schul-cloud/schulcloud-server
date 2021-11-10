@@ -11,19 +11,118 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-343 - run unstable e2e tests on label `run unstable tests` 
+### Fixed
+
+- BC-369 - fix wrong behavior by the general LDAP Strategy if class attribute is not set
+
+## [26.16.0] - 2021-11-09
+
+### Added
+ 
+- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's  
 
 ### Changed
 
-- BC-25  - move logic of npm run setup into console application and add management application with same behavior 
+- BC-451 - move repos to shared: user, role
+- BC-451 - move repos to shared: dashboard, files-storage, course, coursegroup, task, submission and update imports
+- BC-605 - sort references within groups alphabetically
+
+### Fixed
+
+- BC-599 - fix email return
+- BC-526 - fix flaky file repository test
+- BC-404 - students from other schools can not be invited via email anymore
+- fixed autodeployment storageprovider initialization race condition
+
+## [26.15.0] - 2021-11-02
+
+- BC-526 - files deleted via directory deletion will be deleted with the deletion concept
+- BC-369 - add more LDAP systems to the init deployment
+- BC-174 - Improve test data generation with factories
+- BC-40  - rocketchat authentication via user+password
+- BC-532 - add index to course, lesson, task entity and fix permission issue
+
+### Changed
+
+- BC-451 - move repos to shared: files(-storage), news
+- BC-451 - move database, feathers, mail from modules to @shared/infra
+- BC-379 - updated the engine version to node 16 and npm 8
+- BC-477 remove generics from test-module getter
+- BC-507 - remove orphaned GridElements from database
+- BC-469 - defined docker base image
+- BC-543 - move status logic to task entity
+- BC-402 - change e2e test include to reusable workflows
+
+### Fixed
+
+- BC-451 - fix timezone related test issues
+
+## [26.14.0] - 2021-10-26
+
+### Added
+
+- BC-155 - add substitution teacher flag to task
+- BC-121 - add console script to delete soft-deleted files
+- BC-495 - ungroup elements from groups in the course dashboard
+- BC-496 - naming of groups in the course dashboard
+
+### Changed
+
+- BC-383 - remove usage of npm run seed in server
+- BC-527 - cleanup legacy code for filestorage deletion concept
+- BC-13 - filter archived tasks and dont return it by task.findAll uc
+- BC-501 - return lesson name as task description for more detailed informations
+- BC-578 - enable `esModuleInterop` in typescript configuration
+
+## [26.13.2] - 2021-10-22
+
+### Changed
+
+- BC-379 - hard-code node 14 and npm 6
+
+## [26.13.0] - 2021-10-19
+
+### Added
+
+- BC-394 - send email wishes to additionally needed addresses
+- BC-391 - display special characters properly
+- BC-339 - creation of groups in the courses dashboard
+- BC-339 - add elements to groups in the courses dashboard
+
+### Fixed
+
+- BC-436 - Fix univention LDAP strategy
+- BC-21 - Remove generics from DTOs, because generics can not be used to generate OpenApi properly
+
+### Changed
+
+- BC-487 - update mongodb-memory-server from 6.9.6 to 7.4.4
+- BC-490 - setup entities for tests without needing a database
+
+## [26.12.0] - 2021-10-12
+
+### Added
+
+- BC-388 - add simple script for end sjw
+- BC-319 - add route to change the position of a course dashboard element
+- BC-343 - run unstable e2e tests on label `run unstable tests`
+- BC-6 - Show prepared tasks (drafts) for teachers
+
+### Changed
+
+- BC-25 - sort database seeds ascending by date of creation (\_id, createdAt)
+- BC-25 - move logic of npm run setup into console application and add management application with same behavior
 - BC-237 - Clean up global entity registration
 - BC-331 - BC-354 - rename ansible variables for OnePassword
-- BC-269 - check in firstLogin that students can only pass with existing birthdate 
+- BC-269 - check in firstLogin that students can only pass with existing birthdate
+- BC-154 - remove lesson entity from task repository
+- BC-231 - upgraded nestjs@7 to nestjs@8
 
 ### Fixed
 
 ### Security
 
+- BC-386 - added CREATE tests for consentVersionService
 - BC-297 - fixed set-value dependency vulnerabilities
 - BC-377 - fixed axios dependency vulnerabilities
 
@@ -31,14 +130,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- BC-121 - run add bucket to files migration in parallel 
+- BC-121 - run add bucket to files migration in parallel
 
 ## [26.11.2] - 2021-09-29
 
 ### Fixed
+
 - BC-111 wait for mongodb to spin up in deployment
 
-- BC-370 - fixed file directory creation 
+- BC-370 - fixed file directory creation
 
 ## [26.11.1] - 2021-09-29
 

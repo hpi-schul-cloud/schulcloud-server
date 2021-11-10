@@ -25,6 +25,7 @@ const create = async ({
 	isDirectory = false,
 	deletedAt,
 	bucket = 'bucket-test',
+	parent,
 } = {}) => {
 	const data = {
 		isDirectory,
@@ -45,6 +46,7 @@ const create = async ({
 		thumbnailRequestToken: uuidv4(),
 		deleted: deletedAt !== undefined,
 		deletedAt,
+		parent,
 		bucket,
 		storageProviderId: ObjectId(),
 	};

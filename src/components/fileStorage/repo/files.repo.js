@@ -34,7 +34,13 @@ const getPersonalFilesByUserId = async (userId) => {
 	return FileModel.find(personalFileSearchQuery(userId)).lean().exec();
 };
 
-const removeFileById = async (id) => FileModel.deleteById(id).lean().exec();
+const removeFileById = async (id) => {
+	const file = await getFileById(id);
+	if (file.isDirectory) {
+		await FileModel.delete({ parent: id }).lean().exec();
+	}
+	await FileModel.deleteById(id).lean().exec();
+};
 
 /**
  * @param {BSON|BSONString} userId
