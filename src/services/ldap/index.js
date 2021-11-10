@@ -53,7 +53,7 @@ module.exports = function LDAPService() {
 						throw new Forbidden('You are not allowed to access this provider.');
 					}
 					if (
-						system.ldapConfig.providerOptions.classPathAdditions &&
+						system.ldapConfig.providerOptions &&
 						isNotEmptyString(system.ldapConfig.providerOptions.classPathAdditions, true) === false
 					) {
 						return this.getUsers(system.ldapConfig, '').then((userData) => ({
