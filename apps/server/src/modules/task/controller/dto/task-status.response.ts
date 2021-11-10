@@ -1,14 +1,14 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class TaskStatusResponse {
-	@ApiPropertyOptional()
-	submitted?: number;
+	@ApiProperty()
+	submitted: number;
 
-	@ApiPropertyOptional()
-	maxSubmissions?: number;
+	@ApiProperty()
+	maxSubmissions: number;
 
-	@ApiPropertyOptional()
-	graded?: number;
+	@ApiProperty()
+	graded: number;
 
 	@ApiProperty()
 	isDraft: boolean;
