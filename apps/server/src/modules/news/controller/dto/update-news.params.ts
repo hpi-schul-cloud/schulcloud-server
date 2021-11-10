@@ -6,6 +6,12 @@ import { IsDate, IsOptional, IsString } from 'class-validator';
  * A PartialType is a halper which allows to extend an existing class by making all its properties optional.
  */
 export class UpdateNewsParams {
+	constructor(params: UpdateNewsParams) {
+		this.title = params.title;
+		this.content = params.content;
+		this.displayAt = params.displayAt;
+	}
+
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional({

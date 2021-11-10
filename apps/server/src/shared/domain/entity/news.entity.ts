@@ -1,4 +1,4 @@
-import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property, wrap } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { School } from './school.entity';
@@ -28,15 +28,15 @@ export interface INewsProperties {
 export abstract class News extends BaseEntityWithTimestamps {
 	/** the news title */
 	@Property()
-	title!: string;
+	title: string;
 
 	/** the news content as html */
 	@Property()
-	content!: string;
+	content: string;
 
 	/** only past news are visible for viewers, when edit permission, news visible in the future might be accessed too  */
 	@Property()
-	displayAt!: Date;
+	displayAt: Date;
 
 	@Property()
 	externalId?: string;
@@ -52,10 +52,10 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	/** name of a collection which is referenced in target */
 	@Enum()
-	targetModel: NewsTargetModel;
+	targetModel!: NewsTargetModel;
 
 	@ManyToOne('School', { fieldName: 'schoolId' })
-	school!: School;
+	school: School;
 
 	@ManyToOne('User', { fieldName: 'creatorId' })
 	creator!: User;
@@ -71,6 +71,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 		this.content = props.content;
 		this.displayAt = props.displayAt;
 		Object.assign(this, { school: props.school, creator: props.creator, updater: props.updater, target: props.target });
+		this.school = wrap(this.school).assign(props.school);
 		this.externalId = props.externalId;
 		this.source = props.source;
 		this.sourceDescription = props.sourceDescription;
@@ -84,28 +85,54 @@ export abstract class News extends BaseEntityWithTimestamps {
 		} else if (targetModel === NewsTargetModel.Team) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new TeamNews(props);
-		} else {
+		} else if (targetModel === NewsTargetModel.School) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new SchoolNews(props);
+		} else {
+			throw new Error(`wrong targetModel provided: ${JSON.stringify(targetModel)}`);
 		}
 		return news;
 	}
 }
 
+export interface ISchoolNewsProperties extends INewsProperties {
+	target: School;
+}
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
+	constructor(schoolNews: INewsProperties) {
+		super(schoolNews);
+		this.targetModel = NewsTargetModel.School;
+		this.target = schoolNews.target as School;
+	}
+
 	@ManyToOne('School')
 	target: School;
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
+	constructor(courseNews: INewsProperties) {
+		super(courseNews);
+		this.targetModel = NewsTargetModel.Course;
+		this.target = courseNews.target as Course;
+	}
+
 	@ManyToOne('Course')
 	target: Course;
 }
 
+export interface ITeamNewsProperties extends INewsProperties {
+	target: Team;
+}
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
+	constructor(teamNews: INewsProperties) {
+		super(teamNews);
+		this.targetModel = NewsTargetModel.Team;
+		this.target = teamNews.target as Team;
+	}
+
 	@ManyToOne('Team')
 	target: Team;
 }

@@ -7,7 +7,7 @@ export interface ISchoolProperties {
 @Entity({ tableName: 'schools' })
 export class School extends BaseEntity {
 	@Property()
-	name!: string;
+	name: string;
 
 	constructor(props: ISchoolProperties) {
 		super();

@@ -6,24 +6,28 @@ import { UserInfoMapper } from './user-info.mapper';
 
 export class NewsMapper {
 	static mapToResponse(news: News): NewsResponse {
-		const dto = new NewsResponse();
-		dto.id = news.id;
-		dto.title = news.title;
-		dto.content = news.content;
-		dto.displayAt = news.displayAt;
-		dto.source = news.source;
-		dto.sourceDescription = news.sourceDescription;
-		dto.targetId = news.target.id;
-		dto.targetModel = news.targetModel;
-		dto.target = TargetInfoMapper.mapToResponse(news.target);
-		dto.school = SchoolInfoMapper.mapToResponse(news.school);
-		dto.creator = UserInfoMapper.mapToResponse(news.creator);
+		const target = TargetInfoMapper.mapToResponse(news.target);
+		const school = SchoolInfoMapper.mapToResponse(news.school);
+		const creator = UserInfoMapper.mapToResponse(news.creator);
+		const dto = new NewsResponse({
+			id: news.id,
+			title: news.title,
+			content: news.content,
+			displayAt: news.displayAt,
+			source: news.source,
+			sourceDescription: news.sourceDescription,
+			targetId: news.target.id,
+			targetModel: news.targetModel,
+			target,
+			school,
+			creator,
+			createdAt: news.createdAt,
+			updatedAt: news.updatedAt,
+			permissions: news.permissions,
+		});
 		if (news.updater) {
 			dto.updater = UserInfoMapper.mapToResponse(news.updater);
 		}
-		dto.createdAt = news.createdAt;
-		dto.updatedAt = news.updatedAt;
-		dto.permissions = news.permissions;
 		return dto;
 	}
 
