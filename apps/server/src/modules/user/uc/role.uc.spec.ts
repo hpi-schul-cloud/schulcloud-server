@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { RoleRepo } from '../repo';
+import { RoleRepo } from '@shared/repo';
 import { RoleUC } from './role.uc';
 
 describe('RoleUC', () => {
