@@ -71,6 +71,13 @@ jobs:
       DEV_VAULT: ${{ secrets.DEV_VAULT }}
       DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
       ETHERPAD_API_KEY: ${{ secrets.ETHERPAD_API_KEY }}
+  
+  deploy-successful:
+    needs:
+      - deploy
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "deploy was successful"
 
   end-to-end-tests:
     needs:
