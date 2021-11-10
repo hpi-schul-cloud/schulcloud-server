@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+- BC-589 - BC-652 - Change auto deployment to a reusable workflow
+
 ### Fixed
 
 ## [26.16.0] - 2021-11-09
@@ -24,7 +28,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-451 - move repos to shared: user, role
 - BC-451 - move repos to shared: dashboard, files-storage, course, coursegroup, task, submission and update imports
 - BC-605 - sort references within groups alphabetically
-- BC-589 - BC-652 - Change auto deployment to a reusable workflow
 
 ### Fixed
 
