@@ -19,7 +19,6 @@
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"incremental": true,
-		"allowJs": true,
 		"paths": {
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"]
