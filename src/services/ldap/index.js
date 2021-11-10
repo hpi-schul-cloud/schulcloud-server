@@ -11,6 +11,7 @@ const hooks = require('./hooks');
 
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
+const { isNotEmptyString } = require('../../helper/stringHelper');
 
 const LockingQueue = require('./lockingQueue');
 
@@ -51,7 +52,10 @@ module.exports = function LDAPService() {
 					if (system.ldapConfig.provider !== 'general') {
 						throw new Forbidden('You are not allowed to access this provider.');
 					}
-					if (system.ldapConfig.providerOptions.classPathAdditions === '') {
+					if (
+						system.ldapConfig.providerOptions.classPathAdditions &&
+						isNotEmptyString(system.ldapConfig.providerOptions.classPathAdditions, true) === false
+					) {
 						return this.getUsers(system.ldapConfig, '').then((userData) => ({
 							users: userData,
 							classes: [],
