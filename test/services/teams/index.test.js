@@ -137,6 +137,57 @@ describe('Test team basic methods', () => {
 			}
 		});
 	});
+
+	describe.only('teams patch', () => {
+		let team;
+		let teamId;
+		let userId;
+
+		before(async () => {
+			const user = await createTestUser({ roles: ['administrator'] }).catch((err) => {
+				logger.warning('Can not create test user', err);
+			});
+
+			const schoolId = user.schoolId.toString();
+			userId = user._id.toString();
+			const fakeLoginParams = {
+				account: { userId },
+				authenticated: true,
+				provider: 'rest',
+				query: {},
+			};
+
+			team = await teamService
+				.create(
+					{
+						name: 'TestTeam',
+						schoolId,
+						userIds: [userId],
+					},
+					fakeLoginParams
+				)
+				.catch((err) => {
+					logger.warning('Can not create test team', err);
+				});
+
+			teamId = team._id.toString();
+
+			return Promise.resolve();
+		});
+
+		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
+
+		it('should work for team admins', async () => {
+			const teamAdmin = await createTestUser({ roles: ['teamadministrator'] });
+			const username = teamAdmin.email;
+			const password = 'Schulcloud1!';
+			await createTestAccount({ username, password }, 'local', teamAdmin);
+			const params = await generateRequestParams({ username, password });
+
+			const result = await teamService.patch(teamId, params, { name: 'teamNameChanged' });
+			expect(result.name).to.equal('teamNameChanged');
+		});
+	});
 });
 
 describe('Test team extern add services', () => {
