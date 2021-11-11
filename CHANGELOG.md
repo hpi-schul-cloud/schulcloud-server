@@ -11,10 +11,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+- BC-589 - BC-652 - Change auto deployment to a reusable workflow
+
 ### Fixed
 
 - BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
 - BC-668 - fixed security issues/updated dependencies
+- BC-369 - fix wrong behavior by the general LDAP Strategy if class attribute is not set
 
 ## [26.16.0] - 2021-11-09
 
