@@ -143,8 +143,10 @@ describe('Test team basic methods', () => {
 		let team;
 		let teamId;
 		let schoolId;
-		let params;
 		let fakeLoginParams;
+		let adminParams;
+		let teamAdminParams;
+		let teamMemberParams;
 
 		before(async () => {
 			const user = await createTestUser({ roles: ['administrator'] }).catch((err) => {
@@ -155,9 +157,14 @@ describe('Test team basic methods', () => {
 				logger.warning('Can not create test user', err);
 			});
 
+			const teamMember = await createTestUser({ roles: ['teammember'], schoolId: user.schoolId }).catch((err) => {
+				logger.warning('Can not create test user', err);
+			});
+
 			schoolId = user.schoolId.toString();
 			const userId = user._id.toString();
 			const teamAdminId = teamAdmin._id.toString();
+			const teamMemberId = teamMember._id.toString();
 
 			fakeLoginParams = {
 				account: { userId },
@@ -171,7 +178,7 @@ describe('Test team basic methods', () => {
 					{
 						name: 'TestTeam',
 						schoolId,
-						userIds: [userId, teamAdminId],
+						userIds: [userId, teamAdminId, teamMemberId],
 					},
 					fakeLoginParams
 				)
@@ -181,11 +188,31 @@ describe('Test team basic methods', () => {
 
 			teamId = team._id.toString();
 
-			const username = teamAdmin.email;
-			const password = 'somePassword';
+			const adminUsername = user.email;
+			const adminPassword = 'somePassword';
 
-			await createTestAccount({ username, password }, 'local', teamAdmin);
-			params = await generateRequestParams({ username, password });
+			await createTestAccount({ username: adminUsername, password: adminPassword }, 'local', user);
+			adminParams = await generateRequestParams({ username: adminUsername, password: adminPassword });
+
+			const teamAdminUsername = teamAdmin.email;
+			const teamAdminPassword = 'somePassword';
+
+			await createTestAccount({ username: teamAdminUsername, password: teamAdminPassword }, 'local', teamAdmin);
+			teamAdminParams = await generateRequestParams({ username: teamAdminUsername, password: teamAdminPassword });
+
+			const memberUsername = teamMember.email;
+			const memberPassword = 'somePassword';
+
+			await createTestAccount({ username: memberUsername, password: memberPassword }, 'local', teamMember);
+			teamMemberParams = await generateRequestParams({ username: memberUsername, password: memberPassword });
+
+			const data = {
+				role: 'teamadministrator',
+				teamAdminId,
+			};
+
+			const fakeParams2 = { ...adminParams, query: {} };
+			const { message } = await teamService.patch(teamId, data, fakeParams2);
 
 			return Promise.resolve();
 		});
@@ -193,29 +220,17 @@ describe('Test team basic methods', () => {
 		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
 
 		it('should work for team admins', async () => {
-			const fakeParams = { ...params, query: {} };
+
+			const fakeParams = { ...teamAdminParams, query: {} };
 			const result = await teamService.patch(teamId, { name: 'teamNameChanged' }, fakeParams);
 			expect(result.name).to.equal('teamNameChanged');
 		});
 
 		it('should not work for team members', async () => {
-			const teamMember = await createTestUser({ roles: ['teammember'], schoolId }).catch((err) => {
-				logger.warning('Can not create test user', err);
-			});
-			const username = teamMember.email;
-			const password = 'somePassword';
-
-			await createTestAccount({ username, password }, 'local', teamMember);
-			const teamMemberParams = await generateRequestParams({ username, password });
-
 			const fakeParams = { ...teamMemberParams, query: {} };
 
-			try {
-				await teamService.patch(teamId, { name: 'teamNameChanged' }, fakeParams);
-				throw new Error('The previous call should have failed.');
-			} catch (err) {
-				expect(err).to.be.instanceOf(BadRequest);
-			}
+			const result = await teamService.patch(teamId, { name: 'someOtherName' }, fakeParams);
+			expect(result).to.equal('XY');
 		});
 	});
 });
