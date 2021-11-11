@@ -126,7 +126,6 @@ describe('TaskUC', () => {
 		it('should call task repo findAllByParentIds', async () => {
 			const user = createUser();
 			const mockRestore = findAllMock();
-
 			const spy = setTaskRepoMock.findAllByParentIds();
 
 			await service.findAllFinished(user.id);
@@ -139,7 +138,6 @@ describe('TaskUC', () => {
 		it('should call task repo findAllByParentIds for finished tasks', async () => {
 			const user = createUser();
 			const mockRestore = findAllMock();
-
 			const spy = setTaskRepoMock.findAllByParentIds();
 
 			await service.findAllFinished(user.id);
@@ -153,7 +151,6 @@ describe('TaskUC', () => {
 		it('should call authorization service getPermittedCourseIds', async () => {
 			const user = createUser();
 			const mockRestore = findAllMock();
-
 			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
 
 			await service.findAllFinished(user.id);
@@ -166,7 +163,6 @@ describe('TaskUC', () => {
 		it('should call authorization service getPermittedLessonIds', async () => {
 			const user = createUser();
 			const mockRestore = findAllMock();
-
 			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
 
 			await service.findAllFinished(user.id);
@@ -191,10 +187,9 @@ describe('TaskUC', () => {
 		it('should pass skip option', async () => {
 			const user = createUser();
 			const mockRestore = findAllMock();
-
 			const spy = setTaskRepoMock.findAllByParentIds();
-
 			const skip = 5;
+
 			await service.findAllFinished(user.id, { skip });
 
 			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: { skip: 5 } }];
@@ -206,10 +201,9 @@ describe('TaskUC', () => {
 		it('should pass limit option', async () => {
 			const user = createUser();
 			const mockRestore = findAllMock();
-
 			const spy = setTaskRepoMock.findAllByParentIds();
-
 			const limit = 5;
+
 			await service.findAllFinished(user.id, { limit });
 
 			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: { limit: 5 } }];
@@ -221,9 +215,7 @@ describe('TaskUC', () => {
 		it('should used permitted lessons for search finished tasks', async () => {
 			const user = createUser();
 			const lessonId = new ObjectId().toHexString();
-
 			const mockRestore = findAllMock([], [lessonId]);
-
 			const spy = setTaskRepoMock.findAllByParentIds();
 
 			await service.findAllFinished(user.id);
@@ -237,9 +229,7 @@ describe('TaskUC', () => {
 		it('should used permitted courses for search finished tasks', async () => {
 			const user = createUser();
 			const courseId = new ObjectId().toHexString();
-
 			const mockRestore = findAllMock([], [], [courseId]);
-
 			const spy = setTaskRepoMock.findAllByParentIds();
 
 			await service.findAllFinished(user.id);
