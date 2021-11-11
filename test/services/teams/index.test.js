@@ -142,6 +142,8 @@ describe('Test team basic methods', () => {
 		let team;
 		let teamId;
 		let userId;
+		let params;
+		let teamAdminId;
 		let fakeLoginParams;
 
 		before(async () => {
@@ -149,9 +151,14 @@ describe('Test team basic methods', () => {
 				logger.warning('Can not create test user', err);
 			});
 
+			const teamAdmin = await createTestUser({ roles: ['teamadministrator'], schoolId: user.schoolId }).catch((err) => {
+				logger.warning('Can not create test user', err);
+			});
+
 			const schoolId = user.schoolId.toString();
 			userId = user._id.toString();
-			// const fakeLoginParams = {
+			teamAdminId = teamAdmin._id.toString();
+
 			fakeLoginParams = {
 				account: { userId },
 				authenticated: true,
@@ -164,7 +171,7 @@ describe('Test team basic methods', () => {
 					{
 						name: 'TestTeam',
 						schoolId,
-						userIds: [userId],
+						userIds: [userId, teamAdminId],
 					},
 					fakeLoginParams
 				)
@@ -174,37 +181,20 @@ describe('Test team basic methods', () => {
 
 			teamId = team._id.toString();
 
+			const username = teamAdmin.email;
+			const password = 'somePassword';
+
+			await createTestAccount({ username, password }, 'local', teamAdmin);
+			params = await generateRequestParams({ username, password });
+
 			return Promise.resolve();
 		});
 
 		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
 
 		it('should work for team admins', async () => {
-			const teamAdmin = await createTestUser({ roles: ['teamadministrator'] });
-			const username = teamAdmin.email;
-			const password = 'somePassword';
-			await createTestAccount({ username, password }, 'local', teamAdmin);
-			const params = await generateRequestParams({ username, password });
-			params.account = { userId: teamAdmin._id.toString() };
-			params.authenticated = true;
-			params.provider = 'rest';
-			params.query = {};
-
-			// Make this teamAdmin actually part of teamId
-			// const { _id: teamId } = await teamsHelper.create(owner);
-			const teamAdminUserId = teamAdmin._id.toString();
-			const data = {
-				role: 'teamadministrator',
-				teamAdminUserId,
-			};
-
-			// const fakeParams = { ...params, query: {} };
-			// const { message } = await addService.patch(teamId, data, fakeParams);
-			const { message } = await teamService.patch(teamId, data, fakeLoginParams);
-
-			// Change the name of the team
-			// const result = await teamService.patch(teamId, params, { name: 'teamNameChanged' });
-			const result = await teamService.patch(teamId, { name: 'teamNameChanged' }, params);
+			const fakeParams = { ...params, query: {} };
+			const result = await teamService.patch(teamId, { name: 'teamNameChanged' }, fakeParams);
 			expect(result.name).to.equal('teamNameChanged');
 		});
 	});
