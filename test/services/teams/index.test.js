@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongoose').Types;
 const { expect } = require('chai');
 const logger = require('../../../src/logger/index');
+const { BadRequest } = require('../../../src/errors');
 
 const appPromise = require('../../../src/app');
 const {
@@ -141,9 +142,8 @@ describe('Test team basic methods', () => {
 	describe.only('teams patch', () => {
 		let team;
 		let teamId;
-		let userId;
+		let schoolId;
 		let params;
-		let teamAdminId;
 		let fakeLoginParams;
 
 		before(async () => {
@@ -155,9 +155,9 @@ describe('Test team basic methods', () => {
 				logger.warning('Can not create test user', err);
 			});
 
-			const schoolId = user.schoolId.toString();
-			userId = user._id.toString();
-			teamAdminId = teamAdmin._id.toString();
+			schoolId = user.schoolId.toString();
+			const userId = user._id.toString();
+			const teamAdminId = teamAdmin._id.toString();
 
 			fakeLoginParams = {
 				account: { userId },
@@ -196,6 +196,26 @@ describe('Test team basic methods', () => {
 			const fakeParams = { ...params, query: {} };
 			const result = await teamService.patch(teamId, { name: 'teamNameChanged' }, fakeParams);
 			expect(result.name).to.equal('teamNameChanged');
+		});
+
+		it('should not work for team members', async () => {
+			const teamMember = await createTestUser({ roles: ['teammember'], schoolId }).catch((err) => {
+				logger.warning('Can not create test user', err);
+			});
+			const username = teamMember.email;
+			const password = 'somePassword';
+
+			await createTestAccount({ username, password }, 'local', teamMember);
+			const teamMemberParams = await generateRequestParams({ username, password });
+
+			const fakeParams = { ...teamMemberParams, query: {} };
+
+			try {
+				await teamService.patch(teamId, { name: 'teamNameChanged' }, fakeParams);
+				throw new Error('The previous call should have failed.');
+			} catch (err) {
+				expect(err).to.be.instanceOf(BadRequest);
+			}
 		});
 	});
 });
