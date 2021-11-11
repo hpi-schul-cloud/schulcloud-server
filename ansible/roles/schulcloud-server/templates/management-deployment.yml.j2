@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-management-deployment
+  name: management-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-management-deployment
+    app: management-deployment
 spec:
   replicas: {{ API_MANAGEMENT_REPLICAS|default("1", true) }}
   strategy:
@@ -15,11 +15,11 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: api-management-deployment
+      app: management-deployment
   template:
     metadata:
       labels:
-        app: api-management-deployment
+        app: management-deployment
     spec:
       securityContext:
         runAsUser: 1000
@@ -32,7 +32,7 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3333
-          name: api-management-deployment
+          name: management-deployment
           protocol: TCP
         envFrom:
         - configMapRef:
