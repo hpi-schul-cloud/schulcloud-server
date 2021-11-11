@@ -1,8 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, Task, TaskWithStatusVo } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo } from '@shared/domain';
 
-import { LessonRepo } from '@shared/repo';
-import { TaskRepo } from '../repo';
+import { LessonRepo, TaskRepo } from '@shared/repo';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
 export enum TaskDashBoardPermission {
@@ -49,9 +48,12 @@ export class TaskUC {
 			}
 		);
 
-		const computedTasks = tasks.map((task) => this.computeTaskStatusForStudent(task, userId));
+		const taskWithStatusVos = tasks.map((task) => {
+			const status = task.createStudentStatusForUser(userId);
+			return new TaskWithStatusVo(task, status);
+		});
 
-		return [computedTasks, total];
+		return [taskWithStatusVos, total];
 	}
 
 	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -71,9 +73,12 @@ export class TaskUC {
 			}
 		);
 
-		const computedTasks = tasks.map((task) => this.computeTaskStatusForTeacher(task, userId));
+		const taskWithStatusVos = tasks.map((task) => {
+			const status = task.createTeacherStatusForUser(userId);
+			return new TaskWithStatusVo(task, status);
+		});
 
-		return [computedTasks, total];
+		return [taskWithStatusVos, total];
 	}
 
 	private hasTaskDashboardPermission(currentUser: ICurrentUser, permission: TaskDashBoardPermission): boolean {
@@ -81,54 +86,7 @@ export class TaskUC {
 		return hasPermission;
 	}
 
-	private computeTaskStatusForStudent(task: Task, userId: EntityId): TaskWithStatusVo {
-		const studentSubmissions = task.submissions.getItems().filter((submission) => submission.student.id === userId);
-
-		const submitted = studentSubmissions.length > 0 ? 1 : 0;
-		const graded = studentSubmissions.filter((submission) => submission.isGraded()).length;
-		const maxSubmissions = 1;
-		const isDraft = false;
-		const isSubstitutionTeacher = false;
-
-		const valueObject = new TaskWithStatusVo(task, {
-			submitted,
-			maxSubmissions,
-			graded,
-			isDraft,
-			isSubstitutionTeacher,
-		});
-
-		return valueObject;
-	}
-
-	private computeTaskStatusForTeacher(task: Task, userId: EntityId): TaskWithStatusVo {
-		const submittedStudentIds = task.submissions.getItems().map((submission) => submission.student.id);
-
-		// unique by studentId
-		const submitted = [...new Set(submittedStudentIds)].length;
-
-		const gradedStudentIds = task.submissions
-			.getItems()
-			.filter((submission) => submission.isGraded())
-			.map((submission) => submission.student.id);
-
-		// unique by studentId
-		const graded = [...new Set(gradedStudentIds)].length;
-		const maxSubmissions = task.course ? task.course.getNumberOfStudents() : 0;
-		const isDraft = task.isDraft();
-		const isSubstitutionTeacher = task.isSubstitutionTeacher(userId);
-
-		const valueObject = new TaskWithStatusVo(task, {
-			isSubstitutionTeacher,
-			submitted,
-			maxSubmissions,
-			graded,
-			isDraft,
-		});
-
-		return valueObject;
-	}
-
+	// It is more a util method or domain logic in context of findAllForStudent timeframe
 	private getDefaultMaxDueDate(): Date {
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);

@@ -1,5 +1,5 @@
 import { Console, Command } from 'nestjs-console';
-import { Logger } from '../../../core/logger/logger.service';
+import { Logger } from '@src/core/logger';
 import { DeleteFilesUc } from '../uc';
 
 @Console({ command: 'files', description: 'file deletion console' })

@@ -25,6 +25,7 @@ const DEFAULT = {
 	description: '',
 };
 
+@Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property()
@@ -33,19 +34,16 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	description: string = DEFAULT.description;
 
-	@Index()
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@Index()
+	@Index({ name: 'findAllForStudent' })
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
-	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
 	teachers = new Collection<User>(this);
 
-	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
@@ -68,12 +66,11 @@ export class Course extends BaseEntityWithTimestamps {
 		return this.students.length;
 	}
 
-	isSubstitutionTeacher(userId: EntityId): boolean {
-		const teacherIds = this.teachers.getIdentifiers('id');
+	getSubstitutionTeacherIds(): EntityId[] {
 		const substitutionIds = this.substitutionTeachers.getIdentifiers('id');
+		// The result of getIdentifiers is a primary key type where we have no represent for it ((string | ObjectId) & IPrimaryKeyValue)[]
+		const idsAsString = substitutionIds.map((id) => id.toString());
 
-		const isSubstitutionTeacher = !teacherIds.includes(userId) && substitutionIds.includes(userId);
-
-		return isSubstitutionTeacher;
+		return idsAsString;
 	}
 }
