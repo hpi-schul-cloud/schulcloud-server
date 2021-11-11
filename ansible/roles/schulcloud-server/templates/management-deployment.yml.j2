@@ -4,7 +4,7 @@ metadata:
   name: api-management-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: api-management-deployment
 spec:
   replicas: {{ API_MANAGEMENT_REPLICAS|default("1", true) }}
   strategy:
@@ -15,11 +15,11 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: api
+      app: api-management-deployment
   template:
     metadata:
       labels:
-        app: api
+        app: api-management-deployment
     spec:
       securityContext:
         runAsUser: 1000
@@ -31,8 +31,8 @@ spec:
         image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3030
-          name: api
+        - containerPort: 3333
+          name: api-management-deployment
           protocol: TCP
         envFrom:
         - configMapRef:
@@ -43,7 +43,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /api/v1/version
-            port: 3030
+            port: 3333
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
@@ -51,14 +51,14 @@ spec:
         livenessProbe:
           httpGet:
             path: /api/v1/version
-            port: 3030
+            port: 3333
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
             path: /api/v1/version
-            port: 3030
+            port: 3333
           timeoutSeconds: 4
           failureThreshold:  36
           periodSeconds: 5
