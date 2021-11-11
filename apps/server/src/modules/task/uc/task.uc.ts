@@ -18,6 +18,7 @@ export class TaskUC {
 		const courseIds = await this.authorizationService.getPermittedCourseIds(userId, TaskParentPermission.read);
 		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, courseIds);
 
+		// TODO: + all task of courses where duedate is arrived
 		const [finishedTasks, count] = await this.taskRepo.findAllByParentIds(
 			{ courseIds, lessonIds },
 			{ closed: userId },
@@ -53,7 +54,7 @@ export class TaskUC {
 				courseIds,
 				lessonIds,
 			},
-			{ draft: false, afterDueDateOrNone: dueDate, closed: userId },
+			{ draft: false, afterDueDateOrNone: dueDate, excludeClosed: userId },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
@@ -78,7 +79,7 @@ export class TaskUC {
 				courseIds,
 				lessonIds,
 			},
-			{ closed: userId },
+			{ excludeClosed: userId },
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },

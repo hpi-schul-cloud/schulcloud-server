@@ -26,7 +26,7 @@ export class TaskRepo {
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: EntityId },
+		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: EntityId; excludeClosed?: EntityId },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -49,6 +49,10 @@ export class TaskRepo {
 
 		if (filters?.closed) {
 			scope.byClosed(filters.closed);
+		}
+
+		if (filters?.excludeClosed) {
+			scope.byExcludeClosed(filters.excludeClosed);
 		}
 
 		if (filters?.draft !== undefined) {

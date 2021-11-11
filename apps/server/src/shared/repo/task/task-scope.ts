@@ -2,11 +2,14 @@ import { EntityId, Task } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class TaskScope extends Scope<Task> {
-	// TODO: parameter > isClosed: boolean
-	byClosed(userId?: EntityId): TaskScope {
-		// TODO: is not up to date anymore we must merge it with course.untilDate information
-		// but this information is only hold in the entity
+	byExcludeClosed(userId?: EntityId): TaskScope {
 		this.addQuery({ closed: { $ne: userId } });
+
+		return this;
+	}
+
+	byClosed(userId?: EntityId): TaskScope {
+		this.addQuery({ closed: userId });
 
 		return this;
 	}
