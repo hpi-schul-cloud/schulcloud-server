@@ -10,14 +10,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
- 
-- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's  
+
+- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's
 
 ### Changed
 
 - BC-451 - move repos to shared: user, role
 - BC-451 - move repos to shared: dashboard, files-storage, course, coursegroup, task, submission and update imports
 - BC-605 - sort references within groups alphabetically
+- BC-157 - add typescript to task store: update task api response
 
 ### Fixed
 
