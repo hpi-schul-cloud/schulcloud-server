@@ -60,18 +60,21 @@ export class TaskRepo {
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+
 		return countedTaskList;
 	}
 
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
-		const { pagination, order } = options || {};
+		const { pagination, order, select } = options || {};
 		const [taskEntities, count] = await this.em.findAndCount(Task, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap,
+			fields: select,
 		});
 
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
+
 		return [taskEntities, count];
 	}
 }

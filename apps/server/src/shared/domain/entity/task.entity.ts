@@ -6,7 +6,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import { User } from './user.entity';
+import type { User } from './user.entity';
 
 export interface ITaskProperties {
 	name: string;
@@ -68,7 +68,7 @@ export class Task extends BaseEntityWithTimestamps {
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
-	// TODO: is mapped to boolean in future
+	// TODO: rename to finished
 	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	closed = new Collection<User>(this);
@@ -83,7 +83,6 @@ export class Task extends BaseEntityWithTimestamps {
 		this.course = props.course;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
-		// TODO: is replaced with boolean in future
 		this.closed.set(props.closed || []);
 	}
 

@@ -8,9 +8,12 @@ export enum SortOrder {
 	desc = 'desc',
 }
 
+export type FieldsMap = { [K: string]: (string | FieldsMap)[] };
+
 export type SortOrderMap<T> = Partial<Record<keyof T, SortOrder>>;
 
 export interface IFindOptions<T> {
 	pagination?: IPagination;
 	order?: SortOrderMap<T>;
+	select?: (string | FieldsMap)[];
 }

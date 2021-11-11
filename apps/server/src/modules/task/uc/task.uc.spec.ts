@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { PaginationQuery } from '@shared/controller';
-import { EntityId, ICurrentUser, Lesson, Task } from '@shared/domain';
+import { EntityId, ICurrentUser, Task } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -12,7 +12,7 @@ import {
 	createCurrentTestUser,
 } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { LessonRepo, TaskRepo } from '@shared/repo';
+import { TaskRepo } from '@shared/repo';
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
@@ -23,7 +23,6 @@ describe('TaskUC', () => {
 	let module: TestingModule;
 	let service: TaskUC;
 	let taskRepo: TaskRepo;
-	let lessonRepo: LessonRepo;
 	let authorizationService: TaskAuthorizationService;
 
 	beforeEach(async () => {
@@ -40,18 +39,13 @@ describe('TaskUC', () => {
 					},
 				},
 				{
-					provide: LessonRepo,
-					useValue: {
-						findAllByCourseIds() {
-							throw new Error('Please write a mock for LessonRepo.findAllByCourseIds');
-						},
-					},
-				},
-				{
 					provide: TaskAuthorizationService,
 					useValue: {
-						getPermittedCourses() {
-							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourses');
+						getPermittedCourseIds() {
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCoursesIds');
+						},
+						getPermittedLessonIds() {
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedLessonsIds');
 						},
 					},
 				},
@@ -60,7 +54,6 @@ describe('TaskUC', () => {
 
 		service = module.get(TaskUC);
 		taskRepo = module.get(TaskRepo);
-		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(TaskAuthorizationService);
 	});
 
@@ -77,20 +70,17 @@ describe('TaskUC', () => {
 		},
 	};
 
-	const setLessonRepoMock = {
-		findAllByCourseIds: (lessons: Lesson[] = []) => {
-			const spy = jest.spyOn(lessonRepo, 'findAllByCourseIds').mockImplementation(() => {
-				return Promise.resolve(lessons);
+	const setAuthorizationServiceMock = {
+		// TODO: course instant of courseIds
+		getPermittedCourseIds: (courseIds: EntityId[] = []) => {
+			const spy = jest.spyOn(authorizationService, 'getPermittedCourseIds').mockImplementation(() => {
+				return Promise.resolve(courseIds);
 			});
 			return spy;
 		},
-	};
-
-	const setAuthorizationServiceMock = {
-		// TODO: course instant of courseIds
-		getPermittedCourses: (courseIds: EntityId[] = []) => {
-			const spy = jest.spyOn(authorizationService, 'getPermittedCourses').mockImplementation(() => {
-				return Promise.resolve(courseIds);
+		getPermittedLessonIds: (lessonIds: EntityId[] = []) => {
+			const spy = jest.spyOn(authorizationService, 'getPermittedLessonIds').mockImplementation(() => {
+				return Promise.resolve(lessonIds);
 			});
 			return spy;
 		},
@@ -100,11 +90,172 @@ describe('TaskUC', () => {
 		expect(service).toBeDefined();
 	});
 
+	describe('findAllFinished', () => {
+		const findAllMock = (tasks?: Task[], lessonIds?: EntityId[], courseIds?: EntityId[]) => {
+			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
+			const spy2 = setAuthorizationServiceMock.getPermittedCourseIds(courseIds);
+			const spy3 = setAuthorizationServiceMock.getPermittedLessonIds(lessonIds);
+
+			const mockRestore = () => {
+				spy1.mockRestore();
+				spy2.mockRestore();
+				spy3.mockRestore();
+			};
+
+			return mockRestore;
+		};
+
+		const createUser = () => {
+			const user = userFactory.build();
+			Object.assign(user, { _id: new ObjectId() });
+			return user;
+		};
+
+		it('should return task for a user', async () => {
+			const user = createUser();
+			const task = taskFactory.finished(user).build();
+			const mockRestore = findAllMock([task]);
+
+			const [, total] = await service.findAllFinished(user.id);
+
+			expect(total).toEqual(1);
+
+			mockRestore();
+		});
+
+		it('should call task repo findAllByParentIds', async () => {
+			const user = createUser();
+			const mockRestore = findAllMock();
+
+			const spy = setTaskRepoMock.findAllByParentIds();
+
+			await service.findAllFinished(user.id);
+
+			expect(spy).toHaveBeenCalled();
+
+			mockRestore();
+		});
+
+		it('should call task repo findAllByParentIds for finished tasks', async () => {
+			const user = createUser();
+			const mockRestore = findAllMock();
+
+			const spy = setTaskRepoMock.findAllByParentIds();
+
+			await service.findAllFinished(user.id);
+
+			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: undefined }];
+			expect(spy).toHaveBeenCalledWith(...expectedParams);
+
+			mockRestore();
+		});
+
+		it('should call authorization service getPermittedCourseIds', async () => {
+			const user = createUser();
+			const mockRestore = findAllMock();
+
+			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
+
+			await service.findAllFinished(user.id);
+
+			expect(spy).toHaveBeenCalled();
+
+			mockRestore();
+		});
+
+		it('should call authorization service getPermittedLessonIds', async () => {
+			const user = createUser();
+			const mockRestore = findAllMock();
+
+			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
+
+			await service.findAllFinished(user.id);
+
+			expect(spy).toHaveBeenCalled();
+
+			mockRestore();
+		});
+
+		it('should return a counted type', async () => {
+			const user = createUser();
+			const task = taskFactory.finished(user).build();
+			const mockRestore = findAllMock([task]);
+
+			const result = await service.findAllFinished(user.id);
+
+			expect(result).toEqual([[task], 1]);
+
+			mockRestore();
+		});
+
+		it('should pass skip option', async () => {
+			const user = createUser();
+			const mockRestore = findAllMock();
+
+			const spy = setTaskRepoMock.findAllByParentIds();
+
+			const skip = 5;
+			await service.findAllFinished(user.id, { skip });
+
+			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: { skip: 5 } }];
+			expect(spy).toHaveBeenCalledWith(...expectedParams);
+
+			mockRestore();
+		});
+
+		it('should pass limit option', async () => {
+			const user = createUser();
+			const mockRestore = findAllMock();
+
+			const spy = setTaskRepoMock.findAllByParentIds();
+
+			const limit = 5;
+			await service.findAllFinished(user.id, { limit });
+
+			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: { limit: 5 } }];
+			expect(spy).toHaveBeenCalledWith(...expectedParams);
+
+			mockRestore();
+		});
+
+		it('should used permitted lessons for search finished tasks', async () => {
+			const user = createUser();
+			const lessonId = new ObjectId().toHexString();
+
+			const mockRestore = findAllMock([], [lessonId]);
+
+			const spy = setTaskRepoMock.findAllByParentIds();
+
+			await service.findAllFinished(user.id);
+
+			const expectedParams = [{ courseIds: [], lessonIds: [lessonId] }, { closed: user.id }, { pagination: undefined }];
+			expect(spy).toHaveBeenCalledWith(...expectedParams);
+
+			mockRestore();
+		});
+
+		it('should used permitted courses for search finished tasks', async () => {
+			const user = createUser();
+			const courseId = new ObjectId().toHexString();
+
+			const mockRestore = findAllMock([], [], [courseId]);
+
+			const spy = setTaskRepoMock.findAllByParentIds();
+
+			await service.findAllFinished(user.id);
+
+			const expectedParams = [{ courseIds: [courseId], lessonIds: [] }, { closed: user.id }, { pagination: undefined }];
+			expect(spy).toHaveBeenCalledWith(...expectedParams);
+
+			mockRestore();
+		});
+	});
+
 	describe('findAll', () => {
 		const findAllMock = () => {
 			const spy1 = setTaskRepoMock.findAllByParentIds();
-			const spy2 = setLessonRepoMock.findAllByCourseIds();
-			const spy3 = setAuthorizationServiceMock.getPermittedCourses();
+			const spy2 = setAuthorizationServiceMock.getPermittedCourseIds();
+			const spy3 = setAuthorizationServiceMock.getPermittedLessonIds();
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -160,10 +311,10 @@ describe('TaskUC', () => {
 	describe('as a student', () => {
 		let currentUser: ICurrentUser;
 
-		const mockAll = (tasks?, lessons?, courseIds?) => {
+		const mockAll = (tasks?: Task[], lessons?: EntityId[], courseIds?: EntityId[]) => {
 			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
-			const spy2 = setLessonRepoMock.findAllByCourseIds(lessons);
-			const spy3 = setAuthorizationServiceMock.getPermittedCourses(courseIds);
+			const spy2 = setAuthorizationServiceMock.getPermittedLessonIds(lessons);
+			const spy3 = setAuthorizationServiceMock.getPermittedCourseIds(courseIds);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -181,7 +332,7 @@ describe('TaskUC', () => {
 
 		it('should get parent ids for student role', async () => {
 			const mockRestore = mockAll();
-			const spy = setAuthorizationServiceMock.getPermittedCourses();
+			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
@@ -208,9 +359,10 @@ describe('TaskUC', () => {
 			const course = courseFactory.build();
 			const lesson = lessonFactory.build({ course, hidden: false });
 			Object.assign(lesson, { _id: new ObjectId() });
-			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([lesson]);
+
+			const spyGetPermittedLessonIds = setAuthorizationServiceMock.getPermittedLessonIds([lesson.id]);
 			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
-			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses(parentIds);
+			const spyGetPermittedCourseIds = setAuthorizationServiceMock.getPermittedCourseIds(parentIds);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
@@ -228,11 +380,11 @@ describe('TaskUC', () => {
 				pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit },
 			});
 
-			expect(spyLessonRepoFindAllByCourseIds).toHaveBeenCalledWith(parentIds, { hidden: false });
+			expect(spyGetPermittedLessonIds).toHaveBeenCalledWith(currentUser.userId, parentIds);
 
 			spy.mockRestore();
-			spyLessonRepoFindAllByCourseIds.mockRestore();
-			spyGetPermittedCourses.mockRestore();
+			spyGetPermittedLessonIds.mockRestore();
+			spyGetPermittedCourseIds.mockRestore();
 		});
 
 		it('should return well formed task with course and status', async () => {
@@ -381,10 +533,10 @@ describe('TaskUC', () => {
 	describe('as a teacher', () => {
 		let currentUser: ICurrentUser;
 
-		const mockAll = (tasks?, lessons?, courseIds?) => {
+		const mockAll = (tasks?: Task[], lessonIds?: EntityId[], courseIds?: EntityId[]) => {
 			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
-			const spy2 = setLessonRepoMock.findAllByCourseIds(lessons);
-			const spy3 = setAuthorizationServiceMock.getPermittedCourses(courseIds);
+			const spy2 = setAuthorizationServiceMock.getPermittedLessonIds(lessonIds);
+			const spy3 = setAuthorizationServiceMock.getPermittedCourseIds(courseIds);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -402,16 +554,16 @@ describe('TaskUC', () => {
 
 		it('should get parent ids for teacher role', async () => {
 			const mockRestore = mockAll();
-			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([]);
+			const spy = setAuthorizationServiceMock.getPermittedCourseIds([]);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
 			const expectedParams = [currentUser.userId, TaskParentPermission.write];
-			expect(spyGetPermittedCourses).toHaveBeenCalledWith(...expectedParams);
+			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
-			spyGetPermittedCourses.mockRestore();
+			spy.mockRestore();
 		});
 
 		it('should return a counted result', async () => {
@@ -431,7 +583,7 @@ describe('TaskUC', () => {
 			const lesson = lessonFactory.build({ course, hidden: false });
 			Object.assign(lesson, { _id: new ObjectId() });
 			const tasks = [];
-			const mockRestore = mockAll(tasks, [lesson], parentIds);
+			const mockRestore = mockAll(tasks, [lesson.id], parentIds);
 			const spy = setTaskRepoMock.findAllByParentIds(tasks);
 
 			const paginationQuery = new PaginationQuery();
@@ -477,17 +629,13 @@ describe('TaskUC', () => {
 			const course = courseFactory.build({ substitutionTeachers: [userData.user] });
 			const task = new Task({ name: 'task #1', private: false, course });
 
-			const spyTaskRepoFindAllByParentIds = setTaskRepoMock.findAllByParentIds([task]);
-			const spyLessonRepoFindAllByCourseIds = setLessonRepoMock.findAllByCourseIds([]);
-			const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses();
+			const mockRestore = mockAll([task]);
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(userData.currentUser, paginationQuery);
 			expect(result[0].status.isSubstitutionTeacher).toBe(true);
 
-			spyTaskRepoFindAllByParentIds.mockRestore();
-			spyLessonRepoFindAllByCourseIds.mockRestore();
-			spyGetPermittedCourses.mockRestore();
+			mockRestore();
 		});
 
 		it('should find a list of tasks', async () => {

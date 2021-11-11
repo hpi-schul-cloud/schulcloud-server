@@ -1,22 +1,34 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo, Task } from '@shared/domain';
 
-import { LessonRepo, TaskRepo } from '@shared/repo';
+import { TaskRepo } from '@shared/repo';
+
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
 export enum TaskDashBoardPermission {
 	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
 	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
 }
+
 @Injectable()
 export class TaskUC {
-	constructor(
-		private readonly taskRepo: TaskRepo,
-		private readonly lessonRepo: LessonRepo,
-		private readonly authorizationService: TaskAuthorizationService
-	) {}
+	constructor(private readonly taskRepo: TaskRepo, private readonly authorizationService: TaskAuthorizationService) {}
+
+	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<Task[]>> {
+		const courseIds = await this.authorizationService.getPermittedCourseIds(userId, TaskParentPermission.read);
+		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, courseIds);
+
+		const [finishedTasks, count] = await this.taskRepo.findAllByParentIds(
+			{ courseIds, lessonIds },
+			{ closed: userId },
+			{ pagination }
+		);
+
+		return [finishedTasks, count];
+	}
 
 	// TODO replace curentUser with userId. this requires that permissions are loaded inside the use case by authorization service
+	// TODO: use authorizationService instant of private method
 	async findAll(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		let response: Counted<TaskWithStatusVo[]>;
 
@@ -32,14 +44,14 @@ export class TaskUC {
 	}
 
 	private async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courseIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
-		const visibleLessons = await this.lessonRepo.findAllByCourseIds(courseIds, { hidden: false });
+		const courseIds = await this.authorizationService.getPermittedCourseIds(userId, TaskParentPermission.read);
+		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, courseIds);
 		const dueDate = this.getDefaultMaxDueDate();
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				courseIds,
-				lessonIds: visibleLessons.map((o) => o.id),
+				lessonIds,
 			},
 			{ draft: false, afterDueDateOrNone: dueDate, closed: userId },
 			{
@@ -57,14 +69,14 @@ export class TaskUC {
 	}
 
 	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courseIds = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
-		const visibleLessons = await this.lessonRepo.findAllByCourseIds(courseIds, { hidden: false });
+		const courseIds = await this.authorizationService.getPermittedCourseIds(userId, TaskParentPermission.write);
+		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, courseIds);
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				teacherId: userId,
 				courseIds,
-				lessonIds: visibleLessons.map((o) => o.id),
+				lessonIds,
 			},
 			{ closed: userId },
 			{

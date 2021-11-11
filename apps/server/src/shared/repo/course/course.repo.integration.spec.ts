@@ -165,5 +165,9 @@ describe('course repo', () => {
 			expect(checkEqualIds(result, courses)).toEqual(true);
 			expect(count).toEqual(3);
 		});
+
+		it.todo('should filter courses by courseId filter');
+
+		it.todo('should select keys over options');
 	});
 });
