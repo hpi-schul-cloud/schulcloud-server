@@ -39,13 +39,14 @@ describe('dashboard entity', () => {
 		it('should create dashboard with prefilled Grid', () => {
 			const dashboard = new DashboardEntity('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
+				userId: 'userId',
 			});
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
 
 		it('should create dashboard when passing empty grid', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 		});
@@ -53,7 +54,7 @@ describe('dashboard entity', () => {
 
 	describe('getGrid', () => {
 		it('getGrid should return correct value', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 			const testGrid = dashboard.getGrid();
 			expect(Array.isArray(testGrid)).toEqual(true);
 		});
@@ -61,6 +62,7 @@ describe('dashboard entity', () => {
 		it('when testGrid contains element, getGrid should return that element', () => {
 			const dashboard = new DashboardEntity('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
+				userId: 'userId',
 			});
 			const testGrid = dashboard.getGrid();
 
@@ -69,14 +71,13 @@ describe('dashboard entity', () => {
 			expect(testGrid[0].gridElement.getContent().shortTitle).toEqual('ti');
 			expect(testGrid[0].gridElement.getContent().displayColor).toEqual('#FFFFFF');
 		});
-
-		// it.todo('when elements are returned, they should include positions', () => {});
 	});
 
 	describe('moveElement', () => {
 		it('should move existing element to a new position', () => {
 			const dashboard = new DashboardEntity('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
+				userId: 'userId',
 			});
 			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
@@ -85,7 +86,7 @@ describe('dashboard entity', () => {
 		});
 
 		it('when no element at origin position, it should throw notFound', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 			const callMove = () => dashboard.moveElement({ x: 4, y: 2 }, { x: 3, y: 2 });
 			expect(callMove).toThrow(NotFoundException);
 		});
@@ -98,6 +99,7 @@ describe('dashboard entity', () => {
 					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
 					{ pos: { x: 3, y: 3 }, gridElement: targetElement },
 				],
+				userId: 'userId',
 			});
 			const spy = jest.spyOn(targetElement, 'addReferences');
 			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
@@ -109,6 +111,7 @@ describe('dashboard entity', () => {
 			const element = getElementMock('element', 'title', ['ref01', 'ref02', 'ref03']);
 			const dashboard = new DashboardEntity('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
+				userId: 'userId',
 			});
 			const spy = jest.spyOn(element, 'removeReference');
 			dashboard.moveElement({ x: 1, y: 2, groupIndex: 1 }, { x: 3, y: 3 });
@@ -121,6 +124,7 @@ describe('dashboard entity', () => {
 				colums: 3,
 				rows: 3,
 				grid: [{ pos: { x: 0, y: 2 }, gridElement: getElementMock('elementId', 'title', ['referenceId']) }],
+				userId: 'userId',
 			});
 			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 });
 			expect(callMove).toThrow(BadRequestException);
@@ -131,6 +135,7 @@ describe('dashboard entity', () => {
 		it('getElement should return correct value', () => {
 			const dashboard = new DashboardEntity('someid', {
 				grid: [{ pos: { x: 0, y: 2 }, gridElement: getElementMock('elementId', 'Mathe 3d', ['referenceId']) }],
+				userId: 'userId',
 			});
 			const testElement = dashboard.getElement({ x: 0, y: 2 });
 			const result = testElement.getContent();
@@ -148,7 +153,7 @@ describe('dashboard entity', () => {
 		});
 
 		it('when no element at request position, it should throw notFound', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [] });
+			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 			const callGetElement = () => dashboard.getElement({ x: 0, y: 2 });
 			expect(callGetElement).toThrow(NotFoundException);
 		});

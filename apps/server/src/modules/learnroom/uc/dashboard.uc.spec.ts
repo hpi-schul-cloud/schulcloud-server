@@ -15,7 +15,7 @@ describe('dashboard uc', () => {
 				{
 					provide: 'DASHBOARD_REPO',
 					useValue: {
-						getUsersDashboard() {
+						getUsersDashboard(userId: EntityId) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
 						getDashboardById(id: EntityId) {
@@ -35,13 +35,14 @@ describe('dashboard uc', () => {
 
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
-			jest.spyOn(repo, 'getUsersDashboard').mockImplementation(() => {
+			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId) => {
 				const dashboard = new DashboardEntity('someid', { grid: [] });
 				return Promise.resolve(dashboard);
 			});
-			const dashboard = await service.getUsersDashboard();
+			const dashboard = await service.getUsersDashboard('userId');
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(spy).toHaveBeenCalledWith('userId');
 		});
 	});
 

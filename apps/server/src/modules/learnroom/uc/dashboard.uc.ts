@@ -6,8 +6,8 @@ import { IDashboardRepo } from '@shared/repo';
 export class DashboardUc {
 	constructor(@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo) {}
 
-	async getUsersDashboard(): Promise<DashboardEntity> {
-		const dashboard = await this.dashboardRepo.getUsersDashboard();
+	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		return dashboard;
 	}
 

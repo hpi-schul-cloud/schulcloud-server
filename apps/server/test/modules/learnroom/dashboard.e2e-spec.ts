@@ -61,6 +61,7 @@ describe('Dashboard Controller (e2e)', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -90,6 +91,7 @@ describe('Dashboard Controller (e2e)', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -122,6 +124,7 @@ describe('Dashboard Controller (e2e)', () => {
 						]),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -147,6 +150,7 @@ describe('Dashboard Controller (e2e)', () => {
 						]),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -171,6 +175,7 @@ describe('Dashboard Controller (e2e)', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -195,6 +200,7 @@ describe('Dashboard Controller (e2e)', () => {
 						]),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 

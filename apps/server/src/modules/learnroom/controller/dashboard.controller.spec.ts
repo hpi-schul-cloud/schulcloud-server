@@ -1,5 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, EntityId, GridPosition, GridElement, DefaultGridReference } from '@shared/domain';
+import {
+	DashboardEntity,
+	EntityId,
+	GridPosition,
+	GridElement,
+	DefaultGridReference,
+	ICurrentUser,
+} from '@shared/domain';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
@@ -16,7 +23,7 @@ describe('dashboard uc', () => {
 				{
 					provide: DashboardUc,
 					useValue: {
-						getUsersDashboard(): Promise<DashboardEntity> {
+						getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
@@ -40,7 +47,8 @@ describe('dashboard uc', () => {
 				const dashboard = new DashboardEntity('someid', { grid: [] });
 				return Promise.resolve(dashboard);
 			});
-			const response = await controller.findForUser();
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
@@ -60,10 +68,22 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
+			const currentUser = { userId: 'userId' } as ICurrentUser;
 
-			const response = await controller.findForUser();
+			const response = await controller.findForUser(currentUser);
 			expect(response instanceof DashboardResponse).toEqual(true);
 			expect(response.gridElements[0]).toHaveProperty('groupElements');
+		});
+
+		it('should call uc', async () => {
+			const spy = jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
+				const dashboard = new DashboardEntity('someid', { grid: [] });
+				return Promise.resolve(dashboard);
+			});
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			await controller.findForUser(currentUser);
+
+			expect(spy).toHaveBeenCalledWith('userId');
 		});
 	});
 
