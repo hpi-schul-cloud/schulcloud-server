@@ -23,12 +23,15 @@ describe('dashboard uc', () => {
 				{
 					provide: DashboardUc,
 					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						renameGroupOnDashboard(dashboardId: EntityId, position: GridPosition, title: string) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},

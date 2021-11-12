@@ -16,9 +16,11 @@ describe('dashboard uc', () => {
 				{
 					provide: 'DASHBOARD_REPO',
 					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						getUsersDashboard(userId: EntityId) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						getDashboardById(id: EntityId) {
 							throw new Error('Please write a mock for DashboardRepo.getDashboardById.');
 						},
