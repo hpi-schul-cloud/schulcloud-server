@@ -44,7 +44,7 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [] });
+				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
@@ -65,6 +65,7 @@ describe('dashboard uc', () => {
 							]),
 						},
 					],
+					userId: 'userId',
 				});
 				return Promise.resolve(dashboard);
 			});
@@ -77,7 +78,7 @@ describe('dashboard uc', () => {
 
 		it('should call uc', async () => {
 			const spy = jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [] });
+				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
@@ -102,6 +103,7 @@ describe('dashboard uc', () => {
 								),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
@@ -123,6 +125,7 @@ describe('dashboard uc', () => {
 								),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
@@ -146,6 +149,7 @@ describe('dashboard uc', () => {
 								]),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
@@ -167,6 +171,7 @@ describe('dashboard uc', () => {
 								]),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});

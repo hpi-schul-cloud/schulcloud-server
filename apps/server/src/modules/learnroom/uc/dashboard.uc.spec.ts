@@ -36,7 +36,7 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId) => {
-				const dashboard = new DashboardEntity('someid', { grid: [] });
+				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
 			const dashboard = await service.getUsersDashboard('userId');
@@ -59,6 +59,7 @@ describe('dashboard uc', () => {
 							),
 						},
 					],
+					userId: 'userId',
 				});
 				return Promise.resolve(dashboard);
 			});
@@ -81,6 +82,7 @@ describe('dashboard uc', () => {
 									),
 								},
 							],
+							userId: 'userId',
 						})
 					);
 				throw new Error('not found');
@@ -104,6 +106,7 @@ describe('dashboard uc', () => {
 							]),
 						},
 					],
+					userId: 'userId',
 				});
 				return Promise.resolve(dashboard);
 			});
@@ -127,6 +130,7 @@ describe('dashboard uc', () => {
 									]),
 								},
 							],
+							userId: 'userId',
 						})
 					);
 				throw new Error('not found');
