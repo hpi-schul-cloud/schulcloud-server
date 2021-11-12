@@ -68,8 +68,8 @@ export class DashboardModelEntity extends BaseEntityWithTimestamps {
 	gridElements: Collection<DashboardGridElementModel> = new Collection<DashboardGridElementModel>(this);
 
 	// userId
-	@ManyToOne('User', { fieldName: 'userId' })
-	user!: User;
+	@ManyToOne('User', { fieldName: 'userId', wrappedReference: true })
+	user!: IdentifiedReference<User>;
 
 	// sizetype
 }
