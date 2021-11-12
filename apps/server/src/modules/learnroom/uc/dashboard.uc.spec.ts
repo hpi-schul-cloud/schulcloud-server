@@ -36,7 +36,7 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId) => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new DashboardEntity('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
 			const dashboard = await service.getUsersDashboard('userId');
@@ -63,7 +63,7 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
-			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 });
+			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			const resultGrid = result.getGrid();
 			expect(resultGrid[0].pos).toEqual({ x: 2, y: 1 });
 		});
@@ -88,7 +88,7 @@ describe('dashboard uc', () => {
 				throw new Error('not found');
 			});
 			const spy = jest.spyOn(repo, 'persistAndFlush');
-			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 });
+			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			expect(spy).toHaveBeenCalledWith(result);
 		});
 	});
@@ -110,7 +110,7 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
-			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');
 			const gridElement = result.getElement({ x: 3, y: 4 });
 			const resultTitle = gridElement.getContent().title;
 			expect(resultTitle).toEqual('groupTitle');
@@ -136,7 +136,7 @@ describe('dashboard uc', () => {
 				throw new Error('not found');
 			});
 			const spy = jest.spyOn(repo, 'persistAndFlush');
-			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');
 			expect(spy).toHaveBeenCalledWith(result);
 		});
 	});

@@ -25,10 +25,15 @@ export class DashboardController {
 	@ApiBody({ type: DashboardResponse })
 	async moveElement(
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
-		/* @CurrentUser() currentUser: ICurrentUser, */
-		@Body() params: MoveElementParams
+		@Body() params: MoveElementParams,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.moveElementOnDashboard(dashboardId, params.from, params.to);
+		const dashboard = await this.dashboardUc.moveElementOnDashboard(
+			dashboardId,
+			params.from,
+			params.to,
+			currentUser.userId
+		);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
@@ -38,9 +43,15 @@ export class DashboardController {
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
 		@Query('x') x: number,
 		@Query('y') y: number,
-		@Body() params: PatchGroupParams
+		@Body() params: PatchGroupParams,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.renameGroupOnDashboard(dashboardId, { x, y }, params.title);
+		const dashboard = await this.dashboardUc.renameGroupOnDashboard(
+			dashboardId,
+			{ x, y },
+			params.title,
+			currentUser.userId
+		);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}

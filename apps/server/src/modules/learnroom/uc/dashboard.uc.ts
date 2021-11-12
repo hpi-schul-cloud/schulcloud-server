@@ -14,8 +14,8 @@ export class DashboardUc {
 	async moveElementOnDashboard(
 		dashboardId: EntityId,
 		from: GridPositionWithGroupIndex,
-		to: GridPositionWithGroupIndex
-		/* currentUser: ICurrentUser */
+		to: GridPositionWithGroupIndex,
+		userId: EntityId
 	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		dashboard.moveElement(from, to);
@@ -26,7 +26,8 @@ export class DashboardUc {
 	async renameGroupOnDashboard(
 		dashboardId: EntityId,
 		position: GridPosition,
-		params: string
+		params: string,
+		userId: EntityId
 	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		const gridElement = dashboard.getElement(position);
