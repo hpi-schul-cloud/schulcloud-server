@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IDashboardRepo } from '@shared/repo';
 import { DashboardEntity, GridElement, DefaultGridReference, EntityId } from '@shared/domain';
+import { NotFound } from '@feathersjs/errors';
 import { DashboardUc } from './dashboard.uc';
 
 describe('dashboard uc', () => {
@@ -35,7 +36,7 @@ describe('dashboard uc', () => {
 
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
-			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId) => {
+			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
@@ -91,6 +92,28 @@ describe('dashboard uc', () => {
 			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			expect(spy).toHaveBeenCalledWith(result);
 		});
+
+		it('should throw if userIds dont match', async () => {
+			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
+				return Promise.resolve(
+					new DashboardEntity(id, {
+						grid: [
+							{
+								pos: { x: 1, y: 2 },
+								gridElement: GridElement.FromPersistedReference(
+									'elementId',
+									new DefaultGridReference('referenceId', 'Mathe')
+								),
+							},
+						],
+						userId: 'differentId',
+					})
+				);
+			});
+
+			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
+			await expect(callFut).rejects.toThrow(NotFound);
+		});
 	});
 
 	describe('renameGroupOnDashboard', () => {
@@ -138,6 +161,28 @@ describe('dashboard uc', () => {
 			const spy = jest.spyOn(repo, 'persistAndFlush');
 			const result = await service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');
 			expect(spy).toHaveBeenCalledWith(result);
+		});
+
+		it('should throw if userIds dont match', async () => {
+			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
+				return Promise.resolve(
+					new DashboardEntity(id, {
+						grid: [
+							{
+								pos: { x: 3, y: 4 },
+								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+									new DefaultGridReference('referenceId1', 'Math'),
+									new DefaultGridReference('referenceId2', 'German'),
+								]),
+							},
+						],
+						userId: 'differentUserId',
+					})
+				);
+			});
+
+			const callFut = () => service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');
+			await expect(callFut).rejects.toThrow(NotFound);
 		});
 	});
 });

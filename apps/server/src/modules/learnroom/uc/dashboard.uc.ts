@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DashboardEntity, EntityId, GridPositionWithGroupIndex, GridPosition } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
+import { NotFound } from '@feathersjs/errors';
 
 @Injectable()
 export class DashboardUc {
@@ -18,7 +19,10 @@ export class DashboardUc {
 		userId: EntityId
 	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
+		this.validateUsersMatch(dashboard, userId);
+
 		dashboard.moveElement(from, to);
+
 		await this.dashboardRepo.persistAndFlush(dashboard);
 		return dashboard;
 	}
@@ -30,9 +34,18 @@ export class DashboardUc {
 		userId: EntityId
 	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
+		this.validateUsersMatch(dashboard, userId);
+
 		const gridElement = dashboard.getElement(position);
 		gridElement.setGroupName(params);
+
 		await this.dashboardRepo.persistAndFlush(dashboard);
 		return dashboard;
+	}
+
+	private validateUsersMatch(dashboard: DashboardEntity, userId: EntityId) {
+		if (dashboard.getUserId() !== userId) {
+			throw new NotFound('no such dashboard found');
+		}
 	}
 }

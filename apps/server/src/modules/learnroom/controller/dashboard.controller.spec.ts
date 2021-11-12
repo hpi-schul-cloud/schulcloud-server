@@ -152,7 +152,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: position,
-								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+								gridElement: GridElement.FromPersistedGroup('elementId', title, [
 									new DefaultGridReference('referenceId1', 'Math'),
 									new DefaultGridReference('referenceId2', 'German'),
 								]),
@@ -175,7 +175,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: position,
-								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+								gridElement: GridElement.FromPersistedGroup('elementId', title, [
 									new DefaultGridReference('referenceId1', 'Math'),
 									new DefaultGridReference('referenceId2', 'German'),
 								]),
