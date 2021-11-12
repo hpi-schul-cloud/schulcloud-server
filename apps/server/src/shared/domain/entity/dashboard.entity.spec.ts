@@ -52,6 +52,15 @@ describe('dashboard entity', () => {
 		});
 	});
 
+	describe('getUserId', () => {
+		it('should return the owners userId', () => {
+			const userId = 'userId';
+			const dashboard = new DashboardEntity('someid', { grid: [], userId });
+			const result = dashboard.getUserId();
+			expect(result).toEqual(userId);
+		});
+	});
+
 	describe('getGrid', () => {
 		it('getGrid should return correct value', () => {
 			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
