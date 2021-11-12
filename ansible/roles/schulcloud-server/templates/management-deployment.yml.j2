@@ -42,7 +42,7 @@ spec:
         command: ['npm', 'run', 'nest:start:management']
         readinessProbe:
           httpGet:
-            path: /api/v1/version
+            path: /api/docs
             port: 3333
           timeoutSeconds: 4
           failureThreshold: 3
