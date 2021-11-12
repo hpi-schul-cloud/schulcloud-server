@@ -65,3 +65,9 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: management-deployment.yml.j2
+
+  - name: Management Service
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: management-svc.yml.j2
