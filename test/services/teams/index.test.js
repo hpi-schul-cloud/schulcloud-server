@@ -19,11 +19,14 @@ describe('Test team basic methods', () => {
 	let app;
 	let server;
 	let teamService;
+	let addService;
 
 	before(async () => {
 		app = await appPromise;
 		teamService = app.service('/teams');
-		server = await app.listen(0);
+		addService = app.service('/teams/extern/add');
+		addService.setup(app);
+		server = await app.listen();
 	});
 
 	after((done) => {
@@ -178,7 +181,7 @@ describe('Test team basic methods', () => {
 					{
 						name: 'TestTeam',
 						schoolId,
-						userIds: [userId, teamAdminId, teamMemberId],
+						userIds: [userId],
 					},
 					fakeLoginParams
 				)
@@ -212,7 +215,7 @@ describe('Test team basic methods', () => {
 			};
 
 			const fakeParams2 = { ...adminParams, query: {} };
-			const { message } = await teamService.patch(teamId, data, fakeParams2);
+			const { message } = await addService.patch(teamId, data, fakeParams2);
 
 			return Promise.resolve();
 		});
@@ -220,7 +223,6 @@ describe('Test team basic methods', () => {
 		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
 
 		it('should work for team admins', async () => {
-
 			const fakeParams = { ...teamAdminParams, query: {} };
 			const result = await teamService.patch(teamId, { name: 'teamNameChanged' }, fakeParams);
 			expect(result.name).to.equal('teamNameChanged');
@@ -228,7 +230,6 @@ describe('Test team basic methods', () => {
 
 		it('should not work for team members', async () => {
 			const fakeParams = { ...teamMemberParams, query: {} };
-
 			const result = await teamService.patch(teamId, { name: 'someOtherName' }, fakeParams);
 			expect(result).to.equal('XY');
 		});
