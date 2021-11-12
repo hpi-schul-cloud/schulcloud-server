@@ -52,6 +52,7 @@ describe('dashboard model mapper', () => {
 
 			expect(mapped instanceof DashboardModelEntity).toEqual(true);
 			expect(mapped.gridElements.length).toEqual(2);
+			expect(mapped.user).toEqual(dashboard.userId);
 			const element = mapped.gridElements[0];
 			expect(element instanceof DashboardGridElementModel);
 			expect(element.references.length).toBeGreaterThan(0);

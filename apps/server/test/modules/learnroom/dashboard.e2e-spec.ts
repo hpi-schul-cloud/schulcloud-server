@@ -7,7 +7,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '@shared/testing';
 import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
 
@@ -15,6 +14,12 @@ describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let dashboardRepo: IDashboardRepo;
+	const user = {
+		userId: '0000d224816abba584714c9c',
+		roles: [],
+		schoolId: '5f2987e020834114b8efd6f8',
+		accountId: '0000d225816abba584714c9d',
+	};
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -24,8 +29,7 @@ describe('Dashboard Controller (e2e)', () => {
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
-					const { currentUser } = createCurrentTestUser();
-					req.user = currentUser;
+					req.user = user;
 					return true;
 				},
 			})
@@ -51,7 +55,8 @@ describe('Dashboard Controller (e2e)', () => {
 
 	describe('[PATCH] /:id/moveElement', () => {
 		it('should update position of target element', async () => {
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.userId);
+			const dashboard = new DashboardEntity(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -61,7 +66,7 @@ describe('Dashboard Controller (e2e)', () => {
 						),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.userId,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -74,7 +79,8 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should create groups', async () => {
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.userId);
+			const dashboard = new DashboardEntity(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -91,7 +97,7 @@ describe('Dashboard Controller (e2e)', () => {
 						),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.userId,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -107,7 +113,8 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should add element to group', async () => {
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.userId);
+			const dashboard = new DashboardEntity(dashboardId, {
 				grid: [
 					{
 						pos: { x: 2, y: 2 },
@@ -124,7 +131,7 @@ describe('Dashboard Controller (e2e)', () => {
 						]),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.userId,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -140,7 +147,8 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should remove element from group', async () => {
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.userId);
+			const dashboard = new DashboardEntity(dashboardId, {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
@@ -150,7 +158,7 @@ describe('Dashboard Controller (e2e)', () => {
 						]),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.userId,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -165,7 +173,8 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should fail with incomplete input', async () => {
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.userId);
+			const dashboard = new DashboardEntity(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -175,7 +184,7 @@ describe('Dashboard Controller (e2e)', () => {
 						),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.userId,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
@@ -190,7 +199,8 @@ describe('Dashboard Controller (e2e)', () => {
 
 	describe('PATCH /:id/element', () => {
 		it('should be able to rename group', async () => {
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.userId);
+			const dashboard = new DashboardEntity(dashboardId, {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
@@ -200,7 +210,7 @@ describe('Dashboard Controller (e2e)', () => {
 						]),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.userId,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
 
