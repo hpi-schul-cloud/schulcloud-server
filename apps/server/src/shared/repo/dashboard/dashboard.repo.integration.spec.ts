@@ -201,13 +201,23 @@ describe('dashboard repo', () => {
 			expect(result.getGrid().length).toBeGreaterThan(0);
 		});
 
-		it('always returns the same dashboard', async () => {
+		it('always returns the same dashboard for same user', async () => {
 			const userId = new ObjectId().toString();
 			const firstDashboard = await repo.getUsersDashboard(userId);
 			// cant manipulate the dashboard, because the entity doesnt support changes yet
 			const secondDashboard = await repo.getUsersDashboard(userId);
 			expect(firstDashboard.id).toEqual(secondDashboard.id);
 			expect(JSON.stringify(firstDashboard)).toEqual(JSON.stringify(secondDashboard));
+		});
+
+		it('always returns different dashboard for different users', async () => {
+			const firstUserId = new ObjectId().toString();
+			const secondUserId = new ObjectId().toString();
+
+			const firstDashboard = await repo.getUsersDashboard(firstUserId);
+			const secondDashboard = await repo.getUsersDashboard(secondUserId);
+
+			expect(firstDashboard.id).not.toEqual(secondDashboard.id);
 		});
 	});
 });
