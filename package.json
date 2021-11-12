@@ -178,7 +178,7 @@
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.34.0",
 		"@compodoc/compodoc": "^1.1.15",
-		"@nestjs/cli": "^7.5.6",
+		"@nestjs/cli": "^8.1.4",
 		"@nestjs/schematics": "^7.2.7",
 		"@nestjs/testing": "^8.2.0",
 		"@types/crypto-js": "^4.0.2",
