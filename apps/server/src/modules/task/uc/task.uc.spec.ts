@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 import { PaginationQuery } from '@shared/controller';
-import { EntityId, ICurrentUser, Task } from '@shared/domain';
+import { Course, EntityId, ICurrentUser, Task } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -13,6 +12,7 @@ import {
 } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TaskRepo } from '@shared/repo';
+
 import { TaskUC, TaskDashBoardPermission } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
 
@@ -36,16 +36,22 @@ describe('TaskUC', () => {
 						findAllByParentIds() {
 							throw new Error('Please write a mock for TaskRepo.findAllByParentIds');
 						},
+						findAllFinishedByParentIds() {
+							throw new Error('Please write a mock for TaskRepo.findAllFinishedByParentIds');
+						},
 					},
 				},
 				{
 					provide: TaskAuthorizationService,
 					useValue: {
 						getPermittedCourseIds() {
-							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCoursesIds');
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourseIds');
+						},
+						getPermittedCourses() {
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourses');
 						},
 						getPermittedLessonIds() {
-							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedLessonsIds');
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedLessonIds');
 						},
 					},
 				},
@@ -63,25 +69,42 @@ describe('TaskUC', () => {
 
 	const setTaskRepoMock = {
 		findAllByParentIds: (tasks: Task[] = []) => {
-			const spy = jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => {
-				return Promise.resolve([tasks, tasks.length]);
-			});
+			const spy = jest
+				.spyOn(taskRepo, 'findAllByParentIds')
+				.mockImplementation(() => Promise.resolve([tasks, tasks.length]));
+
+			return spy;
+		},
+		findAllFinishedByParentIds: (tasks: Task[] = []) => {
+			const spy = jest
+				.spyOn(taskRepo, 'findAllFinishedByParentIds')
+				.mockImplementation(() => Promise.resolve([tasks, tasks.length]));
+
 			return spy;
 		},
 	};
 
 	const setAuthorizationServiceMock = {
-		// TODO: course instant of courseIds
-		getPermittedCourseIds: (courseIds: EntityId[] = []) => {
-			const spy = jest.spyOn(authorizationService, 'getPermittedCourseIds').mockImplementation(() => {
-				return Promise.resolve(courseIds);
-			});
+		getPermittedCourseIds: (courses: Course[] = []) => {
+			const ids = courses.map((c) => c.id);
+			const spy = jest
+				.spyOn(authorizationService, 'getPermittedCourseIds')
+				.mockImplementation(() => Promise.resolve(ids));
+
+			return spy;
+		},
+		getPermittedCourses: (courses: Course[] = []) => {
+			const spy = jest
+				.spyOn(authorizationService, 'getPermittedCourses')
+				.mockImplementation(() => Promise.resolve(courses));
+
 			return spy;
 		},
 		getPermittedLessonIds: (lessonIds: EntityId[] = []) => {
-			const spy = jest.spyOn(authorizationService, 'getPermittedLessonIds').mockImplementation(() => {
-				return Promise.resolve(lessonIds);
-			});
+			const spy = jest
+				.spyOn(authorizationService, 'getPermittedLessonIds')
+				.mockImplementation(() => Promise.resolve(lessonIds));
+
 			return spy;
 		},
 	};
@@ -91,9 +114,9 @@ describe('TaskUC', () => {
 	});
 
 	describe('findAllFinished', () => {
-		const findAllMock = (tasks?: Task[], lessonIds?: EntityId[], courseIds?: EntityId[]) => {
-			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
-			const spy2 = setAuthorizationServiceMock.getPermittedCourseIds(courseIds);
+		const findAllMock = (tasks?: Task[], lessonIds?: EntityId[], courses?: Course[]) => {
+			const spy1 = setTaskRepoMock.findAllFinishedByParentIds(tasks);
+			const spy2 = setAuthorizationServiceMock.getPermittedCourseIds(courses);
 			const spy3 = setAuthorizationServiceMock.getPermittedLessonIds(lessonIds);
 
 			const mockRestore = () => {
@@ -105,15 +128,9 @@ describe('TaskUC', () => {
 			return mockRestore;
 		};
 
-		const createUser = () => {
-			const user = userFactory.build();
-			Object.assign(user, { _id: new ObjectId() });
-			return user;
-		};
-
 		it('should return task for a user', async () => {
-			const user = createUser();
-			const task = taskFactory.finished(user).build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.finished(user).buildWithId();
 			const mockRestore = findAllMock([task]);
 
 			const [, total] = await service.findAllFinished(user.id);
@@ -123,10 +140,10 @@ describe('TaskUC', () => {
 			mockRestore();
 		});
 
-		it('should call task repo findAllByParentIds', async () => {
-			const user = createUser();
+		it('should call task repo findAllFinishedByParentIds', async () => {
+			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setTaskRepoMock.findAllByParentIds();
+			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
 
@@ -135,21 +152,21 @@ describe('TaskUC', () => {
 			mockRestore();
 		});
 
-		it('should call task repo findAllByParentIds for finished tasks', async () => {
-			const user = createUser();
+		it('should call task repo findAllFinishedByParentIds for finished tasks', async () => {
+			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setTaskRepoMock.findAllByParentIds();
+			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
 
-			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: undefined }];
+			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [] }, { pagination: undefined }];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
 		});
 
 		it('should call authorization service getPermittedCourseIds', async () => {
-			const user = createUser();
+			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
 			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
 
@@ -161,9 +178,9 @@ describe('TaskUC', () => {
 		});
 
 		it('should call authorization service getPermittedLessonIds', async () => {
-			const user = createUser();
+			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
+			const spy = setAuthorizationServiceMock.getPermittedLessonIds();
 
 			await service.findAllFinished(user.id);
 
@@ -173,8 +190,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should return a counted type', async () => {
-			const user = createUser();
-			const task = taskFactory.finished(user).build();
+			const user = userFactory.buildWithId();
+			const task = taskFactory.finished(user).buildWithId();
 			const mockRestore = findAllMock([task]);
 
 			const result = await service.findAllFinished(user.id);
@@ -185,56 +202,56 @@ describe('TaskUC', () => {
 		});
 
 		it('should pass skip option', async () => {
-			const user = createUser();
+			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setTaskRepoMock.findAllByParentIds();
+			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 			const skip = 5;
 
 			await service.findAllFinished(user.id, { skip });
 
-			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: { skip: 5 } }];
+			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [] }, { pagination: { skip: 5 } }];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
 		});
 
 		it('should pass limit option', async () => {
-			const user = createUser();
+			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setTaskRepoMock.findAllByParentIds();
+			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 			const limit = 5;
 
 			await service.findAllFinished(user.id, { limit });
 
-			const expectedParams = [{ courseIds: [], lessonIds: [] }, { closed: user.id }, { pagination: { limit: 5 } }];
+			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [] }, { pagination: { limit: 5 } }];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
 		});
 
 		it('should used permitted lessons for search finished tasks', async () => {
-			const user = createUser();
-			const lessonId = new ObjectId().toHexString();
-			const mockRestore = findAllMock([], [lessonId]);
-			const spy = setTaskRepoMock.findAllByParentIds();
+			const user = userFactory.buildWithId();
+			const lesson = lessonFactory.buildWithId();
+			const mockRestore = findAllMock([], [lesson.id]);
+			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
 
-			const expectedParams = [{ courseIds: [], lessonIds: [lessonId] }, { closed: user.id }, { pagination: undefined }];
+			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [lesson.id] }, { pagination: undefined }];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
 		});
 
 		it('should used permitted courses for search finished tasks', async () => {
-			const user = createUser();
-			const courseId = new ObjectId().toHexString();
-			const mockRestore = findAllMock([], [], [courseId]);
-			const spy = setTaskRepoMock.findAllByParentIds();
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const mockRestore = findAllMock([], [], [course]);
+			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
 
-			const expectedParams = [{ courseIds: [courseId], lessonIds: [] }, { closed: user.id }, { pagination: undefined }];
+			const expectedParams = [{ userId: user.id, courseIds: [course.id], lessonIds: [] }, { pagination: undefined }];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
@@ -244,7 +261,7 @@ describe('TaskUC', () => {
 	describe('findAll', () => {
 		const findAllMock = () => {
 			const spy1 = setTaskRepoMock.findAllByParentIds();
-			const spy2 = setAuthorizationServiceMock.getPermittedCourseIds();
+			const spy2 = setAuthorizationServiceMock.getPermittedCourses();
 			const spy3 = setAuthorizationServiceMock.getPermittedLessonIds();
 
 			const mockRestore = () => {
@@ -301,10 +318,10 @@ describe('TaskUC', () => {
 	describe('as a student', () => {
 		let currentUser: ICurrentUser;
 
-		const mockAll = (tasks?: Task[], lessons?: EntityId[], courseIds?: EntityId[]) => {
+		const mockAll = (tasks?: Task[], lessons?: EntityId[], courses?: Course[]) => {
 			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
 			const spy2 = setAuthorizationServiceMock.getPermittedLessonIds(lessons);
-			const spy3 = setAuthorizationServiceMock.getPermittedCourseIds(courseIds);
+			const spy3 = setAuthorizationServiceMock.getPermittedCourses(courses);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -322,7 +339,7 @@ describe('TaskUC', () => {
 
 		it('should get parent ids for student role', async () => {
 			const mockRestore = mockAll();
-			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
+			const spy = setAuthorizationServiceMock.getPermittedCourses();
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
@@ -346,40 +363,38 @@ describe('TaskUC', () => {
 
 		it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
 			const spy = setTaskRepoMock.findAllByParentIds([]);
-			const course = courseFactory.build();
-			const lesson = lessonFactory.build({ course, hidden: false });
-			Object.assign(lesson, { _id: new ObjectId() });
+			const course = courseFactory.buildWithId();
+			const lesson = lessonFactory.buildWithId({ course, hidden: false });
 
 			const spyGetPermittedLessonIds = setAuthorizationServiceMock.getPermittedLessonIds([lesson.id]);
-			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
-			const spyGetPermittedCourseIds = setAuthorizationServiceMock.getPermittedCourseIds(parentIds);
+			const spygetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([course]);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
 			expect(spy).toHaveBeenCalledTimes(1);
 			expect(spy.mock.calls[0][0]).toEqual({
-				courseIds: parentIds,
+				courseIds: [course.id],
 				lessonIds: [lesson.id],
 			});
 			expect(spy.mock.calls[0][1]?.draft).toEqual(false);
-			expect(spy.mock.calls[0][1]?.closed).toEqual(currentUser.userId);
+			expect(spy.mock.calls[0][1]?.closed).toEqual({ userId: currentUser.userId, value: false });
 			expect(spy.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
 			expect(spy.mock.calls[0][2]).toEqual({
 				order: { dueDate: 'asc' },
 				pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit },
 			});
 
-			expect(spyGetPermittedLessonIds).toHaveBeenCalledWith(currentUser.userId, parentIds);
+			expect(spyGetPermittedLessonIds).toHaveBeenCalledWith(currentUser.userId, [course.id]);
 
 			spy.mockRestore();
 			spyGetPermittedLessonIds.mockRestore();
-			spyGetPermittedCourseIds.mockRestore();
+			spygetPermittedCourses.mockRestore();
 		});
 
 		it('should return well formed task with course and status', async () => {
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
 
 			const mockRestore = mockAll([task]);
 
@@ -395,10 +410,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should find a list of tasks', async () => {
-			const course = courseFactory.build();
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const course = courseFactory.buildWithId();
+			const task1 = taskFactory.draft(false).buildWithId({ course });
+			const task2 = taskFactory.draft(false).buildWithId({ course });
+			const task3 = taskFactory.draft(false).buildWithId({ course });
 
 			const mockRestore = mockAll([task1, task2, task3]);
 
@@ -411,11 +426,11 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute submitted status for task', async () => {
-			const student = userFactory.build();
+			const student = userFactory.buildWithId();
 			student.id = currentUser.userId;
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			task.submissions.add(submissionFactory.build({ task, student }));
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			task.submissions.add(submissionFactory.buildWithId({ task, student }));
 
 			const mockRestore = mockAll([task]);
 
@@ -435,14 +450,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should only count the submissions of the given user', async () => {
-			const student1 = userFactory.build();
-			student1.id = currentUser.userId;
-			const student2 = userFactory.build();
-			student2.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			task.submissions.add(submissionFactory.build({ task, student: student1 }));
-			task.submissions.add(submissionFactory.build({ task, student: student2 }));
+			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
+			const student2 = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			task.submissions.add(submissionFactory.buildWithId({ task, student: student1 }));
+			task.submissions.add(submissionFactory.buildWithId({ task, student: student2 }));
 
 			const mockRestore = mockAll([task]);
 
@@ -462,11 +475,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = userFactory.build();
-			student.id = currentUser.userId;
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission = submissionFactory.build({ task, student });
+			const student = userFactory.buildWithId(undefined, currentUser.userId);
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission = submissionFactory.buildWithId({ task, student });
 			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -490,14 +502,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should only count the graded submissions of the given user', async () => {
-			const student1 = userFactory.build();
-			student1.id = currentUser.userId;
-			const student2 = userFactory.build();
-			student2.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission1 = submissionFactory.build({ task, student: student1 });
-			const submission2 = submissionFactory.build({ task, student: student2 });
+			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
+			const student2 = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
+			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -523,10 +533,10 @@ describe('TaskUC', () => {
 	describe('as a teacher', () => {
 		let currentUser: ICurrentUser;
 
-		const mockAll = (tasks?: Task[], lessonIds?: EntityId[], courseIds?: EntityId[]) => {
+		const mockAll = (tasks?: Task[], lessonIds?: EntityId[], courses?: Course[]) => {
 			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
 			const spy2 = setAuthorizationServiceMock.getPermittedLessonIds(lessonIds);
-			const spy3 = setAuthorizationServiceMock.getPermittedCourseIds(courseIds);
+			const spy3 = setAuthorizationServiceMock.getPermittedCourses(courses);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -544,7 +554,7 @@ describe('TaskUC', () => {
 
 		it('should get parent ids for teacher role', async () => {
 			const mockRestore = mockAll();
-			const spy = setAuthorizationServiceMock.getPermittedCourseIds([]);
+			const spy = setAuthorizationServiceMock.getPermittedCourses([]);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
@@ -568,20 +578,19 @@ describe('TaskUC', () => {
 		});
 
 		it('should find all tasks by permitted parent ids ordered by newest first', async () => {
-			const parentIds = [new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString()];
-			const course = courseFactory.build();
-			const lesson = lessonFactory.build({ course, hidden: false });
-			Object.assign(lesson, { _id: new ObjectId() });
+			const course = courseFactory.buildWithId();
+			const lesson = lessonFactory.buildWithId({ course, hidden: false });
 			const tasks = [];
-			const mockRestore = mockAll(tasks, [lesson.id], parentIds);
+			const mockRestore = mockAll(tasks, [lesson.id], [course]);
 			const spy = setTaskRepoMock.findAllByParentIds(tasks);
 
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
+			const closed = { userId: currentUser.userId, value: false };
 			const expectedParams = [
-				{ teacherId: currentUser.userId, courseIds: parentIds, lessonIds: [lesson.id] },
-				{ closed: currentUser.userId },
+				{ creatorId: currentUser.userId, courseIds: [course.id], lessonIds: [lesson.id] },
+				{ closed },
 				{ order: { dueDate: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
 			];
 
@@ -591,8 +600,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should return well formed task with course and status', async () => {
-			const course = courseFactory.build();
-			const task = taskFactory.build({ course });
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.buildWithId({ course });
 
 			const mockRestore = mockAll([task]);
 
@@ -616,7 +625,7 @@ describe('TaskUC', () => {
 		it('should mark substitution teacher in status', async () => {
 			const perm = [TaskDashBoardPermission.teacherDashboard];
 			const userData = createCurrentTestUser(perm);
-			const course = courseFactory.build({ substitutionTeachers: [userData.user] });
+			const course = courseFactory.buildWithId({ substitutionTeachers: [userData.user] });
 			const task = new Task({ name: 'task #1', private: false, course });
 
 			const mockRestore = mockAll([task]);
@@ -629,10 +638,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should find a list of tasks', async () => {
-			const course = courseFactory.build();
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const course = courseFactory.buildWithId();
+			const task1 = taskFactory.draft(false).buildWithId({ course });
+			const task2 = taskFactory.draft(false).buildWithId({ course });
+			const task3 = taskFactory.draft(false).buildWithId({ course });
 
 			const mockRestore = mockAll([task1, task2, task3]);
 
@@ -645,11 +654,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute submitted status for task', async () => {
-			const student = userFactory.build();
-			student.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			task.submissions.add(submissionFactory.build({ task, student }));
+			const student = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			task.submissions.add(submissionFactory.buildWithId({ task, student }));
 
 			const mockRestore = mockAll([task]);
 
@@ -669,14 +677,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of submissions', async () => {
-			const student1 = userFactory.build();
-			student1.id = new ObjectId().toHexString();
-			const student2 = userFactory.build();
-			student2.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission1 = submissionFactory.build({ task, student: student1 });
-			const submission2 = submissionFactory.build({ task, student: student2 });
+			const student1 = userFactory.buildWithId();
+			const student2 = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
+			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
 			const mockRestore = mockAll([task]);
@@ -697,11 +703,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = userFactory.build();
-			student.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission = submissionFactory.build({ task, student });
+			const student = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission = submissionFactory.buildWithId({ task, student });
 			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -725,14 +730,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of graded submissions', async () => {
-			const student1 = userFactory.build();
-			student1.id = currentUser.userId;
-			const student2 = userFactory.build();
-			student2.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission1 = submissionFactory.build({ task, student: student1 });
-			const submission2 = submissionFactory.build({ task, student: student2 });
+			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
+			const student2 = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
+			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -755,15 +758,13 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of graded submissions', async () => {
-			const student1 = userFactory.build();
-			student1.id = currentUser.userId;
-			const student2 = userFactory.build();
-			student2.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission1 = submissionFactory.build({ task, student: student1 });
-			const submission2 = submissionFactory.build({ task, student: student2 });
-			const submission3 = submissionFactory.build({ task, student: student2 });
+			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
+			const student2 = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
+			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
+			const submission3 = submissionFactory.buildWithId({ task, student: student2 });
 
 			task.submissions.add(submission1, submission2, submission3);
 
@@ -788,15 +789,13 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of submissions', async () => {
-			const student1 = userFactory.build();
-			student1.id = new ObjectId().toHexString();
-			const student2 = userFactory.build();
-			student2.id = new ObjectId().toHexString();
-			const course = courseFactory.build();
-			const task = taskFactory.draft(false).build({ course });
-			const submission1 = submissionFactory.build({ task, student: student1 });
-			const submission2 = submissionFactory.build({ task, student: student1 });
-			const submission3 = submissionFactory.build({ task, student: student2 });
+			const student1 = userFactory.buildWithId();
+			const student2 = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.draft(false).buildWithId({ course });
+			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
+			const submission2 = submissionFactory.buildWithId({ task, student: student1 });
+			const submission3 = submissionFactory.buildWithId({ task, student: student2 });
 
 			task.submissions.add(submission1, submission2, submission3);
 

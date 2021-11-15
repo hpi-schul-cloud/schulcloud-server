@@ -11,9 +11,6 @@ export enum TaskParentPermission {
 export class TaskAuthorizationService {
 	constructor(private readonly courseRepo: CourseRepo, private readonly lessonRepo: LessonRepo) {}
 
-	/**
-	 * Important user group operations are only a temporary solution until we have established groups
-	 */
 	async getPermittedCourseIds(userId: EntityId, neededPermission: TaskParentPermission): Promise<EntityId[]> {
 		let permittedCourses: Course[] = [];
 
@@ -26,6 +23,18 @@ export class TaskAuthorizationService {
 		const entityIds = permittedCourses.map((c) => c.id);
 
 		return entityIds;
+	}
+
+	async getPermittedCourses(userId: EntityId, neededPermission: TaskParentPermission): Promise<Course[]> {
+		let permittedCourses: Course[] = [];
+
+		if (neededPermission === TaskParentPermission.write) {
+			[permittedCourses] = await this.courseRepo.findAllForTeacher(userId);
+		} else if (neededPermission === TaskParentPermission.read) {
+			[permittedCourses] = await this.courseRepo.findAllByUserId(userId);
+		}
+
+		return permittedCourses;
 	}
 
 	async getPermittedLessonIds(userId: EntityId, courseIds: EntityId[]): Promise<EntityId[]> {

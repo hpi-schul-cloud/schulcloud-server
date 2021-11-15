@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 
 import { EntityId, Lesson, IFindOptions, Counted } from '@shared/domain';
 

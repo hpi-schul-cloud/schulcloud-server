@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 
 import { EntityId, IFindOptions, Task, Counted } from '@shared/domain';
 
@@ -8,6 +9,62 @@ import { TaskScope } from './task-scope';
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
+
+	async findAllFinishedByParentIds(
+		parentIds: {
+			userId: EntityId;
+			courseIds: EntityId[];
+			lessonIds: EntityId[];
+		},
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		const { pagination } = options || {};
+
+		const courseIds = parentIds.courseIds.map((id) => new ObjectId(id));
+		const lessonsIds = parentIds.lessonIds.map((id) => new ObjectId(id));
+		const userId = new ObjectId(parentIds.userId);
+
+		// TODO: type
+		const query: unknown[] = [
+			{
+				$match: {
+					$or: [
+						{ $and: [{ courseId: { $in: courseIds } }, { lesson: null }] },
+						{ lessonId: { $in: lessonsIds } },
+						{ teacherId: userId }, // creator
+					],
+				},
+			},
+			{
+				$lookup: {
+					from: 'courses',
+					localField: 'courseId',
+					foreignField: '_id',
+					as: 'courses',
+				},
+			},
+			{
+				$match: {
+					$or: [{ archived: userId }, { 'courses.0.untilDate': { $lt: new Date() } }],
+				},
+			},
+			{ $sort: { dueDate: -1 } },
+		];
+
+		// $facet is also a option instant of skip, limit seperatly
+		if (pagination?.skip) {
+			query.push({ $skip: pagination.skip });
+		}
+
+		if (pagination?.limit) {
+			query.push({ $limit: pagination.limit });
+		}
+
+		const result = await this.em.aggregate(Task, query);
+		const tasks = result.map((entity) => this.em.create(Task, entity));
+
+		return [tasks, tasks.length];
+	}
 
 	/**
 	 * Find all tasks by their parents which can be any of
@@ -22,19 +79,19 @@ export class TaskRepo {
 	 */
 	async findAllByParentIds(
 		parentIds: {
-			teacherId?: EntityId;
+			creatorId?: EntityId;
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: EntityId; excludeClosed?: EntityId },
+		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: { userId: EntityId; value: boolean } },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 
 		const parentIdScope = new TaskScope('$or');
 
-		if (parentIds.teacherId) {
-			parentIdScope.byTeacherId(parentIds.teacherId);
+		if (parentIds.creatorId) {
+			parentIdScope.byTeacherId(parentIds.creatorId);
 		}
 
 		if (parentIds.courseIds) {
@@ -48,11 +105,7 @@ export class TaskRepo {
 		scope.addQuery(parentIdScope.query);
 
 		if (filters?.closed) {
-			scope.byClosed(filters.closed);
-		}
-
-		if (filters?.excludeClosed) {
-			scope.byExcludeClosed(filters.excludeClosed);
+			scope.byClosed(filters.closed.userId, filters.closed.value);
 		}
 
 		if (filters?.draft !== undefined) {
