@@ -774,9 +774,9 @@ describe('TaskUC', () => {
 			const mockRestore = mockAll([task]);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAll(currentUser, paginationQuery);
+			const [result, total] = await service.findAll(currentUser, paginationQuery);
 
-			expect(result.length).toEqual(1);
+			expect(total).toEqual(1);
 			expect(result[0].status).toEqual({
 				graded: 2,
 				submitted: 2,
@@ -802,9 +802,9 @@ describe('TaskUC', () => {
 			const mockRestore = mockAll([task]);
 
 			const paginationQuery = new PaginationQuery();
-			const [result] = await service.findAll(currentUser, paginationQuery);
+			const [result, total] = await service.findAll(currentUser, paginationQuery);
 
-			expect(result.length).toEqual(1);
+			expect(total).toEqual(1);
 			expect(result[0].status).toEqual({
 				graded: 0,
 				submitted: 2,

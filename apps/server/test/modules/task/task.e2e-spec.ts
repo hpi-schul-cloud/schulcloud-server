@@ -546,15 +546,31 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('should not return closed tasks', async () => {
-			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student = userFactory.build();
 			await em.persistAndFlush([student]);
 
 			const course = courseFactory.build({
-				name: 'course #1',
 				students: [student],
 			});
 
 			const task = taskFactory.draft(false).build({ course, closed: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should "not" show task of finished courses', async () => {
+			const untilDate = new Date(Date.now() - 60 * 1000);
+			const student = userFactory.build();
+			const course = courseFactory.build({ untilDate, students: [student] });
+			const task = taskFactory.build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
