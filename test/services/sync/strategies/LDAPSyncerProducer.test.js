@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const sinon = require('sinon');
 const { SyncMessageBuilder } = require('../../../../src/services/sync/strategies/SyncMessageBuilder');
 
 const { LDAPSyncer } = require('../../../../src/services/sync/strategies/LDAPSyncer');
@@ -60,6 +61,9 @@ const exampleLdapClassData = [
 const fakeLdapSystem = {
 	_id: '123456789',
 	alias: 'FakeSystem',
+	ldapConfig: {
+		federalState: 'federal_state_fake_object_id',
+	},
 };
 
 class FakeSyncQueue {
@@ -95,6 +99,18 @@ describe('Ldap Syncer Producer', () => {
 		ldapSyncer.syncQueue = new FakeSyncQueue();
 		ldapSyncer.messageBuilder = new SyncMessageBuilder(SYNC_ID, fakeLdapSystem._id);
 		ldapSyncer.ldapService = new FakeLdapService();
+	});
+
+	describe('processLdapSchools', () => {
+		it('should fetch federalState from syncers system', async () => {
+			const sendLdapSchoolsSpy = sinon.spy(ldapSyncer, 'sendLdapSchools');
+			const result = await ldapSyncer.processLdapSchools();
+			expect(
+				sendLdapSchoolsSpy.calledWith(sinon.match.any, sinon.match.any, fakeLdapSystem.ldapConfig.federalState)
+			).to.equal(true);
+			expect(result).to.have.length(3);
+			sendLdapSchoolsSpy.restore();
+		});
 	});
 
 	describe('sendLdapSchools', () => {
