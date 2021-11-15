@@ -41,7 +41,7 @@ export class DashboardModelMapper {
 				return this.mapElementToEntity(e);
 			})
 		);
-		return new DashboardEntity(modelEntity.id, { grid });
+		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
 	async mapReferenceToModel(
@@ -89,7 +89,7 @@ export class DashboardModelMapper {
 
 	async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
 		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
-		const modelEntity = existing || new DashboardModelEntity(entity.getId());
+		const modelEntity = existing || new DashboardModelEntity({ id: entity.getId(), user: entity.getUserId() });
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
 		);

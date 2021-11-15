@@ -1,5 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, EntityId, GridPosition, GridElement, DefaultGridReference } from '@shared/domain';
+import {
+	DashboardEntity,
+	EntityId,
+	GridPosition,
+	GridElement,
+	DefaultGridReference,
+	ICurrentUser,
+} from '@shared/domain';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
@@ -16,12 +23,15 @@ describe('dashboard uc', () => {
 				{
 					provide: DashboardUc,
 					useValue: {
-						getUsersDashboard(): Promise<DashboardEntity> {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						moveElementOnDashboard(dashboardId: EntityId, from: GridPosition, to: GridPosition) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						renameGroupOnDashboard(dashboardId: EntityId, position: GridPosition, title: string) {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
@@ -37,10 +47,11 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [] });
+				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
-			const response = await controller.findForUser();
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
@@ -57,13 +68,26 @@ describe('dashboard uc', () => {
 							]),
 						},
 					],
+					userId: 'userId',
 				});
 				return Promise.resolve(dashboard);
 			});
+			const currentUser = { userId: 'userId' } as ICurrentUser;
 
-			const response = await controller.findForUser();
+			const response = await controller.findForUser(currentUser);
 			expect(response instanceof DashboardResponse).toEqual(true);
 			expect(response.gridElements[0]).toHaveProperty('groupElements');
+		});
+
+		it('should call uc', async () => {
+			const spy = jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
+				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				return Promise.resolve(dashboard);
+			});
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			await controller.findForUser(currentUser);
+
+			expect(spy).toHaveBeenCalledWith('userId');
 		});
 	});
 
@@ -82,11 +106,13 @@ describe('dashboard uc', () => {
 								),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
-			await controller.moveElement('dashboardId', { from: { x: 1, y: 2 }, to: { x: 2, y: 1 } });
-			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 });
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			await controller.moveElement('dashboardId', { from: { x: 1, y: 2 }, to: { x: 2, y: 1 } }, currentUser);
+			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, currentUser.userId);
 		});
 
 		it('should return a dashboard', async () => {
@@ -103,10 +129,19 @@ describe('dashboard uc', () => {
 								),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
-			const response = await controller.moveElement('dashboardId', { from: { x: 1, y: 2 }, to: { x: 2, y: 1 } });
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const response = await controller.moveElement(
+				'dashboardId',
+				{
+					from: { x: 1, y: 2 },
+					to: { x: 2, y: 1 },
+				},
+				currentUser
+			);
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 	});
@@ -120,17 +155,19 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: position,
-								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+								gridElement: GridElement.FromPersistedGroup('elementId', title, [
 									new DefaultGridReference('referenceId1', 'Math'),
 									new DefaultGridReference('referenceId2', 'German'),
 								]),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
-			await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' });
-			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle');
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' }, currentUser);
+			expect(spy).toHaveBeenCalledWith('dashboardId', { x: 3, y: 4 }, 'groupTitle', currentUser.userId);
 		});
 
 		it('should return a dashboard', async () => {
@@ -141,16 +178,18 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: position,
-								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
+								gridElement: GridElement.FromPersistedGroup('elementId', title, [
 									new DefaultGridReference('referenceId1', 'Math'),
 									new DefaultGridReference('referenceId2', 'German'),
 								]),
 							},
 						],
+						userId: 'userId',
 					});
 					return Promise.resolve(dashboard);
 				});
-			const response = await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' });
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const response = await controller.patchGroup('dashboardId', 3, 4, { title: 'groupTitle' }, currentUser);
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
 	});

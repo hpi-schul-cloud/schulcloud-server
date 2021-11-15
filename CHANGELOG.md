@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+
+- [merge only in 26.17.0!, one release after BC-489] BC-488 - Set federal state in LDAPSyncer by system
+
 ## [Unreleased]
 
 ### Added
@@ -15,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-589 - BC-652 - Change auto deployment to a reusable workflow
 - BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
+- BC-240 - Dashboards are now personalized
 
 ### Fixed
 
