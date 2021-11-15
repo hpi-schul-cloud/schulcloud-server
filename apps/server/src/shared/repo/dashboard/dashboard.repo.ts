@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, DashboardEntity, DefaultGridReference, GridElement, GridElementWithPosition } from '@shared/domain';
+import {
+	EntityId,
+	DashboardEntity,
+	DefaultGridReference,
+	GridElement,
+	GridElementWithPosition,
+	DashboardModelEntity,
+} from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 const hardcodedTestDashboardId = '0000d213816abba584714c0a';
