@@ -1,23 +1,9 @@
 ---
 name: Clean Deployment
 
-on: [push,delete]
+on: delete
 
 jobs:
-  branch_name:
-    runs-on: ubuntu-latest
-    outputs:
-      branch: ${{ steps.extract_branch.outputs.branch }}
-    steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-      - name: show
-        run: |
-          echo ${{ github.event.ref }}
-          echo ${GITHUB_REF#refs/heads/}
-        
   clean:
     uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/clean_workflow.yml@main
     with:
