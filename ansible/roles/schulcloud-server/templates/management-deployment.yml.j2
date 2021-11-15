@@ -65,7 +65,7 @@ spec:
         resources:
           limits:
             cpu: {{ API_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ API_MANAGEMENT_MEMORY_LIMITS|default("2Gi", true) }}
+            memory: {{ API_MANAGEMENT_MEMORY_LIMITS|default("500Mi", true) }}
           requests:
             cpu: {{ API_MANAGEMENT_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ API_MANAGEMENT_MEMORY_REQUESTS|default("150Mi", true) }}
+            memory: {{ API_MANAGEMENT_MEMORY_REQUESTS|default("50Mi", true) }}
