@@ -23,7 +23,7 @@ export class TaskRepo {
 		const courseIds = parentIds.courseIds.map((id) => new ObjectId(id));
 		const lessonsIds = parentIds.lessonIds.map((id) => new ObjectId(id));
 		const userId = new ObjectId(parentIds.userId);
-
+		const now = new Date();
 		// TODO: type
 		const query: unknown[] = [
 			{
@@ -45,7 +45,7 @@ export class TaskRepo {
 			},
 			{
 				$match: {
-					$or: [{ archived: userId }, { 'courses.0.untilDate': { $lt: new Date() } }],
+					$or: [{ archived: userId }, { 'courses.0.untilDate': { $lt: now } }],
 				},
 			},
 			{ $sort: { dueDate: -1 } },
