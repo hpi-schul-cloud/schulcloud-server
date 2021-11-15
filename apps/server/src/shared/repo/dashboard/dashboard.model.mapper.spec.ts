@@ -45,12 +45,14 @@ describe('dashboard model mapper', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 
 			const mapped = await mapper.mapDashboardToModel(dashboard);
 
 			expect(mapped instanceof DashboardModelEntity).toEqual(true);
 			expect(mapped.gridElements.length).toEqual(2);
+			expect(mapped.user).toEqual(dashboard.userId);
 			const element = mapped.gridElements[0];
 			expect(element instanceof DashboardGridElementModel);
 			expect(element.references.length).toBeGreaterThan(0);
@@ -62,7 +64,7 @@ describe('dashboard model mapper', () => {
 			const elementId = new ObjectId().toString();
 			const oldElementId = new ObjectId().toString();
 			const newElementId = new ObjectId().toString();
-			const originalDashboard = new DashboardModelEntity(dashboardId);
+			const originalDashboard = new DashboardModelEntity({ id: dashboardId, user: new ObjectId().toString() });
 			originalDashboard.gridElements.add(new DashboardGridElementModel(oldElementId));
 			originalDashboard.gridElements.add(new DashboardGridElementModel(new ObjectId().toString()));
 			await em.persistAndFlush(originalDashboard);
@@ -81,6 +83,7 @@ describe('dashboard model mapper', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 
 			const mapped = await mapper.mapDashboardToModel(dashboard);
