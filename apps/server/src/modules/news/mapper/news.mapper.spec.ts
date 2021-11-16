@@ -25,6 +25,9 @@ import {
 	UserInfoResponse,
 } from '../controller/dto';
 import { TargetInfoResponse } from '../controller/dto/target-info.response';
+import { SchoolInfoMapper } from './school-info.mapper';
+import { UserInfoMapper } from './user-info.mapper';
+import { TargetInfoMapper } from './target-info.mapper';
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
@@ -76,22 +79,11 @@ const getExpectedNewsResponse = (
 	newsProps: { title: string; content: string },
 	target: NewsTarget
 ): NewsResponse => {
-	const schoolInfoResponse = new SchoolInfoResponse();
-	const schoolProps = (({ id, name }) => ({ id, name }))(school);
-	Object.assign(schoolInfoResponse, schoolProps);
+	const schoolInfoResponse = SchoolInfoMapper.mapToResponse(school);
+	const creatorResponse: UserInfoResponse = UserInfoMapper.mapToResponse(creator);
+	const targetResponse = TargetInfoMapper.mapToResponse(target);
 
-	const creatorResponse: UserInfoResponse = new UserInfoResponse();
-	const creatorProps = {
-		id: creator.id,
-		firstName: creator.firstName,
-		lastName: creator.lastName,
-	};
-	Object.assign(creatorResponse, creatorProps);
-	const expected: NewsResponse = new NewsResponse();
-	const targetResponse = new TargetInfoResponse();
-	targetResponse.id = target.id;
-	targetResponse.name = target.name;
-	Object.assign(expected, {
+	const expected = new NewsResponse({
 		id: news.id,
 		source: undefined,
 		sourceDescription: undefined,
