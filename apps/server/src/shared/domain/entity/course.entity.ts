@@ -97,7 +97,7 @@ export class Course extends BaseEntityWithTimestamps {
 		if (!this.untilDate) {
 			return false;
 		}
-		const isFinished = this.untilDate > new Date();
+		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
 	}

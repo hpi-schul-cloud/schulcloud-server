@@ -5,7 +5,7 @@ export class TaskScope extends Scope<Task> {
 	byClosed(userId: EntityId, value: boolean): TaskScope {
 		if (value === true) {
 			this.addQuery({ closed: userId });
-		} else {
+		} else if (value === false) {
 			this.addQuery({ closed: { $ne: userId } });
 		}
 
