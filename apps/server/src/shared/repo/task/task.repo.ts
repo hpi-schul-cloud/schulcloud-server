@@ -6,6 +6,19 @@ import { EntityId, IFindOptions, Task, Counted } from '@shared/domain';
 
 import { TaskScope } from './task-scope';
 
+interface IAggregation<T> {
+	$match?: FilterQuery<T>;
+	$lookup?: {
+		from: string;
+		localField: string;
+		foreignField: string;
+		as: string;
+	};
+	$sort?: Record<string, number>;
+	$skip?: number;
+	$limit?: number;
+}
+
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
@@ -24,8 +37,8 @@ export class TaskRepo {
 		const lessonsIds = parentIds.lessonIds.map((id) => new ObjectId(id));
 		const userId = new ObjectId(parentIds.userId);
 		const now = new Date();
-		// TODO: type
-		const query: unknown[] = [
+
+		const query: IAggregation<Task>[] = [
 			{
 				$match: {
 					$or: [
