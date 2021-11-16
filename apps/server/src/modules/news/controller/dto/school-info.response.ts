@@ -5,10 +5,10 @@ export class SchoolInfoResponse {
 		pattern: '[a-f0-9]{24}',
 		description: 'The id of the School entity',
 	})
-	id: string;
+	id!: string;
 
 	@ApiProperty({
 		description: 'The name of the School entity',
 	})
-	name: string;
+	name!: string;
 }

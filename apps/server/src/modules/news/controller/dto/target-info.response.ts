@@ -5,10 +5,10 @@ export class TargetInfoResponse {
 		pattern: '[a-f0-9]{24}',
 		description: 'The id of the Target entity',
 	})
-	id: string;
+	id!: string;
 
 	@ApiProperty({
 		description: 'The name of the Target entity',
 	})
-	name: string;
+	name!: string;
 }

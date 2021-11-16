@@ -52,7 +52,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	/** name of a collection which is referenced in target */
 	@Enum()
-	targetModel: NewsTargetModel;
+	targetModel!: NewsTargetModel;
 
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
@@ -95,17 +95,17 @@ export abstract class News extends BaseEntityWithTimestamps {
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
 	@ManyToOne('School')
-	target: School;
+	target!: School;
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
 	@ManyToOne('Course')
-	target: Course;
+	target!: Course;
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
 	@ManyToOne('Team')
-	target: Team;
+	target!: Team;
 }

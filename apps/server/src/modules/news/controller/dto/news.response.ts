@@ -14,22 +14,22 @@ export class NewsResponse {
 		description: 'The id of the News entity',
 		pattern: '[a-f0-9]{24}',
 	})
-	id: string;
+	id!: string;
 
 	@ApiProperty({
 		description: 'Title of the News entity',
 	})
-	title: string;
+	title!: string;
 
 	@ApiProperty({
 		description: 'Content of the News entity',
 	})
-	content: string;
+	content!: string;
 
 	@ApiProperty({
 		description: 'The point in time from when the News entity schould be displayed',
 	})
-	displayAt: Date;
+	displayAt!: Date;
 
 	@ApiPropertyOptional({
 		type: 'string',
@@ -48,28 +48,28 @@ export class NewsResponse {
 		enumName: 'NewsTargetModel',
 		description: 'Target model to which the News entity is related',
 	})
-	targetModel: string;
+	targetModel!: string;
 
 	@ApiProperty({
 		pattern: '[a-f0-9]{24}',
 		description: 'Specific target id to which the News entity is related',
 	})
-	targetId: string;
+	targetId!: string;
 
 	@ApiProperty({
 		description: 'The target object with id and name, could be the school, team, or course name',
 	})
-	target: TargetInfoResponse;
+	target!: TargetInfoResponse;
 
 	@ApiProperty({
 		description: 'The School ownership',
 	})
-	school: SchoolInfoResponse;
+	school!: SchoolInfoResponse;
 
 	@ApiProperty({
 		description: 'Reference to the User that created the News entity',
 	})
-	creator: UserInfoResponse;
+	creator!: UserInfoResponse;
 
 	@ApiPropertyOptional({
 		description: 'Reference to the User that updated the News entity',
@@ -79,17 +79,17 @@ export class NewsResponse {
 	@ApiProperty({
 		description: 'The creation timestamp',
 	})
-	createdAt: Date;
+	createdAt!: Date;
 
 	@ApiProperty({
 		description: 'The update timestamp',
 	})
-	updatedAt: Date;
+	updatedAt!: Date;
 
 	@ApiProperty({
 		description: 'List of permissions the current user has for the News entity',
 	})
-	permissions: string[];
+	permissions!: string[];
 }
 
 export class NewsListResponse extends PaginationResponse<NewsResponse[]> {

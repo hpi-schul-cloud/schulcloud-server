@@ -7,7 +7,7 @@ import { PaginationResponse, DecodeHtmlEntities } from '@shared/controller';
 export class TaskResponse {
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	name: string;
+	name!: string;
 
 	@ApiProperty()
 	availableDate?: Date;
@@ -27,16 +27,16 @@ export class TaskResponse {
 	displayColor?: string;
 
 	@ApiProperty()
-	id: string;
+	id!: string;
 
 	@ApiProperty()
-	createdAt: Date;
+	createdAt!: Date;
 
 	@ApiProperty()
-	updatedAt: Date;
+	updatedAt!: Date;
 
 	@ApiProperty()
-	status: {
+	status!: {
 		submitted?: number;
 		maxSubmissions?: number;
 		graded?: number;

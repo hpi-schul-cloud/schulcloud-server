@@ -5,7 +5,7 @@ export class UserInfoResponse {
 		pattern: '[a-f0-9]{24}',
 		description: 'The id of the User entity',
 	})
-	id: string;
+	id!: string;
 
 	@ApiPropertyOptional({
 		description: 'First name of the user',
