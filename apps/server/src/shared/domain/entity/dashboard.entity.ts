@@ -84,7 +84,9 @@ export class GridElement implements IGridElement {
 
 	private constructor(props: { id?: EntityId; title?: string; references: IGridElementReference[] }) {
 		if (props.id) this.id = props.id;
+		else this.id = '';
 		if (props.title) this.title = props.title;
+		else this.title = '';
 		this.references = props.references.sort(this.sortReferences);
 	}
 

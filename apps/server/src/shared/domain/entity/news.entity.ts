@@ -55,7 +55,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 	targetModel!: NewsTargetModel;
 
 	@ManyToOne('School', { fieldName: 'schoolId' })
-	school: School;
+	school!: School;
 
 	@ManyToOne('User', { fieldName: 'creatorId' })
 	creator!: User;
@@ -71,7 +71,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 		this.content = props.content;
 		this.displayAt = props.displayAt;
 		Object.assign(this, { school: props.school, creator: props.creator, updater: props.updater, target: props.target });
-		this.school = wrap(this.school).assign(props.school);
 		this.externalId = props.externalId;
 		this.source = props.source;
 		this.sourceDescription = props.sourceDescription;

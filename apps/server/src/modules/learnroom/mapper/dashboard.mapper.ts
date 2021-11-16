@@ -3,28 +3,27 @@ import { DashboardResponse, DashboardGridElementResponse } from '../controller/d
 
 export class DashboardMapper {
 	static mapToResponse(dashboard: DashboardEntity): DashboardResponse {
-		const dto = new DashboardResponse();
+		const { id } = dashboard;
 
-		dto.id = dashboard.id;
+		const gridElements = dashboard.getGrid().map((elementWithPosition) => {
+			const gridElementId = elementWithPosition.gridElement.getId();
+			const { title, shortTitle, displayColor, group } = elementWithPosition.gridElement.getContent();
 
-		dto.gridElements = dashboard.getGrid().map((elementWithPosition) => {
-			const elementDTO = new DashboardGridElementResponse();
+			const { x, y } = elementWithPosition.pos;
 
-			elementDTO.id = elementWithPosition.gridElement.getId();
-			const data = elementWithPosition.gridElement.getContent();
-			elementDTO.title = data.title;
-			elementDTO.shortTitle = data.shortTitle;
-			elementDTO.displayColor = data.displayColor;
-			if (data.group) {
-				elementDTO.groupElements = data.group;
-			}
-
-			const { pos } = elementWithPosition;
-			elementDTO.xPosition = pos.x;
-			elementDTO.yPosition = pos.y;
-
+			const elementDTO = new DashboardGridElementResponse({
+				id: gridElementId,
+				title,
+				shortTitle,
+				displayColor,
+				xPosition: x,
+				yPosition: y,
+				groupElements: group || [],
+			});
 			return elementDTO;
 		});
+
+		const dto = new DashboardResponse({ id, gridElements });
 
 		return dto;
 	}

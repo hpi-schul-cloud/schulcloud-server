@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class DashboardGridSubElementResponse {
+	constructor({ id, title, shortTitle, displayColor }: DashboardGridSubElementResponse) {
+		this.id = id;
+		this.title = title;
+		this.shortTitle = shortTitle;
+		this.displayColor = displayColor;
+	}
+
 	@ApiProperty({
 		description: 'The id of the Grid element',
 		pattern: '[a-f0-9]{24}',
@@ -24,6 +31,24 @@ export class DashboardGridSubElementResponse {
 }
 
 export class DashboardGridElementResponse {
+	constructor({
+		id,
+		title,
+		shortTitle,
+		displayColor,
+		xPosition,
+		yPosition,
+		groupElements,
+	}: DashboardGridElementResponse) {
+		this.id = id;
+		this.title = title;
+		this.shortTitle = shortTitle;
+		this.displayColor = displayColor;
+		this.xPosition = xPosition;
+		this.yPosition = yPosition;
+		this.groupElements = groupElements;
+	}
+
 	@ApiProperty({
 		description: 'The id of the Grid element',
 		pattern: '[a-f0-9]{24}',
@@ -59,10 +84,15 @@ export class DashboardGridElementResponse {
 		type: [DashboardGridSubElementResponse],
 		description: 'List of all subelements in the group',
 	})
-	groupElements: DashboardGridSubElementResponse[];
+	groupElements: DashboardGridSubElementResponse[] = [];
 }
 
 export class DashboardResponse {
+	constructor({ id, gridElements }: DashboardResponse) {
+		this.id = id;
+		this.gridElements = gridElements;
+	}
+
 	@ApiProperty({
 		description: 'The id of the Dashboard entity',
 		pattern: '[a-f0-9]{24}',

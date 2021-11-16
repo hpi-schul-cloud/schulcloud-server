@@ -7,6 +7,12 @@ import { ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
  */
 
 export class MoveElementPosition {
+	constructor({ x, y, groupIndex }: MoveElementPosition) {
+		this.x = x;
+		this.y = y;
+		this.groupIndex = groupIndex;
+	}
+
 	@IsNumber()
 	@Min(0)
 	@ApiProperty()
@@ -25,6 +31,11 @@ export class MoveElementPosition {
 }
 
 export class MoveElementParams {
+	constructor({ from, to }: MoveElementParams) {
+		this.from = from;
+		this.to = to;
+	}
+
 	@ValidateNested()
 	@ApiProperty()
 	from: MoveElementPosition;
