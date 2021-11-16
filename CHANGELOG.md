@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+
 - BC-589 - BC-652 - Change auto deployment to a reusable workflow
 - BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
 - BC-240 - Dashboards are now personalized
