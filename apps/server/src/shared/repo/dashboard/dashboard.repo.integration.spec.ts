@@ -21,7 +21,7 @@ describe('dashboard repo', () => {
 	});
 
 	it('should persist a plain dashboard', async () => {
-		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [] });
+		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [], userId: new ObjectId().toString() });
 		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
@@ -40,6 +40,7 @@ describe('dashboard repo', () => {
 					),
 				},
 			],
+			userId: new ObjectId().toString(),
 		});
 		await repo.persist(dashboard);
 		await em.flush();
@@ -59,6 +60,7 @@ describe('dashboard repo', () => {
 					]),
 				},
 			],
+			userId: new ObjectId().toString(),
 		});
 		await repo.persist(dashboard);
 		await em.flush();
@@ -93,6 +95,7 @@ describe('dashboard repo', () => {
 					),
 				},
 			],
+			userId: new ObjectId().toString(),
 		});
 		await repo.persistAndFlush(dashboard);
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
@@ -120,6 +123,7 @@ describe('dashboard repo', () => {
 					),
 				},
 			],
+			userId: new ObjectId().toString(),
 		});
 		const element = dashboard.getElement({ x: 1, y: 3 });
 		await repo.persistAndFlush(dashboard);
@@ -143,6 +147,7 @@ describe('dashboard repo', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await repo.persistAndFlush(dashboard);
 			const result = await repo.getDashboardById(dashboard.id);
@@ -161,6 +166,7 @@ describe('dashboard repo', () => {
 						),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await repo.persistAndFlush(dashboard);
 			await repo.persistAndFlush(dashboard);
@@ -178,6 +184,7 @@ describe('dashboard repo', () => {
 						gridElement: GridElement.FromSingleReference(new DefaultGridReference(new ObjectId().toString(), 'Mathe')),
 					},
 				],
+				userId: new ObjectId().toString(),
 			});
 			await repo.persistAndFlush(dashboard);
 
@@ -187,19 +194,30 @@ describe('dashboard repo', () => {
 		});
 	});
 
-	describe('temporary getUsersDashboard fake implementation', () => {
+	describe('getUsersDashboard', () => {
 		it('returns a dashboard', async () => {
-			const result = await repo.getUsersDashboard();
+			const result = await repo.getUsersDashboard(new ObjectId().toString());
 			expect(result instanceof DashboardEntity).toEqual(true);
 			expect(result.getGrid().length).toBeGreaterThan(0);
 		});
 
-		it('always returns the same dashboard', async () => {
-			const firstDashboard = await repo.getUsersDashboard();
+		it('always returns the same dashboard for same user', async () => {
+			const userId = new ObjectId().toString();
+			const firstDashboard = await repo.getUsersDashboard(userId);
 			// cant manipulate the dashboard, because the entity doesnt support changes yet
-			const secondDashboard = await repo.getUsersDashboard();
+			const secondDashboard = await repo.getUsersDashboard(userId);
 			expect(firstDashboard.id).toEqual(secondDashboard.id);
 			expect(JSON.stringify(firstDashboard)).toEqual(JSON.stringify(secondDashboard));
+		});
+
+		it('always returns different dashboard for different users', async () => {
+			const firstUserId = new ObjectId().toString();
+			const secondUserId = new ObjectId().toString();
+
+			const firstDashboard = await repo.getUsersDashboard(firstUserId);
+			const secondDashboard = await repo.getUsersDashboard(secondUserId);
+
+			expect(firstDashboard.id).not.toEqual(secondDashboard.id);
 		});
 	});
 });

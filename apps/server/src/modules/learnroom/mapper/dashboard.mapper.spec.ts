@@ -10,7 +10,7 @@ describe('dashboard mapper', () => {
 				gridElement: GridElement.FromPersistedReference('elementId', new DefaultGridReference('referenceId', 'Mathe')),
 			},
 		];
-		const entity = new DashboardEntity('someid', { grid: gridArray });
+		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);
 		expect(result.gridElements[0].id).toEqual('elementId');
