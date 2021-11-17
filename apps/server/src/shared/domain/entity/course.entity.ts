@@ -15,6 +15,8 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
+	startDate?: Date;
+	untilDate?: Date;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -51,6 +53,12 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = DEFAULT.color;
 
+	@Property()
+	startDate: Date;
+
+	@Property()
+	untilDate: Date;
+
 	constructor(props: ICourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
@@ -60,6 +68,8 @@ export class Course extends BaseEntityWithTimestamps {
 		if (props.teachers) this.teachers.set(props.teachers);
 		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
 		if (props.color) this.color = props.color;
+		if (props.startDate) this.startDate = props.startDate;
+		if (props.untilDate) this.untilDate = props.untilDate;
 	}
 
 	getNumberOfStudents(): number {
