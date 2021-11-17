@@ -46,7 +46,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		const options = {
 			filter: 'univentionObjectType=users/user',
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'memberOf'],
+			attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass'],
 		};
 		const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app

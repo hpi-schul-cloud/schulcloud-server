@@ -88,69 +88,37 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.returns([
-					{
-						dn: 'cn=student1,ou=users,o=Testschule,dc=de',
-						givenName: 'Max',
-						sn: 'Mustermann',
-						uuid: '00001',
-						cn: 'student1',
-						mail: 'student1@testschule.de',
-						objectClass: ['person', 'posixAccount', 'weirdThirdPartyClass'],
-						memberOf: [
-							'cn=ROLE_STUDENT,ou=roles,o=Testschule,dc=de',
-							'cn=class9a,ou=groups,o=Testschule,dc=de',
-							'cn=schuelersprecher,ou=groups,o=Testschule,dc=de',
-						],
-						modifyTimestamp: '20201020000000Z',
-					},
-					{
-						dn: 'cn=student2,ou=users,o=Testschule,dc=de',
-						givenName: 'Marla',
-						sn: 'Mathe',
-						uuid: '00002',
-						cn: 'student2',
-						mail: 'student2@testschule.de',
-						objectClass: ['person', 'posixAccount'],
-						memberOf: [
-							'cn=ROLE_STUDENT,ou=roles,o=Testschule,dc=de',
-							'cn=class9b,ou=groups,o=Testschule,dc=de',
-							'cn=ROLE_NBC_EXCLUDE,ou=groups,o=Testschule,dc=de',
-						],
-						modifyTimestamp: '20201020111111Z',
-					},
-					{
-						dn: 'cn=teacher,ou=users,o=Testschule,dc=de',
-						givenName: 'Herr',
-						sn: 'Lempel',
-						uuid: '00003',
-						cn: 'teacher',
-						mail: 'teacher@testschule.de',
-						objectClass: ['person', 'posixAccount'],
-						memberOf: [
-							'cn=ROLE_TEACHER,ou=roles,o=Testschule,dc=de',
-							'cn=Kollegium,ou=groups,o=Testschule,dc=de',
-							'cn=ToepferAG,ou=groups,o=Testschule,dc=de',
-						],
-						modifyTimestamp: '20201020222222Z',
-					},
-					{
-						dn: 'cn=admin,ou=users,o=Testschule,dc=de',
-						givenName: '',
-						sn: 'Testington',
-						uuid: '00004',
-						cn: 'admin',
-						mail: 'admin@testschule.de',
-						objectClass: ['person', 'posixAccount'],
-						memberOf: [
-							'cn=ROLE_TEACHER,ou=roles,o=Testschule,dc=de',
-							'cn=ROLE_ADMIN,ou=roles,o=Testschule,dc=de',
-							'cn=Kollegium,ou=groups,o=Testschule,dc=de',
-							'cn=TYPO3Experten,ou=groups,o=Testschule,dc=de',
-						],
-						modifyTimestamp: '20201020333333Z',
-					},
-				]),
+				searchCollection: sinon.fake.returns(
+					Promise.resolve([
+						{
+							dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+							givenName: 'Max',
+							sn: 'Mustermann',
+							uid: '00001',
+							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ea',
+							mail: 'student1@testschule.de',
+							objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+						},
+						{
+							dn: 'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+							givenName: 'Marla',
+							sn: 'Mathe',
+							uid: '00002',
+							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5eb',
+							mail: 'student2@testschule.de',
+							objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+						},
+						{
+							dn: 'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							givenName: 'Herr',
+							sn: 'Lempel',
+							uid: '00003',
+							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ec',
+							mail: 'teacher@testschule.de',
+							objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+						},
+					])
+				),
 			};
 		}
 
@@ -159,48 +127,28 @@ describe('UniventionLDAPStrategy', () => {
 			app.use('/ldap', ldapServiceMock);
 		});
 
-		it('should return all non-ignored users', async () => {
+		it('should return all users', async () => {
 			const school = {
 				ldapSchoolIdentifier: 'o=Testschule,dc=de',
 			};
-			const users = await new UniventionLDAPStrategy(app, {}).getUsers(school);
-			expect(users.length).to.equal(3); // student2 is member of excluded role
+			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers(school);
+			expect(users.length).to.equal(3);
 		});
 
 		it('should follow the internal interface', async () => {
-			const users = await new UniventionLDAPStrategy(app, {}).getUsers({});
+			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers({});
 			users.forEach((user) => {
-				['email', 'firstName', 'lastName', 'roles', 'ldapDn', 'ldapUUID', 'ldapUID', 'modifyTimestamp'].forEach(
-					(attr) => {
-						expect(user).to.haveOwnProperty(attr);
-					}
-				);
+				['email', 'firstName', 'lastName', 'roles', 'ldapDn', 'ldapUUID', 'ldapUID'].forEach((attr) => {
+					expect(user).to.haveOwnProperty(attr);
+				});
 			});
 		});
 
-		it('should assign name defaults if entities lack first names', async () => {
-			const users = await new UniventionLDAPStrategy(app, {}).getUsers({});
-			expect(users[2].firstName).to.equal('Lehrkraft');
-		});
-
 		it('should assign roles based on specific group memberships', async () => {
-			const users = await new UniventionLDAPStrategy(app, {}).getUsers({});
+			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers({});
 			expect(users[0].roles).to.include('student');
-			expect(users[1].roles).to.include('teacher');
-			expect(users[2].roles).to.include('teacher').and.to.include('administrator');
-		});
-
-		it('should not use delta-sync operational attributes in query if no previous sync went through', async () => {
-			await new UniventionLDAPStrategy(app, {}).getUsers({});
-			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
-		});
-
-		it('should filter for modifyTimestamp if applicable', async () => {
-			const school = {
-				ldapLastSync: '20201020000000Z',
-			};
-			await new UniventionLDAPStrategy(app, {}).getUsers(school);
-			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
+			expect(users[1].roles).to.include('student');
+			expect(users[2].roles).to.include('teacher');
 		});
 	});
 
