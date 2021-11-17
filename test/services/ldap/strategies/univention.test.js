@@ -156,24 +156,27 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.returns([
-					{
-						dn: 'cn=klasse9a,ou=groups,o=Testschule,dc=de',
-						description: '9a',
-						member: [
-							'cn=teacher,ou=users,o=Testschule,dc=de',
-							'cn=student1,ou=users,o=Testschule,dc=de',
-							'cn=student2,ou=users,o=Testschule,dc=de',
-						],
-						modifyTimestamp: '20201020000000Z',
-					},
-					{
-						dn: 'cn=Kollegium,ou=groups,o=Testschule,dc=de',
-						description: 'Alle Lehrkräfte',
-						member: ['cn=teacher,ou=users,o=Testschule,dc=de', 'cn=admin,ou=users,o=Testschule,dc=de'],
-						modifyTimestamp: '20201020000000Z',
-					},
-				]),
+				searchCollection: sinon.fake.returns(
+					Promise.resolve([
+						{
+							cn: '100000-3GEGDV64GIHO39TI',
+							dn: 'cn=100000-3GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+							uniqueMember: [
+								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+								'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							],
+						},
+						{
+							cn: '100000-4GEGDV64GIHO39TI',
+							dn: 'cn=100000-4GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+							uniqueMember: [
+								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							],
+						},
+					])
+				),
 			};
 		}
 
@@ -186,42 +189,34 @@ describe('UniventionLDAPStrategy', () => {
 			const school = {
 				ldapSchoolIdentifier: 'o=Testschule,dc=de',
 			};
-			const classes = await new UniventionLDAPStrategy(app, {}).getClasses(school);
+			const classes = await new UniventionLDAPStrategy(app, mockLDAPConfig).getClasses(school);
 			expect(classes.length).to.equal(2);
 		});
 
 		it('should follow the internal interface', async () => {
-			const classes = await new UniventionLDAPStrategy(app, {}).getClasses({});
+			const classes = await new UniventionLDAPStrategy(app, mockLDAPConfig).getClasses({});
 			classes.forEach((klass) => {
-				['className', 'ldapDn', 'uniqueMembers', 'modifyTimestamp'].forEach((attr) => {
+				['className', 'ldapDn', 'uniqueMembers'].forEach((attr) => {
 					expect(klass).to.haveOwnProperty(attr);
 				});
 			});
 		});
 
-		it('should search in ou=groups', async () => {
-			const mockConfig = {};
-			await new UniventionLDAPStrategy(app, mockConfig).getClasses({ ldapSchoolIdentifier: 'cn=foo,cn=bar' });
-			expect(ldapServiceMock.searchCollection.calledWith(mockConfig, 'ou=groups,cn=foo,cn=bar')).to.equal(true);
+		it('should search in cn=groups', async () => {
+			const ldapSchoolIdentifier = 'cn=foo,cn=bar';
+			await new UniventionLDAPStrategy(app, mockLDAPConfig).getClasses({ ldapSchoolIdentifier });
+			expect(
+				ldapServiceMock.searchCollection.calledWith(
+					mockLDAPConfig,
+					`cn=klassen,cn=schueler,cn=groups,ou=${ldapSchoolIdentifier},${mockLDAPConfig.rootPath}`
+				)
+			).to.equal(true);
 		});
 
 		it('should return all members as array', async () => {
-			const classes = await new UniventionLDAPStrategy(app, {}).getClasses({});
+			const classes = await new UniventionLDAPStrategy(app, mockLDAPConfig).getClasses({});
 			expect(classes[0].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(3);
 			expect(classes[1].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(2);
-		});
-
-		it('should not use delta-sync operational attributes in query if no previous sync went through', async () => {
-			await new UniventionLDAPStrategy(app, {}).getClasses({});
-			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
-		});
-
-		it('should filter for modifyTimestamp if applicable', async () => {
-			const school = {
-				ldapLastSync: '20201020000000Z',
-			};
-			await new UniventionLDAPStrategy(app, {}).getClasses(school);
-			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
 		});
 	});
 });

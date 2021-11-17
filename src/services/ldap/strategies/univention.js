@@ -90,8 +90,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			scope: 'sub',
 			attributes: [],
 		};
-		const searchString =
-			'cn=klassen,cn=schueler,cn=groups,' + `ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
+		const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app
 			.service('ldap')
 			.searchCollection(this.config, searchString, options)
@@ -99,7 +98,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 				data.map((obj) => {
 					const splittedName = obj.cn.split('-');
 					return {
-						className: splittedName[splittedName.length - 1],
+						className: splittedName[splittedName.length - 1], // obj.description?
 						ldapDn: obj.dn,
 						uniqueMembers: obj.uniqueMember,
 					};
