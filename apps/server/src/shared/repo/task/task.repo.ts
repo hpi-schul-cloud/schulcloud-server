@@ -38,11 +38,12 @@ export class TaskRepo {
 		const userId = new ObjectId(parentIds.userId);
 		const now = new Date();
 
+		// Important aggregration pass any[] and has NO mikro-orm or entity support
 		const query: IAggregation<Task>[] = [
 			{
 				$match: {
 					$or: [
-						{ $and: [{ courseId: { $in: courseIds } }, { lesson: null }] },
+						{ $and: [{ courseId: { $in: courseIds } }, { lessonId: null }] },
 						{ lessonId: { $in: lessonsIds } },
 						{ teacherId: userId }, // creator
 					],

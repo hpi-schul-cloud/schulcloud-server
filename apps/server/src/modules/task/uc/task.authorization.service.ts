@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course } from '@shared/domain';
+import { EntityId, Course, Lesson } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 
 export enum TaskParentPermission {
@@ -11,20 +11,8 @@ export enum TaskParentPermission {
 export class TaskAuthorizationService {
 	constructor(private readonly courseRepo: CourseRepo, private readonly lessonRepo: LessonRepo) {}
 
-	async getPermittedCourseIds(userId: EntityId, neededPermission: TaskParentPermission): Promise<EntityId[]> {
-		let permittedCourses: Course[] = [];
-
-		if (neededPermission === TaskParentPermission.write) {
-			[permittedCourses] = await this.courseRepo.findAllForTeacher(userId, undefined, { select: ['_id'] });
-		} else if (neededPermission === TaskParentPermission.read) {
-			[permittedCourses] = await this.courseRepo.findAllByUserId(userId, undefined, { select: ['_id'] });
-		}
-
-		const entityIds = permittedCourses.map((c) => c.id);
-
-		return entityIds;
-	}
-
+	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
+	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
 	async getPermittedCourses(userId: EntityId, neededPermission: TaskParentPermission): Promise<Course[]> {
 		let permittedCourses: Course[] = [];
 
@@ -37,9 +25,7 @@ export class TaskAuthorizationService {
 		return permittedCourses;
 	}
 
-	async getPermittedLessonIds(userId: EntityId, courseIds: EntityId[]): Promise<EntityId[]> {
-		const [courses] = await this.courseRepo.findAllByUserId(userId, { courseIds });
-
+	async getPermittedLessons(userId: EntityId, courses: Course[]): Promise<Lesson[]> {
 		const writeCourses = courses.filter(
 			(c) => c.getSubstitutionTeacherIds().includes(userId) || c.getTeacherIds().includes(userId)
 		);
@@ -50,15 +36,13 @@ export class TaskAuthorizationService {
 
 		// idea as combined query:
 		// [{courseIds: onlyWriteCoursesIds}, { courseIds: onlyReadCourses, filter: { hidden: false }}]
-
 		const [[writeLessons], [readLessons]] = await Promise.all([
 			this.lessonRepo.findAllByCourseIds(writeCourseIds),
 			this.lessonRepo.findAllByCourseIds(readCourseIds, { hidden: false }),
 		]);
 
 		const permittedLessons = [...writeLessons, ...readLessons];
-		const permittedLessonIds = permittedLessons.map((c) => c.id);
 
-		return permittedLessonIds;
+		return permittedLessons;
 	}
 }

@@ -663,10 +663,16 @@ describe('TaskRepo', () => {
 
 	describe('findAllFinishedByParentIds', () => {
 		describe('where course is finished', () => {
-			it('should find open tasks that added directly to course', async () => {
+			const setup = () => {
 				const untilDate = new Date(Date.now() - 60000);
 				const user = userFactory.build();
 				const course = courseFactory.build({ untilDate });
+
+				return { user, course };
+			};
+
+			it('should find open tasks that added directly to course', async () => {
+				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([task]);
@@ -682,9 +688,7 @@ describe('TaskRepo', () => {
 			});
 
 			it('should find open tasks of lessons', async () => {
-				const untilDate = new Date(Date.now() - 60000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
 				const task = taskFactory.build({ lesson, course });
 
@@ -702,9 +706,16 @@ describe('TaskRepo', () => {
 		});
 
 		describe('where course is open', () => {
-			it('should "not" find open tasks that added directly to course', async () => {
+			const setup = () => {
+				const untilDate = new Date(Date.now() + 60000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
+				const course = courseFactory.build({ untilDate });
+
+				return { user, course };
+			};
+
+			it('should "not" find open tasks that added directly to course', async () => {
+				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([task]);
@@ -720,8 +731,50 @@ describe('TaskRepo', () => {
 			});
 
 			it('should "not" find open tasks of lessons', async () => {
+				const { user, course } = setup();
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ lesson, course });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					lessonIds: [lesson.id],
+					courseIds: [course.id],
+					userId: user.id,
+				});
+
+				expect(total).toEqual(0);
+			});
+		});
+
+		describe('where course has no finished data', () => {
+			const setup = () => {
+				const untilDate = undefined;
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
+				const course = courseFactory.build({ untilDate });
+
+				return { user, course };
+			};
+
+			it('should "not" find open tasks that added directly to course', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.build({ course });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					lessonIds: [],
+					courseIds: [course.id],
+					userId: user.id,
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should "not" find open tasks of lessons', async () => {
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
 				const task = taskFactory.build({ lesson, course });
 

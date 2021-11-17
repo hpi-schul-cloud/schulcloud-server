@@ -1,6 +1,8 @@
 import { DeepPartial } from 'fishery';
+
 import { Task, ITaskProperties } from '@shared/domain';
 import type { User } from '@shared/domain/entity';
+
 import { BaseFactory } from './base.factory';
 
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {

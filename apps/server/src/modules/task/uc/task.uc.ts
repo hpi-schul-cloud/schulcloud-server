@@ -16,11 +16,11 @@ export class TaskUC {
 
 	// this uc includes 4 awaits
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<Task[]>> {
-		const courseIds = await this.authorizationService.getPermittedCourseIds(userId, TaskParentPermission.read);
-		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, courseIds);
+		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
+		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);
 
 		const [tasks, count] = await this.taskRepo.findAllFinishedByParentIds(
-			{ userId, courseIds, lessonIds },
+			{ userId, courseIds: courses.map((c) => c.id), lessonIds: lessons.map((l) => l.id) },
 			{ pagination }
 		);
 
@@ -46,16 +46,16 @@ export class TaskUC {
 
 	private async findAllForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
-		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
-		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, openCourseIds);
+		const openCourses = courses.filter((c) => !c.isFinished());
+		const lessons = await this.authorizationService.getPermittedLessons(userId, openCourses);
 
 		const dueDate = this.getDefaultMaxDueDate();
 		const closed = { userId, value: false };
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
-				courseIds: openCourseIds,
-				lessonIds,
+				courseIds: openCourses.map((c) => c.id),
+				lessonIds: lessons.map((l) => l.id),
 			},
 			{ draft: false, afterDueDateOrNone: dueDate, closed },
 			{
@@ -74,16 +74,16 @@ export class TaskUC {
 
 	private async findAllForTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.write);
-		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
-		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, openCourseIds);
+		const openCourses = courses.filter((c) => !c.isFinished());
+		const lessons = await this.authorizationService.getPermittedLessons(userId, openCourses);
 
 		const closed = { userId, value: false };
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				creatorId: userId,
-				courseIds: openCourseIds,
-				lessonIds,
+				courseIds: openCourses.map((c) => c.id),
+				lessonIds: lessons.map((l) => l.id),
 			},
 			{ closed },
 			{

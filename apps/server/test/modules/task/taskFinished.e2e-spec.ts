@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { MikroORM, EntityManager } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -138,7 +139,7 @@ describe('task/finished Controller (e2e)', () => {
 		});
 	});
 
-	describe('Where user has write permission in course', () => {
+	describe('where user has write permission in course', () => {
 		describe('where courses are finised', () => {
 			const setup = () => {
 				const untilDate = new Date(Date.now() - 6000);
@@ -164,7 +165,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -177,9 +178,9 @@ describe('task/finished Controller (e2e)', () => {
 				expect(result.total).toEqual(1);
 			});
 
-			it('should return finsihed tasks of visible lessons', async () => {
+			it('should return finished tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -194,7 +195,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -209,7 +210,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finsihed tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -290,7 +291,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -305,7 +306,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finsihed tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -320,7 +321,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -335,7 +336,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finsihed tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -418,7 +419,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -433,7 +434,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finsihed tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -448,7 +449,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -463,7 +464,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return finsihed tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -476,7 +477,7 @@ describe('task/finished Controller (e2e)', () => {
 				expect(result.total).toEqual(0);
 			});
 
-			it('should return draft tasks', async () => {
+			it('should "not" return draft tasks', async () => {
 				const { user, course } = setup();
 				const task = taskFactory.draft(true).build({ course });
 
@@ -544,7 +545,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -559,7 +560,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finished tasks of visible lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: false });
+				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -574,7 +575,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
 				await em.persistAndFlush([task]);
@@ -589,7 +590,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finsihed tasks of hidden lessons', async () => {
 				const { user, course } = setup();
-				const lesson = lessonFactory.build({ hidden: true });
+				const lesson = lessonFactory.build({ course, hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
 				await em.persistAndFlush([task]);

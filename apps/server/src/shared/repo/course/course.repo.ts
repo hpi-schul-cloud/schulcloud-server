@@ -33,13 +33,7 @@ export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	/* TODO: No index is set for this query. */
-	async findAllByUserId(
-		userId: EntityId,
-		filters?: { courseIds?: EntityId[] },
-		options?: IFindOptions<Course>
-	): Promise<Counted<Course[]>> {
-		const { select } = options || {};
-
+	async findAllByUserId(userId: EntityId, filters?: { courseIds?: EntityId[] }): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllGroupTypes(userId);
 
@@ -47,35 +41,23 @@ export class CourseRepo {
 			scope.byCourseIds(filters.courseIds);
 		}
 
-		const [courses, count] = await this.em.findAndCount(Course, scope.query, { fields: select });
+		const [courses, count] = await this.em.findAndCount(Course, scope.query);
 
 		return [courses, count];
 	}
 
-	async findAllForStudent(
-		userId: EntityId,
-		filters?: undefined,
-		options?: IFindOptions<Course>
-	): Promise<Counted<Course[]>> {
-		const { select } = options || {};
-
+	async findAllForStudent(userId: EntityId): Promise<Counted<Course[]>> {
 		const query = { students: userId };
-		const [courses, count] = await this.em.findAndCount(Course, query, { fields: select });
+		const [courses, count] = await this.em.findAndCount(Course, query);
 
 		return [courses, count];
 	}
 
-	async findAllForTeacher(
-		userId: EntityId,
-		filters?: undefined,
-		options?: IFindOptions<Course>
-	): Promise<Counted<Course[]>> {
-		const { select } = options || {};
-
+	async findAllForTeacher(userId: EntityId): Promise<Counted<Course[]>> {
 		const isTeacher = { teachers: userId };
 		const isSubstitutionTeacher = { substitutionTeachers: userId };
 		const query = { $or: [isTeacher, isSubstitutionTeacher] };
-		const [courses, count] = await this.em.findAndCount(Course, query, { fields: select });
+		const [courses, count] = await this.em.findAndCount(Course, query);
 
 		return [courses, count];
 	}

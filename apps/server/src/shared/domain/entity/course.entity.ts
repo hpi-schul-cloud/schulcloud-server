@@ -39,13 +39,13 @@ export class Course extends BaseEntityWithTimestamps {
 	school!: School;
 
 	@Index({ name: 'findAllForStudent' })
-	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	@ManyToMany('User', undefined, { fieldName: 'userIds', owner: true })
 	students = new Collection<User>(this);
 
-	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
+	@ManyToMany('User', undefined, { fieldName: 'teacherIds', owner: true })
 	teachers = new Collection<User>(this);
 
-	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
+	@ManyToMany('User', undefined, { fieldName: 'substitutionIds', owner: true })
 	substitutionTeachers = new Collection<User>(this);
 
 	// TODO: string color format

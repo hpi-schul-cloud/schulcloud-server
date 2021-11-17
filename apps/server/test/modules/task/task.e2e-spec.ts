@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { MikroORM, EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { MikroORM } from '@mikro-orm/core';
 
 import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
