@@ -23,7 +23,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			scope: 'sub',
 			attributes: [],
 		};
-		const searchString = this.config.rootPath;
+		const searchString = this.config.rootPath || '';
 		return this.app
 			.service('ldap')
 			.searchCollection(this.config, searchString, options)
