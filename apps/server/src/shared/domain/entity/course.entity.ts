@@ -6,6 +6,13 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
 
+export type CourseMetadata = {
+	id: string;
+	name: string;
+	shortName: string;
+	displayColor: string;
+};
+
 export interface ICourseProperties {
 	name?: string;
 	description?: string;
@@ -82,5 +89,14 @@ export class Course extends BaseEntityWithTimestamps {
 		const idsAsString = substitutionIds.map((id) => id.toString());
 
 		return idsAsString;
+	}
+
+	getMetadata(): CourseMetadata {
+		return {
+			id: this.id,
+			name: this.name,
+			shortName: this.name.substr(0, 2),
+			displayColor: this.color,
+		};
 	}
 }

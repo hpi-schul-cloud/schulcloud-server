@@ -37,8 +37,6 @@ describe('course uc', () => {
 			const [array, count] = await service.findByUser('someUserId');
 			expect(count).toEqual(5);
 			expect(array).toEqual(courses);
-
-			expect(spy).toHaveBeenCalledWith('someUserId', undefined);
 		});
 
 		it('should pass on options correctly', async () => {
@@ -47,11 +45,12 @@ describe('course uc', () => {
 				return Promise.resolve([courses, 5]);
 			});
 
-			const options = { pagination: { skip: 1, limit: 2 }, order: { name: SortOrder.asc } };
+			const pagination = { skip: 1, limit: 2 };
+			const resultingOptions = { pagination, order: { name: SortOrder.asc } };
 
-			const [array, count] = await service.findByUser('someUserId', options);
+			const [array, count] = await service.findByUser('someUserId', pagination);
 
-			expect(spy).toHaveBeenCalledWith('someUserId', options);
+			expect(spy).toHaveBeenCalledWith('someUserId', resultingOptions);
 		});
 	});
 });
