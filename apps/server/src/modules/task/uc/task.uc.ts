@@ -48,9 +48,10 @@ export class TaskUC {
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
 		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, openCourseIds);
-		const dueDate = this.getDefaultMaxDueDate();
 
+		const dueDate = this.getDefaultMaxDueDate();
 		const closed = { userId, value: false };
+
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				courseIds: openCourseIds,
@@ -77,6 +78,7 @@ export class TaskUC {
 		const lessonIds = await this.authorizationService.getPermittedLessonIds(userId, openCourseIds);
 
 		const closed = { userId, value: false };
+
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				creatorId: userId,
