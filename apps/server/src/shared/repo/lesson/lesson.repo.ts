@@ -27,10 +27,12 @@ export class LessonRepo {
 			scope.byHidden(filters.hidden);
 		}
 
-		const lessons = this.em.findAndCount(Lesson, scope.query, {
+		const [lessons, count] = await this.em.findAndCount(Lesson, scope.query, {
 			fields: select,
 		});
 
-		return lessons;
+		await this.em.populate(lessons, ['course']);
+
+		return [lessons, count];
 	}
 }

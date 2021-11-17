@@ -12,7 +12,6 @@ import {
 	courseFactory,
 	userFactory,
 	taskFactory,
-	submissionFactory,
 	createCurrentTestUser,
 	cleanUpCollections,
 	lessonFactory,
@@ -49,143 +48,108 @@ const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 describe('task/finished Controller (e2e)', () => {
 	// where user is not loggedin -> show always 200, but it should status 401 like if we send a request against backend
 	// test setup is not perfect
+	let app: INestApplication;
+	let orm: MikroORM;
+	let em: EntityManager;
+	let currentUser: ICurrentUser;
+	let api: API;
 
-	describe('Where user has no read and write permission in course', () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let api: API;
-
-		beforeAll(async () => {
-			const moduleFixture: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerModule],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
 			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						const { currentUser } = createCurrentTestUser([]);
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
+			.compile();
 
-			app = moduleFixture.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			api = new API(app, '/tasks/finished');
+		app = module.createNestApplication();
+		await app.init();
+		orm = app.get(MikroORM);
+		em = module.get(EntityManager);
+		currentUser = createCurrentTestUser().currentUser;
+		api = new API(app, '/tasks/finished');
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await app.close();
+	});
+
+	beforeEach(async () => {
+		await Promise.all([
+			em.nativeDelete(Course, {}),
+			em.nativeDelete(Task, {}),
+			em.nativeDelete(Submission, {}),
+			em.nativeDelete(User, {}),
+		]);
+		// await cleanUpCollections(em);
+	});
+
+	it('should possible to open it', async () => {
+		const response = await api.get();
+
+		expect(response.status).toEqual(200);
+	});
+
+	it('should return a paginated result', async () => {
+		const { result } = await api.get();
+
+		expect(result).toEqual({
+			total: 0,
+			data: [],
+			limit: 10,
+			skip: 0,
+		});
+	});
+
+	describe('where user is the creator', () => {
+		it('should return finsihed tasks', async () => {
+			const user = userFactory.build();
+			const task = taskFactory.finished(user).build({ teacher: user });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, user);
+
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(1);
 		});
 
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
+		it('should "not" return open tasks', async () => {
+			const user = userFactory.build();
+			const task = taskFactory.build({ teacher: user });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, user);
+
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
 		});
-
-		it('should possible to open it', async () => {
-			const response = await api.get();
-
-			expect(response.status).toEqual(200);
-		});
-
-		// creator
 	});
 
 	describe('Where user has write permission in course', () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-			currentUser = createCurrentTestUser().currentUser;
-			api = new API(app, '/tasks/finished');
-		});
-
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await Promise.all([
-				em.nativeDelete(Course, {}),
-				em.nativeDelete(Task, {}),
-				em.nativeDelete(Submission, {}),
-				em.nativeDelete(User, {}),
-			]);
-			// await cleanUpCollections(em);
-		});
-
-		it('should possible to open it', async () => {
-			const { status } = await api.get();
-
-			expect(status).toEqual(200);
-		});
-
-		it('should return a paginated result', async () => {
-			const { result } = await api.get();
-
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 10,
-				skip: 0,
-			});
-		});
-
-		describe('where user is the creator', () => {
-			it('should return finsihed tasks', async () => {
-				const user = userFactory.build();
-				const task = taskFactory.finished(user).build({ teacher: user });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				modifyCurrentUserId(currentUser, user);
-
-				const { result } = await api.get();
-
-				expect(result.total).toEqual(1);
-			});
-
-			it('should "not" return open tasks', async () => {
-				const user = userFactory.build();
-				const task = taskFactory.build({ teacher: user });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				modifyCurrentUserId(currentUser, user);
-
-				const { result } = await api.get();
-
-				expect(result.total).toEqual(1);
-			});
-		});
-
 		describe('where courses are finised', () => {
-			it('should return tasks of courses', async () => {
+			const setup = () => {
 				const untilDate = new Date(Date.now() - 6000);
 				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user], untilDate });
+
+				return { course, user };
+			};
+
+			it('should return tasks of courses', async () => {
+				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([task]);
@@ -199,9 +163,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
@@ -216,9 +178,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -233,9 +193,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
@@ -250,9 +208,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -267,9 +223,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return draft tasks', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -283,9 +237,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finished draft tasks', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -299,9 +251,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -316,10 +266,16 @@ describe('task/finished Controller (e2e)', () => {
 		});
 
 		describe('where courses are open', () => {
-			it('should "not" return tasks of courses', async () => {
+			const setup = () => {
 				const untilDate = new Date(Date.now() + 6000);
 				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user], untilDate });
+
+				return { course, user };
+			};
+
+			it('should "not" return tasks of courses', async () => {
+				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([task]);
@@ -333,9 +289,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
@@ -350,9 +304,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -367,9 +319,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
@@ -384,9 +334,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -401,9 +349,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return draft tasks', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -417,9 +363,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finished draft tasks', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -433,9 +377,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -451,71 +393,17 @@ describe('task/finished Controller (e2e)', () => {
 	});
 
 	describe('Where user has read permission in course', () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-			currentUser = createCurrentTestUser().currentUser;
-			api = new API(app, '/tasks/finished');
-		});
-
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await Promise.all([
-				em.nativeDelete(Course, {}),
-				em.nativeDelete(Task, {}),
-				em.nativeDelete(Submission, {}),
-				em.nativeDelete(User, {}),
-			]);
-			// await cleanUpCollections(em);
-		});
-
-		it('should possible to open it', async () => {
-			const { status } = await api.get();
-
-			expect(status).toEqual(200);
-		});
-
-		it('should return a paginated result', async () => {
-			const { result } = await api.get();
-
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 10,
-				skip: 0,
-			});
-		});
-
 		describe('where courses are finised', () => {
-			it('should return tasks of courses', async () => {
+			const setup = () => {
 				const untilDate = new Date(Date.now() - 6000);
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], untilDate });
+
+				return { course, user };
+			};
+
+			it('should return tasks of courses', async () => {
+				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([task]);
@@ -529,9 +417,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
@@ -546,9 +432,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -563,9 +447,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
@@ -580,9 +462,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return finsihed tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -597,9 +477,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return draft tasks', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -613,9 +491,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return finished draft tasks', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -629,9 +505,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finished tasks', async () => {
-				const untilDate = new Date(Date.now() - 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -646,10 +520,16 @@ describe('task/finished Controller (e2e)', () => {
 		});
 
 		describe('where courses are open', () => {
-			it('should "not" return tasks of courses', async () => {
+			const setup = () => {
 				const untilDate = new Date(Date.now() + 6000);
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], untilDate });
+
+				return { course, user };
+			};
+
+			it('should "not" return tasks of courses', async () => {
+				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([task]);
@@ -663,9 +543,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.build({ course, lesson });
 
@@ -680,9 +558,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finished tasks of visible lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: false });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -697,9 +573,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.build({ course, lesson });
 
@@ -714,9 +588,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finsihed tasks of hidden lessons', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const lesson = lessonFactory.build({ hidden: true });
 				const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -731,9 +603,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return draft tasks', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -747,9 +617,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should "not" return finished draft tasks', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.draft(true).finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -763,9 +631,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 
 			it('should return finished tasks', async () => {
-				const untilDate = new Date(Date.now() + 6000);
-				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const { user, course } = setup();
 				const task = taskFactory.finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
