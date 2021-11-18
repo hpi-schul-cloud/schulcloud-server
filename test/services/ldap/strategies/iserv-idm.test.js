@@ -198,7 +198,7 @@ describe('IservIdmLDAPStrategy', () => {
 				ldapLastSync: '20201020000000Z',
 			};
 			await new IservIdmLDAPStrategy(app, {}).getUsers(school);
-			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('!(modifyTimestamp<=20201020000000Z)');
+			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
 		});
 	});
 
@@ -271,7 +271,7 @@ describe('IservIdmLDAPStrategy', () => {
 				ldapLastSync: '20201020000000Z',
 			};
 			await new IservIdmLDAPStrategy(app, {}).getClasses(school);
-			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('!(modifyTimestamp<=20201020000000Z)');
+			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
 		});
 	});
 });

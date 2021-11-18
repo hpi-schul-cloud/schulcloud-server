@@ -106,7 +106,7 @@ data:
 {% else %}
   ADMIN_TOGGLE_STUDENT_VISIBILITY: "enabled"
 {% endif %}
-  FEATURE_ALERTS_STATUS_ENABLED: "true"
+  FEATURE_ALERTS_STATUS_ENABLED: "{{ FEATURE_ALERTS_ENABLED|default("false") }}"
   ALERT_STATUS_URL: "{{ ALERT_STATUS_URL|default("https://status.hpi-schul-cloud.de", true) }}"
   ALERT_STATUS_API_URL: "{{ ALERT_STATUS_URL|default("https://status.hpi-schul-cloud.de", true) }}/api/v1"
   FEATURE_MORGAN_LOG_ENABLED: "false"

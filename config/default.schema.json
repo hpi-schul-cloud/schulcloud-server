@@ -403,6 +403,31 @@
 			"default": false,
 			"description": "Enables chat function for the school."
 		},
+		"ROCKET_CHAT_URI": {
+			"type": "string",
+			"default" : null,
+			"description": "rocketchat base uri"
+		},
+		"ROCKET_CHAT_ADMIN_ID": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin id"
+		},
+		"ROCKET_CHAT_ADMIN_TOKEN": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin token"
+		},
+		"ROCKET_CHAT_ADMIN_USER": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin user"
+		},
+		"ROCKET_CHAT_ADMIN_PASSWORD": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin password"
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -651,7 +676,7 @@
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
 			"type": "string",
 			"default": "ticketsystem@schul-cloud.org",
-			"description": "Email address used for reporting a wish"
+			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
 			"type": "boolean",

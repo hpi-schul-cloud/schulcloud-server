@@ -8,7 +8,7 @@ For logging use the logger ServerLogger, provided by the logger module. It is ho
 
 ```TypeScript
 // add Logger module to your feature module imports or unit tests
-import { LoggerModule } from '../core/logger/logger.module';
+import { LoggerModule } from '@src/core/logger';
 // ...
 imports: [LoggerModule],
 
@@ -18,7 +18,7 @@ imports: [LoggerModule],
 // within of a provider (use-case, service, ...)
 
 // import the server logger service
-import { ServerLogger } from '../core/logger/logger.service';
+import { ServerLogger } from '@src/core/logger';
 
 @Injectable()
 export class YourUc {

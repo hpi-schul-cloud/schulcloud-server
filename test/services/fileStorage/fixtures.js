@@ -147,6 +147,18 @@ module.exports = {
 			],
 		},
 	],
+	storageProvider: [
+		{
+			_id: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
+			type: 'S3',
+			isShared: true,
+			accessKeyId: 'minioadmin',
+			secretAccessKey: 'minioadmin',
+			enpointUrl: 'http://localhost:9090',
+			maxBuckets: 10,
+			freeBuckets: 10,
+		},
+	],
 	files: [
 		{
 			_id: mongoose.mongo.ObjectId('5ca601745d629505e51252d7'),
@@ -158,6 +170,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca601745d629505e51252d8'),
@@ -169,6 +183,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample from teacher',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef27'),
@@ -186,6 +202,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef28'),
@@ -206,6 +224,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef29'),
@@ -224,6 +244,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef30'),
@@ -242,6 +264,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef31'),
@@ -261,6 +285,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef32'),
@@ -280,6 +306,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef33'),
@@ -302,6 +330,8 @@ module.exports = {
 			],
 			isDirectory: true,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef34'),
@@ -320,6 +350,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef35'),
@@ -338,6 +370,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef36'),
@@ -353,6 +387,8 @@ module.exports = {
 			],
 			isDirectory: true,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 		{
 			_id: mongoose.mongo.ObjectId('5ca613c4c7f5120b8c5bef37'),
@@ -371,6 +407,8 @@ module.exports = {
 			type: 'any/type',
 			size: 123,
 			name: 'sample',
+			bucket: 'bucket-test',
+			storageProviderId: mongoose.mongo.ObjectId('6037ac756b73f213eede43b4'),
 		},
 	],
 };
