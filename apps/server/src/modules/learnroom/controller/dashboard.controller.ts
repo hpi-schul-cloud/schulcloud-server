@@ -1,7 +1,8 @@
 import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
+import { ICurrentUser } from '@shared/domain';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardResponse, MoveElementParams, PatchGroupParams } from './dto';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
@@ -14,8 +15,8 @@ export class DashboardController {
 
 	@Get()
 	@ApiBody({ type: DashboardResponse })
-	async findForUser(): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.getUsersDashboard(/* currentUser.userId */);
+	async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
+		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
@@ -24,10 +25,15 @@ export class DashboardController {
 	@ApiBody({ type: DashboardResponse })
 	async moveElement(
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
-		/* @CurrentUser() currentUser: ICurrentUser, */
-		@Body() params: MoveElementParams
+		@Body() params: MoveElementParams,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.moveElementOnDashboard(dashboardId, params.from, params.to);
+		const dashboard = await this.dashboardUc.moveElementOnDashboard(
+			dashboardId,
+			params.from,
+			params.to,
+			currentUser.userId
+		);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
@@ -37,9 +43,15 @@ export class DashboardController {
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
 		@Query('x') x: number,
 		@Query('y') y: number,
-		@Body() params: PatchGroupParams
+		@Body() params: PatchGroupParams,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.renameGroupOnDashboard(dashboardId, { x, y }, params.title);
+		const dashboard = await this.dashboardUc.renameGroupOnDashboard(
+			dashboardId,
+			{ x, y },
+			params.title,
+			currentUser.userId
+		);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}
