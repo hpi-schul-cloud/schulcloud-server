@@ -1,0 +1,44 @@
+name: Run unstable e2e tests
+
+on:
+    pull_request:
+        branches:
+            - main
+        types: [labeled, synchronize]
+    workflow_dispatch:
+        label:
+            name: 'run unstable tests'
+
+jobs:
+  end-to-end-unstable-tests:
+    runs-on: ubuntu-latest
+    # run the action, when label 'run unstable tests' has been set
+    if: "contains( github.event.label.name , 'run unstable tests' ) || contains( github.event.pull_request.labels.*.name , 'run unstable tests' )"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set BRANCH_NAME on pull_request
+        run: |
+            echo ${{ github.head_ref }}
+            branch_name=${{ github.head_ref }}
+            echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+      - name: run git change
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "ssh://git@github.com/"
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+      - name: execute tests
+        run: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/main/scripts/ci/fetch.github.sh" | bash -s unstable
+        env:
+            ES_USER: ${{ secrets.ES_USER }}
+            ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+            SECRET_ES_MERLIN_USERNAME: ${{ secrets.SECRET_ES_MERLIN_USERNAME }}
+            SECRET_ES_MERLIN_PW: ${{ secrets.SECRET_ES_MERLIN_PW }}
+            DOCKER_ID: ${{ secrets.DOCKER_ID }}
+            MY_DOCKER_PASSWORD: ${{ secrets.MY_DOCKER_PASSWORD }}
+      - uses: actions/upload-artifact@v1
+        name: upload results
+        if: always()
+        with:
+          name: report
+          path: end-to-end-tests/reports
+

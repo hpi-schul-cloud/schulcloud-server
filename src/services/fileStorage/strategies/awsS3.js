@@ -314,6 +314,10 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		};
 	}
 
+	getBucket(schoolId) {
+		return getBucketName(schoolId);
+	}
+
 	async listBucketsNames(awsObject) {
 		return listBuckets(awsObject);
 	}

@@ -1,45 +1,13 @@
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
-const { facadeLocator } = require('../../../utils/facadeLocator');
-
 const { removePermissionsThatUserCanAccess, removePersonalFiles } = require('./deleteUserData.uc').private;
 
 const fileRepo = require('../repo/files.repo');
-const fileStorageProviderRepo = require('../repo/fileStorageProvider.repo');
 const { GeneralError } = require('../../../errors');
 
-const facadeStubs = {
-	'/users/v2': {
-		getSchoolIdOfUser: sinon.stub().returns(Promise.resolve(new ObjectId())),
-	},
-	'/school/v2': {
-		getStorageProviderIdForSchool: sinon.stub().returns(Promise.resolve(new ObjectId())),
-	},
-};
-
 describe('deletedUserData.uc.unit', () => {
-	const previousFacades = {};
-
-	before(() => {
-		for (const [key, facade] of Object.entries(facadeStubs)) {
-			previousFacades[key] = facadeLocator.facade(key);
-			facadeLocator.registerFacade(key, facade);
-		}
-	});
-
-	after(() => {
-		for (const [key, facade] of Object.entries(previousFacades)) {
-			facadeLocator.registerFacade(key, facade);
-		}
-	});
-
-	beforeEach(() => {
-		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrashBatch').returns(Promise.resolve(true));
-	});
-
 	afterEach(sinon.restore);
 
 	describe('removePersonalFiles', () => {
@@ -47,8 +15,6 @@ describe('deletedUserData.uc.unit', () => {
 			const userId = new ObjectId();
 			const removePersonalFilesStub = sinon.stub(fileRepo, 'removePersonalFilesByUserId');
 			removePersonalFilesStub.withArgs(userId).returns(true);
-			sinon.stub(fileStorageProviderRepo, 'getStorageProviderMetaInformation').returns({ secretAccessKey: 'secret' });
-			Configuration.set('S3_KEY', 'abcdefghijklmnop');
 			const getPersonalFilesStub = sinon.stub(fileRepo, 'getPersonalFilesByUserId');
 			getPersonalFilesStub.withArgs(userId).returns([
 				{

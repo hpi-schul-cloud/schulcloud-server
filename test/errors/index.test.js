@@ -428,7 +428,9 @@ describe('parameter for feathers errors', () => {
 			logger.info(err);
 			expect(err instanceof Error).to.be.true;
 			expect(err instanceof FeathersError).to.be.true;
-			expect(err.message, 'use message from passed error').to.equal("Cannot read property 'forEach' of undefined");
+			expect(err.message, 'use message from passed error').to.equal(
+				"Cannot read properties of undefined (reading 'forEach')"
+			);
 			expect(err.code).to.equal(400);
 			expect(err.type).to.equal('FeathersError');
 			expect(err.className, 'should the name of constructor as lower case notation').to.equal('bad-request');

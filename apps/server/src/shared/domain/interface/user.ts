@@ -1,3 +1,5 @@
+import type { Role } from '../entity/role.entity';
+
 export interface IRole {
 	name: string;
 
@@ -34,3 +36,8 @@ export interface ICurrentUser {
 
 	user: IResolvedUser;
 }
+
+export type IPermissionsAndRoles = {
+	permissions: string[];
+	roles: Role[];
+};

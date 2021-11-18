@@ -2,7 +2,6 @@ const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
-const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 const { userModel } = require('../../../src/services/user/model');
 
 describe('firstLogin Service', () => {

@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const constants = require('../../utils/constants');
 const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
 
@@ -11,6 +12,19 @@ const getAutomaticConsent = () => ({
 	termsOfUseConsent: true,
 	dateOfTermsOfUseConsent: Date.now(),
 });
+
+const isStudent = (userRoles = []) => userRoles.some((role) => role.name === 'student');
+
+// For admins the birthdate is not set and for teacher is optionl.
+const validateExistingStudentBirthdate = (user, userRoles, data = {}) => {
+	if (!isStudent(userRoles)) {
+		return;
+	}
+
+	if ((user.birthday || data.studentBirthdate) === false) {
+		throw new Error('Bitte gib dein Geburtsdatum an.');
+	}
+};
 
 /**
  * Parse a given string as ISO date or timestamp.
@@ -29,17 +43,36 @@ const parseDate = (dateString) => {
 };
 
 const firstLogin = async (data, params, app) => {
-	if (!passwordsMatch(data['password-1'], data['password-2'])) {
-		return Promise.reject(new Error('Die neuen Passwörter stimmen nicht überein.'));
-	}
-
 	const { accountId } = params.authentication.payload;
-	const accountUpdate = {};
+
+	let userPromise = Promise.resolve();
 	let accountPromise = Promise.resolve();
-	const userUpdate = {};
 	let consentPromise = Promise.resolve();
 	let updateConsentUsingVersions = Promise.resolve();
+
 	const user = await app.service('users').get(params.account.userId);
+
+	const userRoles = await app.service('roles').find({
+		query: { _id: { $in: user.roles }, $select: ['name'] },
+		paginate: false,
+	});
+
+	const preferences = user.preferences || {};
+	preferences.firstLogin = true;
+
+	const accountUpdate = {};
+	let consentUpdate = {};
+	const userUpdate = {
+		preferences,
+		forcePasswordChange: false,
+	};
+
+	// if firstLogin === false skip execution?
+
+	// password
+	if (!passwordsMatch(data['password-1'], data['password-2'])) {
+		throw new Error('Die neuen Passwörter stimmen nicht überein.');
+	}
 
 	if (data['password-1']) {
 		accountUpdate.password_verification = data.password_verification || data['password-2'];
@@ -47,27 +80,25 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
+	// birthdate
+	validateExistingStudentBirthdate(user, userRoles, data);
+
 	if (data.studentBirthdate) {
 		userUpdate.birthday = parseDate(data.studentBirthdate);
 	}
 
+	// email
 	if (data['student-email']) {
 		if (!constants.expressions.email.test(data['student-email'])) {
-			return Promise.reject(new Error('Bitte eine valide E-Mail-Adresse eingeben.'));
+			throw new Error('Bitte eine valide E-Mail-Adresse eingeben.');
 		}
 		userUpdate.email = data['student-email'];
 	}
 
-	const preferences = user.preferences || {};
-	preferences.firstLogin = true;
-	userUpdate.preferences = preferences;
-	userUpdate.forcePasswordChange = false;
+	// TODO: consent also part of user now, why not patch by this request. Is the third parameter really needed?
+	userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 
-	const userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
-
-	// Update consents
-	let consentUpdate = {};
-
+	// consents
 	const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 	if (consentSkipCondition !== '') {
 		// If one of the user's roles is included in one of the groups defined as
@@ -76,10 +107,7 @@ const firstLogin = async (data, params, app) => {
 			employee: ['administrator', 'teacher'],
 			student: ['student'],
 		};
-		const userRoles = await app.service('roles').find({
-			query: { _id: { $in: user.roles }, $select: ['name'] },
-			paginate: false,
-		});
+
 		for (const [condition, allowedRoles] of Object.entries(roleMapping)) {
 			if (consentSkipCondition.includes(condition)) {
 				for (const role of userRoles) {
@@ -165,9 +193,7 @@ const firstLogin = async (data, params, app) => {
 	}
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
-	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
-		.then((result) => Promise.resolve(result))
-		.catch((err) => Promise.reject(err));
+	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions]);
 };
 
 module.exports = function setup(app) {
