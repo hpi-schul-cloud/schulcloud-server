@@ -1,0 +1,292 @@
+const { expect } = require('chai');
+const sinon = require('sinon');
+
+const appPromise = require('../../../../src/app');
+
+const AbstractLDAPStrategy = require('../../../../src/services/ldap/strategies/interface');
+const GeneralLDAPStrategy = require('../../../../src/services/ldap/strategies/general');
+
+const mockLDAPConfig = {
+	url: 'ldaps://foo.bar:636',
+	rootPath: 'o=school0,dc=de,dc=example,dc=org',
+	providerOptions: {
+		schoolName: 'test-school',
+		rootPath: 'o=school0,dc=de,dc=example,dc=org',
+		userAttributeNameMapping: {
+			givenName: 'givenName',
+			sn: 'sn',
+			dn: 'dn',
+			uuid: 'uuid',
+			uid: 'uid',
+			mail: 'mail',
+			role: 'role',
+		},
+		roleAttributeNameMapping: {
+			roleStudent: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
+			roleTeacher: 'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org',
+			roleAdmin: 'cn=ROLE_ADMIN,ou=roles,o=school0,dc=de,dc=example,dc=org',
+		},
+		classAttributeNameMapping: {
+			description: 'description',
+			dn: 'dn',
+			uniqueMember: 'member',
+		},
+		userPathAdditions: 'ou=users',
+		roleType: 'group',
+	},
+};
+
+const createLDAPUserResult = (props) => ({
+	dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+	givenName: 'Max',
+	sn: 'Mustermann',
+	uid: 'max.mustermann.1',
+	uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y0',
+	mail: 'max.mustermann.1@example.org',
+	memberOf: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
+	...props,
+});
+
+describe.only('GeneralLDAPStrategy', () => {
+	it('implements AbstractLDAPStrategy', () => {
+		expect(new GeneralLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
+	});
+
+	let originalLdapService;
+	let ldapServiceMock;
+
+	let app;
+
+	before(async () => {
+		app = await appPromise;
+		originalLdapService = app.service('ldap');
+	});
+
+	after(() => {
+		app.use('/ldap', originalLdapService);
+	});
+
+	describe('#getSchools', () => {
+		it('should return school compliant with internal interface', async () => {
+			const schools = await new GeneralLDAPStrategy(app, mockLDAPConfig).getSchools();
+			expect(schools.length).to.equal(1);
+			const school = schools[0];
+			expect(school).to.haveOwnProperty('ldapOu');
+			expect(school).to.haveOwnProperty('displayName');
+		});
+
+		it('should return school filled with data from the LDAP configuration', async () => {
+			const schools = await new GeneralLDAPStrategy(app, mockLDAPConfig).getSchools();
+			expect(schools.length).to.equal(1);
+			const school = schools[0];
+			expect(school.displayName).to.equal(mockLDAPConfig.providerOptions.schoolName);
+			expect(school.ldapOu).to.equal(mockLDAPConfig.providerOptions.rootPath);
+		});
+	});
+
+	describe('#getUsers', () => {
+		function MockLdapService() {
+			return {
+				setup: () => {},
+				searchCollection: sinon.fake.resolves([
+					{
+						dn: 'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+						givenName: 'Max',
+						sn: 'Mustermann',
+						uid: 'max.mustermann.1',
+						uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y0',
+						mail: 'max.mustermann.1@example.org',
+						memberOf: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
+					},
+					{
+						dn: 'uid=marla.mathe.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+						givenName: 'Marla',
+						sn: 'Mathe',
+						uid: 'marla.mathe.1',
+						uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y1',
+						mail: 'marla.mathe.1@example.org',
+						memberOf: [
+							'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
+							'cn=User-centricdedicatedmoratorium,ou=groups,o=school0,dc=de,dc=example,dc=org',
+						],
+					},
+					{
+						dn: 'uid=herr.lempel.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+						givenName: 'Herr',
+						sn: 'Lempel',
+						uid: 'herr.lempel.1',
+						uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y2',
+						mail: 'herr.lempel.1@example.org',
+						memberOf: [
+							'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org',
+							'cn=Mandatoryhigh-levelGraphicInterface,ou=groups,o=school0,dc=de,dc=example,dc=org',
+							'cn=Front-linebi-directionalalliance,ou=groups,o=school0,dc=de,dc=example,dc=org',
+							'cn=User-centricactuatingportal,ou=groups,o=school0,dc=de,dc=example,dc=org',
+						],
+					},
+					{
+						dn: 'uid=testington.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+						sn: 'Testington',
+						uid: 'testington.1',
+						uuid: 'ZDg0Y2ZlMjMtZGYwNi00MWNjLTg3YmUtZjI3NjA1NDJhY2Y3',
+						mail: 'testington.1@example.org',
+						memberOf: 'cn=ROLE_ADMIN,ou=roles,o=school0,dc=de,dc=example,dc=org',
+					},
+				]),
+			};
+		}
+
+		beforeEach(() => {
+			ldapServiceMock = new MockLdapService();
+			app.use('/ldap', ldapServiceMock);
+		});
+
+		it('should return all users', async () => {
+			const users = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
+			expect(users.length).to.equal(4);
+		});
+
+		it('should follow the internal interface', async () => {
+			const users = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
+			users.forEach((user) => {
+				['email', 'firstName', 'lastName', 'roles', 'ldapDn', 'ldapUUID', 'ldapUID'].forEach((attr) => {
+					expect(user).to.haveOwnProperty(attr);
+				});
+			});
+		});
+
+		it('should search for all user search paths', async () => {
+			const userSearchPaths = ['ou:users1', 'ou:users2', 'ou:users3'];
+			const ldapConfig = {
+				...mockLDAPConfig,
+				providerOptions: { ...mockLDAPConfig.providerOptions, userPathAdditions: userSearchPaths.join(';;') },
+			};
+			await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
+			expect(ldapServiceMock.searchCollection.callCount).to.equal(userSearchPaths.length);
+			const calls = ldapServiceMock.searchCollection.getCalls();
+			calls.forEach((call, index) => {
+				const searchPath = call.args[1];
+				expect(searchPath).to.equal(`${userSearchPaths[index]},${ldapConfig.rootPath}`);
+			});
+		});
+
+		it('should assign roles based on specific group memberships for group role type', async () => {
+			const [student1, student2, teacher, admin] = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
+			expect(student1.roles).to.include('student');
+			expect(student2.roles).to.include('student');
+			expect(teacher.roles).to.include('teacher');
+			expect(admin.roles).to.include('administrator');
+		});
+
+		it('should assign roles based on specific group memberships for non-group role type', async () => {
+			const ldapConfig = {
+				...mockLDAPConfig,
+				providerOptions: { ...mockLDAPConfig.providerOptions, roleType: 'non-group' },
+			};
+			app.use('/ldap', {
+				setup: () => {},
+				searchCollection: sinon.fake.resolves([
+					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent }),
+					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher }),
+					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin }),
+				]),
+			});
+			const [student, teacher, admin] = await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
+			expect(student.roles).to.include('student');
+			expect(teacher.roles).to.include('teacher');
+			expect(admin.roles).to.include('administrator');
+		});
+
+		it('should assign name defaults if entities lack first names', async () => {
+			app.use('/ldap', {
+				setup: () => {},
+				searchCollection: sinon.fake.resolves([
+					createLDAPUserResult({
+						givenName: '',
+						memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent,
+					}),
+					createLDAPUserResult({
+						givenName: '',
+						memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher,
+					}),
+					createLDAPUserResult({
+						givenName: '',
+						memberOf: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin,
+					}),
+				]),
+			});
+			const [student, teacher, admin] = await new GeneralLDAPStrategy(app, mockLDAPConfig).getUsers();
+			expect(student.firstName).to.equal('Schüler:in');
+			expect(teacher.firstName).to.equal('Lehrkraft');
+			expect(admin.firstName).to.equal('Admin');
+		});
+	});
+
+	describe.skip('#getClasses', () => {
+		function MockLdapService() {
+			return {
+				setup: () => {},
+				searchCollection: sinon.fake.returns(
+					Promise.resolve([
+						{
+							cn: '100000-3GEGDV64GIHO39TI',
+							dn: 'cn=100000-3GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+							uniqueMember: [
+								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+								'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							],
+						},
+						{
+							cn: '100000-4GEGDV64GIHO39TI',
+							dn: 'cn=100000-4GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+							uniqueMember: [
+								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							],
+						},
+					])
+				),
+			};
+		}
+
+		beforeEach(() => {
+			ldapServiceMock = new MockLdapService();
+			app.use('/ldap', ldapServiceMock);
+		});
+
+		it('should return all IServ groups as classes', async () => {
+			const school = {
+				ldapSchoolIdentifier: 'o=Testschule,dc=de',
+			};
+			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses(school);
+			expect(classes.length).to.equal(2);
+		});
+
+		it('should follow the internal interface', async () => {
+			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses({});
+			classes.forEach((klass) => {
+				['className', 'ldapDn', 'uniqueMembers'].forEach((attr) => {
+					expect(klass).to.haveOwnProperty(attr);
+				});
+			});
+		});
+
+		it('should search in cn=groups', async () => {
+			const ldapSchoolIdentifier = 'cn=foo,cn=bar';
+			await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses({ ldapSchoolIdentifier });
+			expect(
+				ldapServiceMock.searchCollection.calledWith(
+					mockLDAPConfig,
+					`cn=klassen,cn=schueler,cn=groups,ou=${ldapSchoolIdentifier},${mockLDAPConfig.rootPath}`
+				)
+			).to.equal(true);
+		});
+
+		it('should return all members as array', async () => {
+			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses({});
+			expect(classes[0].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(3);
+			expect(classes[1].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(2);
+		});
+	});
+});
