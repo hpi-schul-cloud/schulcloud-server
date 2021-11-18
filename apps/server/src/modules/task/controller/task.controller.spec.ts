@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LearnroomFacade } from '../../learnroom';
-import { TaskRepo, SubmissionRepo } from '../repo';
+import { LessonRepo, TaskRepo } from '@shared/repo';
 import { TaskUC } from '../uc';
+import { TaskAuthorizationService } from '../uc/task.authorization.service';
 import { TaskController } from './task.controller';
-import { TaskSubmissionMetadataService } from '../domain/task-submission-metadata.service';
 
 describe('TaskController', () => {
 	let controller: TaskController;
@@ -12,30 +11,27 @@ describe('TaskController', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				TaskUC,
-				LearnroomFacade,
-				{
-					provide: LearnroomFacade,
-					useValue: {},
-				},
-				TaskRepo,
 				{
 					provide: TaskRepo,
 					useValue: {},
 				},
-				SubmissionRepo,
 				{
-					provide: SubmissionRepo,
+					provide: LessonRepo,
 					useValue: {},
 				},
 				{
-					provide: TaskSubmissionMetadataService,
-					useValue: {},
+					provide: TaskAuthorizationService,
+					useValue: {
+						getPermittedCourses() {
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourses');
+						},
+					},
 				},
 			],
 			controllers: [TaskController],
 		}).compile();
 
-		controller = module.get<TaskController>(TaskController);
+		controller = module.get(TaskController);
 	});
 
 	it('should be defined', () => {

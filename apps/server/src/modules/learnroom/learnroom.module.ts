@@ -1,11 +1,20 @@
 import { Module } from '@nestjs/common';
-import { CourseUC } from './uc';
-import { CourseRepo, CoursegroupRepo } from './repo';
-import { LearnroomFacade } from './learnroom.facade';
+
+import { DashboardRepo, DashboardModelMapper } from '@shared/repo';
+
+import { DashboardController } from './controller/dashboard.controller';
+import { DashboardUc } from './uc/dashboard.uc';
 
 @Module({
-	controllers: [],
-	providers: [LearnroomFacade, CourseUC, CourseRepo, CoursegroupRepo],
-	exports: [LearnroomFacade],
+	imports: [],
+	controllers: [DashboardController],
+	providers: [
+		DashboardUc,
+		{
+			provide: 'DASHBOARD_REPO',
+			useClass: DashboardRepo,
+		},
+		DashboardModelMapper,
+	],
 })
 export class LearnroomModule {}

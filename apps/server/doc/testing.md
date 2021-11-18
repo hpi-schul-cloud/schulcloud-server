@@ -219,9 +219,9 @@ The basic structure of the repo integration test:
               ],
              providers: [NewsRepo],                                     (1.2)
       }).compile();
-      repo = testModule.get<NewsRepo>(NewsRepo);                        (2)
-      orm = testModule.get<MikroORM>(MikroORM);
-      em = testModule.get<EntityManager>(EntityManager);
+      repo = testModule.get(NewsRepo);                                  (2)
+      orm = testModule.get(MikroORM);
+      em = testModule.get(EntityManager);
     })
 ```
 
@@ -285,8 +285,8 @@ The database calls are mocked and spyied. So we can check how and with which par
 			],
 		}).compile();
 
-		service = module.get<NewsUc>(NewsUc);                           (4)
-		repo = module.get<NewsRepo>(NewsRepo);
+		service = module.get(NewsUc);                                    (4)
+		repo = module.get(NewsRepo);
 ```
 
 #### Test
@@ -379,8 +379,8 @@ are correctly mounted and available at a specific path.
 
 		app = module.createNestApplication();                           (5)
 		await app.init();
-		orm = module.get<MikroORM>(MikroORM);                           (6)
-		em = module.get<EntityManager>(EntityManager);
+		orm = module.get(MikroORM);                                     (6)
+		em = module.get(EntityManager);
 	});
 ```
 
@@ -415,7 +415,7 @@ The response can be verified by checking the response code or by applying some v
 	describe('GET /news', () => {
       it('should get empty response if there is no news', async () => {
         const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-        const {data, total} = response.body as PaginationResponse<NewsResponse[]>;
+        const {data, total} = response.body as NewsListResponse;
         expect(total).toBe(0);
         expect(data.length).toBe(0);
       });

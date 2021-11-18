@@ -1,0 +1,36 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+    cronjob: delete-s3-files
+  name: api-delete-s3-files-cronjob
+spec:
+  concurrencyPolicy: Forbid
+  schedule: "{{ SERVER_FILE_DELETION_CRONJOB_SCHEDULE|default("@hourly", true) }}"
+  jobTemplate:
+    labels:
+      app: api
+      cronjob: delete-s3-files
+    spec:
+      template:
+        spec:
+          containers:
+          - name: delete-s3-files-cronjob
+            image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+            envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:console -- files cleanup-job 7']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure

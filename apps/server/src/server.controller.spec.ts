@@ -9,7 +9,7 @@ describe('ServerController', () => {
 			controllers: [ServerController],
 		}).compile();
 
-		serverController = app.get<ServerController>(ServerController);
+		serverController = app.get(ServerController);
 	});
 
 	describe('root', () => {

@@ -1,8 +1,12 @@
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BruteForcePrevention } = require('../../../errors');
-const { getRedisClient, redisSetAsync, redisDelAsync } = require('../../../utils/redis');
-const { extractRedisDataFromJwt, createRedisIdentifierFromJwtData, getRedisData } = require('../logic/whitelist');
+const { getRedisClient, redisDelAsync } = require('../../../utils/redis');
+const {
+	extractRedisDataFromJwt,
+	createRedisIdentifierFromJwtData,
+	addTokenToWhitelistWithIdAndJti,
+} = require('../logic/whitelist');
 
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
@@ -149,11 +153,7 @@ const removeProvider = (context) => {
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
 		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(context.result.accessToken);
-		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
-		const redisData = getRedisData({ privateDevice });
-		const { expirationInSeconds } = redisData;
-		// todo, do this async without await
-		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
+		await addTokenToWhitelistWithIdAndJti(accountId, jti, privateDevice);
 	}
 
 	return context;

@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { IPermissionsAndRoles } from '../entity';
-import { RoleRepo } from '../repo';
+import { IPermissionsAndRoles, Role } from '@shared/domain';
+
+import { RoleRepo } from '@shared/repo';
 
 @Injectable()
 export class RoleUC {
 	constructor(private readonly roleRepo: RoleRepo) {}
 
-	async resolvePermissionsByIdList(ids: EntityId[]): Promise<IPermissionsAndRoles> {
-		const roles = await Promise.all(ids.map((id) => this.roleRepo.resolvePermissionsFromSubRolesById(id)));
+	async resolvePermissionsByRoles(inputRoles: Role[]): Promise<IPermissionsAndRoles> {
+		const roles = await Promise.all(
+			inputRoles.map((role) => this.roleRepo.resolvePermissionsFromSubRolesById(role.id))
+		);
 
 		let permissions: string[] = [];
 		roles.forEach((role) => {

@@ -4,5 +4,14 @@
  * It is forbidden to reuse existing ones from different layers.
  */
 
-export * from './query';
-export * from './scope';
+export * from './course';
+export * from './coursegroup';
+export * from './dashboard';
+export * from './files';
+export * from './lesson';
+export * from './news';
+export * from './role';
+export * from './storageprovider';
+export * from './submission';
+export * from './task';
+export * from './user';

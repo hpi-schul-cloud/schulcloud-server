@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
 
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { UserUC } from '../uc';
 import { ResolvedUser } from './dto/ResolvedUser.dto';
 

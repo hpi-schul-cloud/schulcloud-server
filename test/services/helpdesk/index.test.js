@@ -10,7 +10,7 @@ describe('helpdesk service', function test() {
 	let app;
 	let helpdeskService;
 	let logger;
-	let originalMailService;;
+	let originalMailService;
 
 	const testProblem = {
 		type: 'contactAdmin',
@@ -138,7 +138,7 @@ describe('helpdesk service', function test() {
 		Configuration.set('SUPPORT_PROBLEM_EMAIL_ADDRESS', tempScTheme);
 	});
 
-	it('POST /helpdesk to schoolcloud with wish should be send to specified in configuration email address if supportType is specified', async () => {
+	it('POST /helpdesk to schoolcloud with wish should be send to default email address in configuration if supportType is specified', async () => {
 		const postBody = {
 			type: 'contactHPI',
 			supportType: 'wish',
@@ -148,10 +148,27 @@ describe('helpdesk service', function test() {
 		};
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
-		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
-		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
-		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
+		expect(mailService.create.args.length).to.equal(1);
+		expect(mailService.create.args[0][0].email).to.equal('ticketsystem@schul-cloud.org');
+	});
+
+	it('POST /helpdesk to schoolcloud with wish should be send to all mentioned emails if supportType is specified', async () => {
+		const postBody = {
+			type: 'contactHPI',
+			supportType: 'wish',
+			subject: 'Dies ist ein Titel 5',
+			problemDescription: 'Dies ist die Problembeschreibung 2',
+			replyEmail: 'test@mail.de',
+		};
+		const mailService = new MockMailService();
+		app.use('/mails', mailService);
+		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de,ticketsystem@schul-cloud.org');
+		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
+		expect(mailService.create.args.length).to.equal(2);
+		expect(mailService.create.args[0][0].email).to.equal('nbc-wunsch@netz-21.de');
+		expect(mailService.create.args[1][0].email).to.equal('ticketsystem@schul-cloud.org');
 		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);
 	});
 

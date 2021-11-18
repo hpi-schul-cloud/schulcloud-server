@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserInfoResponse {
 	@ApiProperty({
@@ -7,13 +7,13 @@ export class UserInfoResponse {
 	})
 	id: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'First name of the user',
 	})
-	firstName: string;
+	firstName?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Last name of the user',
 	})
-	lastName: string;
+	lastName?: string;
 }
