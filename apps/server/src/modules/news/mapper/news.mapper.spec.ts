@@ -1,21 +1,20 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntity } from '@shared/domain';
 import {
 	CourseNews,
 	INewsProperties,
-	NewsTargetModel,
-	SchoolInfo,
-	CourseInfo,
-	SchoolNews,
-	UserInfo,
 	News,
+	School,
+	SchoolNews,
+	Team,
 	TeamNews,
-	TeamInfo,
-	NewsTargetModelValue,
+	User,
+	NewsTargetModel,
 	INewsScope,
 	ICreateNews,
 	IUpdateNews,
-} from '../entity';
+	NewsTarget,
+} from '@shared/domain';
+import { courseFactory, schoolFactory, userFactory, setupEntities } from '@shared/testing';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
@@ -25,15 +24,9 @@ import {
 	UpdateNewsParams,
 	UserInfoResponse,
 } from '../controller/dto';
+import { TargetInfoResponse } from '../controller/dto/target-info.response';
 
-const createDataInfo = <T extends BaseEntity>(props, Type: { new (props): T }): T => {
-	const id = new ObjectId().toHexString();
-	const dataInfo = new Type(props);
-	dataInfo.id = id;
-	return dataInfo;
-};
-
-const getTargetModel = (news: News): NewsTargetModelValue => {
+const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
 		return NewsTargetModel.School;
 	}
@@ -50,9 +43,9 @@ const date = new Date(2021, 1, 1, 0, 0, 0);
 const createNews = <T extends News>(
 	newsProps,
 	NewsType: { new (props: INewsProperties): T },
-	schoolInfo: SchoolInfo,
-	creatorInfo: UserInfo,
-	target: BaseEntity
+	school: School,
+	creator: User,
+	target: NewsTarget
 ): T => {
 	const newsId = new ObjectId().toHexString();
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -61,40 +54,50 @@ const createNews = <T extends News>(
 		displayAt: date,
 		updatedAt: date,
 		createdAt: date,
-		school: schoolInfo.id,
-		creator: creatorInfo.id,
-		updater: creatorInfo.id,
+		school: school.id,
+		creator: creator.id,
+		updater: creator.id,
 		target: target.id,
 		...newsProps,
 	};
 	const resultNews = new NewsType(props);
-	resultNews.school = schoolInfo;
-	resultNews.creator = creatorInfo;
-	resultNews.updater = creatorInfo;
+	resultNews.school = school;
+	resultNews.creator = creator;
+	resultNews.updater = creator;
 	resultNews.target = target;
 	resultNews.targetModel = getTargetModel(resultNews);
 	return resultNews;
 };
 
 const getExpectedNewsResponse = (
-	schoolInfo: SchoolInfo,
-	creatorInfo: UserInfo,
+	school: School,
+	creator: User,
 	news: News,
 	newsProps: { title: string; content: string },
-	target: BaseEntity
+	target: NewsTarget
 ): NewsResponse => {
-	const schoolInfoResponse: SchoolInfoResponse = new SchoolInfoResponse();
-	Object.assign(schoolInfoResponse, schoolInfo);
+	const schoolInfoResponse = new SchoolInfoResponse();
+	const schoolProps = (({ id, name }) => ({ id, name }))(school);
+	Object.assign(schoolInfoResponse, schoolProps);
 
 	const creatorResponse: UserInfoResponse = new UserInfoResponse();
-	Object.assign(creatorResponse, creatorInfo);
+	const creatorProps = {
+		id: creator.id,
+		firstName: creator.firstName,
+		lastName: creator.lastName,
+	};
+	Object.assign(creatorResponse, creatorProps);
 	const expected: NewsResponse = new NewsResponse();
+	const targetResponse = new TargetInfoResponse();
+	targetResponse.id = target.id;
+	targetResponse.name = target.name;
 	Object.assign(expected, {
 		id: news.id,
 		source: undefined,
 		sourceDescription: undefined,
 		targetId: target.id,
 		targetModel: getTargetModel(news),
+		target: targetResponse,
 		title: newsProps.title,
 		content: newsProps.content,
 		displayAt: date,
@@ -109,38 +112,42 @@ const getExpectedNewsResponse = (
 };
 
 describe('NewsMapper', () => {
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
 	describe('mapToResponse', () => {
 		it('should correctly map school news to Dto', () => {
-			const schoolInfo: SchoolInfo = createDataInfo({ name: 'test school' }, SchoolInfo);
-			const creatorInfo: UserInfo = createDataInfo({ firstName: 'fname', lastName: 'lname' }, UserInfo);
+			const school = schoolFactory.build();
+			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
-			const schoolNews = createNews(newsProps, SchoolNews, schoolInfo, creatorInfo, schoolInfo);
+			const schoolNews = createNews(newsProps, SchoolNews, school, creator, school);
 
 			const result = NewsMapper.mapToResponse(schoolNews);
-			const expected = getExpectedNewsResponse(schoolInfo, creatorInfo, schoolNews, newsProps, schoolInfo);
+			const expected = getExpectedNewsResponse(school, creator, schoolNews, newsProps, school);
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map course news to dto', () => {
-			const schoolInfo = createDataInfo({ name: 'test school' }, SchoolInfo);
-			const courseInfo = createDataInfo({ name: 'test course' }, CourseInfo);
-			const creatorInfo = createDataInfo({ firstName: 'fname', lastName: 'lname' }, UserInfo);
+			const school = schoolFactory.build();
+			const creator = userFactory.build();
+			const course = courseFactory.build({ school });
 			const newsProps = { title: 'test title', content: 'test content' };
-			const courseNews = createNews(newsProps, CourseNews, schoolInfo, creatorInfo, courseInfo);
+			const courseNews = createNews(newsProps, CourseNews, school, creator, course);
 
 			const result = NewsMapper.mapToResponse(courseNews);
-			const expected = getExpectedNewsResponse(schoolInfo, creatorInfo, courseNews, newsProps, courseInfo);
+			const expected = getExpectedNewsResponse(school, creator, courseNews, newsProps, course);
 
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map team news to dto', () => {
-			const schoolInfo = createDataInfo({ name: 'test school' }, SchoolInfo);
-			const teamInfo = createDataInfo({ name: 'test course' }, TeamInfo);
-			const creatorInfo = createDataInfo({ firstName: 'fname', lastName: 'lname' }, UserInfo);
+			const school = schoolFactory.build();
+			const team = new Team({ name: 'team #1' });
+			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
-			const teamNews = createNews(newsProps, TeamNews, schoolInfo, creatorInfo, teamInfo);
+			const teamNews = createNews(newsProps, TeamNews, school, creator, team);
 
 			const result = NewsMapper.mapToResponse(teamNews);
-			const expected = getExpectedNewsResponse(schoolInfo, creatorInfo, teamNews, newsProps, teamInfo);
+			const expected = getExpectedNewsResponse(school, creator, teamNews, newsProps, team);
 
 			expect(result).toStrictEqual(expected);
 		});

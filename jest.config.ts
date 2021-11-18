@@ -17,7 +17,7 @@ const config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$', 'main.ts$'],
+	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
 	coverageThreshold: {
 		global: {
 			branches: 80,
@@ -36,5 +36,6 @@ const config: Config.InitialOptions = {
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
 	},
+	maxWorkers: 2, // limited for not taking all workers within of a single github action
 };
 export default config;

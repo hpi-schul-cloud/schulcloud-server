@@ -15,12 +15,24 @@ export abstract class BusinessError extends HttpException {
 
 	readonly message: string;
 
-	constructor({ type, title, defaultMessage }: IErrorType, code: HttpStatus = HttpStatus.CONFLICT) {
+	// Is not matched by type validation because HttpException is already declared
+	readonly details: Record<string, unknown>;
+
+	constructor(
+		{ type, title, defaultMessage }: IErrorType,
+		code: HttpStatus = HttpStatus.CONFLICT,
+		details?: Record<string, unknown>
+	) {
 		super({ code, type, title, message: defaultMessage }, code);
 		this.code = code;
 		this.type = type;
 		this.title = title;
 		this.message = defaultMessage;
+		this.details = details || {};
+	}
+
+	getDetails(): Record<string, unknown> {
+		return this.details;
 	}
 
 	getResponse(): ErrorResponse {

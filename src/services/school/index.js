@@ -7,6 +7,7 @@ const schoolModels = require('./model');
 const hooks = require('./hooks');
 const publicSchoolsHooks = require('./hooks/publicSchools.hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
+const yearsHooks = require('./hooks/years.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
 const { SchoolsListService } = require('./services/schoolsList');
@@ -75,7 +76,7 @@ module.exports = function schoolServices() {
 		})
 	);
 	const yearService = app.service('/years');
-	yearService.hooks(hooks);
+	yearService.hooks(yearsHooks);
 
 	/* gradeLevel Service */
 	app.use(

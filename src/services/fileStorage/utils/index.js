@@ -1,6 +1,6 @@
 const { canWrite, canRead, canCreate, canDelete } = require('./filePermissionHelper');
 
-const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./filePathHelper');
+const { returnFileType, generateFileNameSuffix } = require('./filePathHelper');
 
 const copyFile = require('./copyFile');
 const createCorrectStrategy = require('./createCorrectStrategy');
@@ -13,7 +13,7 @@ module.exports = {
 	canCreate,
 	canDelete,
 	returnFileType,
-	generateFlatFileName,
+	generateFileNameSuffix,
 	copyFile,
 	createCorrectStrategy,
 	createPermission,

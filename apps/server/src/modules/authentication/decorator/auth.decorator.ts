@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { ICurrentUser } from '@shared/domain';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
-import { ICurrentUser } from '../interface/jwt-payload';
 
 const STRATEGIES = ['jwt'] as const;
 type Strategies = typeof STRATEGIES;

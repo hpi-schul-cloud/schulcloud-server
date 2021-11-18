@@ -30,8 +30,7 @@ describe('version service integration tests', function test() {
 	});
 
 	describe('API tests', () => {
-		it('When an unauthenticated user tries to access the version route, and FEATURE_SHOW_VERSION_ENABLED is activated, then the call returns as 200 with data', async () => {
-			Configuration.set('FEATURE_SHOW_VERSION_ENABLED', true);
+		it('When an unauthenticated user tries to access the version route, then the call returns as 200 with data', async () => {
 			const request = chai
 				.request(app)
 				.get('/version')
@@ -40,17 +39,6 @@ describe('version service integration tests', function test() {
 			const response = await request.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.haveOwnProperty('version');
-		});
-
-		it('When an unauthenticated user tries to access the version route, and FEATURE_SHOW_VERSION_ENABLED is deactivated, then the call returns as 405', async () => {
-			Configuration.set('FEATURE_SHOW_VERSION_ENABLED', false);
-			const request = chai
-				.request(app)
-				.get('/version')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(405);
 		});
 	});
 });

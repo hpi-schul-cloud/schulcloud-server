@@ -1,0 +1,23 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+  name: api-ldapsync-full-cronjob
+spec:
+  schedule: "{{ SERVER_LDAP_SYNC_FULL_CRONJOB|default("0 3 * * 3,6", true) }}"
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
+      template:
+        spec:
+          containers:
+          - name: api-ldapsync-cronjob
+            image: curlimages/curl:7.69.0
+            envFrom:
+            - secretRef:
+                name: api-secret
+            command: ['/bin/sh','-c']
+            args: ['sleep 120 ; curl --max-time {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }} -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_LDAP_SYNC_SVC|default("api-svc", true) }}:3030/sync?target=ldap&forceFullSync=true"']
+          restartPolicy: OnFailure

@@ -4,9 +4,9 @@ const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 const redisMock = require('../../../utils/redis/redisMock');
+const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 
-describe('authentication hooks', function test() {
-	this.timeout(20000);
+describe('authentication hooks', () => {
 	let redisHelper;
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;
@@ -64,7 +64,7 @@ describe('authentication hooks', function test() {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const { accessToken } = params.authentication;
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(accessToken);
+		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(accessToken);
 		const result = await addJwtToWhitelist({ result: { accessToken } });
 		expect(result).to.not.equal(undefined);
 		const redisResult = await redisHelper.redisGetAsync(redisIdentifier);
@@ -76,7 +76,7 @@ describe('authentication hooks', function test() {
 	it('removeJwtFromWhitelist', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
 		const result = await removeJwtFromWhitelist({
 			params,

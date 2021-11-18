@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModel, NewsTargetModelValue } from '@src/modules/news/entity';
-import { EntityId } from '@shared/domain';
 import { UnauthorizedException } from '@nestjs/common';
-import { FeathersModule } from '../feathers/feathers.module';
+import { EntityId, NewsTargetModel } from '@shared/domain';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
@@ -18,7 +16,6 @@ describe('AuthorizationService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [FeathersModule],
 			providers: [
 				AuthorizationService,
 				{
@@ -27,7 +24,7 @@ describe('AuthorizationService', () => {
 						getUserSchoolPermissions(user: EntityId, school: EntityId) {
 							return schoolPermissions;
 						},
-						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModelValue, targetId: EntityId) {
+						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel, targetId: EntityId) {
 							return targetModel === NewsTargetModel.Course ? coursePermissions : teamPermissions;
 						},
 						getPermittedSchools(user) {
@@ -41,8 +38,8 @@ describe('AuthorizationService', () => {
 			],
 		}).compile();
 
-		service = module.get<AuthorizationService>(AuthorizationService);
-		authProvider = module.get<FeathersAuthProvider>(FeathersAuthProvider);
+		service = module.get(AuthorizationService);
+		authProvider = module.get(FeathersAuthProvider);
 	});
 
 	it('should be defined', () => {

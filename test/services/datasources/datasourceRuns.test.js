@@ -37,8 +37,7 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', function test() {
-	this.timeout(10000);
+describe('datasourceRuns service', () => {
 	let app;
 	let datasourceRunsService;
 	let server;
@@ -56,10 +55,10 @@ describe('datasourceRuns service', function test() {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
-		server.close(done);
+		await server.close();
 	});
 
 	it('registered the datasourceRuns service', () => {

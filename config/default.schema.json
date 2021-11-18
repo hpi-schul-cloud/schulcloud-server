@@ -43,10 +43,7 @@
 				"DEFAULT_LANGUAGE": {
 					"type": "string",
 					"default": "de",
-					"enum": [
-						"de",
-						"en"
-					],
+					"enum": ["de", "en"],
 					"description": "Value for the default language"
 				},
 				"DEFAULT_TIMEZONE": {
@@ -113,11 +110,6 @@
 			"type": "integer",
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
-		},
-		"JWT_WHITELIST_ACCEPT_ALL": {
-			"type": "boolean",
-			"default": false,
-			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
 		},
 		"TSP_API_BASE_URL": {
 			"type": "string",
@@ -210,6 +202,16 @@
 					"default": false,
 					"description": "If enabled, school admins can allow students to create additional chat rooms"
 				},
+				"SCHOOL_SETTINGS_VISIBLE": {
+					"type": "boolean",
+					"default": false,
+					"description": "Only if enabled, school admins can activate the messenger in their school setting"
+				},
+				"SCHOOL_ROOM_ENABLED": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can choose to create a room for all students and teachers of the school"
+				},
 				"WELCOME_MESSAGE_ADMIN": {
 					"type": "string",
 					"description": "Greet new admin users with a personal message from the sync bot"
@@ -232,7 +234,7 @@
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
-			"default": "amqp://192.168.99.100",
+			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
 		},
 		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
@@ -320,6 +322,11 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_S3_BUCKET_CORS": {
+			"type": "boolean",
+			"description": "true if CORS is supported by the S3 bucket. (Minio does not support it)",
+			"default": true
+		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
 			"type": "integer",
 			"default": 100,
@@ -380,6 +387,46 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Custom School Policy can be uploaded by the school admin "
+		},
+		"ROCKETCHAT_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables chat function for the school."
+		},
+		"ROCKET_CHAT_URI": {
+			"type": "string",
+			"default" : null,
+			"description": "rocketchat base uri"
+		},
+		"ROCKET_CHAT_ADMIN_ID": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin id"
+		},
+		"ROCKET_CHAT_ADMIN_TOKEN": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin token"
+		},
+		"ROCKET_CHAT_ADMIN_USER": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin user"
+		},
+		"ROCKET_CHAT_ADMIN_PASSWORD": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin password"
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
@@ -452,11 +499,10 @@
 			"default": null,
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		},
-		"LERNSTORE_MODE": {
-			"type": "string",
-			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
-			"default": "DISABLED",
-			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		"FEATURE_LERNSTORE_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Defines if backend for the Lern-Store Edu-Sharing is enabled."
 		},
 		"ES_DOMAIN": {
 			"type": "string",
@@ -532,12 +578,7 @@
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
-		"FEATURE_SHOW_VERSION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "enable the /versions route"
-		},
-		"FEATURE_MONGOOSE_LOGGING_ENABLED" : {
+		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enable logging for mongoose database calls."
@@ -587,15 +628,25 @@
 			"default": 1,
 			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
 		},
-		"SYNC_LOG_LEVEL" : {
+		"SYNC_LOG_LEVEL": {
 			"type": "string",
 			"default": "error",
 			"description": "Log level for queue based syncers (e.g. LDAP)"
 		},
-		"SYNC_QUEUE_NAME" : {
+		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
 			"description": "Queue name for sync"
+		},
+		"MAIL_SEND_EXCHANGE": {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Exchange name for mail sending"
+		},
+		"MAIL_SEND_ROUTING_KEY": {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Routing key name for mail sending"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
@@ -625,7 +676,7 @@
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
 			"type": "string",
 			"default": "ticketsystem@schul-cloud.org",
-			"description": "Email address used for reporting a wish"
+			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
 			"type": "boolean",
@@ -651,11 +702,6 @@
 			"type": "string",
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
-		},
-		"FEATURE_LEGACY_NOT_FOUND_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables 404 error handler in feathers app. WARNING: disables all nestjs routes."
 		}
 	},
 	"required": [
@@ -663,9 +709,7 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE",
-		"FEATURE_SHOW_VERSION_ENABLED"
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
 	],
 	"allOf": [
 		{
@@ -702,6 +746,18 @@
 					"FILE_SECURITY_SERVICE_PASSWORD",
 					"API_HOST"
 				]
+			}
+		},
+		"LERNSTORE_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_LERNSTORE_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": ["ES_USER", "ES_PASSWORD"]
 			}
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {

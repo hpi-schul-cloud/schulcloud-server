@@ -1,8 +1,6 @@
 # HPI Schul-Cloud Server
 
-Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
-
-Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server) 
+Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 Master: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 
 Develop: [![codecov](https://codecov.io/gh/hpi-schul-cloud/schulcloud-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/hpi-schul-cloud/schulcloud-server/branch/develop)
@@ -12,27 +10,51 @@ Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d043
 
 [![Version](https://img.shields.io/github/release/hpi-schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/hpi-schul-cloud/releases)
 
-Swagger UI documentation when running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
+## NestJS application
 
-# NestJS application 
+> Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html) of this repository at GitHub pages. It contains information about
 
-> Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/) of this repository at GitHub pages.
+- setup & preconditions
+- starting the application
+- testing
+- tools setup (VSCode, Git)
+- architecture
 
-# Requirements
+Based on [NestJS](https://docs.nestjs.com/)
 
-* Node.js (see `.nvmrc` for version)
-* MongoDB (`4.x`)
+## Feathers application
+
+This is legacy part of the application!
+
+Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
+
+## Application seperation
+
+In order to seperate NestJS and Feathers each application runs in its own express instance. These express instances are then mounted on seperate paths under a common root express instance.
+
+```
+Root-Express-App 
+├─ api/v1/       --> Feathers-App
+├─ api/v3/       --> NestJS-App
+```
+
+This ensures that each application can run its own middleware stack for authentication, error handling, logging etc.
+
+The mount paths don't have any impact on the routes inside of the applications, e.g. the path `/api/v3/news` will translate to the inner path `/news`. That means that in terms of route matching each child application doesn't have to take any measures regarding the path prefix. It simply works as it was mounted to `/`.
+
+**However note** that when URLs are generated inside a child application the path prefix has to be prepended. Only then the generated URLs match the appropriate child application, e.g. the path `/news` has to be provided as the external path `/api/v3/news`.
+
+It is possible (not very likely) that the server api is called with URLs that use the old schema without a path prefix. As a safety net for that we additionally mount the Feathers application as before under the paths:
+
+- `/` - for internal calls
+- `/api` - for external calls
+
+When these paths are accessed an error with context `[DEPRECATED-PATH]` is logged.
 
 ## Setup
 
-You will need the [client](https://github.com/hpi-schul-cloud/schulcloud-client) as well. For more detailed setup instructions, take a look [here](https://docs.hpi-schul-cloud.org/display/SCDOK/Setup). It is written for Windows but the procedure is similar for other OS.
-
-## Run
-
-1. Go into project folder
-2. Run `mongod`
-3. Run `npm start`
-4. Run `npm run setup`
+For more detailed setup instructions, take a look at [setup](https://docs.hpi-schul-cloud.org/display/SCDOK/Setup).
+The whole application setup with all dependencies can be found in [System Architecture](https://docs.hpi-schul-cloud.org/display/TSC/System+Architecture). It contains information about how different application components are connected to each other.
 
 ## Debugger Configuration in Visual Studio Code
 
@@ -45,26 +67,9 @@ For more details how to set up Visual Studio Code, read [this document](https://
 3. Create a PR on branch develop containing the Ticket Number in PR title
 4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically. For more information check our Definition of Done [here](https://docs.hpi-schul-cloud.org/pages/viewpage.action?pageId=92831762).
 
-## Testing
-
-### Run tests
-
-1. Go into project folder
-2. run `npm run test`
-
-To run a single test, use `npm run mocha-single -- <path/to/unit.test.js>`.
-
-### Create tests
-
-1. Create a folder for the "service" you're working on in "/test/services"
-2. Create a file "user.test.js" for frontend tests (e.g. clicking a link or check if URL is available)
-3. Create a file "unit.test.js" for backend tests (e.g. calculating a number)
-
-*Try to cover as many methods as possible unit test wise - goal is 100% of course, so one test per method.*
-
 ## Committing
 
-Default branch: develop
+Default branch: `develop`
 
 1. Go into project folder
 2. Checkout to develop branch (or clone for the first time)

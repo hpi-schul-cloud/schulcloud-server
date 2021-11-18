@@ -1,14 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { LoggerModule } from '@src/core/logger/logger.module';
+import { LoggerModule } from '@src/core/logger';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UnauthorizedException } from '@nestjs/common';
-import { ICreateNews } from '../entity/news.types';
+import { NewsTargetModel, ICreateNews } from '@shared/domain';
 
-import { AuthorizationService } from '../../authorization/authorization.service';
-import { NewsRepo } from '../repo/news.repo';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { NewsRepo } from '@shared/repo';
 import { NewsUc } from './news.uc';
-import { NewsTargetModel } from '../entity';
 
 describe('NewsUc', () => {
 	let service: NewsUc;
@@ -50,7 +49,7 @@ describe('NewsUc', () => {
 				{
 					provide: NewsRepo,
 					useValue: {
-						save() {
+						persistAndFlush() {
 							return {};
 						},
 						findAll() {
@@ -62,7 +61,7 @@ describe('NewsUc', () => {
 							}
 							throw new NotFoundException();
 						},
-						delete(id) {},
+						removeAndFlush() {},
 					},
 				},
 				{
@@ -87,8 +86,8 @@ describe('NewsUc', () => {
 			],
 		}).compile();
 
-		service = module.get<NewsUc>(NewsUc);
-		repo = module.get<NewsRepo>(NewsRepo);
+		service = module.get(NewsUc);
+		repo = module.get(NewsRepo);
 	});
 
 	it('should be defined', () => {
@@ -150,7 +149,7 @@ describe('NewsUc', () => {
 	});
 	describe('create', () => {
 		it('should assign all required properties to news object', async () => {
-			const createSpy = jest.spyOn(repo, 'save');
+			const createSpy = jest.spyOn(repo, 'persistAndFlush');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -166,7 +165,7 @@ describe('NewsUc', () => {
 
 		it('should assign target to news object', async () => {
 			const courseId = new ObjectId().toString();
-			const createSpy = jest.spyOn(repo, 'save');
+			const createSpy = jest.spyOn(repo, 'persistAndFlush');
 			const params = {
 				title: 'title',
 				content: 'content',

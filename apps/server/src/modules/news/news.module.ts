@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { NewsRepo } from '@shared/repo';
 import { NewsUc } from './uc/news.uc';
-import { NewsRepo } from './repo/news.repo';
 import { NewsController } from './controller/news.controller';
-import { AuthorizationModule } from '../authorization/authorization.module';
-import { LoggerModule } from '../../core/logger/logger.module';
+import { TeamNewsController } from './controller/team-news.controller';
 
 /* NewsController
  * to enable:
@@ -13,7 +14,7 @@ import { LoggerModule } from '../../core/logger/logger.module';
  */
 @Module({
 	imports: [AuthorizationModule, LoggerModule],
-	controllers: [NewsController],
+	controllers: [NewsController, TeamNewsController],
 	providers: [NewsUc, NewsRepo],
 	exports: [NewsUc],
 })

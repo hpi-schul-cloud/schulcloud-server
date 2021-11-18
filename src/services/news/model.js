@@ -1,3 +1,5 @@
+// TODO remove after applying migration news_add_target_schools
+
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
@@ -78,7 +80,10 @@ newsSchema.index({ displayAt: 1 }); // ok or = 1
 enableAuditLog(newsSchema);
 enableAuditLog(newsHistorySchema);
 
+/** @deprecated use v3 instead */
 const newsModel = mongoose.model('news', newsSchema);
+
+/** @deprecated use v3 instead */
 const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
 
 module.exports = {

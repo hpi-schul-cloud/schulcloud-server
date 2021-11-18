@@ -10,7 +10,7 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const { getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData } = require('../../../utils/redis');
+const { addTokenToWhitelistWithIdAndJti } = require('../../authentication/logic/whitelist');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
 const DEFAULT_AUDIENCE = 'https://hpi-schul-cloud.de'; // The organisation that create this jwt.
@@ -53,14 +53,7 @@ class JWT {
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
-	async create(userId, supportUserId, secret) {
-		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
-
-		if (!account && !account._id) {
-			throw new Error(`Account for user with the id ${userId} do not exist.`);
-		}
-		const accountId = account._id.toString();
-
+	async create(supportUserId, userData, secret) {
 		const header = {
 			alg: 'HS256',
 			typ: 'access',
@@ -70,15 +63,14 @@ class JWT {
 		const exp = iat + this.expiredOffset;
 
 		const jwtData = {
+			...userData,
 			support: true, // mark for support jwts
 			supportUserId,
-			accountId,
-			userId,
 			iat,
 			exp,
 			aud: this.aud,
 			iss: 'feathers',
-			sub: accountId,
+			sub: userData.accountId,
 			jti: `support_${ObjectId()}`,
 		};
 
@@ -91,6 +83,8 @@ class JWT {
 		let signature = `${encodedHeader}.${encodedData}`;
 		signature = this.HmacSHA256(signature, secret); // algorithm: 'HS256',
 		signature = this.base64url(signature);
+
+		await addTokenToWhitelistWithIdAndJti(jwtData.accountId, jwtData.jti);
 
 		const jwt = `${encodedHeader}.${encodedData}.${signature}`;
 		return jwt;
@@ -131,14 +125,6 @@ class SupportJWTService {
 		);
 	}
 
-	async addToWhitelist(jwt) {
-		if (getRedisClient()) {
-			const { redisIdentifier, privateDevice } = extractDataFromJwt(jwt);
-			const redisData = getRedisData({ privateDevice });
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset);
-		}
-	}
-
 	async create({ userId }, params) {
 		try {
 			if (!userId) {
@@ -148,9 +134,15 @@ class SupportJWTService {
 			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			const jwt = await this.jwt.create(userId, currentUserId);
+			const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
+			if (!account && !account._id) {
+				throw new Error(`Account for user with the id ${userId} does not exist.`);
+			}
 
-			await this.addToWhitelist(jwt);
+			const user = await this.app.service('usersModel').get(requestedUserId);
+
+			const userData = await this.app.service('authentication').getUserData(user, account);
+			const jwt = await this.jwt.create(currentUserId, userData);
 
 			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;

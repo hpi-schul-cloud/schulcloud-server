@@ -5,6 +5,7 @@ const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
+const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 
 const redisMock = require('../../../utils/redis/redisMock');
 
@@ -64,7 +65,7 @@ describe('jwtTimer service', () => {
 			it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
 				const user = await testObjects.createTestUser();
 				const params = await testObjects.generateRequestParamsFromUser(user);
-				const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+				const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 				await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 
 				const result = await app.service('/accounts/jwtTimer').find(params);
@@ -74,7 +75,7 @@ describe('jwtTimer service', () => {
 			it('CREATE resets the ttl on the jwt that is used', async () => {
 				const user = await testObjects.createTestUser();
 				const params = await testObjects.generateRequestParamsFromUser(user);
-				const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+				const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 				const ttl = Configuration.get('JWT_TIMEOUT_SECONDS');
 				await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', ttl - 5);
 

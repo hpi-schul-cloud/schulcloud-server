@@ -108,4 +108,116 @@ paths:
       tags:
         - users
       security: []
+  '/admin/teacher/{id}':
+    delete:
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            pattern: '^[0-9a-f]{24}$'
+          description: ID of the teacher to be deleted
+          required: true
+      responses:
+        '204':
+          description: success
+        '401':
+          description: not authenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: If there is no teacher with the given id.
+        '500':
+          description: general error
+      description: Deletes a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+  '/admin/teacher':
+    delete:
+      parameters:
+        - name: ids
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+          description: IDs of the teachers to be deleted
+          required: true
+      responses:
+        '204':
+          description: success
+        '401':
+          description: not authenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: If there is no teacher with the given id.
+        '500':
+          description: general error
+      description: Deletes a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+  '/admin/administrator/{id}':
+    delete:
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            pattern: '^[0-9a-f]{24}$'
+          description: ID of the administrator to be deleted
+          required: true
+      responses:
+        '204':
+          description: success
+        '401':
+          description: not authenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: If there is no administrator with the given id.
+        '500':
+          description: general error
+      description: Deletes a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+  '/admin/administrator':
+    delete:
+      parameters:
+        - name: ids
+          in: query
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+          description: IDs of the administrators to be deleted
+          required: true
+      responses:
+        '204':
+          description: success
+        '401':
+          description: not authenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: If there is no administrator with the given id.
+        '500':
+          description: general error
+      description: Deletes a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
 openapi: 3.0.2

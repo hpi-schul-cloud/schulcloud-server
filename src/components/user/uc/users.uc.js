@@ -4,7 +4,7 @@ const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
-const { trashBinResult } = require('../../helper/uc.helper');
+const { trashBinResult, grantPermissionsForSchool } = require('../../helper/uc.helper');
 
 const getSchoolIdOfUser = async (userId) => {
 	const user = await userRepo.getUser(userId);
@@ -85,12 +85,14 @@ const replaceUserWithTombstone = async (user) => {
 	return { success: true };
 };
 
+const isSuperhero = (currentUser) => currentUser.roles.some((role) => role.name === 'superhero');
+
 const checkPermissionsInternal = (affectedUser, roleName, permissionAction, currentUser) => {
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
 	grantPermission = grantPermission && affectedUser.roles.some((role) => role.name.toUpperCase() === roleName);
 	// users must be on same school
-	grantPermission = grantPermission && equalIds(affectedUser.schoolId, currentUser.schoolId);
+	grantPermission = grantPermission && grantPermissionsForSchool(currentUser, affectedUser.schoolId);
 
 	// current user must have the permission
 	affectedUser.roles.forEach((userRoleToBeAffected) => {
@@ -109,7 +111,7 @@ const checkPermissionsInternal = (affectedUser, roleName, permissionAction, curr
 				);
 		}
 		if (userRoleToBeAffected.name === 'administrator') {
-			grantPermission = grantPermission && currentUser.roles.some((role) => role.name === 'superhero');
+			grantPermission = grantPermission && isSuperhero(currentUser);
 		}
 	});
 

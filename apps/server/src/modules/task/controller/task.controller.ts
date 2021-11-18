@@ -1,32 +1,31 @@
 import { ApiTags } from '@nestjs/swagger';
 
-import { PaginationResponse } from '@shared/controller/dto/pagination.response';
-import { PaginationQuery } from '@shared/controller/dto/pagination.query';
+import { ICurrentUser } from '@shared/domain';
+import { PaginationQuery } from '@shared/controller/';
 import { Controller, Get, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+
 import { TaskUC } from '../uc/task.uc';
-
-import { TaskResponse } from './dto';
+import { TaskListResponse } from './dto';
 import { TaskMapper } from '../mapper/task.mapper';
-
-// TODO: swagger doku do not read from combined query object only from passed single parameter in Query(), but this do not allowed optional querys only required querys
 
 @ApiTags('Task')
 @Authenticate('jwt')
-@Controller('task')
+@Controller('tasks')
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC) {}
 
-	@Get('dashboard')
+	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
-	): Promise<PaginationResponse<TaskResponse[]>> {
-		const [tasks, total] = await this.taskUc.findAllOpenForUser(currentUser.userId, paginationQuery);
-		const tasksResponse = tasks.map((task) => TaskMapper.mapToResponse(task));
+	): Promise<TaskListResponse> {
+		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser, paginationQuery);
+		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
+			return TaskMapper.mapToResponse(taskWithStatus);
+		});
 		const { skip, limit } = paginationQuery;
-		const result = new PaginationResponse(tasksResponse, total, skip, limit);
+		const result = new TaskListResponse(taskresponses, total, skip, limit);
 		return result;
 	}
 }

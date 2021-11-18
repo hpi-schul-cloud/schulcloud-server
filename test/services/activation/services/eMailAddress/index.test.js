@@ -2,7 +2,7 @@
 /* eslint-disable max-len */
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const nock = require('nock');
+const sinon = require('sinon');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -12,25 +12,11 @@ const { createTestUser, createTestAccount, cleanup } = require('../../../helpers
 
 const util = require('../../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../../src/services/activation/utils/customStrategyUtils');
-const config = require('../../../../../config/test.json');
 
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
 	email: 'testmail@schul-cloud.org123',
 };
-
-const getNotificationMock = (expectedData = {}) =>
-	new Promise((resolve) => {
-		nock(config.NOTIFICATION_URI)
-			.post('/mails')
-			.reply(200, (uri, requestBody) => {
-				Object.entries(expectedData).forEach(([key, value]) => {
-					expect(requestBody[key]).to.eql(value);
-				});
-				resolve(true);
-				return 'Message queued';
-			});
-	});
 
 describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
 	let app;
@@ -41,10 +27,6 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 		app = await appPromise;
 		server = await app.listen(0);
 		activationService = app.service(`activation/${mockData.keyword}`);
-	});
-
-	afterEach(() => {
-		nock.cleanAll();
 	});
 
 	after(async () => {
@@ -68,9 +50,11 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 			password,
 		};
 
-		const cb = getNotificationMock();
+		const nestMailService = { send: sinon.spy() };
+		app.services['nest-mail'] = nestMailService;
+
 		const res = await activationService.create(data, { account: { userId: user._id } });
-		expect(await cb).to.be.true;
+		expect(nestMailService.send.calledOnce).to.equal(true);
 		expect(res.success).to.be.true;
 
 		const entries = await util.getEntriesByUserId(app, user._id);

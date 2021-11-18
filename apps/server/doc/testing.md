@@ -73,6 +73,74 @@ Your test should be structured in three seperate areas, each distinguished by at
 
 this is known as the AAA-pattern.
 
+## Testing Samples
+
+### Handling of function return values
+
+When assigning a value to an expect, separate the function call from the expectation to simplify debugging. This later helps when you not know about the return value type or if it's an promise or not. This is good style not only for tests.
+
+```TypeScript
+	// doSomethingCrazy : retValue
+	it('bad sample', () => {
+		expect(doSomethingCrazy(x,y,z)).to...
+	})
+	it('good sample', () => {
+		const result = doSomethingCrazy(x,y,z)
+		expect(result).to... // here we can simply debug
+	})
+
+```
+
+### Promises and Timouts in tests
+
+When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
+
+- Instead of using done callback, use async test functions.
+- Use await instead of (long) promise chains
+- never manually set a timeout
+
+```TypeScript
+	// doSomethingCrazy : Promise<retValue>
+	it('bad async sample', async function (done) => {
+		this.timeout(10000);
+		return doSomethingCrazy(x,y,z).then(result=>{
+			expect(result).to...
+			done() // expected done
+		}).catch(()=>{
+			logger.info(`Could not ... ${error}`);
+			done() // unexpected done, test will always succeed which is wrong
+		})
+	})
+	it('good async sample', async () => {
+		// no timeout set
+		const result = await doSomethingCrazy(x,y,z)
+		expect(result).to...
+	})
+```
+
+> Timeouts must not be used, when async handling is correctly defined!
+
+### Expecting errors in tests
+
+When expecting an error, you might take values from an error, test for the error type thrown and must care of promises.
+
+```TypeScript
+	// doSomethingCrazy : Promise<retValue>
+	it('bad async sample expecting an error', () => {
+		expect(doSomethingCrazy(x,y,z)).to...
+	})
+	it('good async sample expecting an error value', async () => {
+		const code = await doSomethingCrazy(x,y,z).catch(err => err.code)
+		expect(code).to...
+	})
+	it('good sample expecting an error type from a sync function', () => {
+		expect(() => doSomethingCrazySync(wrong, param)).toThrow(BadRequestException);
+	})
+	it('good sample expecting an error type from an async function', async () => {
+		await expect(doSomethingCrazySync(wrong, param)).rejects.toThrow(BadRequestException);
+	})
+```
+
 ## Testing Utilities
 
 NestJS:
@@ -151,9 +219,9 @@ The basic structure of the repo integration test:
               ],
              providers: [NewsRepo],                                     (1.2)
       }).compile();
-      repo = testModule.get<NewsRepo>(NewsRepo);                        (2)
-      orm = testModule.get<MikroORM>(MikroORM);
-      em = testModule.get<EntityManager>(EntityManager);
+      repo = testModule.get(NewsRepo);                                  (2)
+      orm = testModule.get(MikroORM);
+      em = testModule.get(EntityManager);
     })
 ```
 
@@ -217,8 +285,8 @@ The database calls are mocked and spyied. So we can check how and with which par
 			],
 		}).compile();
 
-		service = module.get<NewsUc>(NewsUc);                           (4)
-		repo = module.get<NewsRepo>(NewsRepo);
+		service = module.get(NewsUc);                                    (4)
+		repo = module.get(NewsRepo);
 ```
 
 #### Test
@@ -233,6 +301,21 @@ The database calls are mocked and spyied. So we can check how and with which par
 			await service.findAllForUser(userId, scope, pagination);    (2)
 			const expectedParams = [targets, false, pagination];
 			expect(findAllSpy).toHaveBeenCalledWith(...expectedParams); (3)
+		});
+```
+
+#### Testing expected error
+
+1. Execute the function with the expected exception in expect context than define how and with which exception
+   the function should be rejected
+
+> Don't forget to add 'await' before expect, otherwise the test will be executed successfully regardless assertions
+and throw an error in log after the test execution.
+
+```Typescript
+		it('should throw not found exception if news was not found', async () => {
+			const anotherNewsId = new ObjectId().toHexString();
+			await expect(service.findOneByIdForUser(anotherNewsId, userId)).rejects.toThrow(NotFoundException);  (1)
 		});
 ```
 
@@ -252,7 +335,7 @@ are correctly mounted and available at a specific path.
 
 > Do not test logic (from the business layer or repository) in e2e-tests, this must be done where the logic is defined within of a unit test. A e2e test should only ensure everything is correctly initialized.
 
-> Do not put logic (beside statements, transactions, mapping) inside a controller, use the logic layer instead. 
+> Do not put logic (beside statements, transactions, mapping) inside a controller, use the logic layer instead.
 
 > Mappers must be unit tested.
 
@@ -296,8 +379,8 @@ are correctly mounted and available at a specific path.
 
 		app = module.createNestApplication();                           (5)
 		await app.init();
-		orm = module.get<MikroORM>(MikroORM);                           (6)
-		em = module.get<EntityManager>(EntityManager);
+		orm = module.get(MikroORM);                                     (6)
+		em = module.get(EntityManager);
 	});
 ```
 
@@ -332,7 +415,7 @@ The response can be verified by checking the response code or by applying some v
 	describe('GET /news', () => {
       it('should get empty response if there is no news', async () => {
         const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-        const {data, total} = response.body as PaginationResponse<NewsResponse[]>;
+        const {data, total} = response.body as NewsListResponse;
         expect(total).toBe(0);
         expect(data.length).toBe(0);
       });
@@ -344,3 +427,9 @@ The response can be verified by checking the response code or by applying some v
 ## References
 
 This guide is inspired by https://github.com/goldbergyoni/javascript-testing-best-practices/
+```Typescript
+		it('should throw not found error, if news doesnt exists', async () => {
+			const newsId = new ObjectId().toHexString();
+			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(404);
+		});
+```

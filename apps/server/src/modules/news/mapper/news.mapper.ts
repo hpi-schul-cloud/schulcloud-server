@@ -1,6 +1,7 @@
+import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain';
 import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from '../controller/dto';
-import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetModelValue } from '../entity';
 import { SchoolInfoMapper } from './school-info.mapper';
+import { TargetInfoMapper } from './target-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';
 
 export class NewsMapper {
@@ -12,8 +13,9 @@ export class NewsMapper {
 		dto.displayAt = news.displayAt;
 		dto.source = news.source;
 		dto.sourceDescription = news.sourceDescription;
-		dto.targetId = news.target?.id;
+		dto.targetId = news.target.id;
 		dto.targetModel = news.targetModel;
+		dto.target = TargetInfoMapper.mapToResponse(news.target);
 		dto.school = SchoolInfoMapper.mapToResponse(news.school);
 		dto.creator = UserInfoMapper.mapToResponse(news.creator);
 		if (news.updater) {
@@ -29,7 +31,7 @@ export class NewsMapper {
 		const dto: INewsScope = {};
 		if (query.targetModel) {
 			dto.target = {
-				targetModel: query.targetModel as NewsTargetModelValue,
+				targetModel: query.targetModel as NewsTargetModel,
 				targetId: query.targetId,
 			};
 		}
@@ -45,7 +47,7 @@ export class NewsMapper {
 			content: params.content,
 			displayAt: params.displayAt,
 			target: {
-				targetModel: params.targetModel as NewsTargetModelValue,
+				targetModel: params.targetModel as NewsTargetModel,
 				targetId: params.targetId,
 			},
 		};

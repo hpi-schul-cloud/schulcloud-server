@@ -18,19 +18,21 @@ class UserAction extends BaseConsumerAction {
 
 	async action(data = {}) {
 		const { user = {}, account = {} } = data;
+
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
-		if (school) {
+
+		if (!school) {
+			throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
+				schoolDn: user.schoolDn,
+				systemId: user.systemId,
+			});
+		} else if (!school.inMaintenance) {
 			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 			if (foundUser !== null) {
 				await this.updateUserAndAccount(foundUser, user, account);
 			} else {
 				await this.createUserAndAccount(user, account, school._id);
 			}
-		} else {
-			throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
-				schoolDn: user.schoolDn,
-				systemId: user.systemId,
-			});
 		}
 	}
 

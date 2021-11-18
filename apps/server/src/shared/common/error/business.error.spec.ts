@@ -31,14 +31,15 @@ describe('BusinessError', () => {
 	});
 	describe('when a business error is extended', () => {
 		class BusinessErrorImpl extends BusinessError {
-			constructor(message?: string, code?: number) {
+			constructor(message?: string, code?: number, details?: Record<string, unknown>) {
 				super(
 					{
 						type: 'SAMPLE_ERROR',
 						title: 'Sample Error',
 						defaultMessage: message || 'default sample error message',
 					},
-					code
+					code,
+					details
 				);
 			}
 		}
@@ -48,11 +49,25 @@ describe('BusinessError', () => {
 			expect(status).toEqual(HttpStatus.CONFLICT);
 			expect(status).toEqual(409);
 		});
+
 		it('should override the default message and error code', () => {
 			const error = new BusinessErrorImpl('custom message', 123);
 			const status = error.getStatus();
 			expect(status).toEqual(123);
 			expect(error.message).toEqual('custom message');
+		});
+
+		it('should set details per default to empty object', () => {
+			const error = new BusinessErrorImpl('custom message', 123);
+			const result = error.getDetails();
+			expect(result).toEqual({});
+		});
+
+		it('should set details over parameter in constuctor', () => {
+			const details = { userId: 123 };
+			const error = new BusinessErrorImpl('custom message', 123, details);
+			const result = error.getDetails();
+			expect(result).toEqual(details);
 		});
 	});
 });

@@ -44,7 +44,7 @@ const edusharingInstancePermissions = [
 		name: 'Thuringia',
 		alias: 'thr',
 		privateGroups: ['GROUP_Thuringia-private'],
-		publicGroups: ['GROUP_Thuringia-public'],
+		publicGroups: ['GROUP_public', 'GROUP_Thuringia-public'],
 	},
 	{
 		// same for BossCloud, Open, and International.
@@ -222,7 +222,10 @@ class EduSharingConnector {
 		}
 
 		// Private: from its own state, public: from all states
-		const groups = [...countyGroups, ...instancePermissions.privateGroups, ...instancePermissions.publicGroups];
+		const groups = [
+			...(countyGroups.length > 0 ? countyGroups : instancePermissions.privateGroups),
+			...instancePermissions.publicGroups,
+		];
 
 		const criterias = [];
 		if (groups.length) {

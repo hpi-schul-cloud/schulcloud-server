@@ -2,6 +2,19 @@ import externalAuthConfig = require('../../../../../src/services/authentication/
 
 const { authConfig } = externalAuthConfig;
 
+/*
+	TODO: look at existing keys, vs implemented keys
+	support: true,
+	supportUserId,
+	accountId,
+	userId,
+	iat,
+	exp,
+	aud: this.aud,
+	iss: 'feathers',
+	sub: accountId,
+	jti: `support_${ObjectId()}`,
+*/
 export interface JwtConstants {
 	secret: string;
 	jwtOptions: {

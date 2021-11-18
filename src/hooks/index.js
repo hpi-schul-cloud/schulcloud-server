@@ -622,7 +622,7 @@ exports.sendEmail = (context, maildata) => {
 	const attachments = [];
 	files.forEach((element) => {
 		try {
-			attachments.push({ filename: element.name, content: Buffer.from(element.data) });
+			attachments.push({ filename: element.name, content: Buffer.from(element.data), mimetype: element.mimetype });
 		} catch (error) {
 			throw new Error('Unexpected Error while creating Attachment.');
 		}

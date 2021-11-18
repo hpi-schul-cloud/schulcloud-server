@@ -280,8 +280,16 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return enrichedUser;
 	}
 
-	generateRegistrationLink(params) {
-		return this.app.service('registrationlink').create(params);
+	async generateRegistrationLink(params) {
+		try {
+			const registrationLink = await this.app.service('registrationlink').create(params);
+			return registrationLink;
+		} catch (err) {
+			return {
+				hash: null,
+				shortLink: null,
+			};
+		}
 	}
 
 	async createOrUpdateUser(record, schoolId) {

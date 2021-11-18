@@ -559,7 +559,7 @@ const sendRegistrationLink = async (context) => {
 	if (data.sendRegistration === true) {
 		delete data.sendRegistration;
 		await app.service('/users/mail/registrationLink').create({
-			userIds: [result._id],
+			users: [result],
 		});
 	}
 	return context;

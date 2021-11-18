@@ -7,7 +7,313 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [Unreleased]
+
+### Added
+
+### Fixed
+
+## [26.17.0] - 2021-11-16
+
+### Changed
+
+- BC-488 - Set federal state in LDAPSyncer by system
+- BC-589 - BC-652 - change auto deployment to a reusable workflow
+- BC-240 - Dashboards are now personalized
+
+### Fixed
+
+- BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
+- BC-668 - fixed security issues/updated dependencies
+
+## [26.16.0] - 2021-11-09
+
+### Added
+
+- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's
+
+### Changed
+
+- BC-451 - move repos to shared: user, role
+- BC-451 - move repos to shared: dashboard, files-storage, course, coursegroup, task, submission and update imports
+- BC-605 - sort references within groups alphabetically
+
+### Fixed
+
+- BC-599 - fix email return
+- BC-526 - fix flaky file repository test
+- BC-404 - students from other schools can not be invited via email anymore
+- fixed autodeployment storageprovider initialization race condition
+
+## [26.15.0] - 2021-11-02
+
+- BC-526 - files deleted via directory deletion will be deleted with the deletion concept
+- BC-369 - add more LDAP systems to the init deployment
+- BC-174 - Improve test data generation with factories
+- BC-40 - rocketchat authentication via user+password
+- BC-532 - add index to course, lesson, task entity and fix permission issue
+
+### Changed
+
+- BC-451 - move repos to shared: files(-storage), news
+- BC-451 - move database, feathers, mail from modules to @shared/infra
+- BC-379 - updated the engine version to node 16 and npm 8
+- BC-477 remove generics from test-module getter
+- BC-507 - remove orphaned GridElements from database
+- BC-469 - defined docker base image
+- BC-543 - move status logic to task entity
+- BC-402 - change e2e test include to reusable workflows
+
+### Fixed
+
+- BC-451 - fix timezone related test issues
+
+## [26.14.0] - 2021-10-26
+
+### Added
+
+- BC-155 - add substitution teacher flag to task
+- BC-121 - add console script to delete soft-deleted files
+- BC-495 - ungroup elements from groups in the course dashboard
+- BC-496 - naming of groups in the course dashboard
+
+### Changed
+
+- BC-383 - remove usage of npm run seed in server
+- BC-527 - cleanup legacy code for filestorage deletion concept
+- BC-13 - filter archived tasks and dont return it by task.findAll uc
+- BC-501 - return lesson name as task description for more detailed informations
+- BC-578 - enable `esModuleInterop` in typescript configuration
+
+## [26.13.2] - 2021-10-22
+
+### Changed
+
+- BC-379 - hard-code node 14 and npm 6
+
+## [26.13.0] - 2021-10-19
+
+### Added
+
+- BC-394 - send email wishes to additionally needed addresses
+- BC-391 - display special characters properly
+- BC-339 - creation of groups in the courses dashboard
+- BC-339 - add elements to groups in the courses dashboard
+
+### Fixed
+
+- BC-436 - Fix univention LDAP strategy
+- BC-21 - Remove generics from DTOs, because generics can not be used to generate OpenApi properly
+
+### Changed
+
+- BC-487 - update mongodb-memory-server from 6.9.6 to 7.4.4
+- BC-490 - setup entities for tests without needing a database
+
+## [26.12.0] - 2021-10-12
+
+### Added
+
+- BC-388 - add simple script for end sjw
+- BC-319 - add route to change the position of a course dashboard element
+- BC-343 - run unstable e2e tests on label `run unstable tests`
+- BC-6 - Show prepared tasks (drafts) for teachers
+
+### Changed
+
+- BC-25 - sort database seeds ascending by date of creation (\_id, createdAt)
+- BC-25 - move logic of npm run setup into console application and add management application with same behavior
+- BC-237 - Clean up global entity registration
+- BC-331 - BC-354 - rename ansible variables for OnePassword
+- BC-269 - check in firstLogin that students can only pass with existing birthdate
+- BC-154 - remove lesson entity from task repository
+- BC-231 - upgraded nestjs@7 to nestjs@8
+
+### Fixed
+
+### Security
+
+- BC-386 - added CREATE tests for consentVersionService
+- BC-297 - fixed set-value dependency vulnerabilities
+- BC-377 - fixed axios dependency vulnerabilities
+
+## [26.11.3] - 2021-10-05
+
+### Fixed
+
+- BC-121 - run add bucket to files migration in parallel
+
+## [26.11.2] - 2021-09-29
+
+### Fixed
+
+- BC-111 wait for mongodb to spin up in deployment
+
+- BC-370 - fixed file directory creation
+
+## [26.11.1] - 2021-09-29
+
+### Fixed
+
+- BC-365 - fixed task overview pagination
+
+## [26.11.0] - 2021-09-22
+
+### Changed
+
+- BC-274 Change Course Colors
+- BC-213 - rewrite file deletion with deletion marker
+- BC-68 - e2e run dependent on build image job
+- BC-179 - refactor task and entity and relations
+- BC-315 - stabilized resolve user roles workflow by use roles from requested user and not from jwt
+
+### Added
+
+- BC-121 add bucket and storage provider to file documents
+- BC-164 - refactored the supportJWTservice and added roles information to its jwt data
+- BC-279 - introduce console application interface to call providers via console command
+- BC-9 add entity and repo for course dashboards
+- BC-9 add a route to recieve dummy data for course dashboards
+- BC-318 implement persistance for course dashboards
+
+### Fixed
+
+- BC-232 prevent users from changing schoolyears
+- BC-233 - when an LDAP system is removed from a school, the ldapschoolidentifier and lastLdapSync are removed as well
+- moved some changelog entries into their correct place
+
+### Removed
+
+- BC-262 - remove S3 lifecycle configuration code
+- BC-247 - remove timestamp from LDAP search Query for sync
+
+## [26.10.3] - 2021-09-09
+
+### Fixed
+
+- BC-267 - skip whitelist-check for api requests on /wopi
+
+## [26.10.2] - 2021-09-03
+
+### Added
+
+- BC-120 - add feature flag for S3 CORS
+- BS-112 - insert missing attribute during school creation
+
+## [26.10.1] - 2021-09-03
+
+### Fixed
+
+- BC-187 - secures the system route
+
+## [26.10.0] - 2021-09-03
+
+### Fixed
+
+- remove broken systemid from seed data
+- SC-9083 - expose env variables for school administration
+- BC-44 - remove JWT_WHITELIST_ACCEPT_ALL feature flag
+- BC-44 - integrate jwt whitelist check in nestjs jwt authentication
+- BC-42 - cycle detection in role inheritance
+- BC-64 - enable e2e test execution for push event on main branch
+- BC-41 - adds feature flag for S3 storage lifecycle management (currently not supported by Strato Hidrive)
+- BC-37 - BC-54 - reduce resource consumption for deployed server
+- BC-81 - remove old Lern-Store
+- BC-119 - remove malfunction S3 lifecycle migration
+- BC-38 - BC-124 - Add ansible files for Bosscloud (default)
+- BC-110 - fileStorage/security should only be called from within the cluster
+
+### Added
+
+- BC-5 - Show completed tasks for students
+
+### Changed
+
+- Refactor nestjs task module and resort imports for course and coursegroup entities and repositories. Add testHelpers.
+
+## [26.9.3] - 2021-09-10
+
+### Fixed
+
+- BC-239 - fix date parsing for students birth date
+
+## [26.9.2] - 2021-08-27
+
+### Changed
+
+- BC-137 - fix bug with display of Blue Bar
+- BC-106 - exit maintenance & change school year for LDAP schools on Boss and NBC
+
+## [26.9.1] - 2021-08-18
+
+### Changed
+
+- SC-9192 - enable cors for nestjs app routes
+- SC-9130 - use whiltelisted filenames at the s3 file storage backend
+
+## [26.9.0] - 2021-08-14
+
+### Changed
+
+- OPS-2491 - Change the hydra service url
+- SC-9231 - add permissions to SuperHero to edit admin role
+- SC-9269 - let eslint ensure no tests with .only exist anymore
+- SC-9192 - mount feathers and nestjs apps under dedicated version paths and allow general path prefix for the whole server
+
+## Added
+
+- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+- SC-9231 - add permissions to SuperHero to edit admin role
+
+## [26.8.0] - 2021-08-10
+
+## [26.7.1] - 2021-08-03
+
+- SC-9233 - fix Lern-Store on THR to load also WLO content
+
+## [26.7.0] - 2021-07-28
+
+### Added
+
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
+- SC-9150 - add script to change school year
+- SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
+- SC-9177 - allow superheros to delete admins
+
+### Changed
+
+- SC-9219 - limited jest workers for not taking all workers within of a single github action
+
+### Fixed
+
+- SC-9212 - fix changing classes via CSV import
+- SC-9053 - fix sending registration link via checkbox for student/teacher creation
+
+## [26.6.4] - 2021-07-23
+
+### Changed
+
+- move S3 expiration migration to the end
+
+## [26.6.3] - 2021-07-21
+
+### Fixed
+
+- SC-9092 - add missing S3 key decryption in migration
+
+## [26.6.2] - 2021-07-21
+
+### Changed
+
+- use edusharing lernstore mode on production
+
+## [26.6.1] - 2021-07-21
+
+### Changed
+
+- change default lernstore mode to edusharing
+
+## [26.6.0] - 2021-07-20
 
 ### Added
 
@@ -15,10 +321,73 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9093 - make configured default language and timezone available in config service
 - SC-9092 - delete S3 files after 7 days from user deletion
 - SC-8959 - Add messenger to deletion concept
+- SC-9157 - Add RabbitMQ connection to new mail service
+- SC-9157 - Improve config handling for RabbitMQ
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
+- OPS-2574 - Removeing autodeployed branches for developers if branch deleted
+- OPS-2579 - Add Ansible task and templates for adding storage
 
-### Changed 
+### Changed
+
+- SC-9190 - publish news target names
+- SC-8887 - allow public access to consentVersion service
+- SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
+- remove unnecessary timeout definitions from tests and avoid promise chains
+- SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+- execute unit tests via github action instead of using travis
+
+### Fixed
+
+- SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
+- SC-9202 - fix sending of registration link mails
+
+## [26.5.0] - 2021-06-28
+
+### Added
+
+- SC-9431 - add teacher view to task/open over permission TASK_DASHBOARD_VIEW_V3, solving permissions after authenticate and add v3/user/me route.
+
+### Changed
 
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+
+## [26.4.9] - 2021-06-29
+
+### Fixed
+
+- api route forwarding
+
+### Removed
+
+- SC-9159 removed news from feathers except remove team event, which already is replaced by v3/news
+
+## [26.4.8] - 2021-06-29
+
+### Fixed
+
+- route forwarding
+
+## [26.4.7] - 2021-06-22
+
+### Added
+
+- SC-9148 - Add migration for change of school year on BRB
+
+### Fixed
+
+- SC-9170 - let superhero delete other users
+
+## [26.4.6] - 2021-06-24
+
+### Changed
+
+- OPS-2466 - changes build pipeline to github actions
+
+## [26.4.5] - 2021-06-21
+
+### Added
+
+- SC-9156 - Add maintenance mode for LDAP rewrite
 
 ## [26.4.4] - 2021-06-16
 
