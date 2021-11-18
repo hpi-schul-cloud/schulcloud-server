@@ -322,10 +322,10 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
-		"FEATURE_S3_BUCKET_LIFECYCLE_MANAGEMENT": {
+		"FEATURE_S3_BUCKET_CORS": {
 			"type": "boolean",
-			"description": "true if lifecycle management is supported by the S3 bucket. Will enable deletion of files having prefix expiring_ after 7 days",
-			"default": false
+			"description": "true if CORS is supported by the S3 bucket. (Minio does not support it)",
+			"default": true
 		},
 		"REQUEST_LIMIT_STORAGE_PROVIDER": {
 			"type": "integer",
@@ -402,6 +402,31 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables chat function for the school."
+		},
+		"ROCKET_CHAT_URI": {
+			"type": "string",
+			"default" : null,
+			"description": "rocketchat base uri"
+		},
+		"ROCKET_CHAT_ADMIN_ID": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin id"
+		},
+		"ROCKET_CHAT_ADMIN_TOKEN": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin token"
+		},
+		"ROCKET_CHAT_ADMIN_USER": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin user"
+		},
+		"ROCKET_CHAT_ADMIN_PASSWORD": {
+			"type": "string",
+			"default": null,
+			"description": "rocketchat admin password"
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
@@ -651,7 +676,7 @@
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
 			"type": "string",
 			"default": "ticketsystem@schul-cloud.org",
-			"description": "Email address used for reporting a wish"
+			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
 			"type": "boolean",

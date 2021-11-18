@@ -1,8 +1,5 @@
-const request = require('request-promise-native');
-
 const { BadRequest } = require('../../../errors');
 const logger = require('../../../logger');
-const { getRequestOptions } = require('../helpers');
 const { userModel } = require('../model');
 const docs = require('../docs');
 
@@ -20,13 +17,10 @@ class RocketChatLogout {
 	async get(userId, params) {
 		try {
 			const rcUser = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params);
+			const service = this.app.service('/nest-rocket-chat');
 			if (rcUser.authToken && rcUser.authToken !== '') {
-				const headers = {
-					authToken: rcUser.authToken,
-					userId: rcUser.rcId,
-				};
-				await userModel.update({ username: rcUser.username }, { authToken: '' });
-				await request(getRequestOptions('/api/v1/logout', {}, false, headers));
+				await userModel.updateOne({ username: rcUser.username }, { authToken: '' });
+				await service.logoutUser(rcUser.authToken, rcUser.rcId);
 			}
 			return 'success';
 		} catch (error) {

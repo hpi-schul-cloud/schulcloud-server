@@ -1,18 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCurrentTestUser } from '../utils';
-import { UserRepo } from '../repo';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { IPermissionsAndRoles } from '@shared/domain';
+import { createCurrentTestUser } from '@shared/testing';
+import { UserRepo } from '@shared/repo';
 import { UserUC } from './user.uc';
 import { RoleUC } from './role.uc';
 import { ResolvedUser } from '../controller/dto';
-import { IPermissionsAndRoles } from '../entity';
 
 describe('UserUC', () => {
+	let module: TestingModule;
 	let service: UserUC;
 	let roleUC: RoleUC;
 	let repo: UserRepo;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				UserUC,
 				UserRepo,
@@ -26,7 +29,7 @@ describe('UserUC', () => {
 				{
 					provide: RoleUC,
 					useValue: {
-						resolvePermissionsByIdList() {},
+						resolvePermissionsByRoles() {},
 					},
 				},
 			],
@@ -35,6 +38,10 @@ describe('UserUC', () => {
 		service = module.get(UserUC);
 		roleUC = module.get(RoleUC);
 		repo = module.get(UserRepo);
+	});
+
+	afterEach(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -47,7 +54,7 @@ describe('UserUC', () => {
 			const permissions = ['A', 'B'] as string[];
 			const { currentUser, user, roles } = createCurrentTestUser(permissions);
 
-			const roleUCSpy = jest.spyOn(roleUC, 'resolvePermissionsByIdList').mockImplementation(() => {
+			const roleUCSpy = jest.spyOn(roleUC, 'resolvePermissionsByRoles').mockImplementation(() => {
 				const result = { roles, permissions } as IPermissionsAndRoles;
 				return Promise.resolve(result);
 			});
@@ -56,7 +63,7 @@ describe('UserUC', () => {
 				return Promise.resolve(user);
 			});
 
-			const result = await service.getUserWithPermissions(currentUser);
+			const result = await service.getUserWithPermissions(currentUser.userId);
 			expect(result instanceof ResolvedUser).toBe(true);
 
 			userRepoSpy.mockRestore();

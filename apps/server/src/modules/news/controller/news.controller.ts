@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
-import { ParseObjectIdPipe, PaginationQuery, PaginationResponse } from '@shared/controller';
+import { ParseObjectIdPipe, PaginationQuery } from '@shared/controller';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { NewsUc } from '../uc/news.uc';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 
-import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from './dto';
+import { CreateNewsParams, NewsFilterQuery, NewsListResponse, NewsResponse, UpdateNewsParams } from './dto';
 import { NewsMapper } from '../mapper/news.mapper';
 
 @ApiTags('News')
@@ -32,18 +32,19 @@ export class NewsController {
 	 * Responds with all news for a user.
 	 */
 	@Get()
+	@ApiBody({ type: NewsListResponse })
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: NewsFilterQuery,
 		@Query() pagination: PaginationQuery
-	): Promise<PaginationResponse<NewsResponse[]>> {
+	): Promise<NewsListResponse> {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
 			NewsMapper.mapNewsScopeToDomain(scope),
 			{ pagination }
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		const response = new PaginationResponse(dtoList, count);
+		const response = new NewsListResponse(dtoList, count);
 		return response;
 	}
 

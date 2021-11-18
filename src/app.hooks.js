@@ -10,6 +10,7 @@ const {
 } = require('./utils');
 const {
 	extractRedisDataFromJwt,
+	isRouteWhitelisted,
 	isTokenAvailable,
 	ensureTokenIsWhitelisted,
 } = require('./services/authentication/logic/whitelist');
@@ -72,9 +73,9 @@ const displayInternRequests = (level) => (context) => {
 const handleAutoLogout = async (context) => {
 	const { path } = context;
 	const { accessToken } = (context.params || {}).authentication || {};
-	if (isTokenAvailable(accessToken)) {
+	if (!isRouteWhitelisted(path) && isTokenAvailable(accessToken)) {
 		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(accessToken);
-		await ensureTokenIsWhitelisted(path, { accountId, jti, privateDevice });
+		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice });
 	}
 	return context;
 };

@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '../entity';
-import { RoleRepo } from '../repo';
+import { Role } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { RoleRepo } from '@shared/repo';
 import { RoleUC } from './role.uc';
 
 describe('RoleUC', () => {
+	let module: TestingModule;
 	let service: RoleUC;
 	let repo: RoleRepo;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				RoleUC,
 				RoleRepo,
@@ -25,12 +28,16 @@ describe('RoleUC', () => {
 		repo = module.get(RoleRepo);
 	});
 
-	it('should be defined', () => {
-		expect(service).toBeDefined();
-		expect(typeof service.resolvePermissionsByIdList).toEqual('function');
+	afterEach(async () => {
+		await module.close();
 	});
 
-	describe('resolvePermissionsByIdList', () => {
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+		expect(typeof service.resolvePermissionsByRoles).toEqual('function');
+	});
+
+	describe('resolvePermissionsByRoles', () => {
 		it('should return valid solved and mapped typ', async () => {
 			const nameA = `a${Date.now()}`;
 			const roleA = new Role({ name: nameA, permissions: ['A', 'C'] });
@@ -39,7 +46,7 @@ describe('RoleUC', () => {
 				return Promise.resolve(roleA);
 			});
 
-			const result = await service.resolvePermissionsByIdList([roleA.id]);
+			const result = await service.resolvePermissionsByRoles([roleA]);
 			expect(Object.keys(result).sort()).toEqual(['permissions', 'roles'].sort());
 
 			repoSpy.mockRestore();

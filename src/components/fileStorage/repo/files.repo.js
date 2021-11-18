@@ -1,5 +1,5 @@
 const { FileModel } = require('./db');
-const { AssertionError } = require('../../../errors');
+const { AssertionError, NotFound } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
@@ -17,7 +17,11 @@ const personalFileSearchQuery = (userId) => ({
 	owner: userId,
 });
 
-const getFileById = async (id) => FileModel.findById(id).lean().exec();
+const getFileById = async (id) => {
+	const file = await FileModel.findById(id).lean().exec();
+	if (!file) throw new NotFound();
+	return file;
+};
 
 /**
  * @param {BSON|BSONString} userId
@@ -30,6 +34,14 @@ const getPersonalFilesByUserId = async (userId) => {
 	return FileModel.find(personalFileSearchQuery(userId)).lean().exec();
 };
 
+const removeFileById = async (id) => {
+	const file = await getFileById(id);
+	if (file.isDirectory) {
+		await FileModel.delete({ parent: id }).lean().exec();
+	}
+	await FileModel.deleteById(id).lean().exec();
+};
+
 /**
  * @param {BSON|BSONString} userId
  * @return {boolean} success
@@ -38,7 +50,10 @@ const removePersonalFilesByUserId = async (userId) => {
 	if (!isValidObjectId(userId)) {
 		throw new AssertionError(missingParameters({ userId }));
 	}
-	const deleteResult = await FileModel.deleteMany(personalFileSearchQuery(userId)).lean().exec();
+	const personalNotDeletedFileSearchQuery = {
+		$and: [personalFileSearchQuery(userId), { deleted: false }],
+	};
+	const deleteResult = await FileModel.delete(personalNotDeletedFileSearchQuery).lean().exec();
 	const { success } = updateManyResult(deleteResult);
 	return success;
 };
@@ -86,4 +101,5 @@ module.exports = {
 	removePersonalFilesByUserId,
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
+	removeFileById,
 };
