@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerModule } from '@src/core/logger/logger.module';
-import { AuthorizationModule } from '@src/modules/authorization/authorization.module';
+import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { NewsRepo } from '@shared/repo';
 import { NewsController } from './news.controller';
-import { NewsRepo } from '../repo/news.repo';
 import { NewsUc } from '../uc';
 
 describe('NewsController', () => {
@@ -21,7 +21,7 @@ describe('NewsController', () => {
 			],
 		}).compile();
 
-		controller = module.get<NewsController>(NewsController);
+		controller = module.get(NewsController);
 	});
 
 	it('should be defined', () => {

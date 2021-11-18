@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { DashboardRepo } from '@src/repositories/learnroom/dashboard.repo';
+import { DashboardRepo, DashboardModelMapper } from '@shared/repo';
 
 import { DashboardController } from './controller/dashboard.controller';
 import { DashboardUc } from './uc/dashboard.uc';
@@ -14,6 +14,7 @@ import { DashboardUc } from './uc/dashboard.uc';
 			provide: 'DASHBOARD_REPO',
 			useClass: DashboardRepo,
 		},
+		DashboardModelMapper,
 	],
 })
 export class LearnroomModule {}

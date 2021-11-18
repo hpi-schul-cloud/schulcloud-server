@@ -4,7 +4,7 @@ metadata:
   name: api-db-init-file
   namespace: {{ NAMESPACE }}
   labels:
-    app: rocketchat
+    app: api-deployment
 data:
   update.sh: |
     #! /bin/bash
@@ -15,15 +15,25 @@ data:
       do
         sleep 1
       done
+    mongo $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
+    sleep 3
+    if [[ $(mongo --quiet --eval "db.isMaster().setName") != rs0 ]]
+    then
+        echo "replicaset config failed :("
+    else
+        echo "gg, hacky mongo replicaset"
+    fi
     for file in /schulcloud-server/backup/setup/*
     do
         mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
     done
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-    mongo $DATABASE__URL --eval 'db.systems.insert({
+    mongo $DATABASE__URL --eval 'db.systems.insert([
+    {
       "alias" : "Zentrales IServ",
       "ldapConfig" : {
         "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c58"),
         "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
         "rootPath" : "dc=de,dc=example,dc=org",
         "searchUser" : "cn=admin,dc=example,dc=org",
@@ -33,8 +43,97 @@ data:
           "userAttributeNameMapping" : {},
           "roleAttributeNameMapping" : {},
           "classAttributeNameMapping" : {}
+        }
+      },
+      "type" : "ldap"
+    },
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne0",
+      "ldapConfig" : {
+        "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c56"),
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne0,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 0",
+          "userPathAdditions" : "ou=users",
+          "classPathAdditions" : "ou=groups",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "description" : "description",
+            "dn" : "dn",
+            "uniqueMember" : "member"
+          }
+        }
       }
     },
-    "type" : "ldap"
-    });'
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne1",
+      "ldapConfig" : {
+        "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c54"),
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne1,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 1",
+          "userPathAdditions" : "ou=users",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "dn" : "dn"
+          }
+        }
+      }
+    }]);'
+    mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
+                                       "isShared" : true,
+                                       "region" : "eu-central-1",
+                                       "type" : "S3",
+                                       "endpointUrl" : "https://storage-{{ DOMAIN }}",
+                                       "accessKeyId" : "'$AWS_ACCESS_KEY'",
+                                       "secretAccessKey" : "'$AWS_SECRET_ACCESS_KEY_AES'",
+                                       "maxBuckets" : 999999,
+                                       "freeBuckets" : 999999,
+                                       "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
+                                       "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
+                                     } );'
+
+
     npm run syncIndexes

@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import { Command, Console } from 'nestjs-console';
-import { ConsoleWriter } from './console-writer/console-writer.service';
+import { ConsoleWriterService } from '@shared/infra/console';
 
 @Console({ command: 'server', description: 'sample server console' })
 export class ServerConsole {
-	constructor(private consoleWriter: ConsoleWriter) {}
+	constructor(private consoleWriter: ConsoleWriterService) {}
 
 	/** test method for console output */
 	@Command({ command: 'test', description: 'sample test output' })
