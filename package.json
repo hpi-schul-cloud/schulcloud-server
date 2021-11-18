@@ -165,7 +165,7 @@
 		"service": "^0.1.4",
 		"socketio-file-upload": "^0.7.0",
 		"source-map-support": "^0.5.19",
-		"strip-bom": "^5.0.0",
+		"strip-bom": "^4.0.0",
 		"swagger-ui-express": "^4.1.6",
 		"tiny-async-pool": "^1.2.0",
 		"universal-analytics": "^0.4.17",
