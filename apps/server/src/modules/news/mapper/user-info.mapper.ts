@@ -1,12 +1,12 @@
-import { UserInfo } from '../entity';
+import { User } from '@shared/domain';
 import { UserInfoResponse } from '../controller/dto';
 
 export class UserInfoMapper {
-	static mapToResponse(userInfo: UserInfo): UserInfoResponse {
+	static mapToResponse(user: User): UserInfoResponse {
 		const dto = new UserInfoResponse();
-		dto.id = userInfo.id;
-		dto.firstName = userInfo.firstName;
-		dto.lastName = userInfo.lastName;
+		dto.id = user.id;
+		dto.firstName = user.firstName;
+		dto.lastName = user.lastName;
 		return dto;
 	}
 }

@@ -7,10 +7,10 @@ const { expect } = chai;
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-
 describe('supportJWTService', () => {
 	let app;
 	let supportJWTService;
+	let meService;
 	const testedPermission = 'CREATE_SUPPORT_JWT';
 
 	let server;
@@ -18,6 +18,7 @@ describe('supportJWTService', () => {
 	before(async () => {
 		app = await appPromise;
 		supportJWTService = app.service('accounts/supportJWT');
+		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);
 	});
 
@@ -76,5 +77,37 @@ describe('supportJWTService', () => {
 			expect(roles[0].permissions).to.not.include(testedPermission);
 			expect(err.code).to.be.equal(403);
 		}
+	});
+
+	it('accountId, userId, roles, and schoolId values should be present in jwtData', async () => {
+		const [superhero, student] = await Promise.all([
+			testObjects.setupUser({ roles: 'superhero' }),
+			testObjects.setupUser({ roles: 'student' }),
+		]);
+
+		const jwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
+
+		const { accountId, userId, roles, schoolId } = decode(jwt);
+
+		expect(accountId).to.be.equal(student.account._id.toString());
+		expect(userId).to.be.equal(student.user._id.toString());
+		expect(roles[0]).to.be.equal(student.user.roles[0].toString());
+		expect(schoolId).to.be.equal(student.user.schoolId.toString());
+	});
+
+	it('superhero data should be the same as the requested user data when using the support jwt', async () => {
+		const [superhero, student] = await Promise.all([
+			testObjects.setupUser({ roles: 'superhero' }),
+			testObjects.setupUser({ roles: 'student' }),
+		]);
+
+		const requestedUserJwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
+
+		let meSHdata = await meService.find(superhero.requestParams);
+		expect(meSHdata._id).to.not.be.equal(student.user._id.toString());
+
+		superhero.requestParams.authentication.accessToken = requestedUserJwt;
+		meSHdata = await meService.find(superhero.requestParams);
+		expect(meSHdata._id).to.be.equal(student.user._id.toString());
 	});
 });

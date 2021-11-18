@@ -1,20 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM, EntityManager } from '@mikro-orm/core';
 
-import { ICurrentUser } from '@shared/domain';
-import { PaginationResponse } from '@shared/controller';
+import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '@src/modules/user/utils';
-import { TaskTestHelper } from '@src/modules/task/utils';
-import { LearnroomTestHelper, Course } from '@src/entities';
-import { TaskResponse } from '@src/modules/task/controller/dto';
-import { Task, Submission, UserTaskInfo } from '@src/modules/task/entity';
+import { TaskListResponse } from '@src/modules/task/controller/dto';
+import { courseFactory, userFactory, taskFactory, submissionFactory, createCurrentTestUser } from '@shared/testing';
 
-const modifiedCurrentUserId = (currentUser: ICurrentUser, user: UserTaskInfo) => {
+const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.user.id = user.id;
 	currentUser.userId = user.id;
 };
@@ -49,23 +45,17 @@ describe('Task Controller (e2e)', () => {
 			await app.close();
 		});
 
-		it('[FIND] /tasks/open', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			expect(response.status).toEqual(401);
-		});
-
-		it('[FIND] /tasks/completed', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
+		it('[FIND] /tasks', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks');
 			expect(response.status).toEqual(401);
 		});
 	});
 
-	describe('As user with write permissions in parents', () => {
+	describe('As user with write permissions in courses', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
-
-		const { currentUser } = createCurrentTestUser(['TASK_DASHBOARD_TEACHER_VIEW_V3']);
+		let currentUser: ICurrentUser;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -85,6 +75,7 @@ describe('Task Controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
+			currentUser = createCurrentTestUser(['TASK_DASHBOARD_TEACHER_VIEW_V3']).currentUser;
 		});
 
 		afterAll(async () => {
@@ -97,14 +88,14 @@ describe('Task Controller (e2e)', () => {
 				em.nativeDelete(Course, {}),
 				em.nativeDelete(Task, {}),
 				em.nativeDelete(Submission, {}),
-				em.nativeDelete(UserTaskInfo, {}),
+				em.nativeDelete(User, {}),
 			]);
 		});
 
-		it('[FIND] /tasks/open can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open').set('Accept', 'application/json');
+		it('[FIND] /tasks can open it', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks').set('Accept', 'application/json');
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -114,10 +105,10 @@ describe('Task Controller (e2e)', () => {
 			});
 		});
 
-		it('[FIND] /tasks/open should allow to modified pagination and set correct limit', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open').query({ limit: 100, skip: 100 });
+		it('[FIND] /tasks should allow to modified pagination and set correct limit', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks').query({ limit: 100, skip: 100 });
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -127,152 +118,176 @@ describe('Task Controller (e2e)', () => {
 			});
 		});
 
-		it('[FIND] /tasks/open should allow to modified pagination limit greater then 100', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open').query({ limit: 1000, skip: 100 });
+		it('[FIND] /tasks should allow to modified pagination limit greater then 100', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks').query({ limit: 1000, skip: 100 });
 
 			expect(response.status).toEqual(400);
 		});
 
-		it('[FIND] /tasks/open return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
+			const teacher = userFactory.build();
+			const course = courseFactory.build({ teachers: [teacher] });
+			const task = taskFactory.draft(false).build({ course });
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			const parent = helperL.createTeacherCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
+			modifyCurrentUserId(currentUser, teacher);
 
-			await em.persistAndFlush([task, parent, user]);
-
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0]).toHaveProperty('status');
 			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
 			expect(paginatedResult.data[0]).toHaveProperty('name');
+			expect(paginatedResult.data[0]).toHaveProperty('description');
 		});
 
-		it('[FIND] /tasks/open return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			const student = helper.getOtherUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
+			const teacher = userFactory.build();
+			const student = userFactory.build();
+			await em.persistAndFlush([teacher, student]);
+			const course = courseFactory.build({ teachers: [teacher] });
+			const task = taskFactory.draft(false).build({ course });
+			task.submissions.add(submissionFactory.build({ task, student }));
 
-			const parent = helperL.createTeacherCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
-			const submission = helper.createSubmission(task, student);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user, student, submission]);
+			modifyCurrentUserId(currentUser, teacher);
 
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.data[0]).toBeDefined();
 			expect(paginatedResult.data[0].status).toEqual({
 				submitted: 1,
-				maxSubmissions: parent.getStudentsNumber(),
+				maxSubmissions: course.getNumberOfStudents(),
 				graded: 0,
+				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 		});
 
-		it('[FIND] /tasks/open return a list of tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks retun a status flag in task if the teacher is only a substitution teacher.', async () => {
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
+			const course = courseFactory.build({ substitutionTeachers: [teacher] });
+			const task = taskFactory.draft(false).build({ course });
 
-			const parent = helperL.createTeacherCourse();
-			const task1 = helper.createTask(parent.id);
-			const task2 = helper.createTask(parent.id);
-			const task3 = helper.createTask(parent.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-			task3.changePrivate(false);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, task3, parent, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.data[0].status.isSubstitutionTeacher).toEqual(true);
+		});
+
+		it('[FIND] /tasks return a list of tasks', async () => {
+			const teacher = userFactory.build();
+			await em.persistAndFlush([teacher]);
+			const course = courseFactory.build({ teachers: [teacher] });
+			const task1 = taskFactory.draft(false).build({ course });
+			const task2 = taskFactory.draft(false).build({ course });
+			const task3 = taskFactory.draft(false).build({ course });
+
+			await em.persistAndFlush([task1, task2, task3]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(3);
 		});
 
-		it('[FIND] /tasks/open return a list of tasks from multiple parents', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks return a list of tasks from multiple courses', async () => {
+			const teacher = userFactory.build();
+			await em.persistAndFlush([teacher]);
+			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
+			const course3 = courseFactory.build({ name: 'course #3', teachers: [teacher] });
+			const task1 = taskFactory.draft(false).build({ course: course1 });
+			const task2 = taskFactory.draft(false).build({ course: course2 });
 
-			const parent1 = helperL.createTeacherCourse();
-			const parent2 = helperL.createTeacherCourse();
-			const parent3 = helperL.createTeacherCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			// parent3 has no task
-			task1.changePrivate(false);
-			task2.changePrivate(false);
+			await em.persistAndFlush([task1, task2, course3]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, parent1, parent2, parent3, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(2);
 		});
 
-		it('[FIND] /tasks/open should not return private tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks should also return private tasks', async () => {
+			const teacher = userFactory.build();
+			await em.persistAndFlush([teacher]);
+			const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
+			const task = taskFactory.draft(true).build({ course });
 
-			const parent = helperL.createTeacherCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(true);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task, parent, user]);
+			modifyCurrentUserId(currentUser, teacher);
 
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(1);
+			expect(paginatedResult.data[0].status.isDraft).toEqual(true);
+		});
+
+		it('[FIND] /tasks should return nothing from courses where the user has only read permissions', async () => {
+			const teacher = userFactory.build();
+			await em.persistAndFlush([teacher]);
+			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
+			const task = taskFactory.draft(false).build({ course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks/open should nothing return from parent where the user has read permissions', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('should not return closed tasks', async () => {
+			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
+			await em.persistAndFlush([teacher]);
 
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+			});
 
-			await em.persistAndFlush([task, parent, user]);
+			const task = taskFactory.draft(false).build({ course, closed: [teacher] });
 
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, teacher);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
 	});
 
-	describe('As user with read permissions in parents', () => {
+	describe('As user with read permissions in courses', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
-
-		const { currentUser } = createCurrentTestUser(['TASK_DASHBOARD_VIEW_V3']);
+		let currentUser: ICurrentUser;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -292,6 +307,7 @@ describe('Task Controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
+			currentUser = createCurrentTestUser(['TASK_DASHBOARD_VIEW_V3']).currentUser;
 		});
 
 		afterAll(async () => {
@@ -304,24 +320,19 @@ describe('Task Controller (e2e)', () => {
 				em.nativeDelete(Course, {}),
 				em.nativeDelete(Task, {}),
 				em.nativeDelete(Submission, {}),
-				em.nativeDelete(UserTaskInfo, {}),
+				em.nativeDelete(User, {}),
 			]);
 		});
 
-		it('[FIND] /tasks/open can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open');
+		it('[FIND] /tasks can open it', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks');
 			expect(response.status).toEqual(200);
 		});
 
-		it('[FIND] /tasks/completed can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
-			expect(response.status).toEqual(200);
-		});
+		it('[FIND] /tasks can open it', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks');
 
-		it('[FIND] /tasks/open can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -331,23 +342,10 @@ describe('Task Controller (e2e)', () => {
 			});
 		});
 
-		it('[FIND] /tasks/completed can open it', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
+		it('[FIND] /tasks should allow to modified pagination and set correct limit', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks').query({ limit: 100, skip: 100 });
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
-
-			expect(paginatedResult).toEqual({
-				total: 0,
-				data: [],
-				limit: 10,
-				skip: 0,
-			});
-		});
-
-		it('[FIND] /tasks/open should allow to modified pagination and set correct limit', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open').query({ limit: 100, skip: 100 });
-
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult).toEqual({
 				total: 0,
@@ -357,232 +355,214 @@ describe('Task Controller (e2e)', () => {
 			});
 		});
 
-		it('[FIND] /tasks/completed should allow to modified pagination and set correct limit', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/completed').query({ limit: 100, skip: 100 });
+		it('[FIND] /tasks should allow to modified pagination limit greater then 100', async () => {
+			const response = await request(app.getHttpServer()).get('/tasks').query({ limit: 1000, skip: 100 });
 
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			expect(response.status).toEqual(400);
+		});
 
-			expect(paginatedResult).toEqual({
-				total: 0,
-				data: [],
-				limit: 100, // maximum is 100
-				skip: 100,
+		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
+			const teacher = userFactory.build();
+			const student = userFactory.build();
+			await em.persistAndFlush([teacher, student]);
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+				students: [student],
+			});
+			const task = taskFactory.draft(false).build({ course });
+			task.submissions.add(submissionFactory.build({ task, student }));
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.data[0]).toBeDefined();
+			expect(paginatedResult.data[0]).toHaveProperty('status');
+			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
+			expect(paginatedResult.data[0]).toHaveProperty('name');
+			expect(paginatedResult.data[0].status).toEqual({
+				submitted: 1,
+				maxSubmissions: 1,
+				graded: 0,
+				isDraft: false,
+				isSubstitutionTeacher: false,
 			});
 		});
 
-		it('[FIND] /tasks/open should allow to modified pagination limit greater then 100', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/open').query({ limit: 1000, skip: 100 });
+		it('[FIND] /tasks return a list of tasks', async () => {
+			const teacher = userFactory.build();
+			const student = userFactory.build();
+			await em.persistAndFlush([teacher, student]);
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+				students: [student],
+			});
+			const task1 = taskFactory.draft(false).build({ course });
+			const task2 = taskFactory.draft(false).build({ course });
+			const task3 = taskFactory.draft(false).build({ course });
 
-			expect(response.status).toEqual(400);
-		});
+			await em.persistAndFlush([task1, task2, task3]);
+			em.clear();
 
-		it('[FIND] /tasks/completed should allow to modified pagination limit greater then 100', async () => {
-			const response = await request(app.getHttpServer()).get('/tasks/completed').query({ limit: 1000, skip: 100 });
+			modifyCurrentUserId(currentUser, student);
 
-			expect(response.status).toEqual(400);
-		});
-
-		it('[FIND] /tasks/open return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
-
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(false);
-
-			await em.persistAndFlush([task, parent, user]);
-
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
-
-			expect(paginatedResult.data[0]).toBeDefined();
-			expect(paginatedResult.data[0]).toHaveProperty('status');
-			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
-			expect(paginatedResult.data[0]).toHaveProperty('name');
-		});
-
-		it('[FIND] /tasks/completed return tasks that include the appropriate information.', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
-
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			const submission = helper.createSubmission(task);
-			task.changePrivate(false);
-
-			await em.persistAndFlush([task, submission, parent, user]);
-
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
-
-			expect(paginatedResult.data[0]).toBeDefined();
-			expect(paginatedResult.data[0]).toHaveProperty('status');
-			expect(paginatedResult.data[0]).toHaveProperty('displayColor');
-			expect(paginatedResult.data[0]).toHaveProperty('name');
-		});
-
-		it('[FIND] /tasks/open return a list of tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
-
-			const parent = helperL.createStudentCourse();
-			const task1 = helper.createTask(parent.id);
-			const task2 = helper.createTask(parent.id);
-			const task3 = helper.createTask(parent.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-			task3.changePrivate(false);
-
-			await em.persistAndFlush([task1, task2, task3, parent, user]);
-
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(3);
 		});
 
-		it('[FIND] /tasks/completed return a list of tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks return a list of tasks from multiple courses', async () => {
+			const teacher = userFactory.build();
+			const student = userFactory.build();
+			await em.persistAndFlush([teacher, student]);
+			const course1 = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+				students: [student],
+			});
+			const course2 = courseFactory.build({
+				name: 'course #2',
+				teachers: [teacher],
+				students: [student],
+			});
+			const course3 = courseFactory.build({
+				name: 'course #3',
+				teachers: [teacher],
+				students: [student],
+			});
+			const task1 = taskFactory.draft(false).build({ course: course1 });
+			const task2 = taskFactory.draft(false).build({ course: course2 });
 
-			const parent = helperL.createStudentCourse();
-			const task1 = helper.createTask(parent.id);
-			const task2 = helper.createTask(parent.id);
-			const task3 = helper.createTask(parent.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-			task3.changePrivate(false);
-			const submission1 = helper.createSubmission(task1);
-			const submission2 = helper.createSubmission(task2);
-			const submission3 = helper.createSubmission(task3);
+			await em.persistAndFlush([task1, task2, course3]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, task3, submission1, submission2, submission3, parent, user]);
+			modifyCurrentUserId(currentUser, student);
 
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
-
-			expect(paginatedResult.total).toEqual(3);
-		});
-
-		it('[FIND] /tasks/open return a list of tasks from multiple parents', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
-
-			const parent1 = helperL.createStudentCourse();
-			const parent2 = helperL.createStudentCourse();
-			const parent3 = helperL.createStudentCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			// parent3 has no task
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-
-			await em.persistAndFlush([task1, task2, parent1, parent2, parent3, user]);
-
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(2);
 		});
 
-		it('[FIND] /tasks/completed return a list of tasks from multiple parents', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks should not return private tasks', async () => {
+			const teacher = userFactory.build();
+			const student = userFactory.build();
+			await em.persistAndFlush([teacher, student]);
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+				students: [student],
+			});
+			const task = taskFactory.draft(true).build({ course });
 
-			const parent1 = helperL.createStudentCourse();
-			const parent2 = helperL.createStudentCourse();
-			const parent3 = helperL.createStudentCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			// parent3 has no task
-			task1.changePrivate(false);
-			task2.changePrivate(false);
-			const submission1 = helper.createSubmission(task1);
-			const submission2 = helper.createSubmission(task2);
+			await em.persistAndFlush([task]);
+			em.clear();
 
-			await em.persistAndFlush([task1, task2, submission1, submission2, parent1, parent2, parent3, user]);
+			modifyCurrentUserId(currentUser, student);
 
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
-
-			expect(paginatedResult.total).toEqual(2);
-		});
-
-		it('[FIND] /tasks/open should not return private tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
-
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(true);
-
-			await em.persistAndFlush([task, parent, user]);
-
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks/completed should not return private tasks', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('[FIND] /tasks should nothing return from student where the user has write permissions', async () => {
+			const teacher = userFactory.build();
+			const subTeacher = userFactory.build();
+			await em.persistAndFlush([teacher, subTeacher]);
+			const course1 = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher],
+			});
+			const course2 = courseFactory.build({
+				name: 'course #2',
+				substitutionTeachers: [subTeacher],
+			});
+			const task1 = taskFactory.draft(false).build({ course: course1 });
+			const task2 = taskFactory.draft(false).build({ course: course2 });
 
-			const parent = helperL.createStudentCourse();
-			const task = helper.createTask(parent.id);
-			task.changePrivate(true);
-			const submission = helper.createSubmission(task);
+			await em.persistAndFlush([task1, task2]);
+			em.clear();
 
-			await em.persistAndFlush([task, submission, parent, user]);
+			// modifyCurrentUserId?
 
-			const response = await request(app.getHttpServer()).get('/tasks/completed');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks/open should nothing return from student where the user has write permissions', async () => {
-			const helperL = new LearnroomTestHelper();
-			const helper = new TaskTestHelper();
-			const user = helper.getFirstUser() as UserTaskInfo;
-			modifiedCurrentUserId(currentUser, user);
-			helperL.createAndAddUser(user);
+		it('should not return a task of a course that has no lesson and is not published', async () => {
+			const student = userFactory.build();
+			await em.persistAndFlush([student]);
 
-			const parent1 = helperL.createTeacherCourse();
-			const parent2 = helperL.createSubstitutionCourse();
-			const task1 = helper.createTask(parent1.id);
-			const task2 = helper.createTask(parent2.id);
-			task1.changePrivate(false);
-			task2.changePrivate(false);
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
 
-			await em.persistAndFlush([task1, task2, parent1, parent2, user]);
+			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+			const task = taskFactory.draft(true).build({ course, availableDate: nextDay });
 
-			const response = await request(app.getHttpServer()).get('/tasks/open');
-			const paginatedResult = response.body as PaginationResponse<TaskResponse[]>;
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should return a task of a course that has no lesson and is not limited', async () => {
+			const student = userFactory.build();
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			// @ts-expect-error expected value null in db
+			const task = taskFactory.draft(false).build({ course, dueDate: null });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(1);
+		});
+
+		it('should not return closed tasks', async () => {
+			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			await em.persistAndFlush([student]);
+
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student],
+			});
+
+			const task = taskFactory.draft(false).build({ course, closed: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
 
 			expect(paginatedResult.total).toEqual(0);
 		});

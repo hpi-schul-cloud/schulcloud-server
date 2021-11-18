@@ -1,5 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
-const { filterForModifiedEntities } = require('./deltaSyncUtils');
+const { isNotEmptyString } = require('../../../helper/stringHelper.js');
 
 /**
  * General LDAP functionality
@@ -40,7 +40,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		const requiredFilters = requiredAttributes.map((attr) => `(${attr}=*)`).join('');
 
 		const options = {
-			filter: filterForModifiedEntities(school, `(&(objectClass=person)${requiredFilters})`),
+			filter: `(&(objectClass=person)${requiredFilters})`,
 			scope: 'sub',
 			attributes: [
 				userAttributeNameMapping.givenName,
@@ -143,9 +143,14 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	getClasses(school) {
 		const { classAttributeNameMapping, classPathAdditions } = this.config.providerOptions;
 
-		if (classPathAdditions !== '') {
+		if (
+			isNotEmptyString(classPathAdditions, true) &&
+			isNotEmptyString(classAttributeNameMapping.dn, true) &&
+			isNotEmptyString(classAttributeNameMapping.description, true) &&
+			isNotEmptyString(classAttributeNameMapping.uniqueMember, true)
+		) {
 			const options = {
-				filter: filterForModifiedEntities(school, `${classAttributeNameMapping.description}=*`),
+				filter: `(${classAttributeNameMapping.description}=*)`,
 				scope: 'sub',
 				attributes: [
 					classAttributeNameMapping.dn,
