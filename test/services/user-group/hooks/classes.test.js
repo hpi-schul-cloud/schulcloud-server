@@ -1,3 +1,4 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
@@ -59,13 +60,17 @@ describe('class hooks', () => {
 	describe('restrictFINDToClassesTheUserIsAllowedToSee', () => {
 		let app;
 		let server;
+		let configBefore;
 
 		before(async () => {
+			configBefore = Configuration.toObject({});
 			app = await appPromise;
+			Configuration.set('ADMIN_TOGGLE_STUDENT_VISIBILITY', 'opt-in');
 			server = await app.listen(0);
 		});
 
 		after(async () => {
+			Configuration.reset(configBefore);
 			await testObjects.cleanup();
 			await server.close();
 		});

@@ -183,6 +183,76 @@ describe('school service', () => {
 		});
 	});
 
+	describe('update schools', () => {
+		it('UPDATE external administrators should not be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+			school.systems = [systemId];
+
+			await app.service('/schools').update(school._id, school, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.be.empty;
+		});
+
+		it('UPDATE superheroes should be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+			school.systems = [systemId];
+
+			await app.service('/schools').update(school._id, school, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.not.be.empty;
+		});
+
+		it('should sync federalState in systems', async () => {
+			const BB = '0000b186816abba584714c53';
+			const BW = '0000b186816abba584714c50';
+			const school = await testObjects.createTestSchool({ federalState: BB });
+			const user = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero', 'administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			const ldapSystemConfig = {
+				ldapConfig: {
+					provider: 'general',
+					federalState: BB,
+					active: true,
+				},
+				type: 'ldap',
+			};
+			let system = await testObjects.createTestSystem(ldapSystemConfig);
+
+			school.systems = [system._id];
+			await app.service('/schools').update(school._id, school, params);
+			system = await app.service('systems').get(system._id, params);
+			expect(system.ldapConfig.federalState.toString()).to.equal(BB);
+
+			school.federalState = BW;
+			await app.service('/schools').update(school._id, school, params);
+
+			system = await app.service('systems').get(system._id, params);
+			expect(system.ldapConfig.federalState.toString()).to.equal(BW);
+		});
+	});
+
 	describe('patch schools', () => {
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
@@ -435,6 +505,68 @@ describe('school service', () => {
 			const countyId = '5fa55eb53f472a2d986c8812';
 			const result = await app.service('/schools').patch(school._id, { county: countyId }, params);
 			expect(result.county._id.toString()).to.be.eq(countyId);
+		});
+
+		it('PATCH external administrators should not be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+
+			await app.service('/schools').patch(school._id, { systems: [systemId] }, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.be.empty;
+		});
+
+		it('PATCH superheroes should be able to change systems', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const { _id: systemId } = await testObjects.createTestSystem();
+
+			await app.service('/schools').patch(school._id, { systems: [systemId] }, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(school._id, params);
+
+			expect(usersSchoolUpdated.systems).to.not.be.empty;
+		});
+
+		it('should sync federalSatate in systems', async () => {
+			const BB = '0000b186816abba584714c53';
+			const BW = '0000b186816abba584714c50';
+			const school = await testObjects.createTestSchool({ federalState: BB });
+			const user = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero', 'administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const ldapSystemConfig = {
+				ldapConfig: {
+					provider: 'general',
+					federalState: BB,
+					active: true,
+				},
+				type: 'ldap',
+			};
+			let system = await testObjects.createTestSystem(ldapSystemConfig);
+			await app.service('/schools').patch(school._id, { systems: [system._id] }, params);
+			system = await app.service('systems').get(system._id, params);
+
+			expect(system.ldapConfig.federalState.toString()).to.equal(BB);
+
+			await app.service('/schools').patch(school._id, { federalState: BW }, params);
+			system = await app.service('systems').get(system._id, params);
+			expect(system.ldapConfig.federalState.toString()).to.equal(BW);
 		});
 	});
 });

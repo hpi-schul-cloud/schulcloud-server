@@ -23,25 +23,54 @@ const restrictToCurrentSchool = (context) => {
 	return context;
 };
 
+const addSystemToSchool = async (context) => {
+	const system = context.result;
+	const { school } = context.params;
+
+	await context.app.service('schools').patch(school._id, { $push: { systems: system._id } });
+	return context;
+};
+
+const removeSystemFromSchool = async (context) => {
+	const system = context.result;
+	const { school } = context.params;
+
+	const patchquery = {
+		$pull: { systems: system._id },
+	};
+	if (system.type === 'ldap') {
+		patchquery.$unset = { ldapSchoolIdentifier: '', ldapLastSync: '' };
+	}
+
+	await context.app.service('schools').patch(school._id, patchquery);
+
+	return context;
+};
+
 exports.before = {
 	all: [iff(isProvider('external'), [authenticate('jwt'), globalHooks.populateCurrentSchool, restrictToCurrentSchool])],
 	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
 	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
 	create: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_CREATE')), encryptSecret],
-	update: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')), encryptSecret],
+	update: [
+		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
+		encryptSecret,
+	],
 	patch: [
 		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
 		encryptSecret,
 	],
-	remove: [iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation])],
+	remove: [
+		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation, verifyPayload]),
+	],
 };
 
 exports.after = {
 	all: [iff(isProvider('external'), [discard('ldapConfig.searchUserPassword')])],
 	find: [decryptSecret],
 	get: [decryptSecret],
-	create: [],
+	create: [iff(isProvider('external'), [addSystemToSchool])],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: [iff(isProvider('external'), [removeSystemFromSchool])],
 };
