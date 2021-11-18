@@ -224,6 +224,7 @@ class LdapConfigService {
 			ldapConfig: {
 				...config,
 				provider: 'general',
+				federalState: school.federalState,
 				providerOptions: {
 					...config.providerOptions,
 					schoolName: school.name,

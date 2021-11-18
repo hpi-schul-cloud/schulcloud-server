@@ -300,6 +300,7 @@ class Add {
 			importHash,
 			// eslint-disable-next-line no-underscore-dangle
 		} = await this._collectUserAndLinkData({ email, role, teamId });
+
 		const { invitedUserIds } = team;
 		// eslint-disable-next-line no-param-reassign
 		role = userRoleName; /*
@@ -309,6 +310,20 @@ class Add {
 
 		// eslint-disable-next-line no-underscore-dangle
 		Add._throwErrorIfUserExistByEmail(team, email);
+
+		const invalidTeacherInvitation =
+			userRoleName === 'teamadministrator' && !['administrator', 'teacher'].includes(user.roles[0].name);
+
+		const invalidExpertInvitation =
+			userRoleName === 'teamexpert' && !['expert'].includes(user.roles[0].name) && !(isUserCreated === true);
+
+		// invite per email should only work for expected users
+		if (invalidTeacherInvitation) {
+			throw new BadRequest('Can not resolve the user information.');
+		}
+		if (invalidExpertInvitation) {
+			throw new BadRequest('Can not resolve the expert user information.');
+		}
 
 		// if not already in invite list
 		if (!invitedUserIds.some((teamUser) => teamUser.email === email)) {

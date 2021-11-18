@@ -1,19 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import * as moment from 'moment';
-
-import { EntityId, News } from '@shared/domain';
-import { PaginationResponse } from '@shared/controller';
+import moment from 'moment';
+import { EntityId, News, NewsTargetModel } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { CreateNewsParams, NewsResponse, NewsListResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
@@ -38,7 +35,7 @@ describe('News Controller (e2e)', () => {
 			targetIds: [teamTargetId],
 		},
 	];
-	const emptyPaginationResponse: PaginationResponse<NewsResponse[]> = { data: [], total: 0 };
+	const emptyPaginationResponse: NewsListResponse = { data: [], total: 0 };
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -101,7 +98,7 @@ describe('News Controller (e2e)', () => {
 	describe('GET /news', () => {
 		it('should get empty response if there is no news', async () => {
 			const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-			const { data, total } = response.body as PaginationResponse<NewsResponse[]>;
+			const { data, total } = response.body as NewsListResponse;
 			expect(total).toBe(0);
 			expect(data.length).toBe(0);
 		});
@@ -113,7 +110,7 @@ describe('News Controller (e2e)', () => {
 				total: 1,
 			};
 			const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-			const { data, total } = response.body as PaginationResponse<NewsResponse[]>;
+			const { data, total } = response.body as NewsListResponse;
 			expect(total).toBe(expected.total);
 			expect(data.length).toBe(expected.data.length);
 			expect(data[0].id).toBe(expected.data[0]._id.toString());
@@ -127,7 +124,7 @@ describe('News Controller (e2e)', () => {
 				total: 1,
 			};
 			const response = await request(app.getHttpServer()).get(`/news?unpublished=true`).expect(200);
-			const { data, total } = response.body as PaginationResponse<NewsResponse[]>;
+			const { data, total } = response.body as NewsListResponse;
 
 			expect(total).toBe(expected.total);
 			expect(data.length).toBe(expected.data.length);
@@ -153,7 +150,7 @@ describe('News Controller (e2e)', () => {
 		it('should get team-news by id', async () => {
 			const news = await createTestNews(NewsTargetModel.Team, teamTargetId);
 			const response = await request(app.getHttpServer()).get(`/team/${teamTargetId}/news`).expect(200);
-			const body = response.body as PaginationResponse<NewsResponse[]>;
+			const body = response.body as NewsListResponse;
 			expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
 		});
 

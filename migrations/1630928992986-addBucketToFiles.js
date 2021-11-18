@@ -29,14 +29,21 @@ const ownerModel = {
 	teams: teamsModel,
 };
 
-module.exports = {
-	up: async function up() {
-		alert('Start adding buckets to file documents...');
-		await connect();
-		const files = FileModel.find({ $or: [{ bucket: { $exists: false } }, { storageProviderId: { $exists: false } }] });
-		const fileCount = await files.count();
-		alert(`${fileCount} files will be processed...`);
-		for await (const file of files) {
+async function* batchIterator(iterator, batchSize) {
+	let batch = [];
+	for await (const item of iterator) {
+		if (batch.length >= batchSize) {
+			yield batch;
+			batch = [];
+		}
+		batch.push(item);
+	}
+	yield batch;
+}
+
+const addBucketAndStorageProviderToFiles = async (files) =>
+	Promise.all(
+		files.map(async (file) => {
 			try {
 				let schoolId;
 				const creatorId = file.creator;
@@ -56,6 +63,23 @@ module.exports = {
 			} catch (err) {
 				error(`bucket could not be added to the file ${file._id}`, err);
 			}
+		})
+	);
+
+module.exports = {
+	up: async function up() {
+		alert('Start adding buckets to file documents...');
+		await connect();
+		const files = FileModel.find({ $or: [{ bucket: { $exists: false } }, { storageProviderId: { $exists: false } }] });
+		const fileCount = await files.count();
+		alert(`${fileCount} files will be processed...`);
+		const fileBatchIterator = batchIterator(files, 100);
+		let fileBatch = await fileBatchIterator.next();
+		while (!fileBatch.done) {
+			// eslint-disable-next-line no-await-in-loop
+			await addBucketAndStorageProviderToFiles(fileBatch.value);
+			// eslint-disable-next-line no-await-in-loop
+			fileBatch = await fileBatchIterator.next();
 		}
 		await close();
 		alert('Done!');

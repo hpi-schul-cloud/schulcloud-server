@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IPermissionsAndRoles, Role } from '@shared/domain';
 
-import { RoleRepo } from '../repo';
+import { RoleRepo } from '@shared/repo';
 
 @Injectable()
 export class RoleUC {
