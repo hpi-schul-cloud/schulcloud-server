@@ -10,8 +10,7 @@ import {
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
-const hardcodedTestDashboardId = '0000d213816abba584714c0a';
-const generateHardcodedTestDashboard = () => {
+const generateHardcodedTestDashboard = (userId: EntityId) => {
 	const gridArray: GridElementWithPosition[] = [];
 
 	gridArray.push({
@@ -51,12 +50,12 @@ const generateHardcodedTestDashboard = () => {
 		),
 	});
 
-	const dashboard = new DashboardEntity(hardcodedTestDashboardId, { grid: gridArray });
+	const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: gridArray, userId });
 	return dashboard;
 };
 
 export interface IDashboardRepo {
-	getUsersDashboard(): Promise<DashboardEntity>;
+	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
 }
@@ -84,13 +83,13 @@ export class DashboardRepo implements IDashboardRepo {
 		return dashboard;
 	}
 
-	async getUsersDashboard(): Promise<DashboardEntity> {
-		const dashboardModel = await this.em.findOne(DashboardModelEntity, hardcodedTestDashboardId);
+	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
 		if (dashboardModel) {
 			return this.mapper.mapDashboardToEntity(dashboardModel);
 		}
 
-		const dashboard = generateHardcodedTestDashboard();
+		const dashboard = generateHardcodedTestDashboard(userId);
 		await this.persistAndFlush(dashboard);
 
 		return dashboard;
