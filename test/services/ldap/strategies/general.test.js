@@ -32,6 +32,7 @@ const mockLDAPConfig = {
 			uniqueMember: 'member',
 		},
 		userPathAdditions: 'ou=users',
+		classPathAdditions: 'ou=classes',
 		roleType: 'group',
 	},
 };
@@ -222,27 +223,27 @@ describe.only('GeneralLDAPStrategy', () => {
 		});
 	});
 
-	describe.skip('#getClasses', () => {
+	describe('#getClasses', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
 				searchCollection: sinon.fake.returns(
 					Promise.resolve([
 						{
-							cn: '100000-3GEGDV64GIHO39TI',
-							dn: 'cn=100000-3GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
-							uniqueMember: [
-								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-								'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							dn: 'cn=100001,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+							description: '1a',
+							member: [
+								'uid=herr.lempel.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+								'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+								'uid=marla.mathe.1,ou=users,o=school0,dc=de,dc=example,dc=org',
 							],
 						},
 						{
-							cn: '100000-4GEGDV64GIHO39TI',
-							dn: 'cn=100000-4GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
-							uniqueMember: [
-								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							dn: 'cn=100002,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+							description: '1b',
+							member: [
+								'uid=herr.lempel.1,ou=users,o=school0,dc=de,dc=example,dc=org',
+								'uid=max.mustermann.1,ou=users,o=school0,dc=de,dc=example,dc=org',
 							],
 						},
 					])
@@ -255,16 +256,13 @@ describe.only('GeneralLDAPStrategy', () => {
 			app.use('/ldap', ldapServiceMock);
 		});
 
-		it('should return all IServ groups as classes', async () => {
-			const school = {
-				ldapSchoolIdentifier: 'o=Testschule,dc=de',
-			};
-			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses(school);
+		it('should return all classes', async () => {
+			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses();
 			expect(classes.length).to.equal(2);
 		});
 
 		it('should follow the internal interface', async () => {
-			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses({});
+			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses();
 			classes.forEach((klass) => {
 				['className', 'ldapDn', 'uniqueMembers'].forEach((attr) => {
 					expect(klass).to.haveOwnProperty(attr);
@@ -272,13 +270,12 @@ describe.only('GeneralLDAPStrategy', () => {
 			});
 		});
 
-		it('should search in cn=groups', async () => {
-			const ldapSchoolIdentifier = 'cn=foo,cn=bar';
-			await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses({ ldapSchoolIdentifier });
+		it('should build the search string correctly from the LDAP configuration', async () => {
+			await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses();
 			expect(
 				ldapServiceMock.searchCollection.calledWith(
 					mockLDAPConfig,
-					`cn=klassen,cn=schueler,cn=groups,ou=${ldapSchoolIdentifier},${mockLDAPConfig.rootPath}`
+					`${mockLDAPConfig.providerOptions.classPathAdditions},${mockLDAPConfig.rootPath}`
 				)
 			).to.equal(true);
 		});
