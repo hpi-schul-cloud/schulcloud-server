@@ -672,7 +672,7 @@ describe('TaskRepo', () => {
 
 			it('should find open tasks of a course', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course });
+				const task = taskFactory.draft(false).build({ course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -691,7 +691,7 @@ describe('TaskRepo', () => {
 			it('should find open tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course });
+				const task = taskFactory.draft(false).build({ lesson, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -710,7 +710,7 @@ describe('TaskRepo', () => {
 			it('should find finished tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course, closed: [user] });
+				const task = taskFactory.draft(false).build({ lesson, course, closed: [user] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -728,7 +728,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished tasks of courses', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course, closed: [user] });
+				const task = taskFactory.draft(false).build({ course, closed: [user] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -743,6 +743,61 @@ describe('TaskRepo', () => {
 
 				expect(total).toEqual(1);
 			});
+
+			it('should find open draft tasks of users', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.draft(true).build({ course, teacher: user });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(1);
+			});
+
+			it('should find finished draft tasks of users', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(1);
+			});
+
+			it('should "not" find finished draft tasks of other users', async () => {
+				const { user, course } = setup();
+				const otherUser = userFactory.build();
+				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
 		});
 
 		describe('when course is open', () => {
@@ -755,15 +810,15 @@ describe('TaskRepo', () => {
 
 			it('should "not" find open tasks of courses', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course });
+				const task = taskFactory.draft(false).build({ course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
 					creatorId: user.id,
-					openCourseIds: [],
-					lessonIdsOfOpenCourses: [course.id],
+					openCourseIds: [course.id],
+					lessonIdsOfOpenCourses: [],
 					finishedCourseIds: [],
 					lessonIdsOfFinishedCourses: [],
 				});
@@ -774,7 +829,7 @@ describe('TaskRepo', () => {
 			it('should "not" find open tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course });
+				const task = taskFactory.draft(false).build({ lesson, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -793,7 +848,7 @@ describe('TaskRepo', () => {
 			it('should find finished tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course, closed: [user] });
+				const task = taskFactory.draft(false).build({ lesson, course, closed: [user] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -811,7 +866,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished tasks of courses', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course, closed: [user] });
+				const task = taskFactory.draft(false).build({ course, closed: [user] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -826,6 +881,61 @@ describe('TaskRepo', () => {
 
 				expect(total).toEqual(1);
 			});
+
+			it('should "not" find open draft tasks of users', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.draft(true).build({ course, teacher: user });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should find finished draft tasks of users', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should "not" find finished draft tasks of other users', async () => {
+				const { user, course } = setup();
+				const otherUser = userFactory.build();
+				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
 		});
 
 		describe('when course has no untilDate (means it is still open)', () => {
@@ -839,7 +949,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find open tasks of courses', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course });
+				const task = taskFactory.draft(false).build({ course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -858,7 +968,7 @@ describe('TaskRepo', () => {
 			it('should "not" find open tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course });
+				const task = taskFactory.draft(false).build({ lesson, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -894,9 +1004,28 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(1);
 			});
 
+			it('should "not" find finished draft tasks of other users', async () => {
+				const user = userFactory.build();
+				const otherUser = userFactory.build();
+				const task = taskFactory.finished(user).draft(true).build({ teacher: otherUser });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
 			it('should find finished tasks of creator', async () => {
 				const user = userFactory.build();
-				const task = taskFactory.finished(user).build({ teacher: user });
+				const task = taskFactory.finished(user).draft(false).build({ teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -932,7 +1061,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find open tasks of creator', async () => {
 				const user = userFactory.build();
-				const task = taskFactory.build({ teacher: user });
+				const task = taskFactory.draft(false).build({ teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -953,7 +1082,7 @@ describe('TaskRepo', () => {
 			const setup = (taskCount) => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ untilDate: undefined });
-				const tasks = taskFactory.buildList(taskCount, { course, closed: [user] });
+				const tasks = taskFactory.draft(false).buildList(taskCount, { course, closed: [user] });
 
 				return { user, course, tasks };
 			};
@@ -1025,10 +1154,12 @@ describe('TaskRepo', () => {
 		it('should sort result by newest dueDate', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ untilDate: undefined });
-			const task1 = taskFactory.build({ course, closed: [user], dueDate: new Date(Date.now() - 60 * 1000) });
-			const task2 = taskFactory.build({ course, closed: [user], dueDate: new Date(Date.now() - 90 * 1000) });
-			const task3 = taskFactory.build({ course, closed: [user], dueDate: new Date(Date.now() - 120 * 1000) });
-			const task4 = taskFactory.build({ course, closed: [user], dueDate: new Date(Date.now() - 30 * 1000) });
+
+			const dateSec = (sec) => new Date(Date.now() - sec * 1000);
+			const task1 = taskFactory.draft(false).build({ course, closed: [user], dueDate: dateSec(60) });
+			const task2 = taskFactory.draft(false).build({ course, closed: [user], dueDate: dateSec(90) });
+			const task3 = taskFactory.draft(false).build({ course, closed: [user], dueDate: dateSec(120) });
+			const task4 = taskFactory.draft(false).build({ course, closed: [user], dueDate: dateSec(30) });
 
 			await em.persistAndFlush([task1, task2, task3, task4]);
 			em.clear();

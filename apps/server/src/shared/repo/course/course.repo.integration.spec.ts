@@ -166,9 +166,16 @@ describe('course repo', () => {
 			expect(count).toEqual(3);
 		});
 
-		it.todo('should filter courses by courseId filter');
+		it('should filter courses by courseId filter', async () => {
+			const user = userFactory.build();
+			const courses = courseFactory.buildList(2, { students: [user] });
 
-		it.todo('should select keys over options');
+			await em.persistAndFlush(courses);
+
+			const [, count] = await repo.findAllByUserId(user.id, { courseIds: [courses[0].id] });
+
+			expect(count).toEqual(1);
+		});
 
 		it('should only return courses that are currently active', async () => {
 			const student = userFactory.build();

@@ -6,7 +6,6 @@ import type { User } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {
-	// i think true false is not needed task.draft() is mean true otherwise it is not added
 	draft(isDraft = true): this {
 		const params: DeepPartial<ITaskProperties> = { private: isDraft };
 		if (isDraft === true) params.course = undefined;

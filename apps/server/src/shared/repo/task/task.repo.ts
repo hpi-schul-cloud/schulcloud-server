@@ -37,17 +37,29 @@ export class TaskRepo {
 
 		const scope = new TaskScope('$or');
 
-		const parents = new TaskScope('$or');
-		parents.byCourseIds(parentIds.openCourseIds);
-		parents.byLessonIds(parentIds.lessonIdsOfOpenCourses);
+		const parentsOpen = new TaskScope('$or');
+		parentsOpen.byCourseIds(parentIds.openCourseIds);
+		parentsOpen.byLessonIds(parentIds.lessonIdsOfOpenCourses);
+
+		const parentsFinished = new TaskScope('$or');
+		parentsFinished.byCourseIds(parentIds.finishedCourseIds);
+		parentsFinished.byLessonIds(parentIds.lessonIdsOfFinishedCourses);
 
 		const openScope = new TaskScope();
-		openScope.addQuery(parents.query);
+		openScope.addQuery(parentsOpen.query);
+		openScope.byDraft(false);
 		openScope.byClosed(parentIds.creatorId, true);
 
+		const byNotCreator = new TaskScope();
+		byNotCreator.addQuery(parentsFinished.query);
+		byNotCreator.byDraft(false);
+
+		const byCreator = new TaskScope();
+		byCreator.byCreatorId(parentIds.creatorId);
+
 		const finishedScope = new TaskScope('$or');
-		finishedScope.byCourseIds(parentIds.finishedCourseIds);
-		finishedScope.byLessonIds(parentIds.lessonIdsOfFinishedCourses);
+		finishedScope.addQuery(byNotCreator.query);
+		finishedScope.addQuery(byCreator.query);
 
 		const creatorScope = new TaskScope();
 		creatorScope.byClosed(parentIds.creatorId, true);
@@ -70,71 +82,6 @@ export class TaskRepo {
 
 		return [tasks, count];
 	}
-	/*
-	async findAllFinishedByParentIds(
-		parentIds: {
-			userId: EntityId;
-			courseIds: EntityId[];
-			lessonIds: EntityId[];
-		},
-		options?: IFindOptions<Task>
-	): Promise<Counted<Task[]>> {
-		const { pagination } = options || {};
-
-		const courseIds = parentIds.courseIds.map((id) => new ObjectId(id));
-		const lessonsIds = parentIds.lessonIds.map((id) => new ObjectId(id));
-		const userId = new ObjectId(parentIds.userId);
-		const now = new Date();
-
-		// Important aggregration pass any[] and has NO mikro-orm or entity support
-		// draft (private) tasks can only see by the creator and not by other teachers
-		const query: IAggregation<Task>[] = [
-			{
-				$match: {
-					$or: [
-						// each that are visible for the user
-						{ $and: [{ courseId: { $in: courseIds } }, { lessonId: null }] }, // find all added on course
-						{ lessonId: { $in: lessonsIds } }, // only visible lessons passed
-						{ $and: [{ teacherId: userId }, { courseId: null }, { lessonId: null }] }, // by creator
-					],
-				},
-			},
-			{
-				$lookup: {
-					from: 'courses',
-					localField: 'courseId',
-					foreignField: '_id',
-					as: 'courses',
-				},
-			},
-			{
-				$match: {
-					$or: [
-						// each of them that are finished
-						{ archived: userId }, // is archived by user
-						{ $and: [{ 'courses.0.untilDate': { $lt: now } }, { private: { $ne: true } }] }, // course is finished but no drafts
-						{ $and: [{ 'courses.0.untilDate': { $lt: now } }, { teacherId: userId }] }, // course is finished and creator see his one (drafts also)
-					],
-				},
-			},
-			{ $sort: { dueDate: -1 } },
-		];
-
-		// $facet is also a option instant of skip, limit seperatly
-		if (pagination?.skip) {
-			query.push({ $skip: pagination.skip });
-		}
-
-		if (pagination?.limit) {
-			query.push({ $limit: pagination.limit });
-		}
-
-		const result = await this.em.aggregate(Task, query);
-		const tasks = result.map((entity) => this.em.create(Task, entity));
-
-		return [tasks, tasks.length];
-	}
-	*/
 
 	/**
 	 * Find all tasks by their parents which can be any of
