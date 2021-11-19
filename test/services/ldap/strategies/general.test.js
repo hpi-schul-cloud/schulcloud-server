@@ -48,7 +48,7 @@ const createLDAPUserResult = (props) => ({
 	...props,
 });
 
-describe('GeneralLDAPStrategy', () => {
+describe.only('GeneralLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new GeneralLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
@@ -284,6 +284,25 @@ describe('GeneralLDAPStrategy', () => {
 			const classes = await new GeneralLDAPStrategy(app, mockLDAPConfig).getClasses({});
 			expect(classes[0].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(3);
 			expect(classes[1].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(2);
+		});
+
+		it('should return an empty array if required config values are missing', async () => {
+			const requiredProviderOptionValues = [
+				'classPathAdditions',
+				'classAttributeNameMapping.dn',
+				'classAttributeNameMapping.description',
+				'classAttributeNameMapping.uniqueMember',
+			];
+			for (const configValue of requiredProviderOptionValues) {
+				const configCopy = JSON.parse(JSON.stringify(mockLDAPConfig));
+				const configPath = configValue.split('.');
+				if (configPath.length === 1) configCopy.providerOptions[configPath[0]] = '';
+				if (configPath.length === 2) configCopy.providerOptions[configPath[0]][configPath[1]] = '';
+
+				// eslint-disable-next-line no-await-in-loop
+				const classes = await new GeneralLDAPStrategy(app, configCopy).getClasses();
+				expect(classes).to.be.empty;
+			}
 		});
 	});
 });
