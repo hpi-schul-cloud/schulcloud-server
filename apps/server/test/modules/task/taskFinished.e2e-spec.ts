@@ -142,9 +142,8 @@ describe('task/finished Controller (e2e)', () => {
 	describe('where user has write permission in course', () => {
 		describe('where courses are finised', () => {
 			const setup = () => {
-				const untilDate = new Date(Date.now() - 6000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const course = courseFactory.isFinished().build({ teachers: [user] });
 
 				return { course, user };
 			};
@@ -268,9 +267,8 @@ describe('task/finished Controller (e2e)', () => {
 
 		describe('where courses are open', () => {
 			const setup = () => {
-				const untilDate = new Date(Date.now() + 6000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user], untilDate });
+				const course = courseFactory.isOpen().build({ teachers: [user] });
 
 				return { course, user };
 			};

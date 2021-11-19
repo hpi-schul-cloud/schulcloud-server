@@ -19,8 +19,20 @@ export class TaskUC {
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);
 
+		const openCourseIds = courses.filter((c) => c.isFinished()).map((c) => c.id);
+		const finishedCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
+
+		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
+		const lessonIdsOfOpenCourses = lessons.filter((l) => !l.course.isFinished()).map((l) => l.id);
+
 		const [tasks, count] = await this.taskRepo.findAllFinishedByParentIds(
-			{ userId, courseIds: courses.map((c) => c.id), lessonIds: lessons.map((l) => l.id) },
+			{
+				creatorId: userId,
+				openCourseIds,
+				lessonIdsOfOpenCourses,
+				finishedCourseIds,
+				lessonIdsOfFinishedCourses,
+			},
 			{ pagination }
 		);
 

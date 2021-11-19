@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginationQuery } from '@shared/controller';
-import { Course, EntityId, ICurrentUser, Task } from '@shared/domain';
+import { Course, EntityId, ICurrentUser, Task, Lesson } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -44,14 +44,11 @@ describe('TaskUC', () => {
 				{
 					provide: TaskAuthorizationService,
 					useValue: {
-						getPermittedCourseIds() {
-							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourseIds');
-						},
 						getPermittedCourses() {
 							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourses');
 						},
-						getPermittedLessonIds() {
-							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedLessonIds');
+						getPermittedLessons() {
+							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedLessons');
 						},
 					},
 				},
@@ -85,14 +82,6 @@ describe('TaskUC', () => {
 	};
 
 	const setAuthorizationServiceMock = {
-		getPermittedCourseIds: (courses: Course[] = []) => {
-			const ids = courses.map((c) => c.id);
-			const spy = jest
-				.spyOn(authorizationService, 'getPermittedCourseIds')
-				.mockImplementation(() => Promise.resolve(ids));
-
-			return spy;
-		},
 		getPermittedCourses: (courses: Course[] = []) => {
 			const spy = jest
 				.spyOn(authorizationService, 'getPermittedCourses')
@@ -100,10 +89,10 @@ describe('TaskUC', () => {
 
 			return spy;
 		},
-		getPermittedLessonIds: (lessonIds: EntityId[] = []) => {
+		getPermittedLessons: (lessons: Lesson[] = []) => {
 			const spy = jest
-				.spyOn(authorizationService, 'getPermittedLessonIds')
-				.mockImplementation(() => Promise.resolve(lessonIds));
+				.spyOn(authorizationService, 'getPermittedLessons')
+				.mockImplementation(() => Promise.resolve(lessons));
 
 			return spy;
 		},
@@ -114,10 +103,10 @@ describe('TaskUC', () => {
 	});
 
 	describe('findAllFinished', () => {
-		const findAllMock = (tasks?: Task[], lessonIds?: EntityId[], courses?: Course[]) => {
+		const findAllMock = (tasks?: Task[], lessons?: Lesson[], courses?: Course[]) => {
 			const spy1 = setTaskRepoMock.findAllFinishedByParentIds(tasks);
-			const spy2 = setAuthorizationServiceMock.getPermittedCourseIds(courses);
-			const spy3 = setAuthorizationServiceMock.getPermittedLessonIds(lessonIds);
+			const spy2 = setAuthorizationServiceMock.getPermittedCourses(courses);
+			const spy3 = setAuthorizationServiceMock.getPermittedLessons(lessons);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -165,10 +154,10 @@ describe('TaskUC', () => {
 			mockRestore();
 		});
 
-		it('should call authorization service getPermittedCourseIds', async () => {
+		it('should call authorization service getPermittedCourses', async () => {
 			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setAuthorizationServiceMock.getPermittedCourseIds();
+			const spy = setAuthorizationServiceMock.getPermittedCourses();
 
 			await service.findAllFinished(user.id);
 
@@ -177,10 +166,10 @@ describe('TaskUC', () => {
 			mockRestore();
 		});
 
-		it('should call authorization service getPermittedLessonIds', async () => {
+		it('should call authorization service getPermittedLessons', async () => {
 			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
-			const spy = setAuthorizationServiceMock.getPermittedLessonIds();
+			const spy = setAuthorizationServiceMock.getPermittedLessons();
 
 			await service.findAllFinished(user.id);
 
@@ -232,7 +221,7 @@ describe('TaskUC', () => {
 		it('should used permitted lessons for search finished tasks', async () => {
 			const user = userFactory.buildWithId();
 			const lesson = lessonFactory.buildWithId();
-			const mockRestore = findAllMock([], [lesson.id]);
+			const mockRestore = findAllMock([], [lesson]);
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
@@ -262,7 +251,7 @@ describe('TaskUC', () => {
 		const findAllMock = () => {
 			const spy1 = setTaskRepoMock.findAllByParentIds();
 			const spy2 = setAuthorizationServiceMock.getPermittedCourses();
-			const spy3 = setAuthorizationServiceMock.getPermittedLessonIds();
+			const spy3 = setAuthorizationServiceMock.getPermittedLessons();
 
 			const mockRestore = () => {
 				spy1.mockRestore();
@@ -318,9 +307,9 @@ describe('TaskUC', () => {
 	describe('as a student', () => {
 		let currentUser: ICurrentUser;
 
-		const mockAll = (tasks?: Task[], lessons?: EntityId[], courses?: Course[]) => {
+		const mockAll = (tasks?: Task[], lessons?: Lesson[], courses?: Course[]) => {
 			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
-			const spy2 = setAuthorizationServiceMock.getPermittedLessonIds(lessons);
+			const spy2 = setAuthorizationServiceMock.getPermittedLessons(lessons);
 			const spy3 = setAuthorizationServiceMock.getPermittedCourses(courses);
 
 			const mockRestore = () => {
@@ -366,7 +355,7 @@ describe('TaskUC', () => {
 			const course = courseFactory.buildWithId();
 			const lesson = lessonFactory.buildWithId({ course, hidden: false });
 
-			const spyGetPermittedLessonIds = setAuthorizationServiceMock.getPermittedLessonIds([lesson.id]);
+			const spyGetPermittedLessonIds = setAuthorizationServiceMock.getPermittedLessons([lesson]);
 			const spygetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([course]);
 
 			const paginationQuery = new PaginationQuery();
@@ -533,9 +522,9 @@ describe('TaskUC', () => {
 	describe('as a teacher', () => {
 		let currentUser: ICurrentUser;
 
-		const mockAll = (tasks?: Task[], lessonIds?: EntityId[], courses?: Course[]) => {
+		const mockAll = (tasks?: Task[], lessons?: Lesson[], courses?: Course[]) => {
 			const spy1 = setTaskRepoMock.findAllByParentIds(tasks);
-			const spy2 = setAuthorizationServiceMock.getPermittedLessonIds(lessonIds);
+			const spy2 = setAuthorizationServiceMock.getPermittedLessons(lessons);
 			const spy3 = setAuthorizationServiceMock.getPermittedCourses(courses);
 
 			const mockRestore = () => {
@@ -581,7 +570,7 @@ describe('TaskUC', () => {
 			const course = courseFactory.buildWithId();
 			const lesson = lessonFactory.buildWithId({ course, hidden: false });
 			const tasks = [];
-			const mockRestore = mockAll(tasks, [lesson.id], [course]);
+			const mockRestore = mockAll(tasks, [lesson], [course]);
 			const spy = setTaskRepoMock.findAllByParentIds(tasks);
 
 			const paginationQuery = new PaginationQuery();
