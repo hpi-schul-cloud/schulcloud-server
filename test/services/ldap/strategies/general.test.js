@@ -48,7 +48,7 @@ const createLDAPUserResult = (props) => ({
 	...props,
 });
 
-describe.only('GeneralLDAPStrategy', () => {
+describe('GeneralLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new GeneralLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
