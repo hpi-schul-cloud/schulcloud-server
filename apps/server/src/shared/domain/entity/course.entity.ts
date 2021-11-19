@@ -22,7 +22,6 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
-	startDate?: Date;
 	untilDate?: Date;
 }
 
@@ -35,6 +34,7 @@ const DEFAULT = {
 };
 
 @Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
+@Index({ name: 'findAllByUserId', properties: ['students', 'substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property()
@@ -60,9 +60,7 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = DEFAULT.color;
 
-	@Property()
-	startDate: Date;
-
+	@Index({ name: 'activeCourses' })
 	@Property()
 	untilDate: Date;
 
