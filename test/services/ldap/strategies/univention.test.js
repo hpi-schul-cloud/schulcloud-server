@@ -31,15 +31,15 @@ describe('UniventionLDAPStrategy', () => {
 	});
 
 	describe('#getSchools', () => {
+		const ldapFakeSchoolSearchResult = [
+			{ ou: '1', displayname: 'Testschule-1' },
+			{ ou: '2', displayname: 'Testschule-2' },
+		];
+
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.returns(
-					Promise.resolve([
-						{ ou: '1', displayname: 'Testschule-1' },
-						{ ou: '2', displayname: 'Testschule-2' },
-					])
-				),
+				searchCollection: sinon.fake.resolves(ldapFakeSchoolSearchResult),
 			};
 		}
 
@@ -49,12 +49,17 @@ describe('UniventionLDAPStrategy', () => {
 		});
 
 		it('should search at the given root path and fall back to empty string', async () => {
+			const searchOptions = {
+				filter: `(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))(objectClass=ucsschoolOrganizationalUnit))`,
+				scope: 'sub',
+				attributes: [],
+			};
 			const configWithoutRootPath = {
 				url: 'ldaps://foo.bar:636',
 				providerOptions: {},
 			};
 			await new UniventionLDAPStrategy(app, configWithoutRootPath).getSchools();
-			expect(ldapServiceMock.searchCollection.calledWith(configWithoutRootPath, '')).to.equal(true);
+			expect(ldapServiceMock.searchCollection.calledWith(configWithoutRootPath, '', searchOptions)).to.equal(true);
 
 			const mockConfig = {
 				url: 'ldaps://foo.bar:636',
@@ -62,7 +67,9 @@ describe('UniventionLDAPStrategy', () => {
 				providerOptions: {},
 			};
 			await new UniventionLDAPStrategy(app, mockConfig).getSchools();
-			expect(ldapServiceMock.searchCollection.calledWith(mockConfig, mockConfig.rootPath)).to.equal(true);
+			expect(ldapServiceMock.searchCollection.calledWith(mockConfig, mockConfig.rootPath, searchOptions)).to.equal(
+				true
+			);
 		});
 
 		it('should return all school-like entities', async () => {
@@ -78,9 +85,36 @@ describe('UniventionLDAPStrategy', () => {
 			});
 		});
 
-		it('should search for objectClass=ucsschoolOrganizationalUnit', async () => {
+		it('should return schools filled with the values of the LDAP search result', async () => {
+			const [school1, school2] = await new UniventionLDAPStrategy(app, mockLDAPConfig).getSchools();
+			const [fakeSearchResult1, fakeSearchResult2] = ldapFakeSchoolSearchResult;
+
+			expect(school1.ldapOu).to.equal(fakeSearchResult1.ou);
+			expect(school1.displayName).to.equal(fakeSearchResult1.displayName);
+
+			expect(school2.ldapOu).to.equal(fakeSearchResult2.ou);
+			expect(school2.displayName).to.equal(fakeSearchResult2.displayName);
+		});
+
+		it('should search with the right search string', async () => {
 			await new UniventionLDAPStrategy(app, mockLDAPConfig).getSchools();
-			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('objectClass=ucsschoolOrganizationalUnit');
+			const expectedSearchString =
+				'(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))(objectClass=ucsschoolOrganizationalUnit))';
+			expect(ldapServiceMock.searchCollection.lastArg.filter).to.equal(expectedSearchString);
+		});
+
+		it('should handle excluded schools in the search string', async () => {
+			const excludedSchoolOus = ['1', '2'];
+			const ldapConfig = {
+				...mockLDAPConfig,
+				providerOptions: { ...mockLDAPConfig.providerOptions, ignoreSchools: excludedSchoolOus },
+			};
+			await new UniventionLDAPStrategy(app, ldapConfig).getSchools();
+			const expectedSearchString =
+				'(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))(objectClass=ucsschoolOrganizationalUnit)' +
+				`(!(ou=${excludedSchoolOus[0]}))` +
+				`(!(ou=${excludedSchoolOus[1]})))`;
+			expect(ldapServiceMock.searchCollection.lastArg.filter).to.equal(expectedSearchString);
 		});
 	});
 
@@ -128,9 +162,7 @@ describe('UniventionLDAPStrategy', () => {
 		});
 
 		it('should return all users', async () => {
-			const school = {
-				ldapSchoolIdentifier: 'o=Testschule,dc=de',
-			};
+			const school = { ldapSchoolIdentifier: 'o=Testschule,dc=de' };
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers(school);
 			expect(users.length).to.equal(3);
 		});
@@ -144,6 +176,22 @@ describe('UniventionLDAPStrategy', () => {
 			});
 		});
 
+		it('should call searchCollection with the right parameters', async () => {
+			const school = { ldapSchoolIdentifier: 'o-Testschule,dc=de' };
+			await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers(school);
+			const expectedSearchString = `cn=users,ou=${school.ldapSchoolIdentifier},${mockLDAPConfig.rootPath}`;
+			const expectedSearchOptions = {
+				filter: 'univentionObjectType=users/user',
+				scope: 'sub',
+				attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass'],
+			};
+			expect(ldapServiceMock.searchCollection).to.have.been.calledWith(
+				mockLDAPConfig,
+				expectedSearchString,
+				expectedSearchOptions
+			);
+		});
+
 		it('should assign roles based on specific group memberships', async () => {
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers({});
 			expect(users[0].roles).to.include('student');
@@ -153,30 +201,29 @@ describe('UniventionLDAPStrategy', () => {
 	});
 
 	describe('#getClasses', () => {
+		const ldapFakeClassSearchResult = [
+			{
+				cn: '100000-3GEGDV64GIHO39TI',
+				dn: 'cn=100000-3GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+				uniqueMember: [
+					'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+					'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+					'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+				],
+			},
+			{
+				cn: '100000-4GEGDV64GIHO39TI',
+				dn: 'cn=100000-4GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
+				uniqueMember: [
+					'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+					'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+				],
+			},
+		];
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.returns(
-					Promise.resolve([
-						{
-							cn: '100000-3GEGDV64GIHO39TI',
-							dn: 'cn=100000-3GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
-							uniqueMember: [
-								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-								'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
-							],
-						},
-						{
-							cn: '100000-4GEGDV64GIHO39TI',
-							dn: 'cn=100000-4GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
-							uniqueMember: [
-								'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-								'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
-							],
-						},
-					])
-				),
+				searchCollection: sinon.fake.resolves(ldapFakeClassSearchResult),
 			};
 		}
 
@@ -185,7 +232,7 @@ describe('UniventionLDAPStrategy', () => {
 			app.use('/ldap', ldapServiceMock);
 		});
 
-		it('should return all IServ groups as classes', async () => {
+		it('should return all classes', async () => {
 			const school = {
 				ldapSchoolIdentifier: 'o=Testschule,dc=de',
 			};
@@ -200,6 +247,19 @@ describe('UniventionLDAPStrategy', () => {
 					expect(klass).to.haveOwnProperty(attr);
 				});
 			});
+		});
+
+		it('should return classes filled with the values of the LDAP search result', async () => {
+			const [class1, class2] = await new UniventionLDAPStrategy(app, mockLDAPConfig).getClasses({});
+			const [fakeSearchResult1, fakeSearchResult2] = ldapFakeClassSearchResult;
+
+			expect(class1.className).to.equal(fakeSearchResult1.cn.split('-').pop());
+			expect(class1.ldapDn).to.equal(fakeSearchResult1.dn);
+			expect(class1.uniqueMembers).to.equal(fakeSearchResult1.uniqueMember);
+
+			expect(class2.className).to.equal(fakeSearchResult2.cn.split('-').pop());
+			expect(class2.ldapDn).to.equal(fakeSearchResult2.dn);
+			expect(class2.uniqueMembers).to.equal(fakeSearchResult2.uniqueMember);
 		});
 
 		it('should search in cn=groups', async () => {

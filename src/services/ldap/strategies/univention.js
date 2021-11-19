@@ -98,7 +98,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 				data.map((obj) => {
 					const splittedName = obj.cn.split('-');
 					return {
-						className: splittedName[splittedName.length - 1], // obj.description?
+						className: splittedName[splittedName.length - 1], // ToDo: should be obj.description?
 						ldapDn: obj.dn,
 						uniqueMembers: obj.uniqueMember,
 					};
