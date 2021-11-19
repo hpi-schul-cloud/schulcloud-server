@@ -803,7 +803,7 @@ describe('TaskRepo', () => {
 		describe('when course is open', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const course = courseFactory.isOpen().build();
+				const course = courseFactory.isOpen().build({ students: [user] });
 
 				return { user, course };
 			};
@@ -848,7 +848,7 @@ describe('TaskRepo', () => {
 			it('should find finished tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.draft(false).build({ lesson, course, closed: [user] });
+				const task = taskFactory.draft(false).finished(user).build({ lesson, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -866,7 +866,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished tasks of courses', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(false).build({ course, closed: [user] });
+				const task = taskFactory.draft(false).finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -891,9 +891,9 @@ describe('TaskRepo', () => {
 
 				const [, total] = await repo.findAllFinishedByParentIds({
 					creatorId: user.id,
-					openCourseIds: [],
+					openCourseIds: [course.id],
 					lessonIdsOfOpenCourses: [],
-					finishedCourseIds: [course.id],
+					finishedCourseIds: [],
 					lessonIdsOfFinishedCourses: [],
 				});
 
@@ -909,13 +909,13 @@ describe('TaskRepo', () => {
 
 				const [, total] = await repo.findAllFinishedByParentIds({
 					creatorId: user.id,
-					openCourseIds: [],
+					openCourseIds: [course.id],
 					lessonIdsOfOpenCourses: [],
-					finishedCourseIds: [course.id],
+					finishedCourseIds: [],
 					lessonIdsOfFinishedCourses: [],
 				});
 
-				expect(total).toEqual(0);
+				expect(total).toEqual(1);
 			});
 
 			it('should "not" find finished draft tasks of other users', async () => {
@@ -942,7 +942,7 @@ describe('TaskRepo', () => {
 			const setup = () => {
 				const untilDate = undefined;
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate });
+				const course = courseFactory.build({ untilDate, students: [user] });
 
 				return { user, course };
 			};
