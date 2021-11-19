@@ -75,7 +75,6 @@ export class Course extends BaseEntityWithTimestamps {
 		if (props.teachers) this.teachers.set(props.teachers);
 		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
 		if (props.color) this.color = props.color;
-		if (props.startDate) this.startDate = props.startDate;
 		if (props.untilDate) this.untilDate = props.untilDate;
 	}
 
