@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { EntityId } from '@shared/domain';
+import { EntityId, SortOrder } from '@shared/domain';
 import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
@@ -169,5 +169,52 @@ describe('course repo', () => {
 		it.todo('should filter courses by courseId filter');
 
 		it.todo('should select keys over options');
+
+		it('should only return courses that are currently active', async () => {
+			const student = userFactory.build();
+			const twoDaysInSeconds = 172800;
+			const course1 = courseFactory.build({
+				name: 'active course',
+				students: [student],
+				untilDate: new Date(Date.now() + twoDaysInSeconds),
+			});
+			const course2 = courseFactory.build({
+				name: 'past course',
+				students: [student],
+				untilDate: new Date(Date.now() - twoDaysInSeconds),
+			});
+			const course3 = courseFactory.build({
+				name: 'timeless course',
+				students: [student],
+			});
+
+			await em.persistAndFlush([course1, course2, course3]);
+			em.clear();
+
+			const [result, count] = await repo.findAllByUserId(student.id, { onlyActiveCourses: true });
+
+			expect(checkEqualIds(result, [course1, course3])).toEqual(true);
+			expect(count).toEqual(2);
+		});
+
+		it('should be able to sort by name', async () => {
+			const user = userFactory.build();
+			await em.persistAndFlush(user);
+
+			const names = ['z course', 'a course', '_ course', 'A course', '2 course', 'h course'];
+			const courses = names.map((name) => courseFactory.build({ name, students: [user] }));
+
+			await em.persistAndFlush(courses);
+			em.clear();
+
+			const [result, count] = await repo.findAllByUserId(user.id, {}, { order: { name: SortOrder.asc } });
+
+			const sortedNames = names.sort();
+
+			expect(count).toEqual(courses.length);
+			for (let i = 0; i < courses.length; i += 1) {
+				expect(sortedNames[i]).toEqual(result[i].name);
+			}
+		});
 	});
 });

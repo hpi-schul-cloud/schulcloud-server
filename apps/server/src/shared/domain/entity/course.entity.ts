@@ -6,6 +6,13 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
 
+export type CourseMetadata = {
+	id: string;
+	name: string;
+	shortName: string;
+	displayColor: string;
+};
+
 export interface ICourseProperties {
 	name?: string;
 	description?: string;
@@ -27,6 +34,7 @@ const DEFAULT = {
 };
 
 @Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
+@Index({ name: 'findAllByUserId', properties: ['students', 'substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property()
@@ -52,6 +60,7 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = DEFAULT.color;
 
+	@Index({ name: 'activeCourses' })
 	@Property()
 	untilDate: Date | null;
 
@@ -100,5 +109,14 @@ export class Course extends BaseEntityWithTimestamps {
 		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
+	}
+
+	getMetadata(): CourseMetadata {
+		return {
+			id: this.id,
+			name: this.name,
+			shortName: this.name.substr(0, 2),
+			displayColor: this.color,
+		};
 	}
 }

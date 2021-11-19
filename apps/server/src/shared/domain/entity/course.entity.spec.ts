@@ -36,6 +36,19 @@ describe('CourseEntity', () => {
 		});
 	});
 
+	describe('getMetadata', () => {
+		it('should return a metadata object', () => {
+			const course = courseFactory.build({ name: 'History', color: '#445566' });
+
+			const result = course.getMetadata();
+
+			expect(result.name).toEqual('History');
+			expect(result.shortName).toEqual('Hi');
+			expect(result.displayColor).toEqual('#445566');
+			expect(result.id).toEqual(course.id);
+		});
+	});
+
 	describe('getStudents', () => {
 		it('should count the number of assigned students', () => {
 			const student1 = userFactory.build();
