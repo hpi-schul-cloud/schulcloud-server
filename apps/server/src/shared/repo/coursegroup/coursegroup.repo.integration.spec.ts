@@ -84,7 +84,7 @@ describe('course group repo', () => {
 			expect(count).toEqual(3);
 		});
 
-		it('should only return course groups where the user is a member of it', async () => {
+		it('should only return course groups when the user is a member of it', async () => {
 			const course1 = courseFactory.build({ name: 'course #1' });
 			const course2 = courseFactory.build({ name: 'course #2' });
 			const courses = [course1, course2];

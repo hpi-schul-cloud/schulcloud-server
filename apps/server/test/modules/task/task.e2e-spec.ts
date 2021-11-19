@@ -244,7 +244,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0].status.isDraft).toEqual(true);
 		});
 
-		it('[FIND] /tasks should return nothing from courses where the user has only read permissions', async () => {
+		it('[FIND] /tasks should return nothing from courses when the user has only read permissions', async () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
@@ -474,7 +474,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks should nothing return from student where the user has write permissions', async () => {
+		it('[FIND] /tasks should nothing return from student when the user has write permissions', async () => {
 			const teacher = userFactory.build();
 			const subTeacher = userFactory.build();
 			await em.persistAndFlush([teacher, subTeacher]);

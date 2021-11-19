@@ -142,7 +142,7 @@ describe('course repo', () => {
 			expect(count).toEqual(3);
 		});
 
-		it('should only return courses where the user is a member of it', async () => {
+		it('should only return courses when the user is a member of it', async () => {
 			const user = userFactory.build();
 			const otherUser = userFactory.build();
 			await em.persistAndFlush([user, otherUser]);

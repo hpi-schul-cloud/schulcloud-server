@@ -47,7 +47,7 @@ const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 };
 
 describe('task/finished Controller (e2e)', () => {
-	// where user is not loggedin -> show always 200, but it should status 401 like if we send a request against backend
+	// when user is not loggedin -> show always 200, but it should status 401 like if we send a request against backend
 	// test setup is not perfect
 	let app: INestApplication;
 	let orm: MikroORM;
@@ -109,7 +109,7 @@ describe('task/finished Controller (e2e)', () => {
 		});
 	});
 
-	describe('where user is the creator', () => {
+	describe('when user is the creator', () => {
 		it('should return finsihed tasks', async () => {
 			const user = userFactory.build();
 			const task = taskFactory.finished(user).build({ teacher: user });
@@ -139,8 +139,8 @@ describe('task/finished Controller (e2e)', () => {
 		});
 	});
 
-	describe('where user has write permission in course', () => {
-		describe('where courses are finised', () => {
+	describe('when user has write permission in course', () => {
+		describe('when courses are finised', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.isFinished().build({ teachers: [user] });
@@ -265,7 +265,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 		});
 
-		describe('where courses are open', () => {
+		describe('when courses are open', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.isOpen().build({ teachers: [user] });
@@ -391,8 +391,8 @@ describe('task/finished Controller (e2e)', () => {
 		});
 	});
 
-	describe('Where user has read permission in course', () => {
-		describe('where courses are finised', () => {
+	describe('when user has read permission in course', () => {
+		describe('when courses are finised', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.isFinished().build({ students: [user] });
@@ -517,7 +517,7 @@ describe('task/finished Controller (e2e)', () => {
 			});
 		});
 
-		describe('where courses are open', () => {
+		describe('when courses are open', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.isOpen().build({ students: [user] });

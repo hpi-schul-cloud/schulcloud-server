@@ -536,8 +536,8 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('where filter closed is false', () => {
-			it('should find task where the task creator has moved it to archived', async () => {
+		describe('when filter closed is false', () => {
+			it('should find task when the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
@@ -552,7 +552,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(1);
 			});
 
-			it('should "not" find task where teacher that is "not" the creator moved this task to archived', async () => {
+			it('should "not" find task when teacher that is "not" the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
@@ -567,7 +567,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 			});
 
-			it('should "not" find task where substitiution teacher that is "not" the creator moved this task to archived', async () => {
+			it('should "not" find task when substitiution teacher that is "not" the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
@@ -582,7 +582,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 			});
 
-			it('should "not" find task where student moved this task to archived', async () => {
+			it('should "not" find task when student moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
@@ -598,8 +598,8 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('where filter closed is true', () => {
-			it('should not find task where the task creator has moved it to archived', async () => {
+		describe('when filter closed is true', () => {
+			it('should not find task when the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
@@ -614,7 +614,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 			});
 
-			it('should find task where teacher that is not the creator moved this task to archived', async () => {
+			it('should find task when teacher that is not the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
@@ -629,7 +629,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(1);
 			});
 
-			it('should find task where substitiution teacher that is not the creator moved this task to archived', async () => {
+			it('should find task when substitiution teacher that is not the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
@@ -644,7 +644,7 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(1);
 			});
 
-			it('should find task where student moved this task to archived', async () => {
+			it('should find task when student moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
@@ -662,7 +662,7 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllFinishedByParentIds', () => {
-		describe('where course is finished', () => {
+		describe('when course is finished', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.isFinished().build();
@@ -745,7 +745,7 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('where course is open', () => {
+		describe('when course is open', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.isOpen().build();
@@ -828,7 +828,7 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('where course has no untilDate (means it is still open)', () => {
+		describe('when course has no untilDate (means it is still open)', () => {
 			const setup = () => {
 				const untilDate = undefined;
 				const user = userFactory.build();
@@ -875,7 +875,7 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('where user is the creator', () => {
+		describe('when user is the creator', () => {
 			it('should find finished draft tasks of creator', async () => {
 				const user = userFactory.build();
 				const task = taskFactory.finished(user).draft(true).build({ teacher: user });
@@ -949,7 +949,7 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('where pagination is passed', () => {
+		describe('when pagination is passed', () => {
 			const setup = (taskCount) => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ untilDate: undefined });

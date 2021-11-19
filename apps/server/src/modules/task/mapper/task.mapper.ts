@@ -29,7 +29,7 @@ export class TaskMapper {
 	}
 
 	static mapToFinishedResponse(task: Task): FinishedTaskReponse {
-		const dto = new TaskResponse();
+		const dto = new FinishedTaskReponse();
 
 		dto.id = task.id;
 		dto.name = task.name;
