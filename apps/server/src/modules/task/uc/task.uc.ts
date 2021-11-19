@@ -14,23 +14,23 @@ export enum TaskDashBoardPermission {
 export class TaskUC {
 	constructor(private readonly taskRepo: TaskRepo, private readonly authorizationService: TaskAuthorizationService) {}
 
-	// this uc includes 4 awaits
+	// This uc includes 4 awaits + 1 from authentication services.
+	// 5 awaits from with db calls from one request against the api is for me the absolut maximum what we should allowed.
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<Task[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);
 
-		const openCourseIds = courses.filter((c) => c.isFinished()).map((c) => c.id);
-		const finishedCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
-
-		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
+		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
+		const finishedCourseIds = courses.filter((c) => c.isFinished()).map((c) => c.id);
 		const lessonIdsOfOpenCourses = lessons.filter((l) => !l.course.isFinished()).map((l) => l.id);
+		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
 
 		const [tasks, count] = await this.taskRepo.findAllFinishedByParentIds(
 			{
 				creatorId: userId,
 				openCourseIds,
-				lessonIdsOfOpenCourses,
 				finishedCourseIds,
+				lessonIdsOfOpenCourses,
 				lessonIdsOfFinishedCourses,
 			},
 			{ pagination }
