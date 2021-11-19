@@ -13,13 +13,24 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+## [26.17.0] - 2021-11-16
+
+### Changed
+
+- BC-488 - Set federal state in LDAPSyncer by system
+- BC-589 - BC-652 - change auto deployment to a reusable workflow
+- BC-240 - Dashboards are now personalized
+
+### Fixed
+
 - BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
+- BC-668 - fixed security issues/updated dependencies
 
 ## [26.16.0] - 2021-11-09
 
 ### Added
- 
-- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's  
+
+- BC-489 - create a migration to add federal state to systems (ldap) and sync with school's
 
 ### Changed
 
@@ -39,7 +50,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-526 - files deleted via directory deletion will be deleted with the deletion concept
 - BC-369 - add more LDAP systems to the init deployment
 - BC-174 - Improve test data generation with factories
-- BC-40  - rocketchat authentication via user+password
+- BC-40 - rocketchat authentication via user+password
 - BC-532 - add index to course, lesson, task entity and fix permission issue
 
 ### Changed
