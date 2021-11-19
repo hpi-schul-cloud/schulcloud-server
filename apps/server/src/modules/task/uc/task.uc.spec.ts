@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PaginationQuery } from '@shared/controller';
-import { Course, EntityId, ICurrentUser, Task, Lesson } from '@shared/domain';
+import { Course, ICurrentUser, Task, Lesson } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -148,7 +148,16 @@ describe('TaskUC', () => {
 
 			await service.findAllFinished(user.id);
 
-			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [] }, { pagination: undefined }];
+			const expectedParams = [
+				{
+					creatorId: user.id,
+					openCourseIds: [],
+					finishedCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ pagination: undefined },
+			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
@@ -198,7 +207,16 @@ describe('TaskUC', () => {
 
 			await service.findAllFinished(user.id, { skip });
 
-			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [] }, { pagination: { skip: 5 } }];
+			const expectedParams = [
+				{
+					creatorId: user.id,
+					openCourseIds: [],
+					finishedCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ pagination: { skip: 5 } },
+			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
@@ -212,7 +230,16 @@ describe('TaskUC', () => {
 
 			await service.findAllFinished(user.id, { limit });
 
-			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [] }, { pagination: { limit: 5 } }];
+			const expectedParams = [
+				{
+					creatorId: user.id,
+					openCourseIds: [],
+					finishedCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ pagination: { limit: 5 } },
+			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
@@ -226,7 +253,16 @@ describe('TaskUC', () => {
 
 			await service.findAllFinished(user.id);
 
-			const expectedParams = [{ userId: user.id, courseIds: [], lessonIds: [lesson.id] }, { pagination: undefined }];
+			const expectedParams = [
+				{
+					creatorId: user.id,
+					openCourseIds: [],
+					finishedCourseIds: [],
+					lessonIdsOfOpenCourses: [lesson.id],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ pagination: undefined },
+			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
@@ -240,7 +276,16 @@ describe('TaskUC', () => {
 
 			await service.findAllFinished(user.id);
 
-			const expectedParams = [{ userId: user.id, courseIds: [course.id], lessonIds: [] }, { pagination: undefined }];
+			const expectedParams = [
+				{
+					creatorId: user.id,
+					openCourseIds: [course.id],
+					finishedCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ pagination: undefined },
+			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
@@ -355,7 +400,7 @@ describe('TaskUC', () => {
 			const course = courseFactory.buildWithId();
 			const lesson = lessonFactory.buildWithId({ course, hidden: false });
 
-			const spyGetPermittedLessonIds = setAuthorizationServiceMock.getPermittedLessons([lesson]);
+			const spyGetPermittedLessons = setAuthorizationServiceMock.getPermittedLessons([lesson]);
 			const spygetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([course]);
 
 			const paginationQuery = new PaginationQuery();
@@ -374,10 +419,10 @@ describe('TaskUC', () => {
 				pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit },
 			});
 
-			expect(spyGetPermittedLessonIds).toHaveBeenCalledWith(currentUser.userId, [course.id]);
+			expect(spyGetPermittedLessons).toHaveBeenCalledWith(currentUser.userId, [course]);
 
 			spy.mockRestore();
-			spyGetPermittedLessonIds.mockRestore();
+			spyGetPermittedLessons.mockRestore();
 			spygetPermittedCourses.mockRestore();
 		});
 
