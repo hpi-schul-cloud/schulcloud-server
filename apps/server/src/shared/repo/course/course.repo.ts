@@ -34,10 +34,17 @@ export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	// TODO: set index
-	// TODO: current year?
-	async findAllByUserId(userId: EntityId, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+	async findAllByUserId(
+		userId: EntityId,
+		filters?: { onlyActiveCourses?: boolean },
+		options?: IFindOptions<Course>
+	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
-		scope.forAllGroupTypes(userId).forActiveCourses();
+		scope.forAllGroupTypes(userId);
+
+		if (filters?.onlyActiveCourses) {
+			scope.forActiveCourses();
+		}
 
 		const { pagination, order } = options || {};
 		const queryOptions = {

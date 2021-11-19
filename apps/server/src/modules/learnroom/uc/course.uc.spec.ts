@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
 import { Course, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
-import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';
 import { CourseUc } from './course.uc';
 
 describe('course uc', () => {
@@ -15,7 +14,7 @@ describe('course uc', () => {
 				{
 					provide: CourseRepo,
 					useValue: {
-						findAllByUserId(userId: EntityId, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
 							throw new Error('Please write a mock for TaskRepo.findAllByParentIds');
 						},
 					},
@@ -34,7 +33,7 @@ describe('course uc', () => {
 				return Promise.resolve([courses, 5]);
 			});
 
-			const [array, count] = await service.findByUser('someUserId');
+			const [array, count] = await service.findActiveByUser('someUserId');
 			expect(count).toEqual(5);
 			expect(array).toEqual(courses);
 		});
@@ -48,9 +47,9 @@ describe('course uc', () => {
 			const pagination = { skip: 1, limit: 2 };
 			const resultingOptions = { pagination, order: { name: SortOrder.asc } };
 
-			const [array, count] = await service.findByUser('someUserId', pagination);
+			const [array, count] = await service.findActiveByUser('someUserId', pagination);
 
-			expect(spy).toHaveBeenCalledWith('someUserId', resultingOptions);
+			expect(spy).toHaveBeenCalledWith('someUserId', { onlyActiveCourses: true }, resultingOptions);
 		});
 	});
 });

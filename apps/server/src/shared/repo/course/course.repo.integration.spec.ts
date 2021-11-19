@@ -187,7 +187,7 @@ describe('course repo', () => {
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(student.id);
+			const [result, count] = await repo.findAllByUserId(student.id, { onlyActiveCourses: true });
 
 			expect(checkEqualIds(result, [course1, course3])).toEqual(true);
 			expect(count).toEqual(2);
@@ -203,7 +203,7 @@ describe('course repo', () => {
 			await em.persistAndFlush(courses);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id, { order: { name: SortOrder.asc } });
+			const [result, count] = await repo.findAllByUserId(user.id, {}, { order: { name: SortOrder.asc } });
 
 			const sortedNames = names.sort();
 

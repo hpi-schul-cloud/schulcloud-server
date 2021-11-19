@@ -17,7 +17,7 @@ describe('course controller', () => {
 					provide: CourseUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
+						findActiveByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
 							throw new Error('Please write a mock for CourseUc.findByUser.');
 						},
 					},
@@ -32,7 +32,7 @@ describe('course controller', () => {
 	describe('findForUser', () => {
 		it('should call uc', async () => {
 			const spy = jest
-				.spyOn(uc, 'findByUser')
+				.spyOn(uc, 'findActiveByUser')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((userId: EntityId, options?: PaginationQuery) => {
 					const courses = new Array(5).map(() => ({} as Course));
@@ -57,7 +57,7 @@ describe('course controller', () => {
 			} as Course;
 
 			jest
-				.spyOn(uc, 'findByUser')
+				.spyOn(uc, 'findActiveByUser')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((userId: EntityId, options?: PaginationQuery) => {
 					return Promise.resolve([[courseMock], 1]);

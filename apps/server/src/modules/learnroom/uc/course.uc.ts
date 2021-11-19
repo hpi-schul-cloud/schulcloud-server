@@ -7,7 +7,11 @@ import { PaginationQuery } from '@shared/controller/';
 export class CourseUc {
 	constructor(private readonly courseRepo: CourseRepo) {}
 
-	findByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
-		return this.courseRepo.findAllByUserId(userId, { pagination: options, order: { name: SortOrder.asc } });
+	findActiveByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
+		return this.courseRepo.findAllByUserId(
+			userId,
+			{ onlyActiveCourses: true },
+			{ pagination: options, order: { name: SortOrder.asc } }
+		);
 	}
 }
