@@ -664,14 +664,13 @@ describe('TaskRepo', () => {
 	describe('findAllFinishedByParentIds', () => {
 		describe('where course is finished', () => {
 			const setup = () => {
-				const untilDate = new Date(Date.now() - 60000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate });
+				const course = courseFactory.isFinished().build();
 
 				return { user, course };
 			};
 
-			it('should find open tasks that added directly to course', async () => {
+			it('should find open tasks of a course', async () => {
 				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
@@ -679,9 +678,11 @@ describe('TaskRepo', () => {
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(1);
@@ -696,9 +697,48 @@ describe('TaskRepo', () => {
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [lesson.id],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [lesson.id],
+				});
+
+				expect(total).toEqual(1);
+			});
+
+			it('should find finished tasks of lessons', async () => {
+				const { user, course } = setup();
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ lesson, course, closed: [user] });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [lesson.id],
+				});
+
+				expect(total).toEqual(1);
+			});
+
+			it('should find finished tasks of courses', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.build({ course, closed: [user] });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [course.id],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(1);
@@ -707,14 +747,13 @@ describe('TaskRepo', () => {
 
 		describe('where course is open', () => {
 			const setup = () => {
-				const untilDate = new Date(Date.now() + 60000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate });
+				const course = courseFactory.isOpen().build();
 
 				return { user, course };
 			};
 
-			it('should "not" find open tasks that added directly to course', async () => {
+			it('should "not" find open tasks of courses', async () => {
 				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
@@ -722,9 +761,11 @@ describe('TaskRepo', () => {
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [course.id],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(0);
@@ -739,16 +780,55 @@ describe('TaskRepo', () => {
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [lesson.id],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [lesson.id],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(0);
 			});
+
+			it('should find finished tasks of lessons', async () => {
+				const { user, course } = setup();
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ lesson, course, closed: [user] });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [lesson.id],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(1);
+			});
+
+			it('should find finished tasks of courses', async () => {
+				const { user, course } = setup();
+				const task = taskFactory.build({ course, closed: [user] });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [course.id],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(1);
+			});
 		});
 
-		describe('where course has no finished data', () => {
+		describe('where course has no untilDate (means it is still open)', () => {
 			const setup = () => {
 				const untilDate = undefined;
 				const user = userFactory.build();
@@ -757,7 +837,7 @@ describe('TaskRepo', () => {
 				return { user, course };
 			};
 
-			it('should "not" find open tasks that added directly to course', async () => {
+			it('should "not" find open tasks of courses', async () => {
 				const { user, course } = setup();
 				const task = taskFactory.build({ course });
 
@@ -765,9 +845,11 @@ describe('TaskRepo', () => {
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [course.id],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(0);
@@ -782,85 +864,85 @@ describe('TaskRepo', () => {
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [lesson.id],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [lesson.id],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(0);
 			});
 		});
 
-		describe('where tasks are finsihed', () => {
-			it('should find tasks of lessons', async () => {
+		describe('where user is the creator', () => {
+			it('should find finished draft tasks of creator', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
-				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course, closed: [user] });
+				const task = taskFactory.finished(user).draft(true).build({ teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [lesson.id],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(1);
 			});
 
-			it('should find tasks of courses', async () => {
+			it('should find finished tasks of creator', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
-				const task = taskFactory.build({ course, closed: [user] });
+				const task = taskFactory.finished(user).build({ teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(1);
 			});
 
-			it.skip('should return draft tasks', async () => {});
-		});
-
-		describe('where tasks are open', () => {
-			it('should "not" find tasks of lessons', async () => {
+			it('should "not" find open draft tasks of creator', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
-				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course });
+				const task = taskFactory.draft(true).build({ teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [lesson.id],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(0);
 			});
 
-			it('should "not" find tasks of courses', async () => {
+			it('should "not" find open tasks of creator', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
-				const task = taskFactory.build({ course });
+				const task = taskFactory.build({ teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
-					lessonIds: [],
-					courseIds: [course.id],
-					userId: user.id,
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
 				});
 
 				expect(total).toEqual(0);
@@ -868,64 +950,75 @@ describe('TaskRepo', () => {
 		});
 
 		describe('where pagination is passed', () => {
-			it('should work for skip', async () => {
+			const setup = (taskCount) => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ untilDate: undefined });
-				const tasks = taskFactory.buildList(10, { course, closed: [user] });
+				const tasks = taskFactory.buildList(taskCount, { course, closed: [user] });
+
+				return { user, course, tasks };
+			};
+
+			it('should work for skip', async () => {
+				const { user, course, tasks } = setup(10);
 
 				await em.persistAndFlush(tasks);
 				em.clear();
 
-				const [, total] = await repo.findAllFinishedByParentIds(
+				const [result, total] = await repo.findAllFinishedByParentIds(
 					{
-						lessonIds: [],
-						courseIds: [course.id],
-						userId: user.id,
+						creatorId: user.id,
+						openCourseIds: [course.id],
+						lessonIdsOfOpenCourses: [],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
 					},
 					{ pagination: { skip: 5 } }
 				);
 
-				expect(total).toEqual(5);
+				expect(result).toHaveLength(5);
+				expect(total).toEqual(10);
 			});
 
 			it('should work for limit', async () => {
-				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
-				const tasks = taskFactory.buildList(10, { course, closed: [user] });
+				const { user, course, tasks } = setup(10);
 
 				await em.persistAndFlush(tasks);
 				em.clear();
 
-				const [, total] = await repo.findAllFinishedByParentIds(
+				const [result, total] = await repo.findAllFinishedByParentIds(
 					{
-						lessonIds: [],
-						courseIds: [course.id],
-						userId: user.id,
+						creatorId: user.id,
+						openCourseIds: [course.id],
+						lessonIdsOfOpenCourses: [],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
 					},
 					{ pagination: { limit: 5 } }
 				);
 
-				expect(total).toEqual(5);
+				expect(result).toHaveLength(5);
+				expect(total).toEqual(10);
 			});
 
 			it('should work for combined limit and skip', async () => {
-				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
-				const tasks = taskFactory.buildList(15, { course, closed: [user] });
+				const { user, course, tasks } = setup(15);
 
 				await em.persistAndFlush(tasks);
 				em.clear();
 
-				const [, total] = await repo.findAllFinishedByParentIds(
+				const [result, total] = await repo.findAllFinishedByParentIds(
 					{
-						lessonIds: [],
-						courseIds: [course.id],
-						userId: user.id,
+						creatorId: user.id,
+						openCourseIds: [course.id],
+						lessonIdsOfOpenCourses: [],
+						finishedCourseIds: [],
+						lessonIdsOfFinishedCourses: [],
 					},
 					{ pagination: { limit: 5, skip: 5 } }
 				);
 
-				expect(total).toEqual(5);
+				expect(result).toHaveLength(5);
+				expect(total).toEqual(15);
 			});
 		});
 
@@ -941,9 +1034,11 @@ describe('TaskRepo', () => {
 			em.clear();
 
 			const [tasks] = await repo.findAllFinishedByParentIds({
-				lessonIds: [],
-				courseIds: [course.id],
-				userId: user.id,
+				creatorId: user.id,
+				openCourseIds: [course.id],
+				lessonIdsOfOpenCourses: [],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
 			});
 
 			expect(tasks.map((t) => t.id)).toEqual([task4.id, task1.id, task2.id, task3.id]);

@@ -223,9 +223,9 @@ describe('task/finished Controller (e2e)', () => {
 				expect(result.total).toEqual(1);
 			});
 
-			it('should return draft tasks', async () => {
+			it('should return draft tasks (current state is draft only exist for creator and creator mean key teacher)', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).build({ course });
+				const task = taskFactory.draft(true).build({ course, teacher: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -396,9 +396,8 @@ describe('task/finished Controller (e2e)', () => {
 	describe('Where user has read permission in course', () => {
 		describe('where courses are finised', () => {
 			const setup = () => {
-				const untilDate = new Date(Date.now() - 6000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const course = courseFactory.isFinished().build({ students: [user] });
 
 				return { course, user };
 			};
@@ -522,9 +521,8 @@ describe('task/finished Controller (e2e)', () => {
 
 		describe('where courses are open', () => {
 			const setup = () => {
-				const untilDate = new Date(Date.now() + 6000);
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], untilDate });
+				const course = courseFactory.isOpen().build({ students: [user] });
 
 				return { course, user };
 			};

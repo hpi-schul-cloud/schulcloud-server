@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 
-import { EntityId, IFindOptions, Task, Counted } from '@shared/domain';
+import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
 
 import { TaskScope } from './task-scope';
-
+/*
 interface IAggregation<T> {
 	$match?: FilterQuery<T>;
 	$lookup?: {
@@ -18,11 +18,59 @@ interface IAggregation<T> {
 	$skip?: number;
 	$limit?: number;
 }
-
+*/
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	async findAllFinishedByParentIds(
+		parentIds: {
+			creatorId: EntityId;
+			openCourseIds: EntityId[];
+			lessonIdsOfOpenCourses: EntityId[];
+			finishedCourseIds: EntityId[];
+			lessonIdsOfFinishedCourses: EntityId[];
+		},
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		const { pagination } = options || {};
+
+		const scope = new TaskScope('$or');
+
+		const parents = new TaskScope('$or');
+		parents.byCourseIds(parentIds.openCourseIds);
+		parents.byLessonIds(parentIds.lessonIdsOfOpenCourses);
+
+		const openScope = new TaskScope();
+		openScope.addQuery(parents.query);
+		openScope.byClosed(parentIds.creatorId, true);
+
+		const finishedScope = new TaskScope('$or');
+		finishedScope.byCourseIds(parentIds.finishedCourseIds);
+		finishedScope.byLessonIds(parentIds.lessonIdsOfFinishedCourses);
+
+		const creatorScope = new TaskScope();
+		creatorScope.byClosed(parentIds.creatorId, true);
+		creatorScope.byCreatorId(parentIds.creatorId);
+
+		scope.addQuery(openScope.query);
+		scope.addQuery(finishedScope.query);
+		scope.addQuery(creatorScope.query);
+
+		const order = { dueDate: SortOrder.desc };
+
+		const [tasks, count] = await this.em.findAndCount(Task, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		// bad that it is not pass directly to findAndCount but it throw an error
+		await this.em.populate(tasks, ['course', 'lesson']);
+
+		return [tasks, count];
+	}
+	/*
 	async findAllFinishedByParentIds(
 		parentIds: {
 			userId: EntityId;
@@ -39,13 +87,15 @@ export class TaskRepo {
 		const now = new Date();
 
 		// Important aggregration pass any[] and has NO mikro-orm or entity support
+		// draft (private) tasks can only see by the creator and not by other teachers
 		const query: IAggregation<Task>[] = [
 			{
 				$match: {
 					$or: [
-						{ $and: [{ courseId: { $in: courseIds } }, { lessonId: null }] },
-						{ lessonId: { $in: lessonsIds } },
-						{ teacherId: userId }, // creator
+						// each that are visible for the user
+						{ $and: [{ courseId: { $in: courseIds } }, { lessonId: null }] }, // find all added on course
+						{ lessonId: { $in: lessonsIds } }, // only visible lessons passed
+						{ $and: [{ teacherId: userId }, { courseId: null }, { lessonId: null }] }, // by creator
 					],
 				},
 			},
@@ -59,7 +109,12 @@ export class TaskRepo {
 			},
 			{
 				$match: {
-					$or: [{ archived: userId }, { 'courses.0.untilDate': { $lt: now } }],
+					$or: [
+						// each of them that are finished
+						{ archived: userId }, // is archived by user
+						{ $and: [{ 'courses.0.untilDate': { $lt: now } }, { private: { $ne: true } }] }, // course is finished but no drafts
+						{ $and: [{ 'courses.0.untilDate': { $lt: now } }, { teacherId: userId }] }, // course is finished and creator see his one (drafts also)
+					],
 				},
 			},
 			{ $sort: { dueDate: -1 } },
@@ -79,6 +134,7 @@ export class TaskRepo {
 
 		return [tasks, tasks.length];
 	}
+	*/
 
 	/**
 	 * Find all tasks by their parents which can be any of
@@ -136,12 +192,11 @@ export class TaskRepo {
 	}
 
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
-		const { pagination, order, select } = options || {};
+		const { pagination, order } = options || {};
 		const [taskEntities, count] = await this.em.findAndCount(Task, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap,
-			fields: select,
 		});
 
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);

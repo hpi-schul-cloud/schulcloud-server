@@ -20,6 +20,12 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
+	byCreatorId(creatorId: EntityId): TaskScope {
+		this.addQuery({ teacher: creatorId });
+
+		return this;
+	}
+
 	byCourseIds(courseIds: EntityId[]): TaskScope {
 		this.addQuery({
 			$and: [{ course: { $in: courseIds } }, { lesson: null }],
