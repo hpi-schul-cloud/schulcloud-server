@@ -46,7 +46,6 @@ export class Course extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@Index({ name: 'findAllForStudent' })
 	@ManyToMany('User', undefined, { fieldName: 'userIds', owner: true })
 	students = new Collection<User>(this);
 
@@ -82,7 +81,7 @@ export class Course extends BaseEntityWithTimestamps {
 
 	getSubstitutionTeacherIds(): EntityId[] {
 		const ids = this.substitutionTeachers.getIdentifiers('id');
-		// The result of getIdentifiers is a primary key type when we have no represent for it ((string | ObjectId) & IPrimaryKeyValue)[]
+		// The result of getIdentifiers is a primary key type. We have no represantation for it ((string | ObjectId) & IPrimaryKeyValue)[]
 		const idsAsString = ids.map((id) => id.toString());
 
 		return idsAsString;

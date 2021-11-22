@@ -5,20 +5,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
 
 import { TaskScope } from './task-scope';
-/*
-interface IAggregation<T> {
-	$match?: FilterQuery<T>;
-	$lookup?: {
-		from: string;
-		localField: string;
-		foreignField: string;
-		as: string;
-	};
-	$sort?: Record<string, number>;
-	$skip?: number;
-	$limit?: number;
-}
-*/
+
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
@@ -54,7 +41,7 @@ export class TaskRepo {
 		finishedScope.addQuery(parentsFinished.query);
 		finishedScope.byDraft(false);
 
-		// must find closed without course or lesson as parent
+		// must find also closed without course or lesson as parent
 		const creatorOpenScope = new TaskScope();
 		creatorOpenScope.byClosed(parentIds.creatorId, true);
 		creatorOpenScope.byCreatorId(parentIds.creatorId);
