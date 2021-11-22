@@ -95,14 +95,11 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			.service('ldap')
 			.searchCollection(this.config, searchString, options)
 			.then((data) =>
-				data.map((obj) => {
-					const splittedName = obj.cn.split('-');
-					return {
-						className: splittedName[splittedName.length - 1], // ToDo: should be obj.description?
-						ldapDn: obj.dn,
-						uniqueMembers: obj.uniqueMember,
-					};
-				})
+				data.map((obj) => ({
+					className: obj.description,
+					ldapDn: obj.dn,
+					uniqueMembers: obj.uniqueMember,
+				}))
 			);
 	}
 

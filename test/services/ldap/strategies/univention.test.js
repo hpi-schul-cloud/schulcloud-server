@@ -11,7 +11,7 @@ const mockLDAPConfig = {
 	providerOptions: {},
 };
 
-describe('UniventionLDAPStrategy', () => {
+describe.only('UniventionLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new UniventionLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
@@ -203,7 +203,7 @@ describe('UniventionLDAPStrategy', () => {
 	describe('#getClasses', () => {
 		const ldapFakeClassSearchResult = [
 			{
-				cn: '100000-3GEGDV64GIHO39TI',
+				description: '1a',
 				dn: 'cn=100000-3GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
 				uniqueMember: [
 					'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
@@ -212,7 +212,7 @@ describe('UniventionLDAPStrategy', () => {
 				],
 			},
 			{
-				cn: '100000-4GEGDV64GIHO39TI',
+				description: '1b',
 				dn: 'cn=100000-4GEGDV64GIHO39TI,cn=klassen,cn=schueler,cn=groups,ou=100000,dc=training,dc=ucs',
 				uniqueMember: [
 					'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
@@ -253,11 +253,11 @@ describe('UniventionLDAPStrategy', () => {
 			const [class1, class2] = await new UniventionLDAPStrategy(app, mockLDAPConfig).getClasses({});
 			const [fakeSearchResult1, fakeSearchResult2] = ldapFakeClassSearchResult;
 
-			expect(class1.className).to.equal(fakeSearchResult1.cn.split('-').pop());
+			expect(class1.className).to.equal(fakeSearchResult1.description);
 			expect(class1.ldapDn).to.equal(fakeSearchResult1.dn);
 			expect(class1.uniqueMembers).to.equal(fakeSearchResult1.uniqueMember);
 
-			expect(class2.className).to.equal(fakeSearchResult2.cn.split('-').pop());
+			expect(class2.className).to.equal(fakeSearchResult2.description);
 			expect(class2.ldapDn).to.equal(fakeSearchResult2.dn);
 			expect(class2.uniqueMembers).to.equal(fakeSearchResult2.uniqueMember);
 		});
