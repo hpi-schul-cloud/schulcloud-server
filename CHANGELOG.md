@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
 
 ### Fixed
+- BC-724 - fixed OpenAPI spec for dashboard
 
 ### Changed
 
