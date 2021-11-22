@@ -8,7 +8,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
+import { ICurrentUser, User } from '@shared/domain';
 import {
 	courseFactory,
 	userFactory,
@@ -83,13 +83,7 @@ describe('task/finished Controller (e2e)', () => {
 	});
 
 	beforeEach(async () => {
-		await Promise.all([
-			em.nativeDelete(Course, {}),
-			em.nativeDelete(Task, {}),
-			em.nativeDelete(Submission, {}),
-			em.nativeDelete(User, {}),
-		]);
-		// await cleanUpCollections(em);
+		await cleanUpCollections(em);
 	});
 
 	it('should possible to open it', async () => {

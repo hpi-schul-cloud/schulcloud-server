@@ -8,7 +8,7 @@ import { BaseFactory } from './base.factory';
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {
 	draft(isDraft = true): this {
 		const params: DeepPartial<ITaskProperties> = { private: isDraft };
-		if (isDraft === true) params.course = undefined;
+
 		return this.params(params);
 	}
 

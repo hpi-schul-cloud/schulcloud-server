@@ -50,20 +50,22 @@ export class TaskRepo {
 		openScope.byDraft(false);
 		openScope.byClosed(parentIds.creatorId, true);
 
-		const byNotCreator = new TaskScope();
-		byNotCreator.addQuery(parentsFinished.query);
-		byNotCreator.byDraft(false);
+		const finishedScope = new TaskScope();
+		finishedScope.addQuery(parentsFinished.query);
+		finishedScope.byDraft(false);
 
-		const byCreator = new TaskScope();
-		byCreator.byCreatorId(parentIds.creatorId);
+		// must find closed without course or lesson as parent
+		const creatorOpenScope = new TaskScope();
+		creatorOpenScope.byClosed(parentIds.creatorId, true);
+		creatorOpenScope.byCreatorId(parentIds.creatorId);
 
-		const finishedScope = new TaskScope('$or');
-		finishedScope.addQuery(byNotCreator.query);
-		finishedScope.addQuery(byCreator.query);
+		const creatorFinishedScope = new TaskScope();
+		creatorFinishedScope.addQuery(parentsFinished.query);
+		creatorFinishedScope.byCreatorId(parentIds.creatorId);
 
-		const creatorScope = new TaskScope();
-		creatorScope.byClosed(parentIds.creatorId, true);
-		creatorScope.byCreatorId(parentIds.creatorId);
+		const creatorScope = new TaskScope('$or');
+		creatorScope.addQuery(creatorOpenScope.query);
+		creatorScope.addQuery(creatorFinishedScope.query);
 
 		scope.addQuery(openScope.query);
 		scope.addQuery(finishedScope.query);
