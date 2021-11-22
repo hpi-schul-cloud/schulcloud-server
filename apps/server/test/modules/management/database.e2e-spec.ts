@@ -25,7 +25,7 @@ describe('Database Management Controller (e2e)', () => {
 
 	describe('When post to database management route', () => {
 		it('should seed all collections', async () => {
-			await request(app.getHttpServer()).post(`/management/database/seed`).expect(201);
+			await request(app.getHttpServer()).post(`/management/database/seed`).expect(200);
 		});
 		it('should seed a collection', async () => {
 			await request(app.getHttpServer()).post(`/management/database/seed/${sampleCollectionName}`).expect(201);

@@ -1,31 +1,27 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Controller, Param, Post, All } from '@nestjs/common';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 @Controller('management/database')
 export class DatabaseManagementController {
 	constructor(private databaseManagementUc: DatabaseManagementUc) {}
 
-	@Post('seed')
+	@All('seed')
 	async importCollections(): Promise<string[]> {
-		const result = await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem();
-		return result;
+		return this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem();
 	}
 
 	@Post('seed/:collectionName')
 	async importCollection(@Param('collectionName') collectionName: string): Promise<string[]> {
-		const result = await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem([collectionName]);
-		return result;
+		return this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem([collectionName]);
 	}
 
 	@Post('export')
 	async exportCollections(): Promise<string[]> {
-		const result = await this.databaseManagementUc.exportCollectionsToFileSystem();
-		return result;
+		return this.databaseManagementUc.exportCollectionsToFileSystem();
 	}
 
 	@Post('export/:collectionName')
 	async exportCollection(@Param('collectionName') collectionName: string): Promise<string[]> {
-		const result = await this.databaseManagementUc.exportCollectionsToFileSystem([collectionName]);
-		return result;
+		return this.databaseManagementUc.exportCollectionsToFileSystem([collectionName]);
 	}
 }
