@@ -11,7 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-609 - Add new route and endpoints for finished task
+- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
 
 ### Fixed
 
