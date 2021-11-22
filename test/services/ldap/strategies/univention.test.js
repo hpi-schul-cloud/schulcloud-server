@@ -11,7 +11,7 @@ const mockLDAPConfig = {
 	providerOptions: {},
 };
 
-describe.only('UniventionLDAPStrategy', () => {
+describe('UniventionLDAPStrategy', () => {
 	it('implements AbstractLDAPStrategy', () => {
 		expect(new UniventionLDAPStrategy()).to.be.instanceOf(AbstractLDAPStrategy);
 	});
