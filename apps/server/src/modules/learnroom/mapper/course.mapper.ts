@@ -2,7 +2,7 @@ import { Course } from '@shared/domain';
 import { CourseMetadataResponse } from '../controller/dto';
 
 export class CourseMapper {
-	static mapToMetadataResponse(course: Course): CourseMetadataResponse {
+	static mapToMetadataResponse(this: void, course: Course): CourseMetadataResponse {
 		const courseMetadata = course.getMetadata();
 		const dto = new CourseMetadataResponse(
 			courseMetadata.id,

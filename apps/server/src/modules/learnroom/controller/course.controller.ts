@@ -1,5 +1,5 @@
-import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { Controller, Get, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { PaginationQuery } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
@@ -14,13 +14,12 @@ export class CourseController {
 	constructor(private readonly courseUc: CourseUc) {}
 
 	@Get()
-	@ApiBody({ type: CourseMetadataListResponse })
 	async findForUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<CourseMetadataListResponse> {
 		const [courses, total] = await this.courseUc.findActiveByUser(currentUser.userId, paginationQuery);
-		const courseResponses = courses.map((course) => CourseMapper.mapToMetadataResponse(course));
+		const courseResponses = courses.map(CourseMapper.mapToMetadataResponse);
 		const { skip, limit } = paginationQuery;
 
 		const result = new CourseMetadataListResponse(courseResponses, total, skip, limit);

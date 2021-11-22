@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 - BC-724 - fixed OpenAPI spec for dashboard
+- BC-724 - fixed OpenAPI spec for courses
 
 ## [26.17.0] - 2021-11-16
 
