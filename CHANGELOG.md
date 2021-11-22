@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-485 - ansible role for management service
 
 ### Fixed
+- BC-724 - fixed OpenAPI spec for dashboard
 
 ## [26.17.0] - 2021-11-16
 
