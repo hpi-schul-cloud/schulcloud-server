@@ -11,7 +11,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-609 - Add new route and endpoints for finished task
+
 ### Fixed
+
+### Changed
+
+- BC-609 - open task do not longer published open tasks of finished courses
 
 ## [26.17.0] - 2021-11-16
 
