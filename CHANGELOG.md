@@ -10,6 +10,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [26.18.0] - 2021-11-23
+
+### Added
 - BC-485 - ansible role for management service
 
 - BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)

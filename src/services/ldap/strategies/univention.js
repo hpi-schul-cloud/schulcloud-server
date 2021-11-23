@@ -23,7 +23,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			scope: 'sub',
 			attributes: [],
 		};
-		const searchString = this.config.rootPath;
+		const searchString = this.config.rootPath || '';
 		return this.app
 			.service('ldap')
 			.searchCollection(this.config, searchString, options)
@@ -46,7 +46,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		const options = {
 			filter: 'univentionObjectType=users/user',
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'memberOf'],
+			attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass'],
 		};
 		const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app
@@ -90,20 +90,16 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			scope: 'sub',
 			attributes: [],
 		};
-		const searchString =
-			'cn=klassen,cn=schueler,cn=groups,' + `ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
+		const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app
 			.service('ldap')
 			.searchCollection(this.config, searchString, options)
 			.then((data) =>
-				data.map((obj) => {
-					const splittedName = obj.cn.split('-');
-					return {
-						className: splittedName[splittedName.length - 1],
-						ldapDn: obj.dn,
-						uniqueMembers: obj.uniqueMember,
-					};
-				})
+				data.map((obj) => ({
+					className: obj.description,
+					ldapDn: obj.dn,
+					uniqueMembers: obj.uniqueMember,
+				}))
 			);
 	}
 
