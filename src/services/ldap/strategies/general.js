@@ -1,5 +1,5 @@
-const AbstractLDAPStrategy = require('./interface.js');
-const { isNotEmptyString } = require('../../../helper/stringHelper.js');
+const AbstractLDAPStrategy = require('./interface');
+const { isNotEmptyString } = require('../../../helper/stringHelper');
 
 /**
  * General LDAP functionality
@@ -28,13 +28,9 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	async getUsers(school) {
-		const {
-			userAttributeNameMapping,
-			userPathAdditions,
-			roleType,
-			roleAttributeNameMapping,
-		} = this.config.providerOptions;
+	async getUsers() {
+		const { userAttributeNameMapping, userPathAdditions, roleType, roleAttributeNameMapping } =
+			this.config.providerOptions;
 
 		const requiredAttributes = [userAttributeNameMapping.uuid, userAttributeNameMapping.mail];
 		const requiredFilters = requiredAttributes.map((attr) => `(${attr}=*)`).join('');
@@ -140,7 +136,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
 	 * @memberof GeneralLDAPStrategy
 	 */
-	getClasses(school) {
+	getClasses() {
 		const { classAttributeNameMapping, classPathAdditions } = this.config.providerOptions;
 
 		if (
