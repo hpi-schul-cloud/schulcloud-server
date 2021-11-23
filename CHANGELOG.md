@@ -7,15 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-
-- [merge only in 26.17.0!, one release after BC-489] BC-488 - Set federal state in LDAPSyncer by system
-
 ## [Unreleased]
 
 ### Added
+- BC-485 - ansible role for management service
+
+### Fixed
+- BC-724 - fixed OpenAPI spec for dashboard
+
+## [26.17.0] - 2021-11-16
 
 ### Changed
 
+- BC-488 - Set federal state in LDAPSyncer by system
 - BC-589 - BC-652 - change auto deployment to a reusable workflow
 - BC-240 - Dashboards are now personalized
 

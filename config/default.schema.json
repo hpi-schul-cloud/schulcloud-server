@@ -367,6 +367,11 @@
 			"default": "default",
 			"description": "The used theming."
 		},
+		"FEATURE_OAUTH_LOGIN": {
+			"type": "boolean",
+			"default": "false",
+			"description": "The used theming."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "HPI Schul-Cloud",
