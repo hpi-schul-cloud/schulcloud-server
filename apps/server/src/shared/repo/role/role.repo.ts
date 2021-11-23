@@ -4,7 +4,7 @@ import { EntityId, Role } from '@shared/domain';
 
 @Injectable()
 export class RoleRepo {
-	cache: 60000;
+	cache = 60000;
 
 	constructor(private readonly em: EntityManager) {}
 

@@ -9,22 +9,25 @@ const createExpectedResponse = (
 	status: TaskStatusResponse,
 	parent?: { name: string; color: string; description: string }
 ): TaskResponse => {
-	const expected = new TaskResponse();
-	expected.id = task.id;
-	expected.name = task.name;
-	expected.availableDate = task.availableDate;
-	expected.duedate = task.dueDate;
-	expected.createdAt = task.createdAt;
-	expected.updatedAt = task.updatedAt;
-	const expectedStatus = new TaskStatusResponse();
+	const expectedStatus = Object.create(TaskStatusResponse.prototype) as TaskStatusResponse;
 	expectedStatus.graded = status.graded;
 	expectedStatus.maxSubmissions = status.maxSubmissions;
 	expectedStatus.submitted = status.submitted;
 	expectedStatus.isDraft = status.isDraft;
 	expectedStatus.isSubstitutionTeacher = status.isSubstitutionTeacher;
-	expected.status = expectedStatus;
+
+	const expected = new TaskResponse({
+		id: task.id,
+		name: task.name,
+		courseName: parent?.name || '',
+		createdAt: task.createdAt,
+		updatedAt: task.updatedAt,
+		status: expectedStatus,
+	});
+	expected.availableDate = task.availableDate;
+	expected.duedate = task.dueDate;
+
 	if (parent !== undefined) {
-		expected.courseName = parent.name;
 		expected.displayColor = parent.color;
 		expected.description = parent.description;
 	}

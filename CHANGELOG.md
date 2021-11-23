@@ -10,6 +10,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [26.18.0] - 2021-11-23
+
+### Added
 - BC-485 - ansible role for management service
 
 ### Changed
@@ -17,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-157 - add typescript to task store: update task api response
 
 ### Fixed
+- BC-724 - fixed OpenAPI spec for dashboard
 
 ## [26.17.0] - 2021-11-16
 
@@ -30,6 +37,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
 - BC-668 - fixed security issues/updated dependencies
+- BC-596 - enable strict property inizialization for typescript
 
 ## [26.16.0] - 2021-11-09
 

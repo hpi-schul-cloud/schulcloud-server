@@ -71,7 +71,7 @@ describe('IservIdmLDAPStrategy', () => {
 
 		it('should request all necessary attributes from the server', async () => {
 			await new IservIdmLDAPStrategy(app, {}).getSchools();
-			[('description', 'o', 'dn')].forEach((attr) =>
+			['description', 'o', 'dn'].forEach((attr) =>
 				expect(ldapServiceMock.searchCollection.lastArg.attributes).to.include(attr)
 			);
 		});
