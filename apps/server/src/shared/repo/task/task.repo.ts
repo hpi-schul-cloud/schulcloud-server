@@ -32,31 +32,31 @@ export class TaskRepo {
 		parentsFinished.byCourseIds(parentIds.finishedCourseIds);
 		parentsFinished.byLessonIds(parentIds.lessonIdsOfFinishedCourses);
 
-		const openScope = new TaskScope();
-		openScope.addQuery(parentsOpen.query);
-		openScope.byDraft(false);
-		openScope.byClosed(parentIds.creatorId, true);
+		const closedForOpenCoursesAndLessons = new TaskScope();
+		closedForOpenCoursesAndLessons.addQuery(parentsOpen.query);
+		closedForOpenCoursesAndLessons.byDraft(false);
+		closedForOpenCoursesAndLessons.byClosed(parentIds.creatorId, true);
 
-		const finishedScope = new TaskScope();
-		finishedScope.addQuery(parentsFinished.query);
-		finishedScope.byDraft(false);
+		const allForFinishedCoursesAndLessons = new TaskScope();
+		allForFinishedCoursesAndLessons.addQuery(parentsFinished.query);
+		allForFinishedCoursesAndLessons.byDraft(false);
 
 		// must find also closed without course or lesson as parent
-		const creatorOpenScope = new TaskScope();
-		creatorOpenScope.byClosed(parentIds.creatorId, true);
-		creatorOpenScope.byCreatorId(parentIds.creatorId);
+		const closedForCreator = new TaskScope();
+		closedForCreator.byClosed(parentIds.creatorId, true);
+		closedForCreator.byCreatorId(parentIds.creatorId);
 
-		const creatorFinishedScope = new TaskScope();
-		creatorFinishedScope.addQuery(parentsFinished.query);
-		creatorFinishedScope.byCreatorId(parentIds.creatorId);
+		const allForFinishedCoursesAndLessonsForCreator = new TaskScope();
+		allForFinishedCoursesAndLessonsForCreator.addQuery(parentsFinished.query);
+		allForFinishedCoursesAndLessonsForCreator.byCreatorId(parentIds.creatorId);
 
-		const creatorScope = new TaskScope('$or');
-		creatorScope.addQuery(creatorOpenScope.query);
-		creatorScope.addQuery(creatorFinishedScope.query);
+		const allForCreator = new TaskScope('$or');
+		allForCreator.addQuery(closedForCreator.query);
+		allForCreator.addQuery(allForFinishedCoursesAndLessonsForCreator.query);
 
-		scope.addQuery(openScope.query);
-		scope.addQuery(finishedScope.query);
-		scope.addQuery(creatorScope.query);
+		scope.addQuery(closedForOpenCoursesAndLessons.query);
+		scope.addQuery(allForFinishedCoursesAndLessons.query);
+		scope.addQuery(allForCreator.query);
 
 		const order = { dueDate: SortOrder.desc };
 
