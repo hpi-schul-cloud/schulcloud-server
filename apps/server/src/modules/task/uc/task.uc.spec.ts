@@ -189,12 +189,25 @@ describe('TaskUC', () => {
 
 		it('should return a counted type', async () => {
 			const user = userFactory.buildWithId();
+			const mockRestore = findAllMock();
+
+			const [data, count] = await service.findAllFinished(user.id);
+
+			expect(typeof count).toBe('number');
+			expect(Array.isArray(data)).toBe(true);
+
+			mockRestore();
+		});
+
+		it('should return read status vo for tasks', async () => {
+			const user = userFactory.buildWithId();
 			const task = taskFactory.finished(user).buildWithId();
 			const mockRestore = findAllMock([task]);
+			const status = task.createStudentStatusForUser(user.id);
 
-			const result = await service.findAllFinished(user.id);
+			const [data] = await service.findAllFinished(user.id);
 
-			expect(result).toEqual([[task], 1]);
+			expect(data[0]).toEqual({ task, status });
 
 			mockRestore();
 		});

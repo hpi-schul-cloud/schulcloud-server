@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo, Task } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo } from '@shared/domain';
 
 import { TaskRepo } from '@shared/repo';
 
@@ -16,7 +16,7 @@ export class TaskUC {
 
 	// This uc includes 4 awaits + 1 from authentication services.
 	// 5 awaits from with db calls from one request against the api is for me the absolut maximum what we should allowed.
-	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<Task[]>> {
+	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);
 
@@ -25,7 +25,7 @@ export class TaskUC {
 		const lessonIdsOfOpenCourses = lessons.filter((l) => !l.course.isFinished()).map((l) => l.id);
 		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
 
-		const [tasks, count] = await this.taskRepo.findAllFinishedByParentIds(
+		const [tasks, total] = await this.taskRepo.findAllFinishedByParentIds(
 			{
 				creatorId: userId,
 				openCourseIds,
@@ -36,7 +36,12 @@ export class TaskUC {
 			{ pagination }
 		);
 
-		return [tasks, count];
+		const taskWithStatusVos = tasks.map((task) => {
+			const status = task.createStudentStatusForUser(userId); // will updated in future pr that it show right status for write permissions
+			return new TaskWithStatusVo(task, status);
+		});
+
+		return [taskWithStatusVos, total];
 	}
 
 	// TODO: should it display task from courses that are not started?

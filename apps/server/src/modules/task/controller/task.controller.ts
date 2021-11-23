@@ -6,7 +6,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, FinishedTaskListResponse } from './dto';
+import { TaskListResponse } from './dto';
 import { TaskMapper } from '../mapper/task.mapper';
 
 @ApiTags('Task')
@@ -33,15 +33,15 @@ export class TaskController {
 	async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
-	): Promise<FinishedTaskListResponse> {
-		const [finsihedTask, total] = await this.taskUc.findAllFinished(currentUser.userId, paginationQuery);
+	): Promise<TaskListResponse> {
+		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, paginationQuery);
 
-		const taskresponses = finsihedTask.map((task) => {
-			return TaskMapper.mapToFinishedResponse(task);
+		const taskresponses = tasksWithStatus.map((task) => {
+			return TaskMapper.mapToResponse(task);
 		});
 
 		const { skip, limit } = paginationQuery;
-		const result = new FinishedTaskListResponse(taskresponses, total, skip, limit);
+		const result = new TaskListResponse(taskresponses, total, skip, limit);
 		return result;
 	}
 }

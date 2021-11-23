@@ -45,38 +45,6 @@ export class TaskResponse {
 	};
 }
 
-export class FinishedTaskReponse {
-	@ApiProperty()
-	@DecodeHtmlEntities()
-	name: string;
-
-	@ApiProperty()
-	availableDate?: Date;
-
-	@ApiProperty()
-	duedate?: Date;
-
-	@ApiPropertyOptional()
-	@DecodeHtmlEntities()
-	courseName?: string;
-
-	@ApiPropertyOptional()
-	@DecodeHtmlEntities()
-	description?: string;
-
-	@ApiPropertyOptional()
-	displayColor?: string;
-
-	@ApiProperty()
-	id: string;
-
-	@ApiProperty()
-	createdAt: Date;
-
-	@ApiProperty()
-	updatedAt: Date;
-}
-
 export class TaskListResponse extends PaginationResponse<TaskResponse[]> {
 	constructor(data: TaskResponse[], total: number, skip?: number, limit?: number) {
 		super(total, skip, limit);
@@ -85,14 +53,4 @@ export class TaskListResponse extends PaginationResponse<TaskResponse[]> {
 
 	@ApiProperty({ type: [TaskResponse] })
 	data: TaskResponse[];
-}
-
-export class FinishedTaskListResponse extends PaginationResponse<FinishedTaskReponse[]> {
-	constructor(data: FinishedTaskReponse[], total: number, skip?: number, limit?: number) {
-		super(total, skip, limit);
-		this.data = data;
-	}
-
-	@ApiProperty({ type: [FinishedTaskReponse] })
-	data: FinishedTaskReponse[];
 }
