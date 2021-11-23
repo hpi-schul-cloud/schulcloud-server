@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+- BC-740 - BC-847 - change ansible vars for docker image and tag
+
 ### Fixed
 
 ## [26.18.0] - 2021-11-23

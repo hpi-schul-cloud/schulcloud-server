@@ -29,7 +29,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: api
-        image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3030

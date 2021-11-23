@@ -18,7 +18,7 @@ spec:
         spec:
           containers:
           - name: delete-s3-files-cronjob
-            image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_TAG }}
             envFrom:
             - configMapRef:
                 name: api-configmap
