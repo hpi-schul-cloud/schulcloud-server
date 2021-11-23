@@ -1174,5 +1174,69 @@ describe('TaskRepo', () => {
 
 			expect(tasks.map((t) => t.id)).toEqual([task4.id, task1.id, task2.id, task3.id]);
 		});
+
+		it('should populate course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user], name: 'test' });
+			const task = taskFactory.draft(false).finished(user).build({ course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			const [tasks] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [course.id],
+				lessonIdsOfOpenCourses: [],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(tasks).toHaveLength(1);
+			expect(tasks[0].course?.name).toEqual('test');
+		});
+
+		it('should populate lesson', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			const lesson = lessonFactory.build({ course, name: 'test' });
+			const task = taskFactory.draft(false).finished(user).build({ course, lesson });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			const [tasks] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [],
+				lessonIdsOfOpenCourses: [lesson.id],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(tasks).toHaveLength(1);
+			expect(tasks[0].lesson?.name).toEqual('test');
+		});
+
+		it('should populate submissions of task', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user] });
+			const lesson = lessonFactory.build({ course });
+			const task = taskFactory.draft(false).finished(user).build({ course, lesson });
+			const submission = submissionFactory.build({ task, student: user, comment: 'test' });
+
+			await em.persistAndFlush([task, submission]);
+			em.clear();
+
+			const [tasks] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [],
+				lessonIdsOfOpenCourses: [lesson.id],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(tasks).toHaveLength(1);
+			expect(tasks[0].submissions).toHaveLength(1);
+			expect(tasks[0].submissions[0]?.comment).toEqual('test');
+		});
 	});
 });
