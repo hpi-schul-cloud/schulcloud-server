@@ -46,13 +46,13 @@ export class Course extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@ManyToMany('User', undefined, { fieldName: 'userIds', owner: true })
+	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
-	@ManyToMany('User', undefined, { fieldName: 'teacherIds', owner: true })
+	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
 	teachers = new Collection<User>(this);
 
-	@ManyToMany('User', undefined, { fieldName: 'substitutionIds', owner: true })
+	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
 	// TODO: string color format
@@ -61,7 +61,7 @@ export class Course extends BaseEntityWithTimestamps {
 
 	@Index({ name: 'activeCourses' })
 	@Property()
-	untilDate: Date | null;
+	untilDate: Date;
 
 	constructor(props: ICourseProperties) {
 		super();

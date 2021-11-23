@@ -18,22 +18,12 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forTeachers(userId: EntityId): CourseScope {
+	forTeacher(userId: EntityId): CourseScope {
 		const isTeacher = { teachers: userId };
 		const isSubstitutionTeacher = { substitutionTeachers: userId };
 
 		if (userId) {
 			this.addQuery({ $or: [isTeacher, isSubstitutionTeacher] });
-		}
-
-		return this;
-	}
-
-	byCourseIds(courseIds: EntityId[] = []): CourseScope {
-		if (courseIds.length > 0) {
-			const $or = courseIds.map((id) => ({ id }));
-
-			this.addQuery({ $or });
 		}
 
 		return this;
@@ -56,7 +46,7 @@ export class CourseRepo {
 
 	async findAllByUserId(
 		userId: EntityId,
-		filters?: { onlyActiveCourses?: boolean; courseIds?: EntityId[] },
+		filters?: { onlyActiveCourses?: boolean },
 		options?: IFindOptions<Course>
 	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
@@ -64,10 +54,6 @@ export class CourseRepo {
 
 		if (filters?.onlyActiveCourses) {
 			scope.forActiveCourses();
-		}
-
-		if (filters?.courseIds) {
-			scope.byCourseIds(filters.courseIds);
 		}
 
 		const { pagination, order } = options || {};
@@ -85,7 +71,7 @@ export class CourseRepo {
 	// not tested in repo.integration.spec
 	async findAllForTeacher(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
-		scope.forTeachers(userId);
+		scope.forTeacher(userId);
 
 		const [courses, count] = await this.em.findAndCount(Course, scope.query);
 
