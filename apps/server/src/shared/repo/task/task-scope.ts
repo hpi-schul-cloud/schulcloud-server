@@ -12,16 +12,16 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byTeacherId(teacherId: EntityId): TaskScope {
+	byOnlyCreatorId(teacherId: EntityId): TaskScope {
 		this.addQuery({
-			$and: [{ teacher: teacherId }, { course: null }, { lesson: null }],
+			$and: [{ creator: teacherId }, { course: null }, { lesson: null }],
 		});
 
 		return this;
 	}
 
 	byCreatorId(creatorId: EntityId): TaskScope {
-		this.addQuery({ teacher: creatorId });
+		this.addQuery({ creator: creatorId });
 
 		return this;
 	}

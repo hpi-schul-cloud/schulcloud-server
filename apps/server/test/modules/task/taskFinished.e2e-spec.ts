@@ -106,7 +106,7 @@ describe('task/finished Controller (e2e)', () => {
 	describe('when user is the creator', () => {
 		it('should return finished tasks', async () => {
 			const user = userFactory.build();
-			const task = taskFactory.finished(user).draft(false).build({ teacher: user });
+			const task = taskFactory.finished(user).draft(false).build({ creator: user });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -120,7 +120,7 @@ describe('task/finished Controller (e2e)', () => {
 
 		it('should return finished draft tasks', async () => {
 			const user = userFactory.build();
-			const task = taskFactory.finished(user).draft(true).build({ teacher: user });
+			const task = taskFactory.finished(user).draft(true).build({ creator: user });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -134,7 +134,7 @@ describe('task/finished Controller (e2e)', () => {
 
 		it('should "not" return open tasks', async () => {
 			const user = userFactory.build();
-			const task = taskFactory.draft(false).build({ teacher: user });
+			const task = taskFactory.draft(false).build({ creator: user });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -232,7 +232,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return open draft tasks of user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).build({ course, teacher: user });
+				const task = taskFactory.draft(true).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -246,7 +246,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finished draft tasks of user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -261,7 +261,7 @@ describe('task/finished Controller (e2e)', () => {
 			it('should "not" return finished draft tasks of the other user', async () => {
 				const { user, course } = setup();
 				const otherUser = userFactory.build();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -386,7 +386,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finished draft tasks of user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -401,7 +401,7 @@ describe('task/finished Controller (e2e)', () => {
 			it('should "not" return finished draft tasks of the other user', async () => {
 				const { user, course } = setup();
 				const otherUser = userFactory.build();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -514,7 +514,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return open draft tasks of user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).build({ course, teacher: user });
+				const task = taskFactory.draft(true).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -528,7 +528,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finished draft tasks of user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -543,7 +543,7 @@ describe('task/finished Controller (e2e)', () => {
 			it('should "not" return finished draft tasks of the other user', async () => {
 				const { user, course } = setup();
 				const otherUser = userFactory.build();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -654,7 +654,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should "not" return draft tasks of the user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).build({ course, teacher: user });
+				const task = taskFactory.draft(true).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -668,7 +668,7 @@ describe('task/finished Controller (e2e)', () => {
 
 			it('should return finished draft tasks of the user', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -683,7 +683,7 @@ describe('task/finished Controller (e2e)', () => {
 			it('should "not" return finished draft tasks of the other user', async () => {
 				const { user, course } = setup();
 				const otherUser = userFactory.build();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();

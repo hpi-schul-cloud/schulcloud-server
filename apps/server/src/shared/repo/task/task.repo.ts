@@ -97,7 +97,7 @@ export class TaskRepo {
 		const parentIdScope = new TaskScope('$or');
 
 		if (parentIds.creatorId) {
-			parentIdScope.byTeacherId(parentIds.creatorId);
+			parentIdScope.byOnlyCreatorId(parentIds.creatorId);
 		}
 
 		if (parentIds.courseIds) {

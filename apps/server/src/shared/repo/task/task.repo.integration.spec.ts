@@ -41,8 +41,8 @@ describe('TaskRepo', () => {
 			it('should find tasks by teacherId', async () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();
-				const task1 = taskFactory.build({ teacher: teacher1 });
-				const task2 = taskFactory.build({ teacher: teacher2 });
+				const task1 = taskFactory.build({ creator: teacher1 });
+				const task2 = taskFactory.build({ creator: teacher2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -55,7 +55,7 @@ describe('TaskRepo', () => {
 			it('should not find tasks with a course assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task = taskFactory.build({ teacher, course });
+				const task = taskFactory.build({ creator: teacher, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -69,7 +69,7 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
-				const task = taskFactory.build({ teacher, lesson });
+				const task = taskFactory.build({ creator: teacher, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -85,8 +85,8 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course1 = courseFactory.build();
 				const course2 = courseFactory.build();
-				const task1 = taskFactory.build({ teacher, course: course1 });
-				const task2 = taskFactory.build({ teacher, course: course2 });
+				const task1 = taskFactory.build({ creator: teacher, course: course1 });
+				const task2 = taskFactory.build({ creator: teacher, course: course2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -99,8 +99,8 @@ describe('TaskRepo', () => {
 			it('should not find tasks with no course assigned', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task1 = taskFactory.build({ teacher, course });
-				const task2 = taskFactory.build({ teacher });
+				const task1 = taskFactory.build({ creator: teacher, course });
+				const task2 = taskFactory.build({ creator: teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -114,7 +114,7 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
-				const task = taskFactory.build({ teacher, course, lesson });
+				const task = taskFactory.build({ creator: teacher, course, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -131,8 +131,8 @@ describe('TaskRepo', () => {
 				const course = courseFactory.build();
 				const lesson1 = lessonFactory.build({ course, hidden: false });
 				const lesson2 = lessonFactory.build({ course, hidden: false });
-				const task1 = taskFactory.build({ teacher, course, lesson: lesson1 });
-				const task2 = taskFactory.build({ teacher, course, lesson: lesson2 });
+				const task1 = taskFactory.build({ creator: teacher, course, lesson: lesson1 });
+				const task2 = taskFactory.build({ creator: teacher, course, lesson: lesson2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -146,9 +146,9 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
-				const task1 = taskFactory.build({ teacher, course, lesson });
-				const task2 = taskFactory.build({ teacher, course });
-				const task3 = taskFactory.build({ teacher });
+				const task1 = taskFactory.build({ creator: teacher, course, lesson });
+				const task2 = taskFactory.build({ creator: teacher, course });
+				const task3 = taskFactory.build({ creator: teacher });
 
 				await em.persistAndFlush([task1, task2, task3]);
 				em.clear();
@@ -165,12 +165,12 @@ describe('TaskRepo', () => {
 				const teacher2 = userFactory.build();
 				const course1 = courseFactory.build();
 				const course2 = courseFactory.build();
-				const task1 = taskFactory.build({ teacher: teacher1 });
-				const task2 = taskFactory.build({ teacher: teacher2 });
-				const task3 = taskFactory.build({ teacher: teacher1, course: course1 });
-				const task4 = taskFactory.build({ teacher: teacher1, course: course2 });
-				const task5 = taskFactory.build({ teacher: teacher2, course: course1 });
-				const task6 = taskFactory.build({ teacher: teacher2, course: course2 });
+				const task1 = taskFactory.build({ creator: teacher1 });
+				const task2 = taskFactory.build({ creator: teacher2 });
+				const task3 = taskFactory.build({ creator: teacher1, course: course1 });
+				const task4 = taskFactory.build({ creator: teacher1, course: course2 });
+				const task5 = taskFactory.build({ creator: teacher2, course: course1 });
+				const task6 = taskFactory.build({ creator: teacher2, course: course2 });
 
 				await em.persistAndFlush([task1, task2, task3, task4, task5, task6]);
 				em.clear();
@@ -187,7 +187,7 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
-				const task = taskFactory.build({ teacher, course, lesson });
+				const task = taskFactory.build({ creator: teacher, course, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -205,12 +205,12 @@ describe('TaskRepo', () => {
 				const course = courseFactory.build();
 				const lesson1 = lessonFactory.build({ course, hidden: false });
 				const lesson2 = lessonFactory.build({ course, hidden: false });
-				const task1 = taskFactory.build({ teacher: teacher1 });
-				const task2 = taskFactory.build({ teacher: teacher2 });
-				const task3 = taskFactory.build({ teacher: teacher1, course, lesson: lesson1 });
-				const task4 = taskFactory.build({ teacher: teacher1, course, lesson: lesson2 });
-				const task5 = taskFactory.build({ teacher: teacher2, course, lesson: lesson1 });
-				const task6 = taskFactory.build({ teacher: teacher2, course, lesson: lesson2 });
+				const task1 = taskFactory.build({ creator: teacher1 });
+				const task2 = taskFactory.build({ creator: teacher2 });
+				const task3 = taskFactory.build({ creator: teacher1, course, lesson: lesson1 });
+				const task4 = taskFactory.build({ creator: teacher1, course, lesson: lesson2 });
+				const task5 = taskFactory.build({ creator: teacher2, course, lesson: lesson1 });
+				const task6 = taskFactory.build({ creator: teacher2, course, lesson: lesson2 });
 
 				await em.persistAndFlush([task1, task2, task3, task4, task5, task6]);
 				em.clear();
@@ -230,8 +230,8 @@ describe('TaskRepo', () => {
 				const course1 = courseFactory.build({ name: 'course #1' });
 				const course2 = courseFactory.build({ name: 'course #2' });
 				const lesson = lessonFactory.build({ course: course2, hidden: false });
-				const task1 = taskFactory.build({ teacher, course: course1 });
-				const task2 = taskFactory.build({ teacher, course: course2, lesson });
+				const task1 = taskFactory.build({ creator: teacher, course: course1 });
+				const task2 = taskFactory.build({ creator: teacher, course: course2, lesson });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -250,7 +250,7 @@ describe('TaskRepo', () => {
 		describe('find by empty ids', () => {
 			it('should find no tasks when no ids are given at all', async () => {
 				const teacher = userFactory.build();
-				const task = taskFactory.build({ teacher });
+				const task = taskFactory.build({ creator: teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -262,7 +262,7 @@ describe('TaskRepo', () => {
 
 			it('should find no tasks when course ids are empty', async () => {
 				const teacher = userFactory.build();
-				const task = taskFactory.build({ teacher });
+				const task = taskFactory.build({ creator: teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -274,7 +274,7 @@ describe('TaskRepo', () => {
 
 			it('should find no tasks when lesson ids are empty', async () => {
 				const teacher = userFactory.build();
-				const task = taskFactory.build({ teacher });
+				const task = taskFactory.build({ creator: teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -288,8 +288,8 @@ describe('TaskRepo', () => {
 		describe('filters', () => {
 			it('should filter tasks by draft status = true', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.draft(true).build({ teacher });
-				const task2 = taskFactory.draft(false).build({ teacher });
+				const task1 = taskFactory.draft(true).build({ creator: teacher });
+				const task2 = taskFactory.draft(false).build({ creator: teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -301,8 +301,8 @@ describe('TaskRepo', () => {
 
 			it('should filter tasks by draft status = false', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.draft(true).build({ teacher });
-				const task2 = taskFactory.draft(false).build({ teacher });
+				const task1 = taskFactory.draft(true).build({ creator: teacher });
+				const task2 = taskFactory.draft(false).build({ creator: teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -314,7 +314,7 @@ describe('TaskRepo', () => {
 
 			it('should filter tasks by draft status = null as false', async () => {
 				const teacher = userFactory.build();
-				const task = taskFactory.build({ teacher });
+				const task = taskFactory.build({ creator: teacher });
 				Object.assign(task, { private: null });
 
 				await em.persistAndFlush([task]);
@@ -328,7 +328,7 @@ describe('TaskRepo', () => {
 			// TODO: FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
 			it('should filter tasks by draft status = undefined as false', async () => {
 				const teacher = userFactory.build();
-				const task = taskFactory.build({ teacher });
+				const task = taskFactory.build({ creator: teacher });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -347,8 +347,8 @@ describe('TaskRepo', () => {
 
 			it('should return tasks with both status when no filter is applied', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.draft(true).build({ teacher });
-				const task2 = taskFactory.draft(false).build({ teacher });
+				const task1 = taskFactory.draft(true).build({ creator: teacher });
+				const task2 = taskFactory.draft(false).build({ creator: teacher });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -365,8 +365,8 @@ describe('TaskRepo', () => {
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
-				const task1 = taskFactory.build({ teacher, dueDate: dueDate1 });
-				const task2 = taskFactory.build({ teacher, dueDate: dueDate2 });
+				const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
+				const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
 
 				await em.persistAndFlush([task1, task2]);
 				em.clear();
@@ -386,9 +386,9 @@ describe('TaskRepo', () => {
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
-				const task1 = taskFactory.build({ teacher, dueDate: dueDate1 });
-				const task2 = taskFactory.build({ teacher, dueDate: dueDate2 });
-				const task3 = taskFactory.build({ teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
+				const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
+				const task3 = taskFactory.build({ creator: teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3]);
 				em.clear();
@@ -410,9 +410,9 @@ describe('TaskRepo', () => {
 				const threeWeeksinMilliseconds = 1.814e9;
 				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
 				const dueDate2 = new Date();
-				const task1 = taskFactory.build({ teacher, dueDate: dueDate1 });
-				const task2 = taskFactory.build({ teacher, dueDate: dueDate2 });
-				const task3 = taskFactory.build({ teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
+				const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
+				const task3 = taskFactory.build({ creator: teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3]);
 				em.clear();
@@ -429,10 +429,10 @@ describe('TaskRepo', () => {
 		describe('order', () => {
 			it('should order by dueDate asc', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 2000) });
-				const task2 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 3000) });
-				const task3 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 1000) });
-				const task4 = taskFactory.build({ teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = taskFactory.build({ creator: teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3, task4]);
 				em.clear();
@@ -449,10 +449,10 @@ describe('TaskRepo', () => {
 
 			it('should order by dueDate desc', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 2000) });
-				const task2 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 3000) });
-				const task3 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 1000) });
-				const task4 = taskFactory.build({ teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = taskFactory.build({ creator: teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3, task4]);
 				em.clear();
@@ -471,10 +471,10 @@ describe('TaskRepo', () => {
 		describe('pagination', () => {
 			it('should skip and limit to the given number of records', async () => {
 				const teacher = userFactory.build();
-				const task1 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 2000) });
-				const task2 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 3000) });
-				const task3 = taskFactory.build({ teacher, dueDate: new Date(Date.now() + 1000) });
-				const task4 = taskFactory.build({ teacher, dueDate: undefined });
+				const task1 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 2000) });
+				const task2 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 3000) });
+				const task3 = taskFactory.build({ creator: teacher, dueDate: new Date(Date.now() + 1000) });
+				const task4 = taskFactory.build({ creator: teacher, dueDate: undefined });
 
 				await em.persistAndFlush([task1, task2, task3, task4]);
 				em.clear();
@@ -493,7 +493,7 @@ describe('TaskRepo', () => {
 			it('should populate the course', async () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
-				const task = taskFactory.build({ teacher, course });
+				const task = taskFactory.build({ creator: teacher, course });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -508,7 +508,7 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
-				const task = taskFactory.build({ teacher, course, lesson });
+				const task = taskFactory.build({ creator: teacher, course, lesson });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -522,7 +522,7 @@ describe('TaskRepo', () => {
 				const teacher = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build();
-				const task = taskFactory.build({ teacher, course });
+				const task = taskFactory.build({ creator: teacher, course });
 				task.submissions.add(submissionFactory.build({ task, student }));
 
 				await em.persistAndFlush([task]);
@@ -541,7 +541,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [creator] });
+				const task = taskFactory.build({ creator, course, closed: [creator] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -556,7 +556,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [teacher] });
+				const task = taskFactory.build({ creator, course, closed: [teacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -571,7 +571,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [substitutionTeacher] });
+				const task = taskFactory.build({ creator, course, closed: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -586,7 +586,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [student] });
+				const task = taskFactory.build({ creator, course, closed: [student] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -603,7 +603,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [creator] });
+				const task = taskFactory.build({ creator, course, closed: [creator] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -618,7 +618,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [teacher] });
+				const task = taskFactory.build({ creator, course, closed: [teacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -633,7 +633,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [substitutionTeacher] });
+				const task = taskFactory.build({ creator, course, closed: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -648,7 +648,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
-				const task = taskFactory.build({ teacher: creator, course, closed: [student] });
+				const task = taskFactory.build({ creator, course, closed: [student] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -746,7 +746,7 @@ describe('TaskRepo', () => {
 
 			it('should find open draft tasks of users', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).build({ course, teacher: user });
+				const task = taskFactory.draft(true).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -764,7 +764,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished draft tasks of users', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -783,7 +783,7 @@ describe('TaskRepo', () => {
 			it('should "not" find finished draft tasks of other users', async () => {
 				const { user, course } = setup();
 				const otherUser = userFactory.build();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -884,7 +884,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find open draft tasks of users', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).build({ course, teacher: user });
+				const task = taskFactory.draft(true).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -902,7 +902,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished draft tasks of users', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: user });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -921,7 +921,7 @@ describe('TaskRepo', () => {
 			it('should "not" find finished draft tasks of other users', async () => {
 				const { user, course } = setup();
 				const otherUser = userFactory.build();
-				const task = taskFactory.draft(true).finished(user).build({ course, teacher: otherUser });
+				const task = taskFactory.draft(true).finished(user).build({ course, creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -988,7 +988,7 @@ describe('TaskRepo', () => {
 		describe('when user is the creator', () => {
 			it('should find finished draft tasks of creator', async () => {
 				const user = userFactory.build();
-				const task = taskFactory.finished(user).draft(true).build({ teacher: user });
+				const task = taskFactory.finished(user).draft(true).build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -1007,7 +1007,7 @@ describe('TaskRepo', () => {
 			it('should "not" find finished draft tasks of other users', async () => {
 				const user = userFactory.build();
 				const otherUser = userFactory.build();
-				const task = taskFactory.finished(user).draft(true).build({ teacher: otherUser });
+				const task = taskFactory.finished(user).draft(true).build({ creator: otherUser });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -1025,7 +1025,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished tasks of creator', async () => {
 				const user = userFactory.build();
-				const task = taskFactory.finished(user).draft(false).build({ teacher: user });
+				const task = taskFactory.finished(user).draft(false).build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -1043,7 +1043,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find open draft tasks of creator', async () => {
 				const user = userFactory.build();
-				const task = taskFactory.draft(true).build({ teacher: user });
+				const task = taskFactory.draft(true).build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -1061,7 +1061,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find open tasks of creator', async () => {
 				const user = userFactory.build();
-				const task = taskFactory.draft(false).build({ teacher: user });
+				const task = taskFactory.draft(false).build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
