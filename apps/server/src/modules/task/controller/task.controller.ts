@@ -1,4 +1,4 @@
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 import { ICurrentUser } from '@shared/domain';
 import { PaginationQuery } from '@shared/controller/';
@@ -16,7 +16,6 @@ export class TaskController {
 	constructor(private readonly taskUc: TaskUC) {}
 
 	@Get()
-	@ApiBody({ type: TaskListResponse })
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
@@ -31,7 +30,6 @@ export class TaskController {
 	}
 
 	@Get('finished')
-	@ApiBody({ type: TaskListResponse })
 	async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
