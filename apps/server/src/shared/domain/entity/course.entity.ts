@@ -62,7 +62,7 @@ export class Course extends BaseEntityWithTimestamps {
 
 	@Index({ name: 'activeCourses' })
 	@Property()
-	untilDate: Date;
+	untilDate!: Date;
 
 	constructor(props: ICourseProperties) {
 		super();
