@@ -5,14 +5,22 @@ import { PaginationResponse, DecodeHtmlEntities } from '@shared/controller';
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
+	constructor({ name, id, createdAt, updatedAt, status }: TaskResponse) {
+		this.name = name;
+		this.id = id;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.status = status;
+	}
+
 	@ApiProperty()
 	@DecodeHtmlEntities()
 	name: string;
 
-	@ApiProperty()
+	@ApiProperty() // TODO use @ApiPropertyOptional() ?
 	availableDate?: Date;
 
-	@ApiProperty()
+	@ApiProperty() // TODO use @ApiPropertyOptional() ?
 	duedate?: Date;
 
 	@ApiPropertyOptional()
