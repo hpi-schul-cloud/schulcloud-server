@@ -441,7 +441,7 @@ describe('TaskUC', () => {
 
 		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 
 			const mockRestore = mockAll([task]);
 
@@ -458,9 +458,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.buildWithId();
-			const task1 = taskFactory.draft(false).buildWithId({ course });
-			const task2 = taskFactory.draft(false).buildWithId({ course });
-			const task3 = taskFactory.draft(false).buildWithId({ course });
+			const task1 = taskFactory.buildWithId({ course });
+			const task2 = taskFactory.buildWithId({ course });
+			const task3 = taskFactory.buildWithId({ course });
 
 			const mockRestore = mockAll([task1, task2, task3]);
 
@@ -476,7 +476,7 @@ describe('TaskUC', () => {
 			const student = userFactory.buildWithId();
 			student.id = currentUser.userId;
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			task.submissions.add(submissionFactory.buildWithId({ task, student }));
 
 			const mockRestore = mockAll([task]);
@@ -500,7 +500,7 @@ describe('TaskUC', () => {
 			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			task.submissions.add(submissionFactory.buildWithId({ task, student: student1 }));
 			task.submissions.add(submissionFactory.buildWithId({ task, student: student2 }));
 
@@ -524,7 +524,7 @@ describe('TaskUC', () => {
 		it('should compute graded status for task', async () => {
 			const student = userFactory.buildWithId(undefined, currentUser.userId);
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission = submissionFactory.buildWithId({ task, student });
 			task.submissions.add(submission);
 
@@ -552,7 +552,7 @@ describe('TaskUC', () => {
 			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
 			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
@@ -648,7 +648,7 @@ describe('TaskUC', () => {
 
 		it('should return well formed task with course and status', async () => {
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
+			const task = taskFactory.draft().buildWithId({ course });
 
 			const mockRestore = mockAll([task]);
 
@@ -673,7 +673,7 @@ describe('TaskUC', () => {
 			const perm = [TaskDashBoardPermission.teacherDashboard];
 			const userData = createCurrentTestUser(perm);
 			const course = courseFactory.buildWithId({ substitutionTeachers: [userData.user] });
-			const task = new Task({ name: 'task #1', private: false, course });
+			const task = taskFactory.buildWithId({ course });
 
 			const mockRestore = mockAll([task]);
 
@@ -686,9 +686,9 @@ describe('TaskUC', () => {
 
 		it('should find a list of tasks', async () => {
 			const course = courseFactory.buildWithId();
-			const task1 = taskFactory.draft(false).buildWithId({ course });
-			const task2 = taskFactory.draft(false).buildWithId({ course });
-			const task3 = taskFactory.draft(false).buildWithId({ course });
+			const task1 = taskFactory.buildWithId({ course });
+			const task2 = taskFactory.buildWithId({ course });
+			const task3 = taskFactory.buildWithId({ course });
 
 			const mockRestore = mockAll([task1, task2, task3]);
 
@@ -703,7 +703,7 @@ describe('TaskUC', () => {
 		it('should compute submitted status for task', async () => {
 			const student = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			task.submissions.add(submissionFactory.buildWithId({ task, student }));
 
 			const mockRestore = mockAll([task]);
@@ -727,7 +727,7 @@ describe('TaskUC', () => {
 			const student1 = userFactory.buildWithId();
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
 			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
@@ -752,7 +752,7 @@ describe('TaskUC', () => {
 		it('should compute graded status for task', async () => {
 			const student = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission = submissionFactory.buildWithId({ task, student });
 			task.submissions.add(submission);
 
@@ -780,7 +780,7 @@ describe('TaskUC', () => {
 			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
 			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
@@ -808,7 +808,7 @@ describe('TaskUC', () => {
 			const student1 = userFactory.buildWithId(undefined, currentUser.userId);
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
 			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			const submission3 = submissionFactory.buildWithId({ task, student: student2 });
@@ -839,7 +839,7 @@ describe('TaskUC', () => {
 			const student1 = userFactory.buildWithId();
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft(false).buildWithId({ course });
+			const task = taskFactory.buildWithId({ course });
 			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
 			const submission2 = submissionFactory.buildWithId({ task, student: student1 });
 			const submission3 = submissionFactory.buildWithId({ task, student: student2 });

@@ -6,11 +6,8 @@ import type { User } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 
 class TaskFactory extends BaseFactory<Task, ITaskProperties> {
-	// change the default parameter for testFactory to private: false
-	// and remove isDraft from this place and interpret .draft() as true
-	// this will cleanup a lot of test code
-	draft(isDraft = true): this {
-		const params: DeepPartial<ITaskProperties> = { private: isDraft };
+	draft(): this {
+		const params: DeepPartial<ITaskProperties> = { private: true };
 
 		return this.params(params);
 	}
@@ -22,5 +19,6 @@ class TaskFactory extends BaseFactory<Task, ITaskProperties> {
 }
 
 export const taskFactory = TaskFactory.define(Task, ({ sequence }) => {
-	return { name: `task #${sequence}` };
+	// private is by default in constructor true, but in the most test cases we need private: false
+	return { name: `task #${sequence}`, private: false };
 });
