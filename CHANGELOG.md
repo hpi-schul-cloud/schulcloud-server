@@ -26,8 +26,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - BC-688 - disable allowJS
-- BC-589 - BC-652 - Change auto deployment to a reusable workflow
 - BC-488 - Set federal state in LDAPSyncer by system
+- BC-589 - BC-652 - Change auto deployment to a reusable workflow
 - BC-240 - Dashboards are now personalized
 
 ### Fixed
