@@ -22,7 +22,7 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
-	untilDate?: Date | null;
+	untilDate?: Date;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
