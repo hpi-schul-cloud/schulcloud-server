@@ -6,7 +6,7 @@ describe('ToBooleanTransformer Decorator', () => {
 	describe('when transform a string to boolean', () => {
 		class WithBooleanDto {
 			@StringToBoolean()
-			booleanProp: boolean;
+			booleanProp!: boolean;
 
 			@StringToBoolean()
 			optionalBooleanProp?: boolean;

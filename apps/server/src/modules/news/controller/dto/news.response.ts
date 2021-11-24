@@ -10,6 +10,40 @@ const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
 type SourceType = typeof NEWS_SOURCES[number];
 export class NewsResponse {
+	constructor({
+		id,
+		title,
+		content,
+		displayAt,
+		source,
+		sourceDescription,
+		targetModel,
+		targetId,
+		target,
+		school,
+		creator,
+		updater,
+		createdAt,
+		updatedAt,
+		permissions,
+	}: NewsResponse) {
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		this.displayAt = displayAt;
+		this.source = source;
+		this.sourceDescription = sourceDescription;
+		this.targetModel = targetModel;
+		this.targetId = targetId;
+		this.target = target;
+		this.school = school;
+		this.creator = creator;
+		this.updater = updater;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.permissions = permissions;
+	}
+
 	@ApiProperty({
 		description: 'The id of the News entity',
 		pattern: '[a-f0-9]{24}',

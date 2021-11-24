@@ -5,7 +5,7 @@ import { TaskResponse } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (task: Task, status: ITaskStatus): TaskResponse => {
-	const expected = new TaskResponse();
+	const expected = Object.create(TaskResponse.prototype) as TaskResponse;
 	expected.id = task.id;
 	expected.name = task.name;
 	expected.availableDate = task.availableDate;

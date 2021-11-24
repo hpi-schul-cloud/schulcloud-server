@@ -31,6 +31,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-688 - disable allowJS
 - BC-488 - Set federal state in LDAPSyncer by system
 - BC-589 - BC-652 - change auto deployment to a reusable workflow
 - BC-240 - Dashboards are now personalized
@@ -39,6 +40,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
 - BC-668 - fixed security issues/updated dependencies
+- BC-596 - enable strict property inizialization for typescript
 
 ## [26.16.0] - 2021-11-09
 

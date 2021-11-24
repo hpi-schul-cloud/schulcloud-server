@@ -4,21 +4,22 @@ import { TaskResponse } from '../controller/dto';
 export class TaskMapper {
 	static mapToResponse(taskWithStatus: TaskWithStatusVo): TaskResponse {
 		const { task, status } = taskWithStatus;
-		const dto = new TaskResponse();
+		const dto = new TaskResponse({
+			id: task.id,
+			name: task.name,
+			createdAt: task.createdAt,
+			updatedAt: task.updatedAt,
+			status: {
+				submitted: status.submitted,
+				maxSubmissions: status.maxSubmissions,
+				graded: status.graded,
+				isDraft: status.isDraft,
+				isSubstitutionTeacher: status.isSubstitutionTeacher,
+			},
+		});
 
-		dto.id = task.id;
-		dto.name = task.name;
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
-		dto.createdAt = task.createdAt;
-		dto.updatedAt = task.updatedAt;
-		dto.status = {
-			submitted: status.submitted,
-			maxSubmissions: status.maxSubmissions,
-			graded: status.graded,
-			isDraft: status.isDraft,
-			isSubstitutionTeacher: status.isSubstitutionTeacher,
-		};
 
 		const taskDesc = task.getDescriptions();
 		dto.courseName = taskDesc.name;
