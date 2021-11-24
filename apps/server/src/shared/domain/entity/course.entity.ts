@@ -80,25 +80,21 @@ export class Course extends BaseEntityWithTimestamps {
 	}
 
 	getSubstitutionTeacherIds(): EntityId[] {
-		const ids = this.substitutionTeachers.getIdentifiers('id');
-		// The result of getIdentifiers is a primary key type. We have no represantation for it ((string | ObjectId) & IPrimaryKeyValue)[]
-		const idsAsString = ids.map((id) => id.toString());
+		const ids: EntityId[] = this.substitutionTeachers.getIdentifiers('id');
 
-		return idsAsString;
+		return ids;
 	}
 
 	getStudentIds(): EntityId[] {
-		const ids = this.students.getIdentifiers('id');
-		const idsAsString = ids.map((id) => id.toString());
+		const ids: EntityId[] = this.students.getIdentifiers('id');
 
-		return idsAsString;
+		return ids;
 	}
 
 	getTeacherIds(): EntityId[] {
-		const ids = this.teachers.getIdentifiers('id');
-		const idsAsString = ids.map((id) => id.toString());
+		const ids: EntityId[] = this.teachers.getIdentifiers('id');
 
-		return idsAsString;
+		return ids;
 	}
 
 	isFinished(): boolean {
