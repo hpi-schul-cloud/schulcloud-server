@@ -1,5 +1,5 @@
 import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
@@ -14,7 +14,6 @@ export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}
 
 	@Get()
-	@ApiBody({ type: DashboardResponse })
 	async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
 		const dto = DashboardMapper.mapToResponse(dashboard);
@@ -22,7 +21,6 @@ export class DashboardController {
 	}
 
 	@Patch(':id/moveElement')
-	@ApiBody({ type: DashboardResponse })
 	async moveElement(
 		@Param('id', ParseObjectIdPipe) dashboardId: string,
 		@Body() params: MoveElementParams,

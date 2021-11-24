@@ -10,12 +10,12 @@ export class MoveElementPosition {
 	@IsNumber()
 	@Min(0)
 	@ApiProperty()
-	x: number;
+	x!: number;
 
 	@IsNumber()
 	@Min(0)
 	@ApiProperty()
-	y: number;
+	y!: number;
 
 	@IsNumber()
 	@Min(0)
@@ -27,9 +27,9 @@ export class MoveElementPosition {
 export class MoveElementParams {
 	@ValidateNested()
 	@ApiProperty()
-	from: MoveElementPosition;
+	from!: MoveElementPosition;
 
 	@ValidateNested()
 	@ApiProperty()
-	to: MoveElementPosition;
+	to!: MoveElementPosition;
 }
