@@ -95,7 +95,7 @@ describe('CourseEntity', () => {
 
 	describe('isFinished', () => {
 		it('should always return false if no untilDate is set', () => {
-			const course = courseFactory.build({ untilDate: null });
+			const course = courseFactory.build({ untilDate: undefined });
 
 			const result = course.isFinished();
 
