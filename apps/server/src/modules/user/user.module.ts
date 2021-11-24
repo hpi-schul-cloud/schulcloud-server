@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserController } from './controller';
 import { UserUC, RoleUC } from './uc';
-import { RoleRepo, UserRepo } from './repo';
 import { UserFacade } from './user.facade';
 
 @Module({

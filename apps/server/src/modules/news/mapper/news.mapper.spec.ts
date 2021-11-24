@@ -1,10 +1,20 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseNews, INewsProperties, News, School, SchoolNews, Team, TeamNews, User } from '@shared/domain';
-import { NewsTargetModel, INewsScope, ICreateNews, IUpdateNews, NewsTarget } from '@shared/domain/types/news.types';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { schoolFactory } from '@shared/domain/factory/school.factory';
-import { userFactory } from '@shared/domain/factory';
+import {
+	CourseNews,
+	INewsProperties,
+	News,
+	School,
+	SchoolNews,
+	Team,
+	TeamNews,
+	User,
+	NewsTargetModel,
+	INewsScope,
+	ICreateNews,
+	IUpdateNews,
+	NewsTarget,
+} from '@shared/domain';
+import { courseFactory, schoolFactory, userFactory, setupEntities } from '@shared/testing';
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
@@ -66,22 +76,23 @@ const getExpectedNewsResponse = (
 	newsProps: { title: string; content: string },
 	target: NewsTarget
 ): NewsResponse => {
-	const schoolInfoResponse = new SchoolInfoResponse();
+	const schoolInfoResponse = Object.create(SchoolInfoResponse.prototype) as SchoolInfoResponse;
 	const schoolProps = (({ id, name }) => ({ id, name }))(school);
 	Object.assign(schoolInfoResponse, schoolProps);
-
-	const creatorResponse: UserInfoResponse = new UserInfoResponse();
+	const creatorResponse = Object.create(UserInfoResponse.prototype) as UserInfoResponse;
 	const creatorProps = {
 		id: creator.id,
 		firstName: creator.firstName,
 		lastName: creator.lastName,
 	};
 	Object.assign(creatorResponse, creatorProps);
-	const expected: NewsResponse = new NewsResponse();
-	const targetResponse = new TargetInfoResponse();
-	targetResponse.id = target.id;
-	targetResponse.name = target.name;
-	Object.assign(expected, {
+	const targetResponse = Object.create(TargetInfoResponse.prototype) as TargetInfoResponse;
+	const targetProps = {
+		id: target.id,
+		name: target.name,
+	};
+	Object.assign(targetResponse, targetProps);
+	const expected = new NewsResponse({
 		id: news.id,
 		source: undefined,
 		sourceDescription: undefined,
@@ -102,16 +113,8 @@ const getExpectedNewsResponse = (
 };
 
 describe('NewsMapper', () => {
-	let module: TestingModule;
-
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-		}).compile();
-	});
-
-	afterAll(async () => {
-		await module.close();
+		await setupEntities();
 	});
 
 	describe('mapToResponse', () => {
@@ -128,7 +131,7 @@ describe('NewsMapper', () => {
 		it('should correctly map course news to dto', () => {
 			const school = schoolFactory.build();
 			const creator = userFactory.build();
-			const course = new Course({ name: 'course #1', school });
+			const course = courseFactory.build({ school });
 			const newsProps = { title: 'test title', content: 'test content' };
 			const courseNews = createNews(newsProps, CourseNews, school, creator, course);
 

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TaskRepo } from '../repo';
+import { LessonRepo, TaskRepo } from '@shared/repo';
 import { TaskUC } from '../uc';
 import { TaskAuthorizationService } from '../uc/task.authorization.service';
 import { TaskController } from './task.controller';
@@ -16,6 +16,10 @@ describe('TaskController', () => {
 					useValue: {},
 				},
 				{
+					provide: LessonRepo,
+					useValue: {},
+				},
+				{
 					provide: TaskAuthorizationService,
 					useValue: {
 						getPermittedCourses() {
@@ -27,12 +31,10 @@ describe('TaskController', () => {
 			controllers: [TaskController],
 		}).compile();
 
-		controller = module.get<TaskController>(TaskController);
+		controller = module.get(TaskController);
 	});
 
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
-
-	it.todo('write unit tests...');
 });

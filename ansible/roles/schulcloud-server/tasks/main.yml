@@ -1,60 +1,47 @@
   - name: Service
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: svc.yml.j2
-      
+
   - name: Configmap
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: configmap.yml.j2
-      
+
   - name: Secret
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: secret.yml.j2
     when: ONEPASSWORD_OPERATOR is undefined or ONEPASSWORD_OPERATOR is defined and not ONEPASSWORD_OPERATOR
-      
+
   - name: Secret by 1Password
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
-    
+
   - name: DB Init Configmap File
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: configmap_file_init_db.yml.j2
-    
+
   - name: DB Init Job
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: job_init_db.yml.j2
-    
-  - name: DB Storage Init Configmap File
-    community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
-      namespace: "{{ NAMESPACE }}"
-      template: configmap_storage_init.yml.j2
-    
-  - name: DB Storage Init Job
-    community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
-      namespace: "{{ NAMESPACE }}"
-      template: storage_init.yml.j2
 
-      
   - name: Deployment
     community.kubernetes.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
-    
+
   - name: Ldap Sync CronJob
     community.kubernetes.k8s:
       kubeconfig: ~/.kube/config
@@ -66,3 +53,10 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-worker-deployment.yml.j2
+
+  - name: Delete Files CronJob
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-delete-s3-files-cronjob.yml.j2
+

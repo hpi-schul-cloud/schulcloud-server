@@ -3,16 +3,17 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ALL_ENTITIES } from '@shared/domain';
+import { MailModule } from '@shared/infra/mail';
+import { RocketChatModule } from '@src/modules/rocketchat';
+import { LearnroomModule } from '@src/modules/learnroom';
+import { CoreModule } from '@src/core';
+import { TaskModule } from '@src/modules/task';
+import { UserModule } from '@src/modules/user';
+import { NewsModule } from '@src/modules/news';
+import { FilesModule } from '@src/modules/files';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
-
-import { CoreModule } from './core/core.module';
-import { TaskModule } from './modules/task/task.module';
-import { UserModule } from './modules/user/user.module';
-import { NewsModule } from './modules/news/news.module';
-import { MailModule } from './modules/mail/mail.module';
-import { LearnroomModule } from './modules/learnroom/learnroom.module';
 
 @Module({
 	imports: [
@@ -25,6 +26,14 @@ import { LearnroomModule } from './modules/learnroom/learnroom.module';
 			uri: Configuration.get('RABBITMQ_URI') as string,
 			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
+		}),
+		FilesModule,
+		RocketChatModule.forRoot({
+			uri: Configuration.get('ROCKET_CHAT_URI') as string,
+			adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
+			adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
+			adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
+			adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 		}),
 
 		MikroOrmModule.forRoot({

@@ -1093,5 +1093,38 @@
 			"$date": "2021-09-15T09:51:11.740Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "616d3b9dedb0421a94ab5d21"
+		},
+		"state": "up",
+		"name": "drop-invalid-dashboard-collections",
+		"createdAt": {
+			"$date": "2021-10-18T09:17:17.853Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "617bb1f9817c1e6d64389230"
+		},
+		"state": "up",
+		"name": "reset-dashboard-collections",
+		"createdAt": {
+			"$date": "2021-10-28T13:44:29.843Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "617ffda22388c274f20fb139"
+		},
+		"state": "up",
+		"name": "ldap_federal_state",
+		"createdAt": {
+			"$date": "2021-10-21T11:16:22.190Z"
+		},
+		"__v": 0
 	}
 ]

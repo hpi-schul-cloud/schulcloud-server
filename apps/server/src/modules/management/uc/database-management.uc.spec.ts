@@ -73,10 +73,10 @@ describe('DatabaseManagementService', () => {
 				},
 			],
 		}).compile();
-		uc = module.get<DatabaseManagementUc>(DatabaseManagementUc);
-		fileSystemAdapter = module.get<FileSystemAdapter>(FileSystemAdapter);
-		dbService = module.get<DatabaseManagementService>(DatabaseManagementService);
-		bsonConverter = module.get<BsonConverter>(BsonConverter);
+		uc = module.get(DatabaseManagementUc);
+		fileSystemAdapter = module.get(FileSystemAdapter);
+		dbService = module.get(DatabaseManagementService);
+		bsonConverter = module.get(BsonConverter);
 	});
 
 	afterAll(async () => {

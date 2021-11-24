@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { NewsTargetModel } from '@shared/domain/types/news.types';
+import { PaginationResponse } from '@shared/controller';
+import { NewsTargetModel } from '@shared/domain';
 import { SchoolInfoResponse } from './school-info.response';
 import { TargetInfoResponse } from './target-info.response';
 import { UserInfoResponse } from './user-info.response';
@@ -9,6 +10,40 @@ const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
 type SourceType = typeof NEWS_SOURCES[number];
 export class NewsResponse {
+	constructor({
+		id,
+		title,
+		content,
+		displayAt,
+		source,
+		sourceDescription,
+		targetModel,
+		targetId,
+		target,
+		school,
+		creator,
+		updater,
+		createdAt,
+		updatedAt,
+		permissions,
+	}: NewsResponse) {
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		this.displayAt = displayAt;
+		this.source = source;
+		this.sourceDescription = sourceDescription;
+		this.targetModel = targetModel;
+		this.targetId = targetId;
+		this.target = target;
+		this.school = school;
+		this.creator = creator;
+		this.updater = updater;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.permissions = permissions;
+	}
+
 	@ApiProperty({
 		description: 'The id of the News entity',
 		pattern: '[a-f0-9]{24}',
@@ -89,4 +124,14 @@ export class NewsResponse {
 		description: 'List of permissions the current user has for the News entity',
 	})
 	permissions: string[];
+}
+
+export class NewsListResponse extends PaginationResponse<NewsResponse[]> {
+	constructor(data: NewsResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [NewsResponse] })
+	data: NewsResponse[];
 }

@@ -1,38 +1,54 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
+
 import { EntityId } from '../types';
+
+import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
+import { User } from './user.entity';
 
-interface ITaskProperties {
+export interface ITaskProperties {
 	name: string;
+	availableDate?: Date;
 	dueDate?: Date;
 	private?: boolean;
-	parent?: Course;
+	teacher?: User;
+	course?: Course;
 	lesson?: Lesson;
 	submissions?: Submission[];
+	closed?: User[];
 }
 
-export interface IParentDescriptionsProperties {
-	id: EntityId;
-	name: string;
-	color: string;
-	description?: string;
+export interface ITaskStatus {
+	submitted: number;
+	maxSubmissions: number;
+	graded: number;
+	isDraft: boolean;
+	isSubstitutionTeacher: boolean;
 }
 
-export interface ITaskParent {
-	id: EntityId;
+export class TaskWithStatusVo {
+	task!: Task;
 
-	hasWritePermission(userId: EntityId): boolean;
-	getDescriptions(): IParentDescriptionsProperties;
-	getNumberOfStudents(): number;
+	status!: ITaskStatus;
+
+	constructor(task: Task, status: ITaskStatus) {
+		this.task = task;
+		this.status = status;
+	}
 }
+
+export type TaskParentDescriptions = { name: string; description: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
+@Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'closed'] })
 export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
+
+	@Property()
+	availableDate?: Date;
 
 	@Property()
 	dueDate?: Date;
@@ -40,8 +56,11 @@ export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	private = true;
 
+	@ManyToOne('User', { fieldName: 'teacherId' })
+	teacher?: User;
+
 	@ManyToOne('Course', { fieldName: 'courseId' })
-	parent?: Course;
+	course?: Course;
 
 	@ManyToOne('Lesson', { fieldName: 'lessonId' })
 	lesson?: Lesson; // In database exist also null, but it can not set.
@@ -49,13 +68,146 @@ export class Task extends BaseEntityWithTimestamps {
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
+	// TODO: is mapped to boolean in future
+	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
+	@ManyToMany('User', undefined, { fieldName: 'archived' })
+	closed = new Collection<User>(this);
+
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
+		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;
-		this.parent = props.parent;
+		this.teacher = props.teacher;
+		this.course = props.course;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
+		// TODO: is replaced with boolean in future
+		this.closed.set(props.closed || []);
+	}
+
+	isDraft(): boolean {
+		// private can be undefined in the database
+		return !!this.private;
+	}
+
+	private getSubmissionsItems(): Submission[] {
+		// TODO: load/init check until mikro-orm base entity is extended
+		const submissions = this.submissions.getItems();
+		return submissions;
+	}
+
+	getSubmittedUserIds(): EntityId[] {
+		const submissions = this.getSubmissionsItems();
+		const submittedUserIds = submissions.map((submission) => submission.getStudentId());
+
+		return submittedUserIds;
+	}
+
+	getNumberOfSubmittedUsers(): number {
+		const submittedUserIds = this.getSubmittedUserIds();
+		const submitted = [...new Set(submittedUserIds)].length;
+
+		return submitted;
+	}
+
+	getGradedUserIds(): EntityId[] {
+		const gradedUserIds = this.getSubmissionsItems()
+			.filter((submission) => submission.isGraded())
+			.map((submission) => submission.getStudentId());
+
+		return gradedUserIds;
+	}
+
+	getNumberOfGradedUsers(): number {
+		const gradedUserIds = this.getGradedUserIds();
+		const graded = [...new Set(gradedUserIds)].length;
+
+		return graded;
+	}
+
+	// attention based on this parent use this.getParent() instant
+	getMaxSubmissions(): number {
+		// hack until parents are defined
+		const numberOfStudents = this.course ? this.course.getNumberOfStudents() : 0;
+
+		return numberOfStudents;
+	}
+
+	createTeacherStatusForUser(userId: EntityId): ITaskStatus {
+		const submitted = this.getNumberOfSubmittedUsers();
+		const graded = this.getNumberOfGradedUsers();
+		const maxSubmissions = this.getMaxSubmissions();
+		const isDraft = this.isDraft();
+		// only point that need the parameter
+		// const isSubstitutionTeacher = this.isSubstitutionTeacher(userId);
+		// work with getParent()
+		let isSubstitutionTeacher = false;
+		if (this.course) {
+			isSubstitutionTeacher = this.course.getSubstitutionTeacherIds().includes(userId);
+		}
+
+		const status = {
+			submitted,
+			graded,
+			maxSubmissions,
+			isDraft,
+			isSubstitutionTeacher,
+		};
+
+		return status;
+	}
+
+	isSubmittedForUser(userId: EntityId): boolean {
+		const submitted = this.getSubmittedUserIds().some((id) => userId === id);
+
+		return submitted;
+	}
+
+	isGradedForUser(userId: EntityId): boolean {
+		const graded = this.getGradedUserIds().some((id) => userId === id);
+
+		return graded;
+	}
+
+	createStudentStatusForUser(userId: EntityId): ITaskStatus {
+		const isSubmitted = this.isSubmittedForUser(userId);
+		const isGraded = this.isGradedForUser(userId);
+		const maxSubmissions = 1;
+		const isDraft = this.isDraft();
+		const isSubstitutionTeacher = false;
+
+		const status = {
+			submitted: isSubmitted ? 1 : 0,
+			graded: isGraded ? 1 : 0,
+			maxSubmissions,
+			isDraft,
+			isSubstitutionTeacher,
+			// TODO: visibility of parent is missed ..but isSubstitutionTeacher and this is not really a part from task,
+			// for this we must add parent relationship
+		};
+
+		return status;
+	}
+
+	// TODO: based on the parent relationship
+	getDescriptions(): TaskParentDescriptions {
+		let descriptions: TaskParentDescriptions;
+		if (this.course) {
+			descriptions = {
+				name: this.course.name,
+				description: this.lesson ? this.lesson.name : '',
+				color: this.course.color,
+			};
+		} else {
+			descriptions = {
+				name: '',
+				description: '',
+				color: '#ACACAC',
+			};
+		}
+
+		return descriptions;
 	}
 }

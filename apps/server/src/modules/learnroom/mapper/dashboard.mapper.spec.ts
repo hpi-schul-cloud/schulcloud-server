@@ -7,12 +7,13 @@ describe('dashboard mapper', () => {
 		const gridArray: GridElementWithPosition[] = [
 			{
 				pos: { x: 1, y: 3 },
-				gridElement: new GridElement('elementId', new DefaultGridReference('referenceId', 'Mathe')),
+				gridElement: GridElement.FromPersistedReference('elementId', new DefaultGridReference('referenceId', 'Mathe')),
 			},
 		];
-		const entity = new DashboardEntity('someid', { grid: gridArray });
+		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);
+		expect(result.gridElements[0].id).toEqual('elementId');
 		expect(result.gridElements[0].xPosition).toEqual(1);
 		expect(result.gridElements[0].yPosition).toEqual(3);
 		expect(result.gridElements[0].title).toEqual('Mathe');
