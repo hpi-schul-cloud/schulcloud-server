@@ -66,7 +66,6 @@ export class TaskRepo {
 			orderBy: order,
 		});
 
-		// bad that it is not pass directly to findAndCount but it throw an error
 		await this.em.populate(tasks, ['course', 'lesson', 'submissions']);
 
 		return [tasks, count];
