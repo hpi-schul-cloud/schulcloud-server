@@ -15,7 +15,7 @@ const createExpectedResponse = (
 	},
 	parent?: { name: string; color: string; description: string }
 ): TaskResponse => {
-	const expected = new TaskResponse();
+	const expected = Object.create(TaskResponse.prototype) as TaskResponse;
 	expected.id = task.id;
 	expected.name = task.name;
 	expected.availableDate = task.availableDate;
