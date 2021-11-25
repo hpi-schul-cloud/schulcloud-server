@@ -8,8 +8,8 @@ import type { User } from './user.entity';
 
 export type CourseMetadata = {
 	id: string;
-	name: string;
-	shortName: string;
+	title: string;
+	shortTitle: string;
 	displayColor: string;
 };
 
@@ -91,8 +91,8 @@ export class Course extends BaseEntityWithTimestamps {
 	getMetadata(): CourseMetadata {
 		return {
 			id: this.id,
-			name: this.name,
-			shortName: this.name.substr(0, 2),
+			title: this.name,
+			shortTitle: this.name.substr(0, 2),
 			displayColor: this.color,
 		};
 	}
