@@ -18,6 +18,17 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
+	forTeacher(userId: EntityId): CourseScope {
+		const isTeacher = { teachers: userId };
+		const isSubstitutionTeacher = { substitutionTeachers: userId };
+
+		if (userId) {
+			this.addQuery({ $or: [isTeacher, isSubstitutionTeacher] });
+		}
+
+		return this;
+	}
+
 	forActiveCourses(): CourseScope {
 		const now = new Date();
 		const noUntilDate = { untilDate: { $exists: false } };
@@ -33,7 +44,6 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	// TODO: set index
 	async findAllByUserId(
 		userId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
@@ -54,20 +64,17 @@ export class CourseRepo {
 		};
 
 		const [courses, count] = await this.em.findAndCount(Course, scope.query, queryOptions);
+
 		return [courses, count];
 	}
 
-	async findAllForStudent(userId: EntityId): Promise<Counted<Course[]>> {
-		const query = { students: userId };
-		const [courses, count] = await this.em.findAndCount(Course, query);
-		return [courses, count];
-	}
-
+	// not tested in repo.integration.spec
 	async findAllForTeacher(userId: EntityId): Promise<Counted<Course[]>> {
-		const isTeacher = { teachers: userId };
-		const isSubstitutionTeacher = { substitutionTeachers: userId };
-		const query = { $or: [isTeacher, isSubstitutionTeacher] };
-		const [courses, count] = await this.em.findAndCount(Course, query);
+		const scope = new CourseScope();
+		scope.forTeacher(userId);
+
+		const [courses, count] = await this.em.findAndCount(Course, scope.query);
+
 		return [courses, count];
 	}
 }

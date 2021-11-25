@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+- BC-740 - BC-847 - change ansible vars for docker image and tag
+
 ### Fixed
 
 ## [26.18.0] - 2021-11-23
@@ -18,13 +22,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 - BC-485 - ansible role for management service
 
+- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
+
 ### Fixed
 - BC-724 - fixed OpenAPI spec for dashboard
+
+### Changed
+
+- BC-609 - open task do not longer published open tasks of finished courses
 
 ## [26.17.0] - 2021-11-16
 
 ### Changed
 
+- BC-688 - disable allowJS
 - BC-488 - Set federal state in LDAPSyncer by system
 - BC-589 - BC-652 - change auto deployment to a reusable workflow
 - BC-240 - Dashboards are now personalized

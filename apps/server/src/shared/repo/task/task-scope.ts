@@ -2,17 +2,26 @@ import { EntityId, Task } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class TaskScope extends Scope<Task> {
-	// TODO: parameter > isClosed: boolean
-	byClosed(userId?: EntityId): TaskScope {
-		this.addQuery({ closed: { $ne: userId } });
+	byClosed(userId: EntityId, value: boolean): TaskScope {
+		if (value === true) {
+			this.addQuery({ closed: userId });
+		} else if (value === false) {
+			this.addQuery({ closed: { $ne: userId } });
+		}
 
 		return this;
 	}
 
-	byTeacherId(teacherId: EntityId): TaskScope {
+	byOnlyCreatorId(teacherId: EntityId): TaskScope {
 		this.addQuery({
-			$and: [{ teacher: teacherId }, { course: null }, { lesson: null }],
+			$and: [{ creator: teacherId }, { course: null }, { lesson: null }],
 		});
+
+		return this;
+	}
+
+	byCreatorId(creatorId: EntityId): TaskScope {
+		this.addQuery({ creator: creatorId });
 
 		return this;
 	}

@@ -29,7 +29,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: api-worker
-        image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         env:
         - name: FEATURE_SYNCER_CONSUMER_ENABLE
