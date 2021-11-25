@@ -26,6 +26,31 @@ describe('dashboard model mapper', () => {
 		em = module.get(EntityManager);
 	});
 
+	describe('mapDashboardToEntity', () => {
+		it('should map dashboard with elements and groups to entity', async () => {
+			const dashboard = new DashboardModelEntity({ id: new ObjectId().toString(), user: new ObjectId().toString() });
+			const element = new DashboardGridElementModel(new ObjectId().toString());
+			element.xPos = 1;
+			element.yPos = 2;
+			const reference = new DefaultGridReferenceModel(new ObjectId().toString());
+			reference.title = 'German';
+
+			element.references.add(reference);
+			dashboard.gridElements.add(element);
+
+			await em.persistAndFlush(dashboard);
+			em.clear();
+
+			const persisted = await em.findOneOrFail(DashboardModelEntity, dashboard.id);
+
+			const result = await mapper.mapDashboardToEntity(persisted);
+
+			expect(result.getId()).toEqual(dashboard.id);
+			const resultElement = result.getElement({ x: 1, y: 2 });
+			expect(resultElement.getContent().title).toEqual('German');
+		});
+	});
+
 	describe('mapDashboardToModel', () => {
 		it('should map dashboard with elements and groups to model', async () => {
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
@@ -33,7 +58,7 @@ describe('dashboard model mapper', () => {
 					{
 						pos: { x: 1, y: 2 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'languages', [
-							new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
+							new DefaultGridReference(new ObjectId().toString(), 'English'),
 							new DefaultGridReference(new ObjectId().toString(), 'German'),
 						]),
 					},
@@ -57,6 +82,8 @@ describe('dashboard model mapper', () => {
 			expect(element instanceof DashboardGridElementModel);
 			expect(element.references.length).toBeGreaterThan(0);
 			expect(element.references[0] instanceof DefaultGridReferenceModel).toEqual(true);
+			const reference = element.references[0];
+			expect(reference.title).toEqual('English');
 		});
 
 		it('should detect changes to gridElement Collection', async () => {

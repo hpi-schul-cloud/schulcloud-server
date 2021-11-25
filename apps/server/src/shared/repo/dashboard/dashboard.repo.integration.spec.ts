@@ -150,9 +150,13 @@ describe('dashboard repo', () => {
 				userId: new ObjectId().toString(),
 			});
 			await repo.persistAndFlush(dashboard);
+			em.clear();
 			const result = await repo.getDashboardById(dashboard.id);
 			expect(dashboard.id).toEqual(result.id);
 			expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
+			const grid = result.getGrid();
+			const firstElement = grid[0].gridElement.getContent();
+			expect(firstElement.title).toEqual('Mathe');
 		});
 
 		it('should be idempotent', async () => {

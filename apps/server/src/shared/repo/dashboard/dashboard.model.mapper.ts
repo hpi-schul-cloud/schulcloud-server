@@ -1,4 +1,4 @@
-import { Collection, wrap, EntityManager } from '@mikro-orm/core';
+import { wrap, EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import {
 	DashboardEntity,
@@ -21,10 +21,8 @@ export class DashboardModelMapper {
 	}
 
 	async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
-		if (!modelEntity.references.isInitialized()) {
-			await modelEntity.references.init();
-		}
-		const references = Array.from(modelEntity.references).map((ref) => this.mapReferenceToEntity(ref));
+		const referenceModels = await modelEntity.references.loadItems();
+		const references = referenceModels.map((ref) => this.mapReferenceToEntity(ref));
 		const result = {
 			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
 			gridElement: GridElement.FromPersistedGroup(modelEntity.id, modelEntity.title, references),
@@ -44,16 +42,12 @@ export class DashboardModelMapper {
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	async mapReferenceToModel(
-		reference: IGridElementReference,
-		element: DashboardGridElementModel
-	): Promise<DefaultGridReferenceModel> {
+	async mapReferenceToModel(reference: IGridElementReference): Promise<DefaultGridReferenceModel> {
 		const metadata = reference.getMetadata();
 		const existingReference = await this.em.findOne(DefaultGridReferenceModel, metadata.id);
 		const result = existingReference || new DefaultGridReferenceModel(metadata.id);
 		result.color = metadata.displayColor;
 		result.title = metadata.title;
-		result.gridelement = wrap(element).toReference();
 		return result;
 	}
 
@@ -78,10 +72,8 @@ export class DashboardModelMapper {
 			elementModel.title = gridElement.getContent().title;
 		}
 
-		const references = await Promise.all(
-			gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref, elementModel))
-		);
-		elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, references);
+		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
+		elementModel.references.set(references);
 
 		elementModel.dashboard = wrap(dashboard).toReference();
 		return elementModel;
