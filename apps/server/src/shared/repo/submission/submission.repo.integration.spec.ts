@@ -68,7 +68,7 @@ describe('submission repo', () => {
 			expect(result[0].student.id).toEqual(student.id);
 		});
 
-		it('should return submissions where the user is a team member', async () => {
+		it('should return submissions when the user is a team member', async () => {
 			const student1 = userFactory.build();
 			const student2 = userFactory.build();
 			const task = taskFactory.build();
@@ -82,7 +82,7 @@ describe('submission repo', () => {
 			expect(result[0].teamMembers[0].id).toEqual(student1.id);
 		});
 
-		it('should return submissions where the user is in the course group', async () => {
+		it('should return submissions when the user is in the course group', async () => {
 			const course = courseFactory.build();
 			await em.persistAndFlush(course);
 

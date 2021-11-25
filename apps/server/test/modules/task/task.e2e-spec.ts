@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { MikroORM, EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { MikroORM } from '@mikro-orm/core';
 
 import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
@@ -127,7 +128,7 @@ describe('Task Controller (e2e)', () => {
 		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
 			const teacher = userFactory.build();
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.build({ course });
 			await em.persistAndFlush([task]);
 			em.clear();
 
@@ -148,7 +149,7 @@ describe('Task Controller (e2e)', () => {
 			const student = userFactory.build();
 			await em.persistAndFlush([teacher, student]);
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
 			await em.persistAndFlush([task]);
@@ -173,7 +174,7 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ substitutionTeachers: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -190,9 +191,9 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const task1 = taskFactory.build({ course });
+			const task2 = taskFactory.build({ course });
+			const task3 = taskFactory.build({ course });
 
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
@@ -211,8 +212,8 @@ describe('Task Controller (e2e)', () => {
 			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
 			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
 			const course3 = courseFactory.build({ name: 'course #3', teachers: [teacher] });
-			const task1 = taskFactory.draft(false).build({ course: course1 });
-			const task2 = taskFactory.draft(false).build({ course: course2 });
+			const task1 = taskFactory.build({ course: course1 });
+			const task2 = taskFactory.build({ course: course2 });
 
 			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
@@ -229,7 +230,7 @@ describe('Task Controller (e2e)', () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-			const task = taskFactory.draft(true).build({ course });
+			const task = taskFactory.draft().build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -243,11 +244,11 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.data[0].status.isDraft).toEqual(true);
 		});
 
-		it('[FIND] /tasks should return nothing from courses where the user has only read permissions', async () => {
+		it('[FIND] /tasks should return nothing from courses when the user has only read permissions', async () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush([teacher]);
 			const course = courseFactory.build({ name: 'course #1', students: [teacher] });
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -269,7 +270,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 			});
 
-			const task = taskFactory.draft(false).build({ course, closed: [teacher] });
+			const task = taskFactory.build({ course, closed: [teacher] });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -370,7 +371,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft(false).build({ course });
+			const task = taskFactory.build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
 			await em.persistAndFlush([task]);
@@ -403,9 +404,9 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task1 = taskFactory.draft(false).build({ course });
-			const task2 = taskFactory.draft(false).build({ course });
-			const task3 = taskFactory.draft(false).build({ course });
+			const task1 = taskFactory.build({ course });
+			const task2 = taskFactory.build({ course });
+			const task3 = taskFactory.build({ course });
 
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
@@ -437,8 +438,8 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task1 = taskFactory.draft(false).build({ course: course1 });
-			const task2 = taskFactory.draft(false).build({ course: course2 });
+			const task1 = taskFactory.build({ course: course1 });
+			const task2 = taskFactory.build({ course: course2 });
 
 			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
@@ -460,7 +461,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft(true).build({ course });
+			const task = taskFactory.draft().build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -473,7 +474,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks should nothing return from student where the user has write permissions', async () => {
+		it('[FIND] /tasks should nothing return from student when the user has write permissions', async () => {
 			const teacher = userFactory.build();
 			const subTeacher = userFactory.build();
 			await em.persistAndFlush([teacher, subTeacher]);
@@ -485,8 +486,8 @@ describe('Task Controller (e2e)', () => {
 				name: 'course #2',
 				substitutionTeachers: [subTeacher],
 			});
-			const task1 = taskFactory.draft(false).build({ course: course1 });
-			const task2 = taskFactory.draft(false).build({ course: course2 });
+			const task1 = taskFactory.build({ course: course1 });
+			const task2 = taskFactory.build({ course: course2 });
 
 			await em.persistAndFlush([task1, task2]);
 			em.clear();
@@ -509,7 +510,7 @@ describe('Task Controller (e2e)', () => {
 			});
 
 			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-			const task = taskFactory.draft(true).build({ course, availableDate: nextDay });
+			const task = taskFactory.draft().build({ course, availableDate: nextDay });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -532,7 +533,7 @@ describe('Task Controller (e2e)', () => {
 			});
 
 			// @ts-expect-error expected value null in db
-			const task = taskFactory.draft(false).build({ course, dueDate: null });
+			const task = taskFactory.build({ course, dueDate: null });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -546,15 +547,31 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('should not return closed tasks', async () => {
-			const student = userFactory.build({ firstName: 'Marla', lastName: 'Mathe' });
+			const student = userFactory.build();
 			await em.persistAndFlush([student]);
 
 			const course = courseFactory.build({
-				name: 'course #1',
 				students: [student],
 			});
 
-			const task = taskFactory.draft(false).build({ course, closed: [student] });
+			const task = taskFactory.build({ course, closed: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			modifyCurrentUserId(currentUser, student);
+
+			const response = await request(app.getHttpServer()).get('/tasks');
+			const paginatedResult = response.body as TaskListResponse;
+
+			expect(paginatedResult.total).toEqual(0);
+		});
+
+		it('should "not" show task of finished courses', async () => {
+			const untilDate = new Date(Date.now() - 60 * 1000);
+			const student = userFactory.build();
+			const course = courseFactory.build({ untilDate, students: [student] });
+			const task = taskFactory.build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();

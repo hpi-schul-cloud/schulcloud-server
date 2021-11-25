@@ -1,10 +1,20 @@
-import { Lesson, ILessonProperties } from '@shared/domain';
+import { Lesson, ILessonProperties, Course } from '@shared/domain';
+
 import { courseFactory } from './course.factory';
 import { BaseFactory } from './base.factory';
 
-export const lessonFactory = BaseFactory.define<Lesson, ILessonProperties>(Lesson, ({ sequence }) => {
+class LessonFactory extends BaseFactory<Lesson, ILessonProperties> {}
+
+export const lessonFactory = LessonFactory.define<Lesson, ILessonProperties>(Lesson, ({ sequence, params }) => {
+	let course: Course;
+	if (params.course) {
+		course = params.course as Course;
+	} else {
+		course = courseFactory.build();
+	}
+
 	return {
 		name: `lesson #${sequence}`,
-		course: courseFactory.build(),
+		course,
 	};
 });
