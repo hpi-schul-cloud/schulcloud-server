@@ -83,7 +83,7 @@ describe('dashboard model mapper', () => {
 			expect(element.references.length).toBeGreaterThan(0);
 			expect(element.references[0] instanceof DefaultGridReferenceModel).toEqual(true);
 			const reference = element.references[0];
-			expect(reference.title).toEqual('English');
+			expect(['English', 'German', 'Math'].includes(reference.title)).toEqual(true);
 		});
 
 		it('should detect changes to gridElement Collection', async () => {
