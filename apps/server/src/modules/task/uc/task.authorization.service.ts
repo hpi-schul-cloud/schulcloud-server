@@ -65,7 +65,8 @@ export class TaskAuthorizationService {
 		if (permission === TaskParentPermission.write) {
 			hasCoursePermission = this.hasCourseWritePermission(userId, task.course);
 		} else if (permission === TaskParentPermission.read) {
-			hasCoursePermission = this.hasCourseReadPermission(userId, task.course);
+			hasCoursePermission =
+				this.hasCourseReadPermission(userId, task.course) || this.hasCourseWritePermission(userId, task.course);
 		}
 
 		const hasPermission = isCreator || hasCoursePermission;
