@@ -1,4 +1,4 @@
-import { Task } from '@shared/domain';
+import { Task, ITaskStatus, TaskParentDescriptions } from '@shared/domain';
 import { taskFactory, setupEntities } from '@shared/testing';
 import { TaskResponse, TaskStatusResponse } from '../controller/dto';
 
@@ -6,8 +6,8 @@ import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
 	task: Task,
-	status: TaskStatusResponse,
-	parent?: { name: string; color: string; description: string }
+	status: ITaskStatus,
+	descriptions: TaskParentDescriptions
 ): TaskResponse => {
 	const expectedStatus = Object.create(TaskStatusResponse.prototype) as TaskStatusResponse;
 	expectedStatus.graded = status.graded;
@@ -16,21 +16,18 @@ const createExpectedResponse = (
 	expectedStatus.isDraft = status.isDraft;
 	expectedStatus.isSubstitutionTeacher = status.isSubstitutionTeacher;
 
-	const expected = new TaskResponse({
-		id: task.id,
-		name: task.name,
-		courseName: parent?.name || '',
-		createdAt: task.createdAt,
-		updatedAt: task.updatedAt,
-		status: expectedStatus,
-	});
+	const expected = Object.create(TaskResponse.prototype) as TaskResponse;
+	expected.id = task.id;
+	expected.name = task.name;
 	expected.availableDate = task.availableDate;
 	expected.duedate = task.dueDate;
+	expected.createdAt = task.createdAt;
+	expected.updatedAt = task.updatedAt;
+	expected.status = expectedStatus;
 
-	if (parent !== undefined) {
-		expected.displayColor = parent.color;
-		expected.description = parent.description;
-	}
+	expected.courseName = descriptions.name;
+	expected.displayColor = descriptions.color;
+	expected.description = descriptions.description;
 
 	return expected;
 };
@@ -40,84 +37,31 @@ describe('task.mapper', () => {
 		await setupEntities();
 	});
 
-	it('should map if course and fullfilled status exist', () => {
-		const task = taskFactory.draft(false).build();
-		const taskDescriptions = task.getDescriptions();
+	describe('mapToResponse', () => {
+		it('should map task with status and description values', () => {
+			const task = taskFactory.buildWithId({ availableDate: new Date(), dueDate: new Date() });
 
-		const status = {
-			graded: 0,
-			maxSubmissions: 0,
-			submitted: 0,
-			isDraft: false,
-			isSubstitutionTeacher: false,
-		};
+			const descriptions: TaskParentDescriptions = {
+				name: 'course #1',
+				color: '#F0F0F0',
+				description: 'a task description',
+			};
 
-		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, taskDescriptions);
+			const spy = jest.spyOn(task, 'getDescriptions').mockReturnValue(descriptions);
 
-		expect(result).toStrictEqual(expected);
-	});
+			const status = {
+				graded: 0,
+				maxSubmissions: 0,
+				submitted: 0,
+				isDraft: false,
+				isSubstitutionTeacher: false,
+			};
 
-	it('should filter unnecessary information from status', () => {
-		const task = taskFactory.draft(false).build();
-		const taskDescriptions = task.getDescriptions();
+			const result = TaskMapper.mapToResponse({ task, status });
+			const expected = createExpectedResponse(task, status, descriptions);
 
-		const status = {
-			graded: 0,
-			maxSubmissions: 0,
-			submitted: 0,
-			isDraft: false,
-			isSubstitutionTeacher: false,
-			additionalKey: '123',
-		};
-
-		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, taskDescriptions);
-
-		expect(result).toStrictEqual(expected);
-	});
-
-	it('should filter not necessary informations from task', () => {
-		const task = taskFactory.draft(false).build();
-		// @ts-expect-error test-case
-		task.key = 1;
-
-		const taskDescriptions = task.getDescriptions();
-
-		const status = {
-			graded: 0,
-			maxSubmissions: 0,
-			submitted: 0,
-			isDraft: false,
-			isSubstitutionTeacher: false,
-		};
-
-		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, taskDescriptions);
-
-		expect(result).toStrictEqual(expected);
-	});
-
-	it('should set default course information if it does not exist in task.', () => {
-		// task has no course
-		const task = taskFactory.build();
-		const taskDefaultDescriptions = {
-			name: '',
-			description: '',
-			color: '#ACACAC',
-		};
-
-		const status = {
-			graded: 0,
-			maxSubmissions: 10,
-			submitted: 0,
-			isDraft: false,
-			isSubstitutionTeacher: false,
-		};
-
-		const result = TaskMapper.mapToResponse({ task, status });
-		const expected = createExpectedResponse(task, status, taskDefaultDescriptions);
-
-		expect(result).toStrictEqual(expected);
+			expect(spy).toHaveBeenCalled();
+			expect(result).toStrictEqual(expected);
+		});
 	});
 });

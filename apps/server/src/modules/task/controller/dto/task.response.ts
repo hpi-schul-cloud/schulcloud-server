@@ -6,10 +6,10 @@ import { TaskStatusResponse } from './task-status.response';
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
-	constructor({ id, name, createdAt, updatedAt, status }: TaskResponse) {
+	constructor({ id, name, courseName, createdAt, updatedAt, status }: TaskResponse) {
 		this.id = id;
 		this.name = name;
-		this.courseName = '';
+		this.courseName = courseName;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.status = status;
@@ -30,7 +30,7 @@ export class TaskResponse {
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	courseName: string;
+	courseName: string = '' as string;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()

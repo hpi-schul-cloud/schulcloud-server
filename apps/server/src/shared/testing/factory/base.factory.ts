@@ -1,4 +1,5 @@
 import { DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
+import { ObjectId } from 'mongodb';
 
 /**
  * Entity factory based on thoughtbot/fishery
@@ -47,6 +48,19 @@ export class BaseFactory<T, U, I = any> {
 		const entity = new this.EntityClass(props);
 
 		return entity;
+	}
+
+	/**
+	 * Build an entity using your factory and generate a id for it.
+	 * @param params
+	 * @param id
+	 * @returns an entity
+	 */
+	buildWithId(params: DeepPartial<U> = {}, id?: string): T {
+		const entity = this.build(params);
+		const entityWithId = Object.assign(entity, { _id: new ObjectId(id) });
+
+		return entityWithId;
 	}
 
 	/**
