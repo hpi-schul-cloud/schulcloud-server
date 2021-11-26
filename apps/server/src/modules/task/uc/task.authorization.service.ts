@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Lesson } from '@shared/domain';
+import { EntityId, Course, Lesson, Task } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 
 export enum TaskParentPermission {
@@ -26,10 +26,8 @@ export class TaskAuthorizationService {
 	}
 
 	async getPermittedLessons(userId: EntityId, courses: Course[]): Promise<Lesson[]> {
-		const writeCourses = courses.filter(
-			(c) => c.getSubstitutionTeacherIds().includes(userId) || c.getTeacherIds().includes(userId)
-		);
-		const readCourses = courses.filter((c) => c.getStudentIds().includes(userId));
+		const writeCourses = courses.filter((c) => this.hasCourseWritePermission(userId, c));
+		const readCourses = courses.filter((c) => this.hasCourseReadPermission(userId, c));
 
 		const writeCourseIds = writeCourses.map((c) => c.id);
 		const readCourseIds = readCourses.map((c) => c.id);
@@ -44,5 +42,34 @@ export class TaskAuthorizationService {
 		const permittedLessons = [...writeLessons, ...readLessons];
 
 		return permittedLessons;
+	}
+
+	private hasCourseWritePermission(userId: EntityId, course?: Course): boolean {
+		const hasPermission =
+			course?.getSubstitutionTeacherIds().includes(userId) === true ||
+			course?.getTeacherIds().includes(userId) === true;
+
+		return hasPermission;
+	}
+
+	private hasCourseReadPermission(userId: EntityId, course?: Course): boolean {
+		const hasPermission = course?.getStudentIds().includes(userId) === true;
+
+		return hasPermission;
+	}
+
+	hasTaskPermission(task: Task, userId: EntityId, permission: TaskParentPermission): boolean {
+		const isCreator = task.creator?.id === userId;
+		let hasCoursePermission = false;
+
+		if (permission === TaskParentPermission.write) {
+			hasCoursePermission = this.hasCourseWritePermission(userId, task.course);
+		} else if (permission === TaskParentPermission.read) {
+			hasCoursePermission = this.hasCourseReadPermission(userId, task.course);
+		}
+
+		const hasPermission = isCreator || hasCoursePermission;
+
+		return hasPermission;
 	}
 }

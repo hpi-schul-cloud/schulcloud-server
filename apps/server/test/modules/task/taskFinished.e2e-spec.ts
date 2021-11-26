@@ -9,6 +9,7 @@ import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
 import { ICurrentUser, User } from '@shared/domain';
+import { TaskDashBoardPermission } from '@src/modules/task/uc';
 import {
 	courseFactory,
 	userFactory,
@@ -46,9 +47,7 @@ const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.userId = user.id;
 };
 
-describe('task/finished Controller (e2e)', () => {
-	// when user is not loggedin -> show always 200, but it should status 401 like if we send a request against backend
-	// test setup is not perfect
+describe('task/finished Controller (e2e) without permission', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -73,7 +72,152 @@ describe('task/finished Controller (e2e)', () => {
 		await app.init();
 		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
-		currentUser = createCurrentTestUser().currentUser;
+
+		const permission = [];
+		currentUser = createCurrentTestUser(permission).currentUser;
+		api = new API(app, '/tasks/finished');
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await app.close();
+	});
+
+	beforeEach(async () => {
+		await cleanUpCollections(em);
+	});
+
+	it('should return status 401', async () => {
+		const user = userFactory.build();
+		const task = taskFactory.finished(user).build({ creator: user });
+
+		await em.persistAndFlush([task]);
+		em.clear();
+
+		modifyCurrentUserId(currentUser, user);
+
+		const response = await api.get();
+
+		expect(response.status).toEqual(401);
+	});
+});
+
+describe(`task/finished Controller (e2e) with ${TaskDashBoardPermission.teacherDashboard} permission`, () => {
+	let app: INestApplication;
+	let orm: MikroORM;
+	let em: EntityManager;
+	let currentUser: ICurrentUser;
+	let api: API;
+
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerModule],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
+			})
+			.compile();
+
+		app = module.createNestApplication();
+		await app.init();
+		orm = app.get(MikroORM);
+		em = module.get(EntityManager);
+
+		const permission = [TaskDashBoardPermission.teacherDashboard];
+		currentUser = createCurrentTestUser(permission).currentUser;
+		api = new API(app, '/tasks/finished');
+	});
+
+	afterAll(async () => {
+		await orm.close();
+		await app.close();
+	});
+
+	beforeEach(async () => {
+		await cleanUpCollections(em);
+	});
+
+	it('should "not" find task if the user is not part of the parent anymore.', async () => {
+		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [] });
+		const task = taskFactory.finished(user).build({ course });
+
+		await em.persistAndFlush([task]);
+		em.clear();
+
+		modifyCurrentUserId(currentUser, user);
+
+		const { result } = await api.get();
+
+		expect(result.total).toEqual(0);
+	});
+
+	it('should return finished tasks of user', async () => {
+		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		const task = taskFactory.finished(user).build({ course });
+
+		await em.persistAndFlush([task]);
+		em.clear();
+
+		modifyCurrentUserId(currentUser, user);
+
+		const { result } = await api.get();
+
+		expect(result.total).toEqual(1);
+	});
+
+	it('should return status for privileged members if user has write permission in for tasks', async () => {
+		const user = userFactory.build();
+		const course = courseFactory.build({ substitutionTeachers: [user] });
+		const task = taskFactory.finished(user).build({ course });
+
+		await em.persistAndFlush([task]);
+		em.clear();
+
+		modifyCurrentUserId(currentUser, user);
+
+		const { result } = await api.get();
+
+		expect(result.data).toHaveLength(1);
+		// can only be true for privileged status
+		expect(result.data[0].status.isSubstitutionTeacher).toBe(true);
+	});
+});
+
+describe(`task/finished Controller (e2e) with ${TaskDashBoardPermission.studentDashboard} permission`, () => {
+	let app: INestApplication;
+	let orm: MikroORM;
+	let em: EntityManager;
+	let currentUser: ICurrentUser;
+	let api: API;
+
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerModule],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
+			})
+			.compile();
+
+		app = module.createNestApplication();
+		await app.init();
+		orm = app.get(MikroORM);
+		em = module.get(EntityManager);
+
+		const permission = [TaskDashBoardPermission.studentDashboard];
+		currentUser = createCurrentTestUser(permission).currentUser;
 		api = new API(app, '/tasks/finished');
 	});
 

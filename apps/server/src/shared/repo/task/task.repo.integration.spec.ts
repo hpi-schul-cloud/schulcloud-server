@@ -1151,6 +1151,25 @@ describe('TaskRepo', () => {
 			});
 		});
 
+		it('should "not" find tasks of "not" passed parents', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [] });
+			const task = taskFactory.finished(user).build({ course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			const [, total] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [],
+				lessonIdsOfOpenCourses: [],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(total).toEqual(0);
+		});
+
 		it('should sort result by newest dueDate', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ untilDate: undefined });
