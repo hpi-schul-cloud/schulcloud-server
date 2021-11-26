@@ -520,7 +520,7 @@ describe('TaskUC', () => {
 				lessonIds: [lesson.id],
 			});
 			expect(spy.mock.calls[0][1]?.draft).toEqual(false);
-			expect(spy.mock.calls[0][1]?.closed).toEqual({ userId: currentUser.userId, value: false });
+			expect(spy.mock.calls[0][1]?.finished).toEqual({ userId: currentUser.userId, value: false });
 			expect(spy.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
 			expect(spy.mock.calls[0][2]).toEqual({
 				order: { dueDate: 'asc' },
@@ -729,10 +729,10 @@ describe('TaskUC', () => {
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
-			const closed = { userId: currentUser.userId, value: false };
+			const notFinished = { userId: currentUser.userId, value: false };
 			const expectedParams = [
 				{ creatorId: currentUser.userId, courseIds: [course.id], lessonIds: [lesson.id] },
-				{ closed },
+				{ finished: notFinished },
 				{ order: { dueDate: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
 			];
 
