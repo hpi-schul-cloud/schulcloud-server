@@ -16,17 +16,17 @@ describe('Task Entity', () => {
 
 	describe('isDraft', () => {
 		it('should return true by default', () => {
-			const task = taskFactory.build();
+			const task = taskFactory.draft().build();
 			expect(task.isDraft()).toEqual(true);
 		});
 
 		it('should return false if private = false', () => {
-			const task = taskFactory.draft(false).build();
+			const task = taskFactory.build();
 			expect(task.isDraft()).toEqual(false);
 		});
 
 		it('should return private property as boolean if defined', () => {
-			const task = taskFactory.build();
+			const task = taskFactory.draft().build();
 			expect(task.isDraft()).toEqual(true);
 		});
 

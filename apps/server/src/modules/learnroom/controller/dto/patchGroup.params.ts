@@ -9,5 +9,5 @@ export class PatchGroupParams {
 	@ApiProperty({
 		description: 'Title of the Group grid element',
 	})
-	title: string;
+	title!: string;
 }

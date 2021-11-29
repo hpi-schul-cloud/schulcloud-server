@@ -59,3 +59,4 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-delete-s3-files-cronjob.yml.j2
+

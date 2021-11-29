@@ -17,7 +17,7 @@ export abstract class BaseFile extends BaseEntityWithTimestamps {
 	deletedAt?: Date;
 
 	@Property()
-	isDirectory: boolean;
+	isDirectory!: boolean;
 
 	@Property()
 	creator?: User;

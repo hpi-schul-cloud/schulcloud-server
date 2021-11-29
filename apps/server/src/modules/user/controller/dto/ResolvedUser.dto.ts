@@ -5,26 +5,26 @@ export type Role = IRole;
 
 export class ResolvedUser implements IResolvedUser {
 	@ApiProperty()
-	firstName: string;
+	firstName!: string;
 
 	@ApiProperty()
-	lastName: string;
+	lastName!: string;
 
 	@ApiProperty()
-	id: string;
+	id!: string;
 
 	@ApiProperty()
-	createdAt: Date;
+	createdAt!: Date;
 
 	@ApiProperty()
-	updatedAt: Date;
+	updatedAt!: Date;
 
 	@ApiProperty()
-	roles: Role[];
+	roles!: Role[];
 
 	@ApiProperty()
-	permissions: string[];
+	permissions!: string[];
 
 	@ApiProperty()
-	schoolId: string;
+	schoolId!: string;
 }

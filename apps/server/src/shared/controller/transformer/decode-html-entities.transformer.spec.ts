@@ -5,7 +5,7 @@ describe('DecodeHtmlEntities Decorator', () => {
 	describe('when transforming a string', () => {
 		class WithHtmlEntitiesDto {
 			@DecodeHtmlEntities()
-			stringProp: string;
+			stringProp!: string;
 
 			@DecodeHtmlEntities()
 			optionalStringProp?: string;
