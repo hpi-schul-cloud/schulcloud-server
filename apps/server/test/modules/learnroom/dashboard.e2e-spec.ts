@@ -7,8 +7,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { DashboardEntity, GridElement, DefaultGridReference } from '@shared/domain';
+import { DashboardEntity, GridElement } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
+import { courseFactory } from '@shared/testing';
 
 describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
@@ -62,7 +63,7 @@ describe('Dashboard Controller (e2e)', () => {
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+							courseFactory.build({ students: [user], name: 'Mathe' })
 						),
 					},
 				],
@@ -86,14 +87,14 @@ describe('Dashboard Controller (e2e)', () => {
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Quantumphysics')
+							courseFactory.build({ students: [user.id], name: 'Quantumphysics' })
 						),
 					},
 					{
 						pos: { x: 2, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Astrophysics')
+							courseFactory.build({ students: [user], name: 'Astrophysics' })
 						),
 					},
 				],
@@ -120,14 +121,14 @@ describe('Dashboard Controller (e2e)', () => {
 						pos: { x: 2, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'mannequinization')
+							courseFactory.build({ students: [user], name: 'mannequinization' })
 						),
 					},
 					{
 						pos: { x: 3, y: 3 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
-							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
-							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
+							courseFactory.build({ students: [user], name: 'Perspective Drawing' }),
+							courseFactory.build({ students: [user], name: 'Shape Manipulation' }),
 						]),
 					},
 				],
@@ -153,8 +154,8 @@ describe('Dashboard Controller (e2e)', () => {
 					{
 						pos: { x: 3, y: 3 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
-							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
-							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
+							courseFactory.build({ students: [user], name: 'Perspective Drawing' }),
+							courseFactory.build({ students: [user], name: 'Shape Manipulation' }),
 						]),
 					},
 				],
@@ -180,7 +181,7 @@ describe('Dashboard Controller (e2e)', () => {
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
+							courseFactory.build({ students: [user], name: 'Mathe' })
 						),
 					},
 				],
@@ -205,8 +206,8 @@ describe('Dashboard Controller (e2e)', () => {
 					{
 						pos: { x: 3, y: 3 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'drawing', [
-							new DefaultGridReference(new ObjectId().toString(), 'Perspective Drawing'),
-							new DefaultGridReference(new ObjectId().toString(), 'Shape Manipulation'),
+							courseFactory.build({ students: [user], name: 'Perspective Drawing' }),
+							courseFactory.build({ students: [user], name: 'Shape Manipulation' }),
 						]),
 					},
 				],

@@ -1,34 +1,9 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { EntityId, LearnroomMetadata } from '@shared/domain/types';
 import { ILearnroom } from '@shared/domain/interface';
 
 const defaultColumns = 6;
 const defaultRows = 6;
-
-export class DefaultGridReference implements ILearnroom {
-	// This is only a temporary fake class, for use until other references, like courses, are fully supported.
-	id: EntityId;
-
-	title: string;
-
-	displayColor: string;
-
-	constructor(id: EntityId, title: string, displayColor = '#f23f76') {
-		this.id = id;
-		this.title = title;
-		this.displayColor = displayColor;
-	}
-
-	getMetadata(): LearnroomMetadata {
-		return {
-			id: this.id,
-			type: LearnroomTypes.Course, // TODO: get rid of this
-			title: this.title,
-			shortTitle: this.title.substr(0, 2),
-			displayColor: this.displayColor,
-		};
-	}
-}
 
 export interface IGridElement {
 	hasId(): boolean;

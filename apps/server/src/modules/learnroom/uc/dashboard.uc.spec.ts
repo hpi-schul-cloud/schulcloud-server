@@ -1,8 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IDashboardRepo } from '@shared/repo';
-import { DashboardEntity, GridElement, DefaultGridReference, EntityId } from '@shared/domain';
+import { DashboardEntity, GridElement, LearnroomTypes, LearnroomMetadata, EntityId } from '@shared/domain';
 import { NotFound } from '@feathersjs/errors';
 import { DashboardUc } from './dashboard.uc';
+
+const learnroomMock = (id: string, name: string) => {
+	return {
+		getMetadata(): LearnroomMetadata {
+			return {
+				id,
+				type: LearnroomTypes.Course,
+				title: name,
+				shortTitle: name.substr(0, 2),
+				displayColor: '#ACACAC',
+			};
+		},
+	};
+};
 
 describe('dashboard uc', () => {
 	let service: DashboardUc;
@@ -56,10 +70,7 @@ describe('dashboard uc', () => {
 					grid: [
 						{
 							pos: { x: 1, y: 2 },
-							gridElement: GridElement.FromPersistedReference(
-								'elementId',
-								new DefaultGridReference('referenceId', 'Mathe')
-							),
+							gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 						},
 					],
 					userId: 'userId',
@@ -79,10 +90,7 @@ describe('dashboard uc', () => {
 							grid: [
 								{
 									pos: { x: 1, y: 2 },
-									gridElement: GridElement.FromPersistedReference(
-										'elementId',
-										new DefaultGridReference('referenceId', 'Mathe')
-									),
+									gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 								},
 							],
 							userId: 'userId',
@@ -102,10 +110,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: { x: 1, y: 2 },
-								gridElement: GridElement.FromPersistedReference(
-									'elementId',
-									new DefaultGridReference('referenceId', 'Mathe')
-								),
+								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 							},
 						],
 						userId: 'differentId',
@@ -126,8 +131,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 3, y: 4 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-								new DefaultGridReference('referenceId1', 'Math'),
-								new DefaultGridReference('referenceId2', 'German'),
+								learnroomMock('referenceId1', 'Math'),
+								learnroomMock('referenceId2', 'German'),
 							]),
 						},
 					],
@@ -150,8 +155,8 @@ describe('dashboard uc', () => {
 								{
 									pos: { x: 3, y: 4 },
 									gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-										new DefaultGridReference('referenceId1', 'Math'),
-										new DefaultGridReference('referenceId2', 'German'),
+										learnroomMock('referenceId1', 'Math'),
+										learnroomMock('referenceId2', 'German'),
 									]),
 								},
 							],
@@ -173,8 +178,8 @@ describe('dashboard uc', () => {
 							{
 								pos: { x: 3, y: 4 },
 								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-									new DefaultGridReference('referenceId1', 'Math'),
-									new DefaultGridReference('referenceId2', 'German'),
+									learnroomMock('referenceId1', 'Math'),
+									learnroomMock('referenceId2', 'German'),
 								]),
 							},
 						],

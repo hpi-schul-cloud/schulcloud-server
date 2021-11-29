@@ -1,13 +1,33 @@
-import { DashboardEntity, GridElement, GridElementWithPosition, DefaultGridReference } from '@shared/domain';
+import {
+	DashboardEntity,
+	GridElement,
+	GridElementWithPosition,
+	LearnroomMetadata,
+	LearnroomTypes,
+} from '@shared/domain';
 import { DashboardMapper } from './dashboard.mapper';
 import { DashboardResponse } from '../controller/dto';
+
+const learnroomMock = (id: string, name: string) => {
+	return {
+		getMetadata(): LearnroomMetadata {
+			return {
+				id,
+				type: LearnroomTypes.Course,
+				title: name,
+				shortTitle: name.substr(0, 2),
+				displayColor: '#ACACAC',
+			};
+		},
+	};
+};
 
 describe('dashboard mapper', () => {
 	it('should map the required properties correctly', () => {
 		const gridArray: GridElementWithPosition[] = [
 			{
 				pos: { x: 1, y: 3 },
-				gridElement: GridElement.FromPersistedReference('elementId', new DefaultGridReference('referenceId', 'Mathe')),
+				gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 			},
 		];
 		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });

@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, DefaultGridReference, DashboardGridElementModel } from '@shared/domain';
+import { DashboardEntity, GridElement, DashboardGridElementModel } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardRepo } from './dashboard.repo';
@@ -54,7 +54,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const firstcourse = courseFactory.build({ students: [user] });
 		const secondCourse = courseFactory.build({ students: [user] });
-		em.persist([firstcourse, secondCourse]);
+		await em.persistAndFlush([user, firstcourse, secondCourse]);
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
@@ -178,6 +178,7 @@ describe('dashboard repo', () => {
 		it('should persist dashboard with element without id', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			await em.persistAndFlush([user, course]);
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{

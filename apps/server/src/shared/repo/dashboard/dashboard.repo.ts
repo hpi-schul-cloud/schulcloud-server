@@ -1,54 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-	EntityId,
-	DashboardEntity,
-	DefaultGridReference,
-	GridElement,
-	GridElementWithPosition,
-	DashboardModelEntity,
-} from '@shared/domain';
+import { EntityId, DashboardEntity, GridElementWithPosition, DashboardModelEntity } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 const generateHardcodedTestDashboard = (userId: EntityId) => {
 	const gridArray: GridElementWithPosition[] = [];
-
-	gridArray.push({
-		pos: { x: 1, y: 3 },
-		gridElement: GridElement.FromPersistedReference(
-			new ObjectId().toString(),
-			new DefaultGridReference(new ObjectId().toString(), 'Math')
-		),
-	});
-	gridArray.push({
-		pos: { x: 1, y: 4 },
-		gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'Science', [
-			new DefaultGridReference(new ObjectId().toString(), 'Physics'),
-			new DefaultGridReference(new ObjectId().toString(), 'Biology'),
-			new DefaultGridReference(new ObjectId().toString(), 'Chemistry'),
-		]),
-	});
-	gridArray.push({
-		pos: { x: 2, y: 1 },
-		gridElement: GridElement.FromPersistedReference(
-			new ObjectId().toString(),
-			new DefaultGridReference(new ObjectId().toString(), 'English')
-		),
-	});
-	gridArray.push({
-		pos: { x: 3, y: 1 },
-		gridElement: GridElement.FromPersistedReference(
-			new ObjectId().toString(),
-			new DefaultGridReference(new ObjectId().toString(), 'German')
-		),
-	});
-	gridArray.push({
-		pos: { x: 4, y: 1 },
-		gridElement: GridElement.FromPersistedReference(
-			new ObjectId().toString(),
-			new DefaultGridReference(new ObjectId().toString(), 'Greek')
-		),
-	});
 
 	const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: gridArray, userId });
 	return dashboard;

@@ -82,7 +82,7 @@ export class DashboardModelMapper {
 
 	async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
 		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
-		const modelEntity = existing || new DashboardModelEntity({ id: entity.getId(), user: entity.getUserId() });
+		const modelEntity = existing || new DashboardModelEntity({ id: entity.getId(), user: entity.getUserId() }); // TODO transform user to reference
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
 		);

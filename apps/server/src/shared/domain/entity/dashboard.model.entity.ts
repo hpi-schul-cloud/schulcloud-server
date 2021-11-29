@@ -5,21 +5,6 @@ import { User } from './user.entity';
 import { Course } from './course.entity';
 import { EntityId } from '../types';
 
-@Entity({ tableName: 'dashboarddefaultreference' })
-export class DefaultGridReferenceModel extends BaseEntityWithTimestamps {
-	constructor(id: string) {
-		super();
-		this._id = ObjectId.createFromHexString(id);
-		this.id = id;
-	}
-
-	@Property()
-	title!: string;
-
-	@Property()
-	color!: string;
-}
-
 @Entity({ tableName: 'dashboardelement' })
 export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	constructor(id?: string) {
