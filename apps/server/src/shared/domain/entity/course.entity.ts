@@ -1,17 +1,11 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
 
-import { EntityId } from '../types';
+import { ILearnroom } from '@shared/domain/interface'; // TODO: move to other file
+import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
-
-export type CourseMetadata = {
-	id: string;
-	title: string;
-	shortTitle: string;
-	displayColor: string;
-};
 
 export interface ICourseProperties {
 	name?: string;
@@ -36,7 +30,7 @@ const DEFAULT = {
 @Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
 @Index({ name: 'findAllByUserId', properties: ['students', 'substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps {
+export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
 	name: string = DEFAULT.name;
 
@@ -88,9 +82,10 @@ export class Course extends BaseEntityWithTimestamps {
 		return idsAsString;
 	}
 
-	getMetadata(): CourseMetadata {
+	getMetadata(): LearnroomMetadata {
 		return {
 			id: this.id,
+			type: LearnroomTypes.Course,
 			title: this.name,
 			shortTitle: this.name.substr(0, 2),
 			displayColor: this.color,

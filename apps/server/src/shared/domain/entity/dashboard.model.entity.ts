@@ -2,6 +2,7 @@ import { Entity, Property, ManyToOne, OneToMany, ManyToMany, Collection, Identif
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { User } from './user.entity';
+import { Course } from './course.entity';
 import { EntityId } from '../types';
 
 @Entity({ tableName: 'dashboarddefaultreference' })
@@ -38,8 +39,8 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	@Property()
 	yPos!: number;
 
-	@ManyToMany('DefaultGridReferenceModel', undefined, { fieldName: 'referenceIds' })
-	references = new Collection<DefaultGridReferenceModel>(this);
+	@ManyToMany('Course', undefined, { fieldName: 'referenceIds' })
+	references = new Collection<Course>(this);
 
 	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
 	dashboard!: IdentifiedReference<DashboardModelEntity>;

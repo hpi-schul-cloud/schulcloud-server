@@ -1,21 +1,11 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { EntityId } from '../types/entity-id';
+import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { ILearnroom } from '@shared/domain/interface';
 
 const defaultColumns = 6;
 const defaultRows = 6;
 
-export type GridElementReferenceMetadata = {
-	id: string;
-	title: string;
-	shortTitle: string;
-	displayColor: string;
-};
-
-export interface IGridElementReference {
-	getMetadata: () => GridElementReferenceMetadata;
-}
-
-export class DefaultGridReference implements IGridElementReference {
+export class DefaultGridReference implements ILearnroom {
 	// This is only a temporary fake class, for use until other references, like courses, are fully supported.
 	id: EntityId;
 
@@ -29,9 +19,10 @@ export class DefaultGridReference implements IGridElementReference {
 		this.displayColor = displayColor;
 	}
 
-	getMetadata(): GridElementReferenceMetadata {
+	getMetadata(): LearnroomMetadata {
 		return {
 			id: this.id,
+			type: LearnroomTypes.Course, // TODO: get rid of this
 			title: this.title,
 			shortTitle: this.title.substr(0, 2),
 			displayColor: this.displayColor,
@@ -50,9 +41,9 @@ export interface IGridElement {
 
 	removeReference(index: number): void;
 
-	getReferences(): IGridElementReference[];
+	getReferences(): ILearnroom[];
 
-	addReferences(anotherReference: IGridElementReference[]): void;
+	addReferences(anotherReference: ILearnroom[]): void;
 
 	setGroupName(newGroupName: string): void;
 }
@@ -62,7 +53,7 @@ export type GridElementContent = {
 	title: string;
 	shortTitle: string;
 	displayColor: string;
-	group?: GridElementReferenceMetadata[];
+	group?: LearnroomMetadata[];
 };
 
 export class GridElement implements IGridElement {
@@ -70,7 +61,7 @@ export class GridElement implements IGridElement {
 
 	title!: string;
 
-	private sortReferences = (a: IGridElementReference, b: IGridElementReference) => {
+	private sortReferences = (a: ILearnroom, b: ILearnroom) => {
 		const titleA = a.getMetadata().title;
 		const titleB = b.getMetadata().title;
 		if (titleA < titleB) {
@@ -82,29 +73,29 @@ export class GridElement implements IGridElement {
 		return 0;
 	};
 
-	private constructor(props: { id?: EntityId; title?: string; references: IGridElementReference[] }) {
+	private constructor(props: { id?: EntityId; title?: string; references: ILearnroom[] }) {
 		if (props.id) this.id = props.id;
 		if (props.title) this.title = props.title;
 		this.references = props.references.sort(this.sortReferences);
 	}
 
-	static FromPersistedReference(id: EntityId, reference: IGridElementReference): GridElement {
+	static FromPersistedReference(id: EntityId, reference: ILearnroom): GridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromPersistedGroup(id: EntityId, title: string, group: IGridElementReference[]): GridElement {
+	static FromPersistedGroup(id: EntityId, title: string, group: ILearnroom[]): GridElement {
 		return new GridElement({ id, title, references: group });
 	}
 
-	static FromSingleReference(reference: IGridElementReference): GridElement {
+	static FromSingleReference(reference: ILearnroom): GridElement {
 		return new GridElement({ references: [reference] });
 	}
 
-	static FromGroup(title: string, references: IGridElementReference[]): GridElement {
+	static FromGroup(title: string, references: ILearnroom[]): GridElement {
 		return new GridElement({ title, references });
 	}
 
-	references: IGridElementReference[];
+	references: ILearnroom[];
 
 	hasId(): boolean {
 		return !!this.id;
@@ -114,7 +105,7 @@ export class GridElement implements IGridElement {
 		return this.id;
 	}
 
-	getReferences(): IGridElementReference[] {
+	getReferences(): ILearnroom[] {
 		return this.references;
 	}
 
@@ -128,7 +119,7 @@ export class GridElement implements IGridElement {
 		this.references.splice(index, 1);
 	}
 
-	addReferences(anotherReference: IGridElementReference[]): void {
+	addReferences(anotherReference: ILearnroom[]): void {
 		this.references = this.references.concat(anotherReference).sort(this.sortReferences);
 	}
 

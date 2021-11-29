@@ -7,8 +7,9 @@ import {
 	DefaultGridReference,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	DefaultGridReferenceModel,
+	Course,
 } from '@shared/domain';
+import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 describe('dashboard model mapper', () => {
@@ -32,10 +33,10 @@ describe('dashboard model mapper', () => {
 			const element = new DashboardGridElementModel(new ObjectId().toString());
 			element.xPos = 1;
 			element.yPos = 2;
-			const reference = new DefaultGridReferenceModel(new ObjectId().toString());
-			reference.title = 'German';
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], name: 'German' });
 
-			element.references.add(reference);
+			element.references.add(course);
 			dashboard.gridElements.add(element);
 
 			await em.persistAndFlush(dashboard);
@@ -53,24 +54,25 @@ describe('dashboard model mapper', () => {
 
 	describe('mapDashboardToModel', () => {
 		it('should map dashboard with elements and groups to model', async () => {
+			const user = userFactory.build();
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'languages', [
-							new DefaultGridReference(new ObjectId().toString(), 'English'),
-							new DefaultGridReference(new ObjectId().toString(), 'German'),
+							courseFactory.build({ students: [user], name: 'English' }),
+							courseFactory.build({ students: [user], name: 'German' }),
 						]),
 					},
 					{
 						pos: { x: 1, y: 4 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Math')
+							courseFactory.build({ students: [user], name: 'Math' })
 						),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.id,
 			});
 
 			const mapped = await mapper.mapDashboardToModel(dashboard);
@@ -81,12 +83,13 @@ describe('dashboard model mapper', () => {
 			const element = mapped.gridElements[0];
 			expect(element instanceof DashboardGridElementModel);
 			expect(element.references.length).toBeGreaterThan(0);
-			expect(element.references[0] instanceof DefaultGridReferenceModel).toEqual(true);
+			expect(element.references[0] instanceof Course).toEqual(true);
 			const reference = element.references[0];
-			expect(['English', 'German', 'Math'].includes(reference.title)).toEqual(true);
+			expect(['English', 'German', 'Math'].includes(reference.name)).toEqual(true);
 		});
 
 		it('should detect changes to gridElement Collection', async () => {
+			const user = userFactory.build();
 			const dashboardId = new ObjectId().toString();
 			const elementId = new ObjectId().toString();
 			const oldElementId = new ObjectId().toString();
@@ -100,14 +103,11 @@ describe('dashboard model mapper', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference(elementId, new DefaultGridReference(elementId, 'Mathe')),
+						gridElement: GridElement.FromPersistedReference(elementId, courseFactory.build({ students: [user] })),
 					},
 					{
 						pos: { x: 1, y: 4 },
-						gridElement: GridElement.FromPersistedReference(
-							newElementId,
-							new DefaultGridReference(new ObjectId().toString(), 'Math')
-						),
+						gridElement: GridElement.FromPersistedReference(newElementId, courseFactory.build({ students: [user] })),
 					},
 				],
 				userId: new ObjectId().toString(),

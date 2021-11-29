@@ -1,9 +1,11 @@
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { DashboardEntity, IGridElementReference } from './dashboard.entity';
+import { ILearnroom, LearnroomMetadata, LearnroomTypes } from '@shared/domain';
+import { DashboardEntity } from './dashboard.entity';
 
 const getReferenceMock = (id: string) => ({
 	getMetadata: () => ({
 		id,
+		type: LearnroomTypes.Course,
 		title: 'Reference',
 		shortTitle: 'Re',
 		displayColor: '#FFFFFF',
@@ -24,7 +26,7 @@ const getElementMock = (mockId: string, title: string, referenceIds: string[]) =
 		isGroup: () => false,
 		removeReference: () => {},
 		getReferences: () => references,
-		addReferences: (newreferences: IGridElementReference[]) => {
+		addReferences: (newreferences: ILearnroom[]) => {
 			references = references.concat(newreferences);
 		},
 		getGroupName: () => '',

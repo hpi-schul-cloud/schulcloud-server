@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, DefaultGridReference, DashboardGridElementModel } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardRepo } from './dashboard.repo';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
@@ -30,17 +31,17 @@ describe('dashboard repo', () => {
 	});
 
 	it('should persist dashboard with gridElements', async () => {
+		const user = userFactory.build();
+		const course = courseFactory.build({ students: [user] });
+		await em.persistAndFlush([course]);
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedReference(
-						new ObjectId().toString(),
-						new DefaultGridReference(new ObjectId().toString(), 'Mathe')
-					),
+					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), course),
 				},
 			],
-			userId: new ObjectId().toString(),
+			userId: user.id,
 		});
 		await repo.persist(dashboard);
 		await em.flush();
@@ -50,17 +51,21 @@ describe('dashboard repo', () => {
 	});
 
 	it('should persist dashboard with gridElement group', async () => {
+		const user = userFactory.build();
+		const firstcourse = courseFactory.build({ students: [user] });
+		const secondCourse = courseFactory.build({ students: [user] });
+		em.persist([firstcourse, secondCourse]);
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
 					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'testgroup', [
-						new DefaultGridReference(new ObjectId().toString(), 'German'),
-						new DefaultGridReference(new ObjectId().toString(), 'Mathe'),
+						firstcourse,
+						secondCourse,
 					]),
 				},
 			],
-			userId: new ObjectId().toString(),
+			userId: user.id,
 		});
 		await repo.persist(dashboard);
 		await em.flush();
@@ -70,29 +75,25 @@ describe('dashboard repo', () => {
 		expect(elementContent.group).toBeDefined();
 		// if check for typescript only. has been asserted before
 		if (elementContent.group) {
-			expect(elementContent.group[0].title).toEqual('German');
-			expect(elementContent.group[1].title).toEqual('Mathe');
+			expect(elementContent.group[0].title).toEqual(firstcourse.name);
+			expect(elementContent.group[1].title).toEqual(secondCourse.name);
 		}
 		expect(elementContent.title).toEqual('testgroup');
 		expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
 	});
 
 	it('should persist changes', async () => {
+		const user = userFactory.build();
+		const courses = courseFactory.buildList(2, { students: [user] });
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedReference(
-						new ObjectId().toString(),
-						new DefaultGridReference(new ObjectId().toString(), 'Math')
-					),
+					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[0]),
 				},
 				{
 					pos: { x: 1, y: 4 },
-					gridElement: GridElement.FromPersistedReference(
-						new ObjectId().toString(),
-						new DefaultGridReference(new ObjectId().toString(), 'German')
-					),
+					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[1]),
 				},
 			],
 			userId: new ObjectId().toString(),
@@ -106,21 +107,17 @@ describe('dashboard repo', () => {
 	});
 
 	it('should remove orphaned gridelements', async () => {
+		const user = userFactory.build();
+		const courses = courseFactory.buildList(2, { students: [user] });
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedReference(
-						new ObjectId().toString(),
-						new DefaultGridReference(new ObjectId().toString(), 'Math')
-					),
+					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[0]),
 				},
 				{
 					pos: { x: 1, y: 4 },
-					gridElement: GridElement.FromPersistedReference(
-						new ObjectId().toString(),
-						new DefaultGridReference(new ObjectId().toString(), 'German')
-					),
+					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[1]),
 				},
 			],
 			userId: new ObjectId().toString(),
@@ -137,14 +134,13 @@ describe('dashboard repo', () => {
 
 	describe('persistAndFlush', () => {
 		it('should persist dashboard with gridElements', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromPersistedReference(
-							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
-						),
+						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), course),
 					},
 				],
 				userId: new ObjectId().toString(),
@@ -160,14 +156,13 @@ describe('dashboard repo', () => {
 		});
 
 		it('should be idempotent', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromPersistedReference(
-							new ObjectId().toString(),
-							new DefaultGridReference(new ObjectId().toString(), 'Mathe')
-						),
+						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), course),
 					},
 				],
 				userId: new ObjectId().toString(),
@@ -181,14 +176,16 @@ describe('dashboard repo', () => {
 		});
 
 		it('should persist dashboard with element without id', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
-						gridElement: GridElement.FromSingleReference(new DefaultGridReference(new ObjectId().toString(), 'Mathe')),
+						gridElement: GridElement.FromSingleReference(course),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.id,
 			});
 			await repo.persistAndFlush(dashboard);
 
