@@ -11,13 +11,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Fixed
+
+## [26.19.0] - 2021-11-30
+
 ### Changed
 
 - BC-617 - changes for transition to Dataport
 - BC-740 - BC-847 - change ansible vars for docker image and tag
 - BC-157 - add typescript to task store: update task api response
-
-### Fixed
+- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
 
 ## [26.18.0] - 2021-11-23
 
@@ -25,8 +28,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - BC-485 - ansible role for management service
 
 ### Changed
-
-- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
 
 ### Fixed
 - BC-724 - fixed OpenAPI spec for dashboard
