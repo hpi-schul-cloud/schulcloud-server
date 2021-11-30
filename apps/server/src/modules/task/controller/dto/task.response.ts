@@ -1,23 +1,36 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse, DecodeHtmlEntities } from '@shared/controller';
+import { TaskStatusResponse } from './task-status.response';
 
 /**
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
+	constructor({ id, name, courseName, createdAt, updatedAt, status }: TaskResponse) {
+		this.id = id;
+		this.name = name;
+		this.courseName = courseName;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.status = status;
+	}
+
+	@ApiProperty()
+	id: string;
+
 	@ApiProperty()
 	@DecodeHtmlEntities()
 	name: string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	availableDate?: Date;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	duedate?: Date;
 
-	@ApiPropertyOptional()
+	@ApiProperty()
 	@DecodeHtmlEntities()
-	courseName?: string;
+	courseName: string = '' as string;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
@@ -27,22 +40,13 @@ export class TaskResponse {
 	displayColor?: string;
 
 	@ApiProperty()
-	id: string;
-
-	@ApiProperty()
 	createdAt: Date;
 
 	@ApiProperty()
 	updatedAt: Date;
 
 	@ApiProperty()
-	status: {
-		submitted?: number;
-		maxSubmissions?: number;
-		graded?: number;
-		isDraft: boolean;
-		isSubstitutionTeacher: boolean;
-	};
+	status: TaskStatusResponse;
 }
 
 export class TaskListResponse extends PaginationResponse<TaskResponse[]> {

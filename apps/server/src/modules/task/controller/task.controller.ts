@@ -28,4 +28,20 @@ export class TaskController {
 		const result = new TaskListResponse(taskresponses, total, skip, limit);
 		return result;
 	}
+
+	@Get('finished')
+	async findAllFinished(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() paginationQuery: PaginationQuery
+	): Promise<TaskListResponse> {
+		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, paginationQuery);
+
+		const taskresponses = tasksWithStatus.map((task) => {
+			return TaskMapper.mapToResponse(task);
+		});
+
+		const { skip, limit } = paginationQuery;
+		const result = new TaskListResponse(taskresponses, total, skip, limit);
+		return result;
+	}
 }

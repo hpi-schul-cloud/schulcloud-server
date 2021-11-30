@@ -1,13 +1,75 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 
-import { EntityId, IFindOptions, Task, Counted } from '@shared/domain';
+import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
 
 import { TaskScope } from './task-scope';
 
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
+
+	async findAllFinishedByParentIds(
+		parentIds: {
+			creatorId: EntityId;
+			openCourseIds: EntityId[];
+			lessonIdsOfOpenCourses: EntityId[];
+			finishedCourseIds: EntityId[];
+			lessonIdsOfFinishedCourses: EntityId[];
+		},
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		const { pagination } = options || {};
+
+		const scope = new TaskScope('$or');
+
+		const parentsOpen = new TaskScope('$or');
+		parentsOpen.byCourseIds(parentIds.openCourseIds);
+		parentsOpen.byLessonIds(parentIds.lessonIdsOfOpenCourses);
+
+		const parentsFinished = new TaskScope('$or');
+		parentsFinished.byCourseIds(parentIds.finishedCourseIds);
+		parentsFinished.byLessonIds(parentIds.lessonIdsOfFinishedCourses);
+
+		const closedForOpenCoursesAndLessons = new TaskScope();
+		closedForOpenCoursesAndLessons.addQuery(parentsOpen.query);
+		closedForOpenCoursesAndLessons.byDraft(false);
+		closedForOpenCoursesAndLessons.byClosed(parentIds.creatorId, true);
+
+		const allForFinishedCoursesAndLessons = new TaskScope();
+		allForFinishedCoursesAndLessons.addQuery(parentsFinished.query);
+		allForFinishedCoursesAndLessons.byDraft(false);
+
+		// must find also closed without course or lesson as parent
+		const closedForCreator = new TaskScope();
+		closedForCreator.byClosed(parentIds.creatorId, true);
+		closedForCreator.byCreatorId(parentIds.creatorId);
+
+		const allForFinishedCoursesAndLessonsForCreator = new TaskScope();
+		allForFinishedCoursesAndLessonsForCreator.addQuery(parentsFinished.query);
+		allForFinishedCoursesAndLessonsForCreator.byCreatorId(parentIds.creatorId);
+
+		const allForCreator = new TaskScope('$or');
+		allForCreator.addQuery(closedForCreator.query);
+		allForCreator.addQuery(allForFinishedCoursesAndLessonsForCreator.query);
+
+		scope.addQuery(closedForOpenCoursesAndLessons.query);
+		scope.addQuery(allForFinishedCoursesAndLessons.query);
+		scope.addQuery(allForCreator.query);
+
+		const order = { dueDate: SortOrder.desc };
+
+		const [tasks, count] = await this.em.findAndCount(Task, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		await this.em.populate(tasks, ['course', 'lesson', 'submissions']);
+
+		return [tasks, count];
+	}
 
 	/**
 	 * Find all tasks by their parents which can be any of
@@ -22,19 +84,19 @@ export class TaskRepo {
 	 */
 	async findAllByParentIds(
 		parentIds: {
-			teacherId?: EntityId;
+			creatorId?: EntityId;
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: EntityId },
+		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: { userId: EntityId; value: boolean } },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
 
 		const parentIdScope = new TaskScope('$or');
 
-		if (parentIds.teacherId) {
-			parentIdScope.byTeacherId(parentIds.teacherId);
+		if (parentIds.creatorId) {
+			parentIdScope.byOnlyCreatorId(parentIds.creatorId);
 		}
 
 		if (parentIds.courseIds) {
@@ -48,7 +110,7 @@ export class TaskRepo {
 		scope.addQuery(parentIdScope.query);
 
 		if (filters?.closed) {
-			scope.byClosed(filters.closed);
+			scope.byClosed(filters.closed.userId, filters.closed.value);
 		}
 
 		if (filters?.draft !== undefined) {
@@ -60,6 +122,7 @@ export class TaskRepo {
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+
 		return countedTaskList;
 	}
 
@@ -72,6 +135,7 @@ export class TaskRepo {
 		});
 
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
+
 		return [taskEntities, count];
 	}
 }

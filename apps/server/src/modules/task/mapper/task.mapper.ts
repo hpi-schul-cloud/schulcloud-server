@@ -1,27 +1,25 @@
 import { TaskWithStatusVo } from '@shared/domain';
 import { TaskResponse } from '../controller/dto';
+import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {
 	static mapToResponse(taskWithStatus: TaskWithStatusVo): TaskResponse {
 		const { task, status } = taskWithStatus;
-		const dto = new TaskResponse();
+		const taskDesc = task.getDescriptions();
+		const statusDto = TaskStatusMapper.mapToResponse(status);
 
-		dto.id = task.id;
-		dto.name = task.name;
+		const dto = new TaskResponse({
+			id: task.id,
+			name: task.name,
+			courseName: taskDesc.name,
+			createdAt: task.createdAt,
+			updatedAt: task.updatedAt,
+			status: statusDto,
+		});
+
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
-		dto.createdAt = task.createdAt;
-		dto.updatedAt = task.updatedAt;
-		dto.status = {
-			submitted: status.submitted,
-			maxSubmissions: status.maxSubmissions,
-			graded: status.graded,
-			isDraft: status.isDraft,
-			isSubstitutionTeacher: status.isSubstitutionTeacher,
-		};
 
-		const taskDesc = task.getDescriptions();
-		dto.courseName = taskDesc.name;
 		dto.displayColor = taskDesc.color;
 		dto.description = taskDesc.description;
 

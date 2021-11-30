@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestjs/common';
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe, PaginationQuery } from '@shared/controller';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -32,7 +32,6 @@ export class NewsController {
 	 * Responds with all news for a user.
 	 */
 	@Get()
-	@ApiBody({ type: NewsListResponse })
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: NewsFilterQuery,
