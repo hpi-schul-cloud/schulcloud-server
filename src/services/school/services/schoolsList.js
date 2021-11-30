@@ -12,7 +12,7 @@ class SchoolsListService {
 		};
 		const systemsQuery = {
 			path: 'systems',
-			select: '_id type alias',
+			select: '_id type alias url oaClientId',
 			match: { $or: [{ type: { $ne: 'ldap' } }, { 'ldapConfig.active': { $eq: true } }] },
 		};
 		const schools = await schoolModel
