@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+### Changed
+
+- BC-701 - bump packages 
+
 ## [26.19.0] - 2021-11-30
 
 ### Changed
