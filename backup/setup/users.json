@@ -5711,5 +5711,48 @@
 		"preferences": {
 			"firstLogin": true
 		}
+	},
+	{
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2020-11-04T20:07:23.066Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2020-11-04T20:07:23.066Z"
+				}
+			}
+		},
+		"roles": [{
+			"$oid": "0000d186816abba584714c99"
+		}],
+		"emailSearchValues": ["s", "st", "stu", "tud", "ude", "den", "ent", "nt.", "t.2", ".2.", "2.q", ".qa", "qa@", "a@s", "@sc", "sch", "chu", "hul", "c", "cl", "clo", "lou", "oud", "ud.", "d.o", ".or", "org"],
+		"firstNameSearchValues": ["S", "St", "Stu", "tud", "ude", "den", "ent", "nt2"],
+		"lastNameSearchValues": ["L", "La", "Las", "ast", "stN", "tNa", "Nam", "ame", "me2"],
+		"forcePasswordChange": false,
+		"features": [],
+		"firstName": "Alwin",
+		"lastName": "Johansson",
+		"email": "alwin.johansson@tim.mein-iserv.de",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"parents": [],
+		"createdAt": {
+			"$date": "2020-11-04T20:05:54.507Z"
+		},
+		"updatedAt": {
+			"$date": "2020-11-04T20:07:49.080Z"
+		},
+		"birthday": {
+			"$date": "2004-07-05T22:00:00.000Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		}
 	}
 ]
