@@ -168,7 +168,7 @@
 		"strip-bom": "^4.0.0",
 		"swagger-ui-express": "^4.1.6",
 		"tiny-async-pool": "^1.2.0",
-		"universal-analytics": "^0.4.17",
+		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
 		"wait-on": "^6.0.0",
@@ -176,7 +176,7 @@
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
-		"@aws-sdk/client-s3": "^3.34.0",
+		"@aws-sdk/client-s3": "^3.43.0",
 		"@compodoc/compodoc": "^1.1.15",
 		"@nestjs/cli": "^8.1.4",
 		"@nestjs/schematics": "^7.2.7",
