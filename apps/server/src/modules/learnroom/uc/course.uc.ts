@@ -14,4 +14,12 @@ export class CourseUc {
 			{ pagination: options, order: { name: SortOrder.asc } }
 		);
 	}
+
+	findArchivedByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
+		return this.courseRepo.findAllByUserId(
+			userId,
+			{ onlyArchivedCourses: true },
+			{ pagination: options, order: { name: SortOrder.asc } }
+		);
+	}
 }

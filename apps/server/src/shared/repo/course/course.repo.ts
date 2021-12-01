@@ -38,6 +38,14 @@ class CourseScope extends Scope<Course> {
 
 		return this;
 	}
+
+	forArchivedCourses(): CourseScope {
+		const now = new Date();
+
+		this.addQuery({ untilDate: { $lt: now } });
+
+		return this;
+	}
 }
 
 @Injectable()
@@ -46,7 +54,10 @@ export class CourseRepo {
 
 	async findAllByUserId(
 		userId: EntityId,
-		filters?: { onlyActiveCourses?: boolean },
+		filters?: {
+			onlyActiveCourses?: boolean;
+			onlyArchivedCourses?: boolean;
+		},
 		options?: IFindOptions<Course>
 	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
@@ -54,6 +65,10 @@ export class CourseRepo {
 
 		if (filters?.onlyActiveCourses) {
 			scope.forActiveCourses();
+		}
+
+		if (filters?.onlyArchivedCourses) {
+			scope.forArchivedCourses();
 		}
 
 		const { pagination, order } = options || {};
