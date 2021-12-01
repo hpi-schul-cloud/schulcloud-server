@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { PaginationQuery } from '@shared/controller/';
 import { ICurrentUser } from '@shared/domain';
@@ -14,7 +14,6 @@ export class CourseController {
 	constructor(private readonly courseUc: CourseUc) {}
 
 	@Get()
-	@ApiBody({ type: CourseMetadataListResponse })
 	async findForUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery

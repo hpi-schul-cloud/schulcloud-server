@@ -11,15 +11,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
+### Fixed
+
+### Changed
+
+- BC-826 - show teacher status for privileged members for tasks
+- BC-701 - bump packages
+
+## [26.19.0] - 2021-11-30
 
 ### Changed
 
 - BC-740 - BC-847 - change ansible vars for docker image and tag
-- BC-609 - open task do not longer published open tasks of finished courses
-- BC-826 - finished tasks display the privilege status for privilege members and check if one fo the taskoverview permissions exist
-
-### Fixed
+- BC-157 - add typescript to task store: update task api response
+- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
 
 ## [26.18.0] - 2021-11-23
 
