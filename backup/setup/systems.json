@@ -5,6 +5,7 @@
 		},
 		"type": "moodle",
 		"url": "http://moodle.schul.tech/",
+		"oaClientId": "564lkjhgfdsadfghj",
 		"__v": 0
 	},
 	{
@@ -12,6 +13,15 @@
 			"$oid": "0000d186816abba584714c91"
 		},
 		"type": "itslearning",
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "61a63e02b3524af5afe719dd"
+		},
+		"type": "iserv",
+		"url": "http://iserv.schul.de/",
+		"oaClientId": "ooooooppppp444ooo4o4o4",
 		"__v": 0
 	}
 ]
