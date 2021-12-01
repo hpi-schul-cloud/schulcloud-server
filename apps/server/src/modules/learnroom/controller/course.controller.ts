@@ -18,13 +18,7 @@ export class CourseController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<CourseMetadataListResponse> {
-		const [activeCourses, totalActive] = await this.courseUc.findActiveByUser(currentUser.userId, paginationQuery);
-		const [archivedCourses, totalArchived] = await this.courseUc.findArchivedByUser(
-			currentUser.userId,
-			paginationQuery
-		);
-		const courses = [...activeCourses, ...archivedCourses];
-		const total = totalActive + totalArchived;
+		const [courses, total] = await this.courseUc.findAllByUser(currentUser.userId, paginationQuery);
 		const courseResponses = courses.map((course) => CourseMapper.mapToMetadataResponse(course));
 		const { skip, limit } = paginationQuery;
 

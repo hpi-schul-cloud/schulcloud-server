@@ -32,7 +32,7 @@ describe('course controller', () => {
 	describe('findForUser', () => {
 		it('should call uc', async () => {
 			const spy = jest
-				.spyOn(uc, 'findActiveByUser')
+				.spyOn(uc, 'findAllByUser')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((userId: EntityId, options?: PaginationQuery) => {
 					const courses = new Array(5).map(() => ({} as Course));
@@ -57,7 +57,7 @@ describe('course controller', () => {
 			} as Course;
 
 			jest
-				.spyOn(uc, 'findActiveByUser')
+				.spyOn(uc, 'findAllByUser')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((userId: EntityId, options?: PaginationQuery) => {
 					return Promise.resolve([[courseMock], 1]);

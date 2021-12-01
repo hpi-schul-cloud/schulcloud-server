@@ -166,7 +166,7 @@ describe('course repo', () => {
 			expect(count).toEqual(3);
 		});
 
-		it('should only return courses that are currently active', async () => {
+		it('should return any courses', async () => {
 			const student = userFactory.build();
 			const twoDaysInSeconds = 172800;
 			const course1 = courseFactory.build({
@@ -187,10 +187,10 @@ describe('course repo', () => {
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(student.id, { onlyActiveCourses: true });
+			const [result, count] = await repo.findAllByUserId(student.id);
 
-			expect(checkEqualIds(result, [course1, course3])).toEqual(true);
-			expect(count).toEqual(2);
+			expect(checkEqualIds(result, [course1, course2, course3])).toEqual(true);
+			expect(count).toEqual(3);
 		});
 
 		it('should be able to sort by name', async () => {
@@ -203,7 +203,7 @@ describe('course repo', () => {
 			await em.persistAndFlush(courses);
 			em.clear();
 
-			const [result, count] = await repo.findAllByUserId(user.id, {}, { order: { name: SortOrder.asc } });
+			const [result, count] = await repo.findAllByUserId(user.id, { order: { name: SortOrder.asc } });
 
 			const sortedNames = names.sort();
 

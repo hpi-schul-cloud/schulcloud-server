@@ -29,20 +29,12 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forActiveCourses(): CourseScope {
+	forAllCourses(): CourseScope {
 		const now = new Date();
 		const noUntilDate = { untilDate: { $exists: false } };
-		const untilDateInFuture = { untilDate: { $gte: now } };
+		const anyUntilDate = { $or: [{ untilDate: { $gte: now } }, { untilDate: { $lt: now } }] };
 
-		this.addQuery({ $or: [noUntilDate, untilDateInFuture] });
-
-		return this;
-	}
-
-	forArchivedCourses(): CourseScope {
-		const now = new Date();
-
-		this.addQuery({ untilDate: { $lt: now } });
+		this.addQuery({ $or: [noUntilDate, anyUntilDate] });
 
 		return this;
 	}
@@ -52,24 +44,10 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findAllByUserId(
-		userId: EntityId,
-		filters?: {
-			onlyActiveCourses?: boolean;
-			onlyArchivedCourses?: boolean;
-		},
-		options?: IFindOptions<Course>
-	): Promise<Counted<Course[]>> {
+	async findAllByUserId(userId: EntityId, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllGroupTypes(userId);
-
-		if (filters?.onlyActiveCourses) {
-			scope.forActiveCourses();
-		}
-
-		if (filters?.onlyArchivedCourses) {
-			scope.forArchivedCourses();
-		}
+		scope.forAllCourses();
 
 		const { pagination, order } = options || {};
 		const queryOptions = {

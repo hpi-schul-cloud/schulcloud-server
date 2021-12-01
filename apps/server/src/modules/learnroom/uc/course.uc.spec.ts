@@ -33,7 +33,7 @@ describe('course uc', () => {
 				return Promise.resolve([courses, 5]);
 			});
 
-			const [array, count] = await service.findActiveByUser('someUserId');
+			const [array, count] = await service.findAllByUser('someUserId');
 			expect(count).toEqual(5);
 			expect(array).toEqual(courses);
 		});
@@ -47,9 +47,9 @@ describe('course uc', () => {
 			const pagination = { skip: 1, limit: 2 };
 			const resultingOptions = { pagination, order: { name: SortOrder.asc } };
 
-			const [array, count] = await service.findActiveByUser('someUserId', pagination);
+			const [array, count] = await service.findAllByUser('someUserId', pagination);
 
-			expect(spy).toHaveBeenCalledWith('someUserId', { onlyActiveCourses: true }, resultingOptions);
+			expect(spy).toHaveBeenCalledWith('someUserId', resultingOptions);
 		});
 	});
 });
