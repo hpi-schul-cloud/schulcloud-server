@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: api-ldapsync-cronjob
   name: api-ldapsync-full-cronjob
 spec:
   schedule: "{{ SERVER_LDAP_SYNC_FULL_CRONJOB|default("0 3 * * 3,6", true) }}"
@@ -11,6 +11,9 @@ spec:
     spec:
       activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
       template:
+        metadata:
+          labels:
+            app: api-ldapsync-cronjob
         spec:
           containers:
           - name: api-ldapsync-cronjob

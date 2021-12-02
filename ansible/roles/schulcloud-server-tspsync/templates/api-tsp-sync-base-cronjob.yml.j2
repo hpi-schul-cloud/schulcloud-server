@@ -3,13 +3,16 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: api-tsp-sync-cronjob
   name: api-tsp-sync-base-cronjob
 spec:
   schedule: "9 3 * * *"
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: api-tsp-sync-cronjob
         spec:
           containers:
           - name: api-tsp-sync-base-cronjob

@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-ldapsync-deployment
+  name: api-ldap-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-ldapsync
+    app: api-ldap
 spec:
-  replicas: {{ API_LDAPSYNC_REPLICAS|default("1", true) }}
+  replicas: {{ API_LDAP_REPLICAS|default("1", true) }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -16,11 +16,11 @@ spec:
   paused: false
   selector:
     matchLabels:
-      app: api-ldapsync
+      app: api-ldap
   template:
     metadata:
       labels:
-        app: api-ldapsync
+        app: api-ldap
     spec:
       securityContext:
         runAsUser: 1000
@@ -28,12 +28,12 @@ spec:
         fsGroup: 1000
         runAsNonRoot: true
       containers:
-      - name: api-ldapsync
+      - name: api
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3030
-          name: api-ldapsync
+          name: api-ldap
           protocol: TCP
         envFrom:
         - configMapRef:
@@ -69,3 +69,10 @@ spec:
           requests:
             cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
             memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+      tolerations:
+      - key: "apihost"
+        operator: "Equal"
+        value: "yes"
+        effect: "NoSchedule"
+      nodeSelector:
+        apihost: "yes"
