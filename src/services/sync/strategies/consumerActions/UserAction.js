@@ -29,7 +29,14 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		if (school.migrationMode) {
-			// persist user data for migration, school admin must link ldap to existing user
+			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+			if (foundUser === null) {
+				// create migration user
+				const updateObject = this.createUserUpdateObject(user, {});
+
+				await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, updateObject);
+			}
+			// persist user data for migration, school admin must link ldap to local users
 			// create or update in new collection
 			return;
 		}
@@ -49,6 +56,14 @@ class UserAction extends BaseConsumerAction {
 	}
 
 	async updateUserAndAccount(foundUser, user, account) {
+		const updateObject = this.createUserUpdateObject(user, foundUser);
+		if (!_.isEmpty(updateObject)) {
+			return UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
+		}
+		return true;
+	}
+
+	createUserUpdateObject(user, foundUser) {
 		const updateObject = {};
 		if (user.firstName !== foundUser.firstName) {
 			updateObject.firstName = user.firstName || ' ';
@@ -67,10 +82,7 @@ class UserAction extends BaseConsumerAction {
 		if (!_.isEqual(userRoles, user.roles)) {
 			updateObject.roles = user.roles;
 		}
-		if (!_.isEmpty(updateObject)) {
-			return UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
-		}
-		return true;
+		return updateObject;
 	}
 
 	async createUserAndAccount(idmUser, account, schoolId) {

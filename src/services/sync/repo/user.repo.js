@@ -1,5 +1,6 @@
 const accountModel = require('../../account/model');
 const { userModel } = require('../../user/model');
+const { importUserModel } = require('../model/userMigration.schema');
 const roleModel = require('../../role/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { BadRequest } = require('../../../errors');
@@ -105,6 +106,16 @@ const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	return { user, account };
 };
 
+// TODO when to delete them (by school)?
+const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
+	const userToUpdate = { ...user, schoolId, systemId, ldapId };
+	const persistedUser = await importUserModel
+		.findOneAndUpdate({ schoolId, ldapId }, userToUpdate, { new: true })
+		.lean()
+		.exec();
+	return persistedUser;
+};
+
 const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 	userModel
 		.findOne({
@@ -129,6 +140,7 @@ const UserRepo = {
 	private: { createAccount, createUser, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
+	createOrUpdateImportUser,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 };

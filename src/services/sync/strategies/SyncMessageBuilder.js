@@ -25,6 +25,7 @@ class SyncMessageBuilder {
 				name: ldapSchool.displayName,
 				systems: [this.systemId],
 				ldapSchoolIdentifier: ldapSchool.ldapOu,
+				officialSchoolNumber: ldapSchool.ou,
 				currentYear,
 				federalState,
 			},

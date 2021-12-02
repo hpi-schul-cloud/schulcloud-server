@@ -23,6 +23,20 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 		.lean({ virtuals: true })
 		.exec();
 
+const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) =>
+	schoolModel.find({ officialSchoolNumber }).exec();
+
+const enableUserMigrationMode = async (schoolId, ldapSchoolIdentifier, system) => {
+	schoolModel
+		.findOneAndUpdate(
+			{ _id: schoolId },
+			{ ldapSchoolIdentifier, inUserMigration: true, $push: { systems: system } },
+			{ new: true }
+		)
+		.lean()
+		.exec();
+};
+
 const getYears = async () => yearModel.find().lean().exec();
 
 const findFederalState = async (abbreviation) => federalStateModel.findOne({ abbreviation }).lean().exec();
@@ -31,6 +45,8 @@ const SchoolRepo = {
 	createSchool,
 	updateSchoolName,
 	findSchoolByLdapIdAndSystem,
+	findSchoolByOfficialSchoolNumber,
+	enableUserMigrationMode,
 	getYears,
 	findFederalState,
 };

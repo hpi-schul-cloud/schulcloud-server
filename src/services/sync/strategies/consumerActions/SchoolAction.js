@@ -1,7 +1,7 @@
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS, SC_THEME } = require('../../../../../config/globals');
 const { SchoolRepo } = require('../../repo');
 const { fileStorageTypes } = require('../../../school/model');
 const getFileStorageStrategy = require('../../../fileStorage/strategies').createStrategy;
@@ -20,19 +20,30 @@ class SchoolAction extends BaseConsumerAction {
 	async action(data = {}) {
 		const { school: schoolData = {} } = data;
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
-		// TODO for BRB compare school identifier (ldap: 'ou' whith 'school.officialSchoolNumber') set ldap id?
-		// set migration mode for school
 		if (school) {
 			if (school.name !== schoolData.name) {
 				await SchoolRepo.updateSchoolName(school._id, schoolData.name);
 			}
 			return;
 		}
-		/* brb and school number matches */
-		if (true) {
-			// set ldap identifier on school
-			// set migration mode enabled
-			return;
+		/* brb and school number matches: enable ldap migration */
+		const { officialSchoolNumber } = schoolData; //
+		if (SC_THEME === 'brb' && officialSchoolNumber) {
+			// compare school numbers
+			const schools = await SchoolRepo.findSchoolByOfficialSchoolNumber(officialSchoolNumber);
+			if (schools.length === 1) {
+				// set migration mode enabled and add ldap uuid
+				await SchoolRepo.enableUserMigrationMode(
+					schools[0]._id,
+					schoolData.ldapSchoolIdentifier,
+					schoolData.systems[0]
+				);
+				return;
+			}
+			if (schools.length > 1) {
+				throw new Error(`found multiple schools with officialSchoolNumber ${officialSchoolNumber}`);
+			}
+			// length:0 create new school when school number does not match...
 		}
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
