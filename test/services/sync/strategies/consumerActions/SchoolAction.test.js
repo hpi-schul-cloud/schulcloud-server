@@ -5,12 +5,14 @@ const sinon = require('sinon');
 const { BadRequest } = require('../../../../../src/errors');
 const { SchoolAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
+const globals = require('../../../../../config/globals');
+
 const { SchoolRepo } = require('../../../../../src/services/sync/repo');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe('School Actions', () => {
+describe.only('School Actions', () => {
 	let schoolAction;
 
 	before(async () => {
@@ -51,6 +53,47 @@ describe('School Actions', () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.throws(new BadRequest('school repo error'));
 			await expect(schoolAction.action({})).to.be.rejectedWith(BadRequest);
+		});
+
+		describe('when ldap school matchs by official school id with local school on BRB instance', () => {
+			let themeBefore;
+
+			before(() => {
+				themeBefore = globals.SC_THEME;
+				globals.SC_THEME = 'brb';
+			});
+
+			after(() => {
+				globals.SC_THEME = themeBefore;
+			});
+
+			it('should enable user migration mode for school', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.resolves(null);
+
+				const schoolId = 1;
+				sinon.stub(SchoolRepo, 'findSchoolByOfficialSchoolNumber').resolves([{ _id: schoolId }]);
+
+				const enableUserMigrationModeStub = sinon.stub(SchoolRepo, 'enableUserMigrationMode');
+
+				const schoolData = { ldapSchoolIdentifier: 'ldapSchoolIdentifier', systems: ['systemId'] };
+				await schoolAction.action(schoolData);
+
+				expect(enableUserMigrationModeStub.calledOnce).to.be.true;
+				expect(enableUserMigrationModeStub.calledOnce).toHaveBeenCalledWith(
+					schoolId,
+					schoolData.ldapSchoolIdentifier,
+					schoolData.systems[0]
+				);
+			});
+
+			it('should fail if multiple schools with the same official school number exist locally');
+
+			it('should create a new school if no school with the given official school number exists locally');
+
+			it('should create a new school if the school if the ldap school does not have a school number');
+
+			it('should not crate new school if local school is already assigned to LDAP');
 		});
 	});
 });
