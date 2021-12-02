@@ -23,6 +23,7 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 		.lean({ virtuals: true })
 		.exec();
 
+// TODO ldap school number should not be taken just from the ou, but be part of the system ldap config definitions to get it
 const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) =>
 	schoolModel.find({ officialSchoolNumber }).exec();
 
