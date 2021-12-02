@@ -29,12 +29,12 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forAllCourses(): CourseScope {
+	forActiveCourses(): CourseScope {
 		const now = new Date();
 		const noUntilDate = { untilDate: { $exists: false } };
-		const anyUntilDate = { $or: [{ untilDate: { $gte: now } }, { untilDate: { $lt: now } }] };
+		const untilDateInFuture = { untilDate: { $gte: now } };
 
-		this.addQuery({ $or: [noUntilDate, anyUntilDate] });
+		this.addQuery({ $or: [noUntilDate, untilDateInFuture] });
 
 		return this;
 	}
@@ -44,10 +44,17 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findAllByUserId(userId: EntityId, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+	async findAllByUserId(
+		userId: EntityId,
+		filters?: { onlyActiveCourses?: boolean },
+		options?: IFindOptions<Course>
+	): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllGroupTypes(userId);
-		scope.forAllCourses();
+
+		if (filters?.onlyActiveCourses) {
+			scope.forActiveCourses();
+		}
 
 		const { pagination, order } = options || {};
 		const queryOptions = {

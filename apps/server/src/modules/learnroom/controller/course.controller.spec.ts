@@ -17,7 +17,7 @@ describe('course controller', () => {
 					provide: CourseUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findActiveByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
+						findAllByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
 							throw new Error('Please write a mock for CourseUc.findByUser.');
 						},
 					},

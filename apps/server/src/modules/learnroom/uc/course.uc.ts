@@ -8,6 +8,6 @@ export class CourseUc {
 	constructor(private readonly courseRepo: CourseRepo) {}
 
 	findAllByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
-		return this.courseRepo.findAllByUserId(userId, { pagination: options, order: { name: SortOrder.asc } });
+		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { name: SortOrder.asc } });
 	}
 }

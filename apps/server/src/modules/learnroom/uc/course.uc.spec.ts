@@ -49,7 +49,7 @@ describe('course uc', () => {
 
 			const [array, count] = await service.findAllByUser('someUserId', pagination);
 
-			expect(spy).toHaveBeenCalledWith('someUserId', resultingOptions);
+			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
 		});
 	});
 });
