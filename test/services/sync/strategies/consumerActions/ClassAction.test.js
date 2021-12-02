@@ -12,7 +12,7 @@ const { SchoolRepo, ClassRepo, UserRepo } = require('../../../../../src/services
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe('Class Actions', () => {
+describe.only('Class Actions', () => {
 	let classAction;
 
 	before(async () => {
@@ -98,6 +98,40 @@ describe('Class Actions', () => {
 		it('should not update class when school is in maintenance mode', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inMaintenance: true });
+
+			const existingClass = {
+				_id: 1,
+				name: 'Old Test Class',
+				year: new ObjectId(),
+				ldapDn: 'Old ldapdn',
+			};
+			sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(existingClass);
+
+			const updateClassSpy = sinon.spy(ClassRepo, 'updateClassName');
+
+			const newClassName = 'New Test Class';
+			await classAction.action({ class: { name: newClassName } });
+
+			expect(updateClassSpy.notCalled).to.be.true;
+		});
+
+		it('should not create class when school is in user migration mode', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inUserMigration: true });
+
+			sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(null);
+
+			const createClassSpy = sinon.spy(ClassRepo, 'createClass');
+
+			const newClassName = 'New Test Class';
+			await classAction.action({ class: { name: newClassName, ldapDn: 'some ldap' } });
+
+			expect(createClassSpy.notCalled).to.be.true;
+		});
+
+		it('should not update class when school is in user migration mode', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inUserMigration: true });
 
 			const existingClass = {
 				_id: 1,
