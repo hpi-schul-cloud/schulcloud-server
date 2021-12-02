@@ -3,7 +3,7 @@ import { EntityId, DashboardEntity, GridElementWithPosition, DashboardModelEntit
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
-const generateHardcodedTestDashboard = (userId: EntityId) => {
+const generateEmptyDashboard = (userId: EntityId) => {
 	const gridArray: GridElementWithPosition[] = [];
 
 	const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: gridArray, userId });
@@ -45,7 +45,7 @@ export class DashboardRepo implements IDashboardRepo {
 			return this.mapper.mapDashboardToEntity(dashboardModel);
 		}
 
-		const dashboard = generateHardcodedTestDashboard(userId);
+		const dashboard = generateEmptyDashboard(userId);
 		await this.persistAndFlush(dashboard);
 
 		return dashboard;

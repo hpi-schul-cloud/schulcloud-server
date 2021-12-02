@@ -197,29 +197,51 @@ describe('dashboard repo', () => {
 	});
 
 	describe('getUsersDashboard', () => {
-		it('returns a dashboard', async () => {
-			const result = await repo.getUsersDashboard(new ObjectId().toString());
-			expect(result instanceof DashboardEntity).toEqual(true);
-			expect(result.getGrid().length).toBeGreaterThan(0);
+		describe('when user has no dashboard yet', () => {
+			it('generates an empty dashboard ', async () => {
+				const result = await repo.getUsersDashboard(new ObjectId().toString());
+				expect(result instanceof DashboardEntity).toEqual(true);
+				expect(result.getGrid().length).toEqual(0);
+			});
 		});
 
-		it('always returns the same dashboard for same user', async () => {
-			const userId = new ObjectId().toString();
-			const firstDashboard = await repo.getUsersDashboard(userId);
-			// cant manipulate the dashboard, because the entity doesnt support changes yet
-			const secondDashboard = await repo.getUsersDashboard(userId);
-			expect(firstDashboard.id).toEqual(secondDashboard.id);
-			expect(JSON.stringify(firstDashboard)).toEqual(JSON.stringify(secondDashboard));
-		});
+		describe('when user has a dashboard already', () => {
+			it('should return the existing dashboard', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ students: [user], name: 'Mathe' });
+				await em.persistAndFlush([user, course]);
+				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+					grid: [
+						{
+							pos: { x: 1, y: 3 },
+							gridElement: GridElement.FromSingleReference(course),
+						},
+					],
+					userId: user.id,
+				});
+				await repo.persistAndFlush(dashboard);
 
-		it('always returns different dashboard for different users', async () => {
-			const firstUserId = new ObjectId().toString();
-			const secondUserId = new ObjectId().toString();
+				const result = await repo.getUsersDashboard(user.id);
+				expect(result.id).toEqual(dashboard.id);
+			});
 
-			const firstDashboard = await repo.getUsersDashboard(firstUserId);
-			const secondDashboard = await repo.getUsersDashboard(secondUserId);
+			it('always returns the same dashboard for same user', async () => {
+				const userId = new ObjectId().toString();
+				const firstDashboard = await repo.getUsersDashboard(userId);
 
-			expect(firstDashboard.id).not.toEqual(secondDashboard.id);
+				const secondDashboard = await repo.getUsersDashboard(userId);
+				expect(firstDashboard.id).toEqual(secondDashboard.id);
+			});
+
+			it('always returns different dashboard for different users', async () => {
+				const firstUserId = new ObjectId().toString();
+				const secondUserId = new ObjectId().toString();
+
+				const firstDashboard = await repo.getUsersDashboard(firstUserId);
+				const secondDashboard = await repo.getUsersDashboard(secondUserId);
+
+				expect(firstDashboard.id).not.toEqual(secondDashboard.id);
+			});
 		});
 	});
 });
