@@ -20,6 +20,7 @@ class SyncMessageBuilder {
 
 	createSchoolDataMessage(ldapSchool, currentYear, federalState) {
 		const data = {
+			// school action data shape
 			school: {
 				name: ldapSchool.displayName,
 				systems: [this.systemId],

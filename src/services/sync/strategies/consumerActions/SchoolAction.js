@@ -20,19 +20,27 @@ class SchoolAction extends BaseConsumerAction {
 	async action(data = {}) {
 		const { school: schoolData = {} } = data;
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
-
+		// TODO for BRB compare school identifier (ldap: 'ou' whith 'school.officialSchoolNumber') set ldap id?
+		// set migration mode for school
 		if (school) {
 			if (school.name !== schoolData.name) {
 				await SchoolRepo.updateSchoolName(school._id, schoolData.name);
 			}
-		} else {
-			schoolData.fileStorageType = this.getDefaultFileStorageType();
-			const createdSchool = await SchoolRepo.createSchool(schoolData);
-			this.createDefaultStorageOptions({
-				schoolId: createdSchool._id,
-				fileStorageType: createdSchool.fileStorageType,
-			});
+			return;
 		}
+		/* brb and school number matches */
+		if (true) {
+			// set ldap identifier on school
+			// set migration mode enabled
+			return;
+		}
+		// default: create new school
+		schoolData.fileStorageType = this.getDefaultFileStorageType();
+		const createdSchool = await SchoolRepo.createSchool(schoolData);
+		this.createDefaultStorageOptions({
+			schoolId: createdSchool._id,
+			fileStorageType: createdSchool.fileStorageType,
+		});
 	}
 
 	getDefaultFileStorageType() {

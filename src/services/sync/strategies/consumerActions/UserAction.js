@@ -26,13 +26,25 @@ class UserAction extends BaseConsumerAction {
 				schoolDn: user.schoolDn,
 				systemId: user.systemId,
 			});
-		} else if (!school.inMaintenance) {
-			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
-			if (foundUser !== null) {
-				await this.updateUserAndAccount(foundUser, user, account);
-			} else {
-				await this.createUserAndAccount(user, account, school._id);
-			}
+		}
+
+		if (school.migrationMode) {
+			// persist user data for migration, school admin must link ldap to existing user
+			// create or update in new collection
+			return;
+		}
+
+		if (school.inMaintenance) {
+			// skip updating users when school in maintenance mode (summer holidays)
+			return;
+		}
+
+		// default: update or create user
+		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+		if (foundUser !== null) {
+			await this.updateUserAndAccount(foundUser, user, account);
+		} else {
+			await this.createUserAndAccount(user, account, school._id);
 		}
 	}
 
