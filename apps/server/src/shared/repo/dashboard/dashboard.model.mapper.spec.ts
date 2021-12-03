@@ -1,7 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { DashboardEntity, GridElement, DashboardGridElementModel, DashboardModelEntity, Course } from '@shared/domain';
+import { InternalServerErrorException } from '@nestjs/common';
+import {
+	DashboardEntity,
+	GridElement,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	Course,
+	LearnroomMetadata,
+	LearnroomTypes,
+} from '@shared/domain';
 import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
@@ -114,6 +123,31 @@ describe('dashboard model mapper', () => {
 			expect(containsNewElement).toEqual(true);
 			const containsOldElement = Array.from(mapped.gridElements).some((el) => el.id === oldElementId);
 			expect(containsOldElement).toEqual(false);
+		});
+
+		it('should not accept unknown types of learnrooms', async () => {
+			const user = userFactory.build();
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 4 },
+						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), {
+							getMetadata: () =>
+								({
+									id: new ObjectId().toString(),
+									title: 'Wohnzimmer',
+									type: 'livingroom' as LearnroomTypes,
+									shortTitle: 'Wo',
+									displayColor: '#FFFFFF',
+								} as LearnroomMetadata),
+						}),
+					},
+				],
+				userId: user.id,
+			});
+
+			const callfunction = () => mapper.mapDashboardToModel(dashboard);
+			await expect(callfunction).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 });
