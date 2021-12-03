@@ -11,6 +11,8 @@ export type CourseMetadata = {
 	name: string;
 	shortName: string;
 	displayColor: string;
+	startDate?: Date;
+	untilDate?: Date;
 };
 
 export interface ICourseProperties {
@@ -22,6 +24,7 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
+	startDate?: Date;
 	untilDate?: Date;
 }
 
@@ -59,9 +62,12 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = DEFAULT.color;
 
+	@Property()
+	startDate?: Date;
+
 	@Index({ name: 'activeCourses' })
 	@Property()
-	untilDate!: Date;
+	untilDate?: Date;
 
 	constructor(props: ICourseProperties) {
 		super();
@@ -73,6 +79,7 @@ export class Course extends BaseEntityWithTimestamps {
 		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
 		if (props.color) this.color = props.color;
 		if (props.untilDate) this.untilDate = props.untilDate;
+		if (props.startDate) this.startDate = props.startDate;
 	}
 
 	getNumberOfStudents(): number {
@@ -112,6 +119,8 @@ export class Course extends BaseEntityWithTimestamps {
 			name: this.name,
 			shortName: this.name.substr(0, 2),
 			displayColor: this.color,
+			untilDate: this.untilDate,
+			startDate: this.startDate,
 		};
 	}
 }
