@@ -11,8 +11,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- BC-874 - added dependency updates
-
 ### Fixed
 
 ### Changed
