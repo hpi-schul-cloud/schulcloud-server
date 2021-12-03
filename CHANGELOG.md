@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-829 - dashboards are populated with courses before their first use
+
 ### Fixed
 
 ### Changed
