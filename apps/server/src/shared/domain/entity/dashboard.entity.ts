@@ -214,6 +214,49 @@ export class DashboardEntity {
 		};
 	}
 
+	setLearnRooms(rooms: ILearnroom[]): void {
+		const newRooms = this.determineNewRoomsIn(rooms);
+
+		newRooms.forEach((room) => {
+			this.addRoom(room);
+		});
+	}
+
+	private determineNewRoomsIn(rooms: ILearnroom[]): ILearnroom[] {
+		const result: ILearnroom[] = [];
+		const existingRooms = this.allRooms();
+		rooms.forEach((room) => {
+			if (!existingRooms.includes(room)) {
+				result.push(room);
+			}
+		});
+		return result;
+	}
+
+	private allRooms(): ILearnroom[] {
+		const elements = [...this.grid.values()];
+		const references = elements
+			.map((el) => {
+				return el.getReferences();
+			})
+			.flat();
+		return references;
+	}
+
+	private addRoom(room: ILearnroom): void {
+		const index = this.getFirstOpenIndex();
+		const newElement = GridElement.FromSingleReference(room);
+		this.grid.set(index, newElement);
+	}
+
+	private getFirstOpenIndex(): number {
+		let i = 1;
+		while (this.grid.get(i) !== undefined) {
+			i += 1;
+		}
+		return i;
+	}
+
 	private getReferencesFromPosition(position: GridPositionWithGroupIndex): IGridElement {
 		const elementToMove = this.getElement(position);
 

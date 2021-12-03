@@ -1,6 +1,6 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
 
-import { ILearnroom } from '@shared/domain/interface'; // TODO: move to other file
+import { ILearnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
