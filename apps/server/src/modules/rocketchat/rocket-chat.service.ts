@@ -21,7 +21,7 @@ export class RocketChatError extends Error {
 	private errorType: string;
 
 	constructor(e: any) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
 		super(e.response.statusText);
 
 		// Set the prototype explicitly.
