@@ -52,17 +52,13 @@ describe('dashboard repo', () => {
 
 	it('should persist dashboard with gridElement group', async () => {
 		const user = userFactory.build();
-		const firstcourse = courseFactory.build({ students: [user] });
-		const secondCourse = courseFactory.build({ students: [user] });
-		await em.persistAndFlush([user, firstcourse, secondCourse]);
+		const courses = courseFactory.buildList(2, { students: [user] });
+		await em.persistAndFlush([user, ...courses]);
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'testgroup', [
-						firstcourse,
-						secondCourse,
-					]),
+					gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'testgroup', courses),
 				},
 			],
 			userId: user.id,
@@ -75,8 +71,8 @@ describe('dashboard repo', () => {
 		expect(elementContent.group).toBeDefined();
 		// if check for typescript only. has been asserted before
 		if (elementContent.group) {
-			expect(elementContent.group[0].title).toEqual(firstcourse.name);
-			expect(elementContent.group[1].title).toEqual(secondCourse.name);
+			expect(elementContent.group[0].title).toEqual(courses[0].name);
+			expect(elementContent.group[1].title).toEqual(courses[1].name);
 		}
 		expect(elementContent.title).toEqual('testgroup');
 		expect(JSON.stringify(dashboard)).toEqual(JSON.stringify(result));
@@ -223,14 +219,6 @@ describe('dashboard repo', () => {
 
 				const result = await repo.getUsersDashboard(user.id);
 				expect(result.id).toEqual(dashboard.id);
-			});
-
-			it('always returns the same dashboard for same user', async () => {
-				const userId = new ObjectId().toString();
-				const firstDashboard = await repo.getUsersDashboard(userId);
-
-				const secondDashboard = await repo.getUsersDashboard(userId);
-				expect(firstDashboard.id).toEqual(secondDashboard.id);
 			});
 
 			it('always returns different dashboard for different users', async () => {
