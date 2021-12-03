@@ -35,7 +35,14 @@ class ClassAction extends BaseConsumerAction {
 				}
 			);
 		}
-		if (school.inMaintenance || school.inUserMigration) {
+		if (school.inUserMigration) {
+			// take classData as Model
+			// TODO ldapDNs in classData or uuids?
+			// TODO add class displayNames to matching immport users only
+			await ClassRepo.createOrUpdateImportClass(school._id, classData.systemId, classData.ldapDN, classData);
+			return;
+		}
+		if (school.inMaintenance) {
 			return;
 		}
 		// default: update classes
