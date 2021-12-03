@@ -50,15 +50,41 @@ describe('Dashboard Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	it('[GET] dashboard', async () => {
-		const user = userFactory.build();
-		await em.persistAndFlush([user]);
-		const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
-		setCurrentUser(user);
-		const response = await request(app.getHttpServer()).get('/dashboard');
-		expect(response.status).toEqual(200);
-		const body = response.body as DashboardResponse;
-		expect(body.id).toEqual(dashboardId);
+	describe('[GET] dashboard', () => {
+		it('should return dashboard with users active courses', async () => {
+			const user = userFactory.build();
+			const twoDaysInMilliSeconds = 172800000;
+			const courses = [
+				courseFactory.build({ name: 'should appear', students: [user] }),
+				courseFactory.build({ name: 'should appear', substitutionTeachers: [user] }),
+				courseFactory.build({
+					name: 'should appear',
+					teachers: [user],
+					untilDate: new Date(Date.now() + twoDaysInMilliSeconds),
+				}),
+				courseFactory.build({ name: 'should appear', teachers: [user] }),
+				courseFactory.build({ name: 'should not appear, not users course' }),
+				courseFactory.build({
+					name: 'should not appear, enddate is in the past',
+					students: [user],
+					untilDate: new Date(Date.now() - twoDaysInMilliSeconds),
+				}),
+			];
+			await em.persistAndFlush([user, ...courses]);
+			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
+			setCurrentUser(user);
+
+			const response = await request(app.getHttpServer()).get('/dashboard');
+
+			expect(response.status).toEqual(200);
+			const body = response.body as DashboardResponse;
+			expect(body.id).toEqual(dashboardId);
+			expect(body.gridElements.length).toEqual(4);
+			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
+			elementNames.forEach((name) => {
+				expect(name).toEqual('should appear');
+			});
+		});
 	});
 
 	describe('[PATCH] /:id/moveElement', () => {
