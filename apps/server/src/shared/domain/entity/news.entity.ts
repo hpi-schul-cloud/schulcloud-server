@@ -28,15 +28,15 @@ export interface INewsProperties {
 export abstract class News extends BaseEntityWithTimestamps {
 	/** the news title */
 	@Property()
-	title!: string;
+	title: string;
 
 	/** the news content as html */
 	@Property()
-	content!: string;
+	content: string;
 
 	/** only past news are visible for viewers, when edit permission, news visible in the future might be accessed too  */
 	@Property()
-	displayAt!: Date;
+	displayAt: Date;
 
 	@Property()
 	externalId?: string;
@@ -52,7 +52,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	/** name of a collection which is referenced in target */
 	@Enum()
-	targetModel: NewsTargetModel;
+	targetModel!: NewsTargetModel;
 
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
@@ -95,17 +95,17 @@ export abstract class News extends BaseEntityWithTimestamps {
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
 	@ManyToOne('School')
-	target: School;
+	target!: School;
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
 	@ManyToOne('Course')
-	target: Course;
+	target!: Course;
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
 	@ManyToOne('Team')
-	target: Team;
+	target!: Team;
 }

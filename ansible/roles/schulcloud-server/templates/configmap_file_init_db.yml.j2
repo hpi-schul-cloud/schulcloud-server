@@ -23,10 +23,7 @@ data:
     else
         echo "gg, hacky mongo replicaset"
     fi
-    for file in /schulcloud-server/backup/setup/*
-    do
-        mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
-    done
+    curl --retry 5000 --retry-connrefused --retry-delay 10 'http://mgmt-svc:3333/api/management/database/seed'
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {

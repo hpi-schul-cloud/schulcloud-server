@@ -12,13 +12,13 @@ export class CreateNewsParams {
 	@ApiProperty({
 		description: 'Title of the News entity',
 	})
-	title: string;
+	title!: string;
 
 	@IsString()
 	@ApiProperty({
 		description: 'Content of the News entity',
 	})
-	content: string;
+	content!: string;
 
 	@IsDate()
 	@IsOptional()
@@ -34,12 +34,12 @@ export class CreateNewsParams {
 		enumName: 'NewsTargetModel',
 		description: 'Target model to which the News entity is related',
 	})
-	targetModel: string;
+	targetModel!: string;
 
 	@IsString()
 	@ApiProperty({
 		pattern: '[a-f0-9]{24}',
 		description: 'Specific target id to which the News entity is related',
 	})
-	targetId: string;
+	targetId!: string;
 }

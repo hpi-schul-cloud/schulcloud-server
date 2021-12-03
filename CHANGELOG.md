@@ -7,24 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-
-- [merge only in 26.17.0!, one release after BC-489] BC-488 - Set federal state in LDAPSyncer by system
-
 ## [Unreleased]
 
 ### Added
 
+### Fixed
+
 ### Changed
 
+- BC-701 - bump packages
+- BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
+
+## [26.19.0] - 2021-11-30
+
+### Changed
+
+- BC-740 - BC-847 - change ansible vars for docker image and tag
+- BC-157 - add typescript to task store: update task api response
+- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
+
+## [26.18.0] - 2021-11-23
+
+### Added
+- BC-485 - ansible role for management service
+
+### Changed
+
+### Fixed
+- BC-724 - fixed OpenAPI spec for dashboard
+
+### Changed
+
+- BC-609 - open task do not longer published open tasks of finished courses
+
+## [26.17.0] - 2021-11-16
+
+### Changed
 
 - BC-589 - BC-652 - Change auto deployment to a reusable workflow
-- BC-372 - replace task seed data, fix test, cleanup error handling and promise chains in task copy service
+- BC-688 - disable allowJS
+- BC-488 - Set federal state in LDAPSyncer by system
+- BC-589 - BC-652 - change auto deployment to a reusable workflow
+
 - BC-240 - Dashboards are now personalized
 
 ### Fixed
 
 - BC-369 - fix wrong behavior by the general LDAP Strategy if an attribute is not set
 - BC-668 - fixed security issues/updated dependencies
+- BC-596 - enable strict property inizialization for typescript
 
 ## [26.16.0] - 2021-11-09
 

@@ -6,6 +6,13 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
 
+export type CourseMetadata = {
+	id: string;
+	name: string;
+	shortName: string;
+	displayColor: string;
+};
+
 export interface ICourseProperties {
 	name?: string;
 	description?: string;
@@ -15,6 +22,7 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
+	untilDate?: Date;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -26,6 +34,7 @@ const DEFAULT = {
 };
 
 @Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
+@Index({ name: 'findAllByUserId', properties: ['students', 'substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property()
@@ -37,7 +46,6 @@ export class Course extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@Index({ name: 'findAllForStudent' })
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
@@ -51,6 +59,10 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = DEFAULT.color;
 
+	@Index({ name: 'activeCourses' })
+	@Property()
+	untilDate!: Date;
+
 	constructor(props: ICourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
@@ -60,6 +72,7 @@ export class Course extends BaseEntityWithTimestamps {
 		if (props.teachers) this.teachers.set(props.teachers);
 		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
 		if (props.color) this.color = props.color;
+		if (props.untilDate) this.untilDate = props.untilDate;
 	}
 
 	getNumberOfStudents(): number {
@@ -67,10 +80,38 @@ export class Course extends BaseEntityWithTimestamps {
 	}
 
 	getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionIds = this.substitutionTeachers.getIdentifiers('id');
-		// The result of getIdentifiers is a primary key type where we have no represent for it ((string | ObjectId) & IPrimaryKeyValue)[]
-		const idsAsString = substitutionIds.map((id) => id.toString());
+		const ids: EntityId[] = this.substitutionTeachers.getIdentifiers('id');
 
-		return idsAsString;
+		return ids;
+	}
+
+	getStudentIds(): EntityId[] {
+		const ids: EntityId[] = this.students.getIdentifiers('id');
+
+		return ids;
+	}
+
+	getTeacherIds(): EntityId[] {
+		const ids: EntityId[] = this.teachers.getIdentifiers('id');
+
+		return ids;
+	}
+
+	isFinished(): boolean {
+		if (!this.untilDate) {
+			return false;
+		}
+		const isFinished = this.untilDate < new Date();
+
+		return isFinished;
+	}
+
+	getMetadata(): CourseMetadata {
+		return {
+			id: this.id,
+			name: this.name,
+			shortName: this.name.substr(0, 2),
+			displayColor: this.color,
+		};
 	}
 }

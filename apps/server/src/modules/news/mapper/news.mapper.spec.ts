@@ -76,22 +76,23 @@ const getExpectedNewsResponse = (
 	newsProps: { title: string; content: string },
 	target: NewsTarget
 ): NewsResponse => {
-	const schoolInfoResponse = new SchoolInfoResponse();
+	const schoolInfoResponse = Object.create(SchoolInfoResponse.prototype) as SchoolInfoResponse;
 	const schoolProps = (({ id, name }) => ({ id, name }))(school);
 	Object.assign(schoolInfoResponse, schoolProps);
-
-	const creatorResponse: UserInfoResponse = new UserInfoResponse();
+	const creatorResponse = Object.create(UserInfoResponse.prototype) as UserInfoResponse;
 	const creatorProps = {
 		id: creator.id,
 		firstName: creator.firstName,
 		lastName: creator.lastName,
 	};
 	Object.assign(creatorResponse, creatorProps);
-	const expected: NewsResponse = new NewsResponse();
-	const targetResponse = new TargetInfoResponse();
-	targetResponse.id = target.id;
-	targetResponse.name = target.name;
-	Object.assign(expected, {
+	const targetResponse = Object.create(TargetInfoResponse.prototype) as TargetInfoResponse;
+	const targetProps = {
+		id: target.id,
+		name: target.name,
+	};
+	Object.assign(targetResponse, targetProps);
+	const expected = new NewsResponse({
 		id: news.id,
 		source: undefined,
 		sourceDescription: undefined,

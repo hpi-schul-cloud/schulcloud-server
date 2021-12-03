@@ -66,9 +66,9 @@ export type GridElementContent = {
 };
 
 export class GridElement implements IGridElement {
-	id: EntityId;
+	id!: EntityId;
 
-	title: string;
+	title!: string;
 
 	private sortReferences = (a: IGridElementReference, b: IGridElementReference) => {
 		const titleA = a.getMetadata().title;

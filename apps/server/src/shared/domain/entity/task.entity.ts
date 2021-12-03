@@ -6,14 +6,14 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import { User } from './user.entity';
+import type { User } from './user.entity';
 
 export interface ITaskProperties {
 	name: string;
 	availableDate?: Date;
 	dueDate?: Date;
 	private?: boolean;
-	teacher?: User;
+	creator?: User;
 	course?: Course;
 	lesson?: Lesson;
 	submissions?: Submission[];
@@ -57,7 +57,7 @@ export class Task extends BaseEntityWithTimestamps {
 	private = true;
 
 	@ManyToOne('User', { fieldName: 'teacherId' })
-	teacher?: User;
+	creator?: User;
 
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course?: Course;
@@ -68,7 +68,7 @@ export class Task extends BaseEntityWithTimestamps {
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
-	// TODO: is mapped to boolean in future
+	// TODO: rename to finished
 	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	closed = new Collection<User>(this);
@@ -79,11 +79,10 @@ export class Task extends BaseEntityWithTimestamps {
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;
-		this.teacher = props.teacher;
+		this.creator = props.creator;
 		this.course = props.course;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
-		// TODO: is replaced with boolean in future
 		this.closed.set(props.closed || []);
 	}
 

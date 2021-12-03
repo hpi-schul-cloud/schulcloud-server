@@ -36,6 +36,19 @@ describe('CourseEntity', () => {
 		});
 	});
 
+	describe('getMetadata', () => {
+		it('should return a metadata object', () => {
+			const course = courseFactory.build({ name: 'History', color: '#445566' });
+
+			const result = course.getMetadata();
+
+			expect(result.name).toEqual('History');
+			expect(result.shortName).toEqual('Hi');
+			expect(result.displayColor).toEqual('#445566');
+			expect(result.id).toEqual(course.id);
+		});
+	});
+
 	describe('getStudents', () => {
 		it('should count the number of assigned students', () => {
 			const student1 = userFactory.build();
@@ -77,6 +90,34 @@ describe('CourseEntity', () => {
 			const ids = course.getSubstitutionTeacherIds();
 
 			expect(ids).toEqual([]);
+		});
+	});
+
+	describe('isFinished', () => {
+		it('should always return false if no untilDate is set', () => {
+			const course = courseFactory.build({ untilDate: undefined });
+
+			const result = course.isFinished();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if the course is not finished', () => {
+			const untilDate = new Date(Date.now() + 6000);
+			const course = courseFactory.build({ untilDate });
+
+			const result = course.isFinished();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if the course is not finished', () => {
+			const untilDate = new Date(Date.now() - 6000);
+			const course = courseFactory.build({ untilDate });
+
+			const result = course.isFinished();
+
+			expect(result).toBe(true);
 		});
 	});
 });
