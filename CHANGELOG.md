@@ -12,6 +12,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - BC-829 - dashboards are populated with courses before their first use
+- BC-830 - return start and enddates of courses
+- BC-874 - add dependency updates
 
 ### Fixed
 

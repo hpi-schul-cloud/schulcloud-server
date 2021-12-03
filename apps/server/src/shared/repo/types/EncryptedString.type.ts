@@ -14,7 +14,7 @@ export class EncryptedStringType extends Type<string, string> {
 		if (customKey) {
 			this.encryptionService = new SymetricKeyEncryptionService(customKey);
 		} else {
-			this.encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY'));
+			this.encryptionService = new SymetricKeyEncryptionService(Configuration.get('S3_KEY') as string);
 		}
 	}
 

@@ -8,4 +8,6 @@ export type LearnroomMetadata = {
 	title: string;
 	shortTitle: string;
 	displayColor: string;
+	startDate?: Date;
+	untilDate?: Date;
 };

@@ -16,6 +16,7 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
+	startDate?: Date;
 	untilDate?: Date;
 }
 
@@ -53,9 +54,12 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
 	color: string = DEFAULT.color;
 
+	@Property()
+	startDate?: Date;
+
 	@Index({ name: 'activeCourses' })
 	@Property()
-	untilDate!: Date;
+	untilDate?: Date;
 
 	constructor(props: ICourseProperties) {
 		super();
@@ -67,6 +71,7 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
 		if (props.color) this.color = props.color;
 		if (props.untilDate) this.untilDate = props.untilDate;
+		if (props.startDate) this.startDate = props.startDate;
 	}
 
 	getNumberOfStudents(): number {
@@ -107,6 +112,8 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 			title: this.name,
 			shortTitle: this.name.substr(0, 2),
 			displayColor: this.color,
+			untilDate: this.untilDate,
+			startDate: this.startDate,
 		};
 	}
 }
