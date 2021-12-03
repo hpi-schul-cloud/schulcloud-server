@@ -8,7 +8,9 @@ export class CourseMapper {
 			courseMetadata.id,
 			courseMetadata.name,
 			courseMetadata.shortName,
-			courseMetadata.displayColor
+			courseMetadata.displayColor,
+			courseMetadata.startDate,
+			courseMetadata.untilDate
 		);
 		return dto;
 	}
