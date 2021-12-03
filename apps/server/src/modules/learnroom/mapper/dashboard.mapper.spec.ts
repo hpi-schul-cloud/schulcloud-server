@@ -33,7 +33,7 @@ describe('dashboard mapper', () => {
 		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);
-		expect(result.gridElements[0].id).toEqual('elementId');
+		expect(result.gridElements[0].id).toEqual('referenceId');
 		expect(result.gridElements[0].xPosition).toEqual(1);
 		expect(result.gridElements[0].yPosition).toEqual(3);
 		expect(result.gridElements[0].title).toEqual('Mathe');
