@@ -32,6 +32,7 @@ class UserAction extends BaseConsumerAction {
 			// create migration user
 			const updateObject = this.createUserUpdateObject(user, {});
 			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, updateObject);
+			// TODO how to handle import users that have been removed in ldap later?
 			return;
 		}
 
