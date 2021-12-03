@@ -142,7 +142,7 @@ describe('course repo', () => {
 			expect(count).toEqual(3);
 		});
 
-		it('should only return courses where the user is a member of it', async () => {
+		it('should only return courses when the user is a member of it', async () => {
 			const user = userFactory.build();
 			const otherUser = userFactory.build();
 			await em.persistAndFlush([user, otherUser]);
@@ -211,6 +211,44 @@ describe('course repo', () => {
 			for (let i = 0; i < courses.length; i += 1) {
 				expect(sortedNames[i]).toEqual(result[i].name);
 			}
+		});
+	});
+
+	describe('findAllForTeacher', () => {
+		it('should find courses of teachers', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [, count] = await repo.findAllForTeacher(user.id);
+
+			expect(count).toEqual(1);
+		});
+
+		it('should find courses of substitution teachers', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ substitutionTeachers: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [, count] = await repo.findAllForTeacher(user.id);
+
+			expect(count).toEqual(1);
+		});
+
+		it('should "not" find courses of students', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const [, count] = await repo.findAllForTeacher(user.id);
+
+			expect(count).toEqual(0);
 		});
 	});
 });

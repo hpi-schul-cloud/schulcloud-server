@@ -13,13 +13,31 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+### Changed
+
+- BC-701 - bump packages 
+
+## [26.19.0] - 2021-11-30
+
+### Changed
+
+- BC-740 - BC-847 - change ansible vars for docker image and tag
+- BC-157 - add typescript to task store: update task api response
+- BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
+
 ## [26.18.0] - 2021-11-23
 
 ### Added
 - BC-485 - ansible role for management service
 
+### Changed
+
 ### Fixed
 - BC-724 - fixed OpenAPI spec for dashboard
+
+### Changed
+
+- BC-609 - open task do not longer published open tasks of finished courses
 
 ## [26.17.0] - 2021-11-16
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 
-import { EntityId, Lesson } from '@shared/domain';
+import { EntityId, Lesson, Counted } from '@shared/domain';
 
 import { LessonScope } from './lesson-scope';
 
@@ -9,10 +9,7 @@ import { LessonScope } from './lesson-scope';
 export class LessonRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	/**
-	 * TODO add pagination and sorting
-	 */
-	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Lesson[]> {
+	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<Lesson[]>> {
 		const scope = new LessonScope();
 
 		scope.byCourseIds(courseIds);
@@ -21,7 +18,10 @@ export class LessonRepo {
 			scope.byHidden(filters.hidden);
 		}
 
-		const lessons = this.em.find(Lesson, scope.query);
-		return lessons;
+		const [lessons, count] = await this.em.findAndCount(Lesson, scope.query);
+
+		await this.em.populate(lessons, ['course']);
+
+		return [lessons, count];
 	}
 }

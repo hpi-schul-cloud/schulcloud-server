@@ -92,4 +92,32 @@ describe('CourseEntity', () => {
 			expect(ids).toEqual([]);
 		});
 	});
+
+	describe('isFinished', () => {
+		it('should always return false if no untilDate is set', () => {
+			const course = courseFactory.build({ untilDate: undefined });
+
+			const result = course.isFinished();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if the course is not finished', () => {
+			const untilDate = new Date(Date.now() + 6000);
+			const course = courseFactory.build({ untilDate });
+
+			const result = course.isFinished();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if the course is not finished', () => {
+			const untilDate = new Date(Date.now() - 6000);
+			const course = courseFactory.build({ untilDate });
+
+			const result = course.isFinished();
+
+			expect(result).toBe(true);
+		});
+	});
 });

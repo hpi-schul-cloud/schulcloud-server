@@ -40,7 +40,6 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@Index({ name: 'findAllForStudent' })
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
@@ -75,11 +74,30 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	}
 
 	getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionIds = this.substitutionTeachers.getIdentifiers('id');
-		// The result of getIdentifiers is a primary key type where we have no represent for it ((string | ObjectId) & IPrimaryKeyValue)[]
-		const idsAsString = substitutionIds.map((id) => id.toString());
+		const ids: EntityId[] = this.substitutionTeachers.getIdentifiers('id');
 
-		return idsAsString;
+		return ids;
+	}
+
+	getStudentIds(): EntityId[] {
+		const ids: EntityId[] = this.students.getIdentifiers('id');
+
+		return ids;
+	}
+
+	getTeacherIds(): EntityId[] {
+		const ids: EntityId[] = this.teachers.getIdentifiers('id');
+
+		return ids;
+	}
+
+	isFinished(): boolean {
+		if (!this.untilDate) {
+			return false;
+		}
+		const isFinished = this.untilDate < new Date();
+
+		return isFinished;
 	}
 
 	getMetadata(): LearnroomMetadata {
