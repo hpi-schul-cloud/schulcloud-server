@@ -1079,7 +1079,7 @@ describe('TaskRepo', () => {
 		});
 
 		describe('when pagination is passed', () => {
-			const setup = (taskCount) => {
+			const setup = (taskCount: number) => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ untilDate: undefined });
 				const tasks = taskFactory.buildList(taskCount, { course, closed: [user] });

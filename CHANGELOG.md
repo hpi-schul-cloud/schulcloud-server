@@ -11,11 +11,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-830 - return start and enddates of courses
+- BC-874 - add dependency updates
+
 ### Fixed
 
 ### Changed
 
-- BC-701 - bump packages 
+- BC-701 - bump packages
+- BC-830 - show archived courses in course list
 
 ## [26.19.0] - 2021-11-30
 
