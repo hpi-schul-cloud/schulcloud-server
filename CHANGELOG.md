@@ -17,7 +17,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- BC-701 - bump packages 
+- BC-701 - bump packages
+- BC-830 - show archived courses in course list
 
 ## [26.19.0] - 2021-11-30
 
