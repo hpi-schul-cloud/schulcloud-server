@@ -29,15 +29,9 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		if (school.migrationMode) {
-			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
-			if (foundUser === null) {
-				// create migration user
-				const updateObject = this.createUserUpdateObject(user, {});
-
-				await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, updateObject);
-			}
-			// persist user data for migration, school admin must link ldap to local users
-			// create or update in new collection
+			// create migration user
+			const updateObject = this.createUserUpdateObject(user, {});
+			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, updateObject);
 			return;
 		}
 
