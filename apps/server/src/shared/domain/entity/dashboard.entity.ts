@@ -2,8 +2,7 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { EntityId, LearnroomMetadata } from '@shared/domain/types';
 import { ILearnroom } from '@shared/domain/interface';
 
-const defaultColumns = 6;
-const defaultRows = 6;
+const defaultColumns = 4;
 
 export interface IGridElement {
 	hasId(): boolean;
@@ -138,21 +137,19 @@ export type GridElementWithPosition = {
 	pos: GridPosition;
 };
 
-export type DashboardProps = { colums?: number; rows?: number; grid: GridElementWithPosition[]; userId: EntityId };
+export type DashboardProps = { colums?: number; grid: GridElementWithPosition[]; userId: EntityId };
 
 export class DashboardEntity {
 	id: EntityId;
 
 	columns: number;
 
-	rows: number;
-
 	grid: Map<number, IGridElement>;
 
 	userId: EntityId;
 
 	private gridIndexFromPosition(pos: GridPosition): number {
-		if (pos.x > this.columns || pos.y > this.rows) {
+		if (pos.x > this.columns) {
 			throw new BadRequestException('dashboard element position is outside the grid.');
 		}
 		return this.columns * pos.y + pos.x;
@@ -166,7 +163,6 @@ export class DashboardEntity {
 
 	constructor(id: string, props: DashboardProps) {
 		this.columns = props.colums || defaultColumns;
-		this.rows = props.rows || defaultRows;
 		this.grid = new Map<number, IGridElement>();
 		props.grid.forEach((element) => {
 			this.grid.set(this.gridIndexFromPosition(element.pos), element.gridElement);

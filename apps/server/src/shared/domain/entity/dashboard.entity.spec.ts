@@ -128,7 +128,6 @@ describe('dashboard entity', () => {
 		it('when the new position is out of bounds, it should throw badrequest', () => {
 			const dashboard = new DashboardEntity('someid', {
 				colums: 3,
-				rows: 3,
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
