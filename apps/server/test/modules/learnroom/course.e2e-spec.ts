@@ -29,7 +29,7 @@ describe('Dashboard Controller (e2e)', () => {
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser; // FIXME currentuser may need an accountId
+					req.user = currentUser;
 					return true;
 				},
 			})
