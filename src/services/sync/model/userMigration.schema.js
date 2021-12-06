@@ -19,6 +19,8 @@ const importUserSchema = new Schema(
 		lastName: { type: String, required: true },
 		email: { type: String, required: true, lowercase: true },
 		roles: [{ type: String }],
+
+		className: { type: String, required: false },
 	},
 	{
 		timestamps: true,
