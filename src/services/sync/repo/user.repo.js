@@ -116,6 +116,10 @@ const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 	return persistedUser;
 };
 
+const addClassToMigrationUsers = async (schoolId, className, users) => {
+	await importUserModel.updateMany({ schoolId, ldapDn: { $in: users } }, { $set: { className } });
+};
+
 const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 	userModel
 		.findOne({
@@ -141,6 +145,7 @@ const UserRepo = {
 	createUserAndAccount,
 	updateUserAndAccount,
 	createOrUpdateImportUser,
+	addClassToMigrationUsers,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 };
