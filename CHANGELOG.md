@@ -20,6 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - BC-701 - bump packages
 - BC-830 - show archived courses in course list
+- BC-830 - change sorting of rooms-list to updatedAt descending
 
 ## [26.19.0] - 2021-11-30
 
