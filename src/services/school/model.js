@@ -63,7 +63,7 @@ const schoolSchema = new Schema(
 			default: '',
 			enum: ['', 'school', 'schoolGroup'],
 		},
-		officialSchoolNumber: { type: String, unique: true, index: true }, // TODO we  should ensure this
+		officialSchoolNumber: { type: String, index: true }, // TODO unique per federal state validation on save
 		county: { type: countySchema },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },

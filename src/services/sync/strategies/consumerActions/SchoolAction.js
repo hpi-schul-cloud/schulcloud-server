@@ -1,11 +1,14 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
-const { NODE_ENV, ENVIRONMENTS, SC_THEME } = require('../../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../../config/globals');
 const { SchoolRepo } = require('../../repo');
 const { fileStorageTypes } = require('../../../school/model');
 const getFileStorageStrategy = require('../../../fileStorage/strategies').createStrategy;
 const { BadRequest } = require('../../../../errors');
+
+const FEATURE_LDAP_MIGRATE_ENABED = Configuration.get('FEATURE_LDAP_MIGRATE_ENABED');
 
 const defaultOptions = {
 	allowedLogKeys: null,
@@ -27,23 +30,22 @@ class SchoolAction extends BaseConsumerAction {
 			return;
 		}
 		/* brb and school number matches: enable ldap migration */
-		const { officialSchoolNumber } = schoolData; //
-		if (SC_THEME === 'brb' && officialSchoolNumber) {
+		if (FEATURE_LDAP_MIGRATE_ENABED === true && schoolData.ldapSchoolIdentifier) {
+			const officialSchoolNumber = schoolData.ldapSchoolIdentifier;
 			// compare school numbers
 			const schools = await SchoolRepo.findSchoolByOfficialSchoolNumber(officialSchoolNumber);
 			if (schools.length === 1) {
 				// set migration mode enabled and add ldap uuid
-				await SchoolRepo.enableUserMigrationMode(
-					schools[0]._id,
-					schoolData.ldapSchoolIdentifier,
-					schoolData.systems[0]
-				);
+				await SchoolRepo.enableUserMigrationMode(schools[0]._id, officialSchoolNumber, schoolData.systems[0]);
 				return;
 			}
 			if (schools.length > 1) {
 				throw new Error(`found multiple schools with officialSchoolNumber ${officialSchoolNumber}`);
 			}
-			// length:0 create new school when school number does not match...
+			// length:0 don't create new school when school number does not match...
+			if (schools.length === 0) {
+				return;
+			}
 		}
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
