@@ -42,7 +42,10 @@ class SchoolAction extends BaseConsumerAction {
 			if (schools.length > 1) {
 				throw new Error(`found multiple schools with officialSchoolNumber ${officialSchoolNumber}`);
 			}
-			// length:0 create new school when school number does not match...
+			// length:0 don't create new school when school number does not match...
+			if (schools.length === 0) {
+				return;
+			}
 		}
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
