@@ -1,30 +1,29 @@
-import { Collection, wrap, EntityManager } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { wrap, EntityManager } from '@mikro-orm/core';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	DashboardEntity,
 	GridElement,
 	IGridElement,
 	GridElementWithPosition,
-	DefaultGridReference,
-	IGridElementReference,
+	ILearnroom,
+	LearnroomTypes,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	DefaultGridReferenceModel,
+	Course,
 } from '@shared/domain';
 
 @Injectable()
 export class DashboardModelMapper {
 	constructor(protected readonly em: EntityManager) {}
 
-	mapReferenceToEntity(modelEntity: DefaultGridReferenceModel): DefaultGridReference {
-		return new DefaultGridReference(modelEntity.id, modelEntity.title, modelEntity.color);
+	async mapReferenceToEntity(modelEntity: Course): Promise<Course> {
+		const domainEntity = await wrap(modelEntity).init();
+		return domainEntity;
 	}
 
 	async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
-		if (!modelEntity.references.isInitialized()) {
-			await modelEntity.references.init();
-		}
-		const references = Array.from(modelEntity.references).map((ref) => this.mapReferenceToEntity(ref));
+		const referenceModels = await modelEntity.references.loadItems();
+		const references = await Promise.all(referenceModels.map((ref) => this.mapReferenceToEntity(ref)));
 		const result = {
 			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
 			gridElement: GridElement.FromPersistedGroup(modelEntity.id, modelEntity.title, references),
@@ -44,17 +43,13 @@ export class DashboardModelMapper {
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	async mapReferenceToModel(
-		reference: IGridElementReference,
-		element: DashboardGridElementModel
-	): Promise<DefaultGridReferenceModel> {
+	mapReferenceToModel(reference: ILearnroom): Course {
 		const metadata = reference.getMetadata();
-		const existingReference = await this.em.findOne(DefaultGridReferenceModel, metadata.id);
-		const result = existingReference || new DefaultGridReferenceModel(metadata.id);
-		result.color = metadata.displayColor;
-		result.title = metadata.title;
-		result.gridelement = wrap(element).toReference();
-		return result;
+		if (metadata.type === LearnroomTypes.Course) {
+			const course = reference as Course;
+			return course;
+		}
+		throw new InternalServerErrorException('unknown learnroom type');
 	}
 
 	private async instantiateGridElementModel(gridElement: IGridElement): Promise<DashboardGridElementModel> {
@@ -78,10 +73,8 @@ export class DashboardModelMapper {
 			elementModel.title = gridElement.getContent().title;
 		}
 
-		const references = await Promise.all(
-			gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref, elementModel))
-		);
-		elementModel.references = new Collection<DefaultGridReferenceModel>(elementModel, references);
+		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
+		elementModel.references.set(references);
 
 		elementModel.dashboard = wrap(dashboard).toReference();
 		return elementModel;
@@ -89,7 +82,7 @@ export class DashboardModelMapper {
 
 	async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
 		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
-		const modelEntity = existing || new DashboardModelEntity({ id: entity.getId(), user: entity.getUserId() });
+		const modelEntity = existing || new DashboardModelEntity({ id: entity.getId(), user: entity.getUserId() }); // TODO transform user to reference
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
 		);
