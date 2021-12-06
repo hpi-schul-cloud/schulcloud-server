@@ -10,8 +10,8 @@ export class DashboardMapper {
 		dto.gridElements = dashboard.getGrid().map((elementWithPosition) => {
 			const elementDTO = new DashboardGridElementResponse();
 
-			elementDTO.id = elementWithPosition.gridElement.getId();
 			const data = elementWithPosition.gridElement.getContent();
+			elementDTO.id = data.referencedId;
 			elementDTO.title = data.title;
 			elementDTO.shortTitle = data.shortTitle;
 			elementDTO.displayColor = data.displayColor;

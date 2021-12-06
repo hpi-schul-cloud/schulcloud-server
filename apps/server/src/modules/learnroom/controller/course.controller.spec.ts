@@ -49,8 +49,8 @@ describe('course controller', () => {
 				getMetadata: () => {
 					return {
 						id: 'courseId',
-						name: 'courseName',
-						shortName: 'co',
+						title: 'courseName',
+						shortTitle: 'co',
 						displayColor: '#ACACAC',
 					};
 				},
