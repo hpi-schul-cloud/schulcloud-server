@@ -31,6 +31,11 @@ class SchoolAction extends BaseConsumerAction {
 		}
 		/* brb and school number matches: enable ldap migration */
 		if (FEATURE_LDAP_MIGRATE_ENABED === true && schoolData.ldapSchoolIdentifier) {
+			// migration finished
+			if (school.ldapSchoolIdentifier && !school.inUserMigration) {
+				return;
+			}
+
 			const officialSchoolNumber = schoolData.ldapSchoolIdentifier;
 			// compare school numbers
 			const schools = await SchoolRepo.findSchoolByOfficialSchoolNumber(officialSchoolNumber);
@@ -42,10 +47,7 @@ class SchoolAction extends BaseConsumerAction {
 			if (schools.length > 1) {
 				throw new Error(`found multiple schools with officialSchoolNumber ${officialSchoolNumber}`);
 			}
-			// length:0 don't create new school when school number does not match...
-			if (schools.length === 0) {
-				return;
-			}
+			// length:0 create new school when school number match...
 		}
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
