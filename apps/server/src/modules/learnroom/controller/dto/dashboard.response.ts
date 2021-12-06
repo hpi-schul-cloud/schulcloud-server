@@ -28,7 +28,7 @@ export class DashboardGridElementResponse {
 		description: 'The id of the Grid element',
 		pattern: '[a-f0-9]{24}',
 	})
-	id!: string;
+	id?: string;
 
 	@ApiProperty({
 		description: 'Title of the Grid element',
@@ -59,7 +59,7 @@ export class DashboardGridElementResponse {
 		type: [DashboardGridSubElementResponse],
 		description: 'List of all subelements in the group',
 	})
-	groupElements!: DashboardGridSubElementResponse[];
+	groupElements?: DashboardGridSubElementResponse[];
 }
 
 export class DashboardResponse {

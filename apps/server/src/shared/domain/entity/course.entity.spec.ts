@@ -42,8 +42,8 @@ describe('CourseEntity', () => {
 
 			const result = course.getMetadata();
 
-			expect(result.name).toEqual('History');
-			expect(result.shortName).toEqual('Hi');
+			expect(result.title).toEqual('History');
+			expect(result.shortTitle).toEqual('Hi');
 			expect(result.displayColor).toEqual('#445566');
 			expect(result.id).toEqual(course.id);
 		});
@@ -60,8 +60,8 @@ describe('CourseEntity', () => {
 
 			const result = course.getMetadata();
 
-			expect(result.name).toEqual('History');
-			expect(result.shortName).toEqual('Hi');
+			expect(result.title).toEqual('History');
+			expect(result.shortTitle).toEqual('Hi');
 			expect(result.displayColor).toEqual('#445566');
 			expect(result.id).toEqual(course.id);
 			expect(result.startDate).toEqual(startDate);
