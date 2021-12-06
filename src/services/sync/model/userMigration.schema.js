@@ -19,6 +19,11 @@ const importUserSchema = new Schema(
 		lastName: { type: String, required: true },
 		email: { type: String, required: true, lowercase: true },
 		roles: [{ type: String }],
+		match: {
+			userId: { type: String, ref: 'user', required: true },
+			matchedBy: { type: String, enum: ['admin', 'auto'], required: true },
+		},
+		flagged: { type: Boolean, default: false, required: true },
 	},
 	{
 		timestamps: true,
