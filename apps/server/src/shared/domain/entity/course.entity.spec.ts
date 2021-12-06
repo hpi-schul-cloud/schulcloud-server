@@ -42,10 +42,30 @@ describe('CourseEntity', () => {
 
 			const result = course.getMetadata();
 
-			expect(result.name).toEqual('History');
-			expect(result.shortName).toEqual('Hi');
+			expect(result.title).toEqual('History');
+			expect(result.shortTitle).toEqual('Hi');
 			expect(result.displayColor).toEqual('#445566');
 			expect(result.id).toEqual(course.id);
+		});
+
+		it('should include start and enddate if course has them', () => {
+			const startDate = Date.now() - 200000;
+			const untilDate = Date.now() + 200000;
+			const course = courseFactory.build({
+				name: 'History',
+				color: '#445566',
+				startDate,
+				untilDate,
+			});
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('History');
+			expect(result.shortTitle).toEqual('Hi');
+			expect(result.displayColor).toEqual('#445566');
+			expect(result.id).toEqual(course.id);
+			expect(result.startDate).toEqual(startDate);
+			expect(result.untilDate).toEqual(untilDate);
 		});
 	});
 

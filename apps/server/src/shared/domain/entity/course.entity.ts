@@ -1,17 +1,11 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
 
-import { EntityId } from '../types';
+import { ILearnroom } from '@shared/domain/interface';
+import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
-
-export type CourseMetadata = {
-	id: string;
-	name: string;
-	shortName: string;
-	displayColor: string;
-};
 
 export interface ICourseProperties {
 	name?: string;
@@ -22,6 +16,7 @@ export interface ICourseProperties {
 	substitutionTeachers?: User[];
 	// TODO: color format
 	color?: string;
+	startDate?: Date;
 	untilDate?: Date;
 }
 
@@ -36,7 +31,7 @@ const DEFAULT = {
 @Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
 @Index({ name: 'findAllByUserId', properties: ['students', 'substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps {
+export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
 	name: string = DEFAULT.name;
 
@@ -59,9 +54,12 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property()
 	color: string = DEFAULT.color;
 
+	@Property()
+	startDate?: Date;
+
 	@Index({ name: 'activeCourses' })
 	@Property()
-	untilDate!: Date;
+	untilDate?: Date;
 
 	constructor(props: ICourseProperties) {
 		super();
@@ -73,6 +71,7 @@ export class Course extends BaseEntityWithTimestamps {
 		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
 		if (props.color) this.color = props.color;
 		if (props.untilDate) this.untilDate = props.untilDate;
+		if (props.startDate) this.startDate = props.startDate;
 	}
 
 	getNumberOfStudents(): number {
@@ -106,12 +105,15 @@ export class Course extends BaseEntityWithTimestamps {
 		return isFinished;
 	}
 
-	getMetadata(): CourseMetadata {
+	getMetadata(): LearnroomMetadata {
 		return {
 			id: this.id,
-			name: this.name,
-			shortName: this.name.substr(0, 2),
+			type: LearnroomTypes.Course,
+			title: this.name,
+			shortTitle: this.name.substr(0, 2),
 			displayColor: this.color,
+			untilDate: this.untilDate,
+			startDate: this.startDate,
 		};
 	}
 }

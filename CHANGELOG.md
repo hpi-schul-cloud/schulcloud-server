@@ -11,16 +11,22 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-829 - dashboards are populated with courses before their first use
+- BC-830 - return start and enddates of courses
+- BC-874 - add dependency updates
+
 ### Fixed
 
 ### Changed
 
-- BC-701 - bump packages 
+- BC-701 - bump packages
+- BC-830 - show archived courses in course list
 
 ## [26.19.0] - 2021-11-30
 
 ### Changed
 
+- BC-617 - changes for transition to Dataport
 - BC-740 - BC-847 - change ansible vars for docker image and tag
 - BC-157 - add typescript to task store: update task api response
 - BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)
