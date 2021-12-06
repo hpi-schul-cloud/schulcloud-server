@@ -26,6 +26,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-617 - changes for transition to Dataport
 - BC-740 - BC-847 - change ansible vars for docker image and tag
 - BC-157 - add typescript to task store: update task api response
 - BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)

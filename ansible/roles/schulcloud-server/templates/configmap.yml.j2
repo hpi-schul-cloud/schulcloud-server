@@ -21,7 +21,7 @@ data:
 {% if SUPPORT_WISH_EMAIL_ADDRESS is defined %}
   SUPPORT_WISH_EMAIL_ADDRESS: "{{ SUPPORT_WISH_EMAIL_ADDRESS  }}"
 {% endif %}
-  DOCUMENT_BASE_DIR: "{{ DOCUMENT_BASE_DIR|default("https://s3.hidrive.strato.com/schul-cloud-hpi/", true) }}"
+  DOCUMENT_BASE_DIR: "{{ DOCUMENT_BASE_DIR|default("https://s3.hidrive.strato.com/cloud-instances/", true) }}"
   SHLVL: "1"
   # STAIC Infos
   MEMORY_INTERVAL_TIME: "{{ MEMORY_INTERVAL_TIME|default("0", true) }}"
