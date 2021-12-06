@@ -28,7 +28,7 @@ class UserAction extends BaseConsumerAction {
 			});
 		}
 
-		if (school.migrationMode) {
+		if (school.inUserMigration) {
 			// create migration user
 			const updateObject = this.createUserUpdateObject(user, {});
 			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, updateObject);
