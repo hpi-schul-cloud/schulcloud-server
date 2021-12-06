@@ -110,7 +110,7 @@ const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 	const userToUpdate = { ...user, schoolId, systemId, ldapId };
 	const persistedUser = await importUserModel
-		.findOneAndUpdate({ schoolId, ldapId }, userToUpdate, { new: true })
+		.findOneAndUpdate({ schoolId, ldapId }, userToUpdate, { upsert: true })
 		.lean()
 		.exec();
 	return persistedUser;
