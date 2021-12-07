@@ -148,6 +148,22 @@ describe.only('Class Actions', () => {
 
 			expect(updateClassSpy.notCalled).to.be.true;
 		});
+
+		it('should add class to import users', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+
+			const schoolId = 'dummy';
+			findSchoolByLdapIdAndSystemStub.returns({ _id: schoolId, name: testSchoolName, inUserMigration: true });
+
+			const addClassToMigrationUsersStub = sinon.stub(UserRepo, 'addClassToMigrationUsers');
+
+			const newClassName = 'New Test Class';
+			const uniqueMembers = ['foo', 'bar', 'baz'];
+			await classAction.action({ class: { name: newClassName, uniqueMembers } });
+
+			expect(addClassToMigrationUsersStub.calledOnce).to.be.true;
+			expect(addClassToMigrationUsersStub.calledWith(schoolId, newClassName, uniqueMembers)).to.be.true;
+		});
 	});
 
 	describe('addUsersToClass', () => {

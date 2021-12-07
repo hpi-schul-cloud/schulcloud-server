@@ -158,9 +158,64 @@ describe('User Actions', () => {
 
 		it('should persist ldap user data for migration when school is in migration mode', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', migrationMode: true });
-			const findByLdapIdAndSchoolSpy = sinon.spy(UserRepo, 'findByLdapIdAndSchool');
-			const createOrUpdateImportUserSpy = sinon.spy(UserRepo, 'createOrUpdateImportUser');
+			const schoolId = 'foo';
+			findSchoolByLdapIdAndSystemStub.returns({ _id: schoolId, name: 'Test School', inUserMigration: true });
+
+			const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
+			const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
+
+			const testUserInput = {
+				_id: 1,
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'New email',
+				ldapDn: 'new ldapdn',
+				ldapId: 'new ldapId',
+				roles: ['role1'],
+				systemId: 'id of system',
+			};
+
+			const expectedUserObject = {
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'New email',
+				ldapDn: 'new ldapdn',
+				roles: ['role1'],
+			};
+
+			const testAccountInput = { _id: 2 };
+			await userAction.action({ user: testUserInput, account: testAccountInput });
+
+			expect(findByLdapIdAndSchoolStub.notCalled).to.be.true;
+
+			expect(createOrUpdateImportUserStub.calledOnce).to.be.true;
+			expect(
+				createOrUpdateImportUserStub.calledWith(
+					schoolId,
+					testUserInput.systemId,
+					testUserInput.ldapId,
+					expectedUserObject
+				)
+			).to.be.true;
+		});
+
+		// TODO clarify business logic - admin manual reset/rerun?
+		it('should override ldap user data user when school is in migration mode', async () => {});
+
+		it('should not update or create real user when school is in migration mode', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', inUserMigration: true });
+
+			const existingUser = {
+				_id: 1,
+				firstName: 'Old fname',
+				lastName: 'Old lname',
+				email: 'Old email',
+				ldapDn: 'Old ldapdn',
+			};
+			sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(existingUser);
+
+			const updateUserSpy = sinon.spy(UserRepo, 'updateUserAndAccount');
 
 			const testUserInput = {
 				_id: 1,
@@ -170,14 +225,10 @@ describe('User Actions', () => {
 				ldapDn: 'new ldapdn',
 				roles: [new ObjectId()],
 			};
-
 			const testAccountInput = { _id: 2 };
 			await userAction.action({ user: testUserInput, account: testAccountInput });
 
-			expect(createOrUpdateImportUserSpy.called).to.be.true;
-			expect(findByLdapIdAndSchoolSpy.notCalled).to.be.true;
+			expect(updateUserSpy.notCalled).to.be.true;
 		});
-		it('should override ldap user data user when school is in migration mode', async () => {});
-		it('should not update or create real user when school is in migration mode', async () => {});
 	});
 });

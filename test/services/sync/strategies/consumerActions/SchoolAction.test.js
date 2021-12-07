@@ -60,12 +60,12 @@ describe.only('School Actions', () => {
 			let originalConfiguration;
 
 			before(() => {
-				originalConfiguration = Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED');
-				Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', true);
+				originalConfiguration = Configuration.get('FEATURE_LDAP_MIGRATE_ENABED');
+				Configuration.set('FEATURE_LDAP_MIGRATE_ENABED', true);
 			});
 
 			after(() => {
-				Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', originalConfiguration);
+				Configuration.set('FEATURE_LDAP_MIGRATE_ENABED', originalConfiguration);
 			});
 
 			it('should enable user migration mode for school', async () => {
