@@ -117,7 +117,7 @@ const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 };
 
 const addClassToMigrationUsers = async (schoolId, className, users) => {
-	await importUserModel.updateMany({ schoolId, ldapDn: { $in: users } }, { $set: { className } });
+	await importUserModel.updateMany({ schoolId, ldapDn: { $in: users } }, { $addToSet: { className } });
 };
 
 const findByLdapIdAndSchool = async (ldapId, schoolId) =>
