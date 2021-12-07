@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const sinon = require('sinon');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../../../../src/errors');
 const { SchoolAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
@@ -56,15 +57,15 @@ describe.only('School Actions', () => {
 		});
 
 		describe('when ldap school matchs by official school id with local school on BRB instance', () => {
-			let themeBefore;
+			let originalConfiguration;
 
 			before(() => {
-				themeBefore = globals.SC_THEME;
-				globals.SC_THEME = 'brb';
+				originalConfiguration = Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED');
+				Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', true);
 			});
 
 			after(() => {
-				globals.SC_THEME = themeBefore;
+				Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', originalConfiguration);
 			});
 
 			it('should enable user migration mode for school', async () => {
