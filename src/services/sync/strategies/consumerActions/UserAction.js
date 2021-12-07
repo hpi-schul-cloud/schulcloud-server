@@ -28,8 +28,10 @@ class UserAction extends BaseConsumerAction {
 			});
 		}
 
-		if (school.inUserMigration) {
-			// create migration user
+		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+
+		if (school.inUserMigration && foundUser === null) {
+			// create migration user when the ldapId is not existing
 			const updateObject = this.createUserUpdateObject(user, {});
 			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, updateObject);
 			// TODO how to handle import users that have been removed in ldap later?
@@ -42,7 +44,6 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		// default: update or create user
-		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 		if (foundUser !== null) {
 			await this.updateUserAndAccount(foundUser, user, account);
 		} else {

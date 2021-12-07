@@ -56,45 +56,5 @@ describe.only('School Actions', () => {
 			await expect(schoolAction.action({})).to.be.rejectedWith(BadRequest);
 		});
 
-		describe('when ldap school matchs by official school id with local school on BRB instance', () => {
-			let originalConfiguration;
-
-			before(() => {
-				originalConfiguration = Configuration.get('FEATURE_LDAP_MIGRATE_ENABED');
-				Configuration.set('FEATURE_LDAP_MIGRATE_ENABED', true);
-			});
-
-			after(() => {
-				Configuration.set('FEATURE_LDAP_MIGRATE_ENABED', originalConfiguration);
-			});
-
-			it('should enable user migration mode for school', async () => {
-				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-				findSchoolByLdapIdAndSystemStub.resolves(null);
-
-				const schoolId = 1;
-				sinon.stub(SchoolRepo, 'findSchoolByOfficialSchoolNumber').resolves([{ _id: schoolId }]);
-
-				const enableUserMigrationModeStub = sinon.stub(SchoolRepo, 'enableUserMigrationMode');
-
-				const schoolData = { ldapSchoolIdentifier: 'ldapSchoolIdentifier', systems: ['systemId'] };
-				await schoolAction.action(schoolData);
-
-				expect(enableUserMigrationModeStub.calledOnce).to.be.true;
-				expect(enableUserMigrationModeStub.calledOnce).toHaveBeenCalledWith(
-					schoolId,
-					schoolData.ldapSchoolIdentifier,
-					schoolData.systems[0]
-				);
-			});
-
-			it('should fail if multiple schools with the same official school number exist locally');
-
-			it('should create a new school if no school with the given official school number exists locally');
-
-			it('should create a new school if the school if the ldap school does not have a school number');
-
-			it('should not crate new school if local school is already assigned to LDAP');
-		});
 	});
 });

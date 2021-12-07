@@ -29,26 +29,7 @@ class SchoolAction extends BaseConsumerAction {
 			}
 			return;
 		}
-		/* brb and school number matches: enable ldap migration */
-		if (FEATURE_LDAP_MIGRATE_ENABED === true && schoolData.ldapSchoolIdentifier) {
-			// migration finished
-			if (school.ldapSchoolIdentifier && !school.inUserMigration) {
-				return;
-			}
 
-			const officialSchoolNumber = schoolData.ldapSchoolIdentifier;
-			// compare school numbers
-			const schools = await SchoolRepo.findSchoolByOfficialSchoolNumber(officialSchoolNumber);
-			if (schools.length === 1) {
-				// set migration mode enabled and add ldap uuid
-				await SchoolRepo.enableUserMigrationMode(schools[0]._id, officialSchoolNumber, schoolData.systems[0]);
-				return;
-			}
-			if (schools.length > 1) {
-				throw new Error(`found multiple schools with officialSchoolNumber ${officialSchoolNumber}`);
-			}
-			// length:0 create new school when school number match...
-		}
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
 		const createdSchool = await SchoolRepo.createSchool(schoolData);
