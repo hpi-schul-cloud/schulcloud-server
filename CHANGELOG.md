@@ -9,20 +9,32 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
-### Added
+### Changed
 
 - BC-837 - import and store users in new collection for ldap migration
 
 ### Fixed
 
+## [26.20.0] - 2021-21-07
+
+### Added
+
+- BC-829 - dashboards are populated with courses before their first use
+- BC-830 - return start and enddates of courses
+- BC-874 - add dependency updates
+
 ### Changed
 
-- BC-701 - bump packages 
+- BC-701 - bump packages
+- BC-830 - show archived courses in course list
+- BC-741 - Sort and split ansible rols
+- BC-830 - change sorting of rooms-list to updatedAt descending
 
 ## [26.19.0] - 2021-11-30
 
 ### Changed
 
+- BC-617 - changes for transition to Dataport
 - BC-740 - BC-847 - change ansible vars for docker image and tag
 - BC-157 - add typescript to task store: update task api response
 - BC-609 BC-612 - Add new route and endpoints for finished task (for students and teachers)

@@ -168,16 +168,16 @@ describe('course repo', () => {
 
 		it('should only return courses that are currently active', async () => {
 			const student = userFactory.build();
-			const twoDaysInSeconds = 172800;
+			const twoDaysInMilliSeconds = 172800000;
 			const course1 = courseFactory.build({
 				name: 'active course',
 				students: [student],
-				untilDate: new Date(Date.now() + twoDaysInSeconds),
+				untilDate: new Date(Date.now() + twoDaysInMilliSeconds),
 			});
 			const course2 = courseFactory.build({
 				name: 'past course',
 				students: [student],
-				untilDate: new Date(Date.now() - twoDaysInSeconds),
+				untilDate: new Date(Date.now() - twoDaysInMilliSeconds),
 			});
 			const course3 = courseFactory.build({
 				name: 'timeless course',

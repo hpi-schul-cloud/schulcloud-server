@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-tsp-sync-cronjob
+  name: api-tsp-sync-cronjob
+spec:
+  schedule: "9 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: api-tsp-sync-cronjob
+        spec:
+          containers:
+          - name: api-tsp-sync-cronjob
+            image: curlimages/curl:7.69.0
+            args:
+            - "-H"
+            - "'X-API-Key: {{ SYNC_API_KEY }}'"
+            - "http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-base"
+            - "&&"
+            - "curl"
+            - "-H"
+            - "'X-API-Key: {{ SYNC_API_KEY }}'"
+            - "http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-school"
+          restartPolicy: OnFailure
