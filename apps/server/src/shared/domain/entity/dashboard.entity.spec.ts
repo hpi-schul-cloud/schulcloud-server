@@ -203,7 +203,7 @@ describe('dashboard entity', () => {
 			expect(dashboard.getGrid()[1].pos).toEqual({ x: 1, y: 0 });
 		});
 
-		it('should not change any passed rooms that are already on the board', () => {
+		it('should not change any recieved rooms that are already on the board', () => {
 			const room = getLearnroomMock('referenceId');
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
@@ -222,7 +222,7 @@ describe('dashboard entity', () => {
 			expect(dashboard.getGrid()[0].pos).toEqual({ x: 0, y: 2 });
 		});
 
-		it('should remove any rooms that are on the dashboard, but not passed', () => {
+		it('should remove any rooms that are on the dashboard, but not in the recieved list', () => {
 			const room = getLearnroomMock('referenceId');
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
