@@ -12,7 +12,7 @@ const { SchoolRepo, ClassRepo, UserRepo } = require('../../../../../src/services
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe.only('Class Actions', () => {
+describe('Class Actions', () => {
 	let classAction;
 
 	before(async () => {

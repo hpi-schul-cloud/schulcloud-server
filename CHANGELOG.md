@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- BC-837 - import and store users in new collection for ldap migration
+
 ### Fixed
 
 ### Changed

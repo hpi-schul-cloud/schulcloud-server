@@ -13,7 +13,7 @@ const { SchoolRepo } = require('../../../../../src/services/sync/repo');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe.only('School Actions', () => {
+describe('School Actions', () => {
 	let schoolAction;
 
 	before(async () => {

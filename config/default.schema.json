@@ -616,11 +616,6 @@
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
 		},
-		"FEATURE_LDAP_MIGRATE_ENABED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Migrate accounts to LDAP allowed."
-		},
 		"FEATURE_SYNCER_CONSUMER_ENABLE": {
 			"type": "boolean",
 			"default": false,
