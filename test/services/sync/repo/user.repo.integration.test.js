@@ -248,10 +248,11 @@ describe('user repo', () => {
 		it('should add more classs to import users', async () => {
 			const testSystem = await testObjects.createTestSystem();
 			const school = await testObjects.createTestSchool();
+			const classNames = ['1a', '1b'];
 			const importUser = await testObjects.createTestImportUser({
 				schoolId: school._id,
 				system: testSystem._id,
-				classNames: ['1a', '1b'],
+				classNames,
 			});
 
 			const userLdapDns = [importUser.ldapDn];
@@ -259,7 +260,7 @@ describe('user repo', () => {
 			await UserRepo.addClassToImportUsers(school._id, className, userLdapDns);
 
 			const res = await importUserModel.findOne({ schoolId: school._id, ldapDn: importUser.ldapDn }).lean().exec();
-			expect(res.classNames).to.eql(['1a', '1b', '1c']);
+			expect(res.classNames).to.eql([...classNames, className]);
 		});
 	});
 });
