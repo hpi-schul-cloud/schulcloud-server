@@ -19,7 +19,10 @@ export class TaskUC {
 	// TODO: clearify if Admin need TASK_DASHBOARD_TEACHER_VIEW_V3 permission
 	async findAllFinished(currentUser: ICurrentUser, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		// TODO: move to this.authorizationService ?
-		if (!this.hasOneOfTheTaskDashboardPermissions(currentUser)) {
+		if (
+			!this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.teacherDashboard) &&
+			!this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)
+		) {
 			throw new UnauthorizedException();
 		}
 
@@ -46,7 +49,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.hasTaskPermission(task, userId, TaskParentPermission.write)) {
+			if (this.authorizationService.hasTaskPermission(userId, task, TaskParentPermission.write)) {
 				status = task.createTeacherStatusForUser(userId);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
@@ -135,18 +138,6 @@ export class TaskUC {
 	// TODO: move to this.authorizationService ?
 	private hasTaskDashboardPermission(currentUser: ICurrentUser, permission: TaskDashBoardPermission): boolean {
 		const hasPermission = currentUser.user.permissions.includes(permission);
-
-		return hasPermission;
-	}
-
-	// TODO: move to this.authorizationService ?
-	// think about hasOneOfThePassedPermission, hasAnyOfThePassedPermission,
-	// or permission are hold in authorizationService
-	private hasOneOfTheTaskDashboardPermissions(currentUser: ICurrentUser) {
-		const { permissions } = currentUser.user;
-		const hasPermission =
-			permissions.includes(TaskDashBoardPermission.studentDashboard) ||
-			permissions.includes(TaskDashBoardPermission.teacherDashboard);
 
 		return hasPermission;
 	}

@@ -77,7 +77,7 @@ describe('task.authorization.service', () => {
 				const user = userFactory.build();
 				const task = taskFactory.build({ creator: user });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -87,7 +87,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ students: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -97,7 +97,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ substitutionTeachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -107,7 +107,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -118,7 +118,7 @@ describe('task.authorization.service', () => {
 				const user = userFactory.build();
 				const task = taskFactory.build({ creator: user });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
 			});
@@ -128,7 +128,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ students: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
 
 				expect(result).toBe(false);
 			});
@@ -138,7 +138,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ substitutionTeachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
 			});
@@ -148,7 +148,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(task, user.id, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
 			});

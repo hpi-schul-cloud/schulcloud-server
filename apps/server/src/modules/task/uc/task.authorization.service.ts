@@ -58,7 +58,7 @@ export class TaskAuthorizationService {
 		return hasPermission;
 	}
 
-	hasTaskPermission(task: Task, userId: EntityId, permission: TaskParentPermission): boolean {
+	hasTaskPermission(userId: EntityId, task: Task, permission: TaskParentPermission): boolean {
 		const isCreator = task.creator?.id === userId;
 		let hasCoursePermission = false;
 
