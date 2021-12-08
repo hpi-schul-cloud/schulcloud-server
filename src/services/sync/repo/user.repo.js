@@ -1,6 +1,6 @@
 const accountModel = require('../../account/model');
 const { userModel } = require('../../user/model');
-const { importUserModel } = require('../model/userMigration.schema');
+const { importUserModel } = require('../model/importUser.schema');
 const roleModel = require('../../role/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { BadRequest } = require('../../../errors');
@@ -116,8 +116,11 @@ const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 	return persistedUser;
 };
 
-const addClassToMigrationUsers = async (schoolId, className, users) => {
-	await importUserModel.updateMany({ schoolId, ldapDn: { $in: users } }, { $addToSet: { className } });
+const addClassToImportUsers = async (schoolId, className, userLdapDns) => {
+	await importUserModel.updateMany(
+		{ schoolId, ldapDn: { $in: userLdapDns } },
+		{ $addToSet: { classNames: className } }
+	);
 };
 
 const findByLdapIdAndSchool = async (ldapId, schoolId) =>
@@ -145,7 +148,7 @@ const UserRepo = {
 	createUserAndAccount,
 	updateUserAndAccount,
 	createOrUpdateImportUser,
-	addClassToMigrationUsers,
+	addClassToImportUsers,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 };

@@ -155,14 +155,14 @@ describe('Class Actions', () => {
 			const schoolId = 'dummy';
 			findSchoolByLdapIdAndSystemStub.returns({ _id: schoolId, name: testSchoolName, inUserMigration: true });
 
-			const addClassToMigrationUsersStub = sinon.stub(UserRepo, 'addClassToMigrationUsers');
+			const addClassToImportUsersStub = sinon.stub(UserRepo, 'addClassToImportUsers');
 
 			const newClassName = 'New Test Class';
 			const uniqueMembers = ['foo', 'bar', 'baz'];
 			await classAction.action({ class: { name: newClassName, uniqueMembers } });
 
-			expect(addClassToMigrationUsersStub.calledOnce).to.be.true;
-			expect(addClassToMigrationUsersStub.calledWith(schoolId, newClassName, uniqueMembers)).to.be.true;
+			expect(addClassToImportUsersStub.calledOnce).to.be.true;
+			expect(addClassToImportUsersStub.calledWith(schoolId, newClassName, uniqueMembers)).to.be.true;
 		});
 	});
 

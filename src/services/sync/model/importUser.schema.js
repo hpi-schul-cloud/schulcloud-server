@@ -13,16 +13,16 @@ const importUserSchema = new Schema(
 		system: { type: String, ref: 'system', required: true },
 
 		ldapDn: { type: String, required: true }, // LDAP login username
-		ldapId: { type: String, required: true, index: true, unique: true }, // UUID to identify during the sync
+		ldapId: { type: String, required: true }, // UUID to identify during the sync
 
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
 		email: { type: String, required: true, lowercase: true },
 		roles: [{ type: String }],
-		className: [{ type: String }],
+		classNames: [{ type: String }],
 		match: {
-			userId: { type: String, ref: 'user', required: true },
-			matchedBy: { type: String, enum: ['admin', 'auto'], required: true },
+			userId: { type: String, ref: 'user' },
+			matchedBy: { type: String, enum: ['admin', 'auto'] },
 		},
 		flagged: { type: Boolean, default: false, required: true },
 	},
