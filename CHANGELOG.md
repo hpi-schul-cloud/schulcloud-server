@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- BC-925 - UX fixes backend
+
 ## [26.20.0] - 2021-21-07
 
 ### Added
