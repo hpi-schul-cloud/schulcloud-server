@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
 import { Course, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
+import { courseFactory } from '@shared/testing';
 import { CourseUc } from './course.uc';
 
 describe('course uc', () => {
@@ -28,28 +29,28 @@ describe('course uc', () => {
 
 	describe('findByUser', () => {
 		it('should return courses of user', async () => {
-			const courses = new Array(5).map(() => ({} as Course));
+			const courses = courseFactory.buildList(5);
 			const spy = jest.spyOn(repo, 'findAllByUserId').mockImplementation((userId: EntityId) => {
 				return Promise.resolve([courses, 5]);
 			});
 
-			const [array, count] = await service.findActiveByUser('someUserId');
+			const [array, count] = await service.findAllByUser('someUserId');
 			expect(count).toEqual(5);
 			expect(array).toEqual(courses);
 		});
 
 		it('should pass on options correctly', async () => {
-			const courses = new Array(5).map(() => ({} as Course));
+			const courses = courseFactory.buildList(5);
 			const spy = jest.spyOn(repo, 'findAllByUserId').mockImplementation((userId: EntityId) => {
 				return Promise.resolve([courses, 5]);
 			});
 
 			const pagination = { skip: 1, limit: 2 };
-			const resultingOptions = { pagination, order: { name: SortOrder.asc } };
+			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
 
-			const [array, count] = await service.findActiveByUser('someUserId', pagination);
+			const [array, count] = await service.findAllByUser('someUserId', pagination);
 
-			expect(spy).toHaveBeenCalledWith('someUserId', { onlyActiveCourses: true }, resultingOptions);
+			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
 		});
 	});
 });
