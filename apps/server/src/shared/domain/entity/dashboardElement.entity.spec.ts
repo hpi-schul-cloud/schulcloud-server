@@ -63,6 +63,7 @@ describe('dashboardElement', () => {
 				const content = element.getContent();
 				expect(content.group?.length).toEqual(2);
 				if (content.group) {
+					expect(content.groupId).toEqual('id');
 					expect(content.group[0].shortTitle).toEqual('Ca');
 					expect(content.group[1].shortTitle).toEqual('Te');
 					expect(content.title).toEqual('groupTitle');
@@ -126,17 +127,18 @@ describe('dashboardElement', () => {
 
 	describe('addReferences', () => {
 		describe('when Element has a single reference', () => {
-			it('should append references', () => {
+			it('should append references and set default group title', () => {
 				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
 				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
 				element.addReferences(referenceList);
+				expect(element.getContent().title).toEqual('new Group');
 				const result = element.getReferences();
 				expect(result.length).toEqual(2);
 				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
 			});
 		});
 		describe('when Element has multiple references', () => {
-			it('should add all references', () => {
+			it('should add all references and not change title', () => {
 				const element = GridElement.FromPersistedGroup('id', 'title', [
 					learnroomMock('referenceId', 'Calendar-Dashboard'),
 					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
