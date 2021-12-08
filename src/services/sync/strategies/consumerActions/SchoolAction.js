@@ -1,4 +1,3 @@
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
@@ -7,8 +6,6 @@ const { SchoolRepo } = require('../../repo');
 const { fileStorageTypes } = require('../../../school/model');
 const getFileStorageStrategy = require('../../../fileStorage/strategies').createStrategy;
 const { BadRequest } = require('../../../../errors');
-
-const FEATURE_LDAP_MIGRATE_ENABED = Configuration.get('FEATURE_LDAP_MIGRATE_ENABED');
 
 const defaultOptions = {
 	allowedLogKeys: null,
