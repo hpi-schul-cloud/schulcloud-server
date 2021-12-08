@@ -1,0 +1,25 @@
+
+  - name: DB Init Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: configmap_file_init_db.yml.j2
+
+  - name: Management Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: management-deployment.yml.j2
+
+  - name: Management Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: management-svc.yml.j2
+
+
+  - name: DB Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: job_init_db.yml.j2

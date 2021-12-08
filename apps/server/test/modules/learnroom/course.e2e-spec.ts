@@ -7,15 +7,19 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';
-import { User } from '@shared/domain';
+import { userFactory, courseFactory, cleanUpCollections, createCurrentTestUser } from '@shared/testing';
+import { ICurrentUser, User } from '@shared/domain';
+
+const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
+	currentUser.user.id = user.id;
+	currentUser.userId = user.id;
+};
 
 describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
-
-	let user: User;
+	let currentUser: ICurrentUser;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -25,7 +29,7 @@ describe('Dashboard Controller (e2e)', () => {
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
-					req.user = user; // FIXME currentuser may need an accountId
+					req.user = currentUser;
 					return true;
 				},
 			})
@@ -35,8 +39,7 @@ describe('Dashboard Controller (e2e)', () => {
 		await app.init();
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
-
-		user = userFactory.build();
+		currentUser = createCurrentTestUser().currentUser;
 	});
 
 	afterEach(async () => {
@@ -46,9 +49,13 @@ describe('Dashboard Controller (e2e)', () => {
 	});
 
 	it('[FIND] courses', async () => {
-		const course = courseFactory.build({ name: 'course #1', students: [user] });
+		const student = userFactory.build();
+		await em.persistAndFlush([student]);
+		const course = courseFactory.build({ name: 'course #1', students: [student] });
 		await em.persistAndFlush(course);
 		em.clear();
+
+		modifyCurrentUserId(currentUser, student);
 
 		const response = await request(app.getHttpServer()).get('/courses');
 

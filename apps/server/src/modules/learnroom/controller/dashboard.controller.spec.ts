@@ -4,12 +4,27 @@ import {
 	EntityId,
 	GridPosition,
 	GridElement,
-	DefaultGridReference,
+	LearnroomTypes,
+	LearnroomMetadata,
 	ICurrentUser,
 } from '@shared/domain';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
+
+const learnroomMock = (id: string, name: string) => {
+	return {
+		getMetadata(): LearnroomMetadata {
+			return {
+				id,
+				type: LearnroomTypes.Course,
+				title: name,
+				shortTitle: name.substr(0, 2),
+				displayColor: '#ACACAC',
+			};
+		},
+	};
+};
 
 describe('dashboard uc', () => {
 	let uc: DashboardUc;
@@ -63,8 +78,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 1, y: 3 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'groupTitle', [
-								new DefaultGridReference('firstId', 'Math'),
-								new DefaultGridReference('secondId', 'German'),
+								learnroomMock('firstId', 'Math'),
+								learnroomMock('secondId', 'German'),
 							]),
 						},
 					],
@@ -100,10 +115,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromPersistedReference(
-									'elementId',
-									new DefaultGridReference('referenceId', 'Mathe')
-								),
+								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 							},
 						],
 						userId: 'userId',
@@ -123,10 +135,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromPersistedReference(
-									'elementId',
-									new DefaultGridReference('referenceId', 'Mathe')
-								),
+								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 							},
 						],
 						userId: 'userId',
@@ -156,8 +165,8 @@ describe('dashboard uc', () => {
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									new DefaultGridReference('referenceId1', 'Math'),
-									new DefaultGridReference('referenceId2', 'German'),
+									learnroomMock('referenceId1', 'Math'),
+									learnroomMock('referenceId2', 'German'),
 								]),
 							},
 						],
@@ -179,8 +188,8 @@ describe('dashboard uc', () => {
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									new DefaultGridReference('referenceId1', 'Math'),
-									new DefaultGridReference('referenceId2', 'German'),
+									learnroomMock('referenceId1', 'Math'),
+									learnroomMock('referenceId2', 'German'),
 								]),
 							},
 						],
