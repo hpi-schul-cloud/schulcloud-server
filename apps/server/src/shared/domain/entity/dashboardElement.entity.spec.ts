@@ -149,6 +149,21 @@ describe('dashboardElement', () => {
 				expect(result.length).toEqual(3);
 				expect(result.some((el) => el.getMetadata().title === 'Homework-Dashboard')).toBeTruthy();
 				expect(result.some((el) => el.getMetadata().title === 'Team-Dashboard')).toBeTruthy();
+				expect(element.getContent().title).toEqual('title');
+			});
+			it('should reset title when elements are ungrouped and regrouped', () => {
+				const element = GridElement.FromPersistedGroup('id', 'title', [
+					learnroomMock('referenceId', 'Calendar-Dashboard'),
+					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+				]);
+				expect(element.getContent().title).toEqual('title');
+				expect(element.getReferences().length).toEqual(2);
+				element.removeReference(1);
+				expect(element.getReferences().length).toEqual(1);
+				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
+				element.addReferences(referenceList);
+				expect(element.getReferences().length).toEqual(2);
+				expect(element.getContent().title).toEqual('new Group');
 			});
 		});
 
