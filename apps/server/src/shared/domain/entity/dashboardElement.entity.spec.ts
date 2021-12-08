@@ -127,14 +127,17 @@ describe('dashboardElement', () => {
 
 	describe('addReferences', () => {
 		describe('when Element has a single reference', () => {
-			it('should append references and set default group title', () => {
-				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
-				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
-				element.addReferences(referenceList);
-				expect(element.getContent().title).toEqual('new Group');
+			const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
+			const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
+			element.addReferences(referenceList);
+			it('should append references', () => {
 				const result = element.getReferences();
 				expect(result.length).toEqual(2);
 				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
+			});
+			it('should set default group name', () => {
+				const result = element.getContent();
+				expect(result.title).toEqual('new Group');
 			});
 		});
 		describe('when Element has multiple references', () => {

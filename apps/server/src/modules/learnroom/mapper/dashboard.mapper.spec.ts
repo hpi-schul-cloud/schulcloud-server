@@ -31,9 +31,9 @@ describe('dashboard mapper', () => {
 			},
 			{
 				pos: { x: 2, y: 3 },
-				gridElement: GridElement.FromPersistedGroup('anotherElementId', 'arbitraryTitle', [
+				gridElement: GridElement.FromPersistedGroup('groupId', 'groupTitle', [
 					learnroomMock('anotherReferenceId', 'Englisch'),
-					learnroomMock('anotherReferenceId', 'Deutsch'),
+					learnroomMock('additionalReferenceId', 'Deutsch'),
 				]),
 			},
 		];
@@ -45,6 +45,7 @@ describe('dashboard mapper', () => {
 		expect(result.gridElements[0].yPosition).toEqual(3);
 		expect(result.gridElements[0].title).toEqual('Mathe');
 		expect(result.gridElements[0].shortTitle).toEqual('Ma');
-		expect(result.gridElements[1].groupId).toEqual('anotherElementId');
+		expect(result.gridElements[1].groupId).toEqual('groupId');
+		expect(result.gridElements[1].title).toEqual('groupTitle');
 	});
 });
