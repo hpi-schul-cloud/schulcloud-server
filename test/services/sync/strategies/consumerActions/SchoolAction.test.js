@@ -2,11 +2,8 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const sinon = require('sinon');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../../../../src/errors');
 const { SchoolAction } = require('../../../../../src/services/sync/strategies/consumerActions');
-
-const globals = require('../../../../../config/globals');
 
 const { SchoolRepo } = require('../../../../../src/services/sync/repo');
 
@@ -55,6 +52,5 @@ describe('School Actions', () => {
 			findSchoolByLdapIdAndSystemStub.throws(new BadRequest('school repo error'));
 			await expect(schoolAction.action({})).to.be.rejectedWith(BadRequest);
 		});
-
 	});
 });

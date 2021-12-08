@@ -35,7 +35,7 @@ class ClassAction extends BaseConsumerAction {
 				}
 			);
 		}
-		if (school.inUserMigration) {
+		if (school.inUserMigration === true) {
 			await UserRepo.addClassToImportUsers(school._id, classData.name, classData.uniqueMembers);
 			return;
 		}

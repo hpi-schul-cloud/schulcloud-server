@@ -119,7 +119,7 @@ describe('User Actions', () => {
 				lastName: 'New lname',
 				email: 'New email',
 				ldapDn: 'new ldapdn',
-				roles: ['role1'],
+				roles: [new ObjectId()],
 			};
 			const testAccountInput = { _id: 2 };
 			await userAction.action({ user: testUserInput, account: testAccountInput });
@@ -148,7 +148,7 @@ describe('User Actions', () => {
 				lastName: 'New lname',
 				email: 'New email',
 				ldapDn: 'new ldapdn',
-				roles: ['role1'],
+				roles: [new ObjectId()],
 			};
 			const testAccountInput = { _id: 2 };
 			await userAction.action({ user: testUserInput, account: testAccountInput });

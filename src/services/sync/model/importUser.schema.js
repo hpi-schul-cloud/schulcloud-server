@@ -10,7 +10,7 @@ const importUserSchema = new Schema(
 			required: true,
 		},
 
-		system: { type: String, ref: 'system', required: true },
+		system: { type: Schema.Types.ObjectId, ref: 'system', required: true },
 
 		ldapDn: { type: String, required: true }, // LDAP login username
 		ldapId: { type: String, required: true }, // UUID to identify during the sync
@@ -21,7 +21,7 @@ const importUserSchema = new Schema(
 		roles: [{ type: String }],
 		classNames: [{ type: String }],
 		match: {
-			userId: { type: String, ref: 'user' },
+			userId: { type: Schema.Types.ObjectId, ref: 'user' },
 			matchedBy: { type: String, enum: ['admin', 'auto'] },
 		},
 		flagged: { type: Boolean, default: false, required: true },

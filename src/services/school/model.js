@@ -63,7 +63,7 @@ const schoolSchema = new Schema(
 			default: '',
 			enum: ['', 'school', 'schoolGroup'],
 		},
-		officialSchoolNumber: { type: String, index: true }, // TODO unique per federal state validation on save
+		officialSchoolNumber: { type: String }, // TODO unique per federal state validation on save
 		county: { type: countySchema },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
@@ -92,7 +92,7 @@ const schoolSchema = new Schema(
 		 */
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
-		inUserMigration: { type: Boolean },
+		inUserMigration: { type: Boolean, default: false },
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
 		tombstoneUserId: {

@@ -106,7 +106,6 @@ const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	return { user, account };
 };
 
-// TODO when to delete them (by school)?
 const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 	const userToUpdate = { ...user, schoolId, systemId, ldapId };
 	const persistedUser = await importUserModel
