@@ -119,7 +119,7 @@ describe('dashboard entity', () => {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
 				userId: 'userId',
 			});
-			const spy = jest.spyOn(element, 'removeReference');
+			const spy = jest.spyOn(element, 'removeReferenceByIndex');
 			dashboard.moveElement({ x: 1, y: 2, groupIndex: 1 }, { x: 3, y: 3 });
 			expect(spy).toHaveBeenCalledWith(1);
 			expect(dashboard.getGrid().length).toEqual(2);
@@ -186,17 +186,18 @@ describe('dashboard entity', () => {
 		});
 
 		it('should put new elements into first available positions', () => {
+			const existingRoom = getLearnroomMock('referenceId');
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 0 },
-						gridElement: GridElement.FromPersistedGroup('elementId', 'Mathe 3d', [getLearnroomMock('referenceId')]),
+						gridElement: GridElement.FromPersistedGroup('elementId', 'Mathe 3d', [existingRoom]),
 					},
 				],
 				userId: 'userId',
 			});
 
-			dashboard.setLearnRooms([getLearnroomMock('first')]);
+			dashboard.setLearnRooms([getLearnroomMock('first'), existingRoom]);
 
 			expect(dashboard.getGrid().length).toEqual(2);
 			expect(dashboard.getGrid()[1].pos).toEqual({ x: 1, y: 0 });
@@ -221,8 +222,7 @@ describe('dashboard entity', () => {
 			expect(dashboard.getGrid()[0].pos).toEqual({ x: 0, y: 2 });
 		});
 
-		it.todo(
-			'should remove any rooms that are on the dashboard, but not passed' /* , () => {
+		it('should remove any rooms that are on the dashboard, but not passed', () => {
 			const room = getLearnroomMock('referenceId');
 			const dashboard = new DashboardEntity('someid', {
 				grid: [
@@ -245,7 +245,6 @@ describe('dashboard entity', () => {
 
 			expect(dashboard.getGrid().length).toEqual(1);
 			expect(dashboard.getGrid()[0].gridElement.getReferences().length).toEqual(1);
-		} */
-		);
+		});
 	});
 });

@@ -13,7 +13,9 @@ export interface IGridElement {
 
 	isGroup(): boolean;
 
-	removeReference(index: number): void;
+	removeReferenceByIndex(index: number): void;
+
+	removeReference(reference: ILearnroom): void;
 
 	getReferences(): ILearnroom[];
 
@@ -83,12 +85,20 @@ export class GridElement implements IGridElement {
 		return this.references;
 	}
 
-	removeReference(index: number): void {
+	removeReferenceByIndex(index: number): void {
 		if (!this.isGroup()) {
 			throw new BadRequestException('this element is not a group.');
 		}
 		if (index > 0 && this.references.length <= index) {
 			throw new BadRequestException('group index out of bounds.');
+		}
+		this.references.splice(index, 1);
+	}
+
+	removeReference(reference: ILearnroom): void {
+		const index = this.references.indexOf(reference);
+		if (index === -1) {
+			throw new BadRequestException('reference not found.');
 		}
 		this.references.splice(index, 1);
 	}
@@ -211,10 +221,26 @@ export class DashboardEntity {
 	}
 
 	setLearnRooms(rooms: ILearnroom[]): void {
+		this.removeRoomsNotInList(rooms);
 		const newRooms = this.determineNewRoomsIn(rooms);
 
 		newRooms.forEach((room) => {
 			this.addRoom(room);
+		});
+	}
+
+	private removeRoomsNotInList(roomList: ILearnroom[]): void {
+		[...this.grid.keys()].forEach((key) => {
+			const element = this.grid.get(key) as IGridElement;
+			const currentRooms = element.getReferences();
+			currentRooms.forEach((room) => {
+				if (!roomList.includes(room)) {
+					element.removeReference(room);
+				}
+			});
+			if (element.getReferences().length === 0) {
+				this.grid.delete(key);
+			}
 		});
 	}
 
@@ -268,7 +294,7 @@ export class DashboardEntity {
 	private removeFromPosition(position: GridPositionWithGroupIndex): void {
 		const element = this.getElement(position);
 		if (typeof position.groupIndex === 'number') {
-			element.removeReference(position.groupIndex);
+			element.removeReferenceByIndex(position.groupIndex);
 		} else {
 			this.grid.delete(this.gridIndexFromPosition(position));
 		}
