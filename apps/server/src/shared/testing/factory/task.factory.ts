@@ -13,7 +13,7 @@ class TaskFactory extends BaseFactory<Task, ITaskProperties> {
 	}
 
 	finished(user: User): this {
-		const params: DeepPartial<ITaskProperties> = { closed: [user] };
+		const params: DeepPartial<ITaskProperties> = { finished: [user] };
 		return this.params(params);
 	}
 }

@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo } from '@shared/domain';
+import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo, ITaskStatus } from '@shared/domain';
 
 import { TaskRepo } from '@shared/repo';
 
@@ -16,7 +16,18 @@ export class TaskUC {
 
 	// This uc includes 4 awaits + 1 from authentication services.
 	// 5 awaits from with db calls from one request against the api is for me the absolut maximum what we should allowed.
-	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+	// TODO: clearify if Admin need TASK_DASHBOARD_TEACHER_VIEW_V3 permission
+	async findAllFinished(currentUser: ICurrentUser, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		// TODO: move to this.authorizationService ?
+		if (
+			!this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.teacherDashboard) &&
+			!this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)
+		) {
+			throw new UnauthorizedException();
+		}
+
+		const { userId } = currentUser;
+
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);
 
@@ -37,7 +48,14 @@ export class TaskUC {
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
-			const status = task.createStudentStatusForUser(userId); // will updated in future pr that it show right status for write permissions
+			let status: ITaskStatus;
+			if (this.authorizationService.hasTaskPermission(userId, task, TaskParentPermission.write)) {
+				status = task.createTeacherStatusForUser(userId);
+			} else {
+				// TaskParentPermission.read check is not needed on this place
+				status = task.createStudentStatusForUser(userId);
+			}
+
 			return new TaskWithStatusVo(task, status);
 		});
 
@@ -67,14 +85,14 @@ export class TaskUC {
 		const lessons = await this.authorizationService.getPermittedLessons(userId, openCourses);
 
 		const dueDate = this.getDefaultMaxDueDate();
-		const closed = { userId, value: false };
+		const notFinished = { userId, value: false };
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ draft: false, afterDueDateOrNone: dueDate, closed },
+			{ draft: false, afterDueDateOrNone: dueDate, finished: notFinished },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
@@ -94,7 +112,7 @@ export class TaskUC {
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.authorizationService.getPermittedLessons(userId, openCourses);
 
-		const closed = { userId, value: false };
+		const notFinished = { userId, value: false };
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
@@ -102,7 +120,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ closed },
+			{ finished: notFinished },
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },
@@ -117,8 +135,10 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
+	// TODO: move to this.authorizationService ?
 	private hasTaskDashboardPermission(currentUser: ICurrentUser, permission: TaskDashBoardPermission): boolean {
 		const hasPermission = currentUser.user.permissions.includes(permission);
+
 		return hasPermission;
 	}
 
@@ -126,6 +146,7 @@ export class TaskUC {
 	private getDefaultMaxDueDate(): Date {
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
 		return oneWeekAgo;
 	}
 }
