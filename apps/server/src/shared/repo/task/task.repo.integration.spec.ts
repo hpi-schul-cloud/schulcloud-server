@@ -536,18 +536,18 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('when filter closed is false', () => {
+		describe('when filter finished is false', () => {
 			it('should find task when the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
-				const task = taskFactory.build({ creator, course, closed: [creator] });
+				const task = taskFactory.build({ creator, course, finished: [creator] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: teacher.id, value: false };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: teacher.id, value: false };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(1);
 			});
@@ -556,13 +556,13 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
-				const task = taskFactory.build({ creator, course, closed: [teacher] });
+				const task = taskFactory.build({ creator, course, finished: [teacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: teacher.id, value: false };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: teacher.id, value: false };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(0);
 			});
@@ -571,13 +571,13 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
-				const task = taskFactory.build({ creator, course, closed: [substitutionTeacher] });
+				const task = taskFactory.build({ creator, course, finished: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: substitutionTeacher.id, value: false };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: substitutionTeacher.id, value: false };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(0);
 			});
@@ -586,30 +586,30 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
-				const task = taskFactory.build({ creator, course, closed: [student] });
+				const task = taskFactory.build({ creator, course, finished: [student] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: student.id, value: false };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: student.id, value: false };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(0);
 			});
 		});
 
-		describe('when filter closed is true', () => {
+		describe('when filter finished is true', () => {
 			it('should not find task when the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator] });
-				const task = taskFactory.build({ creator, course, closed: [creator] });
+				const task = taskFactory.build({ creator, course, finished: [creator] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: teacher.id, value: true };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: teacher.id, value: true };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(0);
 			});
@@ -618,13 +618,13 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator, teacher] });
-				const task = taskFactory.build({ creator, course, closed: [teacher] });
+				const task = taskFactory.build({ creator, course, finished: [teacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: teacher.id, value: true };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: teacher.id, value: true };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(1);
 			});
@@ -633,13 +633,13 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
-				const task = taskFactory.build({ creator, course, closed: [substitutionTeacher] });
+				const task = taskFactory.build({ creator, course, finished: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: substitutionTeacher.id, value: true };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: substitutionTeacher.id, value: true };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(1);
 			});
@@ -648,13 +648,13 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
 				const course = courseFactory.build({ teachers: [creator], students: [student] });
-				const task = taskFactory.build({ creator, course, closed: [student] });
+				const task = taskFactory.build({ creator, course, finished: [student] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				const closed = { userId: student.id, value: true };
-				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { closed });
+				const finished = { userId: student.id, value: true };
+				const [, total] = await repo.findAllByParentIds({ courseIds: [course.id] }, { finished });
 
 				expect(total).toEqual(1);
 			});
@@ -710,7 +710,7 @@ describe('TaskRepo', () => {
 			it('should find finished tasks of lessons', async () => {
 				const { user, course } = setup();
 				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ lesson, course, closed: [user] });
+				const task = taskFactory.build({ lesson, course, finished: [user] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -728,7 +728,7 @@ describe('TaskRepo', () => {
 
 			it('should find finished tasks of courses', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course, closed: [user] });
+				const task = taskFactory.build({ course, finished: [user] });
 
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -1082,7 +1082,7 @@ describe('TaskRepo', () => {
 			const setup = (taskCount: number) => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ untilDate: undefined });
-				const tasks = taskFactory.buildList(taskCount, { course, closed: [user] });
+				const tasks = taskFactory.buildList(taskCount, { course, finished: [user] });
 
 				return { user, course, tasks };
 			};
@@ -1151,15 +1151,34 @@ describe('TaskRepo', () => {
 			});
 		});
 
+		it('should "not" find tasks of "not" passed parents', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [] });
+			const task = taskFactory.finished(user).build({ course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			const [, total] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [],
+				lessonIdsOfOpenCourses: [],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(total).toEqual(0);
+		});
+
 		it('should sort result by newest dueDate', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ untilDate: undefined });
 
 			const dateSec = (sec) => new Date(Date.now() - sec * 1000);
-			const task1 = taskFactory.build({ course, closed: [user], dueDate: dateSec(60) });
-			const task2 = taskFactory.build({ course, closed: [user], dueDate: dateSec(90) });
-			const task3 = taskFactory.build({ course, closed: [user], dueDate: dateSec(120) });
-			const task4 = taskFactory.build({ course, closed: [user], dueDate: dateSec(30) });
+			const task1 = taskFactory.build({ course, finished: [user], dueDate: dateSec(60) });
+			const task2 = taskFactory.build({ course, finished: [user], dueDate: dateSec(90) });
+			const task3 = taskFactory.build({ course, finished: [user], dueDate: dateSec(120) });
+			const task4 = taskFactory.build({ course, finished: [user], dueDate: dateSec(30) });
 
 			await em.persistAndFlush([task1, task2, task3, task4]);
 			em.clear();
