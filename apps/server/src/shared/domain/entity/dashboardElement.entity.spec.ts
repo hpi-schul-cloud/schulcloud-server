@@ -124,6 +124,17 @@ describe('dashboardElement', () => {
 		});
 	});
 
+	describe('removeReference', () => {
+		it('should throw if element doesnt exist', () => {
+			const element = GridElement.FromGroup('title', [
+				learnroomMock('referenceId', 'Calendar-Dashboard'),
+				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+			]);
+			const callFunction = () => element.removeReference(learnroomMock('notmatching', 'Administration-Dashboard'));
+			expect(callFunction).toThrow(BadRequestException);
+		});
+	});
+
 	describe('addReferences', () => {
 		describe('when Element has a single reference', () => {
 			it('should append references', () => {
