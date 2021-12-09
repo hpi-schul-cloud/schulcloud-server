@@ -95,12 +95,7 @@ export class GridElement implements IGridElement {
 	}
 
 	addReferences(anotherReference: ILearnroom[]): void {
-		if (!this.isGroup()) {
-			this.references = this.references.concat(anotherReference).sort(this.sortReferences);
-			this.setGroupName('new Group');
-		} else {
-			this.references = this.references.concat(anotherReference).sort(this.sortReferences);
-		}
+		this.references = this.references.concat(anotherReference).sort(this.sortReferences);
 	}
 
 	getContent(): GridElementContent {

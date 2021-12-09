@@ -127,61 +127,35 @@ describe('dashboardElement', () => {
 
 	describe('addReferences', () => {
 		describe('when Element has a single reference', () => {
-			const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
-			const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
-			element.addReferences(referenceList);
 			it('should append references', () => {
+				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
+				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
+				element.addReferences(referenceList);
 				const result = element.getReferences();
 				expect(result.length).toEqual(2);
 				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
 			});
-			it('should set default group name', () => {
-				const result = element.getContent();
-				expect(result.title).toEqual('new Group');
-			});
 		});
 		describe('when Element has multiple references', () => {
-			it('should add all references and not change title', () => {
-				const element = GridElement.FromPersistedGroup('id', 'title', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
-				]);
-				const referenceList = [learnroomMock('additionalReferenceId', 'Homework-Dashboard')];
-				element.addReferences(referenceList);
-				const result = element.getReferences();
-				expect(result.length).toEqual(3);
-				expect(result.some((el) => el.getMetadata().title === 'Homework-Dashboard')).toBeTruthy();
-				expect(result.some((el) => el.getMetadata().title === 'Team-Dashboard')).toBeTruthy();
-				expect(element.getContent().title).toEqual('title');
-			});
-			it('should reset title when elements are ungrouped and regrouped', () => {
-				const element = GridElement.FromPersistedGroup('id', 'title', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
-				]);
-				expect(element.getContent().title).toEqual('title');
-				expect(element.getReferences().length).toEqual(2);
-				element.removeReference(1);
-				expect(element.getReferences().length).toEqual(1);
-				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
-				element.addReferences(referenceList);
-				expect(element.getReferences().length).toEqual(2);
-				expect(element.getContent().title).toEqual('new Group');
-			});
-		});
-
-		it('should keep references sorted', () => {
 			const element = GridElement.FromPersistedGroup('id', 'title', [
 				learnroomMock('referenceId', 'Calendar-Dashboard'),
 				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
 			]);
 			const referenceList = [learnroomMock('additionalReferenceId', 'Homework-Dashboard')];
 			element.addReferences(referenceList);
-			const result = element.getReferences();
-			expect(result.length).toEqual(3);
-			expect(result[0].getMetadata().title).toEqual('Calendar-Dashboard');
-			expect(result[1].getMetadata().title).toEqual('Homework-Dashboard');
-			expect(result[2].getMetadata().title).toEqual('Team-Dashboard');
+			it('should add all references', () => {
+				const result = element.getReferences();
+				expect(result.length).toEqual(3);
+				expect(result.some((el) => el.getMetadata().title === 'Homework-Dashboard')).toBeTruthy();
+				expect(result.some((el) => el.getMetadata().title === 'Team-Dashboard')).toBeTruthy();
+			});
+			it('should keep references sorted', () => {
+				const result = element.getReferences();
+				expect(result.length).toEqual(3);
+				expect(result[0].getMetadata().title).toEqual('Calendar-Dashboard');
+				expect(result[1].getMetadata().title).toEqual('Homework-Dashboard');
+				expect(result[2].getMetadata().title).toEqual('Team-Dashboard');
+			});
 		});
 	});
 
