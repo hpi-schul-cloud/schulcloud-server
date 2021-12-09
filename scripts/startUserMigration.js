@@ -5,9 +5,9 @@ const { schoolModel } = require('../src/services/school/model');
 const systemModel = require('../src/services/system/model');
 
 program
-	.requiredOption('--systemId <value>', 'ID of the system, which will be added to the schools')
+	.requiredOption('-s, --systemId <value>', '(Required) ID of the system, which will be added to the schools')
 	.option(
-		'--officialSchoolNumbers <value...>',
+		'-o, --officialSchoolNumbers <value...>',
 		'Official school numbers of the schools that should be migrated (space seperated values). If not given, all schools having an official school number will be migrated.'
 	);
 
