@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
+### Added
+
+- BC-884 - deleted and archived courses are removed from the dashboard
+
 ### Changed
 
 ### Fixed
