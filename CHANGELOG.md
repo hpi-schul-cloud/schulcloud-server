@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
+### Added
+
+- BC-837 - BC-932 - add script to prepare ldap migration for schools
+
 ### Changed
 
 ### Fixed
