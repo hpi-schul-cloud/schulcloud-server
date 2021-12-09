@@ -160,11 +160,13 @@ describe('User Actions', () => {
 
 		describe('When school is use migration mode', () => {
 			it('should persist ldap user data for migration', async () => {
-				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 				const schoolId = 'foo';
-				findSchoolByLdapIdAndSystemStub.returns({ _id: schoolId, name: 'Test School', inUserMigration: true });
-
-				const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
+				sinon
+					.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
+					.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
+				sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(null);
+				const createUserAndAccountStub = sinon.stub(UserRepo, 'createUserAndAccount');
+				const updateUserAndAccountStub = sinon.stub(UserRepo, 'updateUserAndAccount');
 				const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
 
 				const testUserInput = {
@@ -180,7 +182,8 @@ describe('User Actions', () => {
 				const testAccountInput = { _id: 2 };
 				await userAction.action({ user: testUserInput, account: testAccountInput });
 
-				expect(findByLdapIdAndSchoolStub.notCalled).to.be.true;
+				expect(updateUserAndAccountStub.notCalled).to.be.true;
+				expect(createUserAndAccountStub.notCalled).to.be.true;
 				expect(createOrUpdateImportUserStub.calledOnce).to.be.true;
 
 				const expectedUserObject = {
@@ -200,9 +203,10 @@ describe('User Actions', () => {
 				).to.be.true;
 			});
 
-			it('should not update or create real user', async () => {
-				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-				findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', inUserMigration: true });
+			it('should not update or create import user, when user has an ldap', async () => {
+				sinon
+					.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
+					.resolves({ name: 'Test School', inUserMigration: true, inMaintenance: true });
 				const userId = new ObjectId();
 				const existingUser = {
 					_id: userId,
@@ -211,12 +215,12 @@ describe('User Actions', () => {
 					email: 'Old email',
 					ldapDn: 'Old ldapdn',
 				};
-				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(existingUser);
+				sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(existingUser);
 
-				const updateUserSpy = sinon.spy(UserRepo, 'updateUserAndAccount');
+				const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
 
 				const testUserInput = {
-					_id: userId,
+					_id: new ObjectId(),
 					firstName: 'New fname',
 					lastName: 'New lname',
 					email: 'New email',
@@ -226,7 +230,7 @@ describe('User Actions', () => {
 				const testAccountInput = { _id: 2 };
 				await userAction.action({ user: testUserInput, account: testAccountInput });
 
-				expect(updateUserSpy.notCalled).to.be.true;
+				expect(createOrUpdateImportUserStub.notCalled).to.be.true;
 			});
 		});
 	});
