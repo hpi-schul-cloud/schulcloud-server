@@ -211,7 +211,15 @@ describe('user repo', () => {
 		it('should update import user', async () => {
 			const testSystem = await testObjects.createTestSystem();
 			const school = await testObjects.createTestSchool();
-			const importUser = await testObjects.createTestImportUser({ schoolId: school._id, system: testSystem._id });
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				firstName: 'foo',
+				lastName: 'bar',
+				email: 'baz',
+				systems: [new ObjectId()],
+				roles: ['role1', 'role2'],
+			});
 
 			const user = {
 				firstName: 'New fname',
@@ -261,6 +269,23 @@ describe('user repo', () => {
 
 			const res = await importUserModel.findOne({ schoolId: school._id, ldapDn: importUser.ldapDn }).lean().exec();
 			expect(res.classNames).to.eql([...classNames, className]);
+		});
+
+		it('should not add duplicate class name', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const className = ['1a'];
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				className,
+			});
+
+			const userLdapDns = [importUser.ldapDn];
+			await UserRepo.addClassToImportUsers(school._id, className, userLdapDns);
+
+			const res = await importUserModel.findOne({ schoolId: school._id, ldapDn: importUser.ldapDn }).lean().exec();
+			expect(res.classNames).to.eql([className]);
 		});
 	});
 });

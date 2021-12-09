@@ -30,7 +30,7 @@ class UserAction extends BaseConsumerAction {
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
-		if (school.inUserMigration === true && foundUser === null) {
+		if (school.inUserMigration === true && !foundUser) {
 			// create migration user when the ldapId is not existing
 			const userUpdateObject = this.createUserUpdateObject(user, {});
 			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
