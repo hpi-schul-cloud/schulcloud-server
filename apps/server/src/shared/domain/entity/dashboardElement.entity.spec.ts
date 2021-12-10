@@ -172,7 +172,7 @@ describe('dashboardElement', () => {
 				]);
 				expect(element.getContent().title).toEqual('title');
 				expect(element.getReferences().length).toEqual(2);
-				element.removeReference(1);
+				element.removeReferenceByIndex(1);
 				expect(element.getReferences().length).toEqual(1);
 				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
 				element.addReferences(referenceList);
