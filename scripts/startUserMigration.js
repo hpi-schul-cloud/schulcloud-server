@@ -40,7 +40,7 @@ const startUserMigration = async () => {
 	}
 	for await (const school of schools) {
 		try {
-			school.ldapSchoolIdentifier = `ou=${school.officialSchoolNumber},${system.ldapConfig.rootPath}`;
+			school.ldapSchoolIdentifier = school.officialSchoolNumber;
 			if (!school.systems.includes(systemId)) school.systems.push(systemId);
 			school.inUserMigration = true;
 			school.inMaintenanceSince = new Date();
