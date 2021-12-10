@@ -5,6 +5,7 @@ const BaseConsumerAction = require('./BaseConsumerAction');
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
+const { isNotEmptyString } = require('../../../../helper/stringHelper');
 
 const defaultOptions = {
 	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated', 'schoolDn'],
@@ -36,7 +37,11 @@ class UserAction extends BaseConsumerAction {
 
 			// calculate match if not already set
 			const importUser = await UserRepo.getImportUser();
-			if (importUser === null || !importUser.match) {
+			if (
+				(importUser === null || !importUser.match) &&
+				isNotEmptyString(user.firstName, true) &&
+				isNotEmptyString(user.lastName, true)
+			) {
 				const matchingUsers = await UserRepo.findUserBySchoolAndName(
 					school._id,
 					userUpdateObject.firstName,
