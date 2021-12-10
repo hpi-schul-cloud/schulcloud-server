@@ -2,11 +2,11 @@ import { EntityId, Task } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class TaskScope extends Scope<Task> {
-	byClosed(userId: EntityId, value: boolean): TaskScope {
+	byFinished(userId: EntityId, value: boolean): TaskScope {
 		if (value === true) {
-			this.addQuery({ closed: userId });
+			this.addQuery({ finished: userId });
 		} else if (value === false) {
-			this.addQuery({ closed: { $ne: userId } });
+			this.addQuery({ finished: { $ne: userId } });
 		}
 
 		return this;
