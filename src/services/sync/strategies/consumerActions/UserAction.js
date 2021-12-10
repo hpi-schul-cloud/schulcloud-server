@@ -30,11 +30,34 @@ class UserAction extends BaseConsumerAction {
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
+		// create migration user when the ldapId is not existing on a real user
 		if (school.inUserMigration === true && !foundUser) {
-			// create migration user when the ldapId is not existing
 			const userUpdateObject = this.createUserUpdateObject(user, {});
-			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
-			// TODO how to handle import users that have been removed in ldap later?
+
+			// calculate match if not already set
+			const importUser = await UserRepo.getImportUser();
+			if (importUser === null || !importUser.match) {
+				const matchingUsers = await UserRepo.findUserBySchoolAndName(
+					school._id,
+					userUpdateObject.firstName,
+					userUpdateObject.lastName
+				);
+				if (matchingUsers && matchingUsers.length === 1) {
+					const userMatch = matchingUsers[0];
+					updateUserObject.match = {
+						userId: userMatch._id,
+						matchedBy: 'auto',
+					};
+				}
+			}
+
+			const importUser = await UserRepo.createOrUpdateImportUser(
+				school._id,
+				user.systemId,
+				user.ldapId,
+				userUpdateObject
+			);
+
 			return;
 		}
 

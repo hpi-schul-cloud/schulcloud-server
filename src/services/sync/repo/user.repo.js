@@ -38,6 +38,9 @@ const createUser = async (user) => {
 
 const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerCase() }).lean().exec();
 
+const findUsersBySchoolAndName = async (schoolId, firstName, lastName) =>
+	userModel.find({ schoolId, firstName, lastName }).lean().exec();
+
 const checkCreate = async (email) => {
 	if (!email) {
 		throw new BadRequest(`User cannot be created. Email is missing`);
@@ -106,6 +109,11 @@ const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	return { user, account };
 };
 
+const getImportUser = async (schoolId, systemId, ldapId) => {
+	const result = await importUserModel.findOne({ schoolId, systemId, ldapId }).lean().exec();
+	return result;
+};
+
 const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 	const userToUpdate = { ...user, schoolId, systemId, ldapId };
 	const persistedUser = await importUserModel
@@ -146,8 +154,10 @@ const UserRepo = {
 	private: { createAccount, createUser, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
+	getImportUser,
 	createOrUpdateImportUser,
 	addClassToImportUsers,
+	findUsersBySchoolAndName,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 };
