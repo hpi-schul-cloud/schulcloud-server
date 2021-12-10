@@ -235,7 +235,8 @@ describe('User Actions', () => {
 			describe('when import user is not having a match', () => {
 				it('should add local user match', () => {});
 				it('should only add exact match', () => {});
-				it('should not add a local user as match twice', () => {});
+				it('should skip adding a match if there is no one', () => {});
+				it('should not add a single user as match to multiple import users', () => {});
 			});
 			describe('when import user already has a match assigned', () => {
 				it('should not update the existing match', () => {});

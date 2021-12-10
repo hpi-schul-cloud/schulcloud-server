@@ -47,6 +47,7 @@ class UserAction extends BaseConsumerAction {
 					userUpdateObject.firstName,
 					userUpdateObject.lastName
 				);
+				// TODO check auto assignments to be revoked if they match
 				if (matchingLocalUsers && matchingLocalUsers.length === 1) {
 					const userMatch = matchingLocalUsers[0];
 					const appliedUserMatches = await UserRepo.findImportUsersByUserMatch(userMatch._id);
