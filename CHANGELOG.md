@@ -15,6 +15,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- BC-826 - show teacher status for privileged members for tasks
+- BC-701 - bump packages
+
 ### Fixed
 
 ## [26.20.0] - 2021-21-07
@@ -44,16 +47,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [26.18.0] - 2021-11-23
 
 ### Added
+
 - BC-485 - ansible role for management service
 
-### Changed
-
 ### Fixed
+
 - BC-724 - fixed OpenAPI spec for dashboard
-
-### Changed
-
-- BC-609 - open task do not longer published open tasks of finished courses
 
 ## [26.17.0] - 2021-11-16
 

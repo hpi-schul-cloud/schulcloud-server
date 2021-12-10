@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 
 import { PaginationQuery } from '@shared/controller';
 import { Course, ICurrentUser, Task, Lesson } from '@shared/domain';
@@ -50,6 +51,9 @@ describe('TaskUC', () => {
 						getPermittedLessons() {
 							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedLessons');
 						},
+						hasTaskPermission() {
+							throw new Error('Please write a mock for TaskAuthorizationService.hasTaskPermission');
+						},
 					},
 				},
 			],
@@ -96,6 +100,11 @@ describe('TaskUC', () => {
 
 			return spy;
 		},
+		hasTaskPermission: (hasWritePermission = false) => {
+			const spy = jest.spyOn(authorizationService, 'hasTaskPermission').mockImplementation(() => hasWritePermission);
+
+			return spy;
+		},
 	};
 
 	it('should be defined', () => {
@@ -103,15 +112,17 @@ describe('TaskUC', () => {
 	});
 
 	describe('findAllFinished', () => {
-		const findAllMock = (tasks?: Task[], lessons?: Lesson[], courses?: Course[]) => {
+		const findAllMock = (tasks?: Task[], lessons?: Lesson[], courses?: Course[], hasWritePermission?: boolean) => {
 			const spy1 = setTaskRepoMock.findAllFinishedByParentIds(tasks);
 			const spy2 = setAuthorizationServiceMock.getPermittedCourses(courses);
 			const spy3 = setAuthorizationServiceMock.getPermittedLessons(lessons);
+			const spy4 = setAuthorizationServiceMock.hasTaskPermission(hasWritePermission);
 
 			const mockRestore = () => {
 				spy1.mockRestore();
 				spy2.mockRestore();
 				spy3.mockRestore();
+				spy4.mockRestore();
 			};
 
 			return mockRestore;
@@ -122,7 +133,10 @@ describe('TaskUC', () => {
 			const task = taskFactory.finished(user).buildWithId();
 			const mockRestore = findAllMock([task]);
 
-			const [, total] = await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			const [, total] = await service.findAllFinished(currentUser);
 
 			expect(total).toEqual(1);
 
@@ -134,7 +148,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock();
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
-			await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser);
 
 			expect(spy).toHaveBeenCalled();
 
@@ -146,7 +163,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock();
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
-			await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser);
 
 			const expectedParams = [
 				{
@@ -168,7 +188,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock();
 			const spy = setAuthorizationServiceMock.getPermittedCourses();
 
-			await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser);
 
 			expect(spy).toHaveBeenCalled();
 
@@ -180,7 +203,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock();
 			const spy = setAuthorizationServiceMock.getPermittedLessons();
 
-			await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser);
 
 			expect(spy).toHaveBeenCalled();
 
@@ -191,7 +217,10 @@ describe('TaskUC', () => {
 			const user = userFactory.buildWithId();
 			const mockRestore = findAllMock();
 
-			const [data, count] = await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			const [data, count] = await service.findAllFinished(currentUser);
 
 			expect(typeof count).toBe('number');
 			expect(Array.isArray(data)).toBe(true);
@@ -205,7 +234,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock([task]);
 			const status = task.createStudentStatusForUser(user.id);
 
-			const [data] = await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			const [data] = await service.findAllFinished(currentUser);
 
 			expect(data[0]).toEqual({ task, status });
 
@@ -218,7 +250,10 @@ describe('TaskUC', () => {
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 			const skip = 5;
 
-			await service.findAllFinished(user.id, { skip });
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser, { skip });
 
 			const expectedParams = [
 				{
@@ -241,7 +276,10 @@ describe('TaskUC', () => {
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 			const limit = 5;
 
-			await service.findAllFinished(user.id, { limit });
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser, { limit });
 
 			const expectedParams = [
 				{
@@ -264,7 +302,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock([], [lesson]);
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
-			await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser);
 
 			const expectedParams = [
 				{
@@ -287,7 +328,10 @@ describe('TaskUC', () => {
 			const mockRestore = findAllMock([], [], [course]);
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
-			await service.findAllFinished(user.id);
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const { currentUser } = createCurrentTestUser(permissions, user);
+
+			await service.findAllFinished(currentUser);
 
 			const expectedParams = [
 				{
@@ -302,6 +346,57 @@ describe('TaskUC', () => {
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
 			mockRestore();
+		});
+
+		describe('when user hasWritePermission and has teacherDashboard permission', () => {
+			it('should return finished tasks', async () => {
+				const user = userFactory.buildWithId();
+
+				const task = taskFactory.finished(user).buildWithId();
+				const mockRestore = findAllMock([task], [], [], true);
+
+				const permissions = [TaskDashBoardPermission.teacherDashboard];
+				const { currentUser } = createCurrentTestUser(permissions, user);
+
+				const [, total] = await service.findAllFinished(currentUser);
+
+				expect(total).toEqual(1);
+
+				mockRestore();
+			});
+
+			it('should select the right status', async () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ teachers: [user] });
+				const task = taskFactory.finished(user).buildWithId({ course });
+				const mockRestore = findAllMock([task], [], [course], true);
+
+				const spy = jest.spyOn(task, 'createTeacherStatusForUser');
+
+				const permissions = [TaskDashBoardPermission.teacherDashboard];
+				const { currentUser } = createCurrentTestUser(permissions, user);
+
+				await service.findAllFinished(currentUser);
+
+				expect(spy).toHaveBeenCalled();
+
+				mockRestore();
+			});
+		});
+
+		describe('when user has no task overview permissions', () => {
+			it('should fail with UnauthorizedException', async () => {
+				const user = userFactory.buildWithId();
+
+				const mockRestore = findAllMock();
+
+				const permissions = [];
+				const { currentUser } = createCurrentTestUser(permissions, user);
+
+				await expect(() => service.findAllFinished(currentUser)).rejects.toThrow(UnauthorizedException);
+
+				mockRestore();
+			});
 		});
 	});
 
@@ -425,7 +520,7 @@ describe('TaskUC', () => {
 				lessonIds: [lesson.id],
 			});
 			expect(spy.mock.calls[0][1]?.draft).toEqual(false);
-			expect(spy.mock.calls[0][1]?.closed).toEqual({ userId: currentUser.userId, value: false });
+			expect(spy.mock.calls[0][1]?.finished).toEqual({ userId: currentUser.userId, value: false });
 			expect(spy.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
 			expect(spy.mock.calls[0][2]).toEqual({
 				order: { dueDate: 'asc' },
@@ -634,10 +729,10 @@ describe('TaskUC', () => {
 			const paginationQuery = new PaginationQuery();
 			await service.findAll(currentUser, paginationQuery);
 
-			const closed = { userId: currentUser.userId, value: false };
+			const notFinished = { userId: currentUser.userId, value: false };
 			const expectedParams = [
 				{ creatorId: currentUser.userId, courseIds: [course.id], lessonIds: [lesson.id] },
-				{ closed },
+				{ finished: notFinished },
 				{ order: { dueDate: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
 			];
 
