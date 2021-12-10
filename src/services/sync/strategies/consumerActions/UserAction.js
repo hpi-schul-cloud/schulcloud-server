@@ -36,23 +36,26 @@ class UserAction extends BaseConsumerAction {
 			const userUpdateObject = this.createUserUpdateObject(user, {});
 
 			// calculate match if not already set
-			const importUser = await UserRepo.getImportUser();
+			const importUser = await UserRepo.getImportUser(school._id, user.systemId, user.ldapId);
 			if (
 				(importUser === null || !importUser.match) &&
 				isNotEmptyString(user.firstName, true) &&
 				isNotEmptyString(user.lastName, true)
 			) {
-				const matchingUsers = await UserRepo.findUserBySchoolAndName(
+				const matchingLocalUsers = await UserRepo.findUserBySchoolAndName(
 					school._id,
 					userUpdateObject.firstName,
 					userUpdateObject.lastName
 				);
-				if (matchingUsers && matchingUsers.length === 1) {
-					const userMatch = matchingUsers[0];
-					userUpdateObject.match = {
-						userId: userMatch._id,
-						matchedBy: 'auto',
-					};
+				if (matchingLocalUsers && matchingLocalUsers.length === 1) {
+					const userMatch = matchingLocalUsers[0];
+					const appliedUserMatches = await UserRepo.findImportUsersByUserMatch(userMatch._id);
+					if (appliedUserMatches.length === 0) {
+						userUpdateObject.match = {
+							userId: userMatch._id,
+							matchedBy: 'auto',
+						};
+					}
 				}
 			}
 

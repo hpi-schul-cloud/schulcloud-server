@@ -114,6 +114,11 @@ const getImportUser = async (schoolId, systemId, ldapId) => {
 	return result;
 };
 
+const findImportUsersByUserMatch = async (userId) => {
+	const result = await importUserModel.find({ match: { userId } }).lean().exec();
+	return result;
+};
+
 const createOrUpdateImportUser = async (schoolId, systemId, ldapId, user) => {
 	const userToUpdate = { ...user, schoolId, systemId, ldapId };
 	const persistedUser = await importUserModel
@@ -158,6 +163,7 @@ const UserRepo = {
 	createOrUpdateImportUser,
 	addClassToImportUsers,
 	findUsersBySchoolAndName,
+	findImportUsersByUserMatch,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 };

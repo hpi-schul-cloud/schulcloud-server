@@ -232,6 +232,14 @@ describe('User Actions', () => {
 
 				expect(createOrUpdateImportUserStub.notCalled).to.be.true;
 			});
+			describe('when import user is not having a match', () => {
+				it('should add local user match', () => {});
+				it('should only add exact match', () => {});
+				it('should not add a local user as match twice', () => {});
+			});
+			describe('when import user already has a match assigned', () => {
+				it('should not update the existing match', () => {});
+			});
 		});
 	});
 });
