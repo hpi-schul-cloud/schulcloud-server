@@ -44,19 +44,14 @@ class UserAction extends BaseConsumerAction {
 				);
 				if (matchingUsers && matchingUsers.length === 1) {
 					const userMatch = matchingUsers[0];
-					updateUserObject.match = {
+					userUpdateObject.match = {
 						userId: userMatch._id,
 						matchedBy: 'auto',
 					};
 				}
 			}
 
-			const importUser = await UserRepo.createOrUpdateImportUser(
-				school._id,
-				user.systemId,
-				user.ldapId,
-				userUpdateObject
-			);
+			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
 
 			return;
 		}
