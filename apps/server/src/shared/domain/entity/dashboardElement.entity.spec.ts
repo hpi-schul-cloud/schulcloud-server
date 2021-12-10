@@ -98,20 +98,20 @@ describe('dashboardElement', () => {
 		});
 	});
 
-	describe('removeReference', () => {
+	describe('removeReferenceByIndex', () => {
 		it('should remove a single reference', () => {
 			const element = GridElement.FromGroup('title', [
 				learnroomMock('referenceId', 'Calendar-Dashboard'),
 				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
 			]);
-			element.removeReference(1);
+			element.removeReferenceByIndex(1);
 			expect(element.getReferences().length).toEqual(1);
 			expect(element.getReferences()[0].getMetadata().id).toEqual('referenceId');
 		});
 
 		it('should throw if not group', () => {
 			const element = GridElement.FromSingleReference(learnroomMock('referenceId', 'Calendar-Dashboard'));
-			const callFunction = () => element.removeReference(0);
+			const callFunction = () => element.removeReferenceByIndex(0);
 			expect(callFunction).toThrow(BadRequestException);
 		});
 
@@ -120,7 +120,18 @@ describe('dashboardElement', () => {
 				learnroomMock('referenceId', 'Calendar-Dashboard'),
 				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
 			]);
-			const callFunction = () => element.removeReference(2);
+			const callFunction = () => element.removeReferenceByIndex(2);
+			expect(callFunction).toThrow(BadRequestException);
+		});
+	});
+
+	describe('removeReference', () => {
+		it('should throw if element doesnt exist', () => {
+			const element = GridElement.FromGroup('title', [
+				learnroomMock('referenceId', 'Calendar-Dashboard'),
+				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+			]);
+			const callFunction = () => element.removeReference(learnroomMock('notmatching', 'Administration-Dashboard'));
 			expect(callFunction).toThrow(BadRequestException);
 		});
 	});

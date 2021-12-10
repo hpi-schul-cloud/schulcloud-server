@@ -26,17 +26,39 @@ class UserAction extends BaseConsumerAction {
 				schoolDn: user.schoolDn,
 				systemId: user.systemId,
 			});
-		} else if (!school.inMaintenance) {
-			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
-			if (foundUser !== null) {
-				await this.updateUserAndAccount(foundUser, user, account);
-			} else {
-				await this.createUserAndAccount(user, account, school._id);
-			}
+		}
+
+		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+
+		if (school.inUserMigration === true && !foundUser) {
+			// create migration user when the ldapId is not existing
+			const userUpdateObject = this.createUserUpdateObject(user, {});
+			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
+			// TODO how to handle import users that have been removed in ldap later?
+			return;
+		}
+
+		if (school.inMaintenance) {
+			// skip updating users when school in maintenance mode (summer holidays)
+			return;
+		}
+
+		// default: update or create user
+		if (foundUser !== null) {
+			await this.updateUserAndAccount(foundUser, user, account);
+		} else {
+			await this.createUserAndAccount(user, account, school._id);
 		}
 	}
 
 	async updateUserAndAccount(foundUser, user, account) {
+		const updateObject = this.createUserUpdateObject(user, foundUser);
+		if (!_.isEmpty(updateObject)) {
+			await UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
+		}
+	}
+
+	createUserUpdateObject(user, foundUser) {
 		const updateObject = {};
 		if (user.firstName !== foundUser.firstName) {
 			updateObject.firstName = user.firstName || ' ';
@@ -55,10 +77,7 @@ class UserAction extends BaseConsumerAction {
 		if (!_.isEqual(userRoles, user.roles)) {
 			updateObject.roles = user.roles;
 		}
-		if (!_.isEmpty(updateObject)) {
-			return UserRepo.updateUserAndAccount(foundUser._id, updateObject, account);
-		}
-		return true;
+		return updateObject;
 	}
 
 	async createUserAndAccount(idmUser, account, schoolId) {

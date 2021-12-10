@@ -81,38 +81,92 @@ describe('Class Actions', () => {
 			await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
 
-		it('should not create class when school is in maintenance mode', async () => {
-			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inMaintenance: true });
+		describe('When school is in maintenance mode', () => {
+			it('should not create class', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inMaintenance: true });
 
-			sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(null);
+				sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(null);
 
-			const createClassSpy = sinon.spy(ClassRepo, 'createClass');
+				const createClassSpy = sinon.spy(ClassRepo, 'createClass');
 
-			const newClassName = 'New Test Class';
-			await classAction.action({ class: { name: newClassName, ldapDn: 'some ldap' } });
+				const newClassName = 'New Test Class';
+				await classAction.action({ class: { name: newClassName, ldapDn: 'some ldap' } });
 
-			expect(createClassSpy.notCalled).to.be.true;
+				expect(createClassSpy.notCalled).to.be.true;
+			});
+
+			it('should not update class', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inMaintenance: true });
+
+				const existingClass = {
+					_id: 1,
+					name: 'Old Test Class',
+					year: new ObjectId(),
+					ldapDn: 'Old ldapdn',
+				};
+				sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(existingClass);
+
+				const updateClassSpy = sinon.spy(ClassRepo, 'updateClassName');
+
+				const newClassName = 'New Test Class';
+				await classAction.action({ class: { name: newClassName } });
+
+				expect(updateClassSpy.notCalled).to.be.true;
+			});
 		});
 
-		it('should not update class when school is in maintenance mode', async () => {
-			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inMaintenance: true });
+		describe('When school is in migration mode', () => {
+			it('should not create class', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inUserMigration: true });
 
-			const existingClass = {
-				_id: 1,
-				name: 'Old Test Class',
-				year: new ObjectId(),
-				ldapDn: 'Old ldapdn',
-			};
-			sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(existingClass);
+				sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(null);
 
-			const updateClassSpy = sinon.spy(ClassRepo, 'updateClassName');
+				const createClassSpy = sinon.spy(ClassRepo, 'createClass');
 
-			const newClassName = 'New Test Class';
-			await classAction.action({ class: { name: newClassName } });
+				const newClassName = 'New Test Class';
+				await classAction.action({ class: { name: newClassName, ldapDn: 'some ldap' } });
 
-			expect(updateClassSpy.notCalled).to.be.true;
+				expect(createClassSpy.notCalled).to.be.true;
+			});
+
+			it('should not update class', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, inUserMigration: true });
+
+				const existingClass = {
+					_id: 1,
+					name: 'Old Test Class',
+					year: new ObjectId(),
+					ldapDn: 'Old ldapdn',
+				};
+				sinon.stub(ClassRepo, 'findClassByYearAndLdapDn').returns(existingClass);
+
+				const updateClassSpy = sinon.spy(ClassRepo, 'updateClassName');
+
+				const newClassName = 'New Test Class';
+				await classAction.action({ class: { name: newClassName } });
+
+				expect(updateClassSpy.notCalled).to.be.true;
+			});
+
+			it('should add class to import users', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+
+				const schoolId = 'dummy';
+				findSchoolByLdapIdAndSystemStub.returns({ _id: schoolId, name: testSchoolName, inUserMigration: true });
+
+				const addClassToImportUsersStub = sinon.stub(UserRepo, 'addClassToImportUsers');
+
+				const newClassName = 'New Test Class';
+				const uniqueMembers = ['foo', 'bar', 'baz'];
+				await classAction.action({ class: { name: newClassName, uniqueMembers } });
+
+				expect(addClassToImportUsersStub.calledOnce).to.be.true;
+				expect(addClassToImportUsersStub.calledWith(schoolId, newClassName, uniqueMembers)).to.be.true;
+			});
 		});
 	});
 

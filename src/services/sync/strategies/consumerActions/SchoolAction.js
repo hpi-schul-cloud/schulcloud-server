@@ -20,19 +20,20 @@ class SchoolAction extends BaseConsumerAction {
 	async action(data = {}) {
 		const { school: schoolData = {} } = data;
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
-
 		if (school) {
 			if (school.name !== schoolData.name) {
 				await SchoolRepo.updateSchoolName(school._id, schoolData.name);
 			}
-		} else {
-			schoolData.fileStorageType = this.getDefaultFileStorageType();
-			const createdSchool = await SchoolRepo.createSchool(schoolData);
-			this.createDefaultStorageOptions({
-				schoolId: createdSchool._id,
-				fileStorageType: createdSchool.fileStorageType,
-			});
+			return;
 		}
+
+		// default: create new school
+		schoolData.fileStorageType = this.getDefaultFileStorageType();
+		const createdSchool = await SchoolRepo.createSchool(schoolData);
+		this.createDefaultStorageOptions({
+			schoolId: createdSchool._id,
+			fileStorageType: createdSchool.fileStorageType,
+		});
 	}
 
 	getDefaultFileStorageType() {
