@@ -34,7 +34,7 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, paginationQuery);
+		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser, paginationQuery);
 
 		const taskresponses = tasksWithStatus.map((task) => {
 			return TaskMapper.mapToResponse(task);

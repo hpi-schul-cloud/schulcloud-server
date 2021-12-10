@@ -29,7 +29,7 @@ class UserAction extends BaseConsumerAction {
 			});
 		}
 
-		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
 		// create migration user when the ldapId is not existing on a real user
 		if (school.inUserMigration === true && !foundUser) {

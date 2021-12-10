@@ -35,7 +35,7 @@ export class TaskRepo {
 		const closedForOpenCoursesAndLessons = new TaskScope();
 		closedForOpenCoursesAndLessons.addQuery(parentsOpen.query);
 		closedForOpenCoursesAndLessons.byDraft(false);
-		closedForOpenCoursesAndLessons.byClosed(parentIds.creatorId, true);
+		closedForOpenCoursesAndLessons.byFinished(parentIds.creatorId, true);
 
 		const allForFinishedCoursesAndLessons = new TaskScope();
 		allForFinishedCoursesAndLessons.addQuery(parentsFinished.query);
@@ -43,7 +43,7 @@ export class TaskRepo {
 
 		// must find also closed without course or lesson as parent
 		const closedForCreator = new TaskScope();
-		closedForCreator.byClosed(parentIds.creatorId, true);
+		closedForCreator.byFinished(parentIds.creatorId, true);
 		closedForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForFinishedCoursesAndLessonsForCreator = new TaskScope();
@@ -88,7 +88,7 @@ export class TaskRepo {
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: { userId: EntityId; value: boolean } },
+		filters?: { draft?: boolean; afterDueDateOrNone?: Date; finished?: { userId: EntityId; value: boolean } },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -109,8 +109,8 @@ export class TaskRepo {
 
 		scope.addQuery(parentIdScope.query);
 
-		if (filters?.closed) {
-			scope.byClosed(filters.closed.userId, filters.closed.value);
+		if (filters?.finished) {
+			scope.byFinished(filters.finished.userId, filters.finished.value);
 		}
 
 		if (filters?.draft !== undefined) {

@@ -4,7 +4,8 @@ import { ResolvedUserMapper } from '@src/modules/user/mapper';
 import { schoolFactory, userFactory } from './factory';
 
 export const createCurrentTestUser = (
-	initPermissions?: string[]
+	initPermissions?: string[],
+	passedUser?: User
 ): {
 	currentUser: ICurrentUser;
 	user: User;
@@ -18,7 +19,7 @@ export const createCurrentTestUser = (
 	const roles = [new Role({ name: 'name', permissions })] as Role[];
 	const roleIds = roles.map((role) => role.id);
 
-	const user = userFactory.build({ roles, school });
+	const user = passedUser || userFactory.build({ roles, school });
 	// const user = new User({ email: `Date.now()@email.de`, roles, school });
 	user._id = new ObjectId();
 	const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, roles);
