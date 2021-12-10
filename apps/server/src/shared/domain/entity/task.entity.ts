@@ -17,7 +17,7 @@ export interface ITaskProperties {
 	course?: Course;
 	lesson?: Lesson;
 	submissions?: Submission[];
-	closed?: User[];
+	finished?: User[];
 }
 
 export interface ITaskStatus {
@@ -42,7 +42,7 @@ export class TaskWithStatusVo {
 export type TaskParentDescriptions = { name: string; description: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
-@Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'closed'] })
+@Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
 export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
@@ -71,7 +71,7 @@ export class Task extends BaseEntityWithTimestamps {
 	// TODO: rename to finished
 	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
-	closed = new Collection<User>(this);
+	finished = new Collection<User>(this);
 
 	constructor(props: ITaskProperties) {
 		super();
@@ -83,7 +83,7 @@ export class Task extends BaseEntityWithTimestamps {
 		this.course = props.course;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
-		this.closed.set(props.closed || []);
+		this.finished.set(props.finished || []);
 	}
 
 	isDraft(): boolean {

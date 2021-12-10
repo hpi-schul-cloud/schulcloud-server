@@ -261,7 +261,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(0);
 		});
 
-		it('should not return closed tasks', async () => {
+		it('should "not" return finished tasks', async () => {
 			const teacher = userFactory.build({ firstName: 'Carl', lastName: 'Cord' });
 			await em.persistAndFlush([teacher]);
 
@@ -270,7 +270,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 			});
 
-			const task = taskFactory.build({ course, closed: [teacher] });
+			const task = taskFactory.build({ course, finished: [teacher] });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -546,7 +546,7 @@ describe('Task Controller (e2e)', () => {
 			expect(paginatedResult.total).toEqual(1);
 		});
 
-		it('should not return closed tasks', async () => {
+		it('should not return finished tasks', async () => {
 			const student = userFactory.build();
 			await em.persistAndFlush([student]);
 
@@ -554,7 +554,7 @@ describe('Task Controller (e2e)', () => {
 				students: [student],
 			});
 
-			const task = taskFactory.build({ course, closed: [student] });
+			const task = taskFactory.build({ course, finished: [student] });
 
 			await em.persistAndFlush([task]);
 			em.clear();
