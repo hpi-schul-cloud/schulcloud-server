@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const userMatchSchema = new Schema(
 	{
-		userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true },
+		userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true, sparse: true },
 		matchedBy: { type: String, enum: ['admin', 'auto'] },
 	},
 	{ timestamps: true }

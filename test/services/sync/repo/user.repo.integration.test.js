@@ -322,4 +322,33 @@ describe('user repo', () => {
 			expect(res.length).to.equal(0);
 		});
 	});
+	describe('findBySchoolAndName', () => {
+		it('should resolve importUsers with given firstName and lastName', async () => {
+			const school = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({
+				schoolId: school._id,
+				firstName: 'jon',
+				lastName: 'doe',
+				email: 'user@test.test',
+			});
+			const res = await UserRepo.findBySchoolAndName(school._id, user.firstName, user.lastName);
+
+			expect(res.length).to.equal(1);
+			expect(res[0].firstName).to.equal(user.firstName);
+			expect(res[0].lastName).to.equal(user.lastName);
+			expect(res[0].email).to.equal(user.email);
+			expect(res[0].schoolId.toString()).to.equal(user.schoolId.toString());
+		});
+		it('should resolve with empty array for no match', async () => {
+			const school = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({
+				schoolId: school._id,
+				firstName: 'jon',
+				lastName: 'doe',
+			});
+			const res = await UserRepo.findBySchoolAndName(school._id, 'jane', user.lastName);
+
+			expect(res.length).to.equal(0);
+		});
+	});
 });

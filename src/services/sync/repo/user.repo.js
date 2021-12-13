@@ -109,11 +109,6 @@ const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	return { user, account };
 };
 
-const getImportUser = async (schoolId, systemId, ldapId) => {
-	const result = await importUserModel.findOne({ schoolId, systemId, ldapId }).lean().exec();
-	return result;
-};
-
 const findImportUsersBySchoolAndName = async (schoolId, firstName, lastName) => {
 	const result = await importUserModel.find({ schoolId, firstName, lastName }).lean().exec();
 	return result;
@@ -163,7 +158,6 @@ const UserRepo = {
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 	// import user methods (used in LDAP)
-	getImportUser,
 	addClassToImportUsers,
 	createOrUpdateImportUser,
 	findImportUsersBySchoolAndName,
