@@ -16,6 +16,7 @@ export class DashboardMapper {
 			elementDTO.shortTitle = data.shortTitle;
 			elementDTO.displayColor = data.displayColor;
 			if (data.group) {
+				elementDTO.groupId = data.groupId;
 				elementDTO.groupElements = data.group;
 			}
 
