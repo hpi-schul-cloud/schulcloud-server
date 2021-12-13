@@ -114,11 +114,8 @@ const getImportUser = async (schoolId, systemId, ldapId) => {
 	return result;
 };
 
-const findImportUsersByMatchOrName = async (userId, firstName, lastName) => {
-	const result = await importUserModel
-		.find({ $or: [{ match: { userId } }, { $and: [{ firstName }, { lastName }] }] })
-		.lean()
-		.exec();
+const findImportUsersByName = async (firstName, lastName) => {
+	const result = await importUserModel.find({ firstName, lastName }).lean().exec();
 	return result;
 };
 
@@ -169,7 +166,7 @@ const UserRepo = {
 	getImportUser,
 	addClassToImportUsers,
 	createOrUpdateImportUser,
-	findImportUsersByMatchOrName,
+	findImportUsersByName,
 };
 
 module.exports = UserRepo;

@@ -50,44 +50,44 @@ class UserAction extends BaseConsumerAction {
 		}
 	}
 
-	async autoMatchImportUser(user, school, userUpdateObject) {
-		// if import was run before, current import user is already in db
-		// calculate match if not already set
-		if (isNotEmptyString(userUpdateObject.firstName, true) && isNotEmptyString(userUpdateObject.lastName, true)) {
-			const matchingLocalUsers = await UserRepo.findBySchoolAndName(
-				school._id,
-				userUpdateObject.firstName,
-				userUpdateObject.lastName
-			);
-			if (matchingLocalUsers && matchingLocalUsers.length === 1) {
-				const userMatch = matchingLocalUsers[0];
-				const foundImportUsers = await UserRepo.findImportUsersByMatchOrName(userMatch._id);
-				if (foundImportUsers.length === 0) {
-					userUpdateObject.match = {
-						userId: userMatch._id,
-						matchedBy: 'auto',
-					};
-				} else {
-					// TODO revoked other previously matched
-					await Promise.all(
-						foundImportUsers.map((foundImportUser) => {
-							delete foundImportUser.match;
-							return UserRepo.createOrUpdateImportUser(
-								school._id,
-								foundImportUser.systemId,
-								foundImportUser.ldapId,
-								foundImportUser
-							);
-						})
+	async autoMatchImportUser(schoolId, userUpdateObject) {
+		if (!isNotEmptyString(userUpdateObject.firstName, true) || !isNotEmptyString(userUpdateObject.lastName, true)) {
+			return;
+		}
+		const matchingLocalUsers = await UserRepo.findBySchoolAndName(
+			schoolId,
+			userUpdateObject.firstName,
+			userUpdateObject.lastName
+		);
+		if (!matchingLocalUsers || matchingLocalUsers.length !== 1) {
+			return;
+		}
+		const userMatch = matchingLocalUsers[0];
+		const foundImportUsers = await UserRepo.findImportUsersByName(userMatch._id);
+		if (foundImportUsers.length === 0) {
+			userUpdateObject.match = {
+				userId: userMatch._id,
+				matchedBy: 'auto',
+			};
+		} else {
+			// revoke other previously matched import users
+			await Promise.all(
+				foundImportUsers.map((foundImportUser) => {
+					delete foundImportUser.match;
+					return UserRepo.createOrUpdateImportUser(
+						schoolId,
+						foundImportUser.systemId,
+						foundImportUser.ldapId,
+						foundImportUser
 					);
-				}
-			}
+				})
+			);
 		}
 	}
 
 	async createImportUser(user, school) {
 		const userUpdateObject = this.createUserUpdateObject(user, {});
-		await this.autoMatchImportUser(user, school, userUpdateObject);
+		await this.autoMatchImportUser(school._id, userUpdateObject);
 		await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
 	}
 

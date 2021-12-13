@@ -12,7 +12,7 @@ const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo'
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe.only('User Actions', () => {
+describe('User Actions', () => {
 	let userAction;
 	before(() => {
 		userAction = new UserAction(true);
@@ -168,6 +168,7 @@ describe.only('User Actions', () => {
 				const createUserAndAccountStub = sinon.stub(UserRepo, 'createUserAndAccount');
 				const updateUserAndAccountStub = sinon.stub(UserRepo, 'updateUserAndAccount');
 				const createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
+				const autoMatchImportUserStub = sinon.stub(userAction, 'autoMatchImportUser');
 
 				const testUserInput = {
 					_id: 1,
@@ -185,6 +186,7 @@ describe.only('User Actions', () => {
 				expect(updateUserAndAccountStub.notCalled).to.be.true;
 				expect(createUserAndAccountStub.notCalled).to.be.true;
 				expect(createOrUpdateImportUserStub.calledOnce).to.be.true;
+				expect(autoMatchImportUserStub.calledOnce).to.be.true;
 
 				const expectedUserObject = {
 					firstName: 'New fname',
@@ -201,6 +203,7 @@ describe.only('User Actions', () => {
 						expectedUserObject
 					)
 				).to.be.true;
+				expect(autoMatchImportUserStub.calledWith(schoolId, expectedUserObject)).to.be.true;
 			});
 
 			it('should not update or create import user, when user has an ldap', async () => {
@@ -232,15 +235,14 @@ describe.only('User Actions', () => {
 
 				expect(createOrUpdateImportUserStub.notCalled).to.be.true;
 			});
-
+			/*
 			describe('when import user is not having a match', () => {
 				it('should add local user match', async () => {
 					const schoolId = 'foo';
 					sinon
 						.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
 						.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
-
-
+					sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(null);
 				});
 				it('should only add exact match', async () => {});
 				it('should not add match if there is no one', async () => {});
@@ -251,6 +253,124 @@ describe.only('User Actions', () => {
 				it('should skip if there is a match already', async () => {});
 				it('should remove match from others import users if match is found', async () => {});
 			});
+			*/
+		});
+	});
+	describe('autoMatchImportUser', () => {
+		let findBySchoolAndNameStub;
+		let findImportUsersByNameStub;
+		let createOrUpdateImportUserStub;
+
+		beforeEach(() => {
+			findBySchoolAndNameStub = sinon.stub(UserRepo, 'findBySchoolAndName');
+			findImportUsersByNameStub = sinon.stub(UserRepo, 'findImportUsersByName');
+			createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
+		});
+
+		it('it should not create match, when firstName or lastName are empty', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject1 = {
+				firstName: ' ',
+				lastName: 'doe',
+			};
+			const userUpdateObject2 = {
+				firstName: 'john',
+				lastName: '',
+			};
+
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject1);
+			expect(userUpdateObject1.match).to.be.undefined;
+
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject2);
+			expect(userUpdateObject2.match).to.be.undefined;
+		});
+
+		it('it should not create match, when no local user is found', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject = {
+				firstName: 'john',
+				lastName: 'doe',
+			};
+			findBySchoolAndNameStub.resolves([]);
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
+			expect(userUpdateObject.match).to.be.undefined;
+		});
+
+		it('it should not create match, when multiple local user are found', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject = {
+				firstName: 'john',
+				lastName: 'doe',
+			};
+			findBySchoolAndNameStub.resolves(['dummyUser1', 'dummyUser2', 'dummyUser3']);
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
+			expect(userUpdateObject.match).to.be.undefined;
+		});
+
+		it('it should create match, when only 1 local user is found', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject = {
+				firstName: 'john',
+				lastName: 'doe',
+			};
+			const localUserId = 'bar';
+			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+			findImportUsersByNameStub.resolves([]);
+
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
+			expect(userUpdateObject.match.userId).to.equal(localUserId);
+			expect(userUpdateObject.match.matchedBy).to.equal('auto');
+		});
+
+		it('should not create match, when multiple import users with same name exists', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject = {
+				firstName: 'john',
+				lastName: 'doe',
+			};
+			const localUserId = 'bar';
+			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+			findImportUsersByNameStub.resolves(['dummyImportUser']);
+
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
+			expect(userUpdateObject.match).to.be.undefined;
+		});
+
+		it('should revoke any previously matched import user, when they have the same name', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject = {
+				firstName: 'john',
+				lastName: 'doe',
+			};
+			const localUserId = 'bar';
+			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+
+			const importUsers = [
+				{
+					systemId: 'dummySystem',
+					ldapId: 'dummyLdap',
+					match: {
+						userId: 'dummyUser',
+						matchedBy: 'auto',
+					},
+				},
+			];
+			findImportUsersByNameStub.resolves(importUsers);
+
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
+
+			const importUserNoMatch = {
+				systemId: importUsers[0].systemId,
+				ldapId: importUsers[0].ldapId,
+			};
+			expect(
+				createOrUpdateImportUserStub.calledWith(
+					schoolId,
+					importUsers[0].systemId,
+					importUsers[0].ldapId,
+					importUserNoMatch
+				)
+			).to.to.true;
 		});
 	});
 });
