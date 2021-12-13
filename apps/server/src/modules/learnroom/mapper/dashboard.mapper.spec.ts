@@ -29,6 +29,13 @@ describe('dashboard mapper', () => {
 				pos: { x: 1, y: 3 },
 				gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 			},
+			{
+				pos: { x: 2, y: 3 },
+				gridElement: GridElement.FromPersistedGroup('groupId', 'groupTitle', [
+					learnroomMock('anotherReferenceId', 'Englisch'),
+					learnroomMock('additionalReferenceId', 'Deutsch'),
+				]),
+			},
 		];
 		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });
 		const result = DashboardMapper.mapToResponse(entity);
@@ -38,5 +45,7 @@ describe('dashboard mapper', () => {
 		expect(result.gridElements[0].yPosition).toEqual(3);
 		expect(result.gridElements[0].title).toEqual('Mathe');
 		expect(result.gridElements[0].shortTitle).toEqual('Ma');
+		expect(result.gridElements[1].groupId).toEqual('groupId');
+		expect(result.gridElements[1].title).toEqual('groupTitle');
 	});
 });
