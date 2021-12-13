@@ -235,25 +235,6 @@ describe('User Actions', () => {
 
 				expect(createOrUpdateImportUserStub.notCalled).to.be.true;
 			});
-			/*
-			describe('when import user is not having a match', () => {
-				it('should add local user match', async () => {
-					const schoolId = 'foo';
-					sinon
-						.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
-						.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
-					sinon.stub(UserRepo, 'findByLdapIdAndSchool').resolves(null);
-				});
-				it('should only add exact match', async () => {});
-				it('should not add match if there is no one', async () => {});
-				it('should not add match, if multiple local users are matched by name', async () => {});
-			});
-			describe('should not add a single user as match to multiple import users', () => {
-				it('should skip if there is a match with same name', async () => {});
-				it('should skip if there is a match already', async () => {});
-				it('should remove match from others import users if match is found', async () => {});
-			});
-			*/
 		});
 	});
 	describe('autoMatchImportUser', () => {
