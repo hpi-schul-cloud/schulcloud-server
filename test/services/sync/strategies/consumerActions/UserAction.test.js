@@ -12,7 +12,7 @@ const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo'
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe('User Actions', () => {
+describe.only('User Actions', () => {
 	let userAction;
 	before(() => {
 		userAction = new UserAction(true);
@@ -232,14 +232,24 @@ describe('User Actions', () => {
 
 				expect(createOrUpdateImportUserStub.notCalled).to.be.true;
 			});
+
 			describe('when import user is not having a match', () => {
-				it('should add local user match', () => {});
-				it('should only add exact match', () => {});
-				it('should skip adding a match if there is no one', () => {});
-				it('should not add a single user as match to multiple import users', () => {});
+				it('should add local user match', async () => {
+					const schoolId = 'foo';
+					sinon
+						.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem')
+						.resolves({ _id: schoolId, name: 'Test School', inUserMigration: true });
+
+
+				});
+				it('should only add exact match', async () => {});
+				it('should not add match if there is no one', async () => {});
+				it('should not add match, if multiple local users are matched by name', async () => {});
 			});
-			describe('when import user already has a match assigned', () => {
-				it('should not update the existing match', () => {});
+			describe('should not add a single user as match to multiple import users', () => {
+				it('should skip if there is a match with same name', async () => {});
+				it('should skip if there is a match already', async () => {});
+				it('should remove match from others import users if match is found', async () => {});
 			});
 		});
 	});

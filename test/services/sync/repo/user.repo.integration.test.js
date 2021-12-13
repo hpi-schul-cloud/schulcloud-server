@@ -290,7 +290,7 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('findImportUsersByUserMatch', () => {
+	describe('findImportUsersByMatchOrName', () => {
 		it('should resolve with importUsers having a userId set in match', () => {});
 		it('should resolve with empty array for no match', () => {});
 	});

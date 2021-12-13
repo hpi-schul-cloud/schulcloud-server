@@ -29,39 +29,11 @@ class UserAction extends BaseConsumerAction {
 			});
 		}
 
-			const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
 		// create migration user when the ldapId is not existing on a real user
 		if (school.inUserMigration === true && !foundUser) {
-			const userUpdateObject = this.createUserUpdateObject(user, {});
-
-			// calculate match if not already set
-			const importUser = await UserRepo.getImportUser(school._id, user.systemId, user.ldapId);
-			if (
-				(importUser === null || !importUser.match) &&
-				isNotEmptyString(user.firstName, true) &&
-				isNotEmptyString(user.lastName, true)
-			) {
-				const matchingLocalUsers = await UserRepo.findUserBySchoolAndName(
-					school._id,
-					userUpdateObject.firstName,
-					userUpdateObject.lastName
-				);
-				// TODO check auto assignments to be revoked if they match
-				if (matchingLocalUsers && matchingLocalUsers.length === 1) {
-					const userMatch = matchingLocalUsers[0];
-					const appliedUserMatches = await UserRepo.findImportUsersByUserMatch(userMatch._id);
-					if (appliedUserMatches.length === 0) {
-						userUpdateObject.match = {
-							userId: userMatch._id,
-							matchedBy: 'auto',
-						};
-					}
-				}
-			}
-
-			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
-
+			await this.createImportUser(user, school);
 			return;
 		}
 
@@ -76,6 +48,47 @@ class UserAction extends BaseConsumerAction {
 		} else {
 			await this.createUserAndAccount(user, account, school._id);
 		}
+	}
+
+	async autoMatchImportUser(user, school, userUpdateObject) {
+		// if import was run before, current import user is already in db
+		// calculate match if not already set
+		if (isNotEmptyString(userUpdateObject.firstName, true) && isNotEmptyString(userUpdateObject.lastName, true)) {
+			const matchingLocalUsers = await UserRepo.findBySchoolAndName(
+				school._id,
+				userUpdateObject.firstName,
+				userUpdateObject.lastName
+			);
+			if (matchingLocalUsers && matchingLocalUsers.length === 1) {
+				const userMatch = matchingLocalUsers[0];
+				const foundImportUsers = await UserRepo.findImportUsersByMatchOrName(userMatch._id);
+				if (foundImportUsers.length === 0) {
+					userUpdateObject.match = {
+						userId: userMatch._id,
+						matchedBy: 'auto',
+					};
+				} else {
+					// TODO revoked other previously matched
+					await Promise.all(
+						foundImportUsers.map((foundImportUser) => {
+							delete foundImportUser.match;
+							return UserRepo.createOrUpdateImportUser(
+								school._id,
+								foundImportUser.systemId,
+								foundImportUser.ldapId,
+								foundImportUser
+							);
+						})
+					);
+				}
+			}
+		}
+	}
+
+	async createImportUser(user, school) {
+		const userUpdateObject = this.createUserUpdateObject(user, {});
+		await this.autoMatchImportUser(user, school, userUpdateObject);
+		await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
 	}
 
 	async updateUserAndAccount(foundUser, user, account) {

@@ -38,7 +38,7 @@ const createUser = async (user) => {
 
 const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerCase() }).lean().exec();
 
-const findUsersBySchoolAndName = async (schoolId, firstName, lastName) =>
+const findBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
 const checkCreate = async (email) => {
@@ -114,8 +114,11 @@ const getImportUser = async (schoolId, systemId, ldapId) => {
 	return result;
 };
 
-const findImportUsersByUserMatch = async (userId) => {
-	const result = await importUserModel.find({ match: { userId } }).lean().exec();
+const findImportUsersByMatchOrName = async (userId, firstName, lastName) => {
+	const result = await importUserModel
+		.find({ $or: [{ match: { userId } }, { $and: [{ firstName }, { lastName }] }] })
+		.lean()
+		.exec();
 	return result;
 };
 
@@ -159,13 +162,14 @@ const UserRepo = {
 	private: { createAccount, createUser, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
-	getImportUser,
-	createOrUpdateImportUser,
-	addClassToImportUsers,
-	findUsersBySchoolAndName,
-	findImportUsersByUserMatch,
+	findBySchoolAndName,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
+	// import user methods (used in LDAP)
+	getImportUser,
+	addClassToImportUsers,
+	createOrUpdateImportUser,
+	findImportUsersByMatchOrName,
 };
 
 module.exports = UserRepo;
