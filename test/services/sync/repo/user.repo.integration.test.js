@@ -290,8 +290,36 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('findImportUsersByMatchOrName', () => {
-		it('should resolve with importUsers having a userId set in match', () => {});
-		it('should resolve with empty array for no match', () => {});
+	describe('findImportUsersByName', () => {
+		it('should resolve importUsers with given firstName and lastName', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				firstName: 'jon',
+				lastName: 'doe',
+			});
+			const res = await UserRepo.findImportUsersBySchoolAndName(school._id, importUser.firstName, importUser.lastName);
+
+			expect(res.length).to.equal(1);
+			expect(res[0].firstName).to.equal(importUser.firstName);
+			expect(res[0].lastName).to.equal(importUser.lastName);
+			expect(res[0].schoolId.toString()).to.equal(importUser.schoolId.toString());
+			expect(res[0].system.toString()).to.equal(importUser.system.toString());
+		});
+		it('should resolve with empty array for no match', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				firstName: 'jon',
+				lastName: 'doe',
+			});
+			const res = await UserRepo.findImportUsersBySchoolAndName(school._id, 'jane', importUser.lastName);
+
+			expect(res.length).to.equal(0);
+		});
 	});
 });
