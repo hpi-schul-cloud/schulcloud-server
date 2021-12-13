@@ -63,7 +63,11 @@ class UserAction extends BaseConsumerAction {
 			return;
 		}
 		const userMatch = matchingLocalUsers[0];
-		const foundImportUsers = await UserRepo.findImportUsersByName(userMatch._id);
+		const foundImportUsers = await UserRepo.findImportUsersBySchoolAndName(
+			schoolId,
+			userUpdateObject.firstName,
+			userUpdateObject.lastName
+		);
 		if (foundImportUsers.length === 0) {
 			userUpdateObject.match = {
 				userId: userMatch._id,

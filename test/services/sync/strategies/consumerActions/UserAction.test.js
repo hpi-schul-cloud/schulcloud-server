@@ -258,12 +258,12 @@ describe('User Actions', () => {
 	});
 	describe('autoMatchImportUser', () => {
 		let findBySchoolAndNameStub;
-		let findImportUsersByNameStub;
+		let findImportUsersBySchoolAndNameStub;
 		let createOrUpdateImportUserStub;
 
 		beforeEach(() => {
 			findBySchoolAndNameStub = sinon.stub(UserRepo, 'findBySchoolAndName');
-			findImportUsersByNameStub = sinon.stub(UserRepo, 'findImportUsersByName');
+			findImportUsersBySchoolAndNameStub = sinon.stub(UserRepo, 'findImportUsersBySchoolAndName');
 			createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
 		});
 
@@ -315,7 +315,7 @@ describe('User Actions', () => {
 			};
 			const localUserId = 'bar';
 			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
-			findImportUsersByNameStub.resolves([]);
+			findImportUsersBySchoolAndNameStub.resolves([]);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
 			expect(userUpdateObject.match.userId).to.equal(localUserId);
@@ -330,7 +330,7 @@ describe('User Actions', () => {
 			};
 			const localUserId = 'bar';
 			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
-			findImportUsersByNameStub.resolves(['dummyImportUser']);
+			findImportUsersBySchoolAndNameStub.resolves(['dummyImportUser']);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
 			expect(userUpdateObject.match).to.be.undefined;
@@ -355,7 +355,7 @@ describe('User Actions', () => {
 					},
 				},
 			];
-			findImportUsersByNameStub.resolves(importUsers);
+			findImportUsersBySchoolAndNameStub.resolves(importUsers);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
 

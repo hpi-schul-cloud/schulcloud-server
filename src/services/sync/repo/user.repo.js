@@ -114,8 +114,8 @@ const getImportUser = async (schoolId, systemId, ldapId) => {
 	return result;
 };
 
-const findImportUsersByName = async (firstName, lastName) => {
-	const result = await importUserModel.find({ firstName, lastName }).lean().exec();
+const findImportUsersBySchoolAndName = async (schoolId, firstName, lastName) => {
+	const result = await importUserModel.find({ schoolId, firstName, lastName }).lean().exec();
 	return result;
 };
 
@@ -166,7 +166,7 @@ const UserRepo = {
 	getImportUser,
 	addClassToImportUsers,
 	createOrUpdateImportUser,
-	findImportUsersByName,
+	findImportUsersBySchoolAndName,
 };
 
 module.exports = UserRepo;
