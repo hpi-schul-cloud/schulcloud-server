@@ -248,7 +248,7 @@ describe('User Actions', () => {
 			createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
 		});
 
-		it('it should not create match, when firstName or lastName are empty', async () => {
+		it('should not create match, when firstName or lastName are empty', async () => {
 			const schoolId = 'foo';
 			const userUpdateObject1 = {
 				firstName: ' ',
@@ -266,7 +266,7 @@ describe('User Actions', () => {
 			expect(userUpdateObject2.match).to.be.undefined;
 		});
 
-		it('it should not create match, when no local user is found', async () => {
+		it('should not create match, when no local user is found', async () => {
 			const schoolId = 'foo';
 			const userUpdateObject = {
 				firstName: 'john',
@@ -277,7 +277,7 @@ describe('User Actions', () => {
 			expect(userUpdateObject.match).to.be.undefined;
 		});
 
-		it('it should not create match, when multiple local user are found', async () => {
+		it('should not create match, when multiple local user are found', async () => {
 			const schoolId = 'foo';
 			const userUpdateObject = {
 				firstName: 'john',
@@ -288,7 +288,7 @@ describe('User Actions', () => {
 			expect(userUpdateObject.match).to.be.undefined;
 		});
 
-		it('it should create match, when only 1 local user is found', async () => {
+		it('should create match, when only 1 local user is found', async () => {
 			const schoolId = 'foo';
 			const userUpdateObject = {
 				firstName: 'john',
