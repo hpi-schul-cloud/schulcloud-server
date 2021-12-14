@@ -238,12 +238,12 @@ describe('User Actions', () => {
 		});
 	});
 	describe('autoMatchImportUser', () => {
-		let findBySchoolAndNameStub;
+		let findUserBySchoolAndNameStub;
 		let findImportUsersBySchoolAndNameStub;
 		let createOrUpdateImportUserStub;
 
 		beforeEach(() => {
-			findBySchoolAndNameStub = sinon.stub(UserRepo, 'findBySchoolAndName');
+			findUserBySchoolAndNameStub = sinon.stub(UserRepo, 'findUserBySchoolAndName');
 			findImportUsersBySchoolAndNameStub = sinon.stub(UserRepo, 'findImportUsersBySchoolAndName');
 			createOrUpdateImportUserStub = sinon.stub(UserRepo, 'createOrUpdateImportUser');
 		});
@@ -272,7 +272,7 @@ describe('User Actions', () => {
 				firstName: 'john',
 				lastName: 'doe',
 			};
-			findBySchoolAndNameStub.resolves([]);
+			findUserBySchoolAndNameStub.resolves([]);
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
 			expect(userUpdateObject.match).to.be.undefined;
 		});
@@ -283,7 +283,7 @@ describe('User Actions', () => {
 				firstName: 'john',
 				lastName: 'doe',
 			};
-			findBySchoolAndNameStub.resolves(['dummyUser1', 'dummyUser2', 'dummyUser3']);
+			findUserBySchoolAndNameStub.resolves(['dummyUser1', 'dummyUser2', 'dummyUser3']);
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
 			expect(userUpdateObject.match).to.be.undefined;
 		});
@@ -295,7 +295,7 @@ describe('User Actions', () => {
 				lastName: 'doe',
 			};
 			const localUserId = 'bar';
-			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+			findUserBySchoolAndNameStub.resolves([{ _id: localUserId }]);
 			findImportUsersBySchoolAndNameStub.resolves([]);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
@@ -310,7 +310,7 @@ describe('User Actions', () => {
 				lastName: 'doe',
 			};
 			const localUserId = 'bar';
-			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+			findUserBySchoolAndNameStub.resolves([{ _id: localUserId }]);
 			findImportUsersBySchoolAndNameStub.resolves(['dummyImportUser']);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
@@ -324,7 +324,7 @@ describe('User Actions', () => {
 				lastName: 'doe',
 			};
 			const localUserId = 'bar';
-			findBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+			findUserBySchoolAndNameStub.resolves([{ _id: localUserId }]);
 
 			const importUsers = [
 				{

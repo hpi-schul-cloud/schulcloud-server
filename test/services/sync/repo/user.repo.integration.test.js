@@ -303,10 +303,7 @@ describe('user repo', () => {
 			const res = await UserRepo.findImportUsersBySchoolAndName(school._id, importUser.firstName, importUser.lastName);
 
 			expect(res.length).to.equal(1);
-			expect(res[0].firstName).to.equal(importUser.firstName);
-			expect(res[0].lastName).to.equal(importUser.lastName);
-			expect(res[0].schoolId.toString()).to.equal(importUser.schoolId.toString());
-			expect(res[0].system.toString()).to.equal(importUser.system.toString());
+			expect(res[0]._id.toString()).to.equal(importUser._id.toString());
 		});
 		it('should resolve with empty array for no match', async () => {
 			const testSystem = await testObjects.createTestSystem();
@@ -317,12 +314,15 @@ describe('user repo', () => {
 				firstName: 'jon',
 				lastName: 'doe',
 			});
-			const res = await UserRepo.findImportUsersBySchoolAndName(school._id, 'jane', importUser.lastName);
 
-			expect(res.length).to.equal(0);
+			const wrongFirstNameRes = await UserRepo.findImportUsersBySchoolAndName(school._id, 'jane', importUser.lastName);
+			expect(wrongFirstNameRes.length).to.equal(0);
+
+			const wrongLastNameRes = await UserRepo.findImportUsersBySchoolAndName(school._id, importUser.firstName, 'doe2');
+			expect(wrongLastNameRes.length).to.equal(0);
 		});
 	});
-	describe('findBySchoolAndName', () => {
+	describe('findUserBySchoolAndName', () => {
 		it('should resolve importUsers with given firstName and lastName', async () => {
 			const school = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({
@@ -331,7 +331,7 @@ describe('user repo', () => {
 				lastName: 'doe',
 				email: 'user@test.test',
 			});
-			const res = await UserRepo.findBySchoolAndName(school._id, user.firstName, user.lastName);
+			const res = await UserRepo.findUserBySchoolAndName(school._id, user.firstName, user.lastName);
 
 			expect(res.length).to.equal(1);
 			expect(res[0].firstName).to.equal(user.firstName);
@@ -346,7 +346,7 @@ describe('user repo', () => {
 				firstName: 'jon',
 				lastName: 'doe',
 			});
-			const res = await UserRepo.findBySchoolAndName(school._id, 'jane', user.lastName);
+			const res = await UserRepo.findUserBySchoolAndName(school._id, 'jane', user.lastName);
 
 			expect(res.length).to.equal(0);
 		});
