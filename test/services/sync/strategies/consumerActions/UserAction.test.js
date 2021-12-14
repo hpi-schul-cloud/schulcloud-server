@@ -12,7 +12,7 @@ const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo'
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe('User Actions', () => {
+describe.only('User Actions', () => {
 	let userAction;
 	before(() => {
 		userAction = new UserAction(true);
@@ -317,7 +317,7 @@ describe('User Actions', () => {
 			expect(userUpdateObject.match).to.be.undefined;
 		});
 
-		it('should revoke any previously matched import user, when they have the same name', async () => {
+		it('should revoke any previously auto-matched import user, when they have the same name', async () => {
 			const schoolId = 'foo';
 			const userUpdateObject = {
 				firstName: 'john',
@@ -352,6 +352,32 @@ describe('User Actions', () => {
 					importUserNoMatch
 				)
 			).to.to.true;
+		});
+
+		it('should not revoke any previously manually matched import user, when they have the same name', async () => {
+			const schoolId = 'foo';
+			const userUpdateObject = {
+				firstName: 'john',
+				lastName: 'doe',
+			};
+			const localUserId = 'bar';
+			findUserBySchoolAndNameStub.resolves([{ _id: localUserId }]);
+
+			const importUsers = [
+				{
+					systemId: 'dummySystem',
+					ldapId: 'dummyLdap',
+					match: {
+						userId: 'dummyUser',
+						matchedBy: 'admin',
+					},
+				},
+			];
+			findImportUsersBySchoolAndNameStub.resolves(importUsers);
+
+			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
+
+			expect(createOrUpdateImportUserStub.calledOnce).to.to.false;
 		});
 	});
 });

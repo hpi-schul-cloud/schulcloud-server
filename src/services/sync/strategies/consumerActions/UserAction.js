@@ -74,16 +74,19 @@ class UserAction extends BaseConsumerAction {
 				matchedBy: 'auto',
 			};
 		} else {
-			// revoke other previously matched import users
+			// revoke other previously auto-matched import users
 			await Promise.all(
 				foundImportUsers.map((foundImportUser) => {
-					delete foundImportUser.match;
-					return UserRepo.createOrUpdateImportUser(
-						schoolId,
-						foundImportUser.systemId,
-						foundImportUser.ldapId,
-						foundImportUser
-					);
+					if (foundImportUser.match && foundImportUser.match.matchedBy === 'auto') {
+						delete foundImportUser.match;
+						return UserRepo.createOrUpdateImportUser(
+							schoolId,
+							foundImportUser.systemId,
+							foundImportUser.ldapId,
+							foundImportUser
+						);
+					}
+					return Promise.resolve();
 				})
 			);
 		}
