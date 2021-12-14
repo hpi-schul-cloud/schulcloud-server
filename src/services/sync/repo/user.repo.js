@@ -38,7 +38,7 @@ const createUser = async (user) => {
 
 const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerCase() }).lean().exec();
 
-const findBySchoolAndName = async (schoolId, firstName, lastName) =>
+const findUserBySchoolAndName = async (schoolId, firstName, lastName) =>
 	userModel.find({ schoolId, firstName, lastName }).lean().exec();
 
 const checkCreate = async (email) => {
@@ -154,7 +154,7 @@ const UserRepo = {
 	private: { createAccount, createUser, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
-	findBySchoolAndName,
+	findUserBySchoolAndName,
 	findByLdapIdAndSchool,
 	findByLdapDnsAndSchool,
 	// import user methods (used in LDAP)

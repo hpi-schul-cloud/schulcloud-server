@@ -54,7 +54,7 @@ class UserAction extends BaseConsumerAction {
 		if (!isNotEmptyString(userUpdateObject.firstName, true) || !isNotEmptyString(userUpdateObject.lastName, true)) {
 			return;
 		}
-		const matchingLocalUsers = await UserRepo.findBySchoolAndName(
+		const matchingLocalUsers = await UserRepo.findUserBySchoolAndName(
 			schoolId,
 			userUpdateObject.firstName,
 			userUpdateObject.lastName
