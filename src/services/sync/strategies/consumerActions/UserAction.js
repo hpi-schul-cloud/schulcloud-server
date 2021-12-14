@@ -5,6 +5,7 @@ const BaseConsumerAction = require('./BaseConsumerAction');
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
+const { isNotEmptyString } = require('../../../../helper/stringHelper');
 
 const defaultOptions = {
 	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated', 'schoolDn'],
@@ -30,11 +31,9 @@ class UserAction extends BaseConsumerAction {
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
+		// create migration user when the ldapId is not existing on a real user
 		if (school.inUserMigration === true && !foundUser) {
-			// create migration user when the ldapId is not existing
-			const userUpdateObject = this.createUserUpdateObject(user, {});
-			await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
-			// TODO how to handle import users that have been removed in ldap later?
+			await this.createImportUser(user, school);
 			return;
 		}
 
@@ -49,6 +48,54 @@ class UserAction extends BaseConsumerAction {
 		} else {
 			await this.createUserAndAccount(user, account, school._id);
 		}
+	}
+
+	async autoMatchImportUser(schoolId, userUpdateObject) {
+		if (!isNotEmptyString(userUpdateObject.firstName, true) || !isNotEmptyString(userUpdateObject.lastName, true)) {
+			return;
+		}
+		const matchingLocalUsers = await UserRepo.findUserBySchoolAndName(
+			schoolId,
+			userUpdateObject.firstName,
+			userUpdateObject.lastName
+		);
+		if (!matchingLocalUsers || matchingLocalUsers.length !== 1) {
+			return;
+		}
+		const userMatch = matchingLocalUsers[0];
+		const foundImportUsers = await UserRepo.findImportUsersBySchoolAndName(
+			schoolId,
+			userUpdateObject.firstName,
+			userUpdateObject.lastName
+		);
+		if (foundImportUsers.length === 0) {
+			userUpdateObject.match = {
+				userId: userMatch._id,
+				matchedBy: 'auto',
+			};
+		} else {
+			// revoke other previously auto-matched import users
+			await Promise.all(
+				foundImportUsers.map((foundImportUser) => {
+					if (foundImportUser.match && foundImportUser.match.matchedBy === 'auto') {
+						delete foundImportUser.match;
+						return UserRepo.createOrUpdateImportUser(
+							schoolId,
+							foundImportUser.systemId,
+							foundImportUser.ldapId,
+							foundImportUser
+						);
+					}
+					return Promise.resolve();
+				})
+			);
+		}
+	}
+
+	async createImportUser(user, school) {
+		const userUpdateObject = this.createUserUpdateObject(user, {});
+		await this.autoMatchImportUser(school._id, userUpdateObject);
+		await UserRepo.createOrUpdateImportUser(school._id, user.systemId, user.ldapId, userUpdateObject);
 	}
 
 	async updateUserAndAccount(foundUser, user, account) {
