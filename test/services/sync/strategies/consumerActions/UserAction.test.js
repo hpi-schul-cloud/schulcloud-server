@@ -12,7 +12,7 @@ const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo'
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe.only('User Actions', () => {
+describe('User Actions', () => {
 	let userAction;
 	before(() => {
 		userAction = new UserAction(true);
