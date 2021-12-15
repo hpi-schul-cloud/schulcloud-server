@@ -204,10 +204,10 @@ describe('UniventionLDAPStrategy', () => {
 
 		it('should assign roles based on specific group memberships', async () => {
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers({});
-			expect(users[0].roles).to.include('student');
-			expect(users[1].roles).to.include('student');
-			expect(users[2].roles).to.include('teacher');
-			expect(users[3].roles).to.include('teacher', 'admin');
+			expect(users[0].roles).to.deep.equal(['student']);
+			expect(users[1].roles).to.deep.equal(['student']);
+			expect(users[2].roles).to.deep.equal(['teacher']);
+			expect(users[3].roles).to.deep.equal(['administrator', 'teacher']);
 		});
 	});
 
