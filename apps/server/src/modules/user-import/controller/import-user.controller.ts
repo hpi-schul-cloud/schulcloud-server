@@ -22,7 +22,7 @@ export class ImportUserController {
 		throw new ImATeapotException();
 	}
 
-	@Patch('match/:id')
+	@Patch(':id/match')
 	updateMatch(
 		@Param('id', ParseObjectIdPipe) importUserId: string,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -32,7 +32,7 @@ export class ImportUserController {
 		throw new ImATeapotException();
 	}
 
-	@Delete('match/:id')
+	@Delete(':id/match')
 	removeMatch(
 		@Param('id', ParseObjectIdPipe) importUserId: string,
 		@CurrentUser() currentUser: ICurrentUser
