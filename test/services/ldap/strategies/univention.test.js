@@ -122,7 +122,7 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.resolves(
+				searchCollection: sinon.fake.resolves([
 					{
 						dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 						givenName: 'Max',
@@ -159,8 +159,8 @@ describe('UniventionLDAPStrategy', () => {
 						mail: 'admin@testschule.de',
 						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
 						SchulCloudAdmin: 'TRUE',
-					}
-				),
+					},
+				]),
 			};
 		}
 
@@ -191,7 +191,17 @@ describe('UniventionLDAPStrategy', () => {
 			const expectedSearchOptions = {
 				filter: 'univentionObjectType=users/user',
 				scope: 'sub',
-				attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass'],
+				attributes: [
+					'givenName',
+					'sn',
+					'mailPrimaryAdress',
+					'mail',
+					'dn',
+					'entryUUID',
+					'uid',
+					'objectClass',
+					'SchulCloudAdmin',
+				],
 			};
 			expect(ldapServiceMock.searchCollection).to.have.been.calledWith(
 				mockLDAPConfig,
