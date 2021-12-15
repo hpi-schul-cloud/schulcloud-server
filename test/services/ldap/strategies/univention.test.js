@@ -151,6 +151,16 @@ describe('UniventionLDAPStrategy', () => {
 							mail: 'teacher@testschule.de',
 							objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
 						},
+						{
+							dn: 'uid=thorsten.test,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+							givenName: 'Thorsten',
+							sn: 'Test',
+							uid: '00004',
+							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ed',
+							mail: 'admin@testschule.de',
+							objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+							SchulCloudAdmin: 'TRUE',
+						},
 					])
 				),
 			};
@@ -164,7 +174,7 @@ describe('UniventionLDAPStrategy', () => {
 		it('should return all users', async () => {
 			const school = { ldapSchoolIdentifier: 'o=Testschule,dc=de' };
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers(school);
-			expect(users.length).to.equal(3);
+			expect(users.length).to.equal(4);
 		});
 
 		it('should follow the internal interface', async () => {
@@ -197,6 +207,7 @@ describe('UniventionLDAPStrategy', () => {
 			expect(users[0].roles).to.include('student');
 			expect(users[1].roles).to.include('student');
 			expect(users[2].roles).to.include('teacher');
+			expect(users[3].roles).to.include('teacher', 'admin');
 		});
 	});
 
