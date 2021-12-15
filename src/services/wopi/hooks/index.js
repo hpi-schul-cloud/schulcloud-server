@@ -29,6 +29,7 @@ const wopiAuthentication = (hook) => {
 	if (jwt.indexOf('?permission') >= 0) {
 		jwt = jwt.slice(0, jwt.indexOf('?permission'));
 	}
+	logger.debug(`[WOPI] wopiAuthentication params "${hook.params}"`);
 	hook.params.authentication = {
 		accessToken: jwt,
 		strategy: 'jwt',
@@ -72,6 +73,7 @@ const checkLockHeader = (hook) => {
 
 	const lockId = hook.params.headers['x-wopi-lock'];
 	const { fileId } = hook.params.route;
+	logger.debug(`[WOPI] checkLockHeader concerningActions "${concerningActions}" lockId "${lockId}" fileId "${fileId}"`);
 	// check if lockId is correct for the given file
 	return FileModel.findOne({ _id: fileId }).then((file) => {
 		if (!file) {

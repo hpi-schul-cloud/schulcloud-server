@@ -40,7 +40,7 @@ class WopiFilesInfoService {
 			OwnerId: userId, // if an user passes the permission check, it's valid to handle it as file-owner
 			UserId: userId,
 		};
-
+		logger.debug(`[WOPI] find fileId "${fileId}" for userId "${userId}"`);
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId })
 			.exec()
@@ -55,7 +55,7 @@ class WopiFilesInfoService {
 					Size: file.size,
 					Version: file.__v,
 				};
-
+				logger.debug(`[WOPI] found file "${file.name}" with version "${file.__v}"`);
 				return canRead(userId, fileId);
 			})
 			.then(() => userService.get(userId))
@@ -84,6 +84,7 @@ class WopiFilesInfoService {
 
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
+		logger.debug(`[WOPI] WopiFilesInfoService.create fileId "${fileId}" payload "${payload}" wopiAction "${wopiAction}"`);
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id })
 			.exec()
@@ -119,6 +120,7 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
+		logger.debug(`[WOPI] WopiFilesContentsService.find fileId "${fileId}" params "${params}"`);
 		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
