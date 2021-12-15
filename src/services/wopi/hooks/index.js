@@ -3,6 +3,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { NotFound, BadRequest, Conflict } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
+const logger = require('../../logger');
 const { mapPayload } = require('../../../hooks');
 
 /**
