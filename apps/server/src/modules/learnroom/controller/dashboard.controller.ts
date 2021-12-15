@@ -5,7 +5,6 @@ import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardResponse, MoveElementParams, PatchGroupParams } from './dto';
-import { DashboardMapper } from '../mapper/dashboard.mapper';
 
 @ApiTags('Dashboard')
 @Authenticate('jwt')
@@ -16,7 +15,7 @@ export class DashboardController {
 	@Get()
 	async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
 		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
-		const dto = DashboardMapper.mapToResponse(dashboard);
+		const dto = DashboardResponse.FromEntity(dashboard);
 		return dto;
 	}
 
@@ -32,7 +31,7 @@ export class DashboardController {
 			params.to,
 			currentUser.userId
 		);
-		const dto = DashboardMapper.mapToResponse(dashboard);
+		const dto = DashboardResponse.FromEntity(dashboard);
 		return dto;
 	}
 
@@ -50,7 +49,7 @@ export class DashboardController {
 			params.title,
 			currentUser.userId
 		);
-		const dto = DashboardMapper.mapToResponse(dashboard);
+		const dto = DashboardResponse.FromEntity(dashboard);
 		return dto;
 	}
 }
