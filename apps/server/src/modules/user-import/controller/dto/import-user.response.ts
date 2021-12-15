@@ -18,7 +18,7 @@ export class ImportUserResponse {
 	@IsMongoId()
 	@ApiProperty({
 		pattern: '[a-f0-9]{24}',
-		description: 'id reference to a user',
+		description: 'id reference to a import user',
 	})
 	// no school, system
 	importUserId: string;
