@@ -122,46 +122,44 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.returns(
-					Promise.resolve([
-						{
-							dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-							givenName: 'Max',
-							sn: 'Mustermann',
-							uid: '00001',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ea',
-							mail: 'student1@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
-						},
-						{
-							dn: 'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-							givenName: 'Marla',
-							sn: 'Mathe',
-							uid: '00002',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5eb',
-							mail: 'student2@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
-						},
-						{
-							dn: 'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
-							givenName: 'Herr',
-							sn: 'Lempel',
-							uid: '00003',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ec',
-							mail: 'teacher@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
-						},
-						{
-							dn: 'uid=thorsten.test,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
-							givenName: 'Thorsten',
-							sn: 'Test',
-							uid: '00004',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ed',
-							mail: 'admin@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
-							SchulCloudAdmin: 'TRUE',
-						},
-					])
+				searchCollection: sinon.fake.resolves(
+					{
+						dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+						givenName: 'Max',
+						sn: 'Mustermann',
+						uid: '00001',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ea',
+						mail: 'student1@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+					},
+					{
+						dn: 'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+						givenName: 'Marla',
+						sn: 'Mathe',
+						uid: '00002',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5eb',
+						mail: 'student2@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+					},
+					{
+						dn: 'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+						givenName: 'Herr',
+						sn: 'Lempel',
+						uid: '00003',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ec',
+						mail: 'teacher@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+					},
+					{
+						dn: 'uid=thorsten.test,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+						givenName: 'Thorsten',
+						sn: 'Test',
+						uid: '00004',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ed',
+						mail: 'admin@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+						SchulCloudAdmin: 'TRUE',
+					}
 				),
 			};
 		}

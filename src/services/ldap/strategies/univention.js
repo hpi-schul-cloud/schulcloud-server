@@ -55,7 +55,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			.then((data) =>
 				data.map((obj) => {
 					const roles = [];
-					if (obj.SchulCloudAdmin === 'TRUE') {
+					if (obj.SchulCloudAdmin === true) {
 						roles.push('administrator');
 					}
 					if (obj.objectClass.includes('ucsschoolTeacher')) {
