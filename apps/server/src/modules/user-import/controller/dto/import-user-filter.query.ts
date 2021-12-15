@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export enum MatchCreatorFilter {
 	AUTO = 'auto',
@@ -7,21 +7,32 @@ export enum MatchCreatorFilter {
 	NONE = 'none',
 }
 
-// TODO DTO validation in all is not completed
 export class ImportUserFilterQuery {
 	@ApiPropertyOptional()
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
 	firstName?: string;
 
 	@ApiPropertyOptional()
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
 	lastName?: string;
 
 	@ApiPropertyOptional()
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
 	loginName?: string;
 
 	@ApiPropertyOptional({ enum: MatchCreatorFilter })
+	@IsOptional()
 	@IsEnum(MatchCreatorFilter)
 	match?: MatchCreatorFilter;
 
 	@ApiPropertyOptional()
+	@IsOptional()
+	@IsBoolean()
 	flagged?: boolean;
 }
