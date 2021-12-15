@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
-import { MatchCreator } from '../../../../shared/domain/entity/import-user.entity';
+import { MatchCreatorResponse } from './match-creator.response';
 
 export class UserMatchResponse {
 	constructor(props: UserMatchResponse) {
@@ -26,7 +26,7 @@ export class UserMatchResponse {
 
 	@ApiProperty({
 		description: 'match type: admin (manual) or auto (set, when names match exactly for a single user',
-		enum: MatchCreator,
+		enum: MatchCreatorResponse,
 	})
-	matchedBy: MatchCreator; // TODO extend with no-match, define separate DTO
+	matchedBy: MatchCreatorResponse;
 }

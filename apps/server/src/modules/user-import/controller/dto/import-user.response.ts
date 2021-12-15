@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';
-import { RoleName } from '../../../../shared/domain/entity/import-user.entity';
+import { RoleNameResponse } from './role-name.response';
 import { UserMatchResponse } from './user-match.response';
 
 export class ImportUserResponse {
@@ -41,9 +41,11 @@ export class ImportUserResponse {
 	})
 	lastName: string;
 
-	// TODO enum array
-	@ApiProperty({ description: 'list of user roles from external system: student, teacher, admin', enum: RoleName })
-	roleNames: RoleName[]; // TODO define RoleNameResponse
+	@ApiProperty({
+		description: 'list of user roles from external system: student, teacher, admin',
+		enum: RoleNameResponse,
+	})
+	roleNames: RoleNameResponse[];
 
 	@ApiProperty({ description: 'names of classes the user attends from external system' })
 	classNames: string[];

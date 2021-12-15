@@ -1,5 +1,10 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
+export enum MatchCreatorFilter {
+	AUTO = 'auto',
+	MANUAL = 'admin',
+	NONE = 'none',
+}
 export class ImportUserFilterQuery {
 	@ApiPropertyOptional()
 	firstName?: string;
@@ -10,8 +15,8 @@ export class ImportUserFilterQuery {
 	@ApiPropertyOptional()
 	loginName?: string;
 
-	@ApiPropertyOptional()
-	match?: 'no-match' | 'admin' | 'auto';
+	@ApiPropertyOptional({ enum: MatchCreatorFilter })
+	match?: MatchCreatorFilter;
 
 	@ApiPropertyOptional()
 	flagged?: boolean;
