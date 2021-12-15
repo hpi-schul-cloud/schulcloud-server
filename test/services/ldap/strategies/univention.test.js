@@ -122,37 +122,45 @@ describe('UniventionLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
-				searchCollection: sinon.fake.returns(
-					Promise.resolve([
-						{
-							dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-							givenName: 'Max',
-							sn: 'Mustermann',
-							uid: '00001',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ea',
-							mail: 'student1@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
-						},
-						{
-							dn: 'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
-							givenName: 'Marla',
-							sn: 'Mathe',
-							uid: '00002',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5eb',
-							mail: 'student2@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
-						},
-						{
-							dn: 'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
-							givenName: 'Herr',
-							sn: 'Lempel',
-							uid: '00003',
-							entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ec',
-							mail: 'teacher@testschule.de',
-							objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
-						},
-					])
-				),
+				searchCollection: sinon.fake.resolves([
+					{
+						dn: 'uid=max1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+						givenName: 'Max',
+						sn: 'Mustermann',
+						uid: '00001',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ea',
+						mail: 'student1@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+					},
+					{
+						dn: 'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
+						givenName: 'Marla',
+						sn: 'Mathe',
+						uid: '00002',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5eb',
+						mail: 'student2@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+					},
+					{
+						dn: 'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+						givenName: 'Herr',
+						sn: 'Lempel',
+						uid: '00003',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ec',
+						mail: 'teacher@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+					},
+					{
+						dn: 'uid=thorsten.test,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
+						givenName: 'Thorsten',
+						sn: 'Test',
+						uid: '00004',
+						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ed',
+						mail: 'admin@testschule.de',
+						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+						SchulCloudAdmin: 'TRUE',
+					},
+				]),
 			};
 		}
 
@@ -164,7 +172,7 @@ describe('UniventionLDAPStrategy', () => {
 		it('should return all users', async () => {
 			const school = { ldapSchoolIdentifier: 'o=Testschule,dc=de' };
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers(school);
-			expect(users.length).to.equal(3);
+			expect(users.length).to.equal(4);
 		});
 
 		it('should follow the internal interface', async () => {
@@ -183,7 +191,17 @@ describe('UniventionLDAPStrategy', () => {
 			const expectedSearchOptions = {
 				filter: 'univentionObjectType=users/user',
 				scope: 'sub',
-				attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass'],
+				attributes: [
+					'givenName',
+					'sn',
+					'mailPrimaryAdress',
+					'mail',
+					'dn',
+					'entryUUID',
+					'uid',
+					'objectClass',
+					'SchulCloudAdmin',
+				],
 			};
 			expect(ldapServiceMock.searchCollection).to.have.been.calledWith(
 				mockLDAPConfig,
@@ -194,9 +212,10 @@ describe('UniventionLDAPStrategy', () => {
 
 		it('should assign roles based on specific group memberships', async () => {
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers({});
-			expect(users[0].roles).to.include('student');
-			expect(users[1].roles).to.include('student');
-			expect(users[2].roles).to.include('teacher');
+			expect(users[0].roles).to.deep.equal(['student']);
+			expect(users[1].roles).to.deep.equal(['student']);
+			expect(users[2].roles).to.deep.equal(['teacher']);
+			expect(users[3].roles).to.deep.equal(['administrator', 'teacher']);
 		});
 	});
 
