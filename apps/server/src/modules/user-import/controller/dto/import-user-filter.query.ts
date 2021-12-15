@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export enum MatchCreatorFilter {
+export enum MatchFilterQuery {
 	AUTO = 'auto',
 	MANUAL = 'admin',
 	NONE = 'none',
@@ -26,10 +26,10 @@ export class ImportUserFilterQuery {
 	@IsNotEmpty()
 	loginName?: string;
 
-	@ApiPropertyOptional({ enum: MatchCreatorFilter })
+	@ApiPropertyOptional({ enum: MatchFilterQuery })
 	@IsOptional()
-	@IsEnum(MatchCreatorFilter)
-	match?: MatchCreatorFilter;
+	@IsEnum(MatchFilterQuery)
+	match?: MatchFilterQuery;
 
 	@ApiPropertyOptional()
 	@IsOptional()
