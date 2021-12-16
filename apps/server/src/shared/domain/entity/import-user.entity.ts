@@ -68,7 +68,7 @@ export class UserMatch {
 		this.matchedBy = props.matchedBy;
 	}
 }
-interface ISystemProperties {
+export interface ISystemProperties {
 	type: string;
 }
 @Entity({ tableName: 'systems' })
