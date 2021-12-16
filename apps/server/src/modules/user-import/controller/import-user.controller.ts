@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // TODO remove when implementation exists
 import { Body, Controller, Delete, Get, ImATeapotException, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';

@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // TODO remove when implementation exists
 import {
 	Embeddable,
 	Embedded,

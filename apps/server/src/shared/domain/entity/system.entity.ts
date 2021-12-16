@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // TODO remove when implementation exists
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
