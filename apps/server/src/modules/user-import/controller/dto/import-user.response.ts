@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // TODO remove when implementation exists
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';

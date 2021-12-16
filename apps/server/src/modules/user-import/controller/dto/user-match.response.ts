@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // TODO remove when implementation exists
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
 import { MatchCreatorResponse } from './match-creator.response';

@@ -12,6 +12,7 @@ import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
+import { System } from './system.entity';
 
 export const ALL_ENTITIES = [
 	Course,
@@ -33,8 +34,8 @@ export const ALL_ENTITIES = [
 	News,
 	SchoolNews,
 	TeamNews,
+	System,
 	// TODO move import user entities?
 	ImportUser,
 	UserMatch,
-	System,
 ];

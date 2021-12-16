@@ -1,3 +1,4 @@
+/* istanbul ignore file */ // TODO remove when implementation exists
 import {
 	Embeddable,
 	Embedded,
@@ -10,6 +11,9 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
+
+import { System } from './system.entity';
+
 import type { User } from './user.entity';
 
 export interface IImportUserProperties {
@@ -56,31 +60,18 @@ export enum RoleName {
 }
 
 @Embeddable()
-export class UserMatch {
+export class UserMatch extends BaseEntityWithTimestamps {
+	constructor(props: UserMatch) {
+		super();
+		this.user = props.user;
+		this.matchedBy = props.matchedBy;
+	}
+
 	@Property({ fieldName: 'userId' })
 	user: User;
 
 	@Enum({ fieldName: 'matchedBy' })
 	matchedBy: MatchCreator;
-
-	constructor(props: UserMatch) {
-		this.user = props.user;
-		this.matchedBy = props.matchedBy;
-	}
-}
-export interface ISystemProperties {
-	type: string;
-}
-@Entity({ tableName: 'systems' })
-export class System extends BaseEntityWithTimestamps {
-	constructor(props: ISystemProperties) {
-		super();
-		this.type = props.type;
-	}
-
-	// TODO add props
-	@Property()
-	type: string;
 }
 
 @Entity({ tableName: 'importUser' })
