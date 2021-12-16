@@ -86,12 +86,13 @@ class WopiFilesInfoService {
 
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
-		logger.debug(`[WOPI] WopiFilesInfoService.create`, {payload, wopiAction});
+		logger.debug(`[WOPI] WopiFilesInfoService.create `, { payload, _id, account, wopiAction });
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id })
 			.exec()
 			.then((file) => {
 				if (!file) {
+					logger.error(`[WOPI] WopiFilesInfoService.create `, file);
 					throw new NotFound('The requested file was not found! (2)');
 				}
 
