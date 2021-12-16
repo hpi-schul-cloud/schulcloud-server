@@ -14,6 +14,7 @@ import { FilesModule } from '@src/modules/files';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
+import { ImportUserModule } from './modules/user-import/user-import.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 		TaskModule,
 		NewsModule,
 		UserModule,
+		ImportUserModule,
 		LearnroomModule,
 		MailModule.forRoot({
 			uri: Configuration.get('RABBITMQ_URI') as string,
