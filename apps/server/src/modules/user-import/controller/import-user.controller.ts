@@ -8,18 +8,30 @@ import { ImportUserListResponse } from './dto/import-user.response';
 import { UpdateMatchParams } from './dto/update-match.params';
 import { UserMatchResponse } from './dto/user-match.response';
 
+import { UserImportUC } from '../uc/user-import.uc';
+
+import { ImportUserMapper } from '../mapper/import-user.mapper'
+
 @ApiTags('User')
 @Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
+	constructor(private readonly userImportUc: UserImportUC) {}
+
 	@Get()
-	findAll(
+	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: ImportUserFilterQuery,
 		@Query() pagination: PaginationQuery
 	): Promise<ImportUserListResponse> {
-		// TODO
-		throw new ImATeapotException();
+		const [importUserList, count] = await this.userImportUc.findAll(
+			currentUser,
+			{},
+			{ pagination }
+		);
+		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
+		const response = new ImportUserListResponse(dtoList, count);
+		return response;
 	}
 
 	@Patch(':id/match')
