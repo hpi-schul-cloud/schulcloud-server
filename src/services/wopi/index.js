@@ -28,7 +28,9 @@ class WopiFilesInfoService {
 	}
 
 	find(params) {
+		logger.debug(`[WOPI] find params.route "${params.route}" for params.account "${params.account}"`);
 		if (!(params.route || {}).fileId) {
+			logger.warning(`[WOPI] find No fileId "${fileId}" exist.`);
 			throw new BadRequest('No fileId exist.');
 		}
 		const { fileId } = params.route;

@@ -74,7 +74,7 @@ const checkLockHeader = (hook) => {
 
 	const lockId = hook.params.headers['x-wopi-lock'];
 	const { fileId } = hook.params.route;
-	logger.debug(`[WOPI] checkLockHeader concerningActions "${concerningActions}" lockId "${lockId}" fileId "${fileId}"`);
+	logger.debug(`[WOPI] checkLockHeader wopiAction "${wopiAction}" lockId "${lockId}" fileId "${fileId}"`);
 	// check if lockId is correct for the given file
 	return FileModel.findOne({ _id: fileId }).then((file) => {
 		if (!file) {
