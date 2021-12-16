@@ -21,6 +21,7 @@ const { mapPayload } = require('../../../hooks');
 
 const wopiAuthentication = (hook) => {
 	hook.params.headers = hook.params.headers || {};
+	logger.debug(`[WOPI] wopiAuthentication params`, hook.params);
 	let jwt = (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
 	if (!jwt) {
 		throw new Error('access_token is missing!');
@@ -30,7 +31,6 @@ const wopiAuthentication = (hook) => {
 	if (jwt.indexOf('?permission') >= 0) {
 		jwt = jwt.slice(0, jwt.indexOf('?permission'));
 	}
-	logger.debug(`[WOPI] wopiAuthentication params "${hook.params}"`);
 	hook.params.authentication = {
 		accessToken: jwt,
 		strategy: 'jwt',
@@ -62,6 +62,7 @@ const retrieveWopiOverrideHeader = (hook) => {
  * INFORMATION: sometimes wopi-clients not implemented locks! Therefore this hook has to be disabled.
  */
 const checkLockHeader = (hook) => {
+	logger.debug(`[WOPI] checkLockHeader params`, hook.params);
 	if (!(hook.params.route || {}).fileId) {
 		throw new BadRequest('No fileId exist.');
 	}
@@ -91,6 +92,7 @@ const checkLockHeader = (hook) => {
 };
 
 const setLockResponseHeader = (hook) => {
+	logger.debug(`[WOPI] checkLockHeader params`, hook.params);
 	hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
 	return hook;
 };

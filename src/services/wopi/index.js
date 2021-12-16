@@ -28,9 +28,9 @@ class WopiFilesInfoService {
 	}
 
 	find(params) {
-		logger.debug(`[WOPI] find params.route "${params.route}" for params.account "${params.account}"`);
+		logger.debug(`[WOPI] WopiFilesInfoService.find params`, params);
 		if (!(params.route || {}).fileId) {
-			logger.warning(`[WOPI] find No fileId "${fileId}" exist.`);
+			logger.error(`[WOPI] find No fileId "${fileId}" exist.`);
 			throw new BadRequest('No fileId exist.');
 		}
 		const { fileId } = params.route;
@@ -42,7 +42,7 @@ class WopiFilesInfoService {
 			OwnerId: userId, // if an user passes the permission check, it's valid to handle it as file-owner
 			UserId: userId,
 		};
-		logger.debug(`[WOPI] find fileId "${fileId}" for userId "${userId}"`);
+		logger.debug(`[WOPI] WopiFilesInfoService.find fileId "${fileId}" for userId "${userId}"`);
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId })
 			.exec()
@@ -122,7 +122,7 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		logger.debug(`[WOPI] WopiFilesContentsService.find fileId "${fileId}" params "${params}"`);
+		logger.debug(`[WOPI] WopiFilesContentsService.find fileId "${fileId}" "`, params);
 		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
