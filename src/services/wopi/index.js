@@ -57,7 +57,7 @@ class WopiFilesInfoService {
 					Size: file.size,
 					Version: file.__v,
 				};
-				logger.debug(`[WOPI] found file "${file.name}" with version "${file.__v}"`);
+				logger.debug(`[WOPI] WopiFilesInfoService.find found file "${file.name}" with version "${file.__v}"`);
 				return canRead(userId, fileId);
 			})
 			.then(() => userService.get(userId))
@@ -86,7 +86,7 @@ class WopiFilesInfoService {
 
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
-		logger.debug(`[WOPI] WopiFilesInfoService.create fileId "${fileId}" payload "${payload}" wopiAction "${wopiAction}"`);
+		logger.debug(`[WOPI] WopiFilesInfoService.create`, {payload, wopiAction});
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id })
 			.exec()
@@ -163,6 +163,7 @@ class WopiFilesContentsService {
 	 * https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	 */
 	create(data, params) {
+		logger.debug(`[WOPI] WopiFilesContentsService.create params`, params);
 		if (!(params.route || {}).fileId) {
 			throw new BadRequest('No fileId exist.');
 		}

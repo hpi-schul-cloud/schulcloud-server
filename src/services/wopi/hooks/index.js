@@ -92,7 +92,7 @@ const checkLockHeader = (hook) => {
 };
 
 const setLockResponseHeader = (hook) => {
-	logger.debug(`[WOPI] checkLockHeader params`, hook.params);
+	logger.debug(`[WOPI] setLockResponseHeader params`, hook.params);
 	hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
 	return hook;
 };
