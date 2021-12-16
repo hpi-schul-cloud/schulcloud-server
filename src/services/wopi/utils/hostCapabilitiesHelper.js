@@ -26,8 +26,8 @@ const HOST_CAPABILITIES = [
 
 const CURRENTLY_IMPLEMENTED = [
 	'SupportsDeleteFile',
-	'SupportsLocks',
-	'SupportsGetLock',
+/*	'SupportsLocks',
+	'SupportsGetLock',*/
 	'SupportsRename',
 	'SupportsUpdate',
 	'UserCanRename',
