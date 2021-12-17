@@ -74,7 +74,7 @@ export class UserMatch extends BaseEntityWithTimestamps {
 	matchedBy: MatchCreator;
 }
 
-@Entity({ tableName: 'importUser' })
+@Entity({ tableName: 'importusers' })
 export class ImportUser extends BaseEntityWithTimestamps {
 	@ManyToOne(() => 'School', { wrappedReference: true, lazy: true })
 	school: IdentifiedReference<School>;
