@@ -1,6 +1,6 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IFindOptions, Counted, ICurrentUser, SortOrder, ImportUser } from '@shared/domain';
+import { EntityId, IFindOptions, Counted, ICurrentUser, SortOrder, ImportUser, IImportUserScope } from '@shared/domain';
 
 import { ImportUserRepo } from '@shared/repo';
 
@@ -10,11 +10,11 @@ export class UserImportUC {
 
 	async findAll(
 		currentUser: ICurrentUser,
-		query: FilterQuery<ImportUser>,
+		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		// ToDo: authorization
 
-		return this.importUserRepo.findImportUsersAndCount(query, options);
+		return this.importUserRepo.findImportUsers(query, options);
 	}
 }

@@ -1,5 +1,5 @@
-import { ImportUser } from '@shared/domain';
-import { ImportUserResponse } from '../controller/dto';
+import { ImportUser, IImportUserScope } from '@shared/domain';
+import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
 
 import { RoleNameMapper } from './role-name.mapper';
 
@@ -14,6 +14,13 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 		});
 
+		return dto;
+	}
+
+	static mapNewsScopeToDomain(query: ImportUserFilterQuery): IImportUserScope {
+		const dto: IImportUserScope = {};
+		dto.firstName = query.firstName;
+		dto.lastName = query.lastName;
 		return dto;
 	}
 }
