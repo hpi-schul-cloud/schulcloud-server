@@ -11,25 +11,21 @@ import { UserMatchResponse } from './dto/user-match.response';
 
 import { UserImportUC } from '../uc/user-import.uc';
 
-import { ImportUserMapper } from '../mapper/import-user.mapper'
+import { ImportUserMapper } from '../mapper/import-user.mapper';
 
 @ApiTags('User')
 @Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
 	constructor(private readonly userImportUc: UserImportUC) {}
-  
+
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: ImportUserFilterQuery,
 		@Query() pagination: PaginationQuery
 	): Promise<ImportUserListResponse> {
-		const [importUserList, count] = await this.userImportUc.findAll(
-			currentUser,
-			{},
-			{ pagination }
-		);
+		const [importUserList, count] = await this.userImportUc.findAll(currentUser, {}, { pagination });
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
 		const response = new ImportUserListResponse(dtoList, count);
 		return response;

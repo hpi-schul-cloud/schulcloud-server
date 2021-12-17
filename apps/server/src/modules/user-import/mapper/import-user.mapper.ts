@@ -14,6 +14,6 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 		});
 
-		return dto
+		return dto;
 	}
 }

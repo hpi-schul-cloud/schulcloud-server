@@ -1,9 +1,7 @@
-
 import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { Counted, EntityId, IFindOptions, ImportUser } from '@shared/domain';
-
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
@@ -12,7 +10,10 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		return importUser;
 	}
 
-	async findImportUsersAndCount(query: FilterQuery<ImportUser>, options?: IFindOptions<ImportUser>): Promise<Counted<ImportUser[]>> {
+	async findImportUsersAndCount(
+		query: FilterQuery<ImportUser>,
+		options?: IFindOptions<ImportUser>
+	): Promise<Counted<ImportUser[]>> {
 		const { pagination, order } = options || {};
 		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, {
 			...pagination,

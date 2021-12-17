@@ -5,7 +5,6 @@ import { ImportUserRepo } from '@shared/repo';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUC } from './uc/user-import.uc';
 
-
 @Module({
 	imports: [
 		AuthorizationModule,
