@@ -49,6 +49,7 @@ import { ImportUserModule } from './modules/user-import/user-import.module';
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},
+			// ToDo: comment this line again
 			debug: true, // use it for locally debugging of querys
 		}),
 		CoreModule,

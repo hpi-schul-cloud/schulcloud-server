@@ -56,7 +56,7 @@ export enum MatchCreator {
 export enum RoleName {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
-	ADMIN = 'admin',
+	ADMIN = 'administrator',
 }
 
 @Embeddable()

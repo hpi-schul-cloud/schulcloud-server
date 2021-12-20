@@ -1,8 +1,8 @@
 /* istanbul ignore file */ // TODO remove when implementation exists
 import { Body, Controller, Delete, Get, ImATeapotException, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
-import { ICurrentUser } from '@shared/domain';
+import { PaginationQuery, SortingQuery, ParseObjectIdPipe } from '@shared/controller';
+import { ICurrentUser, IFindOptions, SortOrder, ImportUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
 import { ImportUserListResponse } from './dto/import-user.response';
@@ -23,12 +23,17 @@ export class ImportUserController {
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: ImportUserFilterQuery,
+		@Query() sortingQuery: SortingQuery,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<ImportUserListResponse> {
+		const options: IFindOptions<ImportUser> = { pagination: paginationQuery };
+		if (sortingQuery.sortBy) {
+			options.order = { [sortingQuery.sortBy]: sortingQuery.sortOrder || SortOrder.asc };
+		}
 		const [importUserList, count] = await this.userImportUc.findAll(
 			currentUser,
 			ImportUserMapper.mapNewsScopeToDomain(scope),
-			{ pagination: paginationQuery }
+			options
 		);
 		const { skip, limit } = paginationQuery;
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
