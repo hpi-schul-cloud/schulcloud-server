@@ -23,10 +23,12 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const { pagination, order } = options || {};
-		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, {
-			...pagination,
-			orderBy: order,
-		});
+		const queryOptions = {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order as QueryOrderMap,
+		};
+		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, queryOptions);
 
 		// ToDo: populate values
 
