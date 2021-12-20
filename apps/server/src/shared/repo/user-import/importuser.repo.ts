@@ -21,6 +21,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		scope.bySchoolId(schoolId);
 		if (filters.firstName) scope.byFirstName(filters.firstName);
 		if (filters.lastName) scope.byLastName(filters.lastName);
+		if (filters.matches) scope.byMatches(filters.matches);
 		return this.findImportUsersAndCount(scope.query, options);
 	}
 

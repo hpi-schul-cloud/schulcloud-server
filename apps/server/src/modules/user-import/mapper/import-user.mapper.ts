@@ -1,5 +1,6 @@
-import { ImportUser, IImportUserScope } from '@shared/domain';
+import { ImportUser, IImportUserScope, MatchCreatorScope } from '@shared/domain';
 import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
+import { ImportUserMatchMapper } from './match.mapper';
 
 import { RoleNameMapper } from './role-name.mapper';
 
@@ -17,10 +18,14 @@ export class ImportUserMapper {
 		return dto;
 	}
 
-	static mapNewsScopeToDomain(query: ImportUserFilterQuery): IImportUserScope {
+	static mapImportUserScopeToDomain(query: ImportUserFilterQuery): IImportUserScope {
 		const dto: IImportUserScope = {};
 		dto.firstName = query.firstName;
 		dto.lastName = query.lastName;
+		if (query.match) {
+			if (!Array.isArray(query.match)) query.match = [query.match];
+			dto.matches = query.match.map((match) => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match));
+		}
 		return dto;
 	}
 }

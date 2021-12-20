@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { ImportUser } from '@shared/domain';
+import { ImportUser, MatchCreatorScope } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
@@ -16,6 +16,17 @@ export class ImportUserScope extends Scope<ImportUser> {
 	bySchoolId(schoolId: string): ImportUserScope {
 		// @ts-ignore
 		this.addQuery({ schoolId: new ObjectId(schoolId) });
+		return this;
+	}
+
+	byMatches(matches: MatchCreatorScope[]) {
+		const queries = matches.map((match) => {
+			if (match === MatchCreatorScope.MANUAL) return { 'match.matchedBy': 'admin' };
+			if (match === MatchCreatorScope.AUTO) return { 'match.matchedBy': 'auto' };
+			if (match === MatchCreatorScope.NONE) return { 'match.matchedBy': { $exists: false } };
+			throw Error(); // ToDo: right error message
+		});
+		this.addQuery({ $or: queries });
 		return this;
 	}
 }

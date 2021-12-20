@@ -26,10 +26,10 @@ export class ImportUserFilterQuery {
 	@IsNotEmpty()
 	loginName?: string;
 
-	@ApiPropertyOptional({ enum: MatchFilterQuery })
+	@ApiPropertyOptional({ enum: MatchFilterQuery, isArray: true })
 	@IsOptional()
-	@IsEnum(MatchFilterQuery)
-	match?: MatchFilterQuery;
+	// @IsEnum(MatchFilterQuery)
+	match?: MatchFilterQuery[];
 
 	@ApiPropertyOptional()
 	@IsOptional()

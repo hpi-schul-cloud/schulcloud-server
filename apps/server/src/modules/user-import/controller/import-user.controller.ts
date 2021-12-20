@@ -32,7 +32,7 @@ export class ImportUserController {
 		}
 		const [importUserList, count] = await this.userImportUc.findAll(
 			currentUser,
-			ImportUserMapper.mapNewsScopeToDomain(scope),
+			ImportUserMapper.mapImportUserScopeToDomain(scope),
 			options
 		);
 		const { skip, limit } = paginationQuery;
