@@ -23,15 +23,16 @@ export class ImportUserController {
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: ImportUserFilterQuery,
-		@Query() pagination: PaginationQuery
+		@Query() paginationQuery: PaginationQuery
 	): Promise<ImportUserListResponse> {
 		const [importUserList, count] = await this.userImportUc.findAll(
 			currentUser,
 			ImportUserMapper.mapNewsScopeToDomain(scope),
-			{ pagination }
+			{ pagination: paginationQuery }
 		);
+		const { skip, limit } = paginationQuery;
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
-		const response = new ImportUserListResponse(dtoList, count);
+		const response = new ImportUserListResponse(dtoList, count, skip, limit);
 		return response;
 	}
 

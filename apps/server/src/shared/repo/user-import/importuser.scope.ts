@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { ImportUser } from '@shared/domain';
 import { Scope } from '../scope';
 
@@ -9,6 +10,12 @@ export class ImportUserScope extends Scope<ImportUser> {
 
 	byLastName(lastName: string): ImportUserScope {
 		this.addQuery({ lastName });
+		return this;
+	}
+
+	bySchoolId(schoolId: string): ImportUserScope {
+		// @ts-ignore
+		this.addQuery({ schoolId: new ObjectId(schoolId) });
 		return this;
 	}
 }

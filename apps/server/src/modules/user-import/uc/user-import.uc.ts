@@ -15,6 +15,8 @@ export class UserImportUC {
 	): Promise<Counted<ImportUser[]>> {
 		// ToDo: authorization
 
-		return this.importUserRepo.findImportUsers(query, options);
+		const { schoolId } = currentUser;
+
+		return this.importUserRepo.findImportUsers(schoolId, query, options);
 	}
 }
