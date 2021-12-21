@@ -38,6 +38,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, queryOptions);
 
 		// ToDo: populate values
+		await this.em.populate(importUserEntities, ['match.user']);
 
 		return [importUserEntities, count];
 	}

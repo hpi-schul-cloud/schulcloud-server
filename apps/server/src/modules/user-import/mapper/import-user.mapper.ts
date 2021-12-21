@@ -6,6 +6,7 @@ import { RoleNameMapper } from './role-name.mapper';
 
 export class ImportUserMapper {
 	static mapToResponse(importUser: ImportUser): ImportUserResponse {
+		const match = importUser.match ? ImportUserMatchMapper.mapToResponse(importUser.match) : undefined;
 		const dto = new ImportUserResponse({
 			importUserId: importUser.id,
 			loginName: importUser.email, // ToDo: Check
@@ -13,6 +14,7 @@ export class ImportUserMapper {
 			lastName: importUser.lastName,
 			roleNames: importUser.roleNames.map((role) => RoleNameMapper.mapToResponse(role)),
 			classNames: importUser.classNames,
+			match,
 		});
 
 		return dto;

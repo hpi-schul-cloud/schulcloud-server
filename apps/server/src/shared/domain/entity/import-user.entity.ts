@@ -67,7 +67,7 @@ export class UserMatch extends BaseEntityWithTimestamps {
 		this.matchedBy = props.matchedBy;
 	}
 
-	@Property({ fieldName: 'userId' })
+	@ManyToOne('User', { fieldName: 'userId' })
 	user: User;
 
 	@Enum({ fieldName: 'matchedBy' })
