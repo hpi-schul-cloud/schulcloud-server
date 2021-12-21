@@ -482,7 +482,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						Bucket: awsObject.bucket,
 						Key: flatFileName,
 						Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
-						ACL: 'public-read',
 					};
 					const getBoolean = (value) => value === true || value === 'true';
 					if (getBoolean(download)) {
