@@ -464,7 +464,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	getSignedUrl({ userId, flatFileName, localFileName, download, action = 'getObject' }) {
 		if (!userId || !flatFileName) {
-			console.log(`userId: ${userId} flatFileName: ${flatFileName}`);
 			return Promise.reject(new BadRequest('Missing parameters by getSignedUrl.', { userId, flatFileName }));
 		}
 
