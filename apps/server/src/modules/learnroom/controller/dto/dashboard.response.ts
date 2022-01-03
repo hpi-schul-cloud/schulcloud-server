@@ -60,7 +60,7 @@ export class DashboardGridElementResponse {
 	@ApiProperty({
 		description: 'Title of the Grid element',
 	})
-	title: string;
+	title?: string;
 
 	@ApiProperty({
 		description: 'Short title of the Grid element',
