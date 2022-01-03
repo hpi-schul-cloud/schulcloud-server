@@ -3,7 +3,6 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	DashboardEntity,
 	GridElement,
-	IGridElement,
 	GridElementWithPosition,
 	ILearnroom,
 	LearnroomTypes,

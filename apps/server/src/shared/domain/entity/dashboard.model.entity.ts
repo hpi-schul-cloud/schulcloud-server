@@ -12,7 +12,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { User } from './user.entity';
 import { Course } from './course.entity';
-import { EntityId } from '../types';
 
 export interface DashboardGridElementModelProperties {
 	id?: string;

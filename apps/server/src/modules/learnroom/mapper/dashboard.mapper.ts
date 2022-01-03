@@ -7,12 +7,12 @@ export class DashboardMapper {
 			id: dashboard.getId(),
 			gridElements: dashboard
 				.getGrid()
-				.map((elementWithPosition) => DashboardMapper.FromGridElementWithPosition(elementWithPosition)),
+				.map((elementWithPosition) => DashboardMapper.mapGridElement(elementWithPosition)),
 		});
 		return dto;
 	}
 
-	private static FromGridElementWithPosition(data: GridElementWithPosition): DashboardGridElementResponse {
+	private static mapGridElement(data: GridElementWithPosition): DashboardGridElementResponse {
 		const elementData = data.gridElement.getContent();
 		const position = data.pos;
 		const dto = new DashboardGridElementResponse({
@@ -27,14 +27,12 @@ export class DashboardMapper {
 		}
 		if (elementData.group && elementData.groupId) {
 			dto.groupId = elementData.groupId;
-			dto.groupElements = elementData.group.map((groupMetadata) =>
-				DashboardMapper.FromLearnroomMetadata(groupMetadata)
-			);
+			dto.groupElements = elementData.group.map((groupMetadata) => DashboardMapper.mapLearnroom(groupMetadata));
 		}
 		return dto;
 	}
 
-	private static FromLearnroomMetadata(metadata: LearnroomMetadata): DashboardGridSubElementResponse {
+	private static mapLearnroom(metadata: LearnroomMetadata): DashboardGridSubElementResponse {
 		return new DashboardGridSubElementResponse(metadata);
 	}
 }
