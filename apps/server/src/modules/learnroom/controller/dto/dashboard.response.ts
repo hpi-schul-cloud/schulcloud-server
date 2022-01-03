@@ -1,16 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LearnroomMetadata, GridElementWithPosition, DashboardEntity } from '@shared/domain';
 
 export class DashboardGridSubElementResponse {
-	private constructor({ id, title, shortTitle, displayColor }: DashboardGridSubElementResponse) {
+	constructor({ id, title, shortTitle, displayColor }: DashboardGridSubElementResponse) {
 		this.id = id;
 		this.title = title;
 		this.shortTitle = shortTitle;
 		this.displayColor = displayColor;
-	}
-
-	static FromLearnroomMetadata(metadata: LearnroomMetadata): DashboardGridSubElementResponse {
-		return new DashboardGridSubElementResponse(metadata);
 	}
 
 	@ApiProperty({
@@ -36,7 +31,7 @@ export class DashboardGridSubElementResponse {
 }
 
 export class DashboardGridElementResponse {
-	private constructor({
+	constructor({
 		id,
 		title,
 		shortTitle,
@@ -54,28 +49,6 @@ export class DashboardGridElementResponse {
 		this.yPosition = yPosition;
 		this.groupId = groupId;
 		this.groupElements = groupElements;
-	}
-
-	static FromGridElementWithPosition(data: GridElementWithPosition): DashboardGridElementResponse {
-		const elementData = data.gridElement.getContent();
-		const position = data.pos;
-		const dto = new DashboardGridElementResponse({
-			title: elementData.title,
-			shortTitle: elementData.shortTitle,
-			displayColor: elementData.displayColor,
-			xPosition: position.x,
-			yPosition: position.y,
-		});
-		if (elementData.referencedId) {
-			dto.id = elementData.referencedId;
-		}
-		if (elementData.group && elementData.groupId) {
-			dto.groupId = elementData.groupId;
-			dto.groupElements = elementData.group.map((groupMetadata) =>
-				DashboardGridSubElementResponse.FromLearnroomMetadata(groupMetadata)
-			);
-		}
-		return dto;
 	}
 
 	@ApiProperty({
@@ -126,16 +99,6 @@ export class DashboardResponse {
 	constructor({ id, gridElements }: DashboardResponse) {
 		this.id = id;
 		this.gridElements = gridElements;
-	}
-
-	static FromEntity(dashboard: DashboardEntity): DashboardResponse {
-		const dto = new DashboardResponse({
-			id: dashboard.getId(),
-			gridElements: dashboard
-				.getGrid()
-				.map((elementWithPosition) => DashboardGridElementResponse.FromGridElementWithPosition(elementWithPosition)),
-		});
-		return dto;
 	}
 
 	@ApiProperty({
