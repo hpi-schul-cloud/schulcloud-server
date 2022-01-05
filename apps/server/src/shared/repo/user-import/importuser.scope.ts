@@ -14,18 +14,21 @@ export class ImportUserScope extends Scope<ImportUser> {
 	}
 
 	bySchoolId(schoolId: string): ImportUserScope {
+		// TODO set school entity as param instead and here use it's id
 		// @ts-ignore
 		this.addQuery({ schoolId: new ObjectId(schoolId) });
 		return this;
 	}
 
 	byMatches(matches: MatchCreatorScope[]) {
-		const queries = matches.map((match) => {
-			if (match === MatchCreatorScope.MANUAL) return { 'match.matchedBy': 'admin' };
-			if (match === MatchCreatorScope.AUTO) return { 'match.matchedBy': 'auto' };
-			if (match === MatchCreatorScope.NONE) return { 'match.matchedBy': { $exists: false } };
-			throw Error(); // ToDo: right error message
-		});
+		const queries = matches
+			.map((match) => {
+				if (match === MatchCreatorScope.MANUAL) return { match_matchedBy: 'admin' };
+				if (match === MatchCreatorScope.AUTO) return { match_matchedBy: 'auto' };
+				if (match === MatchCreatorScope.NONE) return { match_matchedBy: { $exists: false } };
+				return null;
+			})
+			.filter((match) => match != null);
 		this.addQuery({ $or: queries });
 		return this;
 	}

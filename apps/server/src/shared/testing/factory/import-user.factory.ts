@@ -15,7 +15,6 @@ export const userFactory = BaseFactory.define<ImportUser, IImportUserProperties>
 		lastName: `Doe ${sequence}`,
 		email: `user-${sequence}@example.com`,
 		roleNames: [],
-		match: undefined,
 		flagged: false,
 	};
 });

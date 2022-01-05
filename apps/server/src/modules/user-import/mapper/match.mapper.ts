@@ -1,4 +1,4 @@
-import { MatchCreator, MatchCreatorScope, UserMatch } from '@shared/domain';
+import { MatchCreator, MatchCreatorScope, User } from '@shared/domain';
 import { MatchCreatorResponse, MatchFilterQuery, UserMatchResponse } from '../controller/dto';
 
 export class ImportUserMatchMapper {
@@ -9,20 +9,26 @@ export class ImportUserMatchMapper {
 		throw Error(); // ToDo: right error message
 	}
 
-	static mapToResponse(match: UserMatch): UserMatchResponse {
+	static mapToResponse(user: User, matchCreator: MatchCreator): UserMatchResponse {
+		const matchedBy = this.mapMatchCreatorToResponse(matchCreator);
 		const dto = new UserMatchResponse({
-			userId: match.user._id.toString(),
-			firstName: match.user.firstName,
-			lastName: match.user.lastName,
-			loginName: match.user.email,
-			matchedBy: this.mapMatchCreatorToResponse(match.matchedBy),
+			userId: user.id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			loginName: user.email,
+			matchedBy,
 		});
+
 		return dto;
 	}
 
-	static mapMatchCreatorToResponse(matchCreator: MatchCreator): MatchCreatorResponse | undefined {
-		if (matchCreator === MatchCreator.AUTO) return MatchCreatorResponse.AUTO;
-		if (matchCreator === MatchCreator.MANUAL) return MatchCreatorResponse.MANUAL;
-		return undefined;
+	static mapMatchCreatorToResponse(matchCreator: MatchCreator): MatchCreatorResponse {
+		switch (matchCreator) {
+			case MatchCreator.AUTO:
+				return MatchCreatorResponse.AUTO;
+			case MatchCreator.MANUAL:
+			default:
+				return MatchCreatorResponse.MANUAL;
+		}
 	}
 }

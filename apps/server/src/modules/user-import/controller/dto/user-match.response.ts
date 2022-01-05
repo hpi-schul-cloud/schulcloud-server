@@ -14,20 +14,20 @@ export class UserMatchResponse {
 
 	@IsMongoId()
 	@ApiProperty({ description: 'local user id' })
-	userId?: string;
+	userId: string;
 
 	@ApiProperty({ description: 'login name of local user' })
-	loginName?: string;
+	loginName: string;
 
 	@ApiProperty({ description: 'firstname of local user' })
-	firstName?: string;
+	firstName: string;
 
 	@ApiProperty({ description: 'lastname of local user' })
-	lastName?: string;
+	lastName: string;
 
 	@ApiProperty({
 		description: 'match type: admin (manual) or auto (set, when names match exactly for a single user',
 		enum: MatchCreatorResponse,
 	})
-	matchedBy?: MatchCreatorResponse;
+	matchedBy: MatchCreatorResponse;
 }

@@ -28,7 +28,7 @@ export class ImportUserFilterQuery {
 
 	@ApiPropertyOptional({ enum: MatchFilterQuery, isArray: true })
 	@IsOptional()
-	// @IsEnum(MatchFilterQuery)
+	@IsEnum(MatchFilterQuery)
 	match?: MatchFilterQuery[];
 
 	@ApiPropertyOptional()

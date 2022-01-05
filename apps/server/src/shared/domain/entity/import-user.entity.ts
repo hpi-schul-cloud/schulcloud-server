@@ -1,14 +1,5 @@
 /* istanbul ignore file */ // TODO remove when implementation exists
-import {
-	Embeddable,
-	Embedded,
-	Entity,
-	Enum,
-	IdentifiedReference,
-	ManyToOne,
-	Property,
-	Reference,
-} from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Reference, wrap } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 
@@ -29,25 +20,10 @@ export interface IImportUserProperties {
 	email: string; // TODO VO
 	roleNames?: RoleName[];
 	classNames?: string[];
-	match?: UserMatch;
+	user?: User;
+	matchedBy?: MatchCreator;
 	flagged?: boolean;
 }
-
-// class EMailVO {
-// 	_email: string;
-
-// 	set email(value: string) {
-// 		this._email = value.toLowerCase();
-// 	}
-
-// 	get email(): string {
-// 		return this._email;
-// 	}
-
-// 	constructor(value: string) {
-// 		this._email = value.toLowerCase();
-// 	}
-// }
 
 export enum MatchCreator {
 	AUTO = 'auto',
@@ -57,21 +33,6 @@ export enum RoleName {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
 	ADMIN = 'administrator',
-}
-
-@Embeddable()
-export class UserMatch extends BaseEntityWithTimestamps {
-	constructor(props: UserMatch) {
-		super();
-		this.user = props.user;
-		this.matchedBy = props.matchedBy;
-	}
-
-	@ManyToOne('User', { fieldName: 'userId' })
-	user: User;
-
-	@Enum({ fieldName: 'matchedBy' })
-	matchedBy: MatchCreator;
 }
 
 @Entity({ tableName: 'importusers' })
@@ -106,11 +67,30 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@Property()
 	classNames: string[] = [];
 
-	@Embedded({ entity: () => UserMatch, object: true })
-	match?: UserMatch;
+	/**
+	 * Update user-match together with matchedBy
+	 */
+	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
+	user?: IdentifiedReference<User>;
+
+	/**
+	 * References who set the user-match
+	 */
+	@Enum({ fieldName: 'match_matchedBy' })
+	matchedBy?: MatchCreator;
 
 	@Property()
 	flagged = false;
+
+	setMatch(user: User, matchedBy: MatchCreator) {
+		this.user = wrap(user).toReference();
+		this.matchedBy = matchedBy;
+	}
+
+	revokeMatch() {
+		delete this.user;
+		delete this.matchedBy;
+	}
 
 	constructor(props: IImportUserProperties) {
 		super();
@@ -123,7 +103,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 		this.email = props.email;
 		if (Array.isArray(props.roleNames) && props.roleNames.length > 0) this.roleNames.push(...props.roleNames);
 		if (Array.isArray(props.classNames) && props.classNames.length > 0) this.classNames.push(...props.classNames);
-		if (props.match) this.match = props.match;
+		if (props.user && props.matchedBy) this.setMatch(props.user, props.matchedBy);
 		if (props.flagged && props.flagged === true) this.flagged = true;
 	}
 }
