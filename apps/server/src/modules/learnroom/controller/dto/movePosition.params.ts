@@ -2,8 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
 
 /**
- * DTO for Updating a news document.
- * A PartialType is a halper which allows to extend an existing class by making all its properties optional.
+ * DTO for Updating the position of a Dashboard Element.
  */
 
 export class MoveElementPosition {
