@@ -56,21 +56,24 @@ export class DashboardModelMapper {
 		elementWithPosition: GridElementWithPosition,
 		dashboard: DashboardModelEntity
 	): Promise<DashboardGridElementModel> {
+		const existing = await this.findExistingGridElement(elementWithPosition);
+		if (existing) {
+			const updatedModel = this.updateExistingGridElement(existing, elementWithPosition, dashboard);
+			return updatedModel;
+		}
+		const createdModel = await this.createGridElement(elementWithPosition, dashboard);
+		return createdModel;
+	}
+
+	private async findExistingGridElement(
+		elementWithPosition: GridElementWithPosition
+	): Promise<DashboardGridElementModel | undefined> {
 		const { gridElement } = elementWithPosition;
 		if (gridElement.hasId()) {
 			const existing = await this.em.findOne(DashboardGridElementModel, gridElement.getId() as string);
-			if (existing) return this.updateExistingGridElement(existing, elementWithPosition, dashboard);
+			if (existing) return existing;
 		}
-		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
-		const elementModel = new DashboardGridElementModel({
-			id: gridElement.getId(),
-			xPos: elementWithPosition.pos.x,
-			yPos: elementWithPosition.pos.y,
-			references,
-			dashboard,
-		});
-
-		return elementModel;
+		return undefined;
 	}
 
 	private async updateExistingGridElement(
@@ -90,6 +93,23 @@ export class DashboardModelMapper {
 		elementModel.references.set(references);
 
 		elementModel.dashboard = wrap(dashboard).toReference();
+		return elementModel;
+	}
+
+	private async createGridElement(
+		elementWithPosition: GridElementWithPosition,
+		dashboard: DashboardModelEntity
+	): Promise<DashboardGridElementModel> {
+		const { gridElement } = elementWithPosition;
+		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
+		const elementModel = new DashboardGridElementModel({
+			id: gridElement.getId(),
+			xPos: elementWithPosition.pos.x,
+			yPos: elementWithPosition.pos.y,
+			references,
+			dashboard,
+		});
+
 		return elementModel;
 	}
 
