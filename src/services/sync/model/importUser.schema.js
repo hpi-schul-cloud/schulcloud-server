@@ -2,14 +2,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const userMatchSchema = new Schema(
-	{
-		userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true, sparse: true },
-		matchedBy: { type: String, enum: ['admin', 'auto'] },
-	},
-	{ timestamps: true }
-);
-
 const importUserSchema = new Schema(
 	{
 		schoolId: {
@@ -28,7 +20,11 @@ const importUserSchema = new Schema(
 		email: { type: String, required: true, lowercase: true },
 		roles: [{ type: String }],
 		classNames: [{ type: String }],
-		match: userMatchSchema,
+
+		// a match is an assigned local user
+		match_userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true, sparse: true },
+		match_matchedBy: { type: String, enum: ['admin', 'auto'] },
+
 		flagged: { type: Boolean, default: false, required: true },
 	},
 	{
