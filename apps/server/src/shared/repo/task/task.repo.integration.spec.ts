@@ -985,7 +985,45 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('when user is the creator', () => {
+		describe('when parent is "not" passed', () => {
+			it('should "not" find finished tasks', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ students: [] });
+				const task = taskFactory.finished(user).build({ course });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should "not" find finished tasks of creator', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course, finished: [user], creator: user });
+				await em.persistAndFlush([task]);
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+		});
+
+		describe('when task has no parent', () => {
 			it('should find finished draft tasks of creator', async () => {
 				const user = userFactory.build();
 				const task = taskFactory.finished(user).draft().build({ creator: user });
@@ -1149,25 +1187,6 @@ describe('TaskRepo', () => {
 				expect(result).toHaveLength(5);
 				expect(total).toEqual(15);
 			});
-		});
-
-		it('should "not" find tasks of "not" passed parents', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.build({ students: [] });
-			const task = taskFactory.finished(user).build({ course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			const [, total] = await repo.findAllFinishedByParentIds({
-				creatorId: user.id,
-				openCourseIds: [],
-				lessonIdsOfOpenCourses: [],
-				finishedCourseIds: [],
-				lessonIdsOfFinishedCourses: [],
-			});
-
-			expect(total).toEqual(0);
 		});
 
 		it('should sort result by newest dueDate', async () => {
