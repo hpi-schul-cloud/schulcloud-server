@@ -1,22 +1,29 @@
-import { FilterQuery } from '@mikro-orm/core';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IFindOptions, Counted, ICurrentUser, SortOrder, ImportUser, IImportUserScope } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope, School } from '@shared/domain';
 
-import { ImportUserRepo } from '@shared/repo';
+import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { UserImportPermissions } from '../constants';
+import { ImportUserAuthorizationService } from '../provider/import-user.authorization.service';
 
 @Injectable()
 export class UserImportUC {
-	constructor(private readonly importUserRepo: ImportUserRepo) {}
+	constructor(
+		private readonly importUserRepo: ImportUserRepo,
+		private readonly userRepo: UserRepo,
+		private readonly authorizationService: ImportUserAuthorizationService
+	) {}
 
 	async findAll(
-		currentUser: ICurrentUser,
+		userId: EntityId,
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		// ToDo: authorization
+		const user = await this.userRepo.findById(userId);
 
-		const { schoolId } = currentUser;
+		const permissions = [UserImportPermissions.VIEW_IMPORT_USER];
+		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
-		return this.importUserRepo.findImportUsers(schoolId, query, options);
+		const countedImportUsers = this.importUserRepo.findImportUsers(user.school, query, options);
+		return countedImportUsers;
 	}
 }

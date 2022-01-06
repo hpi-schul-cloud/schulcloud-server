@@ -25,7 +25,7 @@ const importUserSchema = new Schema(
 		match_userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true, sparse: true },
 		match_matchedBy: { type: String, enum: ['admin', 'auto'] },
 
-		flagged: { type: Boolean, default: false, required: true },
+		flagged: { type: Boolean },
 	},
 	{
 		timestamps: true,

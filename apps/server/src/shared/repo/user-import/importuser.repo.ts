@@ -2,7 +2,7 @@ import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { QueryOrderMap } from '@mikro-orm/core/enums';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser } from '@shared/domain';
+import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School } from '@shared/domain';
 import { ImportUserScope } from './importuser.scope';
 
 @Injectable()
@@ -13,16 +13,18 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	}
 
 	async findImportUsers(
-		schoolId: string,
+		school: School,
 		filters: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
-		scope.bySchoolId(schoolId);
+		scope.bySchool(school);
 		if (filters.firstName) scope.byFirstName(filters.firstName);
 		if (filters.lastName) scope.byLastName(filters.lastName);
 		if (filters.matches) scope.byMatches(filters.matches);
-		return this.findImportUsersAndCount(scope.query, options);
+		if (filters.flagged) scope.isFlagged(true);
+		const countedImportUsers = this.findImportUsersAndCount(scope.query, options);
+		return countedImportUsers;
 	}
 
 	private async findImportUsersAndCount(

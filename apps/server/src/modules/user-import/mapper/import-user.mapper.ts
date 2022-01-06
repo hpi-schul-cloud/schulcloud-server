@@ -13,6 +13,7 @@ export class ImportUserMapper {
 			lastName: importUser.lastName,
 			roleNames: importUser.roleNames.map((role) => RoleNameMapper.mapToResponse(role)),
 			classNames: importUser.classNames,
+			flagged: importUser.flagged,
 		});
 		if (importUser.user && importUser.matchedBy) {
 			dto.match = ImportUserMatchMapper.mapToResponse(importUser.user, importUser.matchedBy);

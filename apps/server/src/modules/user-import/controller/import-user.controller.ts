@@ -31,7 +31,7 @@ export class ImportUserController {
 			options.order = { [sortingQuery.sortBy]: sortingQuery.sortOrder || SortOrder.asc };
 		}
 		const [importUserList, count] = await this.userImportUc.findAll(
-			currentUser,
+			currentUser.userId,
 			ImportUserMapper.mapImportUserScopeToDomain(scope),
 			options
 		);

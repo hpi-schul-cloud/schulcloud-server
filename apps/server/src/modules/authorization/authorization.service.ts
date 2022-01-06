@@ -35,6 +35,8 @@ export class AuthorizationService {
 		targetId: EntityId,
 		permissions: string[]
 	): Promise<void> | never {
+		if (!Array.isArray(permissions) || permissions.length === 0)
+			throw new UnauthorizedException('missing at least one permission to be checked');
 		const entityPermissions = await this.getEntityPermissions(userId, targetModel, targetId);
 		const hasPermissions = permissions.every((p) => entityPermissions.includes(p));
 		if (!hasPermissions) {

@@ -1,5 +1,4 @@
-import { ObjectId } from 'mongodb';
-import { ImportUser, MatchCreatorScope } from '@shared/domain';
+import { ImportUser, MatchCreatorScope, School } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
@@ -13,10 +12,8 @@ export class ImportUserScope extends Scope<ImportUser> {
 		return this;
 	}
 
-	bySchoolId(schoolId: string): ImportUserScope {
-		// TODO set school entity as param instead and here use it's id
-		// @ts-ignore
-		this.addQuery({ schoolId: new ObjectId(schoolId) });
+	bySchool(school: School): ImportUserScope {
+		this.addQuery({ school: school._id });
 		return this;
 	}
 

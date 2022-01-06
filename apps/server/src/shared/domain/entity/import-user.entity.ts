@@ -79,7 +79,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@Enum({ fieldName: 'match_matchedBy' })
 	matchedBy?: MatchCreator;
 
-	@Property()
+	@Property({ type: Boolean })
 	flagged = false;
 
 	setMatch(user: User, matchedBy: MatchCreator) {
