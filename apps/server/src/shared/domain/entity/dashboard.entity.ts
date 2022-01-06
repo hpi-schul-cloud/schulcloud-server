@@ -279,7 +279,7 @@ export class DashboardEntity {
 	}
 
 	private getFirstOpenIndex(): number {
-		let i = 1;
+		let i = 0;
 		while (this.grid.get(i) !== undefined) {
 			i += 1;
 		}
