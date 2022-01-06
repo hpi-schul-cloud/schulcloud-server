@@ -22,7 +22,9 @@ describe('dashboard repo', () => {
 	});
 
 	it('should persist a plain dashboard', async () => {
-		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [], userId: new ObjectId().toString() });
+		const user = userFactory.build();
+		await em.persistAndFlush(user);
+		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [], userId: user.id });
 		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
@@ -33,7 +35,7 @@ describe('dashboard repo', () => {
 	it('should persist dashboard with gridElements', async () => {
 		const user = userFactory.build();
 		const course = courseFactory.build({ students: [user] });
-		await em.persistAndFlush([course]);
+		await em.persistAndFlush([course, user]);
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
@@ -81,6 +83,7 @@ describe('dashboard repo', () => {
 	it('should persist changes', async () => {
 		const user = userFactory.build();
 		const courses = courseFactory.buildList(2, { students: [user] });
+		await em.persistAndFlush([user, ...courses]);
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
@@ -92,7 +95,7 @@ describe('dashboard repo', () => {
 					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[1]),
 				},
 			],
-			userId: new ObjectId().toString(),
+			userId: user.id,
 		});
 		await repo.persistAndFlush(dashboard);
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
@@ -105,25 +108,26 @@ describe('dashboard repo', () => {
 	it('should remove orphaned gridelements', async () => {
 		const user = userFactory.build();
 		const courses = courseFactory.buildList(2, { students: [user] });
+		await em.persistAndFlush([user, ...courses]);
+		const elementId = new ObjectId().toString();
 		const dashboard = new DashboardEntity(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
-					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[0]),
+					gridElement: GridElement.FromPersistedReference(elementId, courses[0]),
 				},
 				{
 					pos: { x: 1, y: 4 },
 					gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), courses[1]),
 				},
 			],
-			userId: new ObjectId().toString(),
+			userId: user.id,
 		});
-		const element = dashboard.getElement({ x: 1, y: 3 });
 		await repo.persistAndFlush(dashboard);
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
 		await repo.persistAndFlush(dashboard);
 
-		const findOrphan = () => em.findOneOrFail(DashboardGridElementModel, element.getId());
+		const findOrphan = () => em.findOneOrFail(DashboardGridElementModel, elementId);
 
 		await expect(findOrphan).rejects.toThrow();
 	});
@@ -132,6 +136,7 @@ describe('dashboard repo', () => {
 		it('should persist dashboard with gridElements', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			await em.persistAndFlush([user, course]);
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
@@ -139,7 +144,7 @@ describe('dashboard repo', () => {
 						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), course),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.id,
 			});
 			await repo.persistAndFlush(dashboard);
 			em.clear();
@@ -154,6 +159,7 @@ describe('dashboard repo', () => {
 		it('should be idempotent', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			await em.persistAndFlush([user, course]);
 			const dashboard = new DashboardEntity(new ObjectId().toString(), {
 				grid: [
 					{
@@ -161,7 +167,7 @@ describe('dashboard repo', () => {
 						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), course),
 					},
 				],
-				userId: new ObjectId().toString(),
+				userId: user.id,
 			});
 			await repo.persistAndFlush(dashboard);
 			await repo.persistAndFlush(dashboard);
@@ -195,7 +201,9 @@ describe('dashboard repo', () => {
 	describe('getUsersDashboard', () => {
 		describe('when user has no dashboard yet', () => {
 			it('generates an empty dashboard ', async () => {
-				const result = await repo.getUsersDashboard(new ObjectId().toString());
+				const user = userFactory.build();
+				await em.persistAndFlush(user);
+				const result = await repo.getUsersDashboard(user.id);
 				expect(result instanceof DashboardEntity).toEqual(true);
 				expect(result.getGrid().length).toEqual(0);
 			});
@@ -222,11 +230,11 @@ describe('dashboard repo', () => {
 			});
 
 			it('always returns different dashboard for different users', async () => {
-				const firstUserId = new ObjectId().toString();
-				const secondUserId = new ObjectId().toString();
+				const users = userFactory.buildList(2);
+				await em.persistAndFlush(users);
 
-				const firstDashboard = await repo.getUsersDashboard(firstUserId);
-				const secondDashboard = await repo.getUsersDashboard(secondUserId);
+				const firstDashboard = await repo.getUsersDashboard(users[0].id);
+				const secondDashboard = await repo.getUsersDashboard(users[1].id);
 
 				expect(firstDashboard.id).not.toEqual(secondDashboard.id);
 			});

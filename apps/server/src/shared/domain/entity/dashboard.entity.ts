@@ -7,7 +7,7 @@ const defaultColumns = 4;
 export interface IGridElement {
 	hasId(): boolean;
 
-	getId: () => EntityId;
+	getId: () => EntityId | undefined;
 
 	getContent: () => GridElementContent;
 
@@ -26,7 +26,7 @@ export interface IGridElement {
 
 export type GridElementContent = {
 	referencedId?: string;
-	title: string;
+	title?: string;
 	shortTitle: string;
 	displayColor: string;
 	group?: LearnroomMetadata[];
@@ -34,9 +34,9 @@ export type GridElementContent = {
 };
 
 export class GridElement implements IGridElement {
-	id!: EntityId;
+	id?: EntityId;
 
-	title!: string;
+	title?: string;
 
 	private sortReferences = (a: ILearnroom, b: ILearnroom) => {
 		const titleA = a.getMetadata().title;
@@ -60,7 +60,7 @@ export class GridElement implements IGridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromPersistedGroup(id: EntityId, title: string, group: ILearnroom[]): GridElement {
+	static FromPersistedGroup(id: EntityId, title: string | undefined, group: ILearnroom[]): GridElement {
 		return new GridElement({ id, title, references: group });
 	}
 
@@ -78,7 +78,7 @@ export class GridElement implements IGridElement {
 		return !!this.id;
 	}
 
-	getId(): EntityId {
+	getId(): EntityId | undefined {
 		return this.id;
 	}
 
