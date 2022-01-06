@@ -1010,6 +1010,26 @@ describe('TaskRepo', () => {
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course, finished: [user], creator: user });
 				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should "not" find finished tasks of creator with lesson', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ course, lesson, finished: [user], creator: user });
+				await em.persistAndFlush([task]);
+				em.clear();
 
 				const [, total] = await repo.findAllFinishedByParentIds({
 					creatorId: user.id,
