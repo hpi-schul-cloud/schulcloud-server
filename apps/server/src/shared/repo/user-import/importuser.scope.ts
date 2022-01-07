@@ -1,22 +1,33 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ImportUser, MatchCreatorScope, School } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
+	/**
+	 * Regex to escape strings before use as regex against database.
+	 * Used to remove all non-language characters except numbers, whitespace or minus.
+	 */
+	private REGEX_WHITELIST = /[^\-\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]/gi;
+
 	bySchool(school: School): ImportUserScope {
 		this.addQuery({ school: school._id });
 		return this;
 	}
 
 	byFirstName(firstName: string): ImportUserScope {
-		// TODO add support to ignore special chars
+		const escapedFirstName = firstName.replace(this.REGEX_WHITELIST, '');
+		// TODO make db agnostic
 		// @ts-ignore
-		this.addQuery({ firstName: { $regex: firstName, $options: 'i' } });
+		if (escapedFirstName.length) this.addQuery({ firstName: { $regex: escapedFirstName, $options: 'i' } });
 		return this;
 	}
 
 	byLastName(lastName: string): ImportUserScope {
+		// TODO filter does not find café when searching with cafe
+		const escapedLastName = lastName.replace(this.REGEX_WHITELIST, '');
+		// TODO make db agnostic
 		// @ts-ignore
-		this.addQuery({ lastName: { $regex: lastName, $options: 'i' } });
+		if (escapedLastName.length) this.addQuery({ lastName: { $regex: escapedLastName, $options: 'i' } });
 		return this;
 	}
 
