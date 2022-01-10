@@ -21,12 +21,14 @@ export class ImportUserMapper {
 		return dto;
 	}
 
-	static mapImportUserScopeToDomain(query: ImportUserFilterQuery): IImportUserScope {
+	static mapImportUserFilterQueryToDomain(query: ImportUserFilterQuery): IImportUserScope {
 		const dto: IImportUserScope = {};
 		if (query.firstName) dto.firstName = query.firstName;
 		if (query.lastName) dto.lastName = query.lastName;
 		if (query.loginName) dto.loginName = query.loginName;
-		// if(query.roleNames)
+		if (query.role) {
+			dto.role = RoleNameMapper.mapToDomain(query.role);
+		}
 		if (query.match) {
 			if (!Array.isArray(query.match)) query.match = [query.match];
 			dto.matches = query.match.map((match) => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match));

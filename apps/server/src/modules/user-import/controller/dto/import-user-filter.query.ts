@@ -6,7 +6,7 @@ export enum MatchFilterQuery {
 	MANUAL = 'admin',
 	NONE = 'none',
 }
-export enum RoleNameFilerQuery {
+export enum RoleNameFilterQuery {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
 	ADMIN = 'admin',
@@ -42,7 +42,7 @@ export class ImportUserFilterQuery {
 	flagged?: boolean;
 
 	/**
-	 * filter like %classes%
+	 * filter available classes for contains
 	 */
 	@IsOptional()
 	@IsString()
@@ -51,7 +51,7 @@ export class ImportUserFilterQuery {
 	classes?: string;
 
 	@IsOptional()
-	@IsEnum(RoleNameFilerQuery)
-	@ApiPropertyOptional({ type: String })
-	role?: RoleNameFilerQuery;
+	@IsEnum(RoleNameFilterQuery)
+	@ApiPropertyOptional({ enum: RoleNameFilterQuery })
+	role?: RoleNameFilterQuery;
 }

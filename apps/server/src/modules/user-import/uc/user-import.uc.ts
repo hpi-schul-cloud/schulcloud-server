@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope, School } from '@shared/domain';
+import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope } from '@shared/domain';
 
 import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';

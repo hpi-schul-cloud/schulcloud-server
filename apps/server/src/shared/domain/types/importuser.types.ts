@@ -1,3 +1,5 @@
+import type { RoleName } from '../entity/import-user.entity';
+
 export enum MatchCreatorScope {
 	AUTO = 'auto',
 	MANUAL = 'admin',
@@ -10,4 +12,5 @@ export interface IImportUserScope {
 	loginName?: string;
 	matches?: MatchCreatorScope[];
 	flagged?: boolean;
+	role?: RoleName;
 }

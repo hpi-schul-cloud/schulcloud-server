@@ -22,6 +22,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		if (filters.firstName) scope.byFirstName(filters.firstName);
 		if (filters.lastName) scope.byLastName(filters.lastName);
 		if (filters.loginName) scope.byLoginName(filters.loginName);
+		if (filters.role) scope.byRole(filters.role);
 		if (filters.matches) scope.byMatches(filters.matches);
 		if (filters.flagged) scope.isFlagged(true);
 		const countedImportUsers = this.findImportUsersAndCount(scope.query, options);

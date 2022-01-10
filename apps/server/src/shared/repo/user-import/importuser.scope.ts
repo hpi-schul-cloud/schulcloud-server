@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { ImportUser, MatchCreatorScope, School } from '@shared/domain';
+import { ImportUser, MatchCreatorScope, RoleName, School } from '@shared/domain';
 import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
@@ -56,6 +56,23 @@ export class ImportUserScope extends Scope<ImportUser> {
 					$options: 'i',
 				},
 			});
+		return this;
+	}
+
+	byRole(roleName: RoleName): ImportUserScope {
+		switch (roleName) {
+			case RoleName.ADMIN:
+				this.addQuery({ roleNames: { $in: ['admin'] } });
+				break;
+			case RoleName.STUDENT:
+				this.addQuery({ roleNames: { $in: ['student'] } });
+				break;
+			case RoleName.TEACHER:
+				this.addQuery({ roleNames: { $in: ['teacher'] } });
+				break;
+			default:
+				throw new Error('unexpected role name');
+		}
 		return this;
 	}
 
