@@ -10,7 +10,8 @@ export class ImportUserScope extends Scope<ImportUser> {
 	private REGEX_WHITELIST = /[^\-\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]/gi;
 
 	bySchool(school: School): ImportUserScope {
-		this.addQuery({ school: school._id });
+		const schoolId = school._id;
+		this.addQuery({ school: schoolId });
 		return this;
 	}
 
@@ -104,7 +105,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 	}
 
 	isFlagged(flagged = true) {
-		this.addQuery({ flagged });
+		if (flagged === true) this.addQuery({ flagged: true });
 		return this;
 	}
 }
