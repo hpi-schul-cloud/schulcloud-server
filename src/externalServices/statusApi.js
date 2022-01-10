@@ -1,7 +1,8 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Api = require('./apiHelper');
 
-const baseURL = Configuration.get('ALERT_STATUS_URL').join('/api/v1');
+const statusURL = Configuration.get('ALERT_STATUS_URL');
+const baseURL = statusURL.join('/api/v1');
 
 const statusApi = () => {
 	const api = new Api({
