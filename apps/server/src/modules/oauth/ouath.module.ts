@@ -1,9 +1,7 @@
-import { Module } from "@nestjs/common";
-import { OauthController } from "./controller/oauth.controller";
+import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { OauthUc } from "./uc/oauth.uc";
-
-
+import { OauthController } from './controller/oauth.controller';
+import { OauthUc } from './uc/oauth.uc';
 
 @Module({
 	imports: [LoggerModule],
