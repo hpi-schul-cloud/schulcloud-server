@@ -42,16 +42,22 @@ export class TaskRepo {
 		allForFinishedCoursesAndLessons.byDraft(false);
 
 		// must find also closed without course or lesson as parent
-		const closedForCreator = new TaskScope();
-		closedForCreator.byFinished(parentIds.creatorId, true);
-		closedForCreator.byCreatorId(parentIds.creatorId);
+		const closedWithoutParentForCreator = new TaskScope();
+		closedWithoutParentForCreator.byFinished(parentIds.creatorId, true);
+		closedWithoutParentForCreator.byOnlyCreatorId(parentIds.creatorId);
+
+		const closedDraftsForCreator = new TaskScope();
+		closedDraftsForCreator.addQuery(parentsOpen.query);
+		closedDraftsForCreator.byFinished(parentIds.creatorId, true);
+		closedDraftsForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForFinishedCoursesAndLessonsForCreator = new TaskScope();
 		allForFinishedCoursesAndLessonsForCreator.addQuery(parentsFinished.query);
 		allForFinishedCoursesAndLessonsForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForCreator = new TaskScope('$or');
-		allForCreator.addQuery(closedForCreator.query);
+		allForCreator.addQuery(closedWithoutParentForCreator.query);
+		allForCreator.addQuery(closedDraftsForCreator.query);
 		allForCreator.addQuery(allForFinishedCoursesAndLessonsForCreator.query);
 
 		scope.addQuery(closedForOpenCoursesAndLessons.query);

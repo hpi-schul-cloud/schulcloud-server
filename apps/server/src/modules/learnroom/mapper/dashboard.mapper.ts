@@ -1,32 +1,38 @@
-import { DashboardEntity } from '@shared/domain';
-import { DashboardResponse, DashboardGridElementResponse } from '../controller/dto';
+import { DashboardEntity, GridElementWithPosition, LearnroomMetadata } from '@shared/domain';
+import { DashboardResponse, DashboardGridElementResponse, DashboardGridSubElementResponse } from '../controller/dto';
 
 export class DashboardMapper {
 	static mapToResponse(dashboard: DashboardEntity): DashboardResponse {
-		const dto = new DashboardResponse();
-
-		dto.id = dashboard.id;
-
-		dto.gridElements = dashboard.getGrid().map((elementWithPosition) => {
-			const elementDTO = new DashboardGridElementResponse();
-
-			const data = elementWithPosition.gridElement.getContent();
-			elementDTO.id = data.referencedId;
-			elementDTO.title = data.title;
-			elementDTO.shortTitle = data.shortTitle;
-			elementDTO.displayColor = data.displayColor;
-			if (data.group) {
-				elementDTO.groupId = data.groupId;
-				elementDTO.groupElements = data.group;
-			}
-
-			const { pos } = elementWithPosition;
-			elementDTO.xPosition = pos.x;
-			elementDTO.yPosition = pos.y;
-
-			return elementDTO;
+		const dto = new DashboardResponse({
+			id: dashboard.getId(),
+			gridElements: dashboard
+				.getGrid()
+				.map((elementWithPosition) => DashboardMapper.mapGridElement(elementWithPosition)),
 		});
-
 		return dto;
+	}
+
+	private static mapGridElement(data: GridElementWithPosition): DashboardGridElementResponse {
+		const elementData = data.gridElement.getContent();
+		const position = data.pos;
+		const dto = new DashboardGridElementResponse({
+			title: elementData.title,
+			shortTitle: elementData.shortTitle,
+			displayColor: elementData.displayColor,
+			xPosition: position.x,
+			yPosition: position.y,
+		});
+		if (elementData.referencedId) {
+			dto.id = elementData.referencedId;
+		}
+		if (elementData.group && elementData.groupId) {
+			dto.groupId = elementData.groupId;
+			dto.groupElements = elementData.group.map((groupMetadata) => DashboardMapper.mapLearnroom(groupMetadata));
+		}
+		return dto;
+	}
+
+	private static mapLearnroom(metadata: LearnroomMetadata): DashboardGridSubElementResponse {
+		return new DashboardGridSubElementResponse(metadata);
 	}
 }
