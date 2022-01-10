@@ -29,6 +29,7 @@ export class ImportUserMapper {
 		if (query.role) {
 			dto.role = RoleNameMapper.mapToDomain(query.role);
 		}
+		if (query.classes) dto.classes = query.classes;
 		if (query.match) {
 			if (!Array.isArray(query.match)) query.match = [query.match];
 			dto.matches = query.match.map((match) => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match));

@@ -76,6 +76,20 @@ export class ImportUserScope extends Scope<ImportUser> {
 		return this;
 	}
 
+	byClasses(classes: string): ImportUserScope {
+		const escapedClasses = classes.replace(this.REGEX_WHITELIST, '');
+		// TODO make db agnostic
+		if (escapedClasses.length)
+			this.addQuery({
+				classNames: {
+					// @ts-ignore
+					$regex: escapedClasses,
+					$options: 'i',
+				},
+			});
+		return this;
+	}
+
 	byMatches(matches: MatchCreatorScope[]) {
 		const queries = matches
 			.map((match) => {

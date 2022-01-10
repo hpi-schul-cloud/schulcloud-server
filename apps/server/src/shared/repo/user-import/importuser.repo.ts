@@ -19,10 +19,12 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	): Promise<Counted<ImportUser[]>> {
 		const scope = new ImportUserScope();
 		scope.bySchool(school);
+		// TODO is notEmptyString instead of truthy values if following if's to have 0 as valid string...
 		if (filters.firstName) scope.byFirstName(filters.firstName);
 		if (filters.lastName) scope.byLastName(filters.lastName);
 		if (filters.loginName) scope.byLoginName(filters.loginName);
 		if (filters.role) scope.byRole(filters.role);
+		if (filters.classes) scope.byClasses(filters.classes);
 		if (filters.matches) scope.byMatches(filters.matches);
 		if (filters.flagged) scope.isFlagged(true);
 		const countedImportUsers = this.findImportUsersAndCount(scope.query, options);

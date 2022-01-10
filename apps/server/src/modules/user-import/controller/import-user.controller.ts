@@ -30,11 +30,8 @@ export class ImportUserController {
 		if (sortingQuery.sortBy) {
 			options.order = { [sortingQuery.sortBy]: sortingQuery.sortOrder || SortOrder.asc };
 		}
-		const [importUserList, count] = await this.userImportUc.findAll(
-			currentUser.userId,
-			ImportUserMapper.mapImportUserFilterQueryToDomain(scope),
-			options
-		);
+		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
+		const [importUserList, count] = await this.userImportUc.findAll(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
 		const response = new ImportUserListResponse(dtoList, count, skip, limit);

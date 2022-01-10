@@ -13,4 +13,5 @@ export interface IImportUserScope {
 	matches?: MatchCreatorScope[];
 	flagged?: boolean;
 	role?: RoleName;
+	classes?: string;
 }
