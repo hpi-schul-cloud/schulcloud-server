@@ -8,7 +8,7 @@ export class ImportUserMapper {
 	static mapToResponse(importUser: ImportUser): ImportUserResponse {
 		const dto = new ImportUserResponse({
 			importUserId: importUser.id,
-			loginName: importUser.email, // ToDo: Check
+			loginName: importUser.loginName || '',
 			firstName: importUser.firstName,
 			lastName: importUser.lastName,
 			roleNames: importUser.roleNames.map((role) => RoleNameMapper.mapToResponse(role)),
