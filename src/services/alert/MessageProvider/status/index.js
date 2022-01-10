@@ -54,7 +54,7 @@ function compare(a, b) {
 
 module.exports = {
 	async getData(instance) {
-		if (Configuration.has('ALERT_STATUS_API_URL') && Configuration.has('ALERT_STATUS_URL')) {
+		if (Configuration.has('ALERT_STATUS_URL')) {
 			try {
 				const rawData = await statusApi.getIncidents();
 				const instanceSpecific = [];
@@ -87,7 +87,7 @@ module.exports = {
 		} else {
 			/* eslint-disable-next-line */
 			logger.error(
-				'Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!'
+				'Alert-MessageProvider: status: ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!'
 			);
 			return null;
 		}
