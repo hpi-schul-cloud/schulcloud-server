@@ -7,6 +7,7 @@ export enum MatchCreatorScope {
 export interface IImportUserScope {
 	firstName?: string;
 	lastName?: string;
+	loginName?: string;
 	matches?: MatchCreatorScope[];
 	flagged?: boolean;
 }

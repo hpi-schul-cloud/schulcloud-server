@@ -46,14 +46,17 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@Property()
 	ldapDn: string;
 
-	get loginName(): string | undefined {
+	/**
+	 * extracts the login name out of the dn which has the login name in 'uid=LOGINNAME,[...]
+	 * */
+	get loginName(): string | null {
 		const PATTERN_LOGIN_FROM_DN = /^uid=(.+?),/i; // extract uid from dn
 		const matches = this.ldapDn.match(PATTERN_LOGIN_FROM_DN);
 		if (Array.isArray(matches) && matches.length >= 2) {
-			const loginName = matches[1];
+			const loginName = matches[1]; // 0: full match, 1: first group match
 			return loginName;
 		}
-		return undefined;
+		return null;
 	}
 
 	@Property()

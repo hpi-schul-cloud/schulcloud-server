@@ -17,8 +17,14 @@ export class ImportUserScope extends Scope<ImportUser> {
 	byFirstName(firstName: string): ImportUserScope {
 		const escapedFirstName = firstName.replace(this.REGEX_WHITELIST, '');
 		// TODO make db agnostic
-		// @ts-ignore
-		if (escapedFirstName.length) this.addQuery({ firstName: { $regex: escapedFirstName, $options: 'i' } });
+		if (escapedFirstName.length)
+			this.addQuery({
+				firstName: {
+					// @ts-ignore
+					$regex: escapedFirstName,
+					$options: 'i',
+				},
+			});
 		return this;
 	}
 
@@ -26,8 +32,30 @@ export class ImportUserScope extends Scope<ImportUser> {
 		// TODO filter does not find café when searching with cafe
 		const escapedLastName = lastName.replace(this.REGEX_WHITELIST, '');
 		// TODO make db agnostic
-		// @ts-ignore
-		if (escapedLastName.length) this.addQuery({ lastName: { $regex: escapedLastName, $options: 'i' } });
+		if (escapedLastName.length)
+			this.addQuery({
+				lastName: {
+					// @ts-ignore
+					$regex: escapedLastName,
+					$options: 'i',
+				},
+			});
+		return this;
+	}
+
+	/** filters the login name case insensitive for contains which is part of the dn */
+	byLoginName(loginName: string): ImportUserScope {
+		// TODO filter does not find café when searching with cafe
+		const escapedLoginName = loginName.replace(this.REGEX_WHITELIST, '');
+		// TODO make db agnostic
+		if (escapedLoginName.length)
+			this.addQuery({
+				ldapDn: {
+					// @ts-ignore
+					$regex: `^uid=\\w*${escapedLoginName}\\w*,`,
+					$options: 'i',
+				},
+			});
 		return this;
 	}
 
