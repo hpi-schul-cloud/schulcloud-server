@@ -10,7 +10,7 @@ const StatusAdapter = require('./adapter/status');
 
 const cache = new Cache(1);
 // add Message Provider here
-cache.addMessageProvider(new StatusAdapter(), Configuration.get('FEATURE_ALERTS_STATUS_ENABLED'));
+cache.addMessageProvider(new StatusAdapter(), Configuration.has('ALERT_STATUS_URL'));
 
 /**
  * Service to get an array of alert messages from added Message Providers (e.g: status.hpi-schul-cloud.de)

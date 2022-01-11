@@ -54,41 +54,33 @@ function compare(a, b) {
 
 module.exports = {
 	async getData(instance) {
-		if (Configuration.has('ALERT_STATUS_API_URL') && Configuration.has('ALERT_STATUS_URL')) {
-			try {
-				const rawData = await statusApi.getIncidents();
-				const instanceSpecific = [];
-				const noneSpecific = [];
+		try {
+			const rawData = await statusApi.getIncidents();
+			const instanceSpecific = [];
+			const noneSpecific = [];
 
-				const promises = rawData.data.map(async (element) => {
-					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
-						// only mind messages for own instance (including none instance specific messages)
-						const isinstance = await getInstance(instance, element.component_id);
-						if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
-							instanceSpecific.push(element);
-						} else if (isinstance !== importance.INGORE) {
-							noneSpecific.push(element);
-						}
+			const promises = rawData.data.map(async (element) => {
+				if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
+					// only mind messages for own instance (including none instance specific messages)
+					const isinstance = await getInstance(instance, element.component_id);
+					if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
+						instanceSpecific.push(element);
+					} else if (isinstance !== importance.INGORE) {
+						noneSpecific.push(element);
 					}
-				});
+				}
+			});
 
-				await Promise.all(promises);
+			await Promise.all(promises);
 
-				// do some sorting
-				instanceSpecific.sort(compare);
-				noneSpecific.sort(compare);
+			// do some sorting
+			instanceSpecific.sort(compare);
+			noneSpecific.sort(compare);
 
-				return instanceSpecific.concat(noneSpecific);
-			} catch (err) {
-				// return null on error
-				logger.error(err);
-				return null;
-			}
-		} else {
-			/* eslint-disable-next-line */
-			logger.error(
-				'Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!'
-			);
+			return instanceSpecific.concat(noneSpecific);
+		} catch (err) {
+			// return null on error
+			logger.error(err);
 			return null;
 		}
 	},

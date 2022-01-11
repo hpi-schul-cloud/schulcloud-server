@@ -106,9 +106,7 @@ data:
 {% else %}
   ADMIN_TOGGLE_STUDENT_VISIBILITY: "enabled"
 {% endif %}
-  FEATURE_ALERTS_STATUS_ENABLED: "{{ FEATURE_ALERTS_ENABLED|default("false") }}"
-  ALERT_STATUS_URL: "{{ ALERT_STATUS_URL|default("https://status.hpi-schul-cloud.de", true) }}"
-  ALERT_STATUS_API_URL: "{{ ALERT_STATUS_URL|default("https://status.hpi-schul-cloud.de", true) }}/api/v1"
+  ALERT_STATUS_URL: "{{ ALERT_STATUS_URL|default("https://status.dbildungscloud.de", true) }}"
   FEATURE_MORGAN_LOG_ENABLED: "false"
   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: "{{ FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED|default("false", true) }}"
   FEATURE_S3_BUCKET_CORS: "{{ FEATURE_S3_BUCKET_CORS|default("false", true) }}"
