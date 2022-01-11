@@ -8,6 +8,7 @@ import axios, { AxiosResponse } from 'axios';
 import { env } from 'process';
 import jwtDecode from 'jwt-decode';
 import { OauthUc } from '../uc/oauth.uc';
+import { AuthorizationCodeQuery } from './dto/authorization-code.query';
 
 @ApiTags('Oauth')
 @Controller('oauth')
@@ -15,8 +16,7 @@ export class OauthController {
 	constructor(private readonly oauthUc: OauthUc) {}
 
 	@Get()
-	getAuthorizationCode(@Query() query, @Res() res) {
-		if (!query.hasOwnProperty('code')) return 'no code property found.';
+	getAuthorizationCode(@Query() query: AuthorizationCodeQuery, @Res() res): unknown {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		console.log('#################### Code #################');
 		console.log(query.code);
@@ -25,6 +25,7 @@ export class OauthController {
 		return res.redirect('https://google.de');
 	}
 
+	// @Get('token')
 	async requestToken(code: string) {
 		const payload = {
 			url: 'http://iserv.n21.dbildungscloud.de/iserv/auth/public/token',
