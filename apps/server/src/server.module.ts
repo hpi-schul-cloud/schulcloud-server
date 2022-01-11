@@ -15,6 +15,7 @@ import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 import { ImportUserModule } from './modules/user-import/user-import.module';
+import { OauthModule } from './modules/oauth';
 
 @Module({
 	imports: [
@@ -24,6 +25,7 @@ import { ImportUserModule } from './modules/user-import/user-import.module';
 		UserModule,
 		ImportUserModule,
 		LearnroomModule,
+		OauthModule,
 		MailModule.forRoot({
 			uri: Configuration.get('RABBITMQ_URI') as string,
 			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
