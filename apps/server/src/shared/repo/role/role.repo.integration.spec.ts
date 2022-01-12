@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { roleFactory } from '@shared/testing';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -27,7 +28,7 @@ describe('role repo', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
 		expect(typeof repo.findByName).toEqual('function');
-		expect(typeof repo.resolvePermissionsFromSubRolesById).toEqual('function');
+		expect(typeof repo.resolvePermissionsByRoles).toEqual('function');
 	});
 
 	describe('entity', () => {
@@ -122,50 +123,60 @@ describe('role repo', () => {
 		});
 	});
 
-	describe('resolvePermissionsFromSubRolesById', () => {
+	describe('resolvePermissionsByRoles', () => {
 		afterEach(async () => {
 			await em.nativeDelete(Role, {});
 		});
 
-		it('should return right keys', async () => {
-			const idA = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
+		it('should return permissions for one role', async () => {
+			const role = roleFactory.build({ permissions: ['a'] });
 
-			await em.persistAndFlush([roleA]);
-			const result = await repo.resolvePermissionsFromSubRolesById(idA);
-			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
-			);
+			await em.persistAndFlush([role]);
+
+			em.clear();
+
+			const result = await repo.resolvePermissionsByRoles([role]);
+
+			expect(result).toEqual(['a']);
 		});
 
-		it('should return one role that matched by name', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-			const roleB = em.create(Role, { id: idB });
+		it('should return permissions for many roles', async () => {
+			const roleA = roleFactory.build({ permissions: ['a'] });
+			const roleB = roleFactory.build({ permissions: ['b'] });
 
 			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.resolvePermissionsFromSubRolesById(idA);
-			expect(result).toEqual(roleA);
+
+			em.clear();
+
+			const result = await repo.resolvePermissionsByRoles([roleA, roleB]);
+
+			expect(result).toEqual(['a', 'b']);
 		});
 
-		it('should throw an error if roles by name doesnt exist', async () => {
-			const idA = new ObjectId().toHexString();
+		it('should return unique permissions', async () => {
+			const roleA = roleFactory.build({ permissions: ['a', 'b'] });
+			const roleB = roleFactory.build({ permissions: ['b', 'c'] });
 
-			await expect(repo.resolvePermissionsFromSubRolesById(idA)).rejects.toThrow(NotFoundError);
+			await em.persistAndFlush([roleA, roleB]);
+
+			em.clear();
+
+			const result = await repo.resolvePermissionsByRoles([roleA, roleB]);
+
+			expect(result).toEqual(['a', 'b', 'c']);
 		});
 
-		it('should resolve permissions of existing subroles', async () => {
-			const roleD1 = em.create(Role, { permissions: ['D'] });
-			const roleC1 = em.create(Role, { permissions: ['C', 'C1'], roles: [roleD1] });
-			const roleC2 = em.create(Role, { permissions: ['C', 'C2'] });
-			const roleB = em.create(Role, { permissions: ['B', 'C'], roles: [roleC1, roleC2] });
-			const roleA = em.create(Role, { permissions: ['A', 'B'], roles: [roleB] });
+		it('should return permissions for sub role', async () => {
+			const roleA = roleFactory.build({ permissions: ['a'] });
+			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleA] });
 
-			await em.persistAndFlush([roleA, roleB, roleC1, roleC2, roleD1]);
+			await em.persistAndFlush([roleB]);
 
-			const result = await repo.resolvePermissionsFromSubRolesById(roleA.id);
-			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
+			em.clear();
+
+			const result = await repo.resolvePermissionsByRoles([roleB]);
+
+			expect(result.sort()).toEqual(['a', 'b'].sort());
 		});
 	});
 });

@@ -15,22 +15,29 @@ export class RoleRepo {
 
 	async findById(id: EntityId): Promise<Role> {
 		const role = await this.em.findOneOrFail(Role, { id }, { cache: this.cache });
+
+		await this.em.populate(role, ['roles']);
+
 		return role;
 	}
 
-	async resolvePermissionsFromSubRolesById(id: EntityId): Promise<Role> {
-		const role = await this.findById(id);
-		let { permissions } = role;
+	async resolvePermissionsByRoles(inputRoles: Role[]): Promise<string[]> {
+		let permissions: string[] = [];
 
-		for (let i = 0; i < role.roles.length; i += 1) {
-			// eslint-disable-next-line no-await-in-loop
-			const resolvedSubRole = await this.resolvePermissionsFromSubRolesById(role.roles[i].id);
-			permissions = [...permissions, ...resolvedSubRole.permissions];
+		for (let i = 0; i < inputRoles.length; i += 1) {
+			const role = inputRoles[i];
+			const subRoles = role.roles;
+			permissions = [...permissions, ...role.permissions];
+
+			if (subRoles.length > 0) {
+				// eslint-disable-next-line no-await-in-loop
+				const subPermissions = await this.resolvePermissionsByRoles(subRoles.getItems());
+				permissions = [...permissions, ...subPermissions];
+			}
 		}
 
-		const uniquePermissions = [...new Set(permissions)];
-		role.permissions = uniquePermissions;
+		permissions = [...new Set(permissions)];
 
-		return role;
+		return permissions;
 	}
 }
