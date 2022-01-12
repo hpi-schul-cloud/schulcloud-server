@@ -265,24 +265,10 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
-		"FEATURE_ALERTS_STATUS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, user will see messages/incidents from e.g status.dbildungscloud."
-		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"default": "https://status.dbildungscloud.de",
+			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
-		},
-		"ALERT_STATUS_API_URL": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"default": "https://status.dbildungscloud.de/api/v1",
-			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
 			"type": "string",

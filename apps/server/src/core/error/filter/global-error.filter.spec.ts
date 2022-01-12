@@ -95,8 +95,8 @@ describe('GlobalErrorFilter', () => {
 			expect(result).toStrictEqual(expected);
 		});
 
-		it('should not respond with messages of unknown (technical) errors', () => {
-			const errorMsg = 'Unknown error msg';
+		it('should not publish (error details) for default errors with custom message', () => {
+			const errorMsg = 'technical details message';
 			const unknownError = new Error(errorMsg);
 			const result: ErrorResponse = errorFilter.createErrorResponse(unknownError);
 			const expected: ErrorResponse = new ErrorResponse(
@@ -106,9 +106,11 @@ describe('GlobalErrorFilter', () => {
 				HttpStatus.INTERNAL_SERVER_ERROR
 			);
 			expect(result).toStrictEqual(expected);
+			expect(result.message).toEqual('Internal Server Error');
+			expect(result.message).not.toEqual(errorMsg);
 		});
 
-		it('should not respond with messages of default javascript (technical) errors without message', () => {
+		it('should not publish (error details) for default errors with default message', () => {
 			const unknownError = new Error();
 			const result: ErrorResponse = errorFilter.createErrorResponse(unknownError);
 			const expected: ErrorResponse = new ErrorResponse(
@@ -118,6 +120,7 @@ describe('GlobalErrorFilter', () => {
 				HttpStatus.INTERNAL_SERVER_ERROR
 			);
 			expect(result).toStrictEqual(expected);
+			expect(result.message).toEqual('Internal Server Error');
 		});
 
 		it('should process error response correctly in case of processing failure', () => {
