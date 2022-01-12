@@ -30,17 +30,14 @@ const getFederalStateFromSchool = async (systemId) => {
 };
 
 const getFederalStates = async (federalStates) =>
-	federalStateModel
-		.find({ abbreviation: { $in: federalStates } })
-		.select('_id')
-		.lean()
-		.exec();
+	federalStateModel.findOne({ abbreviation: federalStates }).select('_id').lean().exec();
 
 module.exports = {
 	up: async function up() {
 		await connect();
 
-		const [{ _id: brandenburg }, { _id: lowersaxony }] = await getFederalStates(['BB', 'NI']);
+		const { _id: brandenburg } = await getFederalStates('BB');
+		const { _id: lowersaxony } = await getFederalStates('NI');
 
 		const systemsData = await systemModel
 			.find({
@@ -82,19 +79,6 @@ module.exports = {
 	},
 
 	down: async function down() {
-		await connect();
-
-		await systemModel
-			.updateMany(
-				{
-					'ldapConfig.federalState': { $exists: true },
-				},
-				{ $unset: { 'ldapConfig.federalState': '' } }
-			)
-			.exec();
-
-		alert('Finished removing federal states from "systems"');
-
-		await close();
+		// not implemented
 	},
 };
