@@ -31,7 +31,7 @@ const getFederalStateFromSchool = async (systemId) => {
 
 const getFederalStates = async (federalStates) =>
 	federalStateModel
-		.find({ abbreviation: { $in: federalStates } })
+		.findOne({ abbreviation: federalStates})
 		.select('_id')
 		.lean()
 		.exec();
@@ -40,12 +40,12 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		const [{ _id: brandenburg }, { _id: lowersaxony }] = await getFederalStates(['BB', 'NI']);
+		const { _id: brandenburg } = await getFederalStates('BB');
+		const { _id: lowersaxony } = await getFederalStates('NI');
 
 		const systemsData = await systemModel
 			.find({
 				type: { $in: ['ldap', 'iserv'] },
-				'ldapConfig.federalState': { $eq: null },
 			})
 			.lean()
 			.exec();
