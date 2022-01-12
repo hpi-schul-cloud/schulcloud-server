@@ -89,6 +89,7 @@ module.exports = {
 		await systemModel
 			.updateMany(
 				{
+					type: { $in: ['ldap', 'iserv'] },
 					'ldapConfig.federalState': { $exists: true },
 				},
 				{ $unset: { 'ldapConfig.federalState': '' } }
