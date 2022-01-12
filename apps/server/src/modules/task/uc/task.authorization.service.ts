@@ -22,13 +22,13 @@ export class TaskAuthorizationService {
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
 	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
-	async getPermittedCourses(userId: EntityId, neededPermission: TaskParentPermission): Promise<Course[]> {
+	async getPermittedCourses(user: User, neededPermission: TaskParentPermission): Promise<Course[]> {
 		let permittedCourses: Course[] = [];
 
 		if (neededPermission === TaskParentPermission.write) {
-			[permittedCourses] = await this.courseRepo.findAllForTeacher(userId);
+			[permittedCourses] = await this.courseRepo.findAllForTeacher(user.id);
 		} else if (neededPermission === TaskParentPermission.read) {
-			[permittedCourses] = await this.courseRepo.findAllByUserId(userId);
+			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
 		}
 
 		return permittedCourses;

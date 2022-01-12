@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo, LessonRepo, RoleRepo } from '@shared/repo';
 import { taskFactory, courseFactory, userFactory, roleFactory, setupEntities } from '@shared/testing';
-// import { Course, Lesson } from '@shared/domain';
+import { Course, Lesson } from '@shared/domain';
 
 import { MikroORM } from '@mikro-orm/core';
 import { TaskAuthorizationService, TaskDashBoardPermission, TaskParentPermission } from './task.authorization.service';
@@ -9,8 +9,8 @@ import { TaskAuthorizationService, TaskDashBoardPermission, TaskParentPermission
 describe('task.authorization.service', () => {
 	let module: TestingModule;
 	let service: TaskAuthorizationService;
-	// let courseRepo: CourseRepo;
-	// let lessonRepo: LessonRepo;
+	let courseRepo: CourseRepo;
+	let lessonRepo: LessonRepo;
 	let roleRepo: RoleRepo;
 	let orm: MikroORM;
 
@@ -57,44 +57,100 @@ describe('task.authorization.service', () => {
 		}).compile();
 
 		service = module.get(TaskAuthorizationService);
-		// courseRepo = module.get(CourseRepo);
-		// lessonRepo = module.get(LessonRepo);
+		courseRepo = module.get(CourseRepo);
+		lessonRepo = module.get(LessonRepo);
 		roleRepo = module.get(RoleRepo);
 	});
 
-	// const setCourseRepoMock = {
-	// 	findAllForTeacher: (courses: Course[] = []) => {
-	// 		const spy = jest
-	// 			.spyOn(courseRepo, 'findAllForTeacher')
-	// 			.mockImplementation(() => Promise.resolve([courses, courses.length]));
+	const setCourseRepoMock = {
+		findAllForTeacher: (courses: Course[] = []) => {
+			const spy = jest
+				.spyOn(courseRepo, 'findAllForTeacher')
+				.mockImplementation(() => Promise.resolve([courses, courses.length]));
 
-	// 		return spy;
-	// 	},
-	// 	findAllByUserId: (courses: Course[] = []) => {
-	// 		const spy = jest
-	// 			.spyOn(courseRepo, 'findAllByUserId')
-	// 			.mockImplementation(() => Promise.resolve([courses, courses.length]));
+			return spy;
+		},
+		findAllByUserId: (courses: Course[] = []) => {
+			const spy = jest
+				.spyOn(courseRepo, 'findAllByUserId')
+				.mockImplementation(() => Promise.resolve([courses, courses.length]));
 
-	// 		return spy;
-	// 	},
-	// };
+			return spy;
+		},
+	};
 
-	// const setLessonRepoMock = {
-	// 	findAllByCourseIds: (lessons: Lesson[] = []) => {
-	// 		const spy = jest
-	// 			.spyOn(lessonRepo, 'findAllByCourseIds')
-	// 			.mockImplementation(() => Promise.resolve([lessons, lessons.length]));
+	const setLessonRepoMock = {
+		findAllByCourseIds: (lessons: Lesson[] = []) => {
+			const spy = jest
+				.spyOn(lessonRepo, 'findAllByCourseIds')
+				.mockImplementation(() => Promise.resolve([lessons, lessons.length]));
 
-	// 		return spy;
-	// 	},
-	// };
+			return spy;
+		},
+	};
 
 	describe('getPermittedCourses', () => {
 		describe('when checking for read permission', () => {
-			it.todo('implementation');
+			it('should return all courses where the user is assigned as a student', async () => {
+				const user = userFactory.build();
+				const courses = courseFactory.buildList(3);
+
+				const spy1 = setCourseRepoMock.findAllForTeacher([]);
+				const spy2 = setCourseRepoMock.findAllByUserId(courses);
+
+				const result = await service.getPermittedCourses(user, TaskParentPermission.read);
+
+				expect(result).toEqual(courses);
+
+				spy1.mockRestore();
+				spy2.mockRestore();
+			});
+
+			it('should return no courses where the user is assigned as a teacher or substitution teacher', async () => {
+				const user = userFactory.build();
+				const courses = courseFactory.buildList(3);
+
+				const spy1 = setCourseRepoMock.findAllForTeacher(courses);
+				const spy2 = setCourseRepoMock.findAllByUserId([]);
+
+				const result = await service.getPermittedCourses(user, TaskParentPermission.read);
+
+				expect(result).toEqual([]);
+
+				spy1.mockRestore();
+				spy2.mockRestore();
+			});
 		});
-		describe('when checking for read permission', () => {
-			it.todo('implementation');
+		describe('when checking for write permission', () => {
+			it('should return all courses where the user is assigned as a teacher or substitution teacher', async () => {
+				const user = userFactory.build();
+				const courses = courseFactory.buildList(3);
+
+				const spy1 = setCourseRepoMock.findAllForTeacher(courses);
+				const spy2 = setCourseRepoMock.findAllByUserId([]);
+
+				const result = await service.getPermittedCourses(user, TaskParentPermission.write);
+
+				expect(result).toEqual(courses);
+
+				spy1.mockRestore();
+				spy2.mockRestore();
+			});
+
+			it('should return no courses where the user is assigned as a student', async () => {
+				const user = userFactory.build();
+				const courses = courseFactory.buildList(3);
+
+				const spy1 = setCourseRepoMock.findAllForTeacher([]);
+				const spy2 = setCourseRepoMock.findAllByUserId(courses);
+
+				const result = await service.getPermittedCourses(user, TaskParentPermission.write);
+
+				expect(result).toEqual([]);
+
+				spy1.mockRestore();
+				spy2.mockRestore();
+			});
 		});
 	});
 
