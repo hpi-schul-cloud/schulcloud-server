@@ -46,6 +46,7 @@ module.exports = {
 		const systemsData = await systemModel
 			.find({
 				type: { $in: ['ldap', 'iserv'] },
+				'ldapConfig.federalState': { $eq: null },
 			})
 			.lean()
 			.exec();
