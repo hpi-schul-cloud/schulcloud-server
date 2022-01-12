@@ -17,14 +17,15 @@ export class TaskUC {
 	// 5 awaits from with db calls from one request against the api is for me the absolut maximum what we should allowed.
 	// TODO: clearify if Admin need TASK_DASHBOARD_TEACHER_VIEW_V3 permission
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const user = await this.userRepo.findById(userId);
+		// load the user including all roles
+		const user = await this.userRepo.findById(userId, true);
 
-		const [teacherPermission, studentPermission] = await Promise.all([
-			this.authorizationService.hasTaskDashboardPermission(user, TaskDashBoardPermission.teacherDashboard),
-			this.authorizationService.hasTaskDashboardPermission(user, TaskDashBoardPermission.studentDashboard),
-		]);
-
-		if (!teacherPermission && !studentPermission) {
+		if (
+			!this.authorizationService.hasTaskDashboardPermission(user, [
+				TaskDashBoardPermission.teacherDashboard,
+				TaskDashBoardPermission.studentDashboard,
+			])
+		) {
 			throw new UnauthorizedException();
 		}
 

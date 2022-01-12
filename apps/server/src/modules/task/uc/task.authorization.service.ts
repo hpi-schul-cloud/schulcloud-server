@@ -83,10 +83,12 @@ export class TaskAuthorizationService {
 		return hasPermission;
 	}
 
-	async hasTaskDashboardPermission(user: User, permission: TaskDashBoardPermission): Promise<boolean> {
-		const permissions = await this.roleRepo.resolvePermissionsByRoles(user.roles.getItems());
+	hasTaskDashboardPermission(user: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]): boolean {
+		const permissions = this.roleRepo.resolvePermissionsByRoles(user.roles.getItems());
 
-		const hasPermission = permissions.includes(permission);
+		const hasPermission = Array.isArray(permission)
+			? permission.every((p) => permissions.includes(p))
+			: permissions.includes(permission);
 
 		return hasPermission;
 	}

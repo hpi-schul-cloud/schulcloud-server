@@ -19,18 +19,16 @@ export class RoleRepo {
 		return role;
 	}
 
-	async resolvePermissionsByRoles(inputRoles: Role[]): Promise<string[]> {
+	resolvePermissionsByRoles(inputRoles: Role[]): string[] {
 		let permissions: string[] = [];
 
 		for (let i = 0; i < inputRoles.length; i += 1) {
 			const role = inputRoles[i];
-			// eslint-disable-next-line no-await-in-loop
-			const subRoles = await role.roles.loadItems();
+			const subRoles = role.roles.getItems();
 			permissions = [...permissions, ...role.permissions];
 
 			if (subRoles.length > 0) {
-				// eslint-disable-next-line no-await-in-loop
-				const subPermissions = await this.resolvePermissionsByRoles(subRoles);
+				const subPermissions = this.resolvePermissionsByRoles(subRoles);
 				permissions = [...permissions, ...subPermissions];
 			}
 		}
