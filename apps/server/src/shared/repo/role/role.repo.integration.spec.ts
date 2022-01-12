@@ -135,7 +135,9 @@ describe('role repo', () => {
 
 			em.clear();
 
-			const result = await repo.resolvePermissionsByRoles([role]);
+			const rootRole = await em.findOneOrFail(Role, role.id);
+
+			const result = await repo.resolvePermissionsByRoles([rootRole]);
 
 			expect(result).toEqual(['a']);
 		});
@@ -148,9 +150,12 @@ describe('role repo', () => {
 
 			em.clear();
 
-			const result = await repo.resolvePermissionsByRoles([roleA, roleB]);
+			const rootRoleA = await em.findOneOrFail(Role, roleA.id);
+			const rootRoleB = await em.findOneOrFail(Role, roleB.id);
 
-			expect(result).toEqual(['a', 'b']);
+			const result = await repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
+
+			expect(result.sort()).toEqual(['a', 'b'].sort());
 		});
 
 		it('should return unique permissions', async () => {
@@ -161,9 +166,12 @@ describe('role repo', () => {
 
 			em.clear();
 
-			const result = await repo.resolvePermissionsByRoles([roleA, roleB]);
+			const rootRoleA = await em.findOneOrFail(Role, roleA.id);
+			const rootRoleB = await em.findOneOrFail(Role, roleB.id);
 
-			expect(result).toEqual(['a', 'b', 'c']);
+			const result = await repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
+
+			expect(result.sort()).toEqual(['a', 'b', 'c'].sort());
 		});
 
 		it('should return permissions for sub role', async () => {
@@ -174,9 +182,27 @@ describe('role repo', () => {
 
 			em.clear();
 
-			const result = await repo.resolvePermissionsByRoles([roleB]);
+			const rootRole = await em.findOneOrFail(Role, roleB.id);
+
+			const result = await repo.resolvePermissionsByRoles([rootRole]);
 
 			expect(result.sort()).toEqual(['a', 'b'].sort());
+		});
+
+		it('should return permissions for deep sub roles', async () => {
+			const roleA = roleFactory.build({ permissions: ['a'] });
+			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleA] });
+			const roleC = roleFactory.build({ permissions: ['c'], roles: [roleB] });
+
+			await em.persistAndFlush([roleC]);
+
+			em.clear();
+
+			const rootRole = await em.findOneOrFail(Role, roleC.id);
+
+			const result = await repo.resolvePermissionsByRoles([rootRole]);
+
+			expect(result.sort()).toEqual(['a', 'b', 'c'].sort());
 		});
 	});
 });

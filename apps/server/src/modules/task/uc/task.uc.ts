@@ -1,32 +1,32 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination, Counted, ICurrentUser, SortOrder, TaskWithStatusVo, ITaskStatus } from '@shared/domain';
 
-import { TaskRepo } from '@shared/repo';
+import { TaskRepo, UserRepo } from '@shared/repo';
 
-import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
-
-export enum TaskDashBoardPermission {
-	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
-	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
-}
+import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
 
 @Injectable()
 export class TaskUC {
-	constructor(private readonly taskRepo: TaskRepo, private readonly authorizationService: TaskAuthorizationService) {}
+	constructor(
+		private readonly taskRepo: TaskRepo,
+		private readonly authorizationService: TaskAuthorizationService,
+		private readonly userRepo: UserRepo
+	) {}
 
 	// This uc includes 4 awaits + 1 from authentication services.
 	// 5 awaits from with db calls from one request against the api is for me the absolut maximum what we should allowed.
 	// TODO: clearify if Admin need TASK_DASHBOARD_TEACHER_VIEW_V3 permission
-	async findAllFinished(currentUser: ICurrentUser, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		// TODO: move to this.authorizationService ?
-		if (
-			!this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.teacherDashboard) &&
-			!this.hasTaskDashboardPermission(currentUser, TaskDashBoardPermission.studentDashboard)
-		) {
+	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
+		const user = await this.userRepo.findById(userId);
+
+		const [teacherPermission, studentPermission] = await Promise.all([
+			this.authorizationService.hasTaskDashboardPermission(user, TaskDashBoardPermission.teacherDashboard),
+			this.authorizationService.hasTaskDashboardPermission(user, TaskDashBoardPermission.studentDashboard),
+		]);
+
+		if (!teacherPermission && !studentPermission) {
 			throw new UnauthorizedException();
 		}
-
-		const { userId } = currentUser;
 
 		const courses = await this.authorizationService.getPermittedCourses(userId, TaskParentPermission.read);
 		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);

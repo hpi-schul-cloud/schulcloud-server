@@ -9,13 +9,14 @@ import {
 	lessonFactory,
 	taskFactory,
 	submissionFactory,
+	roleFactory,
 	createCurrentTestUser,
 } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TaskRepo } from '@shared/repo';
 
-import { TaskUC, TaskDashBoardPermission } from './task.uc';
-import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
+import { TaskUC } from './task.uc';
+import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
 
 // TODO: add courseGroups tests
 // TODO: what about ignoredTask?
@@ -128,15 +129,20 @@ describe('TaskUC', () => {
 			return mockRestore;
 		};
 
+		const setup = () => {
+			const permissions = [TaskDashBoardPermission.studentDashboard];
+			const role = roleFactory.build({ permissions });
+			const user = userFactory.buildWithId({ roles: [role] });
+
+			return user;
+		};
+
 		it('should return task for a user', async () => {
-			const user = userFactory.buildWithId();
+			const user = setup();
 			const task = taskFactory.finished(user).buildWithId();
 			const mockRestore = findAllMock([task]);
 
-			const permissions = [TaskDashBoardPermission.studentDashboard];
-			const { currentUser } = createCurrentTestUser(permissions, user);
-
-			const [, total] = await service.findAllFinished(currentUser);
+			const [, total] = await service.findAllFinished(user.id);
 
 			expect(total).toEqual(1);
 

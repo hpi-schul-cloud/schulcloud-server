@@ -8,6 +8,9 @@ export class UserRepo {
 
 	async findById(id: EntityId): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
+
+		await this.em.populate(user, ['roles']);
+
 		return user;
 	}
 }

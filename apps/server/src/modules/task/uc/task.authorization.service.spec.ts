@@ -1,16 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo, LessonRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, RoleRepo } from '@shared/repo';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { taskFactory, courseFactory, userFactory } from '@shared/testing';
+import { taskFactory, courseFactory, userFactory, roleFactory } from '@shared/testing';
 import { Course, Lesson } from '@shared/domain';
 
-import { TaskAuthorizationService, TaskParentPermission } from './task.authorization.service';
+import { TaskAuthorizationService, TaskDashBoardPermission, TaskParentPermission } from './task.authorization.service';
 
 describe('task.authorization.service', () => {
 	let module: TestingModule;
 	let service: TaskAuthorizationService;
 	let courseRepo: CourseRepo;
 	let lessonRepo: LessonRepo;
+	let roleRepo: RoleRepo;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -36,12 +37,21 @@ describe('task.authorization.service', () => {
 						},
 					},
 				},
+				{
+					provide: RoleRepo,
+					useValue: {
+						resolvePermissionsByRoles() {
+							throw new Error('Please write a mock for RoleRepo.resolvePermissionsByRoles');
+						},
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(TaskAuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
+		roleRepo = module.get(RoleRepo);
 	});
 
 	const setCourseRepoMock = {
@@ -151,6 +161,19 @@ describe('task.authorization.service', () => {
 				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
+			});
+		});
+
+		describe('hasTaskDashboardPermission', () => {
+			it('should call role repository with the user roles', async () => {
+				const roles = roleFactory.buildList(2);
+				const user = userFactory.build({ roles });
+
+				const spy = jest.spyOn(roleRepo, 'resolvePermissionsByRoles').mockImplementation(() => Promise.resolve([]));
+
+				await service.hasTaskDashboardPermission(user, TaskDashBoardPermission.studentDashboard);
+
+				expect(spy).toBeCalledWith(roles);
 			});
 		});
 	});

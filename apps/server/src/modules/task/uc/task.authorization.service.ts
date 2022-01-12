@@ -1,15 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Lesson, Task } from '@shared/domain';
-import { CourseRepo, LessonRepo } from '@shared/repo';
+import { EntityId, Course, Lesson, Task, User } from '@shared/domain';
+import { CourseRepo, LessonRepo, RoleRepo } from '@shared/repo';
 
 export enum TaskParentPermission {
 	read,
 	write,
 }
 
+export enum TaskDashBoardPermission {
+	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
+	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
+}
+
 @Injectable()
 export class TaskAuthorizationService {
-	constructor(private readonly courseRepo: CourseRepo, private readonly lessonRepo: LessonRepo) {}
+	constructor(
+		private readonly courseRepo: CourseRepo,
+		private readonly lessonRepo: LessonRepo,
+		private readonly roleRepo: RoleRepo
+	) {}
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
 	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
@@ -70,6 +79,14 @@ export class TaskAuthorizationService {
 		}
 
 		const hasPermission = isCreator || hasCoursePermission;
+
+		return hasPermission;
+	}
+
+	async hasTaskDashboardPermission(user: User, permission: TaskDashBoardPermission): Promise<boolean> {
+		const permissions = await this.roleRepo.resolvePermissionsByRoles(user.roles.getItems());
+
+		const hasPermission = permissions.includes(permission);
 
 		return hasPermission;
 	}

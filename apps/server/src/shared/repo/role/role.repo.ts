@@ -16,8 +16,6 @@ export class RoleRepo {
 	async findById(id: EntityId): Promise<Role> {
 		const role = await this.em.findOneOrFail(Role, { id }, { cache: this.cache });
 
-		await this.em.populate(role, ['roles']);
-
 		return role;
 	}
 
@@ -26,12 +24,13 @@ export class RoleRepo {
 
 		for (let i = 0; i < inputRoles.length; i += 1) {
 			const role = inputRoles[i];
-			const subRoles = role.roles;
+			// eslint-disable-next-line no-await-in-loop
+			const subRoles = await role.roles.loadItems();
 			permissions = [...permissions, ...role.permissions];
 
 			if (subRoles.length > 0) {
 				// eslint-disable-next-line no-await-in-loop
-				const subPermissions = await this.resolvePermissionsByRoles(subRoles.getItems());
+				const subPermissions = await this.resolvePermissionsByRoles(subRoles);
 				permissions = [...permissions, ...subPermissions];
 			}
 		}
