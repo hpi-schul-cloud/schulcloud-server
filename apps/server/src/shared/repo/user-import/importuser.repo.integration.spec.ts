@@ -664,4 +664,35 @@ describe('ImportUserRepo', () => {
 			expect(results).toContain(flaggedImportUser);
 		});
 	});
+
+	describe('options: limit and offset', () => {
+		it('should apply limit', async () => {
+			const school = schoolFactory.build();
+			const importUsers = importUserFactory.buildList(10, { school });
+			await em.persistAndFlush(importUsers);
+			const [results, count] = await repo.findImportUsers(school, {}, { pagination: { limit: 3 } });
+			expect(results.length).toEqual(3);
+			expect(count).toEqual(10);
+			const [results1, count1] = await repo.findImportUsers(school, {}, { pagination: { limit: 5 } });
+			expect(results1.length).toEqual(5);
+			expect(count1).toEqual(10);
+			const [results2, count2] = await repo.findImportUsers(school, {}, {});
+			expect(results2.length).toEqual(10);
+			expect(count2).toEqual(10);
+		});
+		it('should apply offset', async () => {
+			const school = schoolFactory.build();
+			const importUsers = importUserFactory.buildList(10, { school });
+			await em.persistAndFlush(importUsers);
+			const [results, count] = await repo.findImportUsers(school, {}, { pagination: { skip: 3 } });
+			expect(results.length).toEqual(7);
+			expect(count).toEqual(10);
+			const [results1, count1] = await repo.findImportUsers(school, {}, { pagination: { limit: 5 } });
+			expect(results1.length).toEqual(5);
+			expect(count1).toEqual(10);
+			const [results2, count2] = await repo.findImportUsers(school, {}, {});
+			expect(results2.length).toEqual(10);
+			expect(count2).toEqual(10);
+		});
+	});
 });
