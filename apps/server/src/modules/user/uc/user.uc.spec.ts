@@ -1,73 +1,75 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { IPermissionsAndRoles } from '@shared/domain';
-import { createCurrentTestUser } from '@shared/testing';
-import { UserRepo } from '@shared/repo';
-import { UserUC } from './user.uc';
-import { RoleUC } from './role.uc';
-import { ResolvedUser } from '../controller/dto';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+// import { IPermissionsAndRoles } from '@shared/domain';
+// import { createCurrentTestUser } from '@shared/testing';
+// import { UserRepo } from '@shared/repo';
+// import { UserUC } from './user.uc';
+// import { RoleUC } from './role.uc';
+// import { ResolvedUser } from '../controller/dto';
 
 describe('UserUC', () => {
-	let module: TestingModule;
-	let service: UserUC;
-	let roleUC: RoleUC;
-	let repo: UserRepo;
+	it.todo('remove this spec');
 
-	beforeEach(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [
-				UserUC,
-				UserRepo,
-				{
-					provide: UserRepo,
-					useValue: {
-						findById() {},
-					},
-				},
-				RoleUC,
-				{
-					provide: RoleUC,
-					useValue: {
-						resolvePermissionsByRoles() {},
-					},
-				},
-			],
-		}).compile();
+	// let module: TestingModule;
+	// let service: UserUC;
+	// let roleUC: RoleUC;
+	// let repo: UserRepo;
 
-		service = module.get(UserUC);
-		roleUC = module.get(RoleUC);
-		repo = module.get(UserRepo);
-	});
+	// beforeEach(async () => {
+	// 	module = await Test.createTestingModule({
+	// 		imports: [MongoMemoryDatabaseModule.forRoot()],
+	// 		providers: [
+	// 			UserUC,
+	// 			UserRepo,
+	// 			{
+	// 				provide: UserRepo,
+	// 				useValue: {
+	// 					findById() {},
+	// 				},
+	// 			},
+	// 			RoleUC,
+	// 			{
+	// 				provide: RoleUC,
+	// 				useValue: {
+	// 					resolvePermissionsByRoles() {},
+	// 				},
+	// 			},
+	// 		],
+	// 	}).compile();
 
-	afterEach(async () => {
-		await module.close();
-	});
+	// 	service = module.get(UserUC);
+	// 	roleUC = module.get(RoleUC);
+	// 	repo = module.get(UserRepo);
+	// });
 
-	it('should be defined', () => {
-		expect(service).toBeDefined();
-		expect(typeof service.getUserWithPermissions).toEqual('function');
-	});
+	// afterEach(async () => {
+	// 	await module.close();
+	// });
 
-	describe('getUserWithPermissions', () => {
-		it('should return valid solved and mapped typ', async () => {
-			const permissions = ['A', 'B'] as string[];
-			const { currentUser, user, roles } = createCurrentTestUser(permissions);
+	// it('should be defined', () => {
+	// 	expect(service).toBeDefined();
+	// 	expect(typeof service.getUserWithPermissions).toEqual('function');
+	// });
 
-			const roleUCSpy = jest.spyOn(roleUC, 'resolvePermissionsByRoles').mockImplementation(() => {
-				const result = { roles, permissions } as IPermissionsAndRoles;
-				return Promise.resolve(result);
-			});
+	// describe('getUserWithPermissions', () => {
+	// 	it('should return valid solved and mapped typ', async () => {
+	// 		const permissions = ['A', 'B'] as string[];
+	// 		const { currentUser, user, roles } = createCurrentTestUser(permissions);
 
-			const userRepoSpy = jest.spyOn(repo, 'findById').mockImplementation(() => {
-				return Promise.resolve(user);
-			});
+	// 		const roleUCSpy = jest.spyOn(roleUC, 'resolvePermissionsByRoles').mockImplementation(() => {
+	// 			const result = { roles, permissions } as IPermissionsAndRoles;
+	// 			return Promise.resolve(result);
+	// 		});
 
-			const result = await service.getUserWithPermissions(currentUser.userId);
-			expect(result instanceof ResolvedUser).toBe(true);
+	// 		const userRepoSpy = jest.spyOn(repo, 'findById').mockImplementation(() => {
+	// 			return Promise.resolve(user);
+	// 		});
 
-			userRepoSpy.mockRestore();
-			roleUCSpy.mockRestore();
-		});
-	});
+	// 		const result = await service.getUserWithPermissions(currentUser.userId);
+	// 		expect(result instanceof ResolvedUser).toBe(true);
+
+	// 		userRepoSpy.mockRestore();
+	// 		roleUCSpy.mockRestore();
+	// 	});
+	// });
 });

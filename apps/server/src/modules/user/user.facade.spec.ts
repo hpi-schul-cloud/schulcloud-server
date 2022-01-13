@@ -1,58 +1,60 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory, createCurrentTestUser } from '@shared/testing';
-import { UserUC } from './uc';
-import { UserFacade } from './user.facade';
-import { ResolvedUserMapper } from './mapper';
-import { ResolvedUser } from './controller/dto';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+// import { userFactory, createCurrentTestUser } from '@shared/testing';
+// import { UserUC } from './uc';
+// import { UserFacade } from './user.facade';
+// import { ResolvedUserMapper } from './mapper';
+// import { ResolvedUser } from './controller/dto';
 
 describe('UserFacade', () => {
-	let module: TestingModule;
-	let facade: UserFacade;
-	let service: UserUC;
+	it.todo('remove this spec');
 
-	beforeEach(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [
-				UserFacade,
-				UserUC,
-				{
-					provide: UserUC,
-					useValue: {
-						getUserWithPermissions() {},
-					},
-				},
-			],
-		}).compile();
+	// let module: TestingModule;
+	// let facade: UserFacade;
+	// let service: UserUC;
 
-		facade = module.get(UserFacade);
-		service = module.get(UserUC);
-	});
+	// beforeEach(async () => {
+	// 	module = await Test.createTestingModule({
+	// 		imports: [MongoMemoryDatabaseModule.forRoot()],
+	// 		providers: [
+	// 			UserFacade,
+	// 			UserUC,
+	// 			{
+	// 				provide: UserUC,
+	// 				useValue: {
+	// 					getUserWithPermissions() {},
+	// 				},
+	// 			},
+	// 		],
+	// 	}).compile();
 
-	afterEach(async () => {
-		await module.close();
-	});
+	// 	facade = module.get(UserFacade);
+	// 	service = module.get(UserUC);
+	// });
 
-	it('should be defined', () => {
-		expect(facade).toBeDefined();
-		expect(typeof facade.resolveUser).toEqual('function');
-	});
+	// afterEach(async () => {
+	// 	await module.close();
+	// });
 
-	describe('getUserWithPermissions', () => {
-		it('should return valid solved and mapped typ', async () => {
-			const { currentUser } = createCurrentTestUser();
+	// it('should be defined', () => {
+	// 	expect(facade).toBeDefined();
+	// 	expect(typeof facade.resolveUser).toEqual('function');
+	// });
 
-			const serviceSpy = jest.spyOn(service, 'getUserWithPermissions').mockImplementation(() => {
-				const user = userFactory.build();
+	// describe('getUserWithPermissions', () => {
+	// 	it('should return valid solved and mapped typ', async () => {
+	// 		const { currentUser } = createCurrentTestUser();
 
-				const resolvedUser = ResolvedUserMapper.mapToResponse(user);
-				return Promise.resolve(resolvedUser);
-			});
+	// 		const serviceSpy = jest.spyOn(service, 'getUserWithPermissions').mockImplementation(() => {
+	// 			const user = userFactory.build();
 
-			const result = await facade.resolveUser(currentUser.userId);
-			expect(result instanceof ResolvedUser).toBe(true);
-			serviceSpy.mockRestore();
-		});
-	});
+	// 			const resolvedUser = ResolvedUserMapper.mapToResponse(user);
+	// 			return Promise.resolve(resolvedUser);
+	// 		});
+
+	// 		const result = await facade.resolveUser(currentUser.userId);
+	// 		expect(result instanceof ResolvedUser).toBe(true);
+	// 		serviceSpy.mockRestore();
+	// 	});
+	// });
 });

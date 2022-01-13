@@ -1,55 +1,57 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { RoleRepo } from '@shared/repo';
-import { RoleUC } from './role.uc';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { Role } from '@shared/domain';
+// import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+// import { RoleRepo } from '@shared/repo';
+// import { RoleUC } from './role.uc';
 
 describe('RoleUC', () => {
-	let module: TestingModule;
-	let service: RoleUC;
-	let repo: RoleRepo;
+	it.todo('remove this spec');
 
-	beforeEach(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [
-				RoleUC,
-				RoleRepo,
-				{
-					provide: RoleRepo,
-					useValue: {
-						resolvePermissionsFromSubRolesById() {},
-					},
-				},
-			],
-		}).compile();
+	// let module: TestingModule;
+	// let service: RoleUC;
+	// let repo: RoleRepo;
 
-		service = module.get(RoleUC);
-		repo = module.get(RoleRepo);
-	});
+	// beforeEach(async () => {
+	// 	module = await Test.createTestingModule({
+	// 		imports: [MongoMemoryDatabaseModule.forRoot()],
+	// 		providers: [
+	// 			RoleUC,
+	// 			RoleRepo,
+	// 			{
+	// 				provide: RoleRepo,
+	// 				useValue: {
+	// 					resolvePermissionsFromSubRolesById() {},
+	// 				},
+	// 			},
+	// 		],
+	// 	}).compile();
 
-	afterEach(async () => {
-		await module.close();
-	});
+	// 	service = module.get(RoleUC);
+	// 	repo = module.get(RoleRepo);
+	// });
 
-	it('should be defined', () => {
-		expect(service).toBeDefined();
-		expect(typeof service.resolvePermissionsByRoles).toEqual('function');
-	});
+	// afterEach(async () => {
+	// 	await module.close();
+	// });
 
-	describe('resolvePermissionsByRoles', () => {
-		it('should return valid solved and mapped typ', async () => {
-			const nameA = `a${Date.now()}`;
-			const roleA = new Role({ name: nameA, permissions: ['A', 'C'] });
+	// it('should be defined', () => {
+	// 	expect(service).toBeDefined();
+	// 	expect(typeof service.resolvePermissionsByRoles).toEqual('function');
+	// });
 
-			const repoSpy = jest.spyOn(repo, 'resolvePermissionsFromSubRolesById').mockImplementation(() => {
-				return Promise.resolve(roleA);
-			});
+	// describe('resolvePermissionsByRoles', () => {
+	// 	it('should return valid solved and mapped typ', async () => {
+	// 		const nameA = `a${Date.now()}`;
+	// 		const roleA = new Role({ name: nameA, permissions: ['A', 'C'] });
 
-			const result = await service.resolvePermissionsByRoles([roleA]);
-			expect(Object.keys(result).sort()).toEqual(['permissions', 'roles'].sort());
+	// 		const repoSpy = jest.spyOn(repo, 'resolvePermissionsFromSubRolesById').mockImplementation(() => {
+	// 			return Promise.resolve(roleA);
+	// 		});
 
-			repoSpy.mockRestore();
-		});
-	});
+	// 		const result = await service.resolvePermissionsByRoles([roleA]);
+	// 		expect(Object.keys(result).sort()).toEqual(['permissions', 'roles'].sort());
+
+	// 		repoSpy.mockRestore();
+	// 	});
+	// });
 });
