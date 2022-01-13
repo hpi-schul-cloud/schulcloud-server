@@ -30,7 +30,7 @@ export class TaskUC {
 		}
 
 		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.read);
-		const lessons = await this.authorizationService.getPermittedLessons(userId, courses);
+		const lessons = await this.authorizationService.getPermittedLessons(user, courses);
 
 		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
 		const finishedCourseIds = courses.filter((c) => c.isFinished()).map((c) => c.id);
@@ -50,7 +50,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.hasTaskPermission(userId, task, TaskParentPermission.write)) {
+			if (this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.write)) {
 				status = task.createTeacherStatusForUser(userId);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
@@ -86,7 +86,7 @@ export class TaskUC {
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.read);
 		const openCourses = courses.filter((c) => !c.isFinished());
-		const lessons = await this.authorizationService.getPermittedLessons(user.id, openCourses);
+		const lessons = await this.authorizationService.getPermittedLessons(user, openCourses);
 
 		const dueDate = this.getDefaultMaxDueDate();
 		const notFinished = { userId: user.id, value: false };
@@ -114,7 +114,7 @@ export class TaskUC {
 	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.write);
 		const openCourses = courses.filter((c) => !c.isFinished());
-		const lessons = await this.authorizationService.getPermittedLessons(user.id, openCourses);
+		const lessons = await this.authorizationService.getPermittedLessons(user, openCourses);
 
 		const notFinished = { userId: user.id, value: false };
 

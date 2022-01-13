@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Lesson, Task, User } from '@shared/domain';
+import { Course, Lesson, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, RoleRepo } from '@shared/repo';
 
 export enum TaskParentPermission {
@@ -34,9 +34,9 @@ export class TaskAuthorizationService {
 		return permittedCourses;
 	}
 
-	async getPermittedLessons(userId: EntityId, courses: Course[]): Promise<Lesson[]> {
-		const writeCourses = courses.filter((c) => this.hasCourseWritePermission(userId, c));
-		const readCourses = courses.filter((c) => this.hasCourseReadPermission(userId, c));
+	async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
+		const writeCourses = courses.filter((c) => this.hasCourseWritePermission(user, c));
+		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 
 		const writeCourseIds = writeCourses.map((c) => c.id);
 		const readCourseIds = readCourses.map((c) => c.id);
@@ -53,29 +53,27 @@ export class TaskAuthorizationService {
 		return permittedLessons;
 	}
 
-	private hasCourseWritePermission(userId: EntityId, course?: Course): boolean {
+	private hasCourseWritePermission(user: User, course: Course): boolean {
+		const hasPermission = course.substitutionTeachers.contains(user) || course.teachers.contains(user);
+
+		return hasPermission;
+	}
+
+	private hasCourseReadPermission(user: User, course: Course): boolean {
 		const hasPermission =
-			course?.getSubstitutionTeacherIds().includes(userId) === true ||
-			course?.getTeacherIds().includes(userId) === true;
+			course.students.contains(user) || course.substitutionTeachers.contains(user) || course.teachers.contains(user);
 
 		return hasPermission;
 	}
 
-	private hasCourseReadPermission(userId: EntityId, course?: Course): boolean {
-		const hasPermission = course?.getStudentIds().includes(userId) === true;
-
-		return hasPermission;
-	}
-
-	hasTaskPermission(userId: EntityId, task: Task, permission: TaskParentPermission): boolean {
-		const isCreator = task.creator?.id === userId;
+	hasTaskPermission(user: User, task: Task, permission: TaskParentPermission): boolean {
+		const isCreator = task.creator === user;
 		let hasCoursePermission = false;
 
-		if (permission === TaskParentPermission.write) {
-			hasCoursePermission = this.hasCourseWritePermission(userId, task.course);
-		} else if (permission === TaskParentPermission.read) {
-			hasCoursePermission =
-				this.hasCourseReadPermission(userId, task.course) || this.hasCourseWritePermission(userId, task.course);
+		if (task.course && permission === TaskParentPermission.write) {
+			hasCoursePermission = this.hasCourseWritePermission(user, task.course);
+		} else if (task.course && permission === TaskParentPermission.read) {
+			hasCoursePermission = this.hasCourseReadPermission(user, task.course);
 		}
 
 		const hasPermission = isCreator || hasCoursePermission;

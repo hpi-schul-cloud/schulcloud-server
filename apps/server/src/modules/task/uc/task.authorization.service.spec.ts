@@ -155,11 +155,47 @@ describe('task.authorization.service', () => {
 	});
 
 	describe('getPermittedLessons', () => {
-		describe('when checking for read permission', () => {
-			it.todo('implementation');
+		describe('for courses where the user is assigned as a student', () => {
+			it('should query the lesson repo for all visible lessons of these courses', async () => {
+				const user = userFactory.build();
+				const courses = [courseFactory.buildWithId({ students: [user] })];
+				const courseIds = courses.map((c) => c.id);
+				const spy = setLessonRepoMock.findAllByCourseIds([]);
+
+				await service.getPermittedLessons(user, courses);
+
+				expect(spy).toBeCalledWith(courseIds, { hidden: false });
+
+				spy.mockRestore();
+			});
 		});
-		describe('when checking for read permission', () => {
-			it.todo('implementation');
+		describe('for courses where the user is assigned as a teacher', () => {
+			it('should query the lesson repo for all lessons of these courses', async () => {
+				const user = userFactory.build();
+				const courses = [courseFactory.buildWithId({ teachers: [user] })];
+				const courseIds = courses.map((c) => c.id);
+				const spy = setLessonRepoMock.findAllByCourseIds([]);
+
+				await service.getPermittedLessons(user, courses);
+
+				expect(spy).toBeCalledWith(courseIds);
+
+				spy.mockRestore();
+			});
+		});
+		describe('for courses where the user is assigned as a substitution teacher', () => {
+			it('should query the lesson repo for all lessons of these courses', async () => {
+				const user = userFactory.build();
+				const courses = [courseFactory.buildWithId({ substitutionTeachers: [user] })];
+				const courseIds = courses.map((c) => c.id);
+				const spy = setLessonRepoMock.findAllByCourseIds([]);
+
+				await service.getPermittedLessons(user, courses);
+
+				expect(spy).toBeCalledWith(courseIds);
+
+				spy.mockRestore();
+			});
 		});
 	});
 
@@ -169,7 +205,7 @@ describe('task.authorization.service', () => {
 				const user = userFactory.build();
 				const task = taskFactory.build({ creator: user });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -179,7 +215,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ students: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -189,7 +225,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ substitutionTeachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -199,7 +235,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.read);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.read);
 
 				expect(result).toBe(true);
 			});
@@ -210,7 +246,7 @@ describe('task.authorization.service', () => {
 				const user = userFactory.build();
 				const task = taskFactory.build({ creator: user });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
 			});
@@ -220,7 +256,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ students: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.write);
 
 				expect(result).toBe(false);
 			});
@@ -230,7 +266,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ substitutionTeachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
 			});
@@ -240,7 +276,7 @@ describe('task.authorization.service', () => {
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
-				const result = service.hasTaskPermission(user.id, task, TaskParentPermission.write);
+				const result = service.hasTaskPermission(user, task, TaskParentPermission.write);
 
 				expect(result).toBe(true);
 			});
