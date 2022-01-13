@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { ObjectId } from '@mikro-orm/mongodb';
+import { StringValidator } from '@shared/common';
 import { ImportUser, MatchCreatorScope, RoleName, School } from '@shared/domain';
 import { Scope } from '../scope';
 
@@ -11,14 +13,15 @@ export class ImportUserScope extends Scope<ImportUser> {
 
 	bySchool(school: School): ImportUserScope {
 		const schoolId = school._id;
+		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 		this.addQuery({ school: schoolId });
 		return this;
 	}
 
 	byFirstName(firstName: string): ImportUserScope {
-		const escapedFirstName = firstName.replace(this.REGEX_WHITELIST, '');
+		const escapedFirstName = firstName.replace(this.REGEX_WHITELIST, '').trim();
 		// TODO make db agnostic
-		if (escapedFirstName.length)
+		if (StringValidator.isNotEmptyString(escapedFirstName, true))
 			this.addQuery({
 				firstName: {
 					// @ts-ignore
@@ -31,9 +34,9 @@ export class ImportUserScope extends Scope<ImportUser> {
 
 	byLastName(lastName: string): ImportUserScope {
 		// TODO filter does not find café when searching with cafe
-		const escapedLastName = lastName.replace(this.REGEX_WHITELIST, '');
+		const escapedLastName = lastName.replace(this.REGEX_WHITELIST, '').trim();
 		// TODO make db agnostic
-		if (escapedLastName.length)
+		if (StringValidator.isNotEmptyString(escapedLastName, true))
 			this.addQuery({
 				lastName: {
 					// @ts-ignore
@@ -47,9 +50,9 @@ export class ImportUserScope extends Scope<ImportUser> {
 	/** filters the login name case insensitive for contains which is part of the dn */
 	byLoginName(loginName: string): ImportUserScope {
 		// TODO filter does not find café when searching with cafe
-		const escapedLoginName = loginName.replace(this.REGEX_WHITELIST, '');
+		const escapedLoginName = loginName.replace(this.REGEX_WHITELIST, '').trim();
 		// TODO make db agnostic
-		if (escapedLoginName.length)
+		if (StringValidator.isNotEmptyString(escapedLoginName, true))
 			this.addQuery({
 				ldapDn: {
 					// @ts-ignore
@@ -78,9 +81,9 @@ export class ImportUserScope extends Scope<ImportUser> {
 	}
 
 	byClasses(classes: string): ImportUserScope {
-		const escapedClasses = classes.replace(this.REGEX_WHITELIST, '');
+		const escapedClasses = classes.replace(this.REGEX_WHITELIST, '').trim();
 		// TODO make db agnostic
-		if (escapedClasses.length)
+		if (StringValidator.isNotEmptyString(escapedClasses, true))
 			this.addQuery({
 				classNames: {
 					// @ts-ignore
@@ -100,7 +103,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 				return null;
 			})
 			.filter((match) => match != null);
-		this.addQuery({ $or: queries });
+		if (queries.length > 0) this.addQuery({ $or: queries });
 		return this;
 	}
 
