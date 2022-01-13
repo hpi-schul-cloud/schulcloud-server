@@ -45,12 +45,12 @@ describe('rooms controller', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 
-				const ucResult = { content: [] } as Board;
+				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as Board;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => {
 					return Promise.resolve(ucResult);
 				});
 
-				const mapperResult = new BoardResponse({ content: [] });
+				const mapperResult = new BoardResponse({ roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] });
 				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => {
 					return mapperResult;
 				});

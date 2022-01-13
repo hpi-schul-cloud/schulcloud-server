@@ -1,0 +1,52 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
+import { BoardMapper } from './board.mapper';
+import { BoardResponse } from '../controller/dto/roomBoardResponse';
+import { TaskResponse } from '../../task/controller/dto';
+
+describe('board mapper', () => {
+	let mapper: BoardMapper;
+
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [],
+			providers: [BoardMapper],
+		}).compile();
+
+		mapper = module.get(BoardMapper);
+	});
+
+	it('should map plain board into response', () => {
+		const course = courseFactory.buildWithId();
+		const board = {
+			roomId: course.id,
+			displayColor: course.color,
+			title: course.name,
+			elements: [],
+		};
+
+		const result = mapper.mapToResponse(board);
+
+		expect(result instanceof BoardResponse).toEqual(true);
+	});
+
+	it('should map tasks on board to response', () => {
+		const course = courseFactory.buildWithId();
+		const task = taskFactory.buildWithId({ course });
+		const board = {
+			roomId: course.id,
+			displayColor: course.color,
+			title: course.name,
+			elements: [{ type: 'task', content: task }],
+		};
+
+		const result = mapper.mapToResponse(board);
+
+		// TODO: module should define its own taskresponse
+		expect(result.elements[0] instanceof TaskResponse).toEqual(true);
+	});
+});
