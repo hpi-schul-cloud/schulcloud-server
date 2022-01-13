@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BoardResponse, BoardTaskResponse } from '../controller/dto/roomBoardResponse';
+import { BoardResponse, BoardElementResponse, BoardTaskResponse } from '../controller/dto/roomBoardResponse';
 import { Board } from '../uc/rooms.uc';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class BoardMapper {
 			mappedTask.displayColor = boardTaskDesc.color;
 			mappedTask.description = boardTaskDesc.description;
 
-			const boardElementResponse = { type: 'task', content: mappedTask };
+			const boardElementResponse = new BoardElementResponse({ type: 'task', content: mappedTask });
 			return boardElementResponse;
 		});
 		const mapped = new BoardResponse({

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, taskFactory, setupEntities } from '@shared/testing';
 import { BoardMapper } from './board.mapper';
-import { BoardResponse, BoardElementResponse } from '../controller/dto/roomBoardResponse';
+import { BoardResponse, BoardElementResponse, BoardTaskResponse } from '../controller/dto/roomBoardResponse';
 
 describe('board mapper', () => {
 	let mapper: BoardMapper;
@@ -18,34 +18,35 @@ describe('board mapper', () => {
 
 		mapper = module.get(BoardMapper);
 	});
+	describe('mapToResponse', () => {
+		it('should map plain board into response', () => {
+			const course = courseFactory.buildWithId();
+			const board = {
+				roomId: course.id,
+				displayColor: course.color,
+				title: course.name,
+				elements: [],
+			};
 
-	it('should map plain board into response', () => {
-		const course = courseFactory.buildWithId();
-		const board = {
-			roomId: course.id,
-			displayColor: course.color,
-			title: course.name,
-			elements: [],
-		};
+			const result = mapper.mapToResponse(board);
 
-		const result = mapper.mapToResponse(board);
+			expect(result instanceof BoardResponse).toEqual(true);
+		});
 
-		expect(result instanceof BoardResponse).toEqual(true);
-	});
+		it('should map tasks on board to response', () => {
+			const course = courseFactory.buildWithId();
+			const task = taskFactory.buildWithId({ course });
+			const board = {
+				roomId: course.id,
+				displayColor: course.color,
+				title: course.name,
+				elements: [{ type: 'task', content: task }],
+			};
 
-	it('should map tasks on board to response', () => {
-		const course = courseFactory.buildWithId();
-		const task = taskFactory.buildWithId({ course });
-		const board = {
-			roomId: course.id,
-			displayColor: course.color,
-			title: course.name,
-			elements: [{ type: 'task', content: task }],
-		};
+			const result = mapper.mapToResponse(board);
 
-		const result = mapper.mapToResponse(board);
-
-		// TODO: module should define its own taskresponse
-		expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+			// TODO: module should define its own taskresponse
+			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+		});
 	});
 });
