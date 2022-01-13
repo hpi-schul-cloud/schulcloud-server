@@ -25,7 +25,7 @@ describe('ImportUserRepo', () => {
 		await module.close();
 	});
 
-	afterEach(async () => {
+	beforeEach(async () => {
 		await cleanUpCollections(em);
 	});
 

@@ -6,13 +6,13 @@ export class RoleNameMapper {
 		if (roleName === RoleName.ADMIN) return RoleNameResponse.ADMIN;
 		if (roleName === RoleName.TEACHER) return RoleNameResponse.TEACHER;
 		if (roleName === RoleName.STUDENT) return RoleNameResponse.STUDENT;
-		throw Error(); // ToDo: right error
+		throw Error('invalid role name from domain');
 	}
 
 	static mapToDomain(roleName: RoleNameFilterQuery): RoleName {
 		if (roleName === RoleNameFilterQuery.ADMIN) return RoleName.ADMIN;
 		if (roleName === RoleNameFilterQuery.TEACHER) return RoleName.TEACHER;
 		if (roleName === RoleNameFilterQuery.STUDENT) return RoleName.STUDENT;
-		throw Error(); // ToDo: right error
+		throw Error('invalid role name from query');
 	}
 }
