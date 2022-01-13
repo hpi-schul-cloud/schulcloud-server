@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory } from '@shared/testing';
+import { roleFactory, userFactory } from '@shared/testing';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -13,7 +13,7 @@ describe('user repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
 			providers: [UserRepo],
 		}).compile();
 		repo = module.get(UserRepo);
@@ -57,6 +57,22 @@ describe('user repo', () => {
 			const idA = new ObjectId().toHexString();
 
 			await expect(repo.findById(idA)).rejects.toThrow(NotFoundError);
+		});
+
+		it('should populate user roles recursively if requested', async () => {
+			const roles3 = roleFactory.buildList(1);
+			const roles2 = roleFactory.buildList(1, { roles: roles3 });
+			const roles1 = roleFactory.buildList(1, { roles: roles2 });
+			const user = userFactory.build({ roles: roles1 });
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findById(user.id, true);
+
+			expect(result.roles.getItems()).toEqual(roles1);
+			expect(result.roles[0].roles.getItems()).toEqual(roles2);
+			expect(result.roles[0].roles[0].roles.getItems()).toEqual(roles3);
 		});
 	});
 });

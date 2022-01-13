@@ -20,9 +20,11 @@ export class UserRepo {
 	private async populateRoles(roles: Role[]): Promise<void> {
 		for (let i = 0; i < roles.length; i += 1) {
 			const role = roles[i];
-			if (!role.roles.isInitialized()) {
+			if (!role.roles.isInitialized(true)) {
 				// eslint-disable-next-line no-await-in-loop
 				await this.em.populate(role, ['roles']);
+				// eslint-disable-next-line no-await-in-loop
+				await this.populateRoles(role.roles.getItems());
 			}
 		}
 	}
