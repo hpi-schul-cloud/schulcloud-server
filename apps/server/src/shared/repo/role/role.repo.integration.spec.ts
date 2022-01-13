@@ -137,7 +137,7 @@ describe('role repo', () => {
 
 			const rootRole = await em.findOneOrFail(Role, role.id);
 
-			const result = await repo.resolvePermissionsByRoles([rootRole]);
+			const result = repo.resolvePermissionsByRoles([rootRole]);
 
 			expect(result).toEqual(['a']);
 		});
@@ -153,7 +153,7 @@ describe('role repo', () => {
 			const rootRoleA = await em.findOneOrFail(Role, roleA.id);
 			const rootRoleB = await em.findOneOrFail(Role, roleB.id);
 
-			const result = await repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
+			const result = repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
 
 			expect(result.sort()).toEqual(['a', 'b'].sort());
 		});
@@ -169,38 +169,41 @@ describe('role repo', () => {
 			const rootRoleA = await em.findOneOrFail(Role, roleA.id);
 			const rootRoleB = await em.findOneOrFail(Role, roleB.id);
 
-			const result = await repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
+			const result = repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
 
 			expect(result.sort()).toEqual(['a', 'b', 'c'].sort());
 		});
 
 		it('should return permissions for sub role', async () => {
-			const roleA = roleFactory.build({ permissions: ['a'] });
-			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleA] });
+			const roleB = roleFactory.build({ permissions: ['b'] });
+			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
 
-			await em.persistAndFlush([roleB]);
+			await em.persistAndFlush([roleA]);
 
 			em.clear();
 
-			const rootRole = await em.findOneOrFail(Role, roleB.id);
+			const rootRole = await em.findOneOrFail(Role, roleA.id);
+			await em.populate(rootRole, ['roles']);
 
-			const result = await repo.resolvePermissionsByRoles([rootRole]);
+			const result = repo.resolvePermissionsByRoles([rootRole]);
 
 			expect(result.sort()).toEqual(['a', 'b'].sort());
 		});
 
-		it('should return permissions for deep sub roles', async () => {
-			const roleA = roleFactory.build({ permissions: ['a'] });
-			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleA] });
-			const roleC = roleFactory.build({ permissions: ['c'], roles: [roleB] });
+		it('should return permissions for n sub roles', async () => {
+			const roleC = roleFactory.build({ permissions: ['c'] });
+			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
+			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
 
-			await em.persistAndFlush([roleC]);
+			await em.persistAndFlush([roleA]);
 
 			em.clear();
 
-			const rootRole = await em.findOneOrFail(Role, roleC.id);
+			const rootRole = await em.findOneOrFail(Role, roleA.id);
+			await em.populate(rootRole, ['roles']);
+			await em.populate(rootRole.roles[0], ['roles']);
 
-			const result = await repo.resolvePermissionsByRoles([rootRole]);
+			const result = repo.resolvePermissionsByRoles([rootRole]);
 
 			expect(result.sort()).toEqual(['a', 'b', 'c'].sort());
 		});
