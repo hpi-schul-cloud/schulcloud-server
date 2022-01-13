@@ -9,7 +9,6 @@ import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
 import { ICurrentUser, User } from '@shared/domain';
-import { TaskDashBoardPermission } from '@src/modules/task/uc';
 import {
 	courseFactory,
 	userFactory,
@@ -18,6 +17,7 @@ import {
 	cleanUpCollections,
 	lessonFactory,
 } from '@shared/testing';
+import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
 class API {
 	app: INestApplication;

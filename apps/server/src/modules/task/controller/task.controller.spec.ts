@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonRepo, TaskRepo } from '@shared/repo';
+import { LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { TaskUC } from '../uc';
 import { TaskAuthorizationService } from '../uc/task.authorization.service';
 import { TaskController } from './task.controller';
@@ -13,6 +13,14 @@ describe('TaskController', () => {
 				TaskUC,
 				{
 					provide: TaskRepo,
+					useValue: {},
+				},
+				{
+					provide: LessonRepo,
+					useValue: {},
+				},
+				{
+					provide: UserRepo,
 					useValue: {},
 				},
 				{
