@@ -6,7 +6,7 @@ export class ImportUserMatchMapper {
 		if (match === MatchFilterQuery.AUTO) return MatchCreatorScope.AUTO;
 		if (match === MatchFilterQuery.MANUAL) return MatchCreatorScope.MANUAL;
 		if (match === MatchFilterQuery.NONE) return MatchCreatorScope.NONE;
-		throw Error(); // ToDo: right error message
+		throw Error('invalid match from filter query');
 	}
 
 	static mapToResponse(user: User, matchCreator: MatchCreator): UserMatchResponse {
