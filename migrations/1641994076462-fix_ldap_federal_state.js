@@ -15,15 +15,15 @@ const getFederalStateFromSchool = async (systemId) => {
 		.exec();
 
 	if (federalStates.length === 0) {
-		error(`LDAP system ${systemId} is not associated to any school`);
+		alert(`LDAP system ${systemId} is not associated to any school`);
 		return;
 	}
 	if (federalStates.length > 1) {
-		error(`LDAP system ${systemId} used in multiple schools from different federal states`);
+		alert(`LDAP system ${systemId} used in multiple schools from different federal states`);
 		return;
 	}
 	if (federalStates[0]._id === null) {
-		error(`LDAP system ${systemId} cannot be associated with a federal state`);
+		alert(`LDAP system ${systemId} cannot be associated with a federal state`);
 		return;
 	}
 	return federalStates[0]._id;
@@ -41,7 +41,7 @@ module.exports = {
 
 		const systemsData = await systemModel
 			.find({
-				type: { $in: ['ldap', 'iserv'] },
+				type: 'ldap',
 			})
 			.lean()
 			.exec();
@@ -53,10 +53,10 @@ module.exports = {
 					case 'univention':
 						newLdapConfig.federalState = brandenburg;
 						break;
-					case 'iserv':
 					case 'iserv-idm':
 						newLdapConfig.federalState = lowersaxony;
 						break;
+					case 'iserv':
 					case 'general':
 					default:
 						// eslint-disable-next-line no-await-in-loop
