@@ -21,6 +21,7 @@ describe('rooms usecase', () => {
 				{
 					provide: CourseRepo,
 					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						findOne(courseId: EntityId, userId?: EntityId): Promise<Course> {
 							throw new Error('Please write a mock for CourseRepo.findOne');
 						},
@@ -29,8 +30,9 @@ describe('rooms usecase', () => {
 				{
 					provide: TaskRepo,
 					useValue: {
-						findAllByParentIds() {
-							throw new Error('Please write a mock for TaskRepo.findAllByParentIds');
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findBySingleParent(courseId: EntityId) {
+							throw new Error('Please write a mock for TaskRepo.findBySingleParent');
 						},
 					},
 				},
@@ -49,7 +51,7 @@ describe('rooms usecase', () => {
 			const task = taskFactory.finished(user).buildWithId({ course });
 
 			const spy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			await uc.getBoard(course.id, user.id);
 			expect(spy).toHaveBeenCalledWith(course.id, user.id);
@@ -61,10 +63,10 @@ describe('rooms usecase', () => {
 			const task = taskFactory.buildWithId({ course });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const spy = jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith({ courseIds: [course.id] });
+			expect(spy).toHaveBeenCalledWith(course.id);
 		});
 
 		it('should return board with tasks for teacher', async () => {
@@ -73,7 +75,7 @@ describe('rooms usecase', () => {
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
@@ -85,7 +87,7 @@ describe('rooms usecase', () => {
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
@@ -97,7 +99,7 @@ describe('rooms usecase', () => {
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);

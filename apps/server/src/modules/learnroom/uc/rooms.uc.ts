@@ -22,7 +22,7 @@ export class RoomsUc {
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
 		const course = await this.courseRepo.findOne(roomId, userId);
-		const [tasks] = await this.taskRepo.findAllByParentIds({ courseIds: [course.id] });
+		const [tasks] = await this.taskRepo.findBySingleParent(course.id);
 		const courseRole = this.getRoleInCourse(userId, course);
 		const tasksWithStatusVos = this.addStatusToTasks(courseRole, tasks, userId);
 

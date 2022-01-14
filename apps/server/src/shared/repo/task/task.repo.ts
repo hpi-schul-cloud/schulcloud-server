@@ -132,6 +132,23 @@ export class TaskRepo {
 		return countedTaskList;
 	}
 
+	async findBySingleParent(
+		courseId: EntityId,
+		filters?: { draft?: boolean },
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		// ToDO: support lesson Ids?
+		const scope = new TaskScope();
+		scope.byCourseIds([courseId]);
+
+		const shouldFetchDrafts = filters?.draft || false;
+		scope.byDraft(shouldFetchDrafts);
+
+		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+
+		return countedTaskList;
+	}
+
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
 		const { pagination, order } = options || {};
 		const [taskEntities, count] = await this.em.findAndCount(Task, query, {
