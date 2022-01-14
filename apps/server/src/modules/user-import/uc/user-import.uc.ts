@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope } from '@shared/domain';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope, User } from '@shared/domain';
 
 import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';
@@ -23,7 +23,19 @@ export class UserImportUC {
 		const permissions = [UserImportPermissions.VIEW_IMPORT_USER];
 		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
-		const countedImportUsers = this.importUserRepo.findImportUsers(user.school, query, options);
+		const countedImportUsers = await this.importUserRepo.findImportUsers(user.school, query, options);
 		return countedImportUsers;
+	}
+
+	async findAllUnassignedUsers(
+		userId: EntityId,
+		query: IImportUserScope,
+		options?: IFindOptions<ImportUser>
+	): Promise<Counted<User[]>> {
+		const user = await this.userRepo.findById(userId);
+
+		const countedImportUsers = await this.importUserRepo.findImportUsers(user.school, query, options); // TODO
+		// return countedImportUsers;
+		throw new NotImplementedException();
 	}
 }

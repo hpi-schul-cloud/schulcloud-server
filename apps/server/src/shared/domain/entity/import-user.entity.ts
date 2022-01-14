@@ -1,4 +1,3 @@
-/* istanbul ignore file */ // TODO remove when implementation exists
 import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Reference, wrap } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
@@ -81,28 +80,38 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	classNames: string[] = [];
 
 	/**
-	 * Update user-match together with matchedBy
+	 * Update user-match together with matchedBy, take the field as read-only
+	 * @private
 	 */
 	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
-	user?: IdentifiedReference<User>;
+	_user?: IdentifiedReference<User>;
+
+	get user(): IdentifiedReference<User> | undefined {
+		return this._user;
+	}
 
 	/**
-	 * References who set the user-match
+	 * References who set the user, take the field as read-only
+	 * @private
 	 */
 	@Enum({ fieldName: 'match_matchedBy' })
-	matchedBy?: MatchCreator;
+	_matchedBy?: MatchCreator;
+
+	get matchedBy(): MatchCreator | undefined {
+		return this.matchedBy;
+	}
 
 	@Property({ type: Boolean })
 	flagged = false;
 
 	setMatch(user: User, matchedBy: MatchCreator) {
-		this.user = wrap(user).toReference();
-		this.matchedBy = matchedBy;
+		this._user = wrap(user).toReference();
+		this._matchedBy = matchedBy;
 	}
 
 	revokeMatch() {
-		delete this.user;
-		delete this.matchedBy;
+		delete this._user;
+		delete this._matchedBy;
 	}
 
 	constructor(props: IImportUserProperties) {
