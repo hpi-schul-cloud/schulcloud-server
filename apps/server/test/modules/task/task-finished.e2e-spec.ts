@@ -13,7 +13,6 @@ import {
 	courseFactory,
 	userFactory,
 	taskFactory,
-	createCurrentTestUser,
 	cleanUpCollections,
 	lessonFactory,
 	roleFactory,
@@ -131,8 +130,6 @@ describe('Task controller (e2e)', () => {
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 
-			const permission = [TaskDashBoardPermission.teacherDashboard];
-			currentUser = createCurrentTestUser(permission).currentUser;
 			api = new API(app, '/tasks/finished');
 		});
 
@@ -223,8 +220,6 @@ describe('Task controller (e2e)', () => {
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 
-			const permission = [TaskDashBoardPermission.studentDashboard];
-			currentUser = createCurrentTestUser(permission).currentUser;
 			api = new API(app, '/tasks/finished');
 		});
 
