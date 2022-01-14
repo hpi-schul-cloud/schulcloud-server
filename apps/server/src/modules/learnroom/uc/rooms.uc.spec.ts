@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
 import { Course, EntityId } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
-import { RoomsUc, Board } from './rooms.uc';
-import { MongoMemoryDatabaseModule } from '../../../shared/infra/database';
+import { RoomsUc } from './rooms.uc';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
@@ -52,30 +51,43 @@ describe('rooms usecase', () => {
 			const spy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
 
-			await uc.getBoard(course.id, 'userId');
-			expect(spy).toHaveBeenCalledWith(course.id, 'userId');
+			await uc.getBoard(course.id, user.id);
+			expect(spy).toHaveBeenCalledWith(course.id, user.id);
 		});
 
 		it('should get tasks for courseId', async () => {
-			const course = courseFactory.buildWithId();
+			const user = userFactory.build();
+			const course = courseFactory.buildWithId({ teachers: [user] });
+			const task = taskFactory.buildWithId({ course });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const task = taskFactory.buildWithId({ course });
 			const spy = jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
 
-			await uc.getBoard(course.id, 'userId');
+			await uc.getBoard(course.id, user.id);
 			expect(spy).toHaveBeenCalledWith({ courseIds: [course.id] });
 		});
 
-		it('should return board with tasks', async () => {
-			const course = courseFactory.buildWithId();
+		it('should return board with tasks for teacher', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.buildWithId({ teachers: [user] });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
 			const task = taskFactory.buildWithId({ course });
 			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
 
-			const result = await uc.getBoard(course.id, 'userId');
+			const result = await uc.getBoard(course.id, user.id);
+			expect(result.elements.length).toEqual(1);
+		});
 
+		it('should return board with tasks for students', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.buildWithId({ students: [user] });
+			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+
+			const task = taskFactory.buildWithId({ course });
+			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
 		});
 	});

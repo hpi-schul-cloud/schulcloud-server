@@ -33,14 +33,21 @@ describe('board mapper', () => {
 			expect(result instanceof BoardResponse).toEqual(true);
 		});
 
-		it('should map tasks on board to response', () => {
+		it('should map tasks with status on board to response', () => {
 			const course = courseFactory.buildWithId();
 			const task = taskFactory.buildWithId({ course });
+			const status = {
+				graded: 0,
+				maxSubmissions: 0,
+				submitted: 0,
+				isDraft: false,
+				isSubstitutionTeacher: false,
+			};
 			const board = {
 				roomId: course.id,
 				displayColor: course.color,
 				title: course.name,
-				elements: [{ type: 'task', content: task }],
+				elements: [{ type: 'task', content: { task, status } }],
 			};
 
 			const result = mapper.mapToResponse(board);

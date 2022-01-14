@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, Task, Course } from '@shared/domain';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { EntityId, Course, TaskWithStatusVo } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 
 // TODO: move this somewhere else
@@ -13,7 +13,7 @@ export interface Board {
 export type BoardElement = {
 	// TODO: should become fullblown class
 	type: string;
-	content: Task;
+	content: TaskWithStatusVo;
 };
 
 @Injectable()
@@ -23,12 +23,29 @@ export class RoomsUc {
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
 		const course = await this.courseRepo.findOne(roomId, userId);
 		const [tasks] = await this.taskRepo.findAllByParentIds({ courseIds: [course.id] });
-		const board = this.buildBoard(course, tasks);
+		let tasksWithStatusVos: TaskWithStatusVo[];
+		const studentStatus = this.isStudentInCourse(userId, course);
+		const teacherStatus = this.isTeacherInCourse(userId, course);
+		if (studentStatus) {
+			tasksWithStatusVos = tasks.map((task) => {
+				const status = task.createStudentStatusForUser(userId);
+				return new TaskWithStatusVo(task, status);
+			});
+		} else if (teacherStatus) {
+			tasksWithStatusVos = tasks.map((task) => {
+				const status = task.createTeacherStatusForUser(userId);
+				return new TaskWithStatusVo(task, status);
+			});
+		} else {
+			throw new UnauthorizedException();
+		}
+
+		const board = this.buildBoard(course, tasksWithStatusVos);
 		return board;
 	}
 
 	// TODO: move somewhere else
-	private buildBoard(room: Course, tasks: Task[]): Board {
+	private buildBoard(room: Course, tasks: TaskWithStatusVo[]): Board {
 		const roomMetadata = room.getMetadata();
 		const board = {
 			roomId: roomMetadata.id,
@@ -37,5 +54,15 @@ export class RoomsUc {
 			elements: tasks.map((task) => ({ type: 'task', content: task })),
 		};
 		return board;
+	}
+
+	private isStudentInCourse(userId: EntityId, course?: Course): boolean {
+		const isParticipant = course?.getStudentIds().includes(userId) === true;
+		return isParticipant;
+	}
+
+	private isTeacherInCourse(userId: EntityId, course?: Course): boolean {
+		const isParticipant = course?.getTeacherIds().includes(userId) === true;
+		return isParticipant;
 	}
 }
