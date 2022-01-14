@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
 
-import { ICurrentUser, Course, Submission, Task, User } from '@shared/domain';
+import { ICurrentUser, User } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
@@ -14,8 +14,8 @@ import {
 	userFactory,
 	taskFactory,
 	submissionFactory,
-	createCurrentTestUser,
 	roleFactory,
+	cleanUpCollections,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
@@ -124,12 +124,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await Promise.all([
-				em.nativeDelete(Course, {}),
-				em.nativeDelete(Task, {}),
-				em.nativeDelete(Submission, {}),
-				em.nativeDelete(User, {}),
-			]);
+			await cleanUpCollections(em);
 		});
 
 		const setup = () => {
@@ -352,12 +347,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await Promise.all([
-				em.nativeDelete(Course, {}),
-				em.nativeDelete(Task, {}),
-				em.nativeDelete(Submission, {}),
-				em.nativeDelete(User, {}),
-			]);
+			await cleanUpCollections(em);
 		});
 
 		const setup = () => {
