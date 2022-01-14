@@ -3,7 +3,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { roleFactory } from '@shared/testing';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -28,7 +27,6 @@ describe('role repo', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
 		expect(typeof repo.findByName).toEqual('function');
-		expect(typeof repo.resolvePermissionsByRoles).toEqual('function');
 	});
 
 	describe('entity', () => {
@@ -120,92 +118,6 @@ describe('role repo', () => {
 
 			await em.persistAndFlush([roleA]);
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
-		});
-	});
-
-	describe('resolvePermissionsByRoles', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-		});
-
-		it('should return permissions for one role', async () => {
-			const role = roleFactory.build({ permissions: ['a'] });
-
-			await em.persistAndFlush([role]);
-
-			em.clear();
-
-			const rootRole = await em.findOneOrFail(Role, role.id);
-
-			const result = repo.resolvePermissionsByRoles([rootRole]);
-
-			expect(result).toEqual(['a']);
-		});
-
-		it('should return permissions for many roles', async () => {
-			const roleA = roleFactory.build({ permissions: ['a'] });
-			const roleB = roleFactory.build({ permissions: ['b'] });
-
-			await em.persistAndFlush([roleA, roleB]);
-
-			em.clear();
-
-			const rootRoleA = await em.findOneOrFail(Role, roleA.id);
-			const rootRoleB = await em.findOneOrFail(Role, roleB.id);
-
-			const result = repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
-
-			expect(result.sort()).toEqual(['a', 'b'].sort());
-		});
-
-		it('should return unique permissions', async () => {
-			const roleA = roleFactory.build({ permissions: ['a', 'b'] });
-			const roleB = roleFactory.build({ permissions: ['b', 'c'] });
-
-			await em.persistAndFlush([roleA, roleB]);
-
-			em.clear();
-
-			const rootRoleA = await em.findOneOrFail(Role, roleA.id);
-			const rootRoleB = await em.findOneOrFail(Role, roleB.id);
-
-			const result = repo.resolvePermissionsByRoles([rootRoleA, rootRoleB]);
-
-			expect(result.sort()).toEqual(['a', 'b', 'c'].sort());
-		});
-
-		it('should return permissions for sub role', async () => {
-			const roleB = roleFactory.build({ permissions: ['b'] });
-			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
-
-			await em.persistAndFlush([roleA]);
-
-			em.clear();
-
-			const rootRole = await em.findOneOrFail(Role, roleA.id);
-			await em.populate(rootRole, ['roles']);
-
-			const result = repo.resolvePermissionsByRoles([rootRole]);
-
-			expect(result.sort()).toEqual(['a', 'b'].sort());
-		});
-
-		it('should return permissions for n sub roles', async () => {
-			const roleC = roleFactory.build({ permissions: ['c'] });
-			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
-			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
-
-			await em.persistAndFlush([roleA]);
-
-			em.clear();
-
-			const rootRole = await em.findOneOrFail(Role, roleA.id);
-			await em.populate(rootRole, ['roles']);
-			await em.populate(rootRole.roles[0], ['roles']);
-
-			const result = repo.resolvePermissionsByRoles([rootRole]);
-
-			expect(result.sort()).toEqual(['a', 'b', 'c'].sort());
 		});
 	});
 });

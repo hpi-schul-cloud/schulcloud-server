@@ -18,23 +18,4 @@ export class RoleRepo {
 
 		return role;
 	}
-
-	resolvePermissionsByRoles(inputRoles: Role[]): string[] {
-		let permissions: string[] = [];
-
-		for (let i = 0; i < inputRoles.length; i += 1) {
-			const role = inputRoles[i];
-			const subRoles = role.roles.getItems();
-			permissions = [...permissions, ...role.permissions];
-
-			if (subRoles.length > 0) {
-				const subPermissions = this.resolvePermissionsByRoles(subRoles);
-				permissions = [...permissions, ...subPermissions];
-			}
-		}
-
-		permissions = [...new Set(permissions)];
-
-		return permissions;
-	}
 }

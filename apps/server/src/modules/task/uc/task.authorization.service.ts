@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Course, Lesson, Task, User } from '@shared/domain';
-import { CourseRepo, LessonRepo, RoleRepo } from '@shared/repo';
+import { Course, Lesson, PermissionService, Task, User } from '@shared/domain';
+import { CourseRepo, LessonRepo } from '@shared/repo';
 
 export enum TaskParentPermission {
 	read,
@@ -17,7 +17,7 @@ export class TaskAuthorizationService {
 	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly roleRepo: RoleRepo
+		private readonly permissionService: PermissionService
 	) {}
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
@@ -82,7 +82,7 @@ export class TaskAuthorizationService {
 	}
 
 	hasTaskDashboardPermission(user: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]): boolean {
-		const permissions = this.roleRepo.resolvePermissionsByRoles(user.roles.getItems());
+		const [, permissions] = this.permissionService.resolveRolesAndPermissions(user);
 
 		const hasPermission = Array.isArray(permission)
 			? permission.every((p) => permissions.includes(p))

@@ -3,9 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { ResolvedUser } from '@src/modules/user/controller/dto';
-import { UserFacade } from '@src/modules/user';
-
+import { UserRepo } from '@shared/repo';
+import { setupEntities, userFactory } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 
@@ -15,10 +15,13 @@ import { JwtValidationAdapter } from './jwt-validation.adapter';
 describe('jwt strategy', () => {
 	let adapter: JwtValidationAdapter;
 	let strategy: JwtStrategy;
-	let facade: UserFacade;
+	let repo: UserRepo;
 	let module: TestingModule;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
+		orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			imports: [PassportModule, JwtModule.register(jwtConstants)],
 			providers: [
@@ -32,10 +35,10 @@ describe('jwt strategy', () => {
 					},
 				},
 				{
-					provide: UserFacade,
+					provide: UserRepo,
 					useValue: {
-						resolveUser() {
-							return new ResolvedUser();
+						findById() {
+							return userFactory.build();
 						},
 					},
 				},
@@ -43,18 +46,19 @@ describe('jwt strategy', () => {
 		}).compile();
 
 		strategy = module.get(JwtStrategy);
-		facade = module.get(UserFacade);
+		repo = module.get(UserRepo);
 		adapter = module.get(JwtValidationAdapter);
 	});
 
 	afterAll(async () => {
+		await orm.close();
 		await module.close();
 	});
 
 	it('should be defined', () => {
 		expect(strategy).toBeDefined();
 		expect(adapter).toBeDefined();
-		expect(facade).toBeDefined();
+		expect(repo).toBeDefined();
 	});
 
 	describe('when authenticate a user with jwt', () => {
@@ -69,7 +73,7 @@ describe('jwt strategy', () => {
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			const resolveUserSpy = jest.spyOn(facade, 'resolveUser');
+			const resolveUserSpy = jest.spyOn(repo, 'findById');
 			const payload = { accountId, jti, userId } as JwtPayload;
 			await strategy.validate(payload);
 			expect(resolveUserSpy).toHaveBeenCalledWith(userId);
