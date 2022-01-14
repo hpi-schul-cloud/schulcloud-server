@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, taskFactory, setupEntities } from '@shared/testing';
 import { BoardMapper } from './board.mapper';
-import { BoardResponse, BoardElementResponse, BoardTaskResponse } from '../controller/dto/roomBoardResponse';
+import { BoardResponse, BoardElementResponse } from '../controller/dto/roomBoardResponse';
 
 describe('board mapper', () => {
 	let mapper: BoardMapper;
@@ -45,7 +45,6 @@ describe('board mapper', () => {
 
 			const result = mapper.mapToResponse(board);
 
-			// TODO: module should define its own taskresponse
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 		});
 	});

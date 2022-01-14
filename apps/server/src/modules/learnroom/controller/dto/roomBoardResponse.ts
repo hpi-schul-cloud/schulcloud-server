@@ -52,9 +52,9 @@ export class BoardElementResponse {
 	type: string;
 
 	@ApiProperty({
-		description: 'Color of the Board',
+		description: 'Content of the Board, either: a task or a lesson specific for the board',
 	})
-	content: BoardTaskResponse; // TODO: define our own taskresponse
+	content: BoardTaskResponse;
 }
 
 // TODO: this and DashboardResponse should be combined
@@ -84,7 +84,7 @@ export class BoardResponse {
 
 	@ApiProperty({
 		type: [BoardElementResponse],
-		description: 'Color of the Board',
+		description: 'Array of board specific tasks or lessons with matching type property',
 	})
 	elements: BoardElementResponse[];
 }
