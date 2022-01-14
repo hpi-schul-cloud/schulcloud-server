@@ -1335,6 +1335,19 @@ describe('TaskRepo', () => {
 			expect(tasks).toHaveLength(0);
 		});
 
+		it('should "not" find tasks of a lesson in the course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			const task = taskFactory.build({ course, lesson });
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id);
+
+			expect(tasks).toHaveLength(0);
+		});
+
 		describe('when drafts are included', () => {
 			it('should return draft', async () => {
 				const user = userFactory.build();

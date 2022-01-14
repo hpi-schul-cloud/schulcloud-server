@@ -15,7 +15,7 @@ const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.userId = user.id;
 };
 
-describe('Dashboard Controller (e2e)', () => {
+describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
