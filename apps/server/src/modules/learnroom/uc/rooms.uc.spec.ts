@@ -57,7 +57,19 @@ describe('rooms usecase', () => {
 			expect(spy).toHaveBeenCalledWith(course.id, user.id);
 		});
 
-		it('should get tasks for courseId', async () => {
+		it('should fetch published drafts for students', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.buildWithId({ students: [user] });
+			const task = taskFactory.buildWithId({ course });
+			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+
+			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			await uc.getBoard(course.id, user.id);
+			expect(spy).toHaveBeenCalledWith(course.id, { draft: false });
+		});
+
+		it('should fetch draft tasks for teachers', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const task = taskFactory.buildWithId({ course });
@@ -66,7 +78,7 @@ describe('rooms usecase', () => {
 			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id);
+			expect(spy).toHaveBeenCalledWith(course.id, { draft: true });
 		});
 
 		it('should return board with tasks for teacher', async () => {

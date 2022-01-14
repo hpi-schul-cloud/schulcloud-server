@@ -22,12 +22,18 @@ export class RoomsUc {
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
 		const course = await this.courseRepo.findOne(roomId, userId);
-		const [tasks] = await this.taskRepo.findBySingleParent(course.id);
 		const courseRole = this.getRoleInCourse(userId, course);
+		const taskFilter = this.taskFilter(courseRole);
+		const [tasks] = await this.taskRepo.findBySingleParent(course.id, taskFilter);
 		const tasksWithStatusVos = this.addStatusToTasks(courseRole, tasks, userId);
 
 		const board = this.buildBoard(course, tasksWithStatusVos);
 		return board;
+	}
+
+	private taskFilter(courseRole: string): { draft?: boolean } {
+		const shouldShowDrafts = courseRole === 'teacher';
+		return { draft: shouldShowDrafts };
 	}
 
 	// TODO: move somewhere else
