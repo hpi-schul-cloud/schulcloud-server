@@ -3,12 +3,12 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { ICurrentUser, User } from '@shared/domain';
+import { ICurrentUser, User, Role } from '@shared/domain';
 import {
 	courseFactory,
 	userFactory,
@@ -16,6 +16,8 @@ import {
 	createCurrentTestUser,
 	cleanUpCollections,
 	lessonFactory,
+	roleFactory,
+	setupEntities,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
@@ -41,11 +43,20 @@ class API {
 		};
 	}
 }
-
+/*
 const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
 	currentUser.user.id = user.id;
 	currentUser.userId = user.id;
 };
+*/
+
+const mapToCurrentUser = (user: User) =>
+	({
+		userId: user.id,
+		roles: user.roles.getItems().map((r) => r.id),
+		schoolId: user.school.id,
+		accountId: new ObjectId().toHexString(),
+	} as ICurrentUser);
 
 describe('Task controller (e2e)', () => {
 	describe('task/finished without permission', () => {
@@ -73,9 +84,6 @@ describe('Task controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
-
-			const permission = [];
-			currentUser = createCurrentTestUser(permission).currentUser;
 			api = new API(app, '/tasks/finished');
 		});
 
@@ -89,13 +97,14 @@ describe('Task controller (e2e)', () => {
 		});
 
 		it('should return status 401', async () => {
-			const user = userFactory.build();
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const user = userFactory.build({ roles });
 			const task = taskFactory.finished(user).build({ creator: user });
 
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			modifyCurrentUserId(currentUser, user);
+			currentUser = mapToCurrentUser(user);
 
 			const response = await api.get();
 
@@ -143,15 +152,22 @@ describe('Task controller (e2e)', () => {
 			await cleanUpCollections(em);
 		});
 
+		const setup = () => {
+			const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.teacherDashboard] });
+			const user = userFactory.build({ roles });
+
+			return user;
+		};
+
 		it('should "not" find task if the user is not part of the parent anymore.', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			const course = courseFactory.build({ teachers: [] });
 			const task = taskFactory.finished(user).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			modifyCurrentUserId(currentUser, user);
+			currentUser = mapToCurrentUser(user);
 
 			const { result } = await api.get();
 
@@ -159,14 +175,14 @@ describe('Task controller (e2e)', () => {
 		});
 
 		it('should return finished tasks of user', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			const course = courseFactory.build({ teachers: [user] });
 			const task = taskFactory.finished(user).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			modifyCurrentUserId(currentUser, user);
+			currentUser = mapToCurrentUser(user);
 
 			const { result } = await api.get();
 
@@ -174,14 +190,14 @@ describe('Task controller (e2e)', () => {
 		});
 
 		it('should return status for privileged members if user has write permission in for tasks', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			const course = courseFactory.build({ substitutionTeachers: [user] });
 			const task = taskFactory.finished(user).build({ course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			modifyCurrentUserId(currentUser, user);
+			currentUser = mapToCurrentUser(user);
 
 			const { result } = await api.get();
 
@@ -249,14 +265,21 @@ describe('Task controller (e2e)', () => {
 		});
 
 		describe('when user is the creator', () => {
+			const setup = () => {
+				const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+				const user = userFactory.build({ roles });
+
+				return user;
+			};
+
 			it('should return finished tasks', async () => {
-				const user = userFactory.build();
+				const user = setup();
 				const task = taskFactory.finished(user).build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				modifyCurrentUserId(currentUser, user);
+				currentUser = mapToCurrentUser(user);
 
 				const { result } = await api.get();
 
@@ -264,13 +287,13 @@ describe('Task controller (e2e)', () => {
 			});
 
 			it('should return finished draft tasks', async () => {
-				const user = userFactory.build();
+				const user = setup();
 				const task = taskFactory.finished(user).draft().build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				modifyCurrentUserId(currentUser, user);
+				currentUser = mapToCurrentUser(user);
 
 				const { result } = await api.get();
 
@@ -278,13 +301,13 @@ describe('Task controller (e2e)', () => {
 			});
 
 			it('should "not" return open tasks', async () => {
-				const user = userFactory.build();
+				const user = setup();
 				const task = taskFactory.build({ creator: user });
 
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				modifyCurrentUserId(currentUser, user);
+				currentUser = mapToCurrentUser(user);
 
 				const { result } = await api.get();
 
@@ -295,7 +318,8 @@ describe('Task controller (e2e)', () => {
 		describe('when user has write permission in course', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
-					const user = userFactory.build();
+					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const user = userFactory.build({ roles });
 					const course = courseFactory.isFinished().build({ teachers: [user] });
 
 					return { course, user };
@@ -308,7 +332,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -323,7 +347,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -338,7 +362,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -353,14 +377,14 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
 				});
 
-				it('should return finished tasks of hidden lessons', async () => {
+				it.only('should return finished tasks of hidden lessons', async () => {
 					const { user, course } = setup();
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.finished(user).build({ course, lesson });
@@ -368,7 +392,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -382,7 +406,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -396,7 +420,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -411,7 +435,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -425,7 +449,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -435,7 +459,8 @@ describe('Task controller (e2e)', () => {
 
 			describe('when courses are open', () => {
 				const setup = () => {
-					const user = userFactory.build();
+					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const user = userFactory.build({ roles });
 					const course = courseFactory.isOpen().build({ teachers: [user] });
 
 					return { course, user };
@@ -448,7 +473,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -463,7 +488,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -478,7 +503,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -493,7 +518,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -508,7 +533,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -522,7 +547,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -536,7 +561,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -551,7 +576,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -565,7 +590,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -577,7 +602,8 @@ describe('Task controller (e2e)', () => {
 		describe('when user has read permission in course', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
-					const user = userFactory.build();
+					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const user = userFactory.build({ roles });
 					const course = courseFactory.isFinished().build({ students: [user] });
 
 					return { course, user };
@@ -590,7 +616,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -605,7 +631,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -620,7 +646,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -635,7 +661,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -650,7 +676,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -664,7 +690,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -678,7 +704,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -693,7 +719,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -707,7 +733,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -717,7 +743,8 @@ describe('Task controller (e2e)', () => {
 
 			describe('when courses are open', () => {
 				const setup = () => {
-					const user = userFactory.build();
+					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const user = userFactory.build({ roles });
 					const course = courseFactory.isOpen().build({ students: [user] });
 
 					return { course, user };
@@ -730,7 +757,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -745,7 +772,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -760,7 +787,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -775,7 +802,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -790,7 +817,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -804,7 +831,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -818,7 +845,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -833,7 +860,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
@@ -847,7 +874,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					modifyCurrentUserId(currentUser, user);
+					currentUser = mapToCurrentUser(user);
 
 					const { result } = await api.get();
 
