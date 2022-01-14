@@ -90,5 +90,17 @@ describe('rooms usecase', () => {
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
 		});
+
+		it('should return board with tasks for substitution teacher', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+
+			const task = taskFactory.buildWithId({ course });
+			jest.spyOn(taskRepo, 'findAllByParentIds').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			const result = await uc.getBoard(course.id, user.id);
+			expect(result.elements.length).toEqual(1);
+		});
 	});
 });

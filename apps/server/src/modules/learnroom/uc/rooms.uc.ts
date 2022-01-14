@@ -42,11 +42,11 @@ export class RoomsUc {
 		return board;
 	}
 
-	private getRoleInCourse(userId: EntityId, course?: Course): string {
-		if (course?.getStudentIds().includes(userId)) {
+	private getRoleInCourse(userId: EntityId, course: Course): string {
+		if (course.getStudentIds().includes(userId)) {
 			return 'student';
 		}
-		if (course?.getTeacherIds().includes(userId)) {
+		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId) === true) {
 			return 'teacher';
 		}
 		throw new NotFoundException();
