@@ -1,5 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, Course, TaskWithStatusVo } from '@shared/domain';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { EntityId, Course, Task, TaskWithStatusVo } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 
 // TODO: move this somewhere else
@@ -23,22 +23,8 @@ export class RoomsUc {
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
 		const course = await this.courseRepo.findOne(roomId, userId);
 		const [tasks] = await this.taskRepo.findAllByParentIds({ courseIds: [course.id] });
-		let tasksWithStatusVos: TaskWithStatusVo[];
-		const studentStatus = this.isStudentInCourse(userId, course);
-		const teacherStatus = this.isTeacherInCourse(userId, course);
-		if (studentStatus) {
-			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createStudentStatusForUser(userId);
-				return new TaskWithStatusVo(task, status);
-			});
-		} else if (teacherStatus) {
-			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createTeacherStatusForUser(userId);
-				return new TaskWithStatusVo(task, status);
-			});
-		} else {
-			throw new UnauthorizedException();
-		}
+		const courseRole = this.getRoleInCourse(userId, course);
+		const tasksWithStatusVos = this.addStatusToTasks(courseRole, tasks, userId);
 
 		const board = this.buildBoard(course, tasksWithStatusVos);
 		return board;
@@ -56,13 +42,31 @@ export class RoomsUc {
 		return board;
 	}
 
-	private isStudentInCourse(userId: EntityId, course?: Course): boolean {
-		const isParticipant = course?.getStudentIds().includes(userId) === true;
-		return isParticipant;
+	private getRoleInCourse(userId: EntityId, course?: Course): string {
+		if (course?.getStudentIds().includes(userId)) {
+			return 'student';
+		}
+		if (course?.getTeacherIds().includes(userId)) {
+			return 'teacher';
+		}
+		throw new NotFoundException();
 	}
 
-	private isTeacherInCourse(userId: EntityId, course?: Course): boolean {
-		const isParticipant = course?.getTeacherIds().includes(userId) === true;
-		return isParticipant;
+	private addStatusToTasks(role: string, tasks: Task[], userId: EntityId): TaskWithStatusVo[] {
+		let tasksWithStatusVos: TaskWithStatusVo[];
+		if (role === 'student') {
+			tasksWithStatusVos = tasks.map((task) => {
+				const status = task.createStudentStatusForUser(userId);
+				return new TaskWithStatusVo(task, status);
+			});
+		} else if (role === 'teacher') {
+			tasksWithStatusVos = tasks.map((task) => {
+				const status = task.createTeacherStatusForUser(userId);
+				return new TaskWithStatusVo(task, status);
+			});
+		} else {
+			throw new UnauthorizedException();
+		}
+		return tasksWithStatusVos;
 	}
 }
