@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser, User, Role } from '@shared/domain';
-import { ResolvedUserMapper } from '@src/modules/user/mapper';
+// import { ResolvedUserMapper } from '@src/modules/user/mapper';
 import { schoolFactory, userFactory } from './factory';
 
 export const createCurrentTestUser = (
@@ -22,14 +22,14 @@ export const createCurrentTestUser = (
 	const user = passedUser || userFactory.build({ roles, school });
 	// const user = new User({ email: `Date.now()@email.de`, roles, school });
 	user._id = new ObjectId();
-	const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, roles);
+	// const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, roles);
 
 	const currentUser = {
 		userId: user.id,
 		roles: roleIds,
 		schoolId: school.id,
 		accountId,
-		user: resolvedUser,
+		// user: resolvedUser,
 	} as ICurrentUser;
 	return { currentUser, user, roles };
 };
