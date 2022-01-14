@@ -520,8 +520,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		it('[FIND] /tasks should nothing return from student when the user has write permissions', async () => {
-			const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.teacherDashboard] });
-			const teacher = userFactory.build({ roles });
+			const teacher = userFactory.build();
 			const subTeacher = userFactory.build();
 			const course1 = courseFactory.build({
 				teachers: [teacher],
