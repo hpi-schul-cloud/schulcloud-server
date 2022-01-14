@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 
-import { DashboardRepo, DashboardModelMapper, CourseRepo } from '@shared/repo';
+import { DashboardRepo, DashboardModelMapper, CourseRepo, TaskRepo } from '@shared/repo';
 
 import { DashboardController } from './controller/dashboard.controller';
 import { CourseController } from './controller/course.controller';
 import { DashboardUc } from './uc/dashboard.uc';
 import { CourseUc } from './uc/course.uc';
+import { RoomsController } from './controller/rooms.controller';
+import { RoomsUc } from './uc/rooms.uc';
+import { BoardMapper } from './mapper/board.mapper';
 
 @Module({
 	imports: [],
-	controllers: [DashboardController, CourseController],
+	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
 		{
@@ -19,6 +22,9 @@ import { CourseUc } from './uc/course.uc';
 		DashboardModelMapper,
 		CourseUc,
 		CourseRepo,
+		RoomsUc,
+		TaskRepo,
+		BoardMapper,
 	],
 })
 export class LearnroomModule {}

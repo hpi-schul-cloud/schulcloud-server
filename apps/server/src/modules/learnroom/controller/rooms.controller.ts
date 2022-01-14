@@ -13,7 +13,7 @@ import { BoardResponse } from './dto/roomBoardResponse';
 export class RoomsController {
 	constructor(private readonly roomsUc: RoomsUc, private readonly mapper: BoardMapper) {}
 
-	@Get(':id/content')
+	@Get(':id/board')
 	async getRoomBoard(
 		@Param('id', ParseObjectIdPipe) roomId: string,
 		@CurrentUser() currentUser: ICurrentUser
