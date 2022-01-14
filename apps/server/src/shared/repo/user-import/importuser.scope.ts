@@ -9,7 +9,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 	 * Regex to escape strings before use as regex against database.
 	 * Used to remove all non-language characters except numbers, whitespace or minus.
 	 */
-	private REGEX_WHITELIST = /[^\-\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]/gi;
+	private REGEX_WHITELIST = /[^\-_\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]/gi;
 
 	bySchool(school: School): ImportUserScope {
 		const schoolId = school._id;
@@ -56,7 +56,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 			this.addQuery({
 				ldapDn: {
 					// @ts-ignore
-					$regex: `^uid=\\w*${escapedLoginName}\\w*,`,
+					$regex: `^uid=[^,]*${escapedLoginName}[^,]*,`,
 					$options: 'i',
 				},
 			});
