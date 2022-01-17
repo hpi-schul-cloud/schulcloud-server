@@ -3,22 +3,19 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
+import { BoardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanUpCollections, roleFactory } from '@shared/testing';
+import { userFactory, courseFactory, taskFactory, cleanUpCollections, createCurrentTestUser } from '@shared/testing';
 import { ICurrentUser, User } from '@shared/domain';
 
-const mapToCurrentUser = (user: User) =>
-	({
-		userId: user.id,
-		roles: user.roles.getItems().map((r) => r.id),
-		schoolId: user.school.id,
-		accountId: new ObjectId().toHexString(),
-	} as ICurrentUser);
+const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
+	currentUser.user.id = user.id;
+	currentUser.userId = user.id;
+};
 
-describe('Course Controller (e2e)', () => {
+describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -42,6 +39,7 @@ describe('Course Controller (e2e)', () => {
 		await app.init();
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
+		currentUser = createCurrentTestUser().currentUser;
 	});
 
 	afterEach(async () => {
@@ -50,25 +48,20 @@ describe('Course Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [] });
-		const user = userFactory.build({ roles });
-
-		return user;
-	};
-
-	it('[FIND] courses', async () => {
-		const student = setup();
+	it('[GET] board', async () => {
+		const student = userFactory.build();
+		await em.persistAndFlush([student]);
 		const course = courseFactory.build({ name: 'course #1', students: [student] });
-		await em.persistAndFlush(course);
+		const task = taskFactory.build({ course });
+		await em.persistAndFlush([course, task]);
 		em.clear();
 
-		currentUser = mapToCurrentUser(student);
+		modifyCurrentUserId(currentUser, student);
 
-		const response = await request(app.getHttpServer()).get('/courses');
+		const response = await request(app.getHttpServer()).get(`/rooms/${course.id}/board`);
 
 		expect(response.status).toEqual(200);
-		const body = response.body as CourseMetadataListResponse;
-		expect(typeof body.data[0].title).toBe('string');
+		const body = response.body as BoardResponse;
+		expect(body.roomId).toEqual(course.id);
 	});
 });
