@@ -49,7 +49,7 @@ export class RoomsUc {
 	}
 
 	private isTeacher(userId: EntityId, course: Course): boolean {
-		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId) === true) {
+		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId)) {
 			return true;
 		}
 		return false;
