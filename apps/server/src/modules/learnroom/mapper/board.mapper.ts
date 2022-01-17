@@ -23,7 +23,7 @@ export class BoardMapper {
 			const taskCourse = boardTask.course as Course;
 			mappedTask.courseName = taskCourse.name;
 			mappedTask.availableDate = boardTask.availableDate;
-			mappedTask.dueDate = boardTask.dueDate;
+			mappedTask.duedate = boardTask.dueDate;
 			mappedTask.displayColor = boardTaskDesc.color;
 			mappedTask.description = boardTaskDesc.description;
 
