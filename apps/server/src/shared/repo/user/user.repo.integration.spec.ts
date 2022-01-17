@@ -30,7 +30,7 @@ describe('user repo', () => {
 	});
 
 	describe('findById', () => {
-		afterEach(async () => {
+		beforeEach(async () => {
 			await em.nativeDelete(User, {});
 		});
 

@@ -15,3 +15,7 @@ export interface IImportUserScope {
 	role?: RoleName;
 	classes?: string;
 }
+
+export interface INameMatch {
+	fullName?: string;
+}

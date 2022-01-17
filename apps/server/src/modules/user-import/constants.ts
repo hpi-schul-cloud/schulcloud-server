@@ -1,3 +1,5 @@
 export enum UserImportPermissions {
 	VIEW_IMPORT_USER = 'IMPORT_USER_VIEW',
+	STUDENT_LIST = 'STUDENT_LIST',
+	TEACHER_LIST = 'TEACHER_LIST',
 }

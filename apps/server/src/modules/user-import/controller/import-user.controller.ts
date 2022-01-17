@@ -6,18 +6,20 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
 import { ImportUserListResponse } from './dto/import-user.response';
 import { UpdateMatchParams } from './dto/update-match.params';
-import { UserDetailsListResponse, UserDetailsResponse, UserMatchResponse } from './dto/user-match.response';
+import { UserDetailsListResponse, UserMatchResponse } from './dto/user-match.response';
 
 import { UserImportUC } from '../uc/user-import.uc';
 
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserFilterQuery } from './dto/user-filter.query';
+import { UserUC } from '../uc/user.uc';
+import { UserMapper } from '../mapper/user.mapper';
 
 @ApiTags('User')
 @Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
-	constructor(private readonly userImportUc: UserImportUC) {}
+	constructor(private readonly userImportUc: UserImportUC, private readonly userUc: UserUC) {}
 
 	@Get()
 	async findAll(
@@ -58,31 +60,18 @@ export class ImportUserController {
 	}
 
 	@Get('unassigned')
-	async findAllUnassignedUsers(
+	async findAllUnmatchedUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: UserFilterQuery,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<UserDetailsListResponse> {
 		const options: IFindOptions<User> = { pagination: paginationQuery };
 
-		// const query = ImportUserMapper.mapUserFilterQueryToDomain(scope);
-		const [userList, count] = await this.userImportUc.findAllUnassignedUsers(
-			currentUser.userId,
-			{
-				/* query */
-			},
-			options
-		);
+		const query = UserMapper.mapToDomain(scope);
+		const userList = await this.userUc.findAllUnmatched(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
-		// const dtoList = userList.map((user) => UserDetailsMapper.mapToResponse(user));
-		const response = new UserDetailsListResponse(
-			[
-				/* dtoList */
-			],
-			0, // count,
-			skip,
-			limit
-		);
+		const dtoList = await Promise.all(userList.map(async (user) => UserMapper.mapToResponse(user)));
+		const response = new UserDetailsListResponse(dtoList, -1, skip, limit); // TODO total missing
 		return response as unknown as UserDetailsListResponse;
 	}
 }

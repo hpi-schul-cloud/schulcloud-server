@@ -1,30 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope } from '@shared/domain';
+import { EntityId, IFindOptions, User, INameMatch } from '@shared/domain';
 
-import { ImportUserRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';
 import { ImportUserAuthorizationService } from '../provider/import-user.authorization.service';
 import { UserRepo } from '../repo/user.repo';
 
 @Injectable()
-export class UserImportUC {
+export class UserUC {
 	constructor(
-		private readonly importUserRepo: ImportUserRepo,
 		private readonly userRepo: UserRepo,
 		private readonly authorizationService: ImportUserAuthorizationService
 	) {}
 
-	async findAll(
-		userId: EntityId,
-		query: IImportUserScope,
-		options?: IFindOptions<ImportUser>
-	): Promise<Counted<ImportUser[]>> {
+	async findAllUnmatched(userId: EntityId, query: INameMatch, options?: IFindOptions<User>): Promise<User[]> {
 		const user = await this.userRepo.findById(userId);
 
-		const permissions = [UserImportPermissions.VIEW_IMPORT_USER];
+		const permissions = [UserImportPermissions.STUDENT_LIST, UserImportPermissions.TEACHER_LIST];
 		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
-		const countedImportUsers = await this.importUserRepo.findImportUsers(user.school, query, options);
+		const countedImportUsers = await this.userRepo.findWithoutImportUser(user.school, query, options);
 		return countedImportUsers;
 	}
 }

@@ -15,8 +15,8 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
-		if (importUser.user && importUser.matchedBy) {
-			dto.match = ImportUserMatchMapper.mapToResponse(importUser.user, importUser.matchedBy);
+		if (importUser._user && importUser._matchedBy) {
+			dto.match = ImportUserMatchMapper.mapToResponse(importUser._user, importUser._matchedBy);
 		}
 		return dto;
 	}
