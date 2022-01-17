@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
-
 import { PaginationQuery } from '@shared/controller';
 import { Course, Task, Lesson, User } from '@shared/domain';
 import {
@@ -13,14 +12,13 @@ import {
 } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TaskRepo, UserRepo } from '@shared/repo';
-
 import { TaskUC } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
 
 let currentUser!: User;
-let currentPermissions!: TaskDashBoardPermission | TaskDashBoardPermission[];
+let currentPermissions!: TaskDashBoardPermission[];
 
-const setupUser = (permissions: any[]) => {
+const setupUser = (permissions: TaskDashBoardPermission[]) => {
 	const role = roleFactory.build({ permissions });
 	currentUser = userFactory.buildWithId({ roles: [role] });
 	currentPermissions = permissions;
@@ -73,8 +71,8 @@ describe('TaskUC', () => {
 						hasTaskPermission() {
 							throw new Error('Please write a mock for TaskAuthorizationService.hasTaskPermission');
 						},
-						hasTaskDashboardPermission() {
-							throw new Error('Please write a mock for TaskAuthorizationService.hasTaskDashboardPermission');
+						hasOneOfTaskDashboardPermissions() {
+							throw new Error('Please write a mock for TaskAuthorizationService.hasOneOfTaskDashboardPermissions');
 						},
 					},
 				},
@@ -136,9 +134,9 @@ describe('TaskUC', () => {
 
 			return spy;
 		},
-		hasTaskDashboardPermission: () => {
+		hasOneOfTaskDashboardPermissions: () => {
 			const spy = jest
-				.spyOn(authorizationService, 'hasTaskDashboardPermission')
+				.spyOn(authorizationService, 'hasOneOfTaskDashboardPermissions')
 				.mockImplementation((user: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
 					const hasPermission: boolean = Array.isArray(permission)
 						? permission.some((p) => currentPermissions.includes(p))
@@ -160,13 +158,13 @@ describe('TaskUC', () => {
 		lessons?: Lesson[];
 		courses?: Course[];
 		hasWritePermission?: boolean;
-		hasTaskDashboardPermission?: boolean;
+		hasOneOfTaskDashboardPermissions?: boolean;
 	}) => {
 		const spy1 = setTaskRepoMock.findAllFinishedByParentIds(data?.tasks);
 		const spy2 = setAuthorizationServiceMock.getPermittedCourses(data?.courses);
 		const spy3 = setAuthorizationServiceMock.getPermittedLessons(data?.lessons);
 		const spy4 = setAuthorizationServiceMock.hasTaskPermission(data?.hasWritePermission);
-		const spy5 = setAuthorizationServiceMock.hasTaskDashboardPermission();
+		const spy5 = setAuthorizationServiceMock.hasOneOfTaskDashboardPermissions();
 		const spy6 = setUserRepoMock.findById();
 		const spy7 = setTaskRepoMock.findAllByParentIds(data?.tasks);
 
@@ -203,7 +201,7 @@ describe('TaskUC', () => {
 			currentUser = setupUser([TaskDashBoardPermission.studentDashboard]);
 
 			const task = taskFactory.finished(currentUser).buildWithId();
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const [, total] = await service.findAllFinished(currentUser.id);
 
@@ -213,7 +211,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should call task repo findAllFinishedByParentIds', async () => {
-			const mockRestore = findAllMock({ hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ hasOneOfTaskDashboardPermissions: true });
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(currentUser.id);
@@ -224,7 +222,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should call task repo findAllFinishedByParentIds for finished tasks', async () => {
-			const mockRestore = findAllMock({ hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ hasOneOfTaskDashboardPermissions: true });
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(currentUser.id);
@@ -426,7 +424,7 @@ describe('TaskUC', () => {
 			});
 
 			it('should fail with UnauthorizedException', async () => {
-				const mockRestore = findAllMock({ hasTaskDashboardPermission: false });
+				const mockRestore = findAllMock({ hasOneOfTaskDashboardPermissions: false });
 				await expect(() => service.findAllFinished(currentUser.id)).rejects.toThrow(UnauthorizedException);
 
 				mockRestore();
@@ -767,7 +765,7 @@ describe('TaskUC', () => {
 			const course = courseFactory.buildWithId({ substitutionTeachers: [userData] });
 			const task = taskFactory.buildWithId({ course });
 
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(userData.id, paginationQuery);
@@ -784,7 +782,7 @@ describe('TaskUC', () => {
 
 			const mockRestore = findAllMock({
 				tasks: [task1, task2, task3],
-				hasTaskDashboardPermission: true,
+				hasOneOfTaskDashboardPermissions: true,
 			});
 
 			const paginationQuery = new PaginationQuery();
@@ -801,7 +799,7 @@ describe('TaskUC', () => {
 			const task = taskFactory.buildWithId({ course });
 			task.submissions.add(submissionFactory.buildWithId({ task, student }));
 
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser.id, paginationQuery);
@@ -827,7 +825,7 @@ describe('TaskUC', () => {
 			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser.id, paginationQuery);
@@ -852,7 +850,7 @@ describe('TaskUC', () => {
 			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser.id, paginationQuery);
@@ -882,7 +880,7 @@ describe('TaskUC', () => {
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(currentUser.id, paginationQuery);
@@ -913,7 +911,7 @@ describe('TaskUC', () => {
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission3, 'isGraded').mockImplementation(() => true);
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result, total] = await service.findAll(currentUser.id, paginationQuery);
@@ -941,7 +939,7 @@ describe('TaskUC', () => {
 
 			task.submissions.add(submission1, submission2, submission3);
 
-			const mockRestore = findAllMock({ tasks: [task], hasTaskDashboardPermission: true });
+			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const paginationQuery = new PaginationQuery();
 			const [result, total] = await service.findAll(currentUser.id, paginationQuery);
