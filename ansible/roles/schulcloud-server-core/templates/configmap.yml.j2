@@ -106,7 +106,9 @@ data:
 {% else %}
   ADMIN_TOGGLE_STUDENT_VISIBILITY: "enabled"
 {% endif %}
-  ALERT_STATUS_URL: "{{ ALERT_STATUS_URL|default("https://status.dbildungscloud.de", true) }}"
+{% if ALERT_STATUS_URL is defined %}
+  ALERT_STATUS_URL: "{{ ALERT_STATUS_URL }}"
+{% endif %}
   FEATURE_MORGAN_LOG_ENABLED: "false"
   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: "{{ FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED|default("false", true) }}"
   FEATURE_S3_BUCKET_CORS: "{{ FEATURE_S3_BUCKET_CORS|default("false", true) }}"

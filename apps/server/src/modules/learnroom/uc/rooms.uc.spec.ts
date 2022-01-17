@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { courseFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
 import { Course, EntityId } from '@shared/domain';
-import { NotFoundException } from '@nestjs/common';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 import { RoomsUc } from './rooms.uc';
 
@@ -118,18 +118,18 @@ describe('rooms usecase', () => {
 			expect(result.elements.length).toEqual(1);
 		});
 
-		describe('when course is invalid', () => {
-			it('should throw NotFound', async () => {
-				const user = userFactory.build();
-				const courseWithoutUser = courseFactory.buildWithId({});
-				jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(courseWithoutUser));
+		it('should "not" return tasks for not specified role in course', async () => {
+			const user = userFactory.buildWithId();
+			const secondUser = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-				const task = taskFactory.buildWithId({ course: courseWithoutUser });
-				jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const task = taskFactory.buildWithId({ course });
+			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
-				const callUc = () => uc.getBoard(courseWithoutUser.id, user.id);
-				await expect(callUc).rejects.toThrow(NotFoundException);
-			});
+			await expect(async () => {
+				await uc.getBoard(course.id, secondUser.id);
+			}).rejects.toThrow(NotFoundException || UnauthorizedException);
 		});
 	});
 });

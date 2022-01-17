@@ -77,8 +77,8 @@ const createErrorResponse = (error: unknown, logger: ILogger): ErrorResponse => 
 				return createErrorResponseForHttpException(error);
 			}
 		}
-		// create response from unknown error
-		return createErrorResponseForUnknownError(error);
+		// create default response for all unknown errors
+		return createErrorResponseForUnknownError();
 	} catch (exception) {
 		const stack = exception instanceof Error ? exception.stack : undefined;
 		logger.error(exception, stack, 'Response Error');
