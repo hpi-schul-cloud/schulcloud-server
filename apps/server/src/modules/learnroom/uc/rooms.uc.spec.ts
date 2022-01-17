@@ -1,16 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
 import { Course, EntityId } from '@shared/domain';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { MikroORM } from '@mikro-orm/core';
 import { RoomsUc } from './rooms.uc';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
 	let courseRepo: CourseRepo;
 	let taskRepo: TaskRepo;
+	let userRepo: UserRepo;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	beforeEach(async () => {
@@ -36,12 +43,21 @@ describe('rooms usecase', () => {
 						},
 					},
 				},
+				{
+					provide: UserRepo,
+					useValue: {
+						findById() {
+							throw new Error('Please write a mock for UserRepo.findById');
+						},
+					},
+				},
 			],
 		}).compile();
 
 		uc = module.get(RoomsUc);
 		courseRepo = module.get(CourseRepo);
 		taskRepo = module.get(TaskRepo);
+		userRepo = module.get(UserRepo);
 	});
 
 	describe('getBoard', () => {
@@ -50,71 +66,101 @@ describe('rooms usecase', () => {
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const task = taskFactory.finished(user).buildWithId({ course });
 
-			const spy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const courseSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+			const taskSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 
 			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, user.id);
+			expect(courseSpy).toHaveBeenCalledWith(course.id, user.id);
+
+			courseSpy.mockRestore();
+			taskSpy.mockRestore();
+			userSpy.mockRestore();
 		});
 
 		it('should exclude drafts for students', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ students: [user] });
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const courseSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+			const taskSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 
 			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, { draft: false });
+			expect(taskSpy).toHaveBeenCalledWith(course.id, { draft: false });
+
+			courseSpy.mockRestore();
+			taskSpy.mockRestore();
+			userSpy.mockRestore();
 		});
 
 		it('should not exclude drafts for teachers', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
 			const task = taskFactory.buildWithId({ course });
-			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			const courseSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+			const taskSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 
 			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, {});
+			expect(taskSpy).toHaveBeenCalledWith(course.id, {});
+
+			courseSpy.mockRestore();
+			taskSpy.mockRestore();
+			userSpy.mockRestore();
 		});
 
 		it('should return board with tasks for teacher', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			const courseSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+			const taskSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
+
+			courseSpy.mockRestore();
+			taskSpy.mockRestore();
+			userSpy.mockRestore();
 		});
 
 		it('should return board with tasks for students', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ students: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			const courseSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+			const taskSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
+
+			courseSpy.mockRestore();
+			taskSpy.mockRestore();
+			userSpy.mockRestore();
 		});
 
 		it('should return board with tasks for substitution teacher', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
 			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+
+			const courseSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+			const taskSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 
 			const result = await uc.getBoard(course.id, user.id);
 			expect(result.elements.length).toEqual(1);
+
+			courseSpy.mockRestore();
+			taskSpy.mockRestore();
+			userSpy.mockRestore();
 		});
 	});
 });
