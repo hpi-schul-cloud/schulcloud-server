@@ -59,19 +59,7 @@ describe('Task Controller (e2e)', () => {
 		beforeAll(async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
 				imports: [ServerModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						const roles = roleFactory.buildList(1, { permissions: [] });
-						const user = userFactory.build({ roles });
-						const currentUser = mapToCurrentUser(user);
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
+			}).compile();
 
 			app = moduleFixture.createNestApplication();
 			await app.init();
@@ -184,6 +172,7 @@ describe('Task Controller (e2e)', () => {
 			const user = setup();
 			const course = courseFactory.build({ teachers: [user] });
 			const task = taskFactory.build({ course });
+
 			await em.persistAndFlush([task]);
 			em.clear();
 
