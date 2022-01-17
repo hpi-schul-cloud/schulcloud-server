@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { courseFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
 import { Course, EntityId } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId, Course, Task, TaskWithStatusVo } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 
