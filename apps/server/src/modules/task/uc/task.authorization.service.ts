@@ -85,7 +85,7 @@ export class TaskAuthorizationService {
 		const [, permissions] = this.permissionService.resolveRolesAndPermissions(user);
 
 		const hasPermission = Array.isArray(permission)
-			? permission.every((p) => permissions.includes(p))
+			? permission.some((p) => permissions.includes(p))
 			: permissions.includes(permission);
 
 		return hasPermission;
