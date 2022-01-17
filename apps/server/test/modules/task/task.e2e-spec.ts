@@ -498,27 +498,6 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
-		it('[FIND] /tasks should nothing return from student when the user has write permissions', async () => {
-			const teacher = userFactory.build();
-			const subTeacher = userFactory.build();
-			const course1 = courseFactory.build({
-				teachers: [teacher],
-			});
-			const course2 = courseFactory.build({
-				substitutionTeachers: [subTeacher],
-			});
-			const task1 = taskFactory.build({ course: course1 });
-			const task2 = taskFactory.build({ course: course2 });
-
-			await em.persistAndFlush([task1, task2]);
-			em.clear();
-
-			currentUser = mapToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
 		it('should not return a task of a course that has no lesson and is not published', async () => {
 			const student = setup();
 			const course = courseFactory.build({
