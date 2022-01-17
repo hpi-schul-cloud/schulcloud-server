@@ -1323,7 +1323,7 @@ describe('TaskRepo', () => {
 			expect(tasks).toHaveLength(0);
 		});
 
-		it('should "not" find drafts', async () => {
+		it('should find drafts', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build();
 			const task = taskFactory.draft().build({ course, creator: user });
@@ -1332,7 +1332,7 @@ describe('TaskRepo', () => {
 
 			const [tasks] = await repo.findBySingleParent(course.id);
 
-			expect(tasks).toHaveLength(0);
+			expect(tasks).toHaveLength(1);
 		});
 
 		it('should "not" find tasks of a lesson in the course', async () => {
@@ -1348,7 +1348,7 @@ describe('TaskRepo', () => {
 			expect(tasks).toHaveLength(0);
 		});
 
-		describe('when drafts are included', () => {
+		describe('when fetching only drafts', () => {
 			it('should return draft', async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build();
@@ -1359,6 +1359,18 @@ describe('TaskRepo', () => {
 				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
 
 				expect(tasks).toHaveLength(1);
+			});
+
+			it('should "not" find published task', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+
+				expect(tasks).toHaveLength(0);
 			});
 		});
 
@@ -1373,6 +1385,18 @@ describe('TaskRepo', () => {
 				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
 
 				expect(tasks).toHaveLength(0);
+			});
+
+			it('should find published tasks in course', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+
+				expect(tasks).toHaveLength(1);
 			});
 		});
 	});

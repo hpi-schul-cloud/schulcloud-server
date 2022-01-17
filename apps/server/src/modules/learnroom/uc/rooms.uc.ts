@@ -32,8 +32,11 @@ export class RoomsUc {
 	}
 
 	private taskFilter(isTeacher: boolean): { draft?: boolean } {
-		const shouldShowDrafts = isTeacher;
-		return { draft: shouldShowDrafts };
+		const filters: { draft?: boolean } = {};
+		if (!isTeacher) {
+			filters.draft = false;
+		}
+		return filters;
 	}
 
 	// TODO: move somewhere else

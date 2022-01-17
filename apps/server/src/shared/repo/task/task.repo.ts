@@ -140,8 +140,9 @@ export class TaskRepo {
 		const scope = new TaskScope();
 		scope.byCourseIds([courseId]);
 
-		const shouldFetchDrafts = filters?.draft || false;
-		scope.byDraft(shouldFetchDrafts);
+		if (filters?.draft !== undefined) {
+			scope.byDraft(filters.draft);
+		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
 
