@@ -49,13 +49,10 @@ export class RoomsUc {
 	}
 
 	private isTeacher(userId: EntityId, course: Course): boolean {
-		if (course.getStudentIds().includes(userId)) {
-			return false;
-		}
 		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId) === true) {
 			return true;
 		}
-		throw new NotFoundException();
+		return false;
 	}
 
 	private addStatusToTasks(isTeacher: boolean, tasks: Task[], userId: EntityId): TaskWithStatusVo[] {
