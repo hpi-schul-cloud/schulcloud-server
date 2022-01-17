@@ -51,10 +51,10 @@ export class TaskUC {
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
 			if (this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.write)) {
-				status = task.createTeacherStatusForUser(userId);
+				status = task.createTeacherStatusForUser(user);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
-				status = task.createStudentStatusForUser(userId);
+				status = task.createStudentStatusForUser(user);
 			}
 
 			return new TaskWithStatusVo(task, status);
@@ -104,7 +104,7 @@ export class TaskUC {
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
-			const status = task.createStudentStatusForUser(user.id);
+			const status = task.createStudentStatusForUser(user);
 			return new TaskWithStatusVo(task, status);
 		});
 
@@ -132,7 +132,7 @@ export class TaskUC {
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
-			const status = task.createTeacherStatusForUser(user.id);
+			const status = task.createTeacherStatusForUser(user);
 			return new TaskWithStatusVo(task, status);
 		});
 

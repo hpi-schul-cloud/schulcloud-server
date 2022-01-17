@@ -281,7 +281,7 @@ describe('TaskUC', () => {
 			const user = userFactory.buildWithId();
 			const task = taskFactory.finished(user).buildWithId();
 			const mockRestore = findAllMock({ tasks: [task] });
-			const status = task.createStudentStatusForUser(user.id);
+			const status = task.createStudentStatusForUser(user);
 
 			const [data] = await service.findAllFinished(currentUser.id);
 
@@ -627,10 +627,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = userFactory.buildWithId(undefined, currentUser.id);
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission = submissionFactory.buildWithId({ task, student });
+			const student = currentUser;
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission = submissionFactory.build({ task, student });
 			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -654,7 +654,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should only count the graded submissions of the given user', async () => {
-			const student1 = userFactory.buildWithId(undefined, currentUser.id);
+			const student1 = currentUser;
 			const student2 = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const task = taskFactory.buildWithId({ course });

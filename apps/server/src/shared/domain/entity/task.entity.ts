@@ -97,31 +97,32 @@ export class Task extends BaseEntityWithTimestamps {
 		return submissions;
 	}
 
-	getSubmittedUserIds(): EntityId[] {
-		const submissions = this.getSubmissionsItems();
-		const submittedUserIds = submissions.map((submission) => submission.getStudentId());
+	getSubmittedUsers(): User[] {
+		const submittedUsers = this.getSubmissionsItems().map((submission) => submission.student);
+		const uniqueSubmittedUsers = [...new Set(submittedUsers)];
 
-		return submittedUserIds;
+		return uniqueSubmittedUsers;
 	}
 
 	getNumberOfSubmittedUsers(): number {
-		const submittedUserIds = this.getSubmittedUserIds();
-		const submitted = [...new Set(submittedUserIds)].length;
+		const submittedUsers = this.getSubmittedUsers();
+		const submitted = submittedUsers.length;
 
 		return submitted;
 	}
 
-	getGradedUserIds(): EntityId[] {
-		const gradedUserIds = this.getSubmissionsItems()
+	getGradedUsers(): User[] {
+		const gradedUsers = this.getSubmissionsItems()
 			.filter((submission) => submission.isGraded())
-			.map((submission) => submission.getStudentId());
+			.map((submission) => submission.student);
+		const uniqueGradedUsers = [...new Set(gradedUsers)];
 
-		return gradedUserIds;
+		return uniqueGradedUsers;
 	}
 
 	getNumberOfGradedUsers(): number {
-		const gradedUserIds = this.getGradedUserIds();
-		const graded = [...new Set(gradedUserIds)].length;
+		const gradedUsers = this.getGradedUsers();
+		const graded = gradedUsers.length;
 
 		return graded;
 	}
@@ -134,7 +135,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return numberOfStudents;
 	}
 
-	createTeacherStatusForUser(userId: EntityId): ITaskStatus {
+	createTeacherStatusForUser(user: User): ITaskStatus {
 		const submitted = this.getNumberOfSubmittedUsers();
 		const graded = this.getNumberOfGradedUsers();
 		const maxSubmissions = this.getMaxSubmissions();
@@ -144,7 +145,7 @@ export class Task extends BaseEntityWithTimestamps {
 		// work with getParent()
 		let isSubstitutionTeacher = false;
 		if (this.course) {
-			isSubstitutionTeacher = this.course.getSubstitutionTeacherIds().includes(userId);
+			isSubstitutionTeacher = this.course.substitutionTeachers.contains(user);
 		}
 
 		const status = {
@@ -158,21 +159,21 @@ export class Task extends BaseEntityWithTimestamps {
 		return status;
 	}
 
-	isSubmittedForUser(userId: EntityId): boolean {
-		const submitted = this.getSubmittedUserIds().some((id) => userId === id);
+	isSubmittedForUser(user: User): boolean {
+		const submitted = this.getSubmittedUsers().some((u) => u === user);
 
 		return submitted;
 	}
 
-	isGradedForUser(userId: EntityId): boolean {
-		const graded = this.getGradedUserIds().some((id) => userId === id);
+	isGradedForUser(user: User): boolean {
+		const graded = this.getGradedUsers().some((u) => u === user);
 
 		return graded;
 	}
 
-	createStudentStatusForUser(userId: EntityId): ITaskStatus {
-		const isSubmitted = this.isSubmittedForUser(userId);
-		const isGraded = this.isGradedForUser(userId);
+	createStudentStatusForUser(user: User): ITaskStatus {
+		const isSubmitted = this.isSubmittedForUser(user);
+		const isGraded = this.isGradedForUser(user);
 		const maxSubmissions = 1;
 		const isDraft = this.isDraft();
 		const isSubstitutionTeacher = false;

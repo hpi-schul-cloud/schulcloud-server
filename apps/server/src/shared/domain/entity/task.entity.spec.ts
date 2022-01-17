@@ -1,3 +1,4 @@
+import { MikroORM } from '@mikro-orm/core';
 import {
 	courseFactory,
 	lessonFactory,
@@ -10,8 +11,14 @@ import {
 import { Task } from './task.entity';
 
 describe('Task Entity', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('isDraft', () => {
@@ -37,13 +44,13 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getSubmittedUserIds', () => {
+	describe('getSubmittedUsers', () => {
 		it('should use save private getSubmissionItems methode to fetch submissions', () => {
 			const task = taskFactory.build();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionsItems');
 
-			task.getSubmittedUserIds();
+			task.getSubmittedUsers();
 
 			expect(spy).toHaveBeenCalled();
 		});
@@ -59,9 +66,9 @@ describe('Task Entity', () => {
 				const submission = submissionFactory.build({ student, task });
 				task.submissions.add(submission);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student.id]);
+				expect(result).toEqual([student]);
 			});
 
 			it('should work for multiple submissions', () => {
@@ -76,31 +83,30 @@ describe('Task Entity', () => {
 				const submission2 = submissionFactory.build({ student: student2, task });
 				task.submissions.add(submission1, submission2);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student1.id, student2.id]);
+				expect(result).toEqual([student1, student2]);
 			});
 
 			it('should work for a user that have multiple submissions', () => {
 				const student = userFactory.build();
-				student.id = '0123456789ab';
 
 				const task = taskFactory.build();
 				const submission1 = submissionFactory.build({ student, task });
 				const submission2 = submissionFactory.build({ student, task });
 				task.submissions.add(submission1, submission2);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student.id, student.id]);
+				expect(result).toEqual([student]);
 			});
 		});
 	});
 
 	describe('getNumberOfSubmittedUsers', () => {
-		it('should call getSubmittedUserIds', () => {
+		it('should call getSubmittedUsers', () => {
 			const task = taskFactory.build();
-			const spy = jest.spyOn(task, 'getSubmittedUserIds');
+			const spy = jest.spyOn(task, 'getSubmittedUsers');
 
 			task.getNumberOfSubmittedUsers();
 
@@ -139,13 +145,13 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getGradedUserIds', () => {
+	describe('getGradedUsers', () => {
 		it('should use save private getSubmissionItems methode to fetch submissions', () => {
 			const task = taskFactory.build();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionsItems');
 
-			task.getGradedUserIds();
+			task.getGradedUsers();
 
 			expect(spy).toHaveBeenCalled();
 		});
@@ -159,9 +165,9 @@ describe('Task Entity', () => {
 				const submission = submissionFactory.graded().build({ student, task });
 				task.submissions.add(submission);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student.id]);
+				expect(result).toEqual([student]);
 			});
 
 			it('should not work for not graded submissions', () => {
@@ -172,9 +178,9 @@ describe('Task Entity', () => {
 				const submission = submissionFactory.build({ student, task });
 				task.submissions.add(submission);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student.id]);
+				expect(result).toEqual([student]);
 			});
 
 			it('should return a list of graded userIds', () => {
@@ -189,9 +195,9 @@ describe('Task Entity', () => {
 				const submission2 = submissionFactory.graded().build({ student: student2, task });
 				task.submissions.add(submission1, submission2);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student1.id, student2.id]);
+				expect(result).toEqual([student1, student2]);
 			});
 
 			it('should work for multiple graded submissions ', () => {
@@ -203,17 +209,17 @@ describe('Task Entity', () => {
 				const submission2 = submissionFactory.graded().build({ student, task });
 				task.submissions.add(submission1, submission2);
 
-				const result = task.getSubmittedUserIds();
+				const result = task.getSubmittedUsers();
 
-				expect(result).toEqual([student.id, student.id]);
+				expect(result).toEqual([student]);
 			});
 		});
 	});
 
 	describe('getNumberOfGradedUsers', () => {
-		it('should call getGradedUserIds', () => {
+		it('should call getGradedUsers', () => {
 			const task = taskFactory.build();
-			const spy = jest.spyOn(task, 'getGradedUserIds');
+			const spy = jest.spyOn(task, 'getGradedUsers');
 
 			task.getNumberOfGradedUsers();
 
@@ -290,10 +296,11 @@ describe('Task Entity', () => {
 
 	describe('createTeacherStatusForUser', () => {
 		it('should call getNumberOfSubmittedUsers and return the result as submitted property', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'getNumberOfSubmittedUsers').mockImplementation(() => 5);
 
-			const result = task.createTeacherStatusForUser('1');
+			const result = task.createTeacherStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.submitted).toEqual(5);
@@ -302,10 +309,11 @@ describe('Task Entity', () => {
 		});
 
 		it('should call getNumberOfGradedUsers and return the result as graded property', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'getNumberOfGradedUsers').mockImplementation(() => 5);
 
-			const result = task.createTeacherStatusForUser('1');
+			const result = task.createTeacherStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.graded).toEqual(5);
@@ -314,10 +322,11 @@ describe('Task Entity', () => {
 		});
 
 		it('should call getMaxSubmissions and return the result as maxSubmissions property', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'getMaxSubmissions').mockImplementation(() => 5);
 
-			const result = task.createTeacherStatusForUser('1');
+			const result = task.createTeacherStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.maxSubmissions).toEqual(5);
@@ -326,10 +335,11 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isDraft and return the result as isDraft property', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'isDraft').mockImplementation(() => true);
 
-			const result = task.createTeacherStatusForUser('1');
+			const result = task.createTeacherStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.isDraft).toBe(true);
@@ -338,38 +348,24 @@ describe('Task Entity', () => {
 		});
 
 		describe('when parent is a course', () => {
-			it('should call course.getSubstitutionTeacherIds', () => {
+			it('should return true if the user is part of it.', () => {
 				const user = userFactory.build();
-				user.id = '0123456789ab';
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const spy = jest.spyOn(course, 'getSubstitutionTeacherIds');
-
-				task.createTeacherStatusForUser(user.id);
-
-				expect(spy).toHaveBeenCalled();
-			});
-
-			it('should return true if userId is part of it.', () => {
-				const user = userFactory.build();
-				user.id = '0123456789ab';
 				const course = courseFactory.build();
 				course.substitutionTeachers.add(user);
 				const task = taskFactory.build({ course });
 
-				const result = task.createTeacherStatusForUser(user.id);
+				const result = task.createTeacherStatusForUser(user);
 
 				expect(result.isSubstitutionTeacher).toBe(true);
 			});
 
-			it('should return false if userId not is part of it', () => {
+			it('should return false if the user not is part of it', () => {
 				const user = userFactory.build();
-				user.id = '0123456789ab';
 				const course = courseFactory.build();
 
 				const task = taskFactory.build({ course });
 
-				const result = task.createTeacherStatusForUser(user.id);
+				const result = task.createTeacherStatusForUser(user);
 
 				expect(result.isSubstitutionTeacher).toBe(false);
 			});
@@ -377,16 +373,15 @@ describe('Task Entity', () => {
 	});
 
 	describe('isSubmittedForUser', () => {
-		it('should call getNumberOfSubmittedUsers and return true if userId is part of it.', () => {
+		it('should call getSubmittedUsers and return true if the user is part of it.', () => {
 			const student = userFactory.build();
-			student.id = '0123456789ab';
 			const task = taskFactory.build();
 			const submission = submissionFactory.build({ student, task });
 			task.submissions.add(submission);
 
-			const spy = jest.spyOn(task, 'getSubmittedUserIds');
+			const spy = jest.spyOn(task, 'getSubmittedUsers');
 
-			const result = task.isSubmittedForUser(student.id);
+			const result = task.isSubmittedForUser(student);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result).toBe(true);
@@ -394,16 +389,13 @@ describe('Task Entity', () => {
 			spy.mockReset();
 		});
 
-		it('should call getNumberOfSubmittedUsers and return false if userId is not part of it.', () => {
+		it('should call getSubmittedUsers and return false if the user is not part of it.', () => {
 			const student = userFactory.build();
-			student.id = '0123456789ab';
 			const task = taskFactory.build();
-			const submission = submissionFactory.build({ student, task });
-			task.submissions.add(submission);
 
-			const spy = jest.spyOn(task, 'getSubmittedUserIds');
+			const spy = jest.spyOn(task, 'getSubmittedUsers').mockReturnValue([]);
 
-			const result = task.isSubmittedForUser('1');
+			const result = task.isSubmittedForUser(student);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result).toBe(false);
@@ -413,17 +405,16 @@ describe('Task Entity', () => {
 	});
 
 	describe('isGradedForUser', () => {
-		it('should call getGradedUserIds and return true if userId is part of it.', () => {
+		it('should call getGradedUsers and return true if the user is part of it.', () => {
 			const student = userFactory.build();
-			student.id = '0123456789ab';
 			const task = taskFactory.build();
 			const submission = submissionFactory.graded().build({ student, task });
 
 			task.submissions.add(submission);
 
-			const spy = jest.spyOn(task, 'getGradedUserIds');
+			const spy = jest.spyOn(task, 'getGradedUsers');
 
-			const result = task.isGradedForUser(student.id);
+			const result = task.isGradedForUser(student);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result).toBe(true);
@@ -431,16 +422,13 @@ describe('Task Entity', () => {
 			spy.mockReset();
 		});
 
-		it('should call getGradedUserIds and return false if userId is not part of it.', () => {
+		it('should call getGradedUsers and return false if the user is not part of it.', () => {
 			const student = userFactory.build();
-			student.id = '0123456789ab';
 			const task = taskFactory.build();
-			const submission = submissionFactory.graded().build({ student, task });
-			task.submissions.add(submission);
 
-			const spy = jest.spyOn(task, 'getGradedUserIds');
+			const spy = jest.spyOn(task, 'getGradedUsers').mockReturnValue([]);
 
-			const result = task.isGradedForUser('1');
+			const result = task.isGradedForUser(student);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result).toBe(false);
@@ -451,10 +439,11 @@ describe('Task Entity', () => {
 
 	describe('createStudentStatusForUser', () => {
 		it('should call isSubmittedForUser and return 1 instant of true for property submitted', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'isSubmittedForUser').mockImplementation(() => true);
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.submitted).toEqual(1);
@@ -463,10 +452,11 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isSubmittedForUser and return 0 instant of false for property submitted', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'isSubmittedForUser').mockImplementation(() => false);
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.submitted).toEqual(0);
@@ -475,10 +465,11 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isGradedForUser and return 1 instant of true for property graded', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'isGradedForUser').mockImplementation(() => true);
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.graded).toEqual(1);
@@ -487,10 +478,11 @@ describe('Task Entity', () => {
 		});
 
 		it('should call isGradedForUser and return 0 instant of false for property graded', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'isGradedForUser').mockImplementation(() => false);
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.graded).toEqual(0);
@@ -499,18 +491,20 @@ describe('Task Entity', () => {
 		});
 
 		it('should return 1 for property maxSubmissions', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(result.maxSubmissions).toEqual(1);
 		});
 
 		it('should call isDraft and return the result as isDraft property', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 			const spy = jest.spyOn(task, 'isDraft').mockImplementation(() => false);
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result.isDraft).toEqual(false);
@@ -519,9 +513,10 @@ describe('Task Entity', () => {
 		});
 
 		it('should return false for property isSubstitutionTeacher', () => {
+			const user = userFactory.build();
 			const task = taskFactory.build();
 
-			const result = task.createStudentStatusForUser('1');
+			const result = task.createStudentStatusForUser(user);
 
 			expect(result.isSubstitutionTeacher).toEqual(false);
 		});

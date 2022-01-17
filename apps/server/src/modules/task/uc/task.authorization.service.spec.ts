@@ -348,9 +348,7 @@ describe('task.authorization.service', () => {
 				it('should return false if it does not match the permissions', () => {
 					const user = userFactory.build();
 
-					const spy = jest
-						.spyOn(permissionService, 'resolveRolesAndPermissions')
-						.mockReturnValue([[], [TaskDashBoardPermission.studentDashboard]]);
+					const spy = jest.spyOn(permissionService, 'resolveRolesAndPermissions').mockReturnValue([[], []]);
 
 					const result = service.hasTaskDashboardPermission(user, [
 						TaskDashBoardPermission.studentDashboard,
