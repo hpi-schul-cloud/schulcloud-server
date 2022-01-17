@@ -39,7 +39,7 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        command: ['npm', 'run', 'nest:start:management']
+        command: ['npm', 'run', 'nest:start:managementi:prod']
         readinessProbe:
           httpGet:
             path: /api/docs
