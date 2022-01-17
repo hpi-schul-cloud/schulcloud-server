@@ -3,17 +3,20 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { BoardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, taskFactory, cleanUpCollections, createCurrentTestUser } from '@shared/testing';
+import { userFactory, courseFactory, taskFactory, cleanUpCollections, roleFactory } from '@shared/testing';
 import { ICurrentUser, User } from '@shared/domain';
 
-const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
-	currentUser.user.id = user.id;
-	currentUser.userId = user.id;
-};
+const mapToCurrentUser = (user: User) =>
+	({
+		userId: user.id,
+		roles: user.roles.getItems().map((r) => r.id),
+		schoolId: user.school.id,
+		accountId: new ObjectId().toHexString(),
+	} as ICurrentUser);
 
 describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
@@ -39,7 +42,6 @@ describe('Rooms Controller (e2e)', () => {
 		await app.init();
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
-		currentUser = createCurrentTestUser().currentUser;
 	});
 
 	afterEach(async () => {
@@ -49,14 +51,15 @@ describe('Rooms Controller (e2e)', () => {
 	});
 
 	it('[GET] board', async () => {
-		const student = userFactory.build();
-		await em.persistAndFlush([student]);
-		const course = courseFactory.build({ name: 'course #1', students: [student] });
+		const roles = roleFactory.buildList(1, { permissions: [] });
+		const student = userFactory.build({ roles });
+		const course = courseFactory.build({ students: [student] });
 		const task = taskFactory.build({ course });
+
 		await em.persistAndFlush([course, task]);
 		em.clear();
 
-		modifyCurrentUserId(currentUser, student);
+		currentUser = mapToCurrentUser(student);
 
 		const response = await request(app.getHttpServer()).get(`/rooms/${course.id}/board`);
 
