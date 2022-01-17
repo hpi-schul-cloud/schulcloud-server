@@ -4,7 +4,7 @@ import { PaginationQuery, SortingQuery, ParseObjectIdPipe } from '@shared/contro
 import { ICurrentUser, IFindOptions, SortOrder, ImportUser, User } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
-import { ImportUserListResponse } from './dto/import-user.response';
+import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
 import { UpdateMatchParams } from './dto/update-match.params';
 import { UserDetailsListResponse, UserMatchResponse } from './dto/user-match.response';
 
@@ -41,13 +41,14 @@ export class ImportUserController {
 	}
 
 	@Patch(':id/match')
-	updateMatch(
+	async updateMatch(
 		@Param('id', ParseObjectIdPipe) importUserId: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateMatchParams
-	): Promise<UserMatchResponse> {
-		// TODO
-		throw new ImATeapotException();
+	): Promise<ImportUserResponse> {
+		const result = await this.userImportUc.setMatch(currentUser.userId, importUserId, params.userId);
+		const response = ImportUserMapper.mapToResponse(result);
+		return response;
 	}
 
 	@Delete(':id/match')
@@ -58,6 +59,15 @@ export class ImportUserController {
 		// TODO
 		throw new ImATeapotException();
 	}
+
+	// @Patch(':id/flag')
+	// async updateFlag(
+	// 	@Param('id', ParseObjectIdPipe) importUserId: string,
+	// 	@CurrentUser() currentUser: ICurrentUser,
+	// 	@Body() params: UpdateFlagParams
+	// ): Promise<void> {
+	// 	const result = await this.userImportUc.setFlag(currentUser.userId, importUserId, params.flagged);
+	// }
 
 	@Get('unassigned')
 	async findAllUnmatchedUsers(

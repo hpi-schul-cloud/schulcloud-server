@@ -1,14 +1,32 @@
-import { FilterQuery } from '@mikro-orm/core';
+import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { QueryOrderMap } from '@mikro-orm/core/enums';
+
 import { BaseRepo } from '@shared/repo/base.repo';
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School } from '@shared/domain';
+import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
 import { ImportUserScope } from './importuser.scope';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async findById(id: EntityId): Promise<ImportUser> {
 		const importUser = await this.em.findOneOrFail(ImportUser, { id });
+		return importUser;
+	}
+
+	async findOneByIdAndSchoolOrFail(id: EntityId, school: School): Promise<ImportUser> {
+		const scope = new ImportUserScope();
+		scope.byId(id);
+		scope.bySchool(school);
+		const importUser = await this.em.findOneOrFail(ImportUser, scope.query);
+		return importUser;
+	}
+
+	/**
+	 * resolves with importusers matched with a local user account
+	 */
+	async hasMatch(user: User): Promise<ImportUser | null> {
+		const scope = new ImportUserScope();
+		scope.byUserMatch(user);
+		const importUser = await this.em.findOne(ImportUser, scope.query);
 		return importUser;
 	}
 

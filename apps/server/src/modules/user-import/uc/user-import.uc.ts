@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope } from '@shared/domain';
+import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope, MatchCreator } from '@shared/domain';
 
 import { UserImportPermissions } from '../constants';
 import { ImportUserAuthorizationService } from '../provider/import-user.authorization.service';
@@ -26,5 +26,31 @@ export class UserImportUC {
 
 		const countedImportUsers = await this.importUserRepo.findImportUsers(user.school, query, options);
 		return countedImportUsers;
+	}
+
+	async setMatch(currentUserId: EntityId, importUserId: EntityId, userId: EntityId) {
+		const currentUser = await this.userRepo.findById(currentUserId);
+		const permissions = [
+			UserImportPermissions.UPDATE_IMPORT_USER, // update import user match
+			UserImportPermissions.STUDENT_LIST, // read other users
+			UserImportPermissions.TEACHER_LIST, // read other users
+		];
+		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
+
+		const userMatch = await this.userRepo.findOneByIdAndSchoolOrFail(userId, currentUser.school); // check user is not already assigned
+		const importUser = await this.importUserRepo.findOneByIdAndSchoolOrFail(importUserId, currentUser.school);
+		const hasMatch = await this.importUserRepo.hasMatch(userMatch);
+		if (hasMatch !== null) throw new Error('remove other assignments of this user first'); // TODO business error
+		importUser.setMatch(userMatch, MatchCreator.MANUAL);
+		await this.importUserRepo.persistAndFlush(importUser);
+		return importUser;
+	}
+
+	removeMatch(userId: string, importUserId: string) {
+		throw new Error('Method not implemented.');
+	}
+
+	setFlag(userId: string, importUserId: string, flagged: boolean) {
+		throw new Error('Method not implemented.');
 	}
 }

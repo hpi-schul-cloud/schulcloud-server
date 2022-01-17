@@ -1,14 +1,27 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
-import { ImportUser, MatchCreatorScope, RoleName, School } from '@shared/domain';
+import { EntityId, ImportUser, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
 import { MongoPatterns, Scope } from '@shared/repo';
 
 export class ImportUserScope extends Scope<ImportUser> {
+	byId(id: EntityId): ImportUserScope {
+		if (!ObjectId.isValid(id)) throw new Error('invalid id');
+		this.addQuery({ id });
+		return this;
+	}
+
 	bySchool(school: School): ImportUserScope {
 		const schoolId = school._id;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 		this.addQuery({ school: schoolId });
+		return this;
+	}
+
+	byUserMatch(user: User): ImportUserScope {
+		const userId = user._id;
+		if (!ObjectId.isValid(userId)) throw new Error('invalid user match id');
+		this.addQuery({ _user: userId });
 		return this;
 	}
 
