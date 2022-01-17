@@ -22,9 +22,10 @@ describe('board mapper', () => {
 		it('should map plain board into response', () => {
 			const course = courseFactory.buildWithId();
 			const board = {
-				roomId: course.id,
-				displayColor: course.color,
-				title: course.name,
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				courseName: course.name,
 				elements: [],
 			};
 
@@ -44,9 +45,10 @@ describe('board mapper', () => {
 				isSubstitutionTeacher: false,
 			};
 			const board = {
-				roomId: course.id,
-				displayColor: course.color,
-				title: course.name,
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				courseName: course.name,
 				elements: [{ type: 'task', content: { task, status } }],
 			};
 

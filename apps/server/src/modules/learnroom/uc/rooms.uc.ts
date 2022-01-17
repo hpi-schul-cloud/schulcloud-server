@@ -52,7 +52,7 @@ export class RoomsUc {
 		if (course.getStudentIds().includes(userId)) {
 			return 'student';
 		}
-		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId) === true) {
+		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId)) {
 			return 'teacher';
 		}
 		throw new NotFoundException();
