@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 
@@ -77,6 +78,16 @@ describe('jwt strategy', () => {
 			const payload = { accountId, jti, userId } as JwtPayload;
 			await strategy.validate(payload);
 			expect(resolveUserSpy).toHaveBeenCalledWith(userId);
+		});
+
+		it('should throw an UnauthorizedException when the user is not found', async () => {
+			const accountId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+			const resolveUserSpy = jest.spyOn(repo, 'findById').mockRejectedValue(new NotFoundException());
+			const payload = { accountId, jti, userId } as JwtPayload;
+			await expect(() => strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
+			resolveUserSpy.mockRestore();
 		});
 	});
 });
