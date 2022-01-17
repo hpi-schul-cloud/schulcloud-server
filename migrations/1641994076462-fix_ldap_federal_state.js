@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { ObjectId } = require('mongoose').Types;
-const { alert, error } = require('../src/logger');
+const { alert } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const federalStateModel = require('../src/services/federalState/model');
 const systemModel = require('../src/services/system/model');
@@ -26,6 +26,7 @@ const getFederalStateFromSchool = async (systemId) => {
 		alert(`LDAP system ${systemId} cannot be associated with a federal state`);
 		return;
 	}
+	// eslint-disable-next-line consistent-return
 	return federalStates[0]._id;
 };
 
