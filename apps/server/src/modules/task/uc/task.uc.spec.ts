@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
+import { MikroORM } from '@mikro-orm/core';
 import { PaginationQuery } from '@shared/controller';
 import { Course, Task, Lesson, User } from '@shared/domain';
+
 import {
 	userFactory,
 	courseFactory,
@@ -9,6 +11,7 @@ import {
 	taskFactory,
 	submissionFactory,
 	roleFactory,
+	setupEntities,
 } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TaskRepo, UserRepo } from '@shared/repo';
@@ -34,10 +37,18 @@ describe('TaskUC', () => {
 	let taskRepo: TaskRepo;
 	let userRepo: UserRepo;
 	let authorizationService: TaskAuthorizationService;
+	let orm: MikroORM;
+
+	beforeAll(async () => {
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				TaskUC,
 				{
