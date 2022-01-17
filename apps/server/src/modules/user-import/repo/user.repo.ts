@@ -1,16 +1,14 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, INameMatch, School, SortOrder, User } from '@shared/domain';
+import { IFindOptions, INameMatch, School, SortOrder, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserRepo as DomainUserRepo } from '@shared/repo';
+import { StringValidator } from '@shared/common';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
 
 @Injectable()
 export class UserRepo extends DomainUserRepo {
-	async findById(id: EntityId): Promise<User> {
-		const user = await this.em.findOneOrFail(User, { id });
-		return user;
-	}
-
 	/**
 	 * used for importusers // TODO should be moved to that module?!
 	 */
@@ -18,8 +16,34 @@ export class UserRepo extends DomainUserRepo {
 		const { _id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 
+		const permittedMatch = { schoolId };
+
+		const queryFilterMatch: { $or?: unknown[] } = {};
+		if (filters?.fullName && StringValidator.isNotEmptyString(filters.fullName, true)) {
+			const escapedName = filters.fullName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+			// TODO make db agnostic
+			if (StringValidator.isNotEmptyString(escapedName, true)) {
+				queryFilterMatch.$or = [
+					{
+						firstName: {
+							// @ts-ignore
+							$regex: escapedName,
+							$options: 'i',
+						},
+					},
+					{
+						lastName: {
+							// @ts-ignore
+							$regex: escapedName,
+							$options: 'i',
+						},
+					},
+				];
+			}
+		}
+
 		const pipeline: unknown[] = [
-			{ $match: { schoolId } },
+			{ $match: permittedMatch },
 			{
 				$lookup: {
 					from: 'importusers',
@@ -35,6 +59,7 @@ export class UserRepo extends DomainUserRepo {
 					},
 				},
 			},
+			{ $match: queryFilterMatch },
 			{
 				$project: {
 					importusers: 0,

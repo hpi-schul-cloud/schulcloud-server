@@ -58,6 +58,37 @@ describe('user repo', () => {
 			expect(result).not.toContain(matchedUser);
 		});
 
+		it('should filter users by firstName contains or lastName contains, ignore case', async () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build({ firstName: 'Papa', lastName: 'Pane', school });
+			const otherUser = userFactory.build({ school });
+			await em.persistAndFlush([user, otherUser]);
+			// full first name
+			const result1 = await repo.findWithoutImportUser(school, { fullName: 'papa' });
+			expect(result1).toContain(user);
+			expect(result1).not.toContain(otherUser);
+			// full last name
+			const result2 = await repo.findWithoutImportUser(school, { fullName: 'pane' });
+			expect(result2).toContain(user);
+			expect(result2).not.toContain(otherUser);
+			// partial first and last name
+			const result3 = await repo.findWithoutImportUser(school, { fullName: 'pa' });
+			expect(result3).toContain(user);
+			expect(result3).not.toContain(otherUser);
+			// partial first name
+			const result4 = await repo.findWithoutImportUser(school, { fullName: 'pap' });
+			expect(result4).toContain(user);
+			expect(result4).not.toContain(otherUser);
+			// partial last name
+			const result5 = await repo.findWithoutImportUser(school, { fullName: 'ane' });
+			expect(result5).toContain(user);
+			expect(result5).not.toContain(otherUser);
+			// no match
+			const result6 = await repo.findWithoutImportUser(school, { fullName: 'Fox' });
+			expect(result6).not.toContain(user);
+			expect(result6).not.toContain(otherUser);
+		});
+
 		it('should sort returned users by firstname, lastname', async () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school, firstName: 'Anna', lastName: 'Schmidt' });

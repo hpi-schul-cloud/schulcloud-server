@@ -4,6 +4,11 @@
  * It is forbidden to reuse existing ones from different layers.
  */
 
+export * from './base.repo';
+export * from './scope';
+
+export * from './mongo.patterns';
+
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
@@ -15,4 +20,3 @@ export * from './storageprovider';
 export * from './submission';
 export * from './task';
 export * from './user';
-export * from './user-import';

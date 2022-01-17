@@ -7,10 +7,11 @@ export class UserMapper {
 	static mapToDomain(query: UserFilterQuery): INameMatch {
 		const scope: INameMatch = {};
 		if (query.name) {
-			if (StringValidator.isNotEmptyString(query.name)) {
-				scope.fullName = query.name;
+			if (StringValidator.isNotEmptyString(query.name, true)) {
+				scope.fullName = query.name.trim();
+			} else {
+				throw Error('invalid name from query');
 			}
-			throw Error('invalid name from query');
 		}
 		return scope;
 	}

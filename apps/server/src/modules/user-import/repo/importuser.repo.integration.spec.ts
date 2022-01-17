@@ -5,7 +5,7 @@ import { cleanUpCollections, importUserFactory, schoolFactory, userFactory } fro
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MatchCreator, MatchCreatorScope, RoleName, School } from '@shared/domain';
 import { NotFoundError } from '@mikro-orm/core';
-import { ImportUserRepo } from '..';
+import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
 	let module: TestingModule;

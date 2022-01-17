@@ -2,15 +2,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
 import { ImportUser, MatchCreatorScope, RoleName, School } from '@shared/domain';
-import { Scope } from '../scope';
+import { MongoPatterns, Scope } from '@shared/repo';
 
 export class ImportUserScope extends Scope<ImportUser> {
-	/**
-	 * Regex to escape strings before use as regex against database.
-	 * Used to remove all non-language characters except numbers, whitespace or minus.
-	 */
-	private REGEX_WHITELIST = /[^\-_\w\d áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]/gi;
-
 	bySchool(school: School): ImportUserScope {
 		const schoolId = school._id;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
@@ -19,7 +13,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 	}
 
 	byFirstName(firstName: string): ImportUserScope {
-		const escapedFirstName = firstName.replace(this.REGEX_WHITELIST, '').trim();
+		const escapedFirstName = firstName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 		// TODO make db agnostic
 		if (StringValidator.isNotEmptyString(escapedFirstName, true))
 			this.addQuery({
@@ -34,7 +28,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 
 	byLastName(lastName: string): ImportUserScope {
 		// TODO filter does not find café when searching with cafe
-		const escapedLastName = lastName.replace(this.REGEX_WHITELIST, '').trim();
+		const escapedLastName = lastName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 		// TODO make db agnostic
 		if (StringValidator.isNotEmptyString(escapedLastName, true))
 			this.addQuery({
@@ -50,7 +44,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 	/** filters the login name case insensitive for contains which is part of the dn */
 	byLoginName(loginName: string): ImportUserScope {
 		// TODO filter does not find café when searching with cafe
-		const escapedLoginName = loginName.replace(this.REGEX_WHITELIST, '').trim();
+		const escapedLoginName = loginName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 		// TODO make db agnostic
 		if (StringValidator.isNotEmptyString(escapedLoginName, true))
 			this.addQuery({
@@ -81,7 +75,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 	}
 
 	byClasses(classes: string): ImportUserScope {
-		const escapedClasses = classes.replace(this.REGEX_WHITELIST, '').trim();
+		const escapedClasses = classes.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 		// TODO make db agnostic
 		if (StringValidator.isNotEmptyString(escapedClasses, true))
 			this.addQuery({

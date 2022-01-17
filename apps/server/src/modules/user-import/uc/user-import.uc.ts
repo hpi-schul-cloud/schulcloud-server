@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope } from '@shared/domain';
 
-import { ImportUserRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';
 import { ImportUserAuthorizationService } from '../provider/import-user.authorization.service';
+import { ImportUserRepo } from '../repo';
 import { UserRepo } from '../repo/user.repo';
 
 @Injectable()

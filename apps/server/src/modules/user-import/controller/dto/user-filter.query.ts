@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UserFilterQuery {
 	/**
-	 * full name filter
+	 * filter firstname or lastname for given value
 	 */
 	@ApiPropertyOptional()
 	@IsOptional()
