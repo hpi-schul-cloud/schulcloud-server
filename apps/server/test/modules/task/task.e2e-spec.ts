@@ -5,18 +5,11 @@ import { Request } from 'express';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
 
-import { ICurrentUser, User } from '@shared/domain';
+import { Course, ICurrentUser, Lesson, Role, Task, User } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import {
-	courseFactory,
-	userFactory,
-	taskFactory,
-	submissionFactory,
-	roleFactory,
-	cleanUpCollections,
-} from '@shared/testing';
+import { courseFactory, userFactory, taskFactory, submissionFactory, roleFactory } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
 class API {
@@ -49,6 +42,16 @@ const mapToCurrentUser = (user: User) =>
 		schoolId: user.school.id,
 		accountId: new ObjectId().toHexString(),
 	} as ICurrentUser);
+
+const cleanup = async (em: EntityManager) => {
+	await Promise.all([
+		em.nativeDelete(Course, {}),
+		em.nativeDelete(Lesson, {}),
+		em.nativeDelete(Task, {}),
+		em.nativeDelete(Role, {}),
+		em.nativeDelete(User, {}),
+	]);
+};
 
 describe('Task Controller (e2e)', () => {
 	describe('without permissions', () => {
@@ -112,7 +115,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanup(em);
 		});
 
 		const setup = () => {
@@ -336,7 +339,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanup(em);
 		});
 
 		const setup = () => {
