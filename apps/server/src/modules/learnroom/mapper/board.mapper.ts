@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Course } from '@shared/domain';
 import { BoardResponse, BoardElementResponse, BoardTaskResponse } from '../controller/dto/roomBoardResponse';
 import { Board } from '../uc/rooms.uc';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
@@ -19,7 +20,8 @@ export class BoardMapper {
 				status: boardTaskStatus,
 			});
 
-			mappedTask.courseName = boardTask.course?.name;
+			const taskCourse = boardTask.course as Course;
+			mappedTask.courseName = taskCourse.name;
 			mappedTask.availableDate = boardTask.availableDate;
 			mappedTask.duedate = boardTask.dueDate;
 			mappedTask.displayColor = boardTaskDesc.color;

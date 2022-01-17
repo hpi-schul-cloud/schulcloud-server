@@ -40,7 +40,7 @@ describe('rooms controller', () => {
 		uc = module.get(RoomsUc);
 	});
 
-	describe('getContent', () => {
+	describe('getRoomBoard', () => {
 		describe('when simple room is fetched', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;

@@ -137,7 +137,6 @@ export class TaskRepo {
 		filters?: { draft?: boolean },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
-		// ToDO: support lesson Ids?
 		const scope = new TaskScope();
 		scope.byCourseIds([courseId]);
 

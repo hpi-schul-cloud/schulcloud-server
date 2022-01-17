@@ -22,17 +22,17 @@ export class RoomsUc {
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
 		const course = await this.courseRepo.findOne(roomId, userId);
-		const courseRole = this.getRoleInCourse(userId, course);
-		const taskFilter = this.taskFilter(courseRole);
+		const isTeacher = this.isTeacher(userId, course);
+		const taskFilter = this.taskFilter(isTeacher);
 		const [tasks] = await this.taskRepo.findBySingleParent(course.id, taskFilter);
-		const tasksWithStatusVos = this.addStatusToTasks(courseRole, tasks, userId);
+		const tasksWithStatusVos = this.addStatusToTasks(isTeacher, tasks, userId);
 
 		const board = this.buildBoard(course, tasksWithStatusVos);
 		return board;
 	}
 
-	private taskFilter(courseRole: string): { draft?: boolean } {
-		const shouldShowDrafts = courseRole === 'teacher';
+	private taskFilter(isTeacher: boolean): { draft?: boolean } {
+		const shouldShowDrafts = isTeacher;
 		return { draft: shouldShowDrafts };
 	}
 
@@ -48,30 +48,28 @@ export class RoomsUc {
 		return board;
 	}
 
-	private getRoleInCourse(userId: EntityId, course: Course): string {
+	private isTeacher(userId: EntityId, course: Course): boolean {
 		if (course.getStudentIds().includes(userId)) {
-			return 'student';
+			return false;
 		}
 		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId) === true) {
-			return 'teacher';
+			return true;
 		}
 		throw new NotFoundException();
 	}
 
-	private addStatusToTasks(role: string, tasks: Task[], userId: EntityId): TaskWithStatusVo[] {
+	private addStatusToTasks(isTeacher: boolean, tasks: Task[], userId: EntityId): TaskWithStatusVo[] {
 		let tasksWithStatusVos: TaskWithStatusVo[];
-		if (role === 'student') {
-			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createStudentStatusForUser(userId);
-				return new TaskWithStatusVo(task, status);
-			});
-		} else if (role === 'teacher') {
+		if (isTeacher) {
 			tasksWithStatusVos = tasks.map((task) => {
 				const status = task.createTeacherStatusForUser(userId);
 				return new TaskWithStatusVo(task, status);
 			});
 		} else {
-			throw new UnauthorizedException();
+			tasksWithStatusVos = tasks.map((task) => {
+				const status = task.createStudentStatusForUser(userId);
+				return new TaskWithStatusVo(task, status);
+			});
 		}
 		return tasksWithStatusVos;
 	}
