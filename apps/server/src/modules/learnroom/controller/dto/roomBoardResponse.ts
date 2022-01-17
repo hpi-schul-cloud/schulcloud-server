@@ -22,7 +22,7 @@ export class BoardTaskResponse {
 	availableDate?: Date;
 
 	@ApiPropertyOptional()
-	dueDate?: Date;
+	duedate?: Date;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
