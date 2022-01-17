@@ -21,7 +21,7 @@ export class TaskUC {
 		const user = await this.userRepo.findById(userId, true);
 
 		if (
-			!this.authorizationService.hasTaskDashboardPermission(user, [
+			!this.authorizationService.hasOneOfTaskDashboardPermissions(user, [
 				TaskDashBoardPermission.teacherDashboard,
 				TaskDashBoardPermission.studentDashboard,
 			])
@@ -72,9 +72,11 @@ export class TaskUC {
 		// load the user including all roles
 		const user = await this.userRepo.findById(userId, true);
 
-		if (this.authorizationService.hasTaskDashboardPermission(user, TaskDashBoardPermission.studentDashboard)) {
+		if (this.authorizationService.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.studentDashboard)) {
 			response = await this.findAllForStudent(user, pagination);
-		} else if (this.authorizationService.hasTaskDashboardPermission(user, TaskDashBoardPermission.teacherDashboard)) {
+		} else if (
+			this.authorizationService.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.teacherDashboard)
+		) {
 			response = await this.findAllForTeacher(user, pagination);
 		} else {
 			throw new UnauthorizedException();

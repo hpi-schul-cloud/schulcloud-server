@@ -232,20 +232,41 @@ describe('Task controller (e2e)', () => {
 			await cleanUpCollections(em);
 		});
 
-		it('should possible to open it', async () => {
-			const response = await api.get();
+		describe('api endpoint', () => {
+			const setup = () => {
+				const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+				const user = userFactory.build({ roles });
 
-			expect(response.status).toEqual(200);
-		});
+				return user;
+			};
 
-		it('should return a paginated result', async () => {
-			const { result } = await api.get();
+			it('should possible to open it', async () => {
+				const user = setup();
 
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 10,
-				skip: 0,
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapToCurrentUser(user);
+				const response = await api.get();
+
+				expect(response.status).toEqual(200);
+			});
+
+			it('should return a paginated result', async () => {
+				const user = setup();
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapToCurrentUser(user);
+				const response = await api.get();
+
+				expect(response.result).toEqual({
+					total: 0,
+					data: [],
+					limit: 10,
+					skip: 0,
+				});
 			});
 		});
 

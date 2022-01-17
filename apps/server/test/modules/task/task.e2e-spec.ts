@@ -59,19 +59,7 @@ describe('Task Controller (e2e)', () => {
 		beforeAll(async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
 				imports: [ServerModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						const roles = roleFactory.buildList(1, { permissions: [] });
-						const user = userFactory.build({ roles });
-						const currentUser = mapToCurrentUser(user);
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
+			}).compile();
 
 			app = moduleFixture.createNestApplication();
 			await app.init();
@@ -184,6 +172,7 @@ describe('Task Controller (e2e)', () => {
 			const user = setup();
 			const course = courseFactory.build({ teachers: [user] });
 			const task = taskFactory.build({ course });
+
 			await em.persistAndFlush([task]);
 			em.clear();
 
@@ -504,27 +493,6 @@ describe('Task Controller (e2e)', () => {
 			em.clear();
 
 			currentUser = mapToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('[FIND] /tasks should nothing return from student when the user has write permissions', async () => {
-			const teacher = userFactory.build();
-			const subTeacher = userFactory.build();
-			const course1 = courseFactory.build({
-				teachers: [teacher],
-			});
-			const course2 = courseFactory.build({
-				substitutionTeachers: [subTeacher],
-			});
-			const task1 = taskFactory.build({ course: course1 });
-			const task2 = taskFactory.build({ course: course2 });
-
-			await em.persistAndFlush([task1, task2]);
-			em.clear();
-
-			currentUser = mapToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);

@@ -81,7 +81,10 @@ export class TaskAuthorizationService {
 		return hasPermission;
 	}
 
-	hasTaskDashboardPermission(user: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]): boolean {
+	hasOneOfTaskDashboardPermissions(
+		user: User,
+		permission: TaskDashBoardPermission | TaskDashBoardPermission[]
+	): boolean {
 		const [, permissions] = this.permissionService.resolveRolesAndPermissions(user);
 
 		const hasPermission = Array.isArray(permission)
