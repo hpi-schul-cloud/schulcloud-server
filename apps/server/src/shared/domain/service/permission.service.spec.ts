@@ -63,7 +63,7 @@ describe('resolveRolesAndPermissions', () => {
 		expect(permissions).toEqual(['a']);
 	});
 
-	it('should return permissions of a user with many roles', async () => {
+	it('should return permissions of a user with many roles', () => {
 		const roleA = roleFactory.build({ permissions: ['a'] });
 		const roleB = roleFactory.build({ permissions: ['b'] });
 		const user = userFactory.build({ roles: [roleA, roleB] });
@@ -73,7 +73,7 @@ describe('resolveRolesAndPermissions', () => {
 		expect(permissions.sort()).toEqual(['a', 'b'].sort());
 	});
 
-	it('should return unique permissions', async () => {
+	it('should return unique permissions', () => {
 		const roleA = roleFactory.build({ permissions: ['a', 'b'] });
 		const roleB = roleFactory.build({ permissions: ['b', 'c'] });
 		const user = userFactory.build({ roles: [roleA, roleB] });
@@ -83,7 +83,7 @@ describe('resolveRolesAndPermissions', () => {
 		expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
 	});
 
-	it('should return the permissions of the 1st level sub role', async () => {
+	it('should return the permissions of the 1st level sub role', () => {
 		const roleB = roleFactory.build({ permissions: ['b'] });
 		const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
 		const user = userFactory.build({ roles: [roleA] });
@@ -93,7 +93,7 @@ describe('resolveRolesAndPermissions', () => {
 		expect(permissions.sort()).toEqual(['a', 'b'].sort());
 	});
 
-	it('should return the permissions of nested sub roles', async () => {
+	it('should return the permissions of nested sub roles', () => {
 		const roleC = roleFactory.build({ permissions: ['c'] });
 		const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
 		const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
@@ -104,7 +104,7 @@ describe('resolveRolesAndPermissions', () => {
 		expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
 	});
 
-	it('should return unique permissions of nested sub roles', async () => {
+	it('should return unique permissions of nested sub roles', () => {
 		const roleC = roleFactory.build({ permissions: ['c', 'a'] });
 		const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
 		const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
