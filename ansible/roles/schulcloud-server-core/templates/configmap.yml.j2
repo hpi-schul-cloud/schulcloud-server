@@ -19,7 +19,7 @@ data:
   PORT: "{{ PORT_SERVER }}"
   TZ: "Europe/Berlin"
 {% for name, data in configuration_all.items() %}
-{% if data.server is defined and data.server == True %}
+{% if data.server is defined and data.server == true %}
 {% if data.config_name is defined and data.config_name in hostvars %}
 {% if data.var_name is defined %}
   {{ data.var_name }}: "{{ hostvars[data.config_name] }}"
