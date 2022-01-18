@@ -15,7 +15,7 @@ import {
 	taskFactory,
 	lessonFactory,
 	roleFactory,
-	cleanUpCollections,
+	cleanupCollections,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
@@ -85,7 +85,7 @@ describe('Task controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanupCollections(em);
 		});
 
 		it('should return status 401', async () => {
@@ -139,7 +139,7 @@ describe('Task controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanupCollections(em);
 		});
 
 		const setup = () => {
@@ -229,7 +229,7 @@ describe('Task controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanupCollections(em);
 		});
 
 		describe('api endpoint', () => {

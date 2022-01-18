@@ -15,7 +15,7 @@ import {
 	taskFactory,
 	submissionFactory,
 	roleFactory,
-	cleanUpCollections,
+	cleanupCollections,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
@@ -112,7 +112,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanupCollections(em);
 		});
 
 		const setup = () => {
@@ -336,7 +336,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		beforeEach(async () => {
-			await cleanUpCollections(em);
+			await cleanupCollections(em);
 		});
 
 		const setup = () => {

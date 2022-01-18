@@ -7,7 +7,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanUpCollections, roleFactory } from '@shared/testing';
+import { userFactory, courseFactory, cleanupCollections, roleFactory } from '@shared/testing';
 import { ICurrentUser, User } from '@shared/domain';
 
 const mapToCurrentUser = (user: User) =>
@@ -45,7 +45,7 @@ describe('Course Controller (e2e)', () => {
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 		await app.close();
 		await orm.close();
 	});
