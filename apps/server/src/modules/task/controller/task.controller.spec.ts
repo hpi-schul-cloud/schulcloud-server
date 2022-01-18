@@ -16,15 +16,7 @@ describe('TaskController', () => {
 					useValue: {},
 				},
 				{
-					provide: LessonRepo,
-					useValue: {},
-				},
-				{
 					provide: UserRepo,
-					useValue: {},
-				},
-				{
-					provide: LessonRepo,
 					useValue: {},
 				},
 				{
