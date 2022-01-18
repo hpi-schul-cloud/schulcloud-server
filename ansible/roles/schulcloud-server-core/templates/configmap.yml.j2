@@ -34,9 +34,9 @@ data:
 {% endif %}
 {% elif data.value is defined %}
 {% if data.var_name is defined %}
-  {{ data.var_name }}: "{{ data.var_name }}"
+  {{ data.var_name }}: "{{ data.value }}"
 {% else %}
-  {{ name }}: "{{ data.var_name }}"
+  {{ name }}: "{{ data.value }}"
 {% endif %}
 {% endif %}
 {% endif %}
