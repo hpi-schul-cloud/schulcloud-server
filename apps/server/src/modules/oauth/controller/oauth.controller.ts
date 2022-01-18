@@ -2,11 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import axios, { AxiosResponse } from 'axios';
-import { env } from 'process';
-import jwtDecode from 'jwt-decode';
+import { Request, Response } from 'express';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationCodeQuery } from './dto/authorization-code.query';
 
@@ -16,43 +14,30 @@ export class OauthController {
 	constructor(private readonly oauthUc: OauthUc) {}
 
 	@Get()
-	getAuthorizationCode(@Query() query: AuthorizationCodeQuery, @Res() res): unknown {
+	async getAuthorizationCode(
+		@Query() query: AuthorizationCodeQuery,
+		@Res() res: Response,
+		@Req() req: Request
+	): Promise<unknown> {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		console.log('#################### Code #################');
 		console.log(query.code);
-		void this.requestToken(query.code);
+		console.log(query);
+
+		await this.oauthUc.requestToken(query.code);
+
+		// this.oauthUc.decodeQueryToken(queryToken);
+		// postPaylod
+
+		// void this.oauthUc.requestToken(query.authorizationCode);
+
+		// void this.requestToken(query.code);
 
 		return res.redirect('https://google.de');
 	}
 
 	// @Get('token')
-	async requestToken(code: string) {
-		const payload = {
-			url: 'http://iserv.n21.dbildungscloud.de/iserv/auth/public/token',
-			data: {
-				client_id: '58_qe54d8bh0v4gog8sw0w88c0s8cwwocc8wk8oo00s4c0g8gkc8',
-				client_secret: env.CLIENT_SECRET,
-				redirect_uri: 'http://localhost:3030/api/v3/oauth/token',
-				grant_type: 'authorization_code',
-				code,
-			},
-		};
+	// async requestToken(code: string) {
 
-		try {
-			console.log(payload);
-			const response: AxiosResponse = await axios.post(payload.url, {}, { params: { ...payload.data } });
-			console.log('############################ RESPONSE #############################');
-			console.log(response.data);
-			const decodedJwt: IJWT = jwtDecode(response.data.id_token);
-			console.log(`This is the uuid >>>> ${decodedJwt.uuid}`);
-		} catch (error) {
-			console.log('############################ ERROR #############################');
-			console.log(error.message);
-		}
-	}
-}
-
-interface IJWT {
-	hmmmm: string;
-	uuid: string;
+	// }
 }
