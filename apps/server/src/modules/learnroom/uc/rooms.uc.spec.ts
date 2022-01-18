@@ -111,7 +111,7 @@ describe('rooms usecase', () => {
 
 			it('should get course for roomId', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.finished(user).buildWithId({ course });
+				const task = taskFactory.finished(user).build({ course });
 
 				const { mockRestore, courseSpy } = setAllMocks(user, course, [task]);
 
@@ -123,7 +123,7 @@ describe('rooms usecase', () => {
 
 			it('should not exclude drafts', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.buildWithId({ course });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
 
@@ -135,7 +135,7 @@ describe('rooms usecase', () => {
 
 			it('should return board with tasks', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.buildWithId({ course });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore } = setAllMocks(user, course, [task]);
 
@@ -156,7 +156,7 @@ describe('rooms usecase', () => {
 
 			it('should exclude drafts', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.buildWithId({ course });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
 
@@ -168,7 +168,7 @@ describe('rooms usecase', () => {
 
 			it('should return board with tasks', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.buildWithId({ course });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore } = setAllMocks(user, course, [task]);
 
@@ -189,7 +189,7 @@ describe('rooms usecase', () => {
 
 			it('should return board with tasks', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.buildWithId({ course });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore } = setAllMocks(user, course, [task]);
 

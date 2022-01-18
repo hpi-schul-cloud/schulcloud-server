@@ -13,7 +13,6 @@ import {
 	roleFactory,
 	setupEntities,
 } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TaskRepo, UserRepo } from '@shared/repo';
 import { TaskUC } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
@@ -209,9 +208,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should return task for a user', async () => {
-			currentUser = setupUser([TaskDashBoardPermission.studentDashboard]);
-
-			const task = taskFactory.finished(currentUser).buildWithId();
+			const task = taskFactory.finished(currentUser).build();
 			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
 			const [, total] = await service.findAllFinished(currentUser.id);
@@ -287,8 +284,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should return read status vo for tasks', async () => {
-			const user = userFactory.buildWithId();
-			const task = taskFactory.finished(user).buildWithId();
+			const user = userFactory.build();
+			const task = taskFactory.finished(user).build();
 			const mockRestore = findAllMock({ tasks: [task] });
 			const status = task.createStudentStatusForUser(user);
 
@@ -393,9 +390,7 @@ describe('TaskUC', () => {
 			});
 
 			it('should return finished tasks', async () => {
-				const user = userFactory.buildWithId();
-
-				const task = taskFactory.finished(user).buildWithId();
+				const task = taskFactory.finished(currentUser).build();
 				const mockRestore = findAllMock({
 					tasks: [task],
 					hasWritePermission: true,
@@ -409,9 +404,8 @@ describe('TaskUC', () => {
 			});
 
 			it('should select the right status', async () => {
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
-				const task = taskFactory.finished(user).buildWithId({ course });
+				const course = courseFactory.build({ teachers: [currentUser] });
+				const task = taskFactory.finished(currentUser).build({ course });
 				const mockRestore = findAllMock({
 					tasks: [task],
 					courses: [course],
@@ -551,8 +545,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should return well formed task with course and status', async () => {
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
 
 			const mockRestore = findAllMock({
 				tasks: [task],
@@ -570,10 +564,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should find a list of tasks', async () => {
-			const course = courseFactory.buildWithId();
-			const task1 = taskFactory.buildWithId({ course });
-			const task2 = taskFactory.buildWithId({ course });
-			const task3 = taskFactory.buildWithId({ course });
+			const course = courseFactory.build();
+			const task1 = taskFactory.build({ course });
+			const task2 = taskFactory.build({ course });
+			const task3 = taskFactory.build({ course });
 
 			const mockRestore = findAllMock({
 				tasks: [task1, task2, task3],
@@ -589,9 +583,9 @@ describe('TaskUC', () => {
 
 		it('should compute submitted status for task', async () => {
 			const student = currentUser;
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			task.submissions.add(submissionFactory.buildWithId({ task, student }));
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			task.submissions.add(submissionFactory.build({ task, student }));
 
 			const mockRestore = findAllMock({ tasks: [task] });
 
@@ -612,11 +606,11 @@ describe('TaskUC', () => {
 
 		it('should only count the submissions of the given user', async () => {
 			const student1 = currentUser;
-			const student2 = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			task.submissions.add(submissionFactory.buildWithId({ task, student: student1 }));
-			task.submissions.add(submissionFactory.buildWithId({ task, student: student2 }));
+			const student2 = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			task.submissions.add(submissionFactory.build({ task, student: student1 }));
+			task.submissions.add(submissionFactory.build({ task, student: student2 }));
 
 			const mockRestore = findAllMock({ tasks: [task] });
 
@@ -664,11 +658,11 @@ describe('TaskUC', () => {
 
 		it('should only count the graded submissions of the given user', async () => {
 			const student1 = currentUser;
-			const student2 = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
-			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
+			const student2 = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -749,8 +743,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should return well formed task with course and status', async () => {
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.draft().buildWithId({ course });
+			const course = courseFactory.build();
+			const task = taskFactory.draft().build({ course });
 
 			const mockRestore = findAllMock({ tasks: [task] });
 
@@ -773,8 +767,8 @@ describe('TaskUC', () => {
 
 		it('should mark substitution teacher in status', async () => {
 			const userData = currentUser;
-			const course = courseFactory.buildWithId({ substitutionTeachers: [userData] });
-			const task = taskFactory.buildWithId({ course });
+			const course = courseFactory.build({ substitutionTeachers: [userData] });
+			const task = taskFactory.build({ course });
 
 			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
@@ -786,10 +780,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should find a list of tasks', async () => {
-			const course = courseFactory.buildWithId();
-			const task1 = taskFactory.buildWithId({ course });
-			const task2 = taskFactory.buildWithId({ course });
-			const task3 = taskFactory.buildWithId({ course });
+			const course = courseFactory.build();
+			const task1 = taskFactory.build({ course });
+			const task2 = taskFactory.build({ course });
+			const task3 = taskFactory.build({ course });
 
 			const mockRestore = findAllMock({
 				tasks: [task1, task2, task3],
@@ -806,9 +800,9 @@ describe('TaskUC', () => {
 
 		it('should compute submitted status for task', async () => {
 			const student = currentUser;
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			task.submissions.add(submissionFactory.buildWithId({ task, student }));
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			task.submissions.add(submissionFactory.build({ task, student }));
 
 			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
 
@@ -828,12 +822,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of submissions', async () => {
-			const student1 = userFactory.buildWithId();
-			const student2 = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
-			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
+			const student1 = userFactory.build();
+			const student2 = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
 			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
@@ -854,10 +848,10 @@ describe('TaskUC', () => {
 		});
 
 		it('should compute graded status for task', async () => {
-			const student = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission = submissionFactory.buildWithId({ task, student });
+			const student = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission = submissionFactory.build({ task, student });
 			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
@@ -881,12 +875,12 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of graded submissions', async () => {
-			const student1 = userFactory.buildWithId(undefined, currentUser.id);
-			const student2 = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
-			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
+			const student1 = currentUser;
+			const student2 = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
@@ -909,13 +903,13 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of graded submissions', async () => {
-			const student1 = userFactory.buildWithId(undefined, currentUser.id);
-			const student2 = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
-			const submission2 = submissionFactory.buildWithId({ task, student: student2 });
-			const submission3 = submissionFactory.buildWithId({ task, student: student2 });
+			const student1 = currentUser;
+			const student2 = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student2 });
+			const submission3 = submissionFactory.build({ task, student: student2 });
 
 			task.submissions.add(submission1, submission2, submission3);
 
@@ -940,13 +934,13 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of submissions', async () => {
-			const student1 = userFactory.buildWithId();
-			const student2 = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const submission1 = submissionFactory.buildWithId({ task, student: student1 });
-			const submission2 = submissionFactory.buildWithId({ task, student: student1 });
-			const submission3 = submissionFactory.buildWithId({ task, student: student2 });
+			const student1 = userFactory.build();
+			const student2 = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			const submission1 = submissionFactory.build({ task, student: student1 });
+			const submission2 = submissionFactory.build({ task, student: student1 });
+			const submission3 = submissionFactory.build({ task, student: student2 });
 
 			task.submissions.add(submission1, submission2, submission3);
 

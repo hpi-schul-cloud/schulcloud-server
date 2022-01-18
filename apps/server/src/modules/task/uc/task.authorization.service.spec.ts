@@ -211,7 +211,7 @@ describe('task.authorization.service', () => {
 			});
 
 			it('should return true if the user is a student', () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user] });
 				const task = taskFactory.build({ course });
 
@@ -221,7 +221,7 @@ describe('task.authorization.service', () => {
 			});
 
 			it('should return true if the user is a substitution teacher', () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const course = courseFactory.build({ substitutionTeachers: [user] });
 				const task = taskFactory.build({ course });
 
@@ -231,7 +231,7 @@ describe('task.authorization.service', () => {
 			});
 
 			it('should return true if the user is a teacher', () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
@@ -252,7 +252,7 @@ describe('task.authorization.service', () => {
 			});
 
 			it('should return false if the user is a student', () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user] });
 				const task = taskFactory.build({ course });
 
@@ -262,7 +262,7 @@ describe('task.authorization.service', () => {
 			});
 
 			it('should return true if the user is a substitution teacher', () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const course = courseFactory.build({ substitutionTeachers: [user] });
 				const task = taskFactory.build({ course });
 
@@ -272,7 +272,7 @@ describe('task.authorization.service', () => {
 			});
 
 			it('should return true if the user is a teacher', () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.build({ course });
 
