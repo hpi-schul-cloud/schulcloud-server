@@ -1,7 +1,8 @@
 import { StringValidator } from '@shared/common';
-import { INameMatch, User } from '@shared/domain';
-import { RoleNameResponse, UserDetailsResponse } from '../controller/dto';
+import { INameMatch, MatchCreator, User } from '@shared/domain';
+import { RoleNameResponse, UserResponse } from '../controller/dto';
 import { UserFilterQuery } from '../controller/dto/user-filter.query';
+import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMapper {
 	static mapToDomain(query: UserFilterQuery): INameMatch {
@@ -16,7 +17,7 @@ export class UserMapper {
 		return scope;
 	}
 
-	static async mapToResponse(user: User): Promise<UserDetailsResponse> {
+	static async mapToResponse(user: User, matchCreator?: MatchCreator): Promise<UserResponse> {
 		const domainRoleNames = await user.getRoleNames();
 		const roleNames: RoleNameResponse[] = domainRoleNames
 			.map((roleName) => {
@@ -32,14 +33,17 @@ export class UserMapper {
 				}
 			})
 			.filter((roleName) => roleName != null) as RoleNameResponse[];
-		const dto = new UserDetailsResponse({
+		const dto = new UserResponse({
 			userId: user.id,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			loginName: user.email,
 			roleNames,
 		});
-
+		if (matchCreator != null) {
+			const matchedBy = ImportUserMatchMapper.mapMatchCreatorToResponse(matchCreator);
+			dto.matchedBy = matchedBy;
+		}
 		return dto;
 	}
 }

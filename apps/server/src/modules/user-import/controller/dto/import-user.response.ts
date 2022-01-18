@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';
+import type { UserResponse } from '.';
 import { RoleNameResponse } from './role-name.response';
-import { UserMatchResponse } from './user-match.response';
 
 export class ImportUserResponse {
 	constructor(props: ImportUserResponse) {
@@ -52,7 +52,7 @@ export class ImportUserResponse {
 	classNames: string[];
 
 	@ApiPropertyOptional({ description: 'assignemnt to a local user account' })
-	match?: UserMatchResponse;
+	match?: UserResponse;
 
 	@ApiProperty({ description: 'manual flag to apply it as filter' })
 	flagged = false;

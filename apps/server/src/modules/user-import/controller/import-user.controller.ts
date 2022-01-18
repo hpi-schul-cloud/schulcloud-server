@@ -6,7 +6,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
 import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
 import { UpdateMatchParams } from './dto/update-match.params';
-import { UserDetailsListResponse, UserMatchResponse } from './dto/user-match.response';
+import { UserListResponse } from './dto/user-match.response';
 
 import { UserImportUC } from '../uc/user-import.uc';
 
@@ -35,7 +35,9 @@ export class ImportUserController {
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAll(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
-		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
+		const dtoList = await Promise.all(
+			importUserList.map(async (importUser) => ImportUserMapper.mapToResponse(importUser))
+		);
 		const response = new ImportUserListResponse(dtoList, count, skip, limit);
 		return response;
 	}
@@ -74,14 +76,14 @@ export class ImportUserController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: UserFilterQuery,
 		@Query() paginationQuery: PaginationQuery
-	): Promise<UserDetailsListResponse> {
+	): Promise<UserListResponse> {
 		const options: IFindOptions<User> = { pagination: paginationQuery };
 
 		const query = UserMapper.mapToDomain(scope);
 		const userList = await this.userUc.findAllUnmatched(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
 		const dtoList = await Promise.all(userList.map(async (user) => UserMapper.mapToResponse(user)));
-		const response = new UserDetailsListResponse(dtoList, -1, skip, limit); // TODO total missing
-		return response as unknown as UserDetailsListResponse;
+		const response = new UserListResponse(dtoList, -1, skip, limit); // TODO total missing
+		return response as unknown as UserListResponse;
 	}
 }

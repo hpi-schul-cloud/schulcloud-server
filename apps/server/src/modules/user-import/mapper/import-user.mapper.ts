@@ -3,9 +3,10 @@ import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
 import { RoleNameMapper } from './role-name.mapper';
+import { UserMapper } from './user.mapper';
 
 export class ImportUserMapper {
-	static mapToResponse(importUser: ImportUser): ImportUserResponse {
+	static async mapToResponse(importUser: ImportUser): Promise<ImportUserResponse> {
 		const dto = new ImportUserResponse({
 			importUserId: importUser.id,
 			loginName: importUser.loginName || '',
@@ -16,7 +17,7 @@ export class ImportUserMapper {
 			flagged: importUser.flagged,
 		});
 		if (importUser._user && importUser._matchedBy) {
-			dto.match = ImportUserMatchMapper.mapToResponse(importUser._user, importUser._matchedBy);
+			dto.match = await UserMapper.mapToResponse(importUser._user, importUser._matchedBy);
 		}
 		return dto;
 	}
