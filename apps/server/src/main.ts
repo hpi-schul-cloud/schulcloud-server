@@ -53,7 +53,7 @@ async function bootstrap() {
 
 	// override console logger for commons configuration
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	(<any>Configuration).options.logger = Logger;
+	((<unknown>Configuration) as { options: { logger: unknown } }).options.logger = Logger;
 
 	// mount instances
 	const rootExpress = express();
