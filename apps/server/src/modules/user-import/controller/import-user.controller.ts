@@ -43,7 +43,7 @@ export class ImportUserController {
 	}
 
 	@Patch(':id/match')
-	async updateMatch(
+	async setMatch(
 		@Param('id', ParseObjectIdPipe) importUserId: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateMatchParams

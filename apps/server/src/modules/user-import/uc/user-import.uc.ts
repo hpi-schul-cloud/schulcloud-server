@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Counted, ImportUser, IImportUserScope, MatchCreator } from '@shared/domain';
 
+import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';
-import { ImportUserAuthorizationService } from '../provider/import-user.authorization.service';
-import { ImportUserRepo } from '../repo';
-import { UserRepo } from '../repo/user.repo';
+import { ImportUserAuthorizationService } from '../services/import-user.authorization.service';
 
 @Injectable()
 export class UserImportUC {

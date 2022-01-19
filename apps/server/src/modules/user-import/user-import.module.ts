@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUC } from './uc/user-import.uc';
-import { ImportUserAuthorizationService } from './provider/import-user.authorization.service';
+import { ImportUserAuthorizationService } from './services/import-user.authorization.service';
 import { UserUC } from './uc/user.uc';
-import { ImportUserRepo, UserRepo } from './repo';
 
 @Module({
 	imports: [AuthorizationModule, LoggerModule],

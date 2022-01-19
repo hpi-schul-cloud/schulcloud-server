@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, User, INameMatch } from '@shared/domain';
+import { UserRepo } from '@shared/repo';
 
 import { UserImportPermissions } from '../constants';
-import { ImportUserAuthorizationService } from '../provider/import-user.authorization.service';
-import { UserRepo } from '../repo/user.repo';
+import { ImportUserAuthorizationService } from '../services/import-user.authorization.service';
 
 @Injectable()
 export class UserUC {
@@ -12,13 +12,26 @@ export class UserUC {
 		private readonly authorizationService: ImportUserAuthorizationService
 	) {}
 
+	/**
+	 * Returns a list of users wich is not assigned as match to importusers.
+	 * The result will filter by curernt users school by default.
+	 * The current user must have permission to read schools users and view importusers.
+	 * @param userId current users id
+	 * @param query filters
+	 * @param options
+	 * @returns
+	 */
 	async findAllUnmatched(userId: EntityId, query: INameMatch, options?: IFindOptions<User>): Promise<User[]> {
 		const user = await this.userRepo.findById(userId);
 
-		const permissions = [UserImportPermissions.STUDENT_LIST, UserImportPermissions.TEACHER_LIST];
+		const permissions = [
+			UserImportPermissions.VIEW_IMPORT_USER,
+			UserImportPermissions.STUDENT_LIST,
+			UserImportPermissions.TEACHER_LIST,
+		];
 		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
-		const countedImportUsers = await this.userRepo.findWithoutImportUser(user.school, query, options);
-		return countedImportUsers;
+		const unmatchedUsers = await this.userRepo.findWithoutImportUser(user.school, query, options);
+		return unmatchedUsers;
 	}
 }

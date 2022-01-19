@@ -2,7 +2,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
 import { EntityId, ImportUser, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
-import { MongoPatterns, Scope } from '@shared/repo';
+import { MongoPatterns } from '../mongo.patterns';
+import { Scope } from '../scope';
 
 export class ImportUserScope extends Scope<ImportUser> {
 	byId(id: EntityId): ImportUserScope {
