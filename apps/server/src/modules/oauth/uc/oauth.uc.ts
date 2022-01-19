@@ -63,7 +63,6 @@ export class OauthUc {
 		} catch (error) {
 			console.log('########### Token konnte nicht entschlüsselt werden #####');
 			console.log('########### KEINE UUID #####');
-			return 'https://niedersachsen.de';
 			// return res.status....
 		}
 	}
