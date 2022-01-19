@@ -1,5 +1,5 @@
 import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
-import { EntityId } from '..';
+import { EntityId } from '../types/entity-id';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -90,7 +90,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return !!this.private;
 	}
 
-	private getSubmissionsItems(): Submission[] {
+	private getSubmissionItems(): Submission[] {
 		if (!this.submissions.isInitialized(true)) {
 			throw new Error('Submissions items are not loaded.');
 		}
@@ -99,7 +99,7 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	getSubmittedUserIds(): EntityId[] {
-		const submittedUserIds = this.getSubmissionsItems().map((submission) => submission.student.id);
+		const submittedUserIds = this.getSubmissionItems().map((submission) => submission.student.id);
 		const uniqueSubmittedUserIds = [...new Set(submittedUserIds)];
 
 		return uniqueSubmittedUserIds;
@@ -113,7 +113,7 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	getGradedUserIds(): EntityId[] {
-		const gradedUserIds = this.getSubmissionsItems()
+		const gradedUserIds = this.getSubmissionItems()
 			.filter((submission) => submission.isGraded())
 			.map((submission) => submission.student.id);
 		const uniqueGradedUserIds = [...new Set(gradedUserIds)];

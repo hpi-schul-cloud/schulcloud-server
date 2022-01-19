@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
 	lessonFactory,
@@ -9,6 +10,7 @@ import {
 } from '@shared/testing';
 
 import { Task } from './task.entity';
+import { Submission } from './submission.entity';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -48,14 +50,19 @@ describe('Task Entity', () => {
 		it('should use save private getSubmissionItems methode to fetch submissions', () => {
 			const task = taskFactory.build();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionsItems');
+			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionItems');
 
 			task.getSubmittedUserIds();
 
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it.todo('should validate if data are loaded');
+		it('should throw if submissions are not loaded', () => {
+			const task = taskFactory.build();
+			task.submissions.set([orm.em.getReference(Submission, new ObjectId().toHexString())]);
+
+			expect(() => task.getSubmittedUserIds()).toThrowError();
+		});
 
 		describe('when submissions are loaded', () => {
 			it('should return a list of submitted userIds', () => {
@@ -142,11 +149,18 @@ describe('Task Entity', () => {
 		it('should use save private getSubmissionItems methode to fetch submissions', () => {
 			const task = taskFactory.build();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionsItems');
+			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionItems');
 
 			task.getGradedUserIds();
 
 			expect(spy).toHaveBeenCalled();
+		});
+
+		it('should throw if submissions are not loaded', () => {
+			const task = taskFactory.build();
+			task.submissions.set([orm.em.getReference(Submission, new ObjectId().toHexString())]);
+
+			expect(() => task.getGradedUserIds()).toThrowError();
 		});
 
 		describe('when submissions are loaded', () => {

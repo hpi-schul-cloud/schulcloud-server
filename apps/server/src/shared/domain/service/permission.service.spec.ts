@@ -1,7 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { PermissionService } from '.';
+import { Role } from '../entity/role.entity';
 
 describe('resolvePermissions', () => {
 	let orm: MikroORM;
@@ -80,5 +82,20 @@ describe('resolvePermissions', () => {
 		const permissions = service.resolvePermissions(user);
 
 		expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+	});
+
+	it('should throw an error if the roles are not populated', () => {
+		const user = userFactory.build();
+		user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
+
+		expect(() => service.resolvePermissions(user)).toThrowError();
+	});
+
+	it('should throw an error if the sub-roles are not populated', () => {
+		const role = roleFactory.build();
+		role.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
+		const user = userFactory.build({ roles: [role] });
+
+		expect(() => service.resolvePermissions(user)).toThrowError();
 	});
 });
