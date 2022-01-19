@@ -83,6 +83,17 @@ describe('AuthorizationService', () => {
 				service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, teamPermissions)
 			).rejects.toThrow(UnauthorizedException);
 		});
+
+		it('should fail when there is not at least one permission given', async () => {
+			const courseId = new ObjectId().toHexString();
+
+			await expect(service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, [])).rejects.toThrow(
+				UnauthorizedException
+			);
+			await expect(
+				service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, undefined as unknown as string[])
+			).rejects.toThrow(UnauthorizedException);
+		});
 	});
 
 	describe('getPermittedEntities', () => {
