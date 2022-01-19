@@ -13,9 +13,6 @@ export class TaskUC {
 		private readonly userRepo: UserRepo
 	) {}
 
-	// This uc includes 4 awaits + 1 from authentication services.
-	// 5 awaits from with db calls from one request against the api is for me the absolut maximum what we should allowed.
-	// TODO: clearify if Admin need TASK_DASHBOARD_TEACHER_VIEW_V3 permission
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		// load the user including all roles
 		const user = await this.userRepo.findById(userId, true);
@@ -63,9 +60,6 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	// TODO: should it display task from courses that are not started?
-	// TODO replace curentUser with userId. this requires that permissions are loaded inside the use case by authorization service
-	// TODO: use authorizationService instant of private method
 	async findAll(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		let response: Counted<TaskWithStatusVo[]>;
 
@@ -141,7 +135,6 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	// It is more a util method or domain logic in context of findAllForStudent timeframe
 	private getDefaultMaxDueDate(): Date {
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);

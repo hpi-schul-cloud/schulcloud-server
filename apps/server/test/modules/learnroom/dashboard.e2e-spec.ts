@@ -51,7 +51,6 @@ describe('Dashboard Controller (e2e)', () => {
 		return user;
 	};
 
-	// TASK_DASHBOARD_TEACHER_VIEW_V3
 	describe('[GET] dashboard', () => {
 		it('should return dashboard with users active courses', async () => {
 			const user = setup();
