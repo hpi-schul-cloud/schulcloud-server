@@ -168,7 +168,6 @@ describe('TaskUC', () => {
 		lessons?: Lesson[];
 		courses?: Course[];
 		hasWritePermission?: boolean;
-		hasOneOfTaskDashboardPermissions?: boolean;
 	}) => {
 		const spy1 = setTaskRepoMock.findAllFinishedByParentIds(data?.tasks);
 		const spy2 = setAuthorizationServiceMock.getPermittedCourses(data?.courses);
@@ -209,7 +208,7 @@ describe('TaskUC', () => {
 
 		it('should return task for a user', async () => {
 			const task = taskFactory.finished(user).build();
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const [, total] = await service.findAllFinished(user.id);
 
@@ -219,7 +218,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should call task repo findAllFinishedByParentIds', async () => {
-			const mockRestore = findAllMock({ hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({});
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
@@ -230,7 +229,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should call task repo findAllFinishedByParentIds for finished tasks', async () => {
-			const mockRestore = findAllMock({ hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({});
 			const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 			await service.findAllFinished(user.id);
@@ -429,7 +428,7 @@ describe('TaskUC', () => {
 			});
 
 			it('should fail with UnauthorizedException', async () => {
-				const mockRestore = findAllMock({ hasOneOfTaskDashboardPermissions: false });
+				const mockRestore = findAllMock({});
 				await expect(() => service.findAllFinished(user.id)).rejects.toThrow(UnauthorizedException);
 
 				mockRestore();
@@ -770,7 +769,7 @@ describe('TaskUC', () => {
 			const course = courseFactory.build({ substitutionTeachers: [userData] });
 			const task = taskFactory.build({ course });
 
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(userData.id, paginationQuery);
@@ -787,7 +786,6 @@ describe('TaskUC', () => {
 
 			const mockRestore = findAllMock({
 				tasks: [task1, task2, task3],
-				hasOneOfTaskDashboardPermissions: true,
 			});
 
 			const paginationQuery = new PaginationQuery();
@@ -804,7 +802,7 @@ describe('TaskUC', () => {
 			const task = taskFactory.build({ course });
 			task.submissions.add(submissionFactory.build({ task, student }));
 
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(user.id, paginationQuery);
@@ -830,7 +828,7 @@ describe('TaskUC', () => {
 			const submission2 = submissionFactory.build({ task, student: student2 });
 			task.submissions.add(submission1, submission2);
 
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(user.id, paginationQuery);
@@ -855,7 +853,7 @@ describe('TaskUC', () => {
 			task.submissions.add(submission);
 
 			const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(user.id, paginationQuery);
@@ -885,7 +883,7 @@ describe('TaskUC', () => {
 
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result] = await service.findAll(user.id, paginationQuery);
@@ -916,7 +914,7 @@ describe('TaskUC', () => {
 			jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
 			jest.spyOn(submission3, 'isGraded').mockImplementation(() => true);
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result, total] = await service.findAll(user.id, paginationQuery);
@@ -944,7 +942,7 @@ describe('TaskUC', () => {
 
 			task.submissions.add(submission1, submission2, submission3);
 
-			const mockRestore = findAllMock({ tasks: [task], hasOneOfTaskDashboardPermissions: true });
+			const mockRestore = findAllMock({ tasks: [task] });
 
 			const paginationQuery = new PaginationQuery();
 			const [result, total] = await service.findAll(user.id, paginationQuery);
