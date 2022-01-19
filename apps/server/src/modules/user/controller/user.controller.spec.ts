@@ -33,8 +33,8 @@ describe('UserController', () => {
 				{
 					provide: PermissionService,
 					useValue: {
-						resolveRolesAndPermissions() {
-							throw new Error('Please write a mock for PermissionService.resolveRolesAndPermissions');
+						resolvePermissions() {
+							throw new Error('Please write a mock for PermissionService.resolvePermissions');
 						},
 					},
 				},
@@ -56,7 +56,7 @@ describe('UserController', () => {
 		user.roles.set([]);
 		const currentUser = mapUserToCurrentUser(user);
 		const spyFindUser = jest.spyOn(userRepo, 'findById').mockImplementation(async () => Promise.resolve(user));
-		const spyResolve = jest.spyOn(permissionService, 'resolveRolesAndPermissions').mockImplementation(() => [[], []]);
+		const spyResolve = jest.spyOn(permissionService, 'resolvePermissions').mockImplementation(() => []);
 
 		await controller.me(currentUser);
 
