@@ -6,7 +6,6 @@ import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
-import { response } from 'express';
 
 @Injectable()
 export class OauthUc {
@@ -18,7 +17,6 @@ export class OauthUc {
 
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string) {
-		console.log(code);
 		const payload: Payload = {
 			tokenEndpoint: env.TOKEN_ENDPOINT,
 			data: {
@@ -40,29 +38,22 @@ export class OauthUc {
 		) {
 			throw new Error('check environment variables');
 		}
-		console.log(payload.data.code);
 
 		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
 			payload.tokenEndpoint,
 			{},
 			{ params: { ...payload.data } }
 		);
-		console.log(responseToken.data);
 		return responseToken.data;
 	}
-	// 2- decode the Token to extract the UUID
 
+	// 2- decode the Token to extract the UUID
 	async decodeToken(token: string) {
-		console.log('############################ RESPONSE #############################');
-		console.log('response.data  ', token);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		try {
 			const decodedJwt: IJWT = await jwtDecode(token);
 			console.log(`This is the uuid >>>> ${decodedJwt.uuid}`);
 		} catch (error) {
 			console.log('########### Token konnte nicht entschlüsselt werden #####');
-			console.log('########### KEINE UUID #####');
 			// return res.status....
 		}
 	}
