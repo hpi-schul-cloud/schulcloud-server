@@ -7,17 +7,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { DashboardEntity, GridElement, ICurrentUser, User } from '@shared/domain';
+import { DashboardEntity, GridElement, ICurrentUser } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
-import { courseFactory, userFactory, roleFactory } from '@shared/testing';
-
-const mapToCurrentUser = (user: User) =>
-	({
-		userId: user.id,
-		roles: user.roles.getItems().map((r) => r.id),
-		schoolId: user.school.id,
-		accountId: new ObjectId().toHexString(),
-	} as ICurrentUser);
+import { courseFactory, userFactory, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 
 describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
@@ -82,7 +74,7 @@ describe('Dashboard Controller (e2e)', () => {
 			];
 			await em.persistAndFlush([user, ...courses]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 
 			const response = await request(app.getHttpServer()).get('/dashboard');
 
@@ -115,7 +107,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4, y: 2 },
@@ -149,7 +141,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 2, y: 2 },
@@ -185,7 +177,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 2, y: 2 },
 				to: { x: 3, y: 3 },
@@ -214,7 +206,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 3, y: 3, groupIndex: 0 },
 				to: { x: 2, y: 3 },
@@ -242,7 +234,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4 },
@@ -270,7 +262,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				title: 'COURSESILOVE',
 			};

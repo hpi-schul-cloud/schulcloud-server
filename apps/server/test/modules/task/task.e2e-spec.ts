@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
 
-import { ICurrentUser, User } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
@@ -16,6 +16,7 @@ import {
 	submissionFactory,
 	roleFactory,
 	cleanupCollections,
+	mapUserToCurrentUser,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
@@ -41,14 +42,6 @@ class API {
 		};
 	}
 }
-
-const mapToCurrentUser = (user: User) =>
-	({
-		userId: user.id,
-		roles: user.roles.getItems().map((r) => r.id),
-		schoolId: user.school.id,
-		accountId: new ObjectId().toHexString(),
-	} as ICurrentUser);
 
 describe('Task Controller (e2e)', () => {
 	describe('without permissions', () => {
@@ -128,7 +121,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([user]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { result } = await api.get();
 
 			expect(result).toEqual({
@@ -145,7 +138,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([user]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { result } = await api.get({ limit: 100, skip: 100 });
 
 			expect(result).toEqual({
@@ -162,7 +155,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([user]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { status } = await api.get({ limit: 1000, skip: 100 });
 
 			expect(status).toEqual(400);
@@ -176,7 +169,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { result } = await api.get();
 
 			expect(result.data[0]).toBeDefined();
@@ -196,7 +189,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.data[0]).toBeDefined();
@@ -217,7 +210,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.data[0].status.isSubstitutionTeacher).toEqual(true);
@@ -233,7 +226,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(3);
@@ -250,7 +243,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(2);
@@ -264,7 +257,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(1);
@@ -279,7 +272,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
@@ -295,7 +288,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(teacher);
+			currentUser = mapUserToCurrentUser(teacher);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
@@ -352,7 +345,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([student]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { status } = await api.get();
 
 			expect(status).toEqual(200);
@@ -364,7 +357,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([student]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result).toEqual({
@@ -381,7 +374,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([student]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get({ limit: 100, skip: 100 });
 
 			expect(result).toEqual({
@@ -398,7 +391,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([student]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { status } = await api.get({ limit: 1000, skip: 100 });
 
 			expect(status).toEqual(400);
@@ -417,7 +410,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.data[0]).toBeDefined();
@@ -447,7 +440,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task1, task2, task3]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(3);
@@ -474,7 +467,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task1, task2, course3]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(2);
@@ -492,7 +485,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
@@ -509,7 +502,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
@@ -526,7 +519,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(1);
@@ -542,7 +535,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
@@ -557,7 +550,7 @@ describe('Task Controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(student);
+			currentUser = mapUserToCurrentUser(student);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);

@@ -5,17 +5,7 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { roleFactory, userFactory } from '@shared/testing';
-import { ICurrentUser, User } from '@shared/domain';
-import { ObjectId } from '@mikro-orm/mongodb';
-
-const mapToCurrentUser = (user: User) =>
-	({
-		userId: user.id,
-		roles: user.roles.getItems().map((r) => r.id),
-		schoolId: user.school.id,
-		accountId: new ObjectId().toHexString(),
-	} as ICurrentUser);
+import { roleFactory, userFactory, mapUserToCurrentUser } from '@shared/testing';
 
 describe('User Controller (e2e)', () => {
 	let app: INestApplication;
@@ -33,7 +23,7 @@ describe('User Controller (e2e)', () => {
 					const roles = roleFactory.buildList(1, { permissions: [] });
 					const user = userFactory.build({ roles });
 
-					const currentUser = mapToCurrentUser(user);
+					const currentUser = mapUserToCurrentUser(user);
 					req.user = currentUser;
 					return true;
 				},
