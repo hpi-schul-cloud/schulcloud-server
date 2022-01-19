@@ -1,6 +1,5 @@
 import { MatchCreator, MatchCreatorScope } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
-import { MatchCreatorResponse, MatchFilterQuery, UserMatchResponse } from '../controller/dto';
+import { MatchCreatorResponse, MatchFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
 describe('[ImportUserMatchMapper', () => {
@@ -42,29 +41,6 @@ describe('[ImportUserMatchMapper', () => {
 			const matchCreator = 'foo' as unknown as MatchCreator;
 			const result = ImportUserMatchMapper.mapMatchCreatorToResponse(matchCreator);
 			expect(result).toEqual(MatchCreatorResponse.MANUAL);
-		});
-	});
-	describe('[mapToResponse] from domain', () => {
-		beforeAll(async () => {
-			await setupEntities();
-		});
-		it('should map user match to response ', () => {
-			const user = userFactory.buildWithId();
-			const matchCreator = MatchCreator.AUTO;
-			const matchedBySpy = jest
-				.spyOn(ImportUserMatchMapper, 'mapMatchCreatorToResponse')
-				.mockReturnValue(MatchCreatorResponse.AUTO);
-			const result = ImportUserMatchMapper.mapToResponse(user, matchCreator);
-			const matchedBy = MatchCreatorResponse.AUTO;
-			const expectedResult = new UserMatchResponse({
-				userId: user.id,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				loginName: user.email,
-				matchedBy,
-			});
-			expect(result).toEqual(expectedResult);
-			expect(matchedBySpy).toBeCalledWith(matchCreator);
 		});
 	});
 });
