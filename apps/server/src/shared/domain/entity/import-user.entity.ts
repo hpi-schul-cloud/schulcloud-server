@@ -105,6 +105,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	flagged = false;
 
 	setMatch(user: User, matchedBy: MatchCreator) {
+		// todo check same school here
 		this._user = wrap(user).toReference();
 		this._matchedBy = matchedBy;
 	}

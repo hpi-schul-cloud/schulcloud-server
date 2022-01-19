@@ -37,9 +37,15 @@ export class UserImportUC {
 		];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
-		const userMatch = await this.userRepo.findOneByIdAndSchoolOrFail(userId, currentUser.school); // check user is not already assigned
+		const userMatch = await this.userRepo.findOneByIdAndSchoolOrFail(userId, currentUser.school);
+		// todo check permission "list"
+
 		const importUser = await this.importUserRepo.findOneByIdAndSchoolOrFail(importUserId, currentUser.school);
+		// todo check permission update
+
+		// check user is not already assigned
 		const hasMatch = await this.importUserRepo.hasMatch(userMatch);
+		// todo same school in entity setMatch?
 		if (hasMatch !== null) throw new Error('remove other assignments of this user first'); // TODO business error
 		importUser.setMatch(userMatch, MatchCreator.MANUAL);
 		await this.importUserRepo.persistAndFlush(importUser);
