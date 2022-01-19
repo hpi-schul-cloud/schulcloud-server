@@ -6,7 +6,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
 import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
 import { UpdateMatchParams } from './dto/update-match.params';
-import { UserListResponse } from './dto/user-match.response';
+import { UserListResponse } from './dto/user.response';
 
 import { UserImportUC } from '../uc/user-import.uc';
 

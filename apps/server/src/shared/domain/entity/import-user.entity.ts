@@ -46,7 +46,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	ldapDn: string;
 
 	/**
-	 * extracts the login name out of the dn which has the login name in 'uid=LOGINNAME,[...]
+	 * extracts the login name out of the dn which has the login name in 'uid=LOGINNAME,[...]'
 	 * */
 	get loginName(): string | null {
 		const PATTERN_LOGIN_FROM_DN = /^uid=(.+?),/i; // extract uid from dn
@@ -98,7 +98,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	_matchedBy?: MatchCreator;
 
 	get matchedBy(): MatchCreator | undefined {
-		return this.matchedBy;
+		return this._matchedBy;
 	}
 
 	@Property({ type: Boolean })

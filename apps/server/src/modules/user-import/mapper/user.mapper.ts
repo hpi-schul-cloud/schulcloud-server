@@ -9,7 +9,7 @@ export class UserMapper {
 		const scope: INameMatch = {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {
-				scope.fullName = query.name.trim();
+				scope.fullName = query.name;
 			} else {
 				throw Error('invalid name from query');
 			}
