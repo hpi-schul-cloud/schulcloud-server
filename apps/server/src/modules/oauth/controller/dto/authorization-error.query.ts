@@ -1,7 +1,7 @@
 import { IsDefined, IsString } from 'class-validator';
 
-export class AuthorizationCodeQuery {
+export class AuthorizationErrorQuery {
 	@IsString()
 	@IsDefined()
-	code!: string;
+	error!: string;
 }
