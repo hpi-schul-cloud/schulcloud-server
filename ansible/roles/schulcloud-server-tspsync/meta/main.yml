@@ -1,0 +1,9 @@
+galaxy_info:
+  role_name: schulcloud-server-tspsync
+  author: Schul-Cloud Verbund
+  description: tspsync role for the schulcloud-server
+  company: Schul-Cloud Verbund
+  license: license (AGPLv3)
+  min_ansible_version: 2.8
+  galaxy_tags: []
+dependencies: []
