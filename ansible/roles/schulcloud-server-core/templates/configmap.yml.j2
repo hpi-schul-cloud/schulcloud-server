@@ -1,3 +1,4 @@
+#jinja2: trim_blocks: "True", lstrip_blocks: "True"
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -19,25 +20,25 @@ data:
   PORT: "{{ PORT_SERVER }}"
   TZ: "Europe/Berlin"
 {% for name, data in configuration_all.items() %}
-{% if data.server is defined and data.server == true %}
-{% if data.config_name is defined and data.config_name in hostvars[inventory_hostname] %}
-{% if data.var_name is defined %}
+  {% if data.server is defined and data.server == true %}
+    {% if data.config_name is defined and data.config_name in hostvars[inventory_hostname] %}
+      {% if data.var_name is defined %}
   {{ data.var_name }}: "{{ hostvars[inventory_hostname][data.config_name] }}"
-{% else %}
+      {% else %}
   {{ name }}: "{{ hostvars[inventory_hostname][data.config_name] }}"
-{% endif %}
-{% elif name in hostvars[inventory_hostname] %}
-{% if data.var_name is defined %}
+      {% endif %}
+    {% elif name in hostvars[inventory_hostname] %}
+      {% if data.var_name is defined %}
   {{ data.var_name }}: "{{ hostvars[inventory_hostname][name] }}"
-{% else %}
+      {% else %}
   {{ name }}: "{{ hostvars[inventory_hostname][name] }}"
-{% endif %}
-{% elif data.value is defined %}
-{% if data.var_name is defined %}
+      {% endif %}
+    {% elif data.value is defined %}
+      {% if data.var_name is defined %}
   {{ data.var_name }}: "{{ data.value }}"
-{% else %}
+      {% else %}
   {{ name }}: "{{ data.value }}"
-{% endif %}
-{% endif %}
-{% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
 {% endfor %}
