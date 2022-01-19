@@ -1,4 +1,5 @@
 import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
+import { EntityId } from '..';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -95,34 +96,34 @@ export class Task extends BaseEntityWithTimestamps {
 		return submissions;
 	}
 
-	getSubmittedUsers(): User[] {
-		const submittedUsers = this.getSubmissionsItems().map((submission) => submission.student);
-		const uniqueSubmittedUsers = [...new Set(submittedUsers)];
+	getSubmittedUserIds(): EntityId[] {
+		const submittedUserIds = this.getSubmissionsItems().map((submission) => submission.student.id);
+		const uniqueSubmittedUserIds = [...new Set(submittedUserIds)];
 
-		return uniqueSubmittedUsers;
+		return uniqueSubmittedUserIds;
 	}
 
 	getNumberOfSubmittedUsers(): number {
-		const submittedUsers = this.getSubmittedUsers();
-		const submitted = submittedUsers.length;
+		const submittedUserIds = this.getSubmittedUserIds();
+		const count = submittedUserIds.length;
 
-		return submitted;
+		return count;
 	}
 
-	getGradedUsers(): User[] {
-		const gradedUsers = this.getSubmissionsItems()
+	getGradedUserIds(): EntityId[] {
+		const gradedUserIds = this.getSubmissionsItems()
 			.filter((submission) => submission.isGraded())
-			.map((submission) => submission.student);
-		const uniqueGradedUsers = [...new Set(gradedUsers)];
+			.map((submission) => submission.student.id);
+		const uniqueGradedUserIds = [...new Set(gradedUserIds)];
 
-		return uniqueGradedUsers;
+		return uniqueGradedUserIds;
 	}
 
 	getNumberOfGradedUsers(): number {
-		const gradedUsers = this.getGradedUsers();
-		const graded = gradedUsers.length;
+		const gradedUserIds = this.getGradedUserIds();
+		const count = gradedUserIds.length;
 
-		return graded;
+		return count;
 	}
 
 	// attention based on this parent use this.getParent() instant
@@ -158,13 +159,13 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	isSubmittedForUser(user: User): boolean {
-		const submitted = this.getSubmittedUsers().some((u) => u === user);
+		const submitted = this.getSubmittedUserIds().some((uid) => uid === user.id);
 
 		return submitted;
 	}
 
 	isGradedForUser(user: User): boolean {
-		const graded = this.getGradedUsers().some((u) => u === user);
+		const graded = this.getGradedUserIds().some((uid) => uid === user.id);
 
 		return graded;
 	}

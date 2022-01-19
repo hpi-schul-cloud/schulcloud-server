@@ -822,8 +822,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should count all student ids of submissions', async () => {
-			const student1 = userFactory.build();
-			const student2 = userFactory.build();
+			const student1 = userFactory.buildWithId();
+			const student2 = userFactory.buildWithId();
 			const course = courseFactory.build();
 			const task = taskFactory.build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
@@ -934,8 +934,8 @@ describe('TaskUC', () => {
 		});
 
 		it('should count only unique student ids of submissions', async () => {
-			const student1 = userFactory.build();
-			const student2 = userFactory.build();
+			const student1 = userFactory.buildWithId();
+			const student2 = userFactory.buildWithId();
 			const course = courseFactory.build();
 			const task = taskFactory.build({ course });
 			const submission1 = submissionFactory.build({ task, student: student1 });
