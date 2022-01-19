@@ -3,20 +3,12 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, cleanupCollections, roleFactory } from '@shared/testing';
-import { ICurrentUser, User } from '@shared/domain';
-
-const mapToCurrentUser = (user: User) =>
-	({
-		userId: user.id,
-		roles: user.roles.getItems().map((r) => r.id),
-		schoolId: user.school.id,
-		accountId: new ObjectId().toHexString(),
-	} as ICurrentUser);
+import { userFactory, courseFactory, cleanupCollections, roleFactory, mapUserToCurrentUser } from '@shared/testing';
+import { ICurrentUser } from '@shared/domain';
 
 describe('Course Controller (e2e)', () => {
 	let app: INestApplication;
@@ -63,7 +55,7 @@ describe('Course Controller (e2e)', () => {
 		await em.persistAndFlush(course);
 		em.clear();
 
-		currentUser = mapToCurrentUser(student);
+		currentUser = mapUserToCurrentUser(student);
 
 		const response = await request(app.getHttpServer()).get('/courses');
 

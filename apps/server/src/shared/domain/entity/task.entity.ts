@@ -91,7 +91,9 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	private getSubmissionsItems(): Submission[] {
-		// TODO: load/init check until mikro-orm base entity is extended
+		if (!this.submissions.isInitialized(true)) {
+			throw new Error('Submissions items are not loaded.');
+		}
 		const submissions = this.submissions.getItems();
 		return submissions;
 	}

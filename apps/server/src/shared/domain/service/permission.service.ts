@@ -10,31 +10,34 @@ export class PermissionService {
 	 * @param user
 	 * @returns
 	 */
-	resolveRolesAndPermissions(user: User): [Role[], string[]] {
-		const rolesAndPermissions = this.resolveRolesAndPermissionsByRoles(user.roles.getItems());
+	resolvePermissions(user: User): string[] {
+		if (!user.roles.isInitialized(true)) {
+			throw new Error('Roles items are not loaded.');
+		}
+		const rolesAndPermissions = this.resolvePermissionsByRoles(user.roles.getItems());
 
 		return rolesAndPermissions;
 	}
 
-	private resolveRolesAndPermissionsByRoles(inputRoles: Role[]): [Role[], string[]] {
-		let roles: Role[] = inputRoles;
+	private resolvePermissionsByRoles(inputRoles: Role[]): string[] {
 		let permissions: string[] = [];
 
 		for (let i = 0; i < inputRoles.length; i += 1) {
 			const role = inputRoles[i];
+			if (!role.roles.isInitialized(true)) {
+				throw new Error('Roles items are not loaded.');
+			}
 			const innerRoles = role.roles.getItems();
 			permissions = [...permissions, ...role.permissions];
 
 			if (innerRoles.length > 0) {
-				const [subRoles, subPermissions] = this.resolveRolesAndPermissionsByRoles(innerRoles);
-				roles = [...roles, ...subRoles];
+				const subPermissions = this.resolvePermissionsByRoles(innerRoles);
 				permissions = [...permissions, ...subPermissions];
 			}
 		}
 
-		roles = [...new Set(roles)];
 		permissions = [...new Set(permissions)];
 
-		return [roles, permissions];
+		return permissions;
 	}
 }

@@ -48,8 +48,8 @@ describe('task.authorization.service', () => {
 				{
 					provide: PermissionService,
 					useValue: {
-						resolveRolesAndPermissions() {
-							throw new Error('Please write a mock for PermissionService.resolveRolesAndPermissions');
+						resolvePermissions() {
+							throw new Error('Please write a mock for PermissionService.resolvePermissions');
 						},
 					},
 				},
@@ -287,7 +287,7 @@ describe('task.authorization.service', () => {
 				const roles = roleFactory.buildList(2);
 				const user = userFactory.build({ roles });
 
-				const spy = jest.spyOn(permissionService, 'resolveRolesAndPermissions').mockReturnValue([[], []]);
+				const spy = jest.spyOn(permissionService, 'resolvePermissions').mockReturnValue([]);
 
 				service.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.studentDashboard);
 
@@ -301,8 +301,8 @@ describe('task.authorization.service', () => {
 					const user = userFactory.build();
 
 					const spy = jest
-						.spyOn(permissionService, 'resolveRolesAndPermissions')
-						.mockReturnValue([[], [TaskDashBoardPermission.studentDashboard]]);
+						.spyOn(permissionService, 'resolvePermissions')
+						.mockReturnValue([TaskDashBoardPermission.studentDashboard]);
 
 					const result = service.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.studentDashboard);
 					expect(result).toBe(true);
@@ -314,8 +314,8 @@ describe('task.authorization.service', () => {
 					const user = userFactory.build();
 
 					const spy = jest
-						.spyOn(permissionService, 'resolveRolesAndPermissions')
-						.mockReturnValue([[], [TaskDashBoardPermission.studentDashboard]]);
+						.spyOn(permissionService, 'resolvePermissions')
+						.mockReturnValue([TaskDashBoardPermission.studentDashboard]);
 
 					const result = service.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.teacherDashboard);
 					expect(result).toBe(false);
@@ -329,11 +329,8 @@ describe('task.authorization.service', () => {
 					const user = userFactory.build();
 
 					const spy = jest
-						.spyOn(permissionService, 'resolveRolesAndPermissions')
-						.mockReturnValue([
-							[],
-							[TaskDashBoardPermission.studentDashboard, TaskDashBoardPermission.teacherDashboard],
-						]);
+						.spyOn(permissionService, 'resolvePermissions')
+						.mockReturnValue([TaskDashBoardPermission.studentDashboard, TaskDashBoardPermission.teacherDashboard]);
 
 					const result = service.hasOneOfTaskDashboardPermissions(user, [
 						TaskDashBoardPermission.studentDashboard,
@@ -348,7 +345,7 @@ describe('task.authorization.service', () => {
 				it('should return false if it does not match the permissions', () => {
 					const user = userFactory.build();
 
-					const spy = jest.spyOn(permissionService, 'resolveRolesAndPermissions').mockReturnValue([[], ['test']]);
+					const spy = jest.spyOn(permissionService, 'resolvePermissions').mockReturnValue(['test']);
 
 					const result = service.hasOneOfTaskDashboardPermissions(user, [
 						TaskDashBoardPermission.studentDashboard,

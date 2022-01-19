@@ -3,12 +3,12 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { ICurrentUser, User } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import {
 	courseFactory,
 	userFactory,
@@ -16,6 +16,7 @@ import {
 	lessonFactory,
 	roleFactory,
 	cleanupCollections,
+	mapUserToCurrentUser,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
@@ -41,14 +42,6 @@ class API {
 		};
 	}
 }
-
-const mapToCurrentUser = (user: User) =>
-	({
-		userId: user.id,
-		roles: user.roles.getItems().map((r) => r.id),
-		schoolId: user.school.id,
-		accountId: new ObjectId().toHexString(),
-	} as ICurrentUser);
 
 describe('Task controller (e2e)', () => {
 	describe('task/finished without permission', () => {
@@ -96,7 +89,7 @@ describe('Task controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get();
 
@@ -157,7 +150,7 @@ describe('Task controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
@@ -171,7 +164,7 @@ describe('Task controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(1);
@@ -185,7 +178,7 @@ describe('Task controller (e2e)', () => {
 			await em.persistAndFlush([task]);
 			em.clear();
 
-			currentUser = mapToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const { result } = await api.get();
 
 			expect(result.data).toHaveLength(1);
@@ -246,7 +239,7 @@ describe('Task controller (e2e)', () => {
 				await em.persistAndFlush([user]);
 				em.clear();
 
-				currentUser = mapToCurrentUser(user);
+				currentUser = mapUserToCurrentUser(user);
 				const response = await api.get();
 
 				expect(response.status).toEqual(200);
@@ -258,7 +251,7 @@ describe('Task controller (e2e)', () => {
 				await em.persistAndFlush([user]);
 				em.clear();
 
-				currentUser = mapToCurrentUser(user);
+				currentUser = mapUserToCurrentUser(user);
 				const response = await api.get();
 
 				expect(response.result).toEqual({
@@ -285,7 +278,7 @@ describe('Task controller (e2e)', () => {
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				currentUser = mapToCurrentUser(user);
+				currentUser = mapUserToCurrentUser(user);
 				const { result } = await api.get();
 
 				expect(result.total).toEqual(1);
@@ -298,7 +291,7 @@ describe('Task controller (e2e)', () => {
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				currentUser = mapToCurrentUser(user);
+				currentUser = mapUserToCurrentUser(user);
 				const { result } = await api.get();
 
 				expect(result.total).toEqual(1);
@@ -311,7 +304,7 @@ describe('Task controller (e2e)', () => {
 				await em.persistAndFlush([task]);
 				em.clear();
 
-				currentUser = mapToCurrentUser(user);
+				currentUser = mapUserToCurrentUser(user);
 				const { result } = await api.get();
 
 				expect(result.total).toEqual(0);
@@ -335,7 +328,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -349,7 +342,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -363,7 +356,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -377,7 +370,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -391,7 +384,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -404,7 +397,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -417,7 +410,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -431,7 +424,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -444,7 +437,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -467,7 +460,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -481,7 +474,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -495,7 +488,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -509,7 +502,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -523,7 +516,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -536,7 +529,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -549,7 +542,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -563,7 +556,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -576,7 +569,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -601,7 +594,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -615,7 +608,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -629,7 +622,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -643,7 +636,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -657,7 +650,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -670,7 +663,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -683,7 +676,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -697,7 +690,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -710,7 +703,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -733,7 +726,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -747,7 +740,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -761,7 +754,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -775,7 +768,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -789,7 +782,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -802,7 +795,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -815,7 +808,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);
@@ -829,7 +822,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(0);
@@ -842,7 +835,7 @@ describe('Task controller (e2e)', () => {
 					await em.persistAndFlush([task]);
 					em.clear();
 
-					currentUser = mapToCurrentUser(user);
+					currentUser = mapUserToCurrentUser(user);
 					const { result } = await api.get();
 
 					expect(result.total).toEqual(1);

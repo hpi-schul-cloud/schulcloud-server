@@ -17,7 +17,7 @@ export class UserController {
 	@Get('me')
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
 		const user = await this.userRepo.findById(currentUser.userId, true);
-		const [, permissions] = this.permissionService.resolveRolesAndPermissions(user);
+		const permissions = this.permissionService.resolvePermissions(user);
 
 		// only the root roles of the user get published
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
