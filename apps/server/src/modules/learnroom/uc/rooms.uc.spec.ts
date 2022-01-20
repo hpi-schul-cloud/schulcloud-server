@@ -57,24 +57,26 @@ describe('rooms usecase', () => {
 			expect(spy).toHaveBeenCalledWith(course.id, user.id);
 		});
 
-		it('should exclude drafts for students', async () => {
+		it('should exclude drafts for students and not show future tasks', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ students: [user] });
-			const task = taskFactory.buildWithId({ course });
+			const threeWeeksinMilliseconds = 1.814e9;
+			const task = taskFactory.buildWithId({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
 			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, { draft: false });
+			expect(spy).toHaveBeenCalledWith(course.id, { draft: false, noFutureAvailableDate: true });
 		});
 
-		it('should not exclude drafts for teachers', async () => {
+		it('should not exclude drafts for teachers and also show future tasks', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const task = taskFactory.buildWithId({ course });
+			const threeWeeksinMilliseconds = 1.814e9;
+			const task = taskFactory.buildWithId({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			await uc.getBoard(course.id, user.id);
@@ -86,7 +88,8 @@ describe('rooms usecase', () => {
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const task = taskFactory.buildWithId({ course });
+			const threeWeeksinMilliseconds = 1.814e9;
+			const task = taskFactory.buildWithId({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			const result = await uc.getBoard(course.id, user.id);
@@ -98,7 +101,7 @@ describe('rooms usecase', () => {
 			const course = courseFactory.buildWithId({ students: [user] });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const task = taskFactory.buildWithId({ course });
+			const task = taskFactory.buildWithId({ course, availableDate: new Date(Date.now()) });
 			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			const result = await uc.getBoard(course.id, user.id);
@@ -110,7 +113,8 @@ describe('rooms usecase', () => {
 			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
 			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
 
-			const task = taskFactory.buildWithId({ course });
+			const threeWeeksinMilliseconds = 1.814e9;
+			const task = taskFactory.buildWithId({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
 
 			const result = await uc.getBoard(course.id, user.id);
