@@ -134,7 +134,7 @@ export class TaskRepo {
 
 	async findBySingleParent(
 		courseId: EntityId,
-		filters?: { draft?: boolean },
+		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -142,6 +142,10 @@ export class TaskRepo {
 
 		if (filters?.draft !== undefined) {
 			scope.byDraft(filters.draft);
+		}
+
+		if (filters?.noFutureAvailableDate !== undefined) {
+			scope.noFutureAvailableDate();
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
