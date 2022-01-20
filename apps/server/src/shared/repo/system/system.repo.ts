@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, System, User } from '@shared/domain';
+import { EntityId, System } from \';
 
 @Injectable()
 export class SystemRepo {
