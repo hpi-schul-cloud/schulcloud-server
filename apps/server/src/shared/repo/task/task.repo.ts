@@ -42,16 +42,22 @@ export class TaskRepo {
 		allForFinishedCoursesAndLessons.byDraft(false);
 
 		// must find also closed without course or lesson as parent
-		const closedForCreator = new TaskScope();
-		closedForCreator.byFinished(parentIds.creatorId, true);
-		closedForCreator.byCreatorId(parentIds.creatorId);
+		const closedWithoutParentForCreator = new TaskScope();
+		closedWithoutParentForCreator.byFinished(parentIds.creatorId, true);
+		closedWithoutParentForCreator.byOnlyCreatorId(parentIds.creatorId);
+
+		const closedDraftsForCreator = new TaskScope();
+		closedDraftsForCreator.addQuery(parentsOpen.query);
+		closedDraftsForCreator.byFinished(parentIds.creatorId, true);
+		closedDraftsForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForFinishedCoursesAndLessonsForCreator = new TaskScope();
 		allForFinishedCoursesAndLessonsForCreator.addQuery(parentsFinished.query);
 		allForFinishedCoursesAndLessonsForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForCreator = new TaskScope('$or');
-		allForCreator.addQuery(closedForCreator.query);
+		allForCreator.addQuery(closedWithoutParentForCreator.query);
+		allForCreator.addQuery(closedDraftsForCreator.query);
 		allForCreator.addQuery(allForFinishedCoursesAndLessonsForCreator.query);
 
 		scope.addQuery(closedForOpenCoursesAndLessons.query);
@@ -119,6 +125,23 @@ export class TaskRepo {
 
 		if (filters?.afterDueDateOrNone !== undefined) {
 			scope.afterDueDateOrNone(filters.afterDueDateOrNone);
+		}
+
+		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+
+		return countedTaskList;
+	}
+
+	async findBySingleParent(
+		courseId: EntityId,
+		filters?: { draft?: boolean },
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		const scope = new TaskScope();
+		scope.byCourseIds([courseId]);
+
+		if (filters?.draft !== undefined) {
+			scope.byDraft(filters.draft);
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
