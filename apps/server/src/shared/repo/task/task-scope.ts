@@ -1,3 +1,4 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityId, Task } from '@shared/domain';
 import { Scope } from '../scope';
 
@@ -41,10 +42,29 @@ export class TaskScope extends Scope<Task> {
 	}
 
 	byDraft(isDraft: boolean): TaskScope {
-		// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
-		// additionally handle undefined and null as false
-		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+		const query = this.getByDraftQuery(isDraft);
 		this.addQuery(query);
+
+		return this;
+	}
+
+	byDraftExcludeOthers(creatorId?: EntityId, isDraft?: boolean): TaskScope {
+		if (creatorId) {
+			if (isDraft !== undefined) {
+				this.addQuery({
+					$or: [
+						{ $and: [{ creator: creatorId }, this.getByDraftQuery(isDraft)] },
+						{ $and: [{ creator: { $ne: creatorId } }, this.getByDraftQuery(false)] },
+					],
+				});
+			} else {
+				this.addQuery({
+					$or: [{ $and: [{ creator: creatorId }, this.getByDraftQuery(true)] }, this.getByDraftQuery(false)],
+				});
+			}
+		} else {
+			this.addQuery(this.getByDraftQuery(false));
+		}
 
 		return this;
 	}
@@ -53,5 +73,11 @@ export class TaskScope extends Scope<Task> {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
 
 		return this;
+	}
+
+	private getByDraftQuery(isDraft: boolean): FilterQuery<Task> {
+		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+
+		return query;
 	}
 }

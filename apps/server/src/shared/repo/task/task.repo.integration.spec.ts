@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain';
+import { SortOrder, Task } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -21,7 +21,7 @@ describe('TaskRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
 			providers: [TaskRepo],
 		}).compile();
 		repo = module.get(TaskRepo);
@@ -34,6 +34,7 @@ describe('TaskRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+		await em.nativeDelete(Task, {});
 	});
 
 	describe('findAllByParentIds', () => {
@@ -123,6 +124,19 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
+
+			it('should not find private tasks', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ creator: user, course, private: true });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
+				expect(total).toBe(0);
+				expect(result.length).toBe(0);
+			});
 		});
 
 		describe('find by lessons', () => {
@@ -156,6 +170,20 @@ describe('TaskRepo', () => {
 				const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
 				expect(total).toEqual(1);
 				expect(result[0].name).toEqual(task1.name);
+			});
+
+			it('should not find private tasks', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ creator: user, course, lesson, private: true });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
+				expect(total).toBe(0);
+				expect(result.length).toBe(0);
 			});
 		});
 
@@ -196,6 +224,20 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
+
+			it('should not find private tasks created by other users', async () => {
+				const user = userFactory.build();
+				const otherUser = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ creator: otherUser, course, private: true });
+
+				await em.persistAndFlush([user, task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ creatorId: user.id, courseIds: [course.id] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
 		});
 
 		describe('find by teacher and lessons', () => {
@@ -222,6 +264,21 @@ describe('TaskRepo', () => {
 				expect(taskNames.includes(task3.name)).toBe(true);
 				expect(taskNames.includes(task5.name)).toBe(true);
 			});
+
+			it('should not find private tasks created by other users', async () => {
+				const user = userFactory.build();
+				const otherUser = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ creator: otherUser, course, private: true });
+
+				await em.persistAndFlush([user, task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ creatorId: user.id, lessonIds: [lesson.id] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
+			});
 		});
 
 		describe('find by courses and lessons', () => {
@@ -244,6 +301,20 @@ describe('TaskRepo', () => {
 				const taskNames = result.map((o) => o.name);
 				expect(taskNames.includes(task1.name)).toBe(true);
 				expect(taskNames.includes(task2.name)).toBe(true);
+			});
+
+			it('should not find private tasks created by other users', async () => {
+				const otherUser = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build({ course, hidden: false });
+				const task = taskFactory.build({ creator: otherUser, course, private: true });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id], lessonIds: [lesson.id] });
+				expect(total).toEqual(0);
+				expect(result).toHaveLength(0);
 			});
 		});
 

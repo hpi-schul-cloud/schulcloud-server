@@ -119,9 +119,7 @@ export class TaskRepo {
 			scope.byFinished(filters.finished.userId, filters.finished.value);
 		}
 
-		if (filters?.draft !== undefined) {
-			scope.byDraft(filters.draft);
-		}
+		scope.byDraftExcludeOthers(parentIds.creatorId, filters?.draft);
 
 		if (filters?.afterDueDateOrNone !== undefined) {
 			scope.afterDueDateOrNone(filters.afterDueDateOrNone);
