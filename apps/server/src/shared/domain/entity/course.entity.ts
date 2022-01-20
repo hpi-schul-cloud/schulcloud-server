@@ -1,7 +1,7 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
 
 import { ILearnroom } from '@shared/domain/interface';
-import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
+import { LearnroomMetadata, LearnroomTypes } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
@@ -76,24 +76,6 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 
 	getNumberOfStudents(): number {
 		return this.students.length;
-	}
-
-	getSubstitutionTeacherIds(): EntityId[] {
-		const ids: EntityId[] = this.substitutionTeachers.getIdentifiers('id');
-
-		return ids;
-	}
-
-	getStudentIds(): EntityId[] {
-		const ids: EntityId[] = this.students.getIdentifiers('id');
-
-		return ids;
-	}
-
-	getTeacherIds(): EntityId[] {
-		const ids: EntityId[] = this.teachers.getIdentifiers('id');
-
-		return ids;
 	}
 
 	isFinished(): boolean {

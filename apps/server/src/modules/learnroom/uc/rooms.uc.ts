@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Task, TaskWithStatusVo } from '@shared/domain';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { EntityId, Course, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
 
 // TODO: move this somewhere else
 export interface Board {
@@ -18,14 +18,20 @@ export type BoardElement = {
 
 @Injectable()
 export class RoomsUc {
-	constructor(private readonly courseRepo: CourseRepo, private readonly taskRepo: TaskRepo) {}
+	constructor(
+		private readonly courseRepo: CourseRepo,
+		private readonly taskRepo: TaskRepo,
+		private readonly userRepo: UserRepo
+	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
+		const user = await this.userRepo.findById(userId, true);
+
 		const course = await this.courseRepo.findOne(roomId, userId);
-		const isTeacher = this.isTeacher(userId, course);
+		const isTeacher = this.isTeacher(user, course);
 		const taskFilter = this.taskFilter(isTeacher);
 		const [tasks] = await this.taskRepo.findBySingleParent(course.id, taskFilter);
-		const tasksWithStatusVos = this.addStatusToTasks(isTeacher, tasks, userId);
+		const tasksWithStatusVos = this.addStatusToTasks(isTeacher, tasks, user);
 
 		const board = this.buildBoard(course, tasksWithStatusVos);
 		return board;
@@ -52,23 +58,23 @@ export class RoomsUc {
 		return board;
 	}
 
-	private isTeacher(userId: EntityId, course: Course): boolean {
-		if (course.getTeacherIds().includes(userId) || course.getSubstitutionTeacherIds().includes(userId)) {
+	private isTeacher(user: User, course: Course): boolean {
+		if (course.teachers.contains(user) || course.substitutionTeachers.contains(user)) {
 			return true;
 		}
 		return false;
 	}
 
-	private addStatusToTasks(isTeacher: boolean, tasks: Task[], userId: EntityId): TaskWithStatusVo[] {
+	private addStatusToTasks(isTeacher: boolean, tasks: Task[], user: User): TaskWithStatusVo[] {
 		let tasksWithStatusVos: TaskWithStatusVo[];
 		if (isTeacher) {
 			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createTeacherStatusForUser(userId);
+				const status = task.createTeacherStatusForUser(user);
 				return new TaskWithStatusVo(task, status);
 			});
 		} else {
 			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createStudentStatusForUser(userId);
+				const status = task.createStudentStatusForUser(user);
 				return new TaskWithStatusVo(task, status);
 			});
 		}

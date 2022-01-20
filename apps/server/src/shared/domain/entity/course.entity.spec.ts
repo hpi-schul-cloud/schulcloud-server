@@ -90,29 +90,6 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getSubstitutionTeacherIds', () => {
-		it('should return all substitution teacher ids.', () => {
-			const teacher1 = userFactory.build();
-			const teacher2 = userFactory.build();
-			teacher1.id = '0123456789ab';
-			teacher2.id = '0123456789cd';
-
-			const course = courseFactory.build({ substitutionTeachers: [teacher1, teacher2] });
-
-			const ids = course.getSubstitutionTeacherIds();
-
-			expect(ids).toEqual([teacher1.id, teacher2.id]);
-		});
-
-		it('should work if no substitution teacher exist.', () => {
-			const course = courseFactory.build({ substitutionTeachers: [] });
-
-			const ids = course.getSubstitutionTeacherIds();
-
-			expect(ids).toEqual([]);
-		});
-	});
-
 	describe('isFinished', () => {
 		it('should always return false if no untilDate is set', () => {
 			const course = courseFactory.build({ untilDate: undefined });

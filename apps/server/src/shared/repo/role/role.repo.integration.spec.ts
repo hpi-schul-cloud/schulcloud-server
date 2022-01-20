@@ -27,7 +27,6 @@ describe('role repo', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
 		expect(typeof repo.findByName).toEqual('function');
-		expect(typeof repo.resolvePermissionsFromSubRolesById).toEqual('function');
 	});
 
 	describe('entity', () => {
@@ -119,53 +118,6 @@ describe('role repo', () => {
 
 			await em.persistAndFlush([roleA]);
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
-		});
-	});
-
-	describe('resolvePermissionsFromSubRolesById', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-		});
-
-		it('should return right keys', async () => {
-			const idA = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-
-			await em.persistAndFlush([roleA]);
-			const result = await repo.resolvePermissionsFromSubRolesById(idA);
-			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
-			);
-		});
-
-		it('should return one role that matched by name', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-			const roleB = em.create(Role, { id: idB });
-
-			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.resolvePermissionsFromSubRolesById(idA);
-			expect(result).toEqual(roleA);
-		});
-
-		it('should throw an error if roles by name doesnt exist', async () => {
-			const idA = new ObjectId().toHexString();
-
-			await expect(repo.resolvePermissionsFromSubRolesById(idA)).rejects.toThrow(NotFoundError);
-		});
-
-		it('should resolve permissions of existing subroles', async () => {
-			const roleD1 = em.create(Role, { permissions: ['D'] });
-			const roleC1 = em.create(Role, { permissions: ['C', 'C1'], roles: [roleD1] });
-			const roleC2 = em.create(Role, { permissions: ['C', 'C2'] });
-			const roleB = em.create(Role, { permissions: ['B', 'C'], roles: [roleC1, roleC2] });
-			const roleA = em.create(Role, { permissions: ['A', 'B'], roles: [roleB] });
-
-			await em.persistAndFlush([roleA, roleB, roleC1, roleC2, roleD1]);
-
-			const result = await repo.resolvePermissionsFromSubRolesById(roleA.id);
-			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
 		});
 	});
 });

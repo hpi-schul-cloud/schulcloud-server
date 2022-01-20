@@ -20,7 +20,7 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser, paginationQuery);
+		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser.userId, paginationQuery);
 		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
 			return TaskMapper.mapToResponse(taskWithStatus);
 		});
@@ -34,7 +34,7 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser, paginationQuery);
+		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, paginationQuery);
 
 		const taskresponses = tasksWithStatus.map((task) => {
 			return TaskMapper.mapToResponse(task);
