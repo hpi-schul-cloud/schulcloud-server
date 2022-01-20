@@ -1348,6 +1348,32 @@ describe('TaskRepo', () => {
 			expect(tasks).toHaveLength(0);
 		});
 
+		it('should find all published future tasks in course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const threeWeeksinMilliseconds = 1.814e9;
+			const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id);
+
+			expect(tasks).toHaveLength(1);
+		});
+
+		it('should "not" find all published future tasks in course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const threeWeeksinMilliseconds = 1.814e9;
+			const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id, { noFutureAvailableDate: true });
+
+			expect(tasks).toHaveLength(0);
+		});
+
 		describe('when fetching only drafts', () => {
 			it('should return draft', async () => {
 				const user = userFactory.build();
@@ -1369,6 +1395,36 @@ describe('TaskRepo', () => {
 				await em.persistAndFlush([user, course, task]);
 
 				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+
+				expect(tasks).toHaveLength(0);
+			});
+
+			it('should return future draft', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ teachers: [user] });
+				const threeWeeksinMilliseconds = 1.814e9;
+				const task = taskFactory
+					.draft()
+					.build({ course, creator: user, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+
+				expect(tasks).toHaveLength(1);
+			});
+
+			it('should "not" return future draft', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ teachers: [user] });
+				const threeWeeksinMilliseconds = 1.814e9;
+				const task = taskFactory
+					.draft()
+					.build({ course, creator: user, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: true, noFutureAvailableDate: true });
 
 				expect(tasks).toHaveLength(0);
 			});
@@ -1397,6 +1453,32 @@ describe('TaskRepo', () => {
 				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
 
 				expect(tasks).toHaveLength(1);
+			});
+
+			it('should find published future tasks in course', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+
+				expect(tasks).toHaveLength(1);
+			});
+
+			it('should "not" find published future tasks in course', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false, noFutureAvailableDate: true });
+
+				expect(tasks).toHaveLength(0);
 			});
 		});
 	});
