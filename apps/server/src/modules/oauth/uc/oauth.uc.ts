@@ -4,6 +4,8 @@ import { ILogger, Logger } from '@src/core/logger';
 import { env } from 'process';
 import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
+import { SystemRepo } from '@shared/repo/system';
+import { UserRepo } from '@shared/repo';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
 
@@ -11,12 +13,13 @@ import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
 export class OauthUc {
 	private logger: ILogger;
 
-	constructor() {
+	constructor(private readonly systemRepo: SystemRepo, private readonly userRepo: UserRepo) {
 		this.logger = new Logger(OauthUc.name);
 	}
 
 	// 1- use Authorization Code to get a valid Token
-	async requestToken(code: string) {
+	async requestToken(code: string, systemId: string) {
+		const system = await this.systemRepo.findById(systemId);
 		const payload: Payload = {
 			tokenEndpoint: env.TOKEN_ENDPOINT,
 			data: {

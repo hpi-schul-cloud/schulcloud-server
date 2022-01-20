@@ -32,6 +32,12 @@ export class User extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
+	@Property()
+	ldapDn?: string;
+
+	@Property()
+	ldapId?: string;
+
 	constructor(props: IUserProperties) {
 		super();
 		this.firstName = props.firstName;

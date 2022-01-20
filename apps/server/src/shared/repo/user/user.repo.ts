@@ -10,4 +10,9 @@ export class UserRepo {
 		const user = await this.em.findOneOrFail(User, { id });
 		return user;
 	}
+
+	async findByLdapId(ldapId: string): Promise<User> {
+		const user = await this.em.findOneOrFail(User, { ldapId });
+		return user;
+	}
 }
