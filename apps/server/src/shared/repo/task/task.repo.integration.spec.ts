@@ -1398,7 +1398,35 @@ describe('TaskRepo', () => {
 
 				expect(tasks).toHaveLength(0);
 			});
+		});
 
+		describe('when drafts are excluded', () => {
+			it('should "not" return draft', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.draft().build({ course, creator: user });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+
+				expect(tasks).toHaveLength(0);
+			});
+
+			it('should find published tasks in course', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+
+				expect(tasks).toHaveLength(1);
+			});
+		});
+
+		describe('when fetching only future drafts', () => {
 			it('should return future draft', async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user] });
@@ -1430,31 +1458,7 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('when drafts are excluded', () => {
-			it('should "not" return draft', async () => {
-				const user = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.draft().build({ course, creator: user });
-
-				await em.persistAndFlush([user, course, task]);
-
-				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
-
-				expect(tasks).toHaveLength(0);
-			});
-
-			it('should find published tasks in course', async () => {
-				const user = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-
-				await em.persistAndFlush([user, course, task]);
-
-				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
-
-				expect(tasks).toHaveLength(1);
-			});
-
+		describe('when future drafts are excluded', () => {
 			it('should find published future tasks in course', async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build();
