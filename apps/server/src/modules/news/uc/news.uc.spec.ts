@@ -72,8 +72,9 @@ describe('NewsUc', () => {
 								throw new UnauthorizedException();
 							}
 						},
+						// the method is not used anymore or?
 						// eslint-disable-next-line @typescript-eslint/no-shadow
-						getPermittedEntities(userId, targetModel, permissions) {
+						getPermittedEntities(userId, targetModel) {
 							return targets
 								.filter((target) => target.targetModel === targetModel)
 								.flatMap((target) => target.targetIds);

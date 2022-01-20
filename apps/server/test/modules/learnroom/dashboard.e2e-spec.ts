@@ -7,9 +7,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { DashboardEntity, GridElement, ICurrentUser, User } from '@shared/domain';
+import { DashboardEntity, GridElement, ICurrentUser } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
-import { courseFactory, userFactory, createCurrentTestUser } from '@shared/testing';
+import { courseFactory, userFactory, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 
 describe('Dashboard Controller (e2e)', () => {
 	let app: INestApplication;
@@ -37,22 +37,23 @@ describe('Dashboard Controller (e2e)', () => {
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 		dashboardRepo = app.get('DASHBOARD_REPO');
-		currentUser = createCurrentTestUser(['TASK_DASHBOARD_TEACHER_VIEW_V3']).currentUser;
 	});
-
-	const setCurrentUser = (user: User) => {
-		currentUser.user.id = user.id;
-		currentUser.userId = user.id;
-	};
 
 	afterEach(async () => {
 		await app.close();
 		await orm.close();
 	});
 
+	const setup = () => {
+		const roles = roleFactory.buildList(1, { permissions: ['TASK_DASHBOARD_TEACHER_VIEW_V3'] });
+		const user = userFactory.build({ roles });
+
+		return user;
+	};
+
 	describe('[GET] dashboard', () => {
 		it('should return dashboard with users active courses', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			const twoDaysInMilliSeconds = 172800000;
 			const courses = [
 				courseFactory.build({ name: 'should appear', students: [user] }),
@@ -72,7 +73,7 @@ describe('Dashboard Controller (e2e)', () => {
 			];
 			await em.persistAndFlush([user, ...courses]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 
 			const response = await request(app.getHttpServer()).get('/dashboard');
 
@@ -89,7 +90,7 @@ describe('Dashboard Controller (e2e)', () => {
 
 	describe('[PATCH] /:id/moveElement', () => {
 		it('should update position of target element', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			await em.persistAndFlush([user]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			const dashboard = new DashboardEntity(dashboardId, {
@@ -105,7 +106,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4, y: 2 },
@@ -116,7 +117,7 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should create groups', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			await em.persistAndFlush([user]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			const dashboard = new DashboardEntity(dashboardId, {
@@ -139,7 +140,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 2, y: 2 },
@@ -152,7 +153,7 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should add element to group', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			await em.persistAndFlush([user]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			const dashboard = new DashboardEntity(dashboardId, {
@@ -175,7 +176,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 2, y: 2 },
 				to: { x: 3, y: 3 },
@@ -188,7 +189,7 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should remove element from group', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			await em.persistAndFlush([user]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			const dashboard = new DashboardEntity(dashboardId, {
@@ -204,7 +205,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 3, y: 3, groupIndex: 0 },
 				to: { x: 2, y: 3 },
@@ -216,7 +217,7 @@ describe('Dashboard Controller (e2e)', () => {
 		});
 
 		it('should fail with incomplete input', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			await em.persistAndFlush([user]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			const dashboard = new DashboardEntity(dashboardId, {
@@ -232,7 +233,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				from: { x: 1, y: 3 },
 				to: { x: 4 },
@@ -244,7 +245,7 @@ describe('Dashboard Controller (e2e)', () => {
 
 	describe('PATCH /:id/element', () => {
 		it('should be able to rename group', async () => {
-			const user = userFactory.build();
+			const user = setup();
 			await em.persistAndFlush([user]);
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(user.id);
 			const dashboard = new DashboardEntity(dashboardId, {
@@ -260,7 +261,7 @@ describe('Dashboard Controller (e2e)', () => {
 				userId: user.id,
 			});
 			await dashboardRepo.persistAndFlush(dashboard);
-			setCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				title: 'COURSESILOVE',
 			};
