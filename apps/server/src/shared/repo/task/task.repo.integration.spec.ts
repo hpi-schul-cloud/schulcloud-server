@@ -985,7 +985,65 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('when user is the creator', () => {
+		describe('when parent is "not" passed', () => {
+			it('should "not" find finished tasks', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ students: [] });
+				const task = taskFactory.finished(user).build({ course });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should "not" find finished tasks of creator', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course, finished: [user], creator: user });
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+
+			it('should "not" find finished tasks of creator with lesson', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ course, lesson, finished: [user], creator: user });
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				expect(total).toEqual(0);
+			});
+		});
+
+		describe('when task has no parent', () => {
 			it('should find finished draft tasks of creator', async () => {
 				const user = userFactory.build();
 				const task = taskFactory.finished(user).draft().build({ creator: user });
@@ -1151,25 +1209,6 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		it('should "not" find tasks of "not" passed parents', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.build({ students: [] });
-			const task = taskFactory.finished(user).build({ course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			const [, total] = await repo.findAllFinishedByParentIds({
-				creatorId: user.id,
-				openCourseIds: [],
-				lessonIdsOfOpenCourses: [],
-				finishedCourseIds: [],
-				lessonIdsOfFinishedCourses: [],
-			});
-
-			expect(total).toEqual(0);
-		});
-
 		it('should sort result by newest dueDate', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ untilDate: undefined });
@@ -1256,6 +1295,109 @@ describe('TaskRepo', () => {
 			expect(tasks).toHaveLength(1);
 			expect(tasks[0].submissions).toHaveLength(1);
 			expect(tasks[0].submissions[0]?.comment).toEqual('test');
+		});
+	});
+
+	describe('findBySingleParent', () => {
+		it('should find all published tasks in course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id);
+
+			expect(tasks).toHaveLength(1);
+		});
+
+		it('should "not" find tasks out of course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.build();
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id);
+
+			expect(tasks).toHaveLength(0);
+		});
+
+		it('should find drafts', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const task = taskFactory.draft().build({ course, creator: user });
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id);
+
+			expect(tasks).toHaveLength(1);
+		});
+
+		it('should "not" find tasks of a lesson in the course', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			const task = taskFactory.build({ course, lesson });
+
+			await em.persistAndFlush([user, course, task]);
+
+			const [tasks] = await repo.findBySingleParent(course.id);
+
+			expect(tasks).toHaveLength(0);
+		});
+
+		describe('when fetching only drafts', () => {
+			it('should return draft', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.draft().build({ course, creator: user });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+
+				expect(tasks).toHaveLength(1);
+			});
+
+			it('should "not" find published task', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+
+				expect(tasks).toHaveLength(0);
+			});
+		});
+
+		describe('when drafts are excluded', () => {
+			it('should "not" return draft', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.draft().build({ course, creator: user });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+
+				expect(tasks).toHaveLength(0);
+			});
+
+			it('should find published tasks in course', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ course });
+
+				await em.persistAndFlush([user, course, task]);
+
+				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+
+				expect(tasks).toHaveLength(1);
+			});
 		});
 	});
 });

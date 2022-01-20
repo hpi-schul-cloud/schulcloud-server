@@ -38,6 +38,11 @@ class CourseScope extends Scope<Course> {
 
 		return this;
 	}
+
+	forCourseId(courseId: EntityId): CourseScope {
+		this.addQuery({ id: courseId });
+		return this;
+	}
 }
 
 @Injectable()
@@ -76,5 +81,15 @@ export class CourseRepo {
 		const [courses, count] = await this.em.findAndCount(Course, scope.query);
 
 		return [courses, count];
+	}
+
+	async findOne(courseId: EntityId, userId?: EntityId): Promise<Course> {
+		const scope = new CourseScope();
+		scope.forCourseId(courseId);
+		if (userId) scope.forAllGroupTypes(userId);
+
+		const course = await this.em.findOneOrFail(Course, scope.query);
+
+		return course;
 	}
 }

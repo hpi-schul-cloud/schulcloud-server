@@ -265,24 +265,10 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
-		"FEATURE_ALERTS_STATUS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, user will see messages/incidents from e.g status.hpi-schul-cloud."
-		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"default": "https://status.hpi-schul-cloud.de",
+			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
-		},
-		"ALERT_STATUS_API_URL": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"default": "https://status.hpi-schul-cloud.de/api/v1",
-			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
 			"type": "string",
@@ -707,6 +693,11 @@
 			"type": "string",
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
+		},
+		"LEGACY_COURSE_OVERVIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for legacy course overview."
 		}
 	},
 	"required": [

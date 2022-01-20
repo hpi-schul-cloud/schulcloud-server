@@ -28,13 +28,12 @@ export class BaseFactory<T, U, I = any> {
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static define<T, U, I = any, F = BaseFactory<T, U>>(
-		this: new (EntityClass: { new (props: U): T }, propsFactory: Factory<U, I>) => F,
+		this: new (EntityClass: { new (props: U): T }, propsFactory: Factory<U, I, U>) => F,
 		EntityClass: { new (props: U): T },
-		generator: GeneratorFn<U, I>
+		generator: GeneratorFn<U, I, U>
 	): F {
-		const propsFactory = Factory.define<U, I>(generator);
+		const propsFactory = Factory.define<U, I, U>(generator);
 		const factory = new this(EntityClass, propsFactory);
-
 		return factory;
 	}
 
@@ -43,7 +42,7 @@ export class BaseFactory<T, U, I = any> {
 	 * @param params
 	 * @returns an entity
 	 */
-	build(params: DeepPartial<U> = {}): T {
+	build(params?: DeepPartial<U>): T {
 		const props = this.propsFactory.build(params);
 		const entity = new this.EntityClass(props);
 
@@ -56,7 +55,7 @@ export class BaseFactory<T, U, I = any> {
 	 * @param id
 	 * @returns an entity
 	 */
-	buildWithId(params: DeepPartial<U> = {}, id?: string): T {
+	buildWithId(params?: DeepPartial<U>, id?: string): T {
 		const entity = this.build(params);
 		const entityWithId = Object.assign(entity, { _id: new ObjectId(id) });
 
@@ -69,7 +68,7 @@ export class BaseFactory<T, U, I = any> {
 	 * @param params
 	 * @returns a list of entities
 	 */
-	buildList(number: number, params: DeepPartial<U> = {}): T[] {
+	buildList(number: number, params?: DeepPartial<U>): T[] {
 		const list: T[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.build(params));
