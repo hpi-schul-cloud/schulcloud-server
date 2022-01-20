@@ -21,7 +21,7 @@ describe('TaskRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [TaskRepo],
 		}).compile();
 		repo = module.get(TaskRepo);
@@ -223,6 +223,19 @@ describe('TaskRepo', () => {
 				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id, courseIds: [course.id] });
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
+			});
+
+			it('should find private tasks created by the user', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ creator: user, course, private: true });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ creatorId: user.id, courseIds: [course.id] });
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
 			});
 
 			it('should not find private tasks created by other users', async () => {

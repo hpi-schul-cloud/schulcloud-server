@@ -249,10 +249,10 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(2);
 		});
 
-		it('[FIND] /tasks should also return private tasks', async () => {
+		it('[FIND] /tasks should also return private tasks created by the user', async () => {
 			const teacher = setup();
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft().build({ course });
+			const task = taskFactory.draft().build({ creator: teacher, course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -262,6 +262,21 @@ describe('Task Controller (e2e)', () => {
 
 			expect(result.total).toEqual(1);
 			expect(result.data[0].status.isDraft).toEqual(true);
+		});
+
+		it('[FIND] /tasks should not return private tasks created by other users', async () => {
+			const teacher = setup();
+			const otherUser = userFactory.build();
+			const course = courseFactory.build({ teachers: [teacher, otherUser] });
+			const task = taskFactory.draft().build({ creator: otherUser, course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
 		});
 
 		it('[FIND] /tasks should return nothing from courses when the user has only read permissions', async () => {
