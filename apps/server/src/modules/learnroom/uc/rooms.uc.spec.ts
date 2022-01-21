@@ -157,7 +157,7 @@ describe('rooms usecase', () => {
 
 			it('should exclude drafts and not show future tasks', async () => {
 				const { user, course } = setup();
-        const threeWeeksinMilliseconds = 1.814e9;
+				const threeWeeksinMilliseconds = 1.814e9;
 				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
 				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
@@ -191,7 +191,7 @@ describe('rooms usecase', () => {
 
 			it('should return board with tasks', async () => {
 				const { user, course } = setup();
-        const threeWeeksinMilliseconds = 1.814e9;
+				const threeWeeksinMilliseconds = 1.814e9;
 				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
 				const { mockRestore } = setAllMocks(user, course, [task]);
