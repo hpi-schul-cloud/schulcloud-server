@@ -75,6 +75,12 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
+	availableOn(availableDate: Date): TaskScope {
+		this.addQuery({ availableDate: { $lte: availableDate } });
+
+		return this;
+	}
+
 	private getByDraftQuery(isDraft: boolean): FilterQuery<Task> {
 		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
 

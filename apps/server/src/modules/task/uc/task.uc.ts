@@ -92,7 +92,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ draft: false, afterDueDateOrNone: dueDate, finished: notFinished },
+			{ draft: false, afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },

@@ -38,8 +38,8 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllByParentIds', () => {
-		describe('when user is a teacher', () => {
-			it('should find tasks by teacherId', async () => {
+		describe('find by creator', () => {
+			it('should find tasks by creatorId', async () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();
 				const task1 = taskFactory.build({ creator: teacher1 });
@@ -507,6 +507,22 @@ describe('TaskRepo', () => {
 				expect(taskNames.includes(task1.name)).toBe(true);
 				expect(taskNames.includes(task2.name)).toBe(true);
 				expect(taskNames.includes(task3.name)).toBe(true);
+			});
+
+			it('should filter tasks that are available on specific date', async () => {
+				const teacher = userFactory.build();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const availableDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+				const availableDate2 = new Date(Date.now() + threeWeeksinMilliseconds);
+				const task1 = taskFactory.build({ creator: teacher, availableDate: availableDate1 });
+				const task2 = taskFactory.build({ creator: teacher, availableDate: availableDate2 });
+
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { availableOn: new Date() });
+				expect(total).toEqual(1);
+				expect(result[0].name).toEqual(task1.name);
 			});
 		});
 

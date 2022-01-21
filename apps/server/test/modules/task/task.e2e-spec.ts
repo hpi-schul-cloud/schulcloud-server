@@ -556,6 +556,23 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
+		it('should not return unavailable tasks', async () => {
+			const student = setup();
+			const course = courseFactory.build({
+				students: [student],
+			});
+			const tomorrow = new Date(Date.now() + 86400000);
+			const task = taskFactory.build({ course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
+		});
+
 		it('should "not" show task of finished courses', async () => {
 			const untilDate = new Date(Date.now() - 60 * 1000);
 			const student = setup();
