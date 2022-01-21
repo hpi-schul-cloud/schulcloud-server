@@ -18,10 +18,7 @@ export class OauthUc {
 	}
 
 	// 1- use Authorization Code to get a valid Token
-	// async requestToken(code: string, systemId: string) {
 	async requestToken(code: string, systemId: string) {
-		// const system = await this.systemRepo.findById(systemId);
-		console.log('WE ARE HERE');
 		const system: System = await this.systemRepo.findById(systemId);
 		console.log(system);
 		const payload: Payload = {
@@ -29,7 +26,7 @@ export class OauthUc {
 			data: {
 				client_id: system.oauthconfig?.client_id,
 				client_secret: system.oauthconfig?.client_secret,
-				redirect_uri: system.oauthconfig?.redirect_uri,
+				redirect_uri: system.oauthconfig?.token_redirect_uri,
 				grant_type: system.oauthconfig?.grant_type,
 				code,
 			},

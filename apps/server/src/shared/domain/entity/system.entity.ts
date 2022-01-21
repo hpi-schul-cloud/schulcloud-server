@@ -12,9 +12,13 @@ export interface ISystemProperties {
 export interface OauthConfig {
 	client_id: string;
 	client_secret: string;
-	redirect_uri: string;
+	auth_redirect_uri: string;
+	token_redirect_uri: string;
 	grant_type: string;
 	token_endpoint: string;
+	auth_endpoint: string;
+	response_type: string;
+	scope: string;
 }
 
 @Entity({ tableName: 'systems' })
