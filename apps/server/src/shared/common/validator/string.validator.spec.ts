@@ -12,7 +12,7 @@ describe('StringValidator', () => {
 			expect(StringValidator.isString(true as unknown as string)).toEqual(false);
 			expect(StringValidator.isString({} as unknown as string)).toEqual(false);
 			expect(StringValidator.isString(null as unknown as string)).toEqual(false);
-			expect(StringValidator.isString(undefined as unknown as string)).toEqual(false);
+			expect(StringValidator.isString(undefined)).toEqual(false);
 		});
 	});
 	describe('isNotEmptyString', () => {
@@ -28,6 +28,9 @@ describe('StringValidator', () => {
 				expect(StringValidator.isNotEmptyString('\n', false)).toEqual(true);
 				expect(StringValidator.isNotEmptyString('\n')).toEqual(true);
 			});
+			it('should resolve false for undefined string', () => {
+				expect(StringValidator.isNotEmptyString(undefined, false)).toEqual(false);
+			});
 		});
 		describe('when trim is enabled', () => {
 			it('should resolve true for given string with', () => {
@@ -40,6 +43,9 @@ describe('StringValidator', () => {
 				expect(StringValidator.isNotEmptyString(' ', true)).toEqual(false);
 				expect(StringValidator.isNotEmptyString('\n', true)).toEqual(false);
 				expect(StringValidator.isNotEmptyString('\t', true)).toEqual(false);
+			});
+			it('should resolve false for undefined string', () => {
+				expect(StringValidator.isNotEmptyString(undefined, true)).toEqual(false);
 			});
 		});
 	});
