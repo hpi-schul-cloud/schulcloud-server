@@ -3,14 +3,13 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { ImportUserController } from './controller/import-user.controller';
-import { UserImportUC } from './uc/user-import.uc';
+import { UserImportUc } from './uc/user-import.uc';
 import { ImportUserAuthorizationService } from './services/import-user.authorization.service';
-import { UserUC } from './uc/user.uc';
 
 @Module({
 	imports: [AuthorizationModule, LoggerModule],
 	controllers: [ImportUserController],
-	providers: [UserImportUC, ImportUserRepo, ImportUserAuthorizationService, UserRepo, UserUC],
+	providers: [UserImportUc, ImportUserRepo, ImportUserAuthorizationService, UserRepo],
 	exports: [],
 })
 /**

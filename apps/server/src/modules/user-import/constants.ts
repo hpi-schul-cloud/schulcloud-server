@@ -1,6 +1,10 @@
+/**
+ * UserImportPermissions expect read access for current users school users.
+ * They are used to read/update on @ImportUser of same school.
+ */
 export enum UserImportPermissions {
-	VIEW_IMPORT_USER = 'IMPORT_USER_VIEW',
-	UPDATE_IMPORT_USER = 'UPDATE_IMPORT_USER',
+	VIEW_SCHOOLS_IMPORT_USERS = 'IMPORT_USER_VIEW',
+	UPDATE_SCHOOLS_IMPORT_USERS = 'UPDATE_IMPORT_USER',
 	STUDENT_LIST = 'STUDENT_LIST',
 	TEACHER_LIST = 'TEACHER_LIST',
 }

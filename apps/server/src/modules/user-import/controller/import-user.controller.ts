@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, ImATeapotException, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationQuery, SortingQuery, ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser, IFindOptions, SortOrder, ImportUser, User } from '@shared/domain';
@@ -8,18 +8,17 @@ import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.re
 import { UpdateMatchParams } from './dto/update-match.params';
 import { UserListResponse } from './dto/user.response';
 
-import { UserImportUC } from '../uc/user-import.uc';
-
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserFilterQuery } from './dto/user-filter.query';
-import { UserUC } from '../uc/user.uc';
 import { UserMapper } from '../mapper/user.mapper';
+import { UserImportUc } from '../uc/user-import.uc';
+import { UpdateFlagParams } from './dto/update-flag.params';
 
 @ApiTags('User')
 @Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
-	constructor(private readonly userImportUc: UserImportUC, private readonly userUc: UserUC) {}
+	constructor(private readonly userImportUc: UserImportUc, private readonly userUc: UserImportUc) {}
 
 	@Get()
 	async findAll(
@@ -54,22 +53,25 @@ export class ImportUserController {
 	}
 
 	@Delete(':id/match')
-	removeMatch(
+	async removeMatch(
 		@Param('id', ParseObjectIdPipe) importUserId: string,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		// TODO
-		throw new ImATeapotException();
+	): Promise<ImportUserResponse> {
+		const result = await this.userImportUc.removeMatch(currentUser.userId, importUserId);
+		const response = ImportUserMapper.mapToResponse(result);
+		return response;
 	}
 
-	// @Patch(':id/flag')
-	// async updateFlag(
-	// 	@Param('id', ParseObjectIdPipe) importUserId: string,
-	// 	@CurrentUser() currentUser: ICurrentUser,
-	// 	@Body() params: UpdateFlagParams
-	// ): Promise<void> {
-	// 	const result = await this.userImportUc.setFlag(currentUser.userId, importUserId, params.flagged);
-	// }
+	@Patch(':id/flag')
+	async updateFlag(
+		@Param('id', ParseObjectIdPipe) importUserId: string,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() params: UpdateFlagParams
+	): Promise<ImportUserResponse> {
+		const result = await this.userImportUc.setFlag(currentUser.userId, importUserId, params.flagged);
+		const response = ImportUserMapper.mapToResponse(result);
+		return response;
+	}
 
 	@Get('unassigned')
 	async findAllUnmatchedUsers(
@@ -80,7 +82,7 @@ export class ImportUserController {
 		const options: IFindOptions<User> = { pagination: paginationQuery };
 
 		const query = UserMapper.mapToDomain(scope);
-		const userList = await this.userUc.findAllUnmatched(currentUser.userId, query, options);
+		const userList = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
 		const dtoList = await Promise.all(userList.map(async (user) => UserMapper.mapToResponse(user)));
 		const response = new UserListResponse(dtoList, -1, skip, limit); // TODO total missing
