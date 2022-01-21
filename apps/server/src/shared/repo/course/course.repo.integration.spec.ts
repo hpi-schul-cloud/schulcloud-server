@@ -5,7 +5,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityId, SortOrder } from '@shared/domain';
-import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';
+import { userFactory, courseFactory, cleanupCollections } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -33,7 +33,7 @@ describe('course repo', () => {
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 	});
 
 	it('should be defined', () => {
