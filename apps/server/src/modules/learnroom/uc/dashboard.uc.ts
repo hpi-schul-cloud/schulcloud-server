@@ -1,7 +1,7 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { DashboardEntity, EntityId, GridPositionWithGroupIndex, GridPosition, SortOrder } from '@shared/domain';
 import { IDashboardRepo, CourseRepo } from '@shared/repo';
-import { NotFound } from '@feathersjs/errors';
+// import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
 
 @Injectable()
 export class DashboardUc {
@@ -55,7 +55,7 @@ export class DashboardUc {
 
 	private validateUsersMatch(dashboard: DashboardEntity, userId: EntityId) {
 		if (dashboard.getUserId() !== userId) {
-			throw new NotFound('no such dashboard found');
+			throw new NotFoundException('no such dashboard found');
 		}
 	}
 }

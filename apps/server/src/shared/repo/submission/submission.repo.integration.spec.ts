@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroup } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { userFactory, courseFactory, taskFactory, submissionFactory, cleanUpCollections } from '@shared/testing';
+import { userFactory, courseFactory, taskFactory, submissionFactory, cleanupCollections } from '@shared/testing';
 
 import { SubmissionRepo } from './submission.repo';
 
@@ -27,7 +27,7 @@ describe('submission repo', () => {
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 	});
 
 	describe('findAllByTasks', () => {
