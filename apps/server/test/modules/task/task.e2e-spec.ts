@@ -20,6 +20,8 @@ import {
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 
+const tomorrow = new Date(Date.now() + 86400000);
+
 class API {
 	app: INestApplication;
 
@@ -279,6 +281,37 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
+		it('should return unavailable tasks created by the user', async () => {
+			const user = setup();
+			const course = courseFactory.build({
+				teachers: [user],
+			});
+			const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(1);
+		});
+
+		it('should not return unavailable tasks created by other users', async () => {
+			const teacher = setup();
+			const otherUser = setup();
+			const course = courseFactory.build({ teachers: [teacher, otherUser] });
+			const task = taskFactory.build({ creator: otherUser, course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
+		});
+
 		it('[FIND] /tasks should return nothing from courses when the user has only read permissions', async () => {
 			const teacher = setup();
 			const course = courseFactory.build({ students: [teacher] });
@@ -293,7 +326,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
-		it('should "not" return finished tasks', async () => {
+		it('should not return finished tasks', async () => {
 			const teacher = setup();
 			const course = courseFactory.build({
 				teachers: [teacher],
@@ -495,7 +528,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft().build({ course });
+			const task = taskFactory.draft().build({ course, private: true });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -511,8 +544,7 @@ describe('Task Controller (e2e)', () => {
 			const course = courseFactory.build({
 				students: [student],
 			});
-			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-			const task = taskFactory.draft().build({ course, availableDate: nextDay });
+			const task = taskFactory.build({ course, availableDate: tomorrow });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -556,12 +588,27 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
+		it('should return unavailable tasks created by the user', async () => {
+			const user = setup();
+			const course = courseFactory.build({
+				students: [user],
+			});
+			const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(1);
+		});
+
 		it('should not return unavailable tasks', async () => {
 			const student = setup();
 			const course = courseFactory.build({
 				students: [student],
 			});
-			const tomorrow = new Date(Date.now() + 86400000);
 			const task = taskFactory.build({ course, availableDate: tomorrow });
 
 			await em.persistAndFlush([task]);
@@ -573,7 +620,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
-		it('should "not" show task of finished courses', async () => {
+		it('should not return task of finished courses', async () => {
 			const untilDate = new Date(Date.now() - 60 * 1000);
 			const student = setup();
 			const course = courseFactory.build({ untilDate, students: [student] });

@@ -14,6 +14,9 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { TaskRepo } from './task.repo';
 
+const yesterday = new Date(Date.now() - 86400000);
+const tomorrow = new Date(Date.now() + 86400000);
+
 describe('TaskRepo', () => {
 	let module: TestingModule;
 	let repo: TaskRepo;
@@ -251,6 +254,19 @@ describe('TaskRepo', () => {
 				expect(total).toEqual(0);
 				expect(result).toHaveLength(0);
 			});
+
+			it('should find unavailable tasks created by the user', async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const [result, total] = await repo.findAllByParentIds({ creatorId: user.id, courseIds: [course.id] });
+				expect(total).toEqual(1);
+				expect(result).toHaveLength(1);
+			});
 		});
 
 		describe('find by teacher and lessons', () => {
@@ -370,159 +386,104 @@ describe('TaskRepo', () => {
 		});
 
 		describe('filters', () => {
-			it('should filter tasks by draft status = true', async () => {
-				const teacher = userFactory.build();
-				const task1 = taskFactory.draft().build({ creator: teacher });
-				const task2 = taskFactory.build({ creator: teacher });
+			describe('when due date filter is applied', () => {
+				it('should filter tasks by dueDate after a given date', async () => {
+					const teacher = userFactory.build();
+					const threeWeeksinMilliseconds = 1.814e9;
+					const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+					const dueDate2 = new Date();
+					const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
+					const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
 
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
+					await em.persistAndFlush([task1, task2]);
+					em.clear();
 
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { draft: true });
-				expect(total).toEqual(1);
-				expect(result[0].id).toEqual(task1.id);
+					const oneWeekInMilliseconds = 6.048e8;
+
+					const [result, total] = await repo.findAllByParentIds(
+						{ creatorId: teacher.id },
+						{ afterDueDateOrNone: new Date(Date.now() - oneWeekInMilliseconds) }
+					);
+					expect(total).toEqual(1);
+					expect(result[0].id).toEqual(task2.id);
+				});
+
+				it('should return tasks if they have no dueDate', async () => {
+					const teacher = userFactory.build();
+					const threeWeeksinMilliseconds = 1.814e9;
+					const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+					const dueDate2 = new Date();
+					const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
+					const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
+					const task3 = taskFactory.build({ creator: teacher, dueDate: undefined });
+
+					await em.persistAndFlush([task1, task2, task3]);
+					em.clear();
+
+					const oneWeekInMilliseconds = 6.048e8;
+
+					const [result, total] = await repo.findAllByParentIds(
+						{ creatorId: teacher.id },
+						{ afterDueDateOrNone: new Date(Date.now() - oneWeekInMilliseconds) }
+					);
+					expect(total).toEqual(2);
+					const taskNames = result.map((o) => o.name);
+					expect(taskNames.includes(task2.name)).toBe(true);
+					expect(taskNames.includes(task3.name)).toBe(true);
+				});
+
+				it('should return tasks with any dueDate if no filter is applied', async () => {
+					const teacher = userFactory.build();
+					const threeWeeksinMilliseconds = 1.814e9;
+					const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
+					const dueDate2 = new Date();
+					const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
+					const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
+					const task3 = taskFactory.build({ creator: teacher, dueDate: undefined });
+
+					await em.persistAndFlush([task1, task2, task3]);
+					em.clear();
+
+					const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id });
+					expect(total).toEqual(3);
+					const taskNames = result.map((o) => o.name);
+					expect(taskNames.includes(task1.name)).toBe(true);
+					expect(taskNames.includes(task2.name)).toBe(true);
+					expect(taskNames.includes(task3.name)).toBe(true);
+				});
 			});
 
-			it('should filter tasks by draft status = false', async () => {
-				const teacher = userFactory.build();
-				const task1 = taskFactory.draft().build({ creator: teacher });
-				const task2 = taskFactory.build({ creator: teacher });
+			describe('when availability filter is applied', () => {
+				it('should return available and unavailable tasks created by the user', async () => {
+					const teacher = userFactory.build();
+					const task1 = taskFactory.build({ creator: teacher, availableDate: yesterday });
+					const task2 = taskFactory.build({ creator: teacher, availableDate: tomorrow });
 
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
+					await em.persistAndFlush([task1, task2]);
+					em.clear();
 
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { draft: false });
-				expect(total).toEqual(1);
-				expect(result[0].id).toEqual(task2.id);
-			});
+					const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { availableOn: new Date() });
+					expect(total).toEqual(2);
+					expect(result[0].name).toEqual(task1.name);
+					expect(result[1].name).toEqual(task2.name);
+				});
 
-			it('should filter tasks by draft status = null as false', async () => {
-				const teacher = userFactory.build();
-				const task = taskFactory.build({ creator: teacher });
-				Object.assign(task, { private: null });
+				it('should return only available tasks created by other users', async () => {
+					const teacher = userFactory.build();
+					const course = courseFactory.build();
+					const task1 = taskFactory.build({ creator: teacher, course, availableDate: yesterday });
+					const task2 = taskFactory.build({ creator: teacher, course, availableDate: tomorrow });
 
-				await em.persistAndFlush([task]);
-				em.clear();
+					await em.persistAndFlush([task1, task2]);
+					em.clear();
 
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { draft: false });
-				expect(total).toEqual(1);
-				expect(result[0].id).toEqual(task.id);
-			});
-
-			// TODO: FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
-			it('should filter tasks by draft status = undefined as false', async () => {
-				const teacher = userFactory.build();
-				const task = taskFactory.build({ creator: teacher });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				// unset private using a raw query because it's impossible using the ORM
-				await em
-					.getDriver()
-					.getConnection()
-					.getCollection('homeworks')
-					.updateOne({ _id: task._id }, { $unset: { private: '' } });
-
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { draft: false });
-				expect(total).toEqual(1);
-				expect(result[0].id).toEqual(task.id);
-			});
-
-			it('should return tasks with both status when no filter is applied', async () => {
-				const teacher = userFactory.build();
-				const task1 = taskFactory.draft().build({ creator: teacher });
-				const task2 = taskFactory.build({ creator: teacher });
-
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
-
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id });
-				expect(total).toEqual(2);
-				const taskNames = result.map((o) => o.name);
-				expect(taskNames.includes(task1.name)).toBe(true);
-				expect(taskNames.includes(task2.name)).toBe(true);
-			});
-
-			it('should filter tasks by dueDate after a given date', async () => {
-				const teacher = userFactory.build();
-				const threeWeeksinMilliseconds = 1.814e9;
-				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
-				const dueDate2 = new Date();
-				const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
-				const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
-
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
-
-				const oneWeekInMilliseconds = 6.048e8;
-
-				const [result, total] = await repo.findAllByParentIds(
-					{ creatorId: teacher.id },
-					{ afterDueDateOrNone: new Date(Date.now() - oneWeekInMilliseconds) }
-				);
-				expect(total).toEqual(1);
-				expect(result[0].id).toEqual(task2.id);
-			});
-
-			it('should return tasks if they have no dueDate', async () => {
-				const teacher = userFactory.build();
-				const threeWeeksinMilliseconds = 1.814e9;
-				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
-				const dueDate2 = new Date();
-				const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
-				const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
-				const task3 = taskFactory.build({ creator: teacher, dueDate: undefined });
-
-				await em.persistAndFlush([task1, task2, task3]);
-				em.clear();
-
-				const oneWeekInMilliseconds = 6.048e8;
-
-				const [result, total] = await repo.findAllByParentIds(
-					{ creatorId: teacher.id },
-					{ afterDueDateOrNone: new Date(Date.now() - oneWeekInMilliseconds) }
-				);
-				expect(total).toEqual(2);
-				const taskNames = result.map((o) => o.name);
-				expect(taskNames.includes(task2.name)).toBe(true);
-				expect(taskNames.includes(task3.name)).toBe(true);
-			});
-
-			it('should return tasks with any dueDate if no filter is applied', async () => {
-				const teacher = userFactory.build();
-				const threeWeeksinMilliseconds = 1.814e9;
-				const dueDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
-				const dueDate2 = new Date();
-				const task1 = taskFactory.build({ creator: teacher, dueDate: dueDate1 });
-				const task2 = taskFactory.build({ creator: teacher, dueDate: dueDate2 });
-				const task3 = taskFactory.build({ creator: teacher, dueDate: undefined });
-
-				await em.persistAndFlush([task1, task2, task3]);
-				em.clear();
-
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id });
-				expect(total).toEqual(3);
-				const taskNames = result.map((o) => o.name);
-				expect(taskNames.includes(task1.name)).toBe(true);
-				expect(taskNames.includes(task2.name)).toBe(true);
-				expect(taskNames.includes(task3.name)).toBe(true);
-			});
-
-			it('should filter tasks that are available on specific date', async () => {
-				const teacher = userFactory.build();
-				const threeWeeksinMilliseconds = 1.814e9;
-				const availableDate1 = new Date(Date.now() - threeWeeksinMilliseconds);
-				const availableDate2 = new Date(Date.now() + threeWeeksinMilliseconds);
-				const task1 = taskFactory.build({ creator: teacher, availableDate: availableDate1 });
-				const task2 = taskFactory.build({ creator: teacher, availableDate: availableDate2 });
-
-				await em.persistAndFlush([task1, task2]);
-				em.clear();
-
-				const [result, total] = await repo.findAllByParentIds({ creatorId: teacher.id }, { availableOn: new Date() });
-				expect(total).toEqual(1);
-				expect(result[0].name).toEqual(task1.name);
+					const [result, total] = await repo.findAllByParentIds(
+						{ courseIds: [course.id] },
+						{ availableOn: new Date() }
+					);
+					expect(total).toEqual(1);
+					expect(result[0].name).toEqual(task1.name);
+				});
 			});
 		});
 

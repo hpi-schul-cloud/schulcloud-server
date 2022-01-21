@@ -48,35 +48,32 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byDraftExcludeOthers(creatorId?: EntityId, isDraft?: boolean): TaskScope {
-		if (creatorId) {
-			if (isDraft !== undefined) {
-				this.addQuery({
-					$or: [
-						{ $and: [{ creator: creatorId }, this.getByDraftQuery(isDraft)] },
-						{ $and: [{ creator: { $ne: creatorId } }, this.getByDraftQuery(false)] },
-					],
-				});
-			} else {
-				this.addQuery({
-					$or: [{ $and: [{ creator: creatorId }, this.getByDraftQuery(true)] }, this.getByDraftQuery(false)],
-				});
-			}
-		} else {
-			this.addQuery(this.getByDraftQuery(false));
-		}
+	excludeDraftsOfOthers(creatorId: EntityId): TaskScope {
+		this.addQuery({
+			$or: [{ $and: [{ creator: creatorId }, this.getByDraftQuery(true)] }, this.getByDraftQuery(false)],
+		});
 
+		return this;
+	}
+
+	byAvailable(availableDate: Date): TaskScope {
+		this.addQuery({ availableDate: { $lte: availableDate } });
+
+		return this;
+	}
+
+	excludeUnavailableOfOthers(creatorId: EntityId, availableOn: Date): TaskScope {
+		this.addQuery({
+			$or: [
+				{ creator: creatorId },
+				{ $and: [{ creator: { $ne: creatorId } }, { availableDate: { $lte: availableOn } }] },
+			],
+		});
 		return this;
 	}
 
 	afterDueDateOrNone(dueDate: Date): TaskScope {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
-
-		return this;
-	}
-
-	availableOn(availableDate: Date): TaskScope {
-		this.addQuery({ availableDate: { $lte: availableDate } });
 
 		return this;
 	}

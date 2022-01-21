@@ -95,7 +95,6 @@ export class TaskRepo {
 			lessonIds?: EntityId[];
 		},
 		filters?: {
-			draft?: boolean;
 			afterDueDateOrNone?: Date;
 			finished?: { userId: EntityId; value: boolean };
 			availableOn?: Date;
@@ -124,14 +123,22 @@ export class TaskRepo {
 			scope.byFinished(filters.finished.userId, filters.finished.value);
 		}
 
-		scope.byDraftExcludeOthers(parentIds.creatorId, filters?.draft);
+		if (parentIds.creatorId) {
+			scope.excludeDraftsOfOthers(parentIds.creatorId);
+		} else {
+			scope.byDraft(false);
+		}
 
 		if (filters?.afterDueDateOrNone !== undefined) {
 			scope.afterDueDateOrNone(filters.afterDueDateOrNone);
 		}
 
 		if (filters?.availableOn !== undefined) {
-			scope.availableOn(filters.availableOn);
+			if (parentIds.creatorId) {
+				scope.excludeUnavailableOfOthers(parentIds.creatorId, filters.availableOn);
+			} else {
+				scope.byAvailable(filters?.availableOn);
+			}
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
