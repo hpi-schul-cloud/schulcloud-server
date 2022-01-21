@@ -1,15 +1,22 @@
 import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { MongoEntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { EntityId, IFindOptions, INameMatch, School, SortOrder, User } from '@shared/domain';
-import { BaseRepo } from '../base.repo';
+import { EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
-export class UserRepo extends BaseRepo<User> {
-	async findById(id: EntityId): Promise<User> {
+export class UserRepo {
+	constructor(private readonly em: MongoEntityManager) {}
+
+	async findById(id: EntityId, populateRoles = false): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
+
+		if (populateRoles) {
+			await this.em.populate(user, ['roles']);
+			await this.populateRoles(user.roles.getItems());
+		}
+
 		return user;
 	}
 
@@ -115,5 +122,17 @@ export class UserRepo extends BaseRepo<User> {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
 		return users;
+	}
+
+	private async populateRoles(roles: Role[]): Promise<void> {
+		for (let i = 0; i < roles.length; i += 1) {
+			const role = roles[i];
+			if (!role.roles.isInitialized(true)) {
+				// eslint-disable-next-line no-await-in-loop
+				await this.em.populate(role, ['roles']);
+				// eslint-disable-next-line no-await-in-loop
+				await this.populateRoles(role.roles.getItems());
+			}
+		}
 	}
 }

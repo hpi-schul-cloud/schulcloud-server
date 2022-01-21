@@ -7,7 +7,7 @@ import {
 	lessonFactory,
 	taskFactory,
 	submissionFactory,
-	cleanUpCollections,
+	cleanupCollections,
 } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -33,7 +33,7 @@ describe('TaskRepo', () => {
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 	});
 
 	describe('findAllByParentIds', () => {

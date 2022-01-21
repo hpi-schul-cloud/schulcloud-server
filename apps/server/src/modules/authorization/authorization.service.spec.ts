@@ -21,16 +21,16 @@ describe('AuthorizationService', () => {
 				{
 					provide: FeathersAuthProvider,
 					useValue: {
-						getUserSchoolPermissions(user: EntityId, school: EntityId) {
+						getUserSchoolPermissions() {
 							return schoolPermissions;
 						},
-						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel, targetId: EntityId) {
+						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel) {
 							return targetModel === NewsTargetModel.Course ? coursePermissions : teamPermissions;
 						},
-						getPermittedSchools(user) {
+						getPermittedSchools() {
 							return [];
 						},
-						getPermittedTargets(user, targetModel, permissionsToCheck) {
+						getPermittedTargets() {
 							return [];
 						},
 					},

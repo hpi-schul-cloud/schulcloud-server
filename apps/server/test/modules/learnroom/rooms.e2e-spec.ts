@@ -7,13 +7,15 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerModule } from '@src/server.module';
 import { BoardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { userFactory, courseFactory, taskFactory, cleanUpCollections, createCurrentTestUser } from '@shared/testing';
-import { ICurrentUser, User } from '@shared/domain';
-
-const modifyCurrentUserId = (currentUser: ICurrentUser, user: User) => {
-	currentUser.user.id = user.id;
-	currentUser.userId = user.id;
-};
+import {
+	userFactory,
+	courseFactory,
+	taskFactory,
+	cleanupCollections,
+	roleFactory,
+	mapUserToCurrentUser,
+} from '@shared/testing';
+import { ICurrentUser } from '@shared/domain';
 
 describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
@@ -39,24 +41,24 @@ describe('Rooms Controller (e2e)', () => {
 		await app.init();
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
-		currentUser = createCurrentTestUser().currentUser;
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 		await app.close();
 		await orm.close();
 	});
 
 	it('[GET] board', async () => {
-		const student = userFactory.build();
-		await em.persistAndFlush([student]);
-		const course = courseFactory.build({ name: 'course #1', students: [student] });
+		const roles = roleFactory.buildList(1, { permissions: [] });
+		const student = userFactory.build({ roles });
+		const course = courseFactory.build({ students: [student] });
 		const task = taskFactory.build({ course });
+
 		await em.persistAndFlush([course, task]);
 		em.clear();
 
-		modifyCurrentUserId(currentUser, student);
+		currentUser = mapUserToCurrentUser(student);
 
 		const response = await request(app.getHttpServer()).get(`/rooms/${course.id}/board`);
 

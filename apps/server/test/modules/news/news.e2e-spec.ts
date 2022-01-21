@@ -52,7 +52,7 @@ describe('News Controller (e2e)', () => {
 			.overrideProvider(AuthorizationService)
 			.useValue({
 				checkEntityPermissions() {},
-				getPermittedEntities(userId, targetModel, permissions) {
+				getPermittedEntities(userId, targetModel) {
 					return targets.filter((target) => target.targetModel === targetModel).flatMap((target) => target.targetIds);
 				},
 				getEntityPermissions() {
@@ -117,7 +117,6 @@ describe('News Controller (e2e)', () => {
 		});
 
 		it('should get for /news with unpublished params only unpublished news', async () => {
-			const publishedNews = await createTestNews(NewsTargetModel.Course, courseTargetId, false);
 			const unpublishedNews = await createTestNews(NewsTargetModel.Course, unpublishedCourseTargetId, true);
 			const expected = {
 				data: [unpublishedNews],
