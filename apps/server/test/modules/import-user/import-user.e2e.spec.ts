@@ -27,7 +27,7 @@ describe('ImportUser Controller (e2e)', () => {
 					const req: Request = context.switchToHttp().getRequest();
 					const { currentUser } = createCurrentTestUser(
 						[
-							UserImportPermissions.VIEW_IMPORT_USER,
+							UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS,
 							UserImportPermissions.STUDENT_LIST,
 							UserImportPermissions.TEACHER_LIST,
 						],
