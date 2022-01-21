@@ -32,7 +32,7 @@ export class ImportUserController {
 			options.order = { [sortingQuery.sortBy]: sortingQuery.sortOrder || SortOrder.asc };
 		}
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
-		const [importUserList, count] = await this.userImportUc.findAll(currentUser.userId, query, options);
+		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
 		const dtoList = await Promise.all(
 			importUserList.map(async (importUser) => ImportUserMapper.mapToResponse(importUser))

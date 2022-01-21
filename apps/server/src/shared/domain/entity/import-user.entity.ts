@@ -87,7 +87,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	_user?: IdentifiedReference<User>;
 
 	get user(): User | undefined {
-		return this._user?.unwrap();
+		return this._user;
 	}
 
 	/**

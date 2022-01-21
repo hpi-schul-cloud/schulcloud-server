@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { UserRepo } from '@shared/repo';
+import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { userFactory } from '@shared/testing';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { ImportUserAuthorizationService } from '../services/import-user.authorization.service';
@@ -11,6 +11,7 @@ describe('[ImportUserModule]', () => {
 		let module: TestingModule;
 		let uc: UserImportUc;
 		let userRepo: UserRepo;
+		let importUserRepo: ImportUserRepo;
 		let authorizationService: ImportUserAuthorizationService;
 
 		beforeAll(async () => {
@@ -20,6 +21,7 @@ describe('[ImportUserModule]', () => {
 					UserImportUc,
 					ImportUserAuthorizationService,
 					UserRepo,
+					ImportUserRepo,
 					// {
 					// 	provide: UserRepo,
 					// 	useValue: {
@@ -33,6 +35,7 @@ describe('[ImportUserModule]', () => {
 
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
 			userRepo = module.get(UserRepo);
+			importUserRepo = module.get(ImportUserRepo);
 			authorizationService = module.get(ImportUserAuthorizationService);
 		});
 
@@ -43,6 +46,7 @@ describe('[ImportUserModule]', () => {
 		it('should be defined', () => {
 			expect(uc).toBeDefined();
 			expect(userRepo).toBeDefined();
+			expect(importUserRepo).toBeDefined();
 			expect(authorizationService).toBeDefined();
 		});
 

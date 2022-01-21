@@ -30,7 +30,7 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAll(
+	async findAllImportUsers(
 		userId: EntityId,
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>

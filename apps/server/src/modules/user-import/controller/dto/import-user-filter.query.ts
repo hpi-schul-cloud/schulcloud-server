@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export enum MatchFilterQuery {
 	AUTO = 'auto',
@@ -33,6 +33,7 @@ export class ImportUserFilterQuery {
 
 	@ApiPropertyOptional({ enum: MatchFilterQuery, isArray: true })
 	@IsOptional()
+	@IsArray()
 	@IsEnum(MatchFilterQuery, { each: true })
 	match?: MatchFilterQuery[];
 
