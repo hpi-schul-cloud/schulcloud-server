@@ -18,8 +18,9 @@ export class OauthUc {
 	}
 
 	// 1- use Authorization Code to get a valid Token
-	async requestToken(code: string, systemId: string) {
-		const system = await this.systemRepo.findById(systemId);
+	// async requestToken(code: string, systemId: string) {
+	async requestToken(code: string) {
+		// const system = await this.systemRepo.findById(systemId);
 		const payload: Payload = {
 			tokenEndpoint: env.TOKEN_ENDPOINT,
 			data: {
