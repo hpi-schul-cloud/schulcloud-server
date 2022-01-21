@@ -21,6 +21,7 @@ export class OauthUc {
 	// async requestToken(code: string, systemId: string) {
 	async requestToken(code: string) {
 		// const system = await this.systemRepo.findById(systemId);
+		console.log('WE ARE HERE');
 		const payload: Payload = {
 			tokenEndpoint: env.TOKEN_ENDPOINT,
 			data: {
