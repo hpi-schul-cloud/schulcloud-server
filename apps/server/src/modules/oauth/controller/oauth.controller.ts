@@ -25,7 +25,10 @@ export class OauthController {
 		console.log(systemid);
 		if ((query as AuthorizationCodeQuery).code !== undefined) {
 			console.log((query as AuthorizationCodeQuery).code);
-			const queryToken: OauthTokenResponse = await this.oauthUc.requestToken((query as AuthorizationCodeQuery).code);
+			const queryToken: OauthTokenResponse = await this.oauthUc.requestToken(
+				(query as AuthorizationCodeQuery).code,
+				systemid
+			);
 			await this.oauthUc.decodeToken(queryToken.id_token);
 			// ToDo: redirect auf Frontend
 			return res.redirect('https://google.de');

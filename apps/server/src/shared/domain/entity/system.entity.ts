@@ -6,10 +6,15 @@ export interface ISystemProperties {
 	type: string;
 	url?: string;
 	alias?: string;
-	clientId?: string;
-	clientSecret?: string;
-	redirect_uri?: string;
-	grant_type?: string;
+	oauthconfig?: OauthConfig;
+}
+
+export interface OauthConfig {
+	client_id: string;
+	client_secret: string;
+	redirect_uri: string;
+	grant_type: string;
+	token_endpoint: string;
 }
 
 @Entity({ tableName: 'systems' })
@@ -31,14 +36,5 @@ export class System extends BaseEntityWithTimestamps {
 	alias?: string;
 
 	@Property()
-	clientId?: string;
-
-	@Property()
-	clientSecret?: string;
-
-	@Property()
-	redirect_uri?: string;
-
-	@Property()
-	grant_type?: string;
+	oauthconfig?: OauthConfig;
 }

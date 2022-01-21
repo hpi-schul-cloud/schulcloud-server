@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Injectable } from '@nestjs/common';
 import { ILogger, Logger } from '@src/core/logger';
-import { env } from 'process';
 import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
+import { System } from '@shared/domain';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
 
@@ -19,22 +19,24 @@ export class OauthUc {
 
 	// 1- use Authorization Code to get a valid Token
 	// async requestToken(code: string, systemId: string) {
-	async requestToken(code: string) {
+	async requestToken(code: string, systemId: string) {
 		// const system = await this.systemRepo.findById(systemId);
 		console.log('WE ARE HERE');
+		const system: System = await this.systemRepo.findById(systemId);
+		console.log(system);
 		const payload: Payload = {
-			tokenEndpoint: env.TOKEN_ENDPOINT,
+			token_endpoint: system.oauthconfig?.token_endpoint,
 			data: {
-				client_id: env.CLIENT_ID,
-				client_secret: env.CLIENT_SECRET,
-				redirect_uri: env.REDIRECT_URI,
-				grant_type: env.GRANT_TYPE,
+				client_id: system.oauthconfig?.client_id,
+				client_secret: system.oauthconfig?.client_secret,
+				redirect_uri: system.oauthconfig?.redirect_uri,
+				grant_type: system.oauthconfig?.grant_type,
 				code,
 			},
 		};
 		if (
 			!(
-				payload.tokenEndpoint &&
+				payload.token_endpoint &&
 				payload.data.client_id &&
 				payload.data.client_secret &&
 				payload.data.redirect_uri &&
@@ -45,7 +47,7 @@ export class OauthUc {
 		}
 
 		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
-			payload.tokenEndpoint,
+			payload.token_endpoint,
 			{},
 			{ params: { ...payload.data } }
 		);
