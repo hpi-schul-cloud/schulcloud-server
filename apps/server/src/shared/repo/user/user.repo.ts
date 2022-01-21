@@ -1,5 +1,5 @@
 import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
-import { MongoEntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
@@ -7,7 +7,7 @@ import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
 export class UserRepo {
-	constructor(private readonly em: MongoEntityManager) {}
+	constructor(private readonly em: EntityManager<MongoDriver>) {}
 
 	async findById(id: EntityId, populateRoles = false): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
