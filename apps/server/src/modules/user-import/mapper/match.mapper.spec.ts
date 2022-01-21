@@ -2,7 +2,7 @@ import { MatchCreator, MatchCreatorScope } from '@shared/domain';
 import { MatchCreatorResponse, MatchFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
-describe('[ImportUserMatchMapper', () => {
+describe('[ImportUserMatchMapper]', () => {
 	describe('[mapImportUserMatchScopeToDomain] from query', () => {
 		it('should map auto from query to domain', () => {
 			const match = MatchFilterQuery.AUTO;

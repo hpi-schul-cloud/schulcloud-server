@@ -50,7 +50,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	 * */
 	get loginName(): string | null {
 		const PATTERN_LOGIN_FROM_DN = /^uid=(.+?),/i; // extract uid from dn
-		const matches = this.ldapDn.match(PATTERN_LOGIN_FROM_DN);
+		const matches = this.ldapDn?.match(PATTERN_LOGIN_FROM_DN);
 		if (Array.isArray(matches) && matches.length >= 2) {
 			const loginName = matches[1]; // 0: full match, 1: first group match
 			return loginName;
@@ -86,8 +86,8 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
 	_user?: IdentifiedReference<User>;
 
-	get user(): IdentifiedReference<User> | undefined {
-		return this._user;
+	get user(): User | undefined {
+		return this._user?.unwrap();
 	}
 
 	/**

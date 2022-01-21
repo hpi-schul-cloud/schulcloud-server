@@ -1,3 +1,4 @@
+import { StringValidator } from '@shared/common';
 import { ImportUser, IImportUserScope } from '@shared/domain';
 import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
@@ -16,23 +17,22 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
-		if (importUser._user && importUser._matchedBy) {
-			dto.match = await UserMapper.mapToResponse(importUser._user, importUser._matchedBy);
+		if (importUser.user && importUser.matchedBy) {
+			dto.match = await UserMapper.mapToResponse(importUser.user, importUser.matchedBy);
 		}
 		return dto;
 	}
 
 	static mapImportUserFilterQueryToDomain(query: ImportUserFilterQuery): IImportUserScope {
 		const dto: IImportUserScope = {};
-		if (query.firstName) dto.firstName = query.firstName;
-		if (query.lastName) dto.lastName = query.lastName;
-		if (query.loginName) dto.loginName = query.loginName;
-		if (query.role) {
+		if (StringValidator.isNotEmptyString(query.firstName)) dto.firstName = query.firstName;
+		if (StringValidator.isNotEmptyString(query.lastName)) dto.lastName = query.lastName;
+		if (StringValidator.isNotEmptyString(query.loginName)) dto.loginName = query.loginName;
+		if (query.role != null) {
 			dto.role = RoleNameMapper.mapToDomain(query.role);
 		}
-		if (query.classes) dto.classes = query.classes;
+		if (StringValidator.isNotEmptyString(query.classes)) dto.classes = query.classes;
 		if (query.match) {
-			if (!Array.isArray(query.match)) query.match = [query.match];
 			dto.matches = query.match.map((match) => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match));
 		}
 		if (query.flagged === true) dto.flagged = true;
