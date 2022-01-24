@@ -89,10 +89,11 @@ export class TaskUC {
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
+				creatorId: user.id,
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ draft: false, afterDueDateOrNone: dueDate, finished: notFinished },
+			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
@@ -120,7 +121,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ finished: notFinished },
+			{ finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },
