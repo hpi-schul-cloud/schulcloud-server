@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanUpCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MatchCreator, MatchCreatorScope, RoleName, School } from '@shared/domain';
@@ -26,7 +26,7 @@ describe('ImportUserRepo', () => {
 	});
 
 	beforeEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 	});
 
 	describe('defined', () => {
