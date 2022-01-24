@@ -277,7 +277,7 @@ describe('Task Controller (e2e)', () => {
 		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
-		let api: API;
+		let api: E2eTestApi<TaskListResponse>;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
