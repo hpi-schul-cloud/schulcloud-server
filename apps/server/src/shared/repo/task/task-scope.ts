@@ -54,11 +54,4 @@ export class TaskScope extends Scope<Task> {
 
 		return this;
 	}
-
-	noFutureAvailableDate(): TaskScope {
-		const query = { availableDate: { $lte: new Date(Date.now()) } };
-		this.addQuery(query);
-
-		return this;
-	}
 }

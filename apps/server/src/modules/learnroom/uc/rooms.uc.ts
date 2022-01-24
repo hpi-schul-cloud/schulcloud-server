@@ -37,11 +37,11 @@ export class RoomsUc {
 		return board;
 	}
 
-	private taskFilter(isTeacher: boolean): { draft?: boolean; noFutureAvailableDate?: boolean } {
-		const filters: { draft?: boolean; noFutureAvailableDate?: boolean } = {};
+	private taskFilter(isTeacher: boolean): { draft?: boolean /* ; noFutureAvailableDate?: boolean */ } {
+		const filters: { draft?: boolean /* ; noFutureAvailableDate?: boolean */ } = {};
 		if (!isTeacher) {
 			filters.draft = false;
-			filters.noFutureAvailableDate = true;
+			// filters.noFutureAvailableDate = true;
 		}
 		return filters;
 	}
