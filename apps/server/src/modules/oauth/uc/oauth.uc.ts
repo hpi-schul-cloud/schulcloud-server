@@ -5,9 +5,10 @@ import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
-import { System } from '@shared/domain';
+import { System, User } from '@shared/domain';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
+import { SupportJWTService } from '../../../../../../src/services/account/services/SupportJWTService.js';
 
 @Injectable()
 export class OauthUc {
@@ -56,19 +57,28 @@ export class OauthUc {
 		try {
 			const decodedJwt: IJWT = await jwtDecode(token);
 			console.log(`This is the uuid >>>> ${decodedJwt.uuid}`);
+			return decodedJwt.uuid;
 		} catch (error) {
 			console.log('########### Token konnte nicht entschlüsselt werden #####');
 			// return res.status....
 		}
+		return '';
 	}
 
 	// 1.1- Token Validation? (later)
 
 	// 3- get user using the UUID (userHelpers.js?)
+	findUserById(uuid: string): Promise<User> {
+		return this.userRepo.findByLdapId(uuid);
+	}
 
 	// 3.1- User bestätigen?
 
 	// 4- JWT erzeugen (oder finden)
+	getJWTForUser(user: User) {
+		console.log('JWT CREATED:');
+		// console.log(SupportJWTService.create(user._id));
+	}
 }
 
 interface IJWT {
