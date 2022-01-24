@@ -1,4 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
+import { MikroORM, Reference } from '@mikro-orm/core';
 import { MatchCreator, MatchCreatorScope, RoleName } from '@shared/domain';
 import { importUserFactory, setupEntities, userFactory } from '@shared/testing';
 import { ImportUserFilterQuery, MatchFilterQuery, RoleNameFilterQuery, UserResponse } from '../controller/dto';
@@ -58,7 +58,7 @@ describe('[ImportUserMapper]', () => {
 				const userMapperSpy = jest.spyOn(UserMapper, 'mapToResponse').mockResolvedValueOnce(mockResponse);
 				const result = await ImportUserMapper.mapToResponse(importUser);
 				expect(result.match).toEqual(mockResponse);
-				expect(userMapperSpy).toBeCalledWith(user, MatchCreator.AUTO);
+				expect(userMapperSpy).toBeCalledWith(new Reference(user), MatchCreator.AUTO);
 				userMapperSpy.mockRestore();
 			});
 		});
