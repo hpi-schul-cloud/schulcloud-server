@@ -94,7 +94,11 @@ export class TaskRepo {
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date; finished?: { userId: EntityId; value: boolean } },
+		filters?: {
+			afterDueDateOrNone?: Date;
+			finished?: { userId: EntityId; value: boolean };
+			availableOn?: Date;
+		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -119,12 +123,22 @@ export class TaskRepo {
 			scope.byFinished(filters.finished.userId, filters.finished.value);
 		}
 
-		if (filters?.draft !== undefined) {
-			scope.byDraft(filters.draft);
+		if (parentIds.creatorId) {
+			scope.excludeDraftsOfOthers(parentIds.creatorId);
+		} else {
+			scope.byDraft(false);
 		}
 
 		if (filters?.afterDueDateOrNone !== undefined) {
 			scope.afterDueDateOrNone(filters.afterDueDateOrNone);
+		}
+
+		if (filters?.availableOn !== undefined) {
+			if (parentIds.creatorId) {
+				scope.excludeUnavailableOfOthers(parentIds.creatorId, filters.availableOn);
+			} else {
+				scope.byAvailable(filters?.availableOn);
+			}
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);
