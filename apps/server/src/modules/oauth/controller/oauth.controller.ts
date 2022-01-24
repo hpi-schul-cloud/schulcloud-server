@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from '@shared/domain';
 import { Response } from 'express';
@@ -47,7 +48,9 @@ export class OauthController {
 				const jwt = await this.oauthUc.getJWTForUser(user);
 
 				// TODO: redirect to Frontend
-				return res.redirect('https://google.de');
+				res.cookie('jwt', jwt);
+				const HOST = Configuration.get('HOST') as string;
+				return res.redirect(`${HOST}/dashboard`);
 			}
 		} catch (exception) {
 			console.log('EXCEPTION');
