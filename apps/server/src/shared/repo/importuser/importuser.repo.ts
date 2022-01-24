@@ -44,7 +44,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		if (filters.classes != null) scope.byClasses(filters.classes);
 		if (filters.matches != null) scope.byMatches(filters.matches);
 		if (filters.flagged === true) scope.isFlagged(true);
-		const countedImportUsers = this.findImportUsersAndCount(scope.query, options);
+		const countedImportUsers = await this.findImportUsersAndCount(scope.query, options);
 		return countedImportUsers;
 	}
 

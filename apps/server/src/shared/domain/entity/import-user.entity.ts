@@ -36,10 +36,10 @@ export enum RoleName {
 
 @Entity({ tableName: 'importusers' })
 export class ImportUser extends BaseEntityWithTimestamps {
-	@ManyToOne(() => 'School', { fieldName: 'schoolId', wrappedReference: true, eager: true })
+	@ManyToOne(() => 'School', { fieldName: 'schoolId', eager: true })
 	school: IdentifiedReference<School>;
 
-	@ManyToOne(() => 'System', { wrappedReference: true, lazy: true })
+	@ManyToOne(() => 'System', { lazy: true })
 	system: IdentifiedReference<System>;
 
 	@Property()
