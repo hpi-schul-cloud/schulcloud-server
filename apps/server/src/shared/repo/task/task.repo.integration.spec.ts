@@ -138,7 +138,7 @@ describe('TaskRepo', () => {
 
 				const [result, total] = await repo.findAllByParentIds({ courseIds: [course.id] });
 				expect(total).toBe(0);
-				expect(result.length).toBe(0);
+				expect(result).toHaveLength(0);
 			});
 		});
 
@@ -186,7 +186,7 @@ describe('TaskRepo', () => {
 
 				const [result, total] = await repo.findAllByParentIds({ lessonIds: [lesson.id] });
 				expect(total).toBe(0);
-				expect(result.length).toBe(0);
+				expect(result).toHaveLength(0);
 			});
 		});
 

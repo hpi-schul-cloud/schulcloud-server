@@ -100,7 +100,7 @@ describe('News Controller (e2e)', () => {
 			const response = await request(app.getHttpServer()).get(`/news`).expect(200);
 			const { data, total } = response.body as NewsListResponse;
 			expect(total).toBe(0);
-			expect(data.length).toBe(0);
+			expect(data).toHaveLength(0);
 		});
 
 		it('should get for /news without parameters', async () => {

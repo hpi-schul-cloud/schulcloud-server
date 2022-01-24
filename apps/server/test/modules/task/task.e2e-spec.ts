@@ -299,7 +299,7 @@ describe('Task Controller (e2e)', () => {
 
 		it('should not return unavailable tasks created by other users', async () => {
 			const teacher = setup();
-			const otherUser = setup();
+			const otherUser = userFactory.build();
 			const course = courseFactory.build({ teachers: [teacher, otherUser] });
 			const task = taskFactory.build({ creator: otherUser, course, availableDate: tomorrow });
 
@@ -528,7 +528,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft().build({ course, private: true });
+			const task = taskFactory.build({ course, private: true });
 
 			await em.persistAndFlush([task]);
 			em.clear();
