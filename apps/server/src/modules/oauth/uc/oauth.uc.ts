@@ -57,16 +57,14 @@ export class OauthUc {
 	}
 
 	// 2- decode the Token to extract the UUID
-	async decodeToken(token: string) {
-		try {
-			const decodedJwt: IJWT = await jwtDecode(token);
-			console.log(`This is the uuid >>>> ${decodedJwt.uuid}`);
-			return decodedJwt.uuid;
-		} catch (error) {
-			console.log('########### Token konnte nicht entschlüsselt werden #####');
-			// return res.status....
+	async decodeToken(token: string): Promise<string> {
+		const decodedJwt: IJWT = await jwtDecode(token);
+		console.log(`This is the uuid >>>> ${decodedJwt.uuid}`);
+		const { uuid } = decodedJwt;
+		if (!uuid /** test not empty string or id format */) {
+			throw Error('...');
 		}
-		return '';
+		return uuid;
 	}
 
 	// 1.1- Token Validation? (later)
