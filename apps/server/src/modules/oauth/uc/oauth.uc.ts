@@ -6,15 +6,19 @@ import jwtDecode from 'jwt-decode';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
+import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
-import { SupportJWTService } from '../../../../../../src/services/account/services/SupportJWTService.js';
 
 @Injectable()
 export class OauthUc {
 	private logger: ILogger;
 
-	constructor(private readonly systemRepo: SystemRepo, private readonly userRepo: UserRepo) {
+	constructor(
+		private readonly systemRepo: SystemRepo,
+		private readonly userRepo: UserRepo,
+		private readonly jwtService: FeathersJwtProvider
+	) {
 		this.logger = new Logger(OauthUc.name);
 	}
 
@@ -68,15 +72,17 @@ export class OauthUc {
 	// 1.1- Token Validation? (later)
 
 	// 3- get user using the UUID (userHelpers.js?)
-	findUserById(uuid: string): Promise<User> {
-		return this.userRepo.findByLdapId(uuid);
+	async findUserById(uuid: string): Promise<User> {
+		const user = await this.userRepo.findByLdapId(uuid);
+		return user;
 	}
 
 	// 3.1- User bestätigen?
 
 	// 4- JWT erzeugen (oder finden)
-	getJWTForUser(user: User) {
-		console.log('JWT CREATED:');
+	async getJWTForUser(user: User) {
+		const jwt = await this.jwtService.generateJwt(user.id);
+		return jwt;
 		// console.log(SupportJWTService.create(user._id));
 	}
 }

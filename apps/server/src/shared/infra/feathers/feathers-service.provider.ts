@@ -17,6 +17,11 @@ export interface FeathersService {
 	 * @deprecated Access legacy eathers service find method
 	 */
 	find(params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
+	/**
+	 *
+	 * @deprecated
+	 */
+	post(params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
