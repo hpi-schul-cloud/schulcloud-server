@@ -53,18 +53,14 @@ export class UserImportUc {
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userId: EntityId) {
 		const currentUser = await this.userRepo.findById(currentUserId);
-		const permissions = [
-			UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS,
-			UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS,
-		];
+		const permissions = [UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const userMatch = await this.userRepo.findById(userId);
 		const importUser = await this.importUserRepo.findById(importUserId);
-		await importUser.school.load();
 
 		// check same school
-		if (currentUser.school !== userMatch.school || currentUser.school !== importUser.school) {
+		if (!currentUser.school || currentUser.school !== userMatch.school || currentUser.school !== importUser.school) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -80,17 +76,13 @@ export class UserImportUc {
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
 		const currentUser = await this.userRepo.findById(currentUserId);
-		const permissions = [
-			UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS,
-			UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS,
-		];
+		const permissions = [UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
-		await importUser.school.load();
 
 		// check same school
-		if (currentUser.school !== importUser.school) {
+		if (!currentUser.school || currentUser.school !== importUser.school) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -102,17 +94,13 @@ export class UserImportUc {
 
 	async setFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
 		const currentUser = await this.userRepo.findById(currentUserId);
-		const permissions = [
-			UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS,
-			UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS,
-		];
+		const permissions = [UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
-		await importUser.school.load();
 
 		// check same school
-		if (currentUser.school !== importUser.school) {
+		if (!currentUser.school || currentUser.school !== importUser.school) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -134,11 +122,7 @@ export class UserImportUc {
 	async findAllUnmatchedUsers(userId: EntityId, query: INameMatch, options?: IFindOptions<User>): Promise<User[]> {
 		const user = await this.userRepo.findById(userId);
 
-		const permissions = [
-			UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS,
-			UserImportPermissions.STUDENT_LIST,
-			UserImportPermissions.TEACHER_LIST,
-		];
+		const permissions = [UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS];
 		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
 		const unmatchedUsers = await this.userRepo.findWithoutImportUser(user.school, query, options);

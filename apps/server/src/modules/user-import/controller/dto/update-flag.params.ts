@@ -4,7 +4,7 @@ import { IsBoolean } from 'class-validator';
 
 export class UpdateFlagParams {
 	@ApiProperty({ description: 'updates flag for an import user' })
-	@StringToBoolean()
 	@IsBoolean()
+	@StringToBoolean()
 	flagged!: boolean;
 }
