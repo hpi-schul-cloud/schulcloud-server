@@ -61,6 +61,7 @@ export class UserImportUc {
 
 		const userMatch = await this.userRepo.findById(userId);
 		const importUser = await this.importUserRepo.findById(importUserId);
+		await importUser.school.load();
 
 		// check same school
 		if (currentUser.school !== userMatch.school || currentUser.school !== importUser.school) {
@@ -86,6 +87,7 @@ export class UserImportUc {
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
+		await importUser.school.load();
 
 		// check same school
 		if (currentUser.school !== importUser.school) {
@@ -107,6 +109,7 @@ export class UserImportUc {
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
+		await importUser.school.load();
 
 		// check same school
 		if (currentUser.school !== importUser.school) {
