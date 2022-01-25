@@ -214,9 +214,9 @@ describe('News Controller (e2e)', () => {
 		});
 
 		it('should throw an error if trying to update of object which doesnt exists', async () => {
-			const notExistedNews = new ObjectId().toHexString();
+			const randomId = new ObjectId().toHexString();
 			const params = {} as UpdateNewsParams;
-			await request(app.getHttpServer()).patch(`/news/${notExistedNews}`).send(params).expect(404);
+			await request(app.getHttpServer()).patch(`/news/${randomId}`).send(params).expect(404);
 		});
 	});
 	describe('DELETE /news/{id}', () => {
@@ -227,8 +227,8 @@ describe('News Controller (e2e)', () => {
 		});
 
 		it('should throw not found error, if news doesnt exists', async () => {
-			const newsId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(404);
+			const randomId = new ObjectId().toHexString();
+			await request(app.getHttpServer()).delete(`/news/${randomId}`).expect(404);
 		});
 	});
 });

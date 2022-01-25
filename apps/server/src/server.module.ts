@@ -41,6 +41,13 @@ const serverModules = [
 	}),
 ];
 
+const defaultMikroOrmOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
+	},
+};
+
 /**
  * Server Module used for production
  */
@@ -48,16 +55,14 @@ const serverModules = [
 	imports: [
 		...serverModules,
 		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
-			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-			},
+
 			// debug: true, // use it for locally debugging of querys
 		}),
 	],
@@ -74,14 +79,14 @@ export class ServerModule {}
  * // TODO use instead of ServerModule when NODE_ENV=test
  */
 @Module({
-	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot()],
+	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
 	controllers: [ServerController],
 })
 export class ServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: ServerTestModule,
-			imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...options })],
+			imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
 			controllers: [ServerController],
 		};
 	}
