@@ -40,5 +40,5 @@ export class System extends BaseEntityWithTimestamps {
 	alias?: string;
 
 	@Property()
-	oauthconfig?: OauthConfig;
+	oauthconfig!: OauthConfig;
 }

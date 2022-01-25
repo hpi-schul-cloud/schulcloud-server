@@ -3,7 +3,7 @@ import { Data } from './data';
 
 export class Payload {
 	@IsDefined()
-	token_endpoint!: string | undefined;
+	token_endpoint!: string;
 
 	@IsDefined()
 	data!: Data;

@@ -1,14 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Injectable } from '@nestjs/common';
 import { ILogger, Logger } from '@src/core/logger';
 import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
+import { Response } from 'express';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
+import { AuthorizationQuery } from '../controller/dto/authorization.query';
 
 @Injectable()
 export class OauthUc {
@@ -22,10 +24,32 @@ export class OauthUc {
 		this.logger = new Logger(OauthUc.name);
 	}
 
-	// 1- use Authorization Code to get a valid Token
-	async requestToken(code: string, systemId: string) {
-		const system: System = await this.systemRepo.findById(systemId);
-		console.log(system);
+	// 0- start Oauth Process
+	async startOauth(query: AuthorizationQuery, res: Response, systemId: string) {
+		// get the authorization code
+		const code: string = this.extractCode(query);
+		// get the Tokens using the authorization token
+		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
+		// extract the uuid from the token
+		const uuid = await this.decodeToken(queryToken.id_token);
+		// get the user using the uuid
+		const user: User = await this.findUserById(uuid);
+		// create JWT for the user
+		const jwt = await this.getJWTForUser(user);
+		// TODO: redirect to Frontend
+		res.cookie('jwt', jwt);
+		const HOST = Configuration.get('HOST') as string;
+		return res.redirect(`${HOST}/dashboard`);
+	}
+
+	extractCode(query: AuthorizationQuery): string {
+		if (query.code) return query.code;
+		if (query.error) throw new Error(query.code);
+		// TODO: fix the error message
+		throw new Error('Error while .........');
+	}
+
+	mapSystemConfigtoPayload(system: System, code: string): Payload {
 		const payload: Payload = {
 			token_endpoint: system.oauthconfig?.token_endpoint,
 			data: {
@@ -47,7 +71,13 @@ export class OauthUc {
 		) {
 			throw new Error('check environment variables');
 		}
+		return payload;
+	}
 
+	// 1- use Authorization Code to get a valid Token
+	async requestToken(code: string, systemId: string) {
+		const system: System = await this.systemRepo.findById(systemId);
+		const payload: Payload = this.mapSystemConfigtoPayload(system, code);
 		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
 			payload.token_endpoint,
 			{},
