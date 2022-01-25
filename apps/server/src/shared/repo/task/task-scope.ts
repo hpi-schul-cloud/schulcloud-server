@@ -50,8 +50,14 @@ export class TaskScope extends Scope<Task> {
 
 	excludeDraftsOfOthers(creatorId: EntityId): TaskScope {
 		this.addQuery({
-			$or: [{ $and: [{ creator: creatorId }, this.getByDraftQuery(true)] }, this.getByDraftQuery(false)],
+			$or: [this.getByDraftForCreatorQuery(creatorId), this.getByDraftQuery(false)],
 		});
+
+		return this;
+	}
+
+	byDraftForCreator(creatorId: EntityId): TaskScope {
+		this.addQuery(this.getByDraftForCreatorQuery(creatorId));
 
 		return this;
 	}
@@ -80,6 +86,12 @@ export class TaskScope extends Scope<Task> {
 
 	private getByDraftQuery(isDraft: boolean): FilterQuery<Task> {
 		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+
+		return query;
+	}
+
+	private getByDraftForCreatorQuery(creatorId: EntityId): FilterQuery<Task> {
+		const query = { $and: [{ creator: creatorId }, this.getByDraftQuery(true)] };
 
 		return query;
 	}

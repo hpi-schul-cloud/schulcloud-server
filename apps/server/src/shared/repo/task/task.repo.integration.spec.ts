@@ -1367,7 +1367,7 @@ describe('TaskRepo', () => {
 
 			await em.persistAndFlush([user, course, task]);
 
-			const [tasks] = await repo.findBySingleParent(course.id);
+			const [tasks] = await repo.findBySingleParent(user.id, course.id);
 
 			expect(tasks).toHaveLength(1);
 		});
@@ -1379,7 +1379,7 @@ describe('TaskRepo', () => {
 
 			await em.persistAndFlush([user, course, task]);
 
-			const [tasks] = await repo.findBySingleParent(course.id);
+			const [tasks] = await repo.findBySingleParent(user.id, course.id);
 
 			expect(tasks).toHaveLength(0);
 		});
@@ -1387,11 +1387,11 @@ describe('TaskRepo', () => {
 		it('should find drafts', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build();
-			const task = taskFactory.draft().build({ course, creator: user });
+			const task = taskFactory.draft().build({ creator: user, course });
 
 			await em.persistAndFlush([user, course, task]);
 
-			const [tasks] = await repo.findBySingleParent(course.id);
+			const [tasks] = await repo.findBySingleParent(user.id, course.id);
 
 			expect(tasks).toHaveLength(1);
 		});
@@ -1404,7 +1404,7 @@ describe('TaskRepo', () => {
 
 			await em.persistAndFlush([user, course, task]);
 
-			const [tasks] = await repo.findBySingleParent(course.id);
+			const [tasks] = await repo.findBySingleParent(user.id, course.id);
 
 			expect(tasks).toHaveLength(0);
 		});
@@ -1417,7 +1417,7 @@ describe('TaskRepo', () => {
 
 				await em.persistAndFlush([user, course, task]);
 
-				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: true });
 
 				expect(tasks).toHaveLength(1);
 			});
@@ -1429,7 +1429,7 @@ describe('TaskRepo', () => {
 
 				await em.persistAndFlush([user, course, task]);
 
-				const [tasks] = await repo.findBySingleParent(course.id, { draft: true });
+				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: true });
 
 				expect(tasks).toHaveLength(0);
 			});
@@ -1443,7 +1443,7 @@ describe('TaskRepo', () => {
 
 				await em.persistAndFlush([user, course, task]);
 
-				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: false });
 
 				expect(tasks).toHaveLength(0);
 			});
@@ -1455,7 +1455,7 @@ describe('TaskRepo', () => {
 
 				await em.persistAndFlush([user, course, task]);
 
-				const [tasks] = await repo.findBySingleParent(course.id, { draft: false });
+				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: false });
 
 				expect(tasks).toHaveLength(1);
 			});
