@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder } from '@nestjs/swagger';
+import { OpenApiNestFactory } from 'nest-openapi-tools';
 
 /** *********************************************
  * OpenAPI docs setup
@@ -17,10 +18,36 @@ const config = new DocumentBuilder()
 	.setDescription('This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.')
 	.setVersion('3.0')
 	/** set authentication for all routes enabled by default */
-	.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
-	.build();
+	.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' });
 
-export const enableOpenApiDocs = (app: INestApplication, path: string): void => {
-	const document = SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup(path, app, document);
+export const enableOpenApiDocs = async (app: INestApplication, path: string): Promise<void> => {
+	await OpenApiNestFactory.configure(
+		app,
+		config,
+		{
+			webServerOptions: {
+				enabled: true,
+				path,
+			},
+			fileGeneratorOptions: {
+				enabled: true,
+				outputFilePath: './openapi.yaml', // or ./openapi.json
+			},
+			clientGeneratorOptions: {
+				enabled: true,
+				type: 'typescript-axios',
+				outputFolderPath: 'apps/server/test/api-client',
+				additionalProperties:
+					'apiPackage=clients,modelPackage=models,withoutPrefixEnums=true,withSeparateModelsAndApi=true',
+				openApiFilePath: './openapi.yaml', // or ./openapi.json
+				skipValidation: true, // optional, false by default
+			},
+		},
+		{
+			operationIdFactory: (c: string, method: string) => method,
+		}
+	);
+
+	// const document = SwaggerModule.createDocument(app, config);
+	// SwaggerModule.setup(path, app, document);
 };

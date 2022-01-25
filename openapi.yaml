@@ -1,0 +1,1288 @@
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: getHello
+      summary: ""
+      description: default route to test public access
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+  /user/me:
+    get:
+      operationId: me
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResolvedUser"
+      tags:
+        - User
+      security:
+        - bearer: []
+  /tasks:
+    get:
+      operationId: findAll
+      parameters:
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+      tags:
+        - Task
+      security:
+        - bearer: []
+  /tasks/finished:
+    get:
+      operationId: findAllFinished
+      parameters:
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+      tags:
+        - Task
+      security:
+        - bearer: []
+  /news:
+    post:
+      operationId: create
+      summary: ""
+      description: "* Create a news by a user in a given scope (school or team)."
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNewsParams"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsResponse"
+      tags:
+        - News
+      security:
+        - bearer: []
+    get:
+      operationId: findAll
+      summary: ""
+      description: "* Responds with all news for a user."
+      parameters:
+        - name: targetModel
+          required: false
+          in: query
+          description: Target model to which the news are related
+          schema:
+            $ref: "#/components/schemas/NewsTargetModel"
+        - name: targetId
+          required: false
+          in: query
+          description: Specific target id to which the news are related (works only
+            together with targetModel)
+          schema:
+            pattern: "[a-f0-9]{24}"
+            type: string
+        - name: unpublished
+          required: false
+          in: query
+          description: Flag that filters if the news should be published or not
+          schema:
+            type: boolean
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsListResponse"
+      tags:
+        - News
+      security:
+        - bearer: []
+  "/news/{id}":
+    get:
+      operationId: findOne
+      summary: ""
+      description: "* Retrieve a specific news entry by id.\r
+
+        \t * A user may only read news of scopes he has the read
+        permission.\r
+
+        \t * The news entity has school and user names populated."
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsResponse"
+      tags:
+        - News
+      security:
+        - bearer: []
+    patch:
+      operationId: update
+      summary: ""
+      description: "* Update properties of a news."
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNewsParams"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsResponse"
+      tags:
+        - News
+      security:
+        - bearer: []
+    delete:
+      operationId: delete
+      summary: ""
+      description: "* Delete a news."
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+      tags:
+        - News
+      security:
+        - bearer: []
+  "/team/{teamId}/news":
+    get:
+      operationId: findAllForTeam
+      summary: ""
+      description: "* Responds with news of a given team for a user."
+      parameters:
+        - name: teamId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: targetModel
+          required: false
+          in: query
+          description: Target model to which the news are related
+          schema:
+            $ref: "#/components/schemas/NewsTargetModel"
+        - name: targetId
+          required: false
+          in: query
+          description: Specific target id to which the news are related (works only
+            together with targetModel)
+          schema:
+            pattern: "[a-f0-9]{24}"
+            type: string
+        - name: unpublished
+          required: false
+          in: query
+          description: Flag that filters if the news should be published or not
+          schema:
+            type: boolean
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsListResponse"
+      tags:
+        - News
+      security:
+        - bearer: []
+  /user/import:
+    get:
+      operationId: findAll
+      parameters:
+        - name: firstName
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: lastName
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: loginName
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: match
+          required: false
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - auto
+                - admin
+                - none
+        - name: flagged
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: classes
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: role
+          required: false
+          in: query
+          schema:
+            enum:
+              - student
+              - teacher
+              - admin
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          required: false
+          in: query
+          schema:
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportUserListResponse"
+      tags:
+        - User
+      security:
+        - bearer: []
+  "/user/import/{id}/match":
+    patch:
+      operationId: setMatch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMatchParams"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportUserResponse"
+      tags:
+        - User
+      security:
+        - bearer: []
+    delete:
+      operationId: removeMatch
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportUserResponse"
+      tags:
+        - User
+      security:
+        - bearer: []
+  "/user/import/{id}/flag":
+    patch:
+      operationId: updateFlag
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFlagParams"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportUserResponse"
+      tags:
+        - User
+      security:
+        - bearer: []
+  /user/import/unassigned:
+    get:
+      operationId: findAllUnmatchedUsers
+      parameters:
+        - name: name
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListResponse"
+      tags:
+        - User
+      security:
+        - bearer: []
+  /dashboard:
+    get:
+      operationId: findForUser
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+      tags:
+        - Dashboard
+      security:
+        - bearer: []
+  "/dashboard/{id}/moveElement":
+    patch:
+      operationId: moveElement
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveElementParams"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+      tags:
+        - Dashboard
+      security:
+        - bearer: []
+  "/dashboard/{id}/element":
+    patch:
+      operationId: patchGroup
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: x
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: y
+          required: true
+          in: query
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchGroupParams"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+      tags:
+        - Dashboard
+      security:
+        - bearer: []
+  /courses:
+    get:
+      operationId: findForUser
+      parameters:
+        - name: skip
+          required: false
+          in: query
+          description: Number of elements (not pages) to be skipped
+          schema:
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Page limit, defaults to 10.
+          schema:
+            minimum: 1
+            maximum: 99
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseMetadataListResponse"
+      tags:
+        - Courses
+      security:
+        - bearer: []
+  "/rooms/{id}/board":
+    get:
+      operationId: getRoomBoard
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoardResponse"
+      tags:
+        - Rooms
+      security:
+        - bearer: []
+info:
+  title: HPI Schul-Cloud Server API
+  description: This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.
+  version: "3.0"
+  contact: {}
+tags: []
+servers:
+  - url: /api/v3/
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    ResolvedUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        id:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        roles:
+          type: array
+          items:
+            type: object
+        permissions:
+          type: array
+          items:
+            type: string
+        schoolId:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - id
+        - createdAt
+        - updatedAt
+        - roles
+        - permissions
+        - schoolId
+    TaskStatusResponse:
+      type: object
+      properties:
+        submitted:
+          type: number
+        maxSubmissions:
+          type: number
+        graded:
+          type: number
+        isDraft:
+          type: boolean
+        isSubstitutionTeacher:
+          type: boolean
+      required:
+        - submitted
+        - maxSubmissions
+        - graded
+        - isDraft
+        - isSubstitutionTeacher
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        availableDate:
+          format: date-time
+          type: string
+        duedate:
+          format: date-time
+          type: string
+        courseName:
+          type: string
+        description:
+          type: string
+        displayColor:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        status:
+          $ref: "#/components/schemas/TaskStatusResponse"
+      required:
+        - id
+        - name
+        - courseName
+        - createdAt
+        - updatedAt
+        - status
+    TaskListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskResponse"
+        total:
+          type: number
+        skip:
+          type: number
+        limit:
+          type: number
+      required:
+        - data
+        - total
+        - skip
+        - limit
+    NewsTargetModel:
+      type: string
+      enum:
+        - schools
+        - courses
+        - teams
+    CreateNewsParams:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the News entity
+        content:
+          type: string
+          description: Content of the News entity
+        displayAt:
+          format: date-time
+          type: string
+          description: The point in time from when the News entity schould be displayed.
+            Defaults to now so that the news is published
+        targetModel:
+          description: Target model to which the News entity is related
+          $ref: "#/components/schemas/NewsTargetModel"
+        targetId:
+          type: string
+          pattern: "[a-f0-9]{24}"
+          description: Specific target id to which the News entity is related
+      required:
+        - title
+        - content
+        - targetModel
+        - targetId
+    TargetInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "[a-f0-9]{24}"
+          description: The id of the Target entity
+        name:
+          type: string
+          description: The name of the Target entity
+      required:
+        - id
+        - name
+    SchoolInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "[a-f0-9]{24}"
+          description: The id of the School entity
+        name:
+          type: string
+          description: The name of the School entity
+      required:
+        - id
+        - name
+    UserInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "[a-f0-9]{24}"
+          description: The id of the User entity
+        firstName:
+          type: string
+          description: First name of the user
+        lastName:
+          type: string
+          description: Last name of the user
+      required:
+        - id
+    NewsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the News entity
+          pattern: "[a-f0-9]{24}"
+        title:
+          type: string
+          description: Title of the News entity
+        content:
+          type: string
+          description: Content of the News entity
+        displayAt:
+          format: date-time
+          type: string
+          description: The point in time from when the News entity schould be displayed
+        source:
+          type: string
+          enum:
+            - internal
+            - rss
+          description: The type of source of the News entity
+        sourceDescription:
+          type: string
+          description: The source description of the News entity
+        targetModel:
+          description: Target model to which the News entity is related
+          $ref: "#/components/schemas/NewsTargetModel"
+        targetId:
+          type: string
+          pattern: "[a-f0-9]{24}"
+          description: Specific target id to which the News entity is related
+        target:
+          description: The target object with id and name, could be the school, team, or
+            course name
+          allOf:
+            - $ref: "#/components/schemas/TargetInfoResponse"
+        school:
+          description: The School ownership
+          allOf:
+            - $ref: "#/components/schemas/SchoolInfoResponse"
+        creator:
+          description: Reference to the User that created the News entity
+          allOf:
+            - $ref: "#/components/schemas/UserInfoResponse"
+        updater:
+          description: Reference to the User that updated the News entity
+          allOf:
+            - $ref: "#/components/schemas/UserInfoResponse"
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation timestamp
+        updatedAt:
+          format: date-time
+          type: string
+          description: The update timestamp
+        permissions:
+          description: List of permissions the current user has for the News entity
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - title
+        - content
+        - displayAt
+        - targetModel
+        - targetId
+        - target
+        - school
+        - creator
+        - createdAt
+        - updatedAt
+        - permissions
+    NewsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsResponse"
+        total:
+          type: number
+        skip:
+          type: number
+        limit:
+          type: number
+      required:
+        - data
+        - total
+        - skip
+        - limit
+    UpdateNewsParams:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the News entity
+        content:
+          type: string
+          description: Content of the News entity
+        displayAt:
+          format: date-time
+          type: string
+          description: The point in time from when the News entity schould be displayed
+    Function:
+      type: object
+      properties: {}
+    ImportUserResponse:
+      type: object
+      properties:
+        importUserId:
+          type: string
+          pattern: "[a-f0-9]{24}"
+          description: id reference to a import user
+        loginName:
+          type: string
+          description: login name from external system
+        firstName:
+          type: string
+          description: external systems user firstname
+        lastName:
+          type: string
+          description: external systems user lastname
+        roleNames:
+          type: string
+          description: "list of user roles from external system: student, teacher, admin"
+          enum:
+            - student
+            - teacher
+            - admin
+        classNames:
+          description: names of classes the user attends from external system
+          type: array
+          items:
+            type: string
+        match:
+          description: assignemnt to a local user account
+          allOf:
+            - $ref: "#/components/schemas/Function"
+        flagged:
+          type: object
+          description: manual flag to apply it as filter
+      required:
+        - importUserId
+        - loginName
+        - firstName
+        - lastName
+        - roleNames
+        - classNames
+        - flagged
+    ImportUserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImportUserResponse"
+        total:
+          type: number
+        skip:
+          type: number
+        limit:
+          type: number
+      required:
+        - data
+        - total
+        - skip
+        - limit
+    UpdateMatchParams:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: updates local user reference for an import user
+      required:
+        - userId
+    UpdateFlagParams:
+      type: object
+      properties:
+        flagged:
+          type: boolean
+          description: updates flag for an import user
+      required:
+        - flagged
+    UserResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: local user id
+        loginName:
+          type: string
+          description: login name of local user
+        firstName:
+          type: string
+          description: firstname of local user
+        lastName:
+          type: string
+          description: lastname of local user
+        roleNames:
+          type: string
+          description: "list of user roles from external system: student, teacher, admin"
+          enum:
+            - student
+            - teacher
+            - admin
+        matchedBy:
+          type: string
+          description: "match type: admin (manual) or auto (set, when names match exactly
+            for a single user"
+          enum:
+            - auto
+            - admin
+      required:
+        - userId
+        - loginName
+        - firstName
+        - lastName
+        - roleNames
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResponse"
+        total:
+          type: number
+        skip:
+          type: number
+        limit:
+          type: number
+      required:
+        - data
+        - total
+        - skip
+        - limit
+    DashboardGridSubElementResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the Grid element
+          pattern: "[a-f0-9]{24}"
+        title:
+          type: string
+          description: Title of the Grid element
+        shortTitle:
+          type: string
+          description: Short title of the Grid element
+        displayColor:
+          type: string
+          description: Color of the Grid element
+      required:
+        - id
+        - title
+        - shortTitle
+        - displayColor
+    DashboardGridElementResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the Grid element
+          pattern: "[a-f0-9]{24}"
+        title:
+          type: string
+          description: Title of the Grid element
+        shortTitle:
+          type: string
+          description: Short title of the Grid element
+        displayColor:
+          type: string
+          description: Color of the Grid element
+        xPosition:
+          type: number
+          description: X position of the Grid element
+        yPosition:
+          type: number
+          description: Y position of the Grid element
+        groupId:
+          type: string
+          description: The id of the group element
+          pattern: "[a-f0-9]{24}"
+        groupElements:
+          description: List of all subelements in the group
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardGridSubElementResponse"
+      required:
+        - id
+        - title
+        - shortTitle
+        - displayColor
+        - xPosition
+        - yPosition
+        - groupId
+        - groupElements
+    DashboardResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the Dashboard entity
+          pattern: "[a-f0-9]{24}"
+        gridElements:
+          description: List of all elements visible on the dashboard
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardGridElementResponse"
+      required:
+        - id
+        - gridElements
+    MoveElementPosition:
+      type: object
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        groupIndex:
+          type: number
+          description: used to identify a position within a group.
+      required:
+        - x
+        - y
+    MoveElementParams:
+      type: object
+      properties:
+        from:
+          $ref: "#/components/schemas/MoveElementPosition"
+        to:
+          $ref: "#/components/schemas/MoveElementPosition"
+      required:
+        - from
+        - to
+    PatchGroupParams:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the Group grid element
+      required:
+        - title
+    CourseMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the Grid element
+          pattern: "[a-f0-9]{24}"
+        title:
+          type: string
+          description: Title of the Grid element
+        shortTitle:
+          type: string
+          description: Short title of the Grid element
+        displayColor:
+          type: string
+          description: Color of the Grid element
+        startDate:
+          format: date-time
+          type: string
+          description: Start date of the course
+        untilDate:
+          format: date-time
+          type: string
+          description: End date of the course. After this the course counts as archived
+      required:
+        - id
+        - title
+        - shortTitle
+        - displayColor
+        - startDate
+        - untilDate
+    CourseMetadataListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CourseMetadataResponse"
+        total:
+          type: number
+        skip:
+          type: number
+        limit:
+          type: number
+      required:
+        - data
+        - total
+        - skip
+        - limit
+    BoardTaskStatusResponse:
+      type: object
+      properties:
+        submitted:
+          type: number
+        maxSubmissions:
+          type: number
+        graded:
+          type: number
+        isDraft:
+          type: boolean
+        isSubstitutionTeacher:
+          type: boolean
+      required:
+        - submitted
+        - maxSubmissions
+        - graded
+        - isDraft
+        - isSubstitutionTeacher
+    BoardTaskResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        availableDate:
+          format: date-time
+          type: string
+        duedate:
+          format: date-time
+          type: string
+        courseName:
+          type: string
+        description:
+          type: string
+        displayColor:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        status:
+          $ref: "#/components/schemas/BoardTaskStatusResponse"
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+        - status
+    BoardElementResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'ElementType. Can be any of: "task", "lesson".'
+        content:
+          description: "Content of the Board, either: a task or a lesson specific for the
+            board"
+          allOf:
+            - $ref: "#/components/schemas/BoardTaskResponse"
+      required:
+        - type
+        - content
+    BoardResponse:
+      type: object
+      properties:
+        roomId:
+          type: string
+          description: The id of the room this board belongs to
+          pattern: "[a-f0-9]{24}"
+        title:
+          type: string
+          description: Title of the Board
+        displayColor:
+          type: string
+          description: Color of the Board
+        elements:
+          description: Array of board specific tasks or lessons with matching type property
+          type: array
+          items:
+            $ref: "#/components/schemas/BoardElementResponse"
+      required:
+        - roomId
+        - title
+        - displayColor
+        - elements

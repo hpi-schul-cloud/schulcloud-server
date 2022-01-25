@@ -1,4 +1,4 @@
-import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Reference, wrap } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Reference } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 
@@ -111,7 +111,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 
 	setMatch(user: User, matchedBy: MatchCreator) {
 		if (!user.school?.id && user.school !== this.school) {
-			throw new Error('no school or not same school');
+			throw new Error('no school or not same school'); // TODO
 		}
 		this._user = Reference.create(user);
 		this._matchedBy = matchedBy;
