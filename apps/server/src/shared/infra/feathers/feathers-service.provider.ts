@@ -21,7 +21,7 @@ export interface FeathersService {
 	 *
 	 * @deprecated
 	 */
-	post(params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
+	create(data?: FeathersServiceParams, params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

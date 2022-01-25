@@ -8,7 +8,7 @@ export class FeathersJwtProvider {
 
 	async generateJwt(userId: EntityId): Promise<unknown> {
 		const service = this.feathersServiceProvider.getService('accounts/supportJWT');
-		const jwt = (await service.post({ userId })) as unknown;
+		const jwt = (await service.create({ userId }, { account: { userId } })) as unknown;
 		if (jwt == null) throw new NotFoundException();
 		return jwt;
 	}
