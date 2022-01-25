@@ -39,6 +39,7 @@ const exposedVars = [
 	'SC_TITLE',
 	'SC_SHORT_TITLE',
 	'LEGACY_COURSE_OVERVIEW_ENABLED',
+	'FEATURE_COURSE_SHARE'
 ];
 
 /**
