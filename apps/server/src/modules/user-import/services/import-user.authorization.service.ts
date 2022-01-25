@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ImportUser, NewsTargetModel, User } from '@shared/domain';
+import { NewsTargetModel, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { UserImportPermissions } from '../constants';
 

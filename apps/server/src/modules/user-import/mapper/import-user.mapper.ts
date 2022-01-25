@@ -1,5 +1,5 @@
 import { StringValidator } from '@shared/common';
-import { ImportUser, IImportUserScope } from '@shared/domain';
+import { ImportUser, IImportUserScope, User } from '@shared/domain';
 import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
@@ -17,8 +17,9 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
-		if (importUser.user && importUser.matchedBy) {
-			dto.match = await UserMapper.mapToResponse(importUser.user, importUser.matchedBy);
+		if (importUser.hasUser() && importUser.matchedBy) {
+			const user = (await importUser.getUser()) as User;
+			dto.match = await UserMapper.mapToResponse(user, importUser.matchedBy);
 		}
 		return dto;
 	}

@@ -37,7 +37,7 @@ export class UserImportUc {
 	): Promise<Counted<ImportUser[]>> {
 		const user = await this.userRepo.findById(userId);
 
-		const permissions = [UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS];
+		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW];
 		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
 		const countedImportUsers = await this.importUserRepo.findImportUsers(user.school, query, options);
@@ -53,7 +53,7 @@ export class UserImportUc {
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userId: EntityId) {
 		const currentUser = await this.userRepo.findById(currentUserId);
-		const permissions = [UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS];
+		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const userMatch = await this.userRepo.findById(userId);
@@ -76,7 +76,7 @@ export class UserImportUc {
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
 		const currentUser = await this.userRepo.findById(currentUserId);
-		const permissions = [UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS];
+		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
@@ -94,7 +94,7 @@ export class UserImportUc {
 
 	async setFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
 		const currentUser = await this.userRepo.findById(currentUserId);
-		const permissions = [UserImportPermissions.UPDATE_SCHOOLS_IMPORT_USERS];
+		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
 		await this.authorizationService.checkUserHasSchoolPermissions(currentUser, permissions);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
@@ -122,7 +122,7 @@ export class UserImportUc {
 	async findAllUnmatchedUsers(userId: EntityId, query: INameMatch, options?: IFindOptions<User>): Promise<User[]> {
 		const user = await this.userRepo.findById(userId);
 
-		const permissions = [UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS];
+		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW];
 		await this.authorizationService.checkUserHasSchoolPermissions(user, permissions);
 
 		const unmatchedUsers = await this.userRepo.findWithoutImportUser(user.school, query, options);

@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import { Request } from 'express';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, ImportUser, User } from '@shared/domain';
 import { E2eTestApi } from '@shared/testing/e2e-test-api';
-import { ImportUserListResponse, UserListResponse } from '@src/modules/user-import/controller/dto';
+import { ImportUserListResponse } from '@src/modules/user-import/controller/dto';
+import { ImportUserAuthorizationService } from '@src/modules/user-import/services/import-user.authorization.service';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
@@ -17,6 +17,7 @@ describe('ImportUser Controller (e2e)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: E2eTestApi<ImportUserListResponse>;
+	const school = schoolFactory.build();
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,6 +31,12 @@ describe('ImportUser Controller (e2e)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(ImportUserAuthorizationService)
+			.useValue({
+				checkUserHasSchoolPermissions(user: User, permissions: UserImportPermissions[]): Promise<void> {
+					return Promise.resolve();
+				},
+			} as Pick<ImportUserAuthorizationService, 'checkUserHasSchoolPermissions'>)
 			.compile();
 
 		app = moduleFixture.createNestApplication();
@@ -46,15 +53,10 @@ describe('ImportUser Controller (e2e)', () => {
 		await app.close();
 	});
 
-	const authenticatedUser = async () => {
-		const school = schoolFactory.build();
+	const authenticatedUser = async (permissions: UserImportPermissions[]) => {
 		const roles = [
 			roleFactory.build({
-				permissions: [
-					UserImportPermissions.VIEW_SCHOOLS_IMPORT_USERS,
-					UserImportPermissions.STUDENT_LIST,
-					UserImportPermissions.TEACHER_LIST,
-				],
+				permissions,
 			}),
 		];
 		const user = userFactory.build({
@@ -65,17 +67,31 @@ describe('ImportUser Controller (e2e)', () => {
 		em.clear();
 		return user;
 	};
+	describe('[GET] /user/import', () => {
+		let importusers: ImportUser[];
+		beforeAll(async () => {
+			importusers = importUserFactory.buildList(10, { school });
+			await em.persistAndFlush(importusers);
+		});
 
-	it('[GET] user/import fails without permission', async () => {
-		currentUser = mapUserToCurrentUser(userFactory.build());
-		const response = await api.get();
-		expect(response.status === 401);
-	});
+		afterAll(async () => {
+			await em.removeAndFlush(importusers);
+		});
 
-	it('[GET] user/import', async () => {
-		const user = await authenticatedUser();
-		currentUser = mapUserToCurrentUser(user);
-		const response = await api.get();
-		expect(response.status === 200);
+		it('should fail without permission', async () => {
+			const user = userFactory.build();
+			currentUser = mapUserToCurrentUser(user);
+			const response = await api.get();
+			expect(response.status === 401);
+			expect(response.result.data).toBeUndefined();
+		});
+
+		// it('should succeed for users with permission VIEW_SCHOOLS_IMPORT_USERS', async () => {
+		// 	const user = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]);
+		// 	currentUser = mapUserToCurrentUser(user);
+		// 	const response = await api.get();
+		// 	expect(response.status === 200);
+		// 	expect(response.result.data).toHaveLength(10);
+		// });
 	});
 });

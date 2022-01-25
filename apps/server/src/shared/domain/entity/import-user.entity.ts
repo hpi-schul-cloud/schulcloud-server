@@ -36,7 +36,7 @@ export enum RoleName {
 
 @Entity({ tableName: 'importusers' })
 export class ImportUser extends BaseEntityWithTimestamps {
-	@ManyToOne(() => 'School', { fieldName: 'schoolId', eager: true })
+	@ManyToOne(() => 'School', { fieldName: 'schoolId', eager: true }) // TODO eager false, change to reference
 	school: IdentifiedReference<School>;
 
 	@ManyToOne(() => 'System', { lazy: true })
@@ -86,8 +86,17 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
 	_user?: IdentifiedReference<User>;
 
-	get user(): User | undefined {
-		return this._user;
+	async getUser(): Promise<User | undefined> {
+		if (this._user && !this._user?.isInitialized()) {
+			await this._user.load();
+		}
+		const user = this._user?.unwrap();
+		return user;
+	}
+
+	hasUser(): boolean {
+		const result = this._user == null;
+		return result;
 	}
 
 	/**
@@ -105,13 +114,15 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	flagged = false;
 
 	setMatch(user: User, matchedBy: MatchCreator) {
-		// todo check same school here
-		this._user = wrap(user).toReference();
+		if (!user.school?.id && user.school !== this.school) {
+			throw new Error('no school or not same school');
+		}
+		this._user = Reference.create(user);
 		this._matchedBy = matchedBy;
 	}
 
 	revokeMatch() {
-		delete this._user;
+		this._user = undefined;
 		delete this._matchedBy;
 	}
 
