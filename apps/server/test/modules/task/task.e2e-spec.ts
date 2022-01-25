@@ -6,7 +6,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
 
 import { ICurrentUser } from '@shared/domain';
-import { ServerModule } from '@src/server.module';
+import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
 import {
@@ -53,7 +53,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeAll(async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerTestModule],
 			}).compile();
 
 			app = moduleFixture.createNestApplication();
@@ -82,7 +82,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerTestModule],
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue({
@@ -352,7 +352,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerTestModule],
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue({

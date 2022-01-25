@@ -6,7 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import moment from 'moment';
 import { EntityId, News, NewsTargetModel } from '@shared/domain';
-import { ServerModule } from '@src/server.module';
+import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
@@ -39,7 +39,7 @@ describe('News Controller (e2e)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerModule],
+			imports: [ServerTestModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
