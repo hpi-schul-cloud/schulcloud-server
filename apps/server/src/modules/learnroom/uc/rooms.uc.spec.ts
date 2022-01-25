@@ -103,7 +103,7 @@ describe('rooms usecase', () => {
 
 		describe('when user in course is a teacher', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ teachers: [user] });
 
 				return { user, course };
@@ -121,15 +121,28 @@ describe('rooms usecase', () => {
 				mockRestore();
 			});
 
-			it('should not exclude drafts and show future tasks', async () => {
+			it('should not exclude drafts', async () => {
 				const { user, course } = setup();
-				// const threeWeeksinMilliseconds = 1.814e9;
-				const task = taskFactory.build({ course /* , availableDate: new Date(Date.now() + threeWeeksinMilliseconds) */ });
+				const task = taskFactory.build({ course, private: true });
 
 				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
 
-				await uc.getBoard(course.id, user.id);
-				expect(taskSpy).toHaveBeenCalledWith(course.id, {});
+				const result = await uc.getBoard(course.id, user.id);
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: true });
+				expect(result.elements[0].content.task.isDraft()).toBe(true);
+
+				mockRestore();
+			});
+
+			it('should show future tasks', async () => {
+				const { user, course } = setup();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				const { mockRestore } = setAllMocks(user, course, [task]);
+
+				const result = await uc.getBoard(course.id, user.id);
+				expect(result.elements).toHaveLength(1);
 
 				mockRestore();
 			});
@@ -149,28 +162,42 @@ describe('rooms usecase', () => {
 
 		describe('when user in course is a student', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ students: [user] });
 
 				return { user, course };
 			};
 
-			it('should exclude drafts and not show future tasks', async () => {
+			it('should exclude drafts', async () => {
 				const { user, course } = setup();
-				// const threeWeeksinMilliseconds = 1.814e9;
-				const task = taskFactory.build({ course /* , availableDate: new Date(Date.now() + threeWeeksinMilliseconds) */ });
+				const today = new Date(Date.now());
+				const task = taskFactory.build({ course, private: true });
 
 				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
 
-				await uc.getBoard(course.id, user.id);
-				expect(taskSpy).toHaveBeenCalledWith(course.id, { draft: false /* , noFutureAvailableDate: true */ });
+				const result = await uc.getBoard(course.id, user.id);
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, availableOn: today });
+				expect(result.elements).toHaveLength(0);
+
+				mockRestore();
+			});
+
+			it('should not show future tasks', async () => {
+				const { user, course } = setup();
+				const threeWeeksinMilliseconds = 1.814e9;
+				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				const { mockRestore } = setAllMocks(user, course, [task]);
+
+				const result = await uc.getBoard(course.id, user.id);
+				expect(result.elements).toHaveLength(0);
 
 				mockRestore();
 			});
 
 			it('should return board with tasks', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course /* , availableDate: new Date(Date.now()) */ });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore } = setAllMocks(user, course, [task]);
 
@@ -191,8 +218,7 @@ describe('rooms usecase', () => {
 
 			it('should return board with tasks', async () => {
 				const { user, course } = setup();
-				// const threeWeeksinMilliseconds = 1.814e9;
-				const task = taskFactory.build({ course /* , availableDate: new Date(Date.now() + threeWeeksinMilliseconds) */ });
+				const task = taskFactory.build({ course });
 
 				const { mockRestore } = setAllMocks(user, course, [task]);
 

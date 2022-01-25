@@ -30,19 +30,21 @@ export class RoomsUc {
 		const course = await this.courseRepo.findOne(roomId, userId);
 		const isTeacher = this.isTeacher(user, course);
 		const taskFilter = this.taskFilter(isTeacher);
-		const [tasks] = await this.taskRepo.findBySingleParent(course.id, taskFilter);
+		const [tasks] = await this.taskRepo.findBySingleParent(user.id, course.id, taskFilter);
 		const tasksWithStatusVos = this.addStatusToTasks(isTeacher, tasks, user);
 
 		const board = this.buildBoard(course, tasksWithStatusVos);
 		return board;
 	}
 
-	private taskFilter(isTeacher: boolean): { draft?: boolean /* ; noFutureAvailableDate?: boolean */ } {
-		const filters: { draft?: boolean /* ; noFutureAvailableDate?: boolean */ } = {};
+	private taskFilter(isTeacher: boolean): { draft?: boolean; availableOn?: Date } {
+		const filters: { draft?: boolean; availableOn?: Date } = {};
 		if (!isTeacher) {
 			filters.draft = false;
-			// filters.noFutureAvailableDate = true;
+			filters.availableOn = new Date(Date.now());
+			return filters;
 		}
+		filters.draft = true;
 		return filters;
 	}
 
