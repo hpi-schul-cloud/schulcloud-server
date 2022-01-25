@@ -1,6 +1,6 @@
 import { StringValidator } from '@shared/common';
 import { INameMatch, MatchCreator, User } from '@shared/domain';
-import { RoleNameResponse, UserResponse } from '../controller/dto';
+import { RoleNameResponse, UserMatchResponse } from '../controller/dto';
 import { UserFilterQuery } from '../controller/dto/user-filter.query';
 import { ImportUserMatchMapper } from './match.mapper';
 
@@ -17,7 +17,7 @@ export class UserMatchMapper {
 		return scope;
 	}
 
-	static mapToResponse(user: User, matchCreator?: MatchCreator): UserResponse {
+	static mapToResponse(user: User, matchCreator?: MatchCreator): UserMatchResponse {
 		const domainRoles = user.roles.getItems();
 		const domainRoleNames = domainRoles.map((role) => role.name);
 		const roleNames: RoleNameResponse[] = domainRoleNames
@@ -34,7 +34,7 @@ export class UserMatchMapper {
 				}
 			})
 			.filter((roleName) => roleName != null) as RoleNameResponse[];
-		const dto = new UserResponse({
+		const dto = new UserMatchResponse({
 			userId: user.id,
 			firstName: user.firstName,
 			lastName: user.lastName,

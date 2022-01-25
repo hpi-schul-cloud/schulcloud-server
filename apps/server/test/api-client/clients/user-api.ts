@@ -31,7 +31,7 @@ import { UpdateFlagParams } from '../models';
 // @ts-ignore
 import { UpdateMatchParams } from '../models';
 // @ts-ignore
-import { UserListResponse } from '../models';
+import { UserMatchListResponse } from '../models';
 /**
  * UserApi - axios parameter creator
  * @export
@@ -368,7 +368,7 @@ export const UserApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async findAllUnmatchedUsers(name?: string, skip?: number, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserListResponse>> {
+        async findAllUnmatchedUsers(name?: string, skip?: number, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserMatchListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.findAllUnmatchedUsers(name, skip, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -450,7 +450,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        findAllUnmatchedUsers(name?: string, skip?: number, limit?: number, options?: any): AxiosPromise<UserListResponse> {
+        findAllUnmatchedUsers(name?: string, skip?: number, limit?: number, options?: any): AxiosPromise<UserMatchListResponse> {
             return localVarFp.findAllUnmatchedUsers(name, skip, limit, options).then((request) => request(axios, basePath));
         },
         /**

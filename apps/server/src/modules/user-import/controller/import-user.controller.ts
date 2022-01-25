@@ -6,7 +6,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
 import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
 import { UpdateMatchParams } from './dto/update-match.params';
-import { UserListResponse } from './dto/user.response';
+import { UserMatchListResponse } from './dto/user-match.response';
 
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserFilterQuery } from './dto/user-filter.query';
@@ -76,14 +76,14 @@ export class ImportUserController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: UserFilterQuery,
 		@Query() paginationQuery: PaginationQuery
-	): Promise<UserListResponse> {
+	): Promise<UserMatchListResponse> {
 		const options: IFindOptions<User> = { pagination: paginationQuery };
 
 		const query = UserMatchMapper.mapToDomain(scope);
 		const userList = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
-		const response = new UserListResponse(dtoList, -1, skip, limit); // TODO total missing
-		return response as unknown as UserListResponse;
+		const response = new UserMatchListResponse(dtoList, -1, skip, limit); // TODO total missing
+		return response as unknown as UserMatchListResponse;
 	}
 }

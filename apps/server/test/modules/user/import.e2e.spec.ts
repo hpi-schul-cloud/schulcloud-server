@@ -8,6 +8,7 @@ import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, us
 import { UserImportPermissions } from '@src/modules/user-import/constants';
 import { ICurrentUser, ImportUser, NewsTargetModel } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { UserApi } from '../../api-client';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -35,7 +36,7 @@ describe('ImportUser Controller (e2e)', () => {
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [ServerModule],
+			imports: [ServerModule, MongoMemoryDatabaseModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -45,7 +46,7 @@ describe('ImportUser Controller (e2e)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(AuthorizationService)
+			.overrideProvider(AuthorizationService) // remove feathers dependencies
 			.useValue({
 				checkEntityPermissions(
 					userId: string,

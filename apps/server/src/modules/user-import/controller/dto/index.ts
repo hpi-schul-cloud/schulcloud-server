@@ -3,4 +3,4 @@ export * from './import-user.response';
 export * from './match-creator.response';
 export * from './role-name.response';
 export * from './update-match.params';
-export * from './user.response';
+export * from './user-match.response';

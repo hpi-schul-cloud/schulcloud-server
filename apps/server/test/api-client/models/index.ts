@@ -26,5 +26,5 @@ export * from './update-flag-params';
 export * from './update-match-params';
 export * from './update-news-params';
 export * from './user-info-response';
-export * from './user-list-response';
-export * from './user-response';
+export * from './user-match-list-response';
+export * from './user-match-response';

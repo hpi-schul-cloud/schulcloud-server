@@ -4,8 +4,8 @@ import { IsMongoId } from 'class-validator';
 import { MatchCreatorResponse } from './match-creator.response';
 import { RoleNameResponse } from './role-name.response';
 
-export class UserResponse {
-	constructor(props: UserResponse) {
+export class UserMatchResponse {
+	constructor(props: UserMatchResponse) {
 		this.userId = props.userId;
 		this.loginName = props.loginName;
 		this.firstName = props.firstName;
@@ -40,12 +40,12 @@ export class UserResponse {
 	matchedBy?: MatchCreatorResponse;
 }
 
-export class UserListResponse extends PaginationResponse<UserResponse[]> {
-	constructor(data: UserResponse[], total: number, skip?: number, limit?: number) {
+export class UserMatchListResponse extends PaginationResponse<UserMatchResponse[]> {
+	constructor(data: UserMatchResponse[], total: number, skip?: number, limit?: number) {
 		super(total, skip, limit);
 		this.data = data;
 	}
 
-	@ApiProperty({ type: [UserResponse] })
-	data: UserResponse[];
+	@ApiProperty({ type: [UserMatchResponse] })
+	data: UserMatchResponse[];
 }

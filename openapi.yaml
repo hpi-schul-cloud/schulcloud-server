@@ -477,7 +477,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserListResponse"
+                $ref: "#/components/schemas/UserMatchListResponse"
       tags:
         - User
       security:
@@ -988,7 +988,7 @@ components:
           description: updates flag for an import user
       required:
         - flagged
-    UserResponse:
+    UserMatchResponse:
       type: object
       properties:
         userId:
@@ -1023,13 +1023,13 @@ components:
         - firstName
         - lastName
         - roleNames
-    UserListResponse:
+    UserMatchListResponse:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/UserResponse"
+            $ref: "#/components/schemas/UserMatchResponse"
         total:
           type: number
         skip:

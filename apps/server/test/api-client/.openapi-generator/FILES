@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 api.ts
 base.ts
 clients/courses-api.ts
@@ -43,5 +42,5 @@ models/update-flag-params.ts
 models/update-match-params.ts
 models/update-news-params.ts
 models/user-info-response.ts
-models/user-list-response.ts
-models/user-response.ts
+models/user-match-list-response.ts
+models/user-match-response.ts

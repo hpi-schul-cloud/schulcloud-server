@@ -1,7 +1,7 @@
 import { MikroORM, Reference } from '@mikro-orm/core';
 import { MatchCreator, MatchCreatorScope, RoleName } from '@shared/domain';
 import { importUserFactory, setupEntities, userFactory } from '@shared/testing';
-import { ImportUserFilterQuery, MatchFilterQuery, RoleNameFilterQuery, UserResponse } from '../controller/dto';
+import { ImportUserFilterQuery, MatchFilterQuery, RoleNameFilterQuery, UserMatchResponse } from '../controller/dto';
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';
@@ -54,7 +54,7 @@ describe('[ImportUserMapper]', () => {
 			it('should map match', () => {
 				const user = userFactory.build();
 				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school: user.school });
-				const mockResponse = Object.create(UserResponse, {}) as UserResponse;
+				const mockResponse = Object.create(UserMatchResponse, {}) as UserMatchResponse;
 				const userMapperSpy = jest.spyOn(UserMatchMapper, 'mapToResponse').mockReturnValue(mockResponse);
 				const result = ImportUserMapper.mapToResponse(importUser);
 				expect(result.match).toEqual(mockResponse);
