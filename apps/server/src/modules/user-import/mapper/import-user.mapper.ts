@@ -19,7 +19,7 @@ export class ImportUserMapper {
 		});
 		if (importUser.hasUser() && importUser.matchedBy) {
 			const user = (await importUser.getUser()) as User;
-			dto.match = await UserMapper.mapToResponse(user, importUser.matchedBy);
+			dto.match = UserMapper.mapToResponse(user, importUser.matchedBy);
 		}
 		return dto;
 	}

@@ -38,27 +38,27 @@ describe('UserMapper', () => {
 		describe('When having a user provided only', () => {
 			it('should map role name student', async () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'student' })] });
-				const result = await UserMapper.mapToResponse(user);
+				const result = UserMapper.mapToResponse(user);
 				expect(result.roleNames).toContainEqual(RoleNameResponse.STUDENT);
 			});
 			it('should map role name admin', async () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'administrator' })] });
-				const result = await UserMapper.mapToResponse(user);
+				const result = UserMapper.mapToResponse(user);
 				expect(result.roleNames).toContainEqual(RoleNameResponse.ADMIN);
 			});
 			it('should map role name teacher', async () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'teacher' })] });
-				const result = await UserMapper.mapToResponse(user);
+				const result = UserMapper.mapToResponse(user);
 				expect(result.roleNames).toContainEqual(RoleNameResponse.TEACHER);
 			});
 			it('should not map other role names like superhero', async () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'superhero' })] });
-				const result = await UserMapper.mapToResponse(user);
+				const result = UserMapper.mapToResponse(user);
 				expect(result.roleNames.length).toEqual(0);
 			});
 			it('should not set matchedBy', async () => {
 				const user = userFactory.build();
-				const result = await UserMapper.mapToResponse(user);
+				const result = UserMapper.mapToResponse(user);
 				expect(result.matchedBy).toBeUndefined();
 			});
 		});
@@ -68,7 +68,7 @@ describe('UserMapper', () => {
 				const ImportUserMatchMapperSpy = jest
 					.spyOn(ImportUserMatchMapper, 'mapMatchCreatorToResponse')
 					.mockReturnValue('MAPPED_MATCH_VALUE' as MatchCreatorResponse);
-				const result = await UserMapper.mapToResponse(user, MatchCreator.AUTO);
+				const result = UserMapper.mapToResponse(user, MatchCreator.AUTO);
 				expect(result.matchedBy).toEqual('MAPPED_MATCH_VALUE');
 				expect(ImportUserMatchMapperSpy).toBeCalledTimes(1);
 				expect(ImportUserMatchMapperSpy).toBeCalledWith(MatchCreator.AUTO);

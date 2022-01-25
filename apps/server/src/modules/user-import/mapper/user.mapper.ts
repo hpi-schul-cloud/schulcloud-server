@@ -17,8 +17,9 @@ export class UserMapper {
 		return scope;
 	}
 
-	static async mapToResponse(user: User, matchCreator?: MatchCreator): Promise<UserResponse> {
-		const domainRoleNames = await user.getRoleNames();
+	static mapToResponse(user: User, matchCreator?: MatchCreator): UserResponse {
+		const domainRoleNames = user.roles.getItems().map((role) => role.name);
+
 		const roleNames: RoleNameResponse[] = domainRoleNames
 			.map((roleName) => {
 				switch (roleName) {

@@ -84,7 +84,7 @@ export class ImportUserController {
 		const query = UserMapper.mapToDomain(scope);
 		const userList = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
-		const dtoList = await Promise.all(userList.map(async (user) => UserMapper.mapToResponse(user)));
+		const dtoList = userList.map((user) => UserMapper.mapToResponse(user));
 		const response = new UserListResponse(dtoList, -1, skip, limit); // TODO total missing
 		return response as unknown as UserListResponse;
 	}

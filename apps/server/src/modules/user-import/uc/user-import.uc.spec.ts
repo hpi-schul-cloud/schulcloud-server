@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NewsTargetModel } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, UserRepo } from '@shared/repo';
 import { userFactory } from '@shared/testing';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { ImportUserAuthorizationService } from '../services/import-user.authorization.service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { UserImportUc } from './user-import.uc';
 
 describe('[ImportUserModule]', () => {
@@ -12,31 +12,35 @@ describe('[ImportUserModule]', () => {
 		let uc: UserImportUc;
 		let userRepo: UserRepo;
 		let importUserRepo: ImportUserRepo;
-		let authorizationService: ImportUserAuthorizationService;
+		let authorizationService: AuthorizationService;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
-				imports: [MongoMemoryDatabaseModule.forRoot(), AuthorizationModule],
+				imports: [MongoMemoryDatabaseModule.forRoot()],
 				providers: [
 					UserImportUc,
-					ImportUserAuthorizationService,
 					UserRepo,
 					ImportUserRepo,
-					// {
-					// 	provide: UserRepo,
-					// 	useValue: {
-					// 		findById(id: EntityId) {
-					// 			return Promise.resolve(userFactory.buildWithId());
-					// 		},
-					// 	} as Pick<UserRepo, 'findById' | 'findWithoutImportUser'>,
-					// },
+					{
+						provide: AuthorizationService,
+						useValue: {
+							checkEntityPermissions(
+								userId: string,
+								targetModel: NewsTargetModel,
+								targetId: string,
+								permissions: string[]
+							): Promise<void> {
+								throw new Error();
+							},
+						} as Pick<AuthorizationService, 'checkEntityPermissions'>,
+					},
 				],
 			}).compile();
 
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
 			userRepo = module.get(UserRepo);
 			importUserRepo = module.get(ImportUserRepo);
-			authorizationService = module.get(ImportUserAuthorizationService);
+			authorizationService = module.get(AuthorizationService);
 		});
 
 		afterAll(async () => {
@@ -51,25 +55,18 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('When list unassigned users from users school', () => {
-			it('Should request read permissions for student, teachers and import users of current user', async () => {
-				const user = userFactory.build();
-				// await userRepo.persistAndFlush(user);
-				// const userRepoSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-				// const authorizationSpy = jest
-				// 	.spyOn(authorizationService, 'checkUserHasSchoolPermissions')
-				// 	.mockResolvedValueOnce();
+			it('Should request authorization service', async () => {
+				const user = userFactory.buildWithId();
+				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+				const authorizationSpy = jest.spyOn(authorizationService, 'checkEntityPermissions').mockResolvedValueOnce();
+				const userRepoFindUnmatchedSpy = jest.spyOn(userRepo, 'findWithoutImportUser').mockResolvedValueOnce([]);
 				const query = {};
-				expect(userRepo).toBeDefined();
 				const result = await uc.findAllUnmatchedUsers(user.id, query);
-				// expect(userRepoSpy).toBeCalledWith('userId');
-				// expect(authorizationSpy).toBeCalledWith(user, [
-				// 	UserImportPermissions.VIEW_IMPORT_USER,
-				// 	UserImportPermissions.STUDENT_LIST,
-				// 	UserImportPermissions.TEACHER_LIST,
-				// ]);
+				expect(authorizationSpy).toBeCalled();
 				expect(result.length).toEqual(0);
-				// userRepoSpy.mockRestore();
-				// authorizationSpy.mockRestore();
+				userRepoByIdSpy.mockRestore();
+				authorizationSpy.mockRestore();
+				userRepoFindUnmatchedSpy.mockRestore();
 			});
 		});
 	});

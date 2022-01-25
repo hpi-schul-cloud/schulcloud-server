@@ -28,16 +28,6 @@ export class User extends BaseEntityWithTimestamps {
 	@ManyToMany('Role', undefined, { fieldName: 'roles' })
 	roles = new Collection<Role>(this);
 
-	/**
-	 * lazy load role names of the user
-	 * @returns
-	 */
-	async getRoleNames(): Promise<string[]> {
-		const roles = await this.roles.loadItems();
-		const roleNames = roles.map((role) => role.name);
-		return roleNames;
-	}
-
 	@Index({ name: 'searchUserForSchool' })
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
