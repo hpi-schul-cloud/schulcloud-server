@@ -4,7 +4,7 @@ import { RoleNameResponse, UserResponse } from '../controller/dto';
 import { UserFilterQuery } from '../controller/dto/user-filter.query';
 import { ImportUserMatchMapper } from './match.mapper';
 
-export class UserMapper {
+export class UserMatchMapper {
 	static mapToDomain(query: UserFilterQuery): INameMatch {
 		const scope: INameMatch = {};
 		if (query.name) {
@@ -18,8 +18,8 @@ export class UserMapper {
 	}
 
 	static mapToResponse(user: User, matchCreator?: MatchCreator): UserResponse {
-		const domainRoleNames = user.roles.getItems().map((role) => role.name);
-
+		const domainRoles = user.roles.getItems();
+		const domainRoleNames = domainRoles.map((role) => role.name);
 		const roleNames: RoleNameResponse[] = domainRoleNames
 			.map((roleName) => {
 				switch (roleName) {

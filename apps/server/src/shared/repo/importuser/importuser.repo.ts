@@ -59,7 +59,9 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 			orderBy: order as QueryOrderMap,
 		};
 		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, queryOptions);
-
+		const userMatches = importUserEntities.map((importUser) => importUser._user).filter((user) => user != null);
+		// load role names of referenced users
+		await this.em.populate(userMatches, 'roles');
 		return [importUserEntities, count];
 	}
 }

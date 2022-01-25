@@ -10,7 +10,7 @@ import { UserListResponse } from './dto/user.response';
 
 import { ImportUserMapper } from '../mapper/import-user.mapper';
 import { UserFilterQuery } from './dto/user-filter.query';
-import { UserMapper } from '../mapper/user.mapper';
+import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
 import { UpdateFlagParams } from './dto/update-flag.params';
 
@@ -34,9 +34,7 @@ export class ImportUserController {
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
-		const dtoList = await Promise.all(
-			importUserList.map(async (importUser) => ImportUserMapper.mapToResponse(importUser))
-		);
+		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
 		const response = new ImportUserListResponse(dtoList, count, skip, limit);
 		return response;
 	}
@@ -81,10 +79,10 @@ export class ImportUserController {
 	): Promise<UserListResponse> {
 		const options: IFindOptions<User> = { pagination: paginationQuery };
 
-		const query = UserMapper.mapToDomain(scope);
+		const query = UserMatchMapper.mapToDomain(scope);
 		const userList = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
-		const dtoList = userList.map((user) => UserMapper.mapToResponse(user));
+		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserListResponse(dtoList, -1, skip, limit); // TODO total missing
 		return response as unknown as UserListResponse;
 	}

@@ -5,7 +5,7 @@ import { ImportUserFilterQuery, MatchFilterQuery, RoleNameFilterQuery, UserRespo
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';
-import { UserMapper } from './user.mapper';
+import { UserMatchMapper } from './user-match.mapper';
 
 describe('[ImportUserMapper]', () => {
 	let orm: MikroORM;
@@ -19,7 +19,7 @@ describe('[ImportUserMapper]', () => {
 	});
 
 	describe('[mapToResponse] from domain', () => {
-		it('should map simple types', async () => {
+		it('should map simple types', () => {
 			const importUser = importUserFactory.buildWithId({
 				firstName: 'Eva',
 				lastName: 'Rakäthe',
@@ -28,7 +28,7 @@ describe('[ImportUserMapper]', () => {
 				ldapDn: 'uid=Eva_Rak123,foo=bar,...',
 				flagged: true,
 			});
-			const result = await ImportUserMapper.mapToResponse(importUser);
+			const result = ImportUserMapper.mapToResponse(importUser);
 			const expected = {
 				flagged: true,
 				importUserId: importUser.id,
@@ -40,23 +40,23 @@ describe('[ImportUserMapper]', () => {
 			};
 			expect(result).toEqual(expected);
 		});
-		it('should skip login name for optional ldapDn', async () => {
+		it('should skip login name for optional ldapDn', () => {
 			const importUser = importUserFactory.build({ ldapDn: undefined });
-			const result = await ImportUserMapper.mapToResponse(importUser);
+			const result = ImportUserMapper.mapToResponse(importUser);
 			expect(result.loginName).toEqual('');
 		});
-		it('should skip and not fail for login name for wrong format of ldapDn', async () => {
+		it('should skip and not fail for login name for wrong format of ldapDn', () => {
 			const importUser = importUserFactory.build({ ldapDn: 'wrong_format=foo,bar...' });
-			const result = await ImportUserMapper.mapToResponse(importUser);
+			const result = ImportUserMapper.mapToResponse(importUser);
 			expect(result.loginName).toEqual('');
 		});
 		describe('when user and matchedBy is defined', () => {
-			it('should map match', async () => {
+			it('should map match', () => {
 				const user = userFactory.build();
 				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build();
 				const mockResponse = Object.create(UserResponse, {}) as UserResponse;
-				const userMapperSpy = jest.spyOn(UserMapper, 'mapToResponse').mockResolvedValueOnce(mockResponse);
-				const result = await ImportUserMapper.mapToResponse(importUser);
+				const userMapperSpy = jest.spyOn(UserMatchMapper, 'mapToResponse').mockReturnValue(mockResponse);
+				const result = ImportUserMapper.mapToResponse(importUser);
 				expect(result.match).toEqual(mockResponse);
 				expect(userMapperSpy).toBeCalledWith(new Reference(user), MatchCreator.AUTO);
 				userMapperSpy.mockRestore();

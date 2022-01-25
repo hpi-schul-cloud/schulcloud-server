@@ -86,12 +86,8 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
 	_user?: IdentifiedReference<User>;
 
-	async getUser(): Promise<User | undefined> {
-		if (this._user && !this._user?.isInitialized()) {
-			await this._user.load();
-		}
-		const user = this._user?.unwrap();
-		return user;
+	getUser(): User | undefined {
+		return this._user;
 	}
 
 	hasUser(): boolean {

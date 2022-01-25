@@ -4,10 +4,10 @@ import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
 import { RoleNameMapper } from './role-name.mapper';
-import { UserMapper } from './user.mapper';
+import { UserMatchMapper } from './user-match.mapper';
 
 export class ImportUserMapper {
-	static async mapToResponse(importUser: ImportUser): Promise<ImportUserResponse> {
+	static mapToResponse(importUser: ImportUser): ImportUserResponse {
 		const dto = new ImportUserResponse({
 			importUserId: importUser.id,
 			loginName: importUser.loginName || '',
@@ -17,9 +17,9 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
-		if (importUser.hasUser() && importUser.matchedBy) {
-			const user = (await importUser.getUser()) as User;
-			dto.match = UserMapper.mapToResponse(user, importUser.matchedBy);
+		if (importUser.getUser() != null && importUser.matchedBy) {
+			const user = importUser.getUser() as User;
+			dto.match = UserMatchMapper.mapToResponse(user, importUser.matchedBy);
 		}
 		return dto;
 	}
