@@ -5,7 +5,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
 
 import { ICurrentUser } from '@shared/domain';
-import { ServerModule } from '@src/server.module';
+import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
 import {
@@ -20,6 +20,31 @@ import {
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
 import { E2eTestApi } from '@shared/testing/e2e-test-api';
 
+const tomorrow = new Date(Date.now() + 86400000);
+
+class API {
+	app: INestApplication;
+
+	routeName: string;
+
+	constructor(app: INestApplication, routeName: string) {
+		this.app = app;
+		this.routeName = routeName;
+	}
+
+	async get(query?: string | Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer())
+			.get(this.routeName)
+			.set('Accept', 'application/json')
+			.query(query || {});
+
+		return {
+			result: response.body as TaskListResponse,
+			status: response.status,
+		};
+	}
+}
+
 describe('Task Controller (e2e)', () => {
 	describe('without permissions', () => {
 		let app: INestApplication;
@@ -28,7 +53,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeAll(async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerTestModule],
 			}).compile();
 
 			app = moduleFixture.createNestApplication();
@@ -57,7 +82,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerTestModule],
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue({
@@ -226,10 +251,10 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(2);
 		});
 
-		it('[FIND] /tasks should also return private tasks', async () => {
+		it('[FIND] /tasks should also return private tasks created by the user', async () => {
 			const teacher = setup();
 			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft().build({ course });
+			const task = taskFactory.draft().build({ creator: teacher, course });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -239,6 +264,52 @@ describe('Task Controller (e2e)', () => {
 
 			expect(result.total).toEqual(1);
 			expect(result.data[0].status.isDraft).toEqual(true);
+		});
+
+		it('[FIND] /tasks should not return private tasks created by other users', async () => {
+			const teacher = setup();
+			const otherUser = userFactory.build();
+			const course = courseFactory.build({ teachers: [teacher, otherUser] });
+			const task = taskFactory.draft().build({ creator: otherUser, course });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
+		});
+
+		it('should return unavailable tasks created by the user', async () => {
+			const user = setup();
+			const course = courseFactory.build({
+				teachers: [user],
+			});
+			const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(1);
+		});
+
+		it('should not return unavailable tasks created by other users', async () => {
+			const teacher = setup();
+			const otherUser = userFactory.build();
+			const course = courseFactory.build({ teachers: [teacher, otherUser] });
+			const task = taskFactory.build({ creator: otherUser, course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
 		});
 
 		it('[FIND] /tasks should return nothing from courses when the user has only read permissions', async () => {
@@ -255,7 +326,7 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
-		it('should "not" return finished tasks', async () => {
+		it('should not return finished tasks', async () => {
 			const teacher = setup();
 			const course = courseFactory.build({
 				teachers: [teacher],
@@ -281,7 +352,7 @@ describe('Task Controller (e2e)', () => {
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerModule],
+				imports: [ServerTestModule],
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue({
@@ -457,7 +528,7 @@ describe('Task Controller (e2e)', () => {
 				teachers: [teacher],
 				students: [student],
 			});
-			const task = taskFactory.draft().build({ course });
+			const task = taskFactory.build({ course, private: true });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -473,8 +544,7 @@ describe('Task Controller (e2e)', () => {
 			const course = courseFactory.build({
 				students: [student],
 			});
-			const nextDay = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-			const task = taskFactory.draft().build({ course, availableDate: nextDay });
+			const task = taskFactory.build({ course, availableDate: tomorrow });
 
 			await em.persistAndFlush([task]);
 			em.clear();
@@ -518,7 +588,39 @@ describe('Task Controller (e2e)', () => {
 			expect(result.total).toEqual(0);
 		});
 
-		it('should "not" show task of finished courses', async () => {
+		it('should return unavailable tasks created by the user', async () => {
+			const user = setup();
+			const course = courseFactory.build({
+				students: [user],
+			});
+			const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(1);
+		});
+
+		it('should not return unavailable tasks', async () => {
+			const student = setup();
+			const course = courseFactory.build({
+				students: [student],
+			});
+			const task = taskFactory.build({ course, availableDate: tomorrow });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+			const { result } = await api.get();
+
+			expect(result.total).toEqual(0);
+		});
+
+		it('should not return task of finished courses', async () => {
 			const untilDate = new Date(Date.now() - 60 * 1000);
 			const student = setup();
 			const course = courseFactory.build({ untilDate, students: [student] });

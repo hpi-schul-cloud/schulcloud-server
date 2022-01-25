@@ -524,10 +524,10 @@ describe('TaskUC', () => {
 
 			expect(spy).toHaveBeenCalledTimes(1);
 			expect(spy.mock.calls[0][0]).toEqual({
+				creatorId: user.id,
 				courseIds: [course.id],
 				lessonIds: [lesson.id],
 			});
-			expect(spy.mock.calls[0][1]?.draft).toEqual(false);
 			expect(spy.mock.calls[0][1]?.finished).toEqual({ userId: user.id, value: false });
 			expect(spy.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
 			expect(spy.mock.calls[0][2]).toEqual({
@@ -732,7 +732,7 @@ describe('TaskUC', () => {
 			const notFinished = { userId: user.id, value: false };
 			const expectedParams = [
 				{ creatorId: user.id, courseIds: [course.id], lessonIds: [lesson.id] },
-				{ finished: notFinished },
+				{ finished: notFinished, availableOn: expect.any(Date) as Date },
 				{ order: { dueDate: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
 			];
 
