@@ -103,7 +103,7 @@ describe('rooms usecase', () => {
 
 		describe('when user in course is a teacher', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ teachers: [user] });
 
 				return { user, course };
@@ -111,9 +111,9 @@ describe('rooms usecase', () => {
 
 			it('should get course for roomId', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.finished(user).build({ course });
+				taskFactory.finished(user).build({ course });
 
-				const { mockRestore, courseSpy } = setAllMocks(user, course, [task]);
+				const { mockRestore, courseSpy } = setAllMocks(user, course, []);
 
 				await uc.getBoard(course.id, user.id);
 				expect(courseSpy).toHaveBeenCalledWith(course.id, user.id);
@@ -123,12 +123,25 @@ describe('rooms usecase', () => {
 
 			it('should not exclude drafts', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course });
+				taskFactory.build({ course, private: true });
 
-				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
+				const { mockRestore, taskSpy } = setAllMocks(user, course, []);
 
 				await uc.getBoard(course.id, user.id);
-				expect(taskSpy).toHaveBeenCalledWith(course.id, {});
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: true });
+
+				mockRestore();
+			});
+
+			it('should show future tasks', async () => {
+				const { user, course } = setup();
+				const threeWeeksinMilliseconds = 1.814e9;
+				taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				const { mockRestore, taskSpy } = setAllMocks(user, course, []);
+
+				await uc.getBoard(course.id, user.id);
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: true });
 
 				mockRestore();
 			});
@@ -146,9 +159,9 @@ describe('rooms usecase', () => {
 			});
 		});
 
-		describe('when user in course is a students', () => {
+		describe('when user in course is a student', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ students: [user] });
 
 				return { user, course };
@@ -156,12 +169,25 @@ describe('rooms usecase', () => {
 
 			it('should exclude drafts', async () => {
 				const { user, course } = setup();
-				const task = taskFactory.build({ course });
+				taskFactory.build({ course, private: true });
 
-				const { mockRestore, taskSpy } = setAllMocks(user, course, [task]);
+				const { mockRestore, taskSpy } = setAllMocks(user, course, []);
 
 				await uc.getBoard(course.id, user.id);
-				expect(taskSpy).toHaveBeenCalledWith(course.id, { draft: false });
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, noFutureAvailableDate: true });
+
+				mockRestore();
+			});
+
+			it('should not show future tasks', async () => {
+				const { user, course } = setup();
+				const threeWeeksinMilliseconds = 1.814e9;
+				taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
+
+				const { mockRestore, taskSpy } = setAllMocks(user, course, []);
+
+				await uc.getBoard(course.id, user.id);
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, noFutureAvailableDate: true });
 
 				mockRestore();
 			});
