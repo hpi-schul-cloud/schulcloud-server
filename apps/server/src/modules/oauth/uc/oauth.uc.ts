@@ -115,7 +115,7 @@ export class OauthUc {
 
 	// 4- JWT erzeugen (oder finden)
 	async getJWTForUser(user: User): Promise<string> {
-		const jwt = (await this.jwtService.generateJwt(user.id)) as string;
+		const jwt: string = await this.jwtService.generateJwt(user.id);
 		return jwt;
 		// console.log(SupportJWTService.create(user._id));
 	}
