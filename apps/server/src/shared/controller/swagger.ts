@@ -30,15 +30,14 @@ export const enableOpenApiDocs = async (app: INestApplication, path: string): Pr
 				path,
 			},
 			fileGeneratorOptions: {
-				enabled: true,
+				enabled: false,
 				outputFilePath: './openapi.yaml', // or ./openapi.json
 			},
 			clientGeneratorOptions: {
-				enabled: true,
+				enabled: false,
 				type: 'typescript-axios',
-				outputFolderPath: 'apps/server/test/api-client',
-				additionalProperties:
-					'apiPackage=clients,modelPackage=models,withoutPrefixEnums=true,withSeparateModelsAndApi=true',
+				outputFolderPath: 'apps/server/test/opanapi-client',
+				additionalProperties: 'apiPackage=clients,modelPackage=models,withSeparateModelsAndApi=false',
 				openApiFilePath: './openapi.yaml', // or ./openapi.json
 				skipValidation: true, // optional, false by default
 			},
