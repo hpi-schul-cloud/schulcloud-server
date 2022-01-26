@@ -1426,12 +1426,11 @@ describe('TaskRepo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build();
 			const threeWeeksinMilliseconds = 1.814e9;
-			const today = new Date(Date.now());
 			const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
 			await em.persistAndFlush([user, course, task]);
 
-			const [tasks] = await repo.findBySingleParent(user.id, course.id, { availableOn: today });
+			const [tasks] = await repo.findBySingleParent(user.id, course.id, { noFutureAvailableDate: true });
 
 			expect(tasks).toHaveLength(0);
 		});
@@ -1508,14 +1507,13 @@ describe('TaskRepo', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user] });
 				const threeWeeksinMilliseconds = 1.814e9;
-				const today = new Date(Date.now());
 				const task = taskFactory
 					.draft()
 					.build({ course, creator: user, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
 				await em.persistAndFlush([user, course, task]);
 
-				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: true, availableOn: today });
+				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: true, noFutureAvailableDate: true });
 
 				expect(tasks).toHaveLength(0);
 			});
@@ -1539,12 +1537,14 @@ describe('TaskRepo', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build();
 				const threeWeeksinMilliseconds = 1.814e9;
-				const today = new Date(Date.now());
 				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
 				await em.persistAndFlush([user, course, task]);
 
-				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: false, availableOn: today });
+				const [tasks] = await repo.findBySingleParent(user.id, course.id, {
+					draft: false,
+					noFutureAvailableDate: true,
+				});
 
 				expect(tasks).toHaveLength(0);
 			});

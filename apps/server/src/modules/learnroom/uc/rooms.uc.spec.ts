@@ -174,7 +174,7 @@ describe('rooms usecase', () => {
 				const { mockRestore, taskSpy } = setAllMocks(user, course, []);
 
 				await uc.getBoard(course.id, user.id);
-				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, availableOn: new Date(Date.now()) });
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, noFutureAvailableDate: true });
 
 				mockRestore();
 			});
@@ -187,7 +187,7 @@ describe('rooms usecase', () => {
 				const { mockRestore, taskSpy } = setAllMocks(user, course, []);
 
 				await uc.getBoard(course.id, user.id);
-				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, availableOn: new Date(Date.now()) });
+				expect(taskSpy).toHaveBeenCalledWith(user.id, course.id, { draft: false, noFutureAvailableDate: true });
 
 				mockRestore();
 			});
