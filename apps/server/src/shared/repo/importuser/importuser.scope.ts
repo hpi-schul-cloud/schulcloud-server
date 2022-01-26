@@ -22,7 +22,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 	byUserMatch(user: User): ImportUserScope {
 		const userId = user._id;
 		if (!ObjectId.isValid(userId)) throw new Error('invalid user match id');
-		this.addQuery({ _user: userId });
+		this.addQuery({ user: userId });
 		return this;
 	}
 

@@ -17,8 +17,8 @@ export class ImportUserMapper {
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
-		if (importUser.getUser() != null && importUser.matchedBy) {
-			const user = importUser.getUser() as User;
+		if (importUser.user != null && importUser.matchedBy) {
+			const { user } = importUser;
 			dto.match = UserMatchMapper.mapToResponse(user, importUser.matchedBy);
 		}
 		return dto;
