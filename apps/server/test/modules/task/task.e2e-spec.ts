@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
+import request from 'supertest';
 import { Request } from 'express';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
@@ -18,7 +19,6 @@ import {
 	mapUserToCurrentUser,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
-import { E2eTestApi } from '@shared/testing/e2e-test-api';
 
 const tomorrow = new Date(Date.now() + 86400000);
 
@@ -49,7 +49,7 @@ describe('Task Controller (e2e)', () => {
 	describe('without permissions', () => {
 		let app: INestApplication;
 		let orm: MikroORM;
-		let api: E2eTestApi<TaskListResponse>;
+		let api: API;
 
 		beforeAll(async () => {
 			const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -59,7 +59,7 @@ describe('Task Controller (e2e)', () => {
 			app = moduleFixture.createNestApplication();
 			await app.init();
 			orm = app.get(MikroORM);
-			api = new E2eTestApi<TaskListResponse>(app, '/tasks');
+			api = new API(app, '/tasks');
 		});
 
 		afterAll(async () => {
@@ -78,7 +78,7 @@ describe('Task Controller (e2e)', () => {
 		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
-		let api: E2eTestApi<TaskListResponse>;
+		let api: API;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -98,7 +98,7 @@ describe('Task Controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
-			api = new E2eTestApi<TaskListResponse>(app, '/tasks');
+			api = new API(app, '/tasks');
 		});
 
 		afterAll(async () => {
@@ -348,7 +348,7 @@ describe('Task Controller (e2e)', () => {
 		let orm: MikroORM;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
-		let api: E2eTestApi<TaskListResponse>;
+		let api: API;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -368,7 +368,7 @@ describe('Task Controller (e2e)', () => {
 			await app.init();
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
-			api = new E2eTestApi<TaskListResponse>(app, '/tasks');
+			api = new API(app, '/tasks');
 		});
 
 		afterAll(async () => {
