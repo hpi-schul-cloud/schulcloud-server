@@ -11,6 +11,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Payload } from '../controller/dto/payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
+import { OAuthResponse } from '../controller/dto/oauth.response';
 
 @Injectable()
 export class OauthUc {
@@ -25,7 +26,7 @@ export class OauthUc {
 	}
 
 	// 0- start Oauth Process
-	async startOauth(query: AuthorizationQuery, res: Response, systemId: string) {
+	async startOauth(query: AuthorizationQuery, res: Response, systemId: string): Promise<OAuthResponse> {
 		// get the authorization code
 		const code: string = this.extractCode(query);
 		// get the Tokens using the authorization token
@@ -35,16 +36,21 @@ export class OauthUc {
 		// get the user using the uuid
 		const user: User = await this.findUserById(uuid);
 		// create JWT for the user
-		const jwt = await this.getJWTForUser(user);
-		// TODO: redirect to Frontend
-		res.cookie('jwt', jwt);
+		const jwt: string = await this.getJWTForUser(user);
+		// send response back
 		const HOST = Configuration.get('HOST') as string;
-		return res.redirect(`${HOST}/dashboard`);
+		const redirectUri = HOST.concat('/dashboard');
+		const response: OAuthResponse = new OAuthResponse({
+			jwt,
+			redirectUri,
+		});
+		// res.cookie('jwt', jwt);
+		return response;
 	}
 
 	extractCode(query: AuthorizationQuery): string {
 		if (query.code) return query.code;
-		if (query.error) throw new Error(query.code);
+		if (query.error) throw new Error(query.error);
 		// TODO: fix the error message
 		throw new Error('Error while .........');
 	}
@@ -108,8 +114,8 @@ export class OauthUc {
 	// 3.1- User bestätigen?
 
 	// 4- JWT erzeugen (oder finden)
-	async getJWTForUser(user: User) {
-		const jwt = await this.jwtService.generateJwt(user.id);
+	async getJWTForUser(user: User): Promise<string> {
+		const jwt = (await this.jwtService.generateJwt(user.id)) as string;
 		return jwt;
 		// console.log(SupportJWTService.create(user._id));
 	}
