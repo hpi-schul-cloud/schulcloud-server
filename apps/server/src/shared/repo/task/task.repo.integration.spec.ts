@@ -1435,7 +1435,7 @@ describe('TaskRepo', () => {
 			expect(tasks).toHaveLength(0);
 		});
 
-		describe('when fetching only drafts', () => {
+		describe('when drafts are included', () => {
 			it('should return draft', async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build();
@@ -1448,7 +1448,7 @@ describe('TaskRepo', () => {
 				expect(tasks).toHaveLength(1);
 			});
 
-			it('should "not" find published task', async () => {
+			it('should also find published task', async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
@@ -1457,7 +1457,7 @@ describe('TaskRepo', () => {
 
 				const [tasks] = await repo.findBySingleParent(user.id, course.id, { draft: true });
 
-				expect(tasks).toHaveLength(0);
+				expect(tasks).toHaveLength(1);
 			});
 		});
 
@@ -1487,7 +1487,7 @@ describe('TaskRepo', () => {
 			});
 		});
 
-		describe('when fetching only future drafts', () => {
+		describe('when future drafts are present', () => {
 			it('should return future draft', async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user] });

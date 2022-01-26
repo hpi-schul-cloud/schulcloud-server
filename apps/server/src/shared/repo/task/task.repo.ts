@@ -157,7 +157,7 @@ export class TaskRepo {
 
 		if (filters?.draft !== undefined) {
 			if (filters?.draft === true) {
-				scope.byDraftForCreator(creatorId);
+				scope.excludeDraftsOfOthers(creatorId);
 			} else {
 				scope.byDraft(false);
 			}
