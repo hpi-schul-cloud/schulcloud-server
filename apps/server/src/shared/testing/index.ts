@@ -1,4 +1,4 @@
 export * from './factory';
 export * from './setup-entities';
 export * from './cleanup-collections';
-export * from './mapUserToCurrentUser';
+export * from './map-user-to-current-user';
