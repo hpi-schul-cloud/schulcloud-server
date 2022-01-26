@@ -56,12 +56,6 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byDraftForCreator(creatorId: EntityId): TaskScope {
-		this.addQuery(this.getByDraftForCreatorQuery(creatorId));
-
-		return this;
-	}
-
 	byAvailable(availableDate: Date): TaskScope {
 		this.addQuery({ availableDate: { $lte: availableDate } });
 
