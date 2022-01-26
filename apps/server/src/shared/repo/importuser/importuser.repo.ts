@@ -3,20 +3,14 @@ import { Injectable } from '@nestjs/common';
 
 import { BaseRepo } from '@shared/repo/base.repo';
 import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ImportUserScope } from './importuser.scope';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async findById(id: EntityId): Promise<ImportUser> {
+		if (!ObjectId.isValid(id)) throw new Error('invalid id');
 		const importUser = await this.em.findOneOrFail(ImportUser, { id });
-		return importUser;
-	}
-
-	async findOneByIdAndSchoolOrFail(id: EntityId, school: School): Promise<ImportUser> {
-		const scope = new ImportUserScope();
-		scope.byId(id);
-		scope.bySchool(school);
-		const importUser = await this.em.findOneOrFail(ImportUser, scope.query);
 		return importUser;
 	}
 

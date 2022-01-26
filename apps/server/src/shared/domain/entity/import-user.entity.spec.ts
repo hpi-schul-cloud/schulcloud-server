@@ -1,5 +1,5 @@
-import { MikroORM, wrap } from '@mikro-orm/core';
-import { importUserFactory, setupEntities, userFactory } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
+import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchCreator } from '.';
 
 describe('ImportUser entity', () => {
@@ -48,26 +48,12 @@ describe('ImportUser entity', () => {
 		});
 	});
 
-	describe('getters', () => {
-		it('get matchedBy should return property value _matchedBy', () => {
-			const user = userFactory.build();
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build();
-			expect(importUser.matchedBy).toEqual(importUser._matchedBy);
-			expect(importUser.matchedBy).toEqual(MatchCreator.AUTO);
-		});
-		it('get user should return property value _user', () => {
-			const user = userFactory.build();
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build();
-			expect(importUser.user).toEqual(importUser._user);
-			expect(importUser.user).toEqual(wrap(user).toReference());
-		});
-	});
-
-	describe('revokeMatch', () => {
-		it('should unset both, _user and _matchedBy', () => {
-			const user = userFactory.build();
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build();
-			expect(importUser.user).toEqual(wrap(user).toReference());
+	describe('match', () => {
+		it('should set and unset both, user and matchedBy', () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build({ school });
+			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
+			expect(importUser.user).toEqual(user);
 			expect(importUser.matchedBy).toEqual(MatchCreator.AUTO);
 			importUser.revokeMatch();
 			expect(importUser.user).toBeUndefined();

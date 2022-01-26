@@ -12,6 +12,13 @@ describe('ImportUserRepo', () => {
 	let repo: ImportUserRepo;
 	let em: EntityManager;
 
+	const persistedReferences = async () => {
+		const school = schoolFactory.build();
+		const user = userFactory.build({ school });
+		await em.persistAndFlush([school, user]);
+		return { user, school };
+	};
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
@@ -58,6 +65,26 @@ describe('ImportUserRepo', () => {
 			await em.removeAndFlush(importUser);
 
 			await expect(async () => repo.findById(id)).rejects.toThrowError(NotFoundError);
+		});
+		it('should fail for invalid id', async () => {
+			await expect(async () => repo.findById('foo')).rejects.toThrowError(Error);
+		});
+	});
+
+	describe('[hasMatch] find import-user by user', () => {
+		it('should return import-user if a match is assigned', async () => {
+			const { school, user } = await persistedReferences();
+			const importUser = importUserFactory.build({ user, matchedBy: MatchCreator.AUTO, school });
+			await em.persistAndFlush([importUser]);
+			const result = await repo.hasMatch(user);
+			expect(result).toBe(importUser);
+		});
+		it('should return null if no match is assigned', async () => {
+			const { user } = await persistedReferences();
+			const importUser = importUserFactory.build();
+			await em.persistAndFlush([importUser]);
+			const result = await repo.hasMatch(user);
+			expect(result).toBeNull();
 		});
 	});
 
@@ -511,18 +538,14 @@ describe('ImportUserRepo', () => {
 
 	describe('byMatches', () => {
 		it('should contain importusers with different and no match for no filter', async () => {
-			const school = schoolFactory.build();
-			const matchedImportUser = importUserFactory.build({
-				matchedBy: MatchCreator.MANUAL,
-				user: userFactory.build(),
+			const { user, school } = await persistedReferences();
+			const matchedImportUser = importUserFactory.matched(MatchCreator.MANUAL, user).build({
 				school,
 			});
-			const autoMatchedImportUser = importUserFactory.build({
-				matchedBy: MatchCreator.AUTO,
-				user: userFactory.build(),
+			const autoMatchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userFactory.build({ school })).build({
 				school,
 			});
-			const unmatchedImportUser = importUserFactory.build({ matchedBy: undefined, school });
+			const unmatchedImportUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, matchedImportUser, autoMatchedImportUser, unmatchedImportUser]);
 			const [results] = await repo.findImportUsers(school, {});
 			expect(results).toContain(matchedImportUser);
@@ -530,19 +553,15 @@ describe('ImportUserRepo', () => {
 			expect(results).toContain(unmatchedImportUser);
 		});
 		it('should contain importusers with manual match by admin only', async () => {
-			const school = schoolFactory.build();
-			const importUser = importUserFactory.build({
-				matchedBy: MatchCreator.MANUAL,
-				user: userFactory.build(),
+			const { user, school } = await persistedReferences();
+			const importUser = importUserFactory.matched(MatchCreator.MANUAL, user).build({
 				school,
 			});
 
-			const skippedImportUser = importUserFactory.build({
-				matchedBy: MatchCreator.AUTO,
-				user: userFactory.build(),
+			const skippedImportUser = importUserFactory.matched(MatchCreator.AUTO, userFactory.build({ school })).build({
 				school,
 			});
-			const otherSkippedImportUser = importUserFactory.build({ matchedBy: undefined, user: undefined, school });
+			const otherSkippedImportUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser, skippedImportUser, otherSkippedImportUser]);
 			const [results, count] = await repo.findImportUsers(school, { matches: [MatchCreatorScope.MANUAL] });
 			expect(results).toContain(importUser); // single match
@@ -552,11 +571,11 @@ describe('ImportUserRepo', () => {
 		});
 
 		it('should contain importusers with automatic match only', async () => {
-			const school = schoolFactory.build();
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, userFactory.build()).build({
+			const { user, school } = await persistedReferences();
+			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({
 				school,
 			});
-			const skippedImportUser = importUserFactory.matched(MatchCreator.MANUAL, userFactory.build()).build({
+			const skippedImportUser = importUserFactory.matched(MatchCreator.MANUAL, userFactory.build({ school })).build({
 				school,
 			});
 			const otherSkippedImportUser = importUserFactory.build({ school });
@@ -568,14 +587,14 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(1); // no other or no match not in response
 		});
 		it('should contain importusers with automatic and manual match', async () => {
-			const school = schoolFactory.build();
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, userFactory.build()).build({
+			const { user, school } = await persistedReferences();
+			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({
 				school,
 			});
-			const otherImportUser = importUserFactory.matched(MatchCreator.MANUAL, userFactory.build()).build({
+			const otherImportUser = importUserFactory.matched(MatchCreator.MANUAL, userFactory.build({ school })).build({
 				school,
 			});
-			const otherSkippedImportUser = importUserFactory.build({ matchedBy: undefined, school });
+			const otherSkippedImportUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser, otherImportUser, otherSkippedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, {
 				matches: [MatchCreatorScope.AUTO, MatchCreatorScope.MANUAL],
@@ -586,15 +605,15 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2); // no other or no match not in response
 		});
 		it('should contain importusers with no match only', async () => {
-			const school = schoolFactory.build();
+			const { user, school } = await persistedReferences();
 			const importUser = importUserFactory.build({
 				school,
 			});
-			const matchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userFactory.build()).build({
+			const matchedImportUser = importUserFactory.matched(MatchCreator.AUTO, user).build({
 				school,
 			});
 			const otherMatchedImportUser = importUserFactory
-				.matched(MatchCreator.MANUAL, userFactory.build())
+				.matched(MatchCreator.MANUAL, userFactory.build({ school }))
 				.build({ school });
 			await em.persistAndFlush([school, importUser, matchedImportUser, otherMatchedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, {
@@ -606,15 +625,15 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(1); // no other matched importuser in response
 		});
 		it('should contain importusers for none and with matches same time', async () => {
-			const school = schoolFactory.build();
+			const { user, school } = await persistedReferences();
 			const importUser = importUserFactory.build({
 				school,
 			});
-			const matchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userFactory.build()).build({
+			const matchedImportUser = importUserFactory.matched(MatchCreator.AUTO, user).build({
 				school,
 			});
 			const otherMatchedImportUser = importUserFactory
-				.matched(MatchCreator.MANUAL, userFactory.build())
+				.matched(MatchCreator.MANUAL, userFactory.build({ school }))
 				.build({ school });
 			await em.persistAndFlush([school, importUser, matchedImportUser, otherMatchedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, {
