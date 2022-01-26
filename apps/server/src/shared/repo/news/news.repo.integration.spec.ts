@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
 import { NewsTargetModel, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanUpCollections } from '@shared/testing';
+import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanupCollections } from '@shared/testing';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {
@@ -26,7 +26,7 @@ describe('NewsRepo', () => {
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 	});
 
 	describe('defined', () => {
