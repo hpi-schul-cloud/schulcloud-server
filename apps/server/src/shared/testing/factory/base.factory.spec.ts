@@ -66,13 +66,38 @@ describe('BaseFactory', () => {
 			expect(afterBuild).toHaveBeenCalledWith(user);
 		});
 
-		it('should delegate transient params', () => {
+		it('should delegate transient params as a trait', () => {
 			const factory = BaseFactory.define<User, IUserProperties, UserTransientParams>(User, ({ transientParams }) => {
 				const { registered, numTasks } = transientParams;
 				return { email: `joe-${registered ? 'r' : 'u'}-${numTasks || '0'}@example.com`, roles: ['member'] };
 			});
 			const user = factory.transient({ registered: true, numTasks: 10 }).build();
 			expect(user.email).toEqual('joe-r-10@example.com');
+		});
+
+		it('should delegate transientParams as a build option', () => {
+			const factory = BaseFactory.define<User, IUserProperties, UserTransientParams>(User, ({ transientParams }) => {
+				const { registered, numTasks } = transientParams;
+				return { email: `joe-${registered ? 'r' : 'u'}-${numTasks || '0'}@example.com`, roles: ['member'] };
+			});
+			const user = factory.build({}, { transient: { registered: true, numTasks: 10 } });
+			expect(user.email).toEqual('joe-r-10@example.com');
+		});
+
+		it('should delegate associations as a trait', () => {
+			const factory = BaseFactory.define<User, IUserProperties>(User, ({ associations }) => {
+				return { email: 'joe@example.com', roles: associations.roles || ['member'] };
+			});
+			const user = factory.associations({ roles: ['admin'] }).build();
+			expect(user.roles).toEqual(['admin']);
+		});
+
+		it('should delegate associations as build option', () => {
+			const factory = BaseFactory.define<User, IUserProperties, UserTransientParams>(User, ({ associations }) => {
+				return { email: 'joe@example.com', roles: associations.roles || ['member'] };
+			});
+			const user = factory.build({}, { associations: { roles: ['admin'] } });
+			expect(user.roles).toEqual(['admin']);
 		});
 	});
 

@@ -92,6 +92,18 @@ export class BaseFactory<T, U, I = any, C = U> {
 	}
 
 	/**
+	 * Extend the factory by adding default associations to be passed to the factory when "build" is called
+	 * @param associations
+	 * @returns a new factory
+	 */
+	associations(associations: Partial<U>): this {
+		const newPropsFactory = this.propsFactory.associations(associations);
+		const newFactory = this.clone(newPropsFactory);
+
+		return newFactory;
+	}
+
+	/**
 	 * Extend the factory by adding default parameters to be passed to the factory when "build" is called
 	 * @param params
 	 * @returns a new factory
