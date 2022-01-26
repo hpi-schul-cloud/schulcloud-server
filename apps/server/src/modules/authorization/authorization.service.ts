@@ -34,7 +34,7 @@ export class AuthorizationService {
 		targetModel: NewsTargetModel,
 		targetId: EntityId,
 		permissions: string[]
-	): Promise<void> | never {
+	): Promise<void> {
 		if (!Array.isArray(permissions) || permissions.length === 0)
 			throw new UnauthorizedException('missing at least one permission to be checked');
 		const entityPermissions = await this.getEntityPermissions(userId, targetModel, targetId);
