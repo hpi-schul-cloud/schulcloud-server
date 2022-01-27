@@ -208,6 +208,7 @@ describe('ImportUser Controller (e2e)', () => {
 				describe('when use pagination', () => {
 					it.todo('should skip importUsers');
 					it.todo('should limit importUsers');
+					it.todo('should have total higher than current page');
 				});
 
 				describe('when apply filters', () => {
@@ -250,8 +251,20 @@ describe('ImportUser Controller (e2e)', () => {
 
 			describe('[findAllUnmatchedUsers]', () => {
 				describe('[GET] user/import/unassigned', () => {
-					it.todo('should respond with unassigned users of own school');
+					it.todo('should respond with users of own school');
+					it.todo('should not respond with assigned users');
 					it.todo('should respond userMatch with all properties');
+
+					describe('when use pagination', () => {
+						it.todo('should skip users');
+						it.todo('should limit users');
+						it.todo('should have total higher than current page');
+					});
+
+					describe('when apply filters', () => {
+						it.todo('should match name in firstname');
+						it.todo('should match name in lastname');
+					});
 				});
 			});
 		});
