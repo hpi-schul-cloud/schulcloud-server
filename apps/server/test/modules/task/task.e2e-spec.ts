@@ -200,6 +200,7 @@ describe('Task Controller (e2e)', () => {
 				maxSubmissions: course.getNumberOfStudents(),
 				graded: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 		});
@@ -470,6 +471,7 @@ describe('Task Controller (e2e)', () => {
 				maxSubmissions: 1,
 				graded: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 		});

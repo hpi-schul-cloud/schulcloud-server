@@ -42,6 +42,7 @@ describe('board mapper', () => {
 				maxSubmissions: 0,
 				submitted: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			};
 			const board = {
