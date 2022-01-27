@@ -14,7 +14,7 @@ import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
 import { UpdateFlagParams } from './dto/update-flag.params';
 
-@ApiTags('User')
+@ApiTags('UserImport')
 @Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
