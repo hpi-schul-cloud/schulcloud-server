@@ -15,7 +15,6 @@ import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { NODE_ENV } from './config';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -37,10 +36,7 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors();
-	if (NODE_ENV !== 'production') {
-		// TODO NODE_ENV not working yet
-		await enableOpenApiDocs(nestApp, 'docs');
-	}
+	await enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
 

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
+import { request } from 'supertest';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -9,14 +10,12 @@ import { UserImportPermissions } from '@src/modules/user-import/constants';
 import { ICurrentUser, ImportUser, NewsTargetModel } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { UserApi } from '../../api-client';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
-	let api: UserApi;
 	const school = schoolFactory.build();
 
 	const authenticatedUser = async (permissions: UserImportPermissions[]) => {
@@ -70,7 +69,6 @@ describe('ImportUser Controller (e2e)', () => {
 		await app.listen(1234); // TODO dynamic
 		const url = await app.getUrl();
 		expect(url).toEqual('http://[::1]:1234');
-		api = new UserApi(undefined, url); // TODO
 	});
 
 	afterAll(async () => {
@@ -92,7 +90,7 @@ describe('ImportUser Controller (e2e)', () => {
 		it('should fail without permission', async () => {
 			const user = await authenticatedUser([]);
 			currentUser = mapUserToCurrentUser(user);
-			const response = await api.findAll();
+			const response = request;
 			expect(response.status).toEqual(401);
 			expect(response.data).toBeUndefined();
 		});
