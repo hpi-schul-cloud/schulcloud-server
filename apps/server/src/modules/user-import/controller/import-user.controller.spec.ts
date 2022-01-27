@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PermissionService } from '@shared/domain';
 import { ImportUserRepo, UserRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
 
@@ -12,7 +12,7 @@ describe('ImportUserController', () => {
 			providers: [
 				UserImportUc,
 				{
-					provide: AuthorizationService,
+					provide: PermissionService,
 					useValue: {},
 				},
 				{
