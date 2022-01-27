@@ -44,18 +44,17 @@ export class PermissionService {
 		return permissions;
 	}
 
-	async hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): Promise<boolean> {
+	hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
-		await user.roles.loadItems();
 		const usersPermissions = this.resolvePermissions(user);
 		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 		return hasPermissions;
 	}
 
-	async checkUserHasAllSchoolPermissions(user: User, requiredPermissions: string[]): Promise<void> {
-		const hasPermission = await this.hasUserAllSchoolPermissions(user, requiredPermissions);
+	checkUserHasAllSchoolPermissions(user: User, requiredPermissions: string[]): void {
+		const hasPermission = this.hasUserAllSchoolPermissions(user, requiredPermissions);
 		if (hasPermission !== true) {
 			throw new UnauthorizedException();
 		}

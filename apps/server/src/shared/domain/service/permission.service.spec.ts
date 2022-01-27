@@ -141,7 +141,7 @@ describe('resolvePermissions', () => {
 		describe('[checkUserHasAllSchoolPermissions]', () => {
 			it('should throw when hasUserAllSchoolPermissions is false', async () => {
 				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockResolvedValueOnce(false);
+				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(false);
 				await expect(async () => service.checkUserHasAllSchoolPermissions(user, ['permission1'])).rejects.toThrowError(
 					UnauthorizedException
 				);
@@ -149,7 +149,7 @@ describe('resolvePermissions', () => {
 			});
 			it('should not throw when hasUserAllSchoolPermissions is true', async () => {
 				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockResolvedValueOnce(true);
+				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(true);
 				await service.checkUserHasAllSchoolPermissions(user, ['permission1']);
 				spy.mockRestore();
 			});

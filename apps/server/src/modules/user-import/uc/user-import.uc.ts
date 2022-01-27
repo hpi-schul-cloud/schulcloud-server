@@ -9,11 +9,10 @@ import {
 	MatchCreator,
 	INameMatch,
 	User,
-	NewsTargetModel,
+	PermissionService,
 } from '@shared/domain';
 
 import { ImportUserRepo, UserRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { UserImportPermissions } from '../constants';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class UserImportUc {
 	constructor(
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly userRepo: UserRepo,
-		private readonly authorizationService: AuthorizationService
+		private readonly permissionService: PermissionService
 	) {}
 
 	/**
@@ -36,17 +35,12 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		const user = await this.userRepo.findById(userId, true);
+		const currentUser = await this.userRepo.findById(userId, true);
 
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW];
-		await this.authorizationService.checkEntityPermissions(
-			user.id,
-			NewsTargetModel.School,
-			user.school.id,
-			permissions
-		);
+		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
 
-		const countedImportUsers = await this.importUserRepo.findImportUsers(user.school, query, options);
+		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
 	}
 
@@ -58,14 +52,10 @@ export class UserImportUc {
 	 * @returns importuser and matched user
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
-		const currentUser = await this.userRepo.findById(currentUserId);
+		const currentUser = await this.userRepo.findById(currentUserId, true);
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
-		await this.authorizationService.checkEntityPermissions(
-			currentUser.id,
-			NewsTargetModel.School,
-			currentUser.school.id,
-			permissions
-		);
+		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
+
 		const userMatch = await this.userRepo.findById(userMatchId);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
@@ -89,16 +79,11 @@ export class UserImportUc {
 	}
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
-		const currentUser = await this.userRepo.findById(currentUserId);
+		const currentUser = await this.userRepo.findById(currentUserId, true);
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
-		await this.authorizationService.checkEntityPermissions(
-			currentUser.id,
-			NewsTargetModel.School,
-			currentUser.school.id,
-			permissions
-		);
-		const importUser = await this.importUserRepo.findById(importUserId);
+		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
 
+		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (currentUser.school.id !== importUser.school.id) {
 			throw new ForbiddenException('not same school');
@@ -111,14 +96,10 @@ export class UserImportUc {
 	}
 
 	async setFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
-		const currentUser = await this.userRepo.findById(currentUserId);
+		const currentUser = await this.userRepo.findById(currentUserId, true);
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
-		await this.authorizationService.checkEntityPermissions(
-			currentUser.id,
-			NewsTargetModel.School,
-			currentUser.school.id,
-			permissions
-		);
+		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
+
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
@@ -146,15 +127,11 @@ export class UserImportUc {
 		query: INameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
-		const currentUser = await this.userRepo.findById(currentUserId);
+		const currentUser = await this.userRepo.findById(currentUserId, true);
 
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW];
-		await this.authorizationService.checkEntityPermissions(
-			currentUser.id,
-			NewsTargetModel.School,
-			currentUser.school.id,
-			permissions
-		);
+		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
+
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
