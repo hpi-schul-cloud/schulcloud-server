@@ -95,7 +95,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async setFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
+	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
 		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);

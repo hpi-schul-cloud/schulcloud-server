@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Request } from 'express';
-import { request } from 'supertest';
+import request from 'supertest';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { ServerModule } from '@src/server.module';
+import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser, NewsTargetModel } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ICurrentUser, ImportUser } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ImportUserListResponse, UpdateMatchParams } from '@src/modules/user-import/controller/dto';
+import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
@@ -19,11 +20,7 @@ describe('ImportUser Controller (e2e)', () => {
 	const school = schoolFactory.build();
 
 	const authenticatedUser = async (permissions: UserImportPermissions[]) => {
-		const roles = [
-			roleFactory.build({
-				permissions,
-			}),
-		];
+		const roles = [roleFactory.build({ name: 'administrator', permissions })];
 		const user = userFactory.build({
 			school,
 			roles,
@@ -35,7 +32,7 @@ describe('ImportUser Controller (e2e)', () => {
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [ServerModule, MongoMemoryDatabaseModule],
+			imports: [ServerTestModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -45,17 +42,7 @@ describe('ImportUser Controller (e2e)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(AuthorizationService) // remove feathers dependencies
-			.useValue({
-				checkEntityPermissions(
-					userId: string,
-					targetModel: NewsTargetModel,
-					targetId: string,
-					permissions: string[]
-				): Promise<void> {
-					throw new UnauthorizedException();
-				},
-			} as Pick<AuthorizationService, 'checkEntityPermissions'>)
+
 			.compile();
 
 		app = moduleFixture.createNestApplication();
@@ -63,12 +50,6 @@ describe('ImportUser Controller (e2e)', () => {
 
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
-
-		const user = await authenticatedUser([]);
-		currentUser = mapUserToCurrentUser(user);
-		await app.listen(1234); // TODO dynamic
-		const url = await app.getUrl();
-		expect(url).toEqual('http://[::1]:1234');
 	});
 
 	afterAll(async () => {
@@ -87,20 +68,192 @@ describe('ImportUser Controller (e2e)', () => {
 			await em.removeAndFlush(importusers);
 		});
 
-		it('should fail without permission', async () => {
-			const user = await authenticatedUser([]);
-			currentUser = mapUserToCurrentUser(user);
-			const response = request;
-			expect(response.status).toEqual(401);
-			expect(response.data).toBeUndefined();
+		describe('Generic Errors', () => {
+			beforeEach(async () => {
+				const user = await authenticatedUser([]);
+				currentUser = mapUserToCurrentUser(user);
+			});
+			describe('When authorization is missing', () => {
+				it('GET /user/import is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					await request(app.getHttpServer()).get('/user/import').expect(401);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+			});
+
+			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW', () => {
+				beforeEach(async () => {
+					const user = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]);
+					currentUser = mapUserToCurrentUser(user);
+				});
+				it('GET /user/import responds with importusers', async () => {
+					const usermatch = userFactory.build({ school });
+					const importuser = importUserFactory.build({ school });
+					await em.persistAndFlush([usermatch, importuser]);
+					await request(app.getHttpServer()).get('/user/import').expect(200);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+			});
+			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
+				beforeEach(async () => {
+					const user = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
+					currentUser = mapUserToCurrentUser(user);
+				});
+				it('GET /user/import responds with importusers', async () => {
+					const usermatch = userFactory.build({ school });
+					const importuser = importUserFactory.build({ school });
+					await em.persistAndFlush([usermatch, importuser]);
+					const response = await request(app.getHttpServer()).get('/user/import').expect(200);
+					expect(response.body).toMatchObject(ImportUserListResponse);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const user = await authenticatedUser([]);
+					currentUser = mapUserToCurrentUser(user);
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+			});
 		});
 
-		it('should succeed for users with permission VIEW_SCHOOLS_IMPORT_USERS', async () => {
-			const user = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]);
-			currentUser = mapUserToCurrentUser(user);
-			const response = await api.findAll();
-			expect(response.status).toEqual(418);
-			expect(response.data).toHaveLength(10);
+		describe('Business Errors', () => {
+			describe('[setMatch]', () => {
+				describe('When set a match on import user', () => {
+					it('should fail for different school of match- and import-user');
+					it('should fail for different school of current- and import-user');
+				});
+
+				describe('When set a match with a user twice', () => {
+					it('should fail', () => {
+						// expect().toThrowError(UserAlreadyAssignedToImportUserError)
+					});
+				});
+			});
+			describe('[removeMatch]', () => {
+				describe('When remove a match on import user', () => {
+					it('should fail for different school of current- and import-user');
+				});
+			});
+			describe('[updateFlag]', () => {
+				describe('When remove a match on import user', () => {
+					it('should fail for different school of current- and import-user');
+				});
+			});
+		});
+
+		describe('Acceptance Criteria', () => {
+			describe('[findAllImportUsers]', () => {
+				it.todo('should return importUsers of current school');
+				it.todo('should return importUsers as ImportUsersListResponse');
+				it.todo('should return importUsers with all properties');
+
+				describe('when use sorting', () => {
+					it.todo('should sort by firstname asc');
+					it.todo('should sort by firstname desc');
+					it.todo('should sort by lastname asc');
+					it.todo('should sort by lastname desc');
+				});
+				describe('when use pagination', () => {
+					it.todo('should skip importUsers');
+					it.todo('should limit importUsers');
+				});
+
+				describe('when apply filters', () => {
+					it.todo('should filter by firstname');
+					it.todo('should filter by lastname');
+					it.todo('should filter by username');
+					it.todo('should filter by one role of student, teacher, or admin');
+					it.todo('should filter by class');
+					it.todo('should filter by match type none');
+					it.todo('should filter by match type admin');
+					it.todo('should filter by match type auto');
+					it.todo('should filter by multiple match types');
+					it.todo('should filter by flag enabled');
+				});
+			});
+
+			describe('[setMatch]', () => {
+				describe('[PATCH] user/import/:id/match', () => {
+					it.todo('should set a match');
+					it.todo('should update an existing match');
+					it.todo('should respond importUser with all properties');
+					it.todo('should respond importUser with MANUAL match type');
+				});
+			});
+
+			describe('[removeMatch]', () => {
+				describe('[DELETE] user/import/:id/match', () => {
+					it.todo('should remove a match');
+					it.todo('should not fail when importuser is not having a match');
+					it.todo('should respond importUser with all properties');
+				});
+			});
+			describe('[updateFlag]', () => {
+				describe('[PATCH] user/import/:id/flag', () => {
+					it.todo('should add a flag');
+					it.todo('should remove a flag');
+					it.todo('should respond importUser with all properties');
+				});
+			});
+
+			describe('[findAllUnmatchedUsers]', () => {
+				describe('[GET] user/import/unassigned', () => {
+					it.todo('should respond with unassigned users of own school');
+					it.todo('should respond userMatch with all properties');
+				});
+			});
 		});
 	});
 });

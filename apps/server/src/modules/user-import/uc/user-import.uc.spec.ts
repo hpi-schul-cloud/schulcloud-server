@@ -223,7 +223,9 @@ describe('[ImportUserModule]', () => {
 							.spyOn(importUserRepo, 'persistAndFlush')
 							.mockResolvedValueOnce(importUser);
 
-						await expect(async () => uc.setFlag(user.id, importUser.id, true)).rejects.toThrowError(ForbiddenException);
+						await expect(async () => uc.updateFlag(user.id, importUser.id, true)).rejects.toThrowError(
+							ForbiddenException
+						);
 						expect(importUser.flagged).not.toEqual(true);
 						userRepoByIdSpy.mockRestore();
 						permissionServiceSpy.mockRestore();
@@ -245,7 +247,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(importUserRepo, 'persistAndFlush')
 							.mockResolvedValueOnce(importUser);
 
-						const result = await uc.setFlag(user.id, importUser.id, true);
+						const result = await uc.updateFlag(user.id, importUser.id, true);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
 						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
@@ -270,7 +272,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(importUserRepo, 'persistAndFlush')
 							.mockResolvedValueOnce(importUser);
 
-						const result = await uc.setFlag(user.id, importUser.id, false);
+						const result = await uc.updateFlag(user.id, importUser.id, false);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
 						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);

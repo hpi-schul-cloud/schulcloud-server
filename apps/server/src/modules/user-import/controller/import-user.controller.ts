@@ -21,7 +21,7 @@ export class ImportUserController {
 	constructor(private readonly userImportUc: UserImportUc, private readonly userUc: UserImportUc) {}
 
 	@Get()
-	async findAll(
+	async findAllImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: ImportUserFilterQuery,
 		@Query() sortingQuery: SortingQuery,
@@ -66,7 +66,7 @@ export class ImportUserController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() params: UpdateFlagParams
 	): Promise<ImportUserResponse> {
-		const result = await this.userImportUc.setFlag(currentUser.userId, importUserId, params.flagged);
+		const result = await this.userImportUc.updateFlag(currentUser.userId, importUserId, params.flagged);
 		const response = ImportUserMapper.mapToResponse(result);
 		return response;
 	}
