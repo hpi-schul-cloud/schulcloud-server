@@ -102,55 +102,55 @@ describe('resolvePermissions', () => {
 
 	describe('School authorization', () => {
 		describe('[hasUserAllSchoolPermissions]', () => {
-			it('should fail, when no permissions are given to be checked', async () => {
+			it('should fail, when no permissions are given to be checked', () => {
 				const user = userFactory.build();
-				const result = await service.hasUserAllSchoolPermissions(user, []);
+				const result = service.hasUserAllSchoolPermissions(user, []);
 				expect(result).toEqual(false);
 			});
-			it('should fail, when no permissions (array) is given to be checked', async () => {
+			it('should fail, when no permissions (array) is given to be checked', () => {
 				const user = userFactory.build();
-				const result = await service.hasUserAllSchoolPermissions(user, 'foo' as unknown as []);
+				const result = service.hasUserAllSchoolPermissions(user, 'foo' as unknown as []);
 				expect(result).toEqual(false);
 			});
-			it('should succeed when user has all given permissions', async () => {
+			it('should succeed when user has all given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = await service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(true);
 			});
-			it('should fail when user has some given permissions only', async () => {
+			it('should fail when user has some given permissions only', () => {
 				const role = roleFactory.build({ permissions: ['permission1'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = await service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(false);
 			});
-			it('should fail when user has none given permissions', async () => {
+			it('should fail when user has none given permissions', () => {
 				const role = roleFactory.build({ permissions: [] });
 				const user = userFactory.build({ roles: [role] });
-				const result = await service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(false);
 			});
-			it('should fail when user has only different than the given permissions', async () => {
+			it('should fail when user has only different than the given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission3'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = await service.hasUserAllSchoolPermissions(user, ['permission1']);
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1']);
 				expect(result).toEqual(false);
 			});
 		});
 
 		describe('[checkUserHasAllSchoolPermissions]', () => {
-			it('should throw when hasUserAllSchoolPermissions is false', async () => {
+			it('should throw when hasUserAllSchoolPermissions is false', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(false);
-				await expect(async () => service.checkUserHasAllSchoolPermissions(user, ['permission1'])).rejects.toThrowError(
+				expect(() => service.checkUserHasAllSchoolPermissions(user, ['permission1'])).toThrowError(
 					UnauthorizedException
 				);
 				spy.mockRestore();
 			});
-			it('should not throw when hasUserAllSchoolPermissions is true', async () => {
+			it('should not throw when hasUserAllSchoolPermissions is true', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(true);
-				await service.checkUserHasAllSchoolPermissions(user, ['permission1']);
+				service.checkUserHasAllSchoolPermissions(user, ['permission1']);
 				spy.mockRestore();
 			});
 		});
