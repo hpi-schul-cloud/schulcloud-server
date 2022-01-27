@@ -1,4 +1,4 @@
-import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Reference } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, ManyToOne, Property, wrap } from '@mikro-orm/core';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 
@@ -19,10 +19,8 @@ export interface IImportUserProperties {
 	email: string; // TODO VO
 	roleNames?: RoleName[];
 	classNames?: string[];
-	match?: {
-		user: User;
-		matchedBy: MatchCreator;
-	};
+	user?: User;
+	matchedBy?: MatchCreator;
 	flagged?: boolean;
 }
 
@@ -40,8 +38,8 @@ export enum RoleName {
 export class ImportUser extends BaseEntityWithTimestamps {
 	constructor(props: IImportUserProperties) {
 		super();
-		this.school = props.school;
-		this.system = Reference.create(props.system);
+		this.school = wrap(props.school).toReference();
+		this.system = wrap(props.system).toReference();
 		this.ldapDn = props.ldapDn;
 		this.ldapId = props.ldapId;
 		this.firstName = props.firstName;
@@ -49,12 +47,12 @@ export class ImportUser extends BaseEntityWithTimestamps {
 		this.email = props.email;
 		if (Array.isArray(props.roleNames) && props.roleNames.length > 0) this.roleNames.push(...props.roleNames);
 		if (Array.isArray(props.classNames) && props.classNames.length > 0) this.classNames.push(...props.classNames);
-		if (props.match) this.setMatch(props.match.user, props.match.matchedBy);
+		if (props.user && props.matchedBy) this.setMatch(props.user, props.matchedBy);
 		if (props.flagged && props.flagged === true) this.flagged = true;
 	}
 
-	@ManyToOne(() => 'School', { fieldName: 'schoolId', eager: true })
-	school: School;
+	@ManyToOne(() => 'School', { fieldName: 'schoolId', wrappedReference: true, eager: true })
+	school: IdentifiedReference<School>;
 
 	@ManyToOne(() => 'System', { wrappedReference: true })
 	system: IdentifiedReference<System, BaseEntityReference>;
@@ -114,8 +112,8 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	flagged = false;
 
 	setMatch(user: User, matchedBy: MatchCreator) {
-		if (!this.school || this.school !== user.school) {
-			throw new Error('missing school or not same school');
+		if (this.school.id !== user.school.id) {
+			throw new Error('not same school');
 		}
 		this.user = user;
 		this.matchedBy = matchedBy;

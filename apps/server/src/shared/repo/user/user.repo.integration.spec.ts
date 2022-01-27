@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { importUserFactory, schoolFactory, userFactory, roleFactory } from '@shared/testing';
+import { importUserFactory, schoolFactory, userFactory, roleFactory, cleanupCollections } from '@shared/testing';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -31,7 +31,7 @@ describe('user repo', () => {
 
 	describe('findById', () => {
 		beforeEach(async () => {
-			await em.nativeDelete(User, {});
+			await cleanupCollections(em);
 		});
 
 		it('should return right keys', async () => {
@@ -60,6 +60,7 @@ describe('user repo', () => {
 		});
 
 		it('should populate user roles recursively if requested', async () => {
+			// TODO
 			const roles3 = roleFactory.buildList(1);
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
@@ -78,30 +79,35 @@ describe('user repo', () => {
 
 	describe('findWithoutImportUser', () => {
 		beforeEach(async () => {
-			await em.nativeDelete(User, {});
+			await cleanupCollections(em);
 		});
 
+		const persistUserAndSchool = async () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build({ school });
+			await em.persistAndFlush([user, school]);
+			return { user, school };
+		};
+
 		it('should find users not referenced in importusers', async () => {
-			const user = userFactory.build();
-			await em.persistAndFlush([user]);
+			const { user } = await persistUserAndSchool();
 			const result = await repo.findWithoutImportUser(user.school);
 			expect(result).toContain(user);
 		});
 
 		it('should exclude users referenced in importusers', async () => {
-			const user = userFactory.build();
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build();
+			const { user, school } = await persistUserAndSchool();
+			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 			await em.persistAndFlush([user, importUser]);
 			const result = await repo.findWithoutImportUser(user.school);
 			expect(result).not.toContain(user);
 		});
 
 		it('should find users but exclude users referenced in importusers ', async () => {
-			const school = schoolFactory.build();
-			const user = userFactory.build({ school });
+			const { user, school } = await persistUserAndSchool();
 			const matchedUser = userFactory.build({ school });
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, matchedUser).build();
-			await em.persistAndFlush([user, importUser]);
+			const importUser = importUserFactory.matched(MatchCreator.AUTO, matchedUser).build({ school });
+			await em.persistAndFlush([matchedUser, importUser]);
 			const result = await repo.findWithoutImportUser(school);
 			expect(result).toContain(user);
 			expect(result).not.toContain(matchedUser);

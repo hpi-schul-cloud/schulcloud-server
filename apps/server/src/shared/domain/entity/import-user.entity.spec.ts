@@ -50,9 +50,9 @@ describe('ImportUser entity', () => {
 
 	describe('match', () => {
 		it('should set and unset both, user and matchedBy', () => {
-			const school = schoolFactory.build();
-			const user = userFactory.build({ school });
-			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
+			const school = schoolFactory.buildWithId();
+			const user = userFactory.buildWithId({ school });
+			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).buildWithId({ school });
 			expect(importUser.user).toEqual(user);
 			expect(importUser.matchedBy).toEqual(MatchCreator.AUTO);
 			importUser.revokeMatch();

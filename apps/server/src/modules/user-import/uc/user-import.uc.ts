@@ -54,10 +54,10 @@ export class UserImportUc {
 	 * Update a @User reference of an @ImportUser
 	 * @param currentUserId
 	 * @param importUserId
-	 * @param userId
+	 * @param userMatchId
 	 * @returns importuser and matched user
 	 */
-	async setMatch(currentUserId: EntityId, importUserId: EntityId, userId: EntityId) {
+	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
 		const currentUser = await this.userRepo.findById(currentUserId);
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
 		await this.authorizationService.checkEntityPermissions(
@@ -66,11 +66,15 @@ export class UserImportUc {
 			currentUser.school.id,
 			permissions
 		);
-		const userMatch = await this.userRepo.findById(userId);
+		const userMatch = await this.userRepo.findById(userMatchId);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
-		if (!currentUser.school || currentUser.school !== userMatch.school || currentUser.school !== importUser.school) {
+		if (
+			!currentUser.school.id ||
+			currentUser.school.id !== userMatch.school.id ||
+			currentUser.school.id !== importUser.school.id
+		) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -96,7 +100,7 @@ export class UserImportUc {
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
-		if (!currentUser.school || currentUser.school !== importUser.school) {
+		if (currentUser.school.id !== importUser.school.id) {
 			throw new ForbiddenException('not same school');
 		}
 
@@ -118,7 +122,7 @@ export class UserImportUc {
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
-		if (!currentUser.school || currentUser.school !== importUser.school) {
+		if (currentUser.school.id !== importUser.school.id) {
 			throw new ForbiddenException('not same school');
 		}
 
