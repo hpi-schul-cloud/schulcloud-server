@@ -145,7 +145,7 @@ export class UserImportUc {
 		currentUserId: EntityId,
 		query: INameMatch,
 		options?: IFindOptions<User>
-	): Promise<User[]> {
+	): Promise<Counted<User[]>> {
 		const currentUser = await this.userRepo.findById(currentUserId);
 
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW];
@@ -155,7 +155,7 @@ export class UserImportUc {
 			currentUser.school.id,
 			permissions
 		);
-		const unmatchedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
-		return unmatchedUsers;
+		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
+		return unmatchedCountedUsers;
 	}
 }

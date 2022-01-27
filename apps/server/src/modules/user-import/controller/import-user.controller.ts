@@ -80,10 +80,10 @@ export class ImportUserController {
 		const options: IFindOptions<User> = { pagination: paginationQuery };
 
 		const query = UserMatchMapper.mapToDomain(scope);
-		const userList = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
+		const [userList, total] = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
-		const response = new UserMatchListResponse(dtoList, -1, skip, limit); // TODO total missing
+		const response = new UserMatchListResponse(dtoList, total, skip, limit);
 		return response as unknown as UserMatchListResponse;
 	}
 }

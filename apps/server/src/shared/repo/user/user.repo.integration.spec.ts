@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, User } from '@shared/domain';
+import { MatchCreator, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { importUserFactory, schoolFactory, userFactory, roleFactory, cleanupCollections } from '@shared/testing';
 import { UserRepo } from './user.repo';
@@ -13,7 +13,7 @@ describe('user repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
 			providers: [UserRepo],
 		}).compile();
 		repo = module.get(UserRepo);
@@ -60,7 +60,6 @@ describe('user repo', () => {
 		});
 
 		it('should populate user roles recursively if requested', async () => {
-			// TODO
 			const roles3 = roleFactory.buildList(1);
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
@@ -91,16 +90,18 @@ describe('user repo', () => {
 
 		it('should find users not referenced in importusers', async () => {
 			const { user } = await persistUserAndSchool();
-			const result = await repo.findWithoutImportUser(user.school);
+			const [result, count] = await repo.findWithoutImportUser(user.school);
 			expect(result).toContain(user);
+			expect(count).toEqual(1);
 		});
 
 		it('should exclude users referenced in importusers', async () => {
 			const { user, school } = await persistUserAndSchool();
 			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 			await em.persistAndFlush([user, importUser]);
-			const result = await repo.findWithoutImportUser(user.school);
+			const [result, count] = await repo.findWithoutImportUser(user.school);
 			expect(result).not.toContain(user);
+			expect(count).toEqual(0);
 		});
 
 		it('should find users but exclude users referenced in importusers ', async () => {
@@ -108,9 +109,10 @@ describe('user repo', () => {
 			const matchedUser = userFactory.build({ school });
 			const importUser = importUserFactory.matched(MatchCreator.AUTO, matchedUser).build({ school });
 			await em.persistAndFlush([matchedUser, importUser]);
-			const result = await repo.findWithoutImportUser(school);
+			const [result, count] = await repo.findWithoutImportUser(school);
 			expect(result).toContain(user);
 			expect(result).not.toContain(matchedUser);
+			expect(count).toEqual(1);
 		});
 
 		it('should filter users by firstName contains or lastName contains, ignore case', async () => {
@@ -119,29 +121,35 @@ describe('user repo', () => {
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
 			// full first name
-			const result1 = await repo.findWithoutImportUser(school, { fullName: 'papa' });
+			const [result1, count1] = await repo.findWithoutImportUser(school, { fullName: 'papa' });
 			expect(result1).toContain(user);
 			expect(result1).not.toContain(otherUser);
+			expect(count1).toEqual(1);
 			// full last name
-			const result2 = await repo.findWithoutImportUser(school, { fullName: 'pane' });
+			const [result2, count2] = await repo.findWithoutImportUser(school, { fullName: 'pane' });
 			expect(result2).toContain(user);
 			expect(result2).not.toContain(otherUser);
+			expect(count2).toEqual(1);
 			// partial first and last name
-			const result3 = await repo.findWithoutImportUser(school, { fullName: 'pa' });
+			const [result3, count3] = await repo.findWithoutImportUser(school, { fullName: 'pa' });
 			expect(result3).toContain(user);
 			expect(result3).not.toContain(otherUser);
+			expect(count3).toEqual(1);
 			// partial first name
-			const result4 = await repo.findWithoutImportUser(school, { fullName: 'pap' });
+			const [result4, count4] = await repo.findWithoutImportUser(school, { fullName: 'pap' });
 			expect(result4).toContain(user);
 			expect(result4).not.toContain(otherUser);
+			expect(count4).toEqual(1);
 			// partial last name
-			const result5 = await repo.findWithoutImportUser(school, { fullName: 'ane' });
+			const [result5, count5] = await repo.findWithoutImportUser(school, { fullName: 'ane' });
 			expect(result5).toContain(user);
 			expect(result5).not.toContain(otherUser);
+			expect(count5).toEqual(1);
 			// no match
-			const result6 = await repo.findWithoutImportUser(school, { fullName: 'Fox' });
+			const [result6, count6] = await repo.findWithoutImportUser(school, { fullName: 'Fox' });
 			expect(result6).not.toContain(user);
 			expect(result6).not.toContain(otherUser);
+			expect(count6).toEqual(0);
 		});
 
 		it('should sort returned users by firstname, lastname', async () => {
@@ -149,27 +157,31 @@ describe('user repo', () => {
 			const user = userFactory.build({ school, firstName: 'Anna', lastName: 'Schmidt' });
 			const otherUser = userFactory.build({ school, firstName: 'Peter', lastName: 'Ball' });
 			await em.persistAndFlush([user, otherUser]);
-			const result = await repo.findWithoutImportUser(school, undefined, {
+			const [result, count] = await repo.findWithoutImportUser(school, undefined, {
 				order: { firstName: SortOrder.desc },
 			});
+			expect(count).toEqual(2);
 			expect(result.indexOf(user)).toEqual(1);
 			expect(result.indexOf(otherUser)).toEqual(0);
 
-			const result2 = await repo.findWithoutImportUser(school, undefined, {
+			const [result2, count2] = await repo.findWithoutImportUser(school, undefined, {
 				order: { firstName: SortOrder.asc },
 			});
+			expect(count2).toEqual(2);
 			expect(result2.indexOf(user)).toEqual(0);
 			expect(result2.indexOf(otherUser)).toEqual(1);
 
-			const result3 = await repo.findWithoutImportUser(school, undefined, {
+			const [result3, count3] = await repo.findWithoutImportUser(school, undefined, {
 				order: { lastName: SortOrder.desc },
 			});
+			expect(count3).toEqual(2);
 			expect(result3.indexOf(user)).toEqual(0);
 			expect(result3.indexOf(otherUser)).toEqual(1);
 
-			const result4 = await repo.findWithoutImportUser(school, undefined, {
+			const [result4, count4] = await repo.findWithoutImportUser(school, undefined, {
 				order: { lastName: SortOrder.asc },
 			});
+			expect(count4).toEqual(2);
 			expect(result4.indexOf(user)).toEqual(1);
 			expect(result4.indexOf(otherUser)).toEqual(0);
 		});
@@ -179,10 +191,11 @@ describe('user repo', () => {
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
-			const result = await repo.findWithoutImportUser(school, undefined, { pagination: { skip: 1 } });
+			const [result, count] = await repo.findWithoutImportUser(school, undefined, { pagination: { skip: 1 } });
 			expect(result).not.toContain(user);
 			expect(result).toContain(otherUser);
 			expect(result.length).toEqual(1);
+			expect(count).toEqual(2);
 		});
 
 		it('should limit returned users from two to one', async () => {
@@ -190,10 +203,11 @@ describe('user repo', () => {
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
-			const result = await repo.findWithoutImportUser(school, undefined, { pagination: { limit: 1 } });
+			const [result, count] = await repo.findWithoutImportUser(school, undefined, { pagination: { limit: 1 } });
 			expect(result).toContain(user);
 			expect(result).not.toContain(otherUser);
 			expect(result.length).toEqual(1);
+			expect(count).toEqual(2);
 		});
 	});
 });
