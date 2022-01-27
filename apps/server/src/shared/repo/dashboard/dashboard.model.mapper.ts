@@ -3,13 +3,13 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	DashboardEntity,
 	GridElement,
-	IGridElement,
 	GridElementWithPosition,
 	ILearnroom,
 	LearnroomTypes,
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	Course,
+	User,
 } from '@shared/domain';
 
 @Injectable()
@@ -52,22 +52,38 @@ export class DashboardModelMapper {
 		throw new InternalServerErrorException('unknown learnroom type');
 	}
 
-	private async instantiateGridElementModel(gridElement: IGridElement): Promise<DashboardGridElementModel> {
-		if (!gridElement.hasId()) {
-			return new DashboardGridElementModel();
-		}
-		const existing = await this.em.findOne(DashboardGridElementModel, gridElement.getId());
-		return existing || new DashboardGridElementModel(gridElement.getId());
-	}
-
 	async mapGridElementToModel(
 		elementWithPosition: GridElementWithPosition,
 		dashboard: DashboardModelEntity
 	): Promise<DashboardGridElementModel> {
+		const existing = await this.findExistingGridElement(elementWithPosition);
+		if (existing) {
+			const updatedModel = this.updateExistingGridElement(existing, elementWithPosition, dashboard);
+			return updatedModel;
+		}
+		const createdModel = await this.createGridElement(elementWithPosition, dashboard);
+		return createdModel;
+	}
+
+	private async findExistingGridElement(
+		elementWithPosition: GridElementWithPosition
+	): Promise<DashboardGridElementModel | undefined> {
 		const { gridElement } = elementWithPosition;
-		const elementModel = await this.instantiateGridElementModel(gridElement);
+		if (gridElement.hasId()) {
+			const existing = await this.em.findOne(DashboardGridElementModel, gridElement.getId() as string);
+			if (existing) return existing;
+		}
+		return undefined;
+	}
+
+	private async updateExistingGridElement(
+		elementModel: DashboardGridElementModel,
+		elementWithPosition: GridElementWithPosition,
+		dashboard: DashboardModelEntity
+	): Promise<DashboardGridElementModel> {
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
+		const { gridElement } = elementWithPosition;
 
 		if (gridElement.isGroup()) {
 			elementModel.title = gridElement.getContent().title;
@@ -80,9 +96,25 @@ export class DashboardModelMapper {
 		return elementModel;
 	}
 
+	private async createGridElement(
+		elementWithPosition: GridElementWithPosition,
+		dashboard: DashboardModelEntity
+	): Promise<DashboardGridElementModel> {
+		const { gridElement } = elementWithPosition;
+		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
+		const elementModel = new DashboardGridElementModel({
+			id: gridElement.getId(),
+			xPos: elementWithPosition.pos.x,
+			yPos: elementWithPosition.pos.y,
+			references,
+			dashboard,
+		});
+
+		return elementModel;
+	}
+
 	async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
-		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
-		const modelEntity = existing || new DashboardModelEntity({ id: entity.getId(), user: entity.getUserId() }); // TODO transform user to reference
+		const modelEntity = await this.getOrConstructDashboardModelEntity(entity);
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
 		);
@@ -95,5 +127,14 @@ export class DashboardModelMapper {
 		});
 
 		return modelEntity;
+	}
+
+	private async getOrConstructDashboardModelEntity(entity: DashboardEntity): Promise<DashboardModelEntity> {
+		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
+		if (existing) {
+			return existing;
+		}
+		const user = await this.em.findOneOrFail(User, entity.getUserId());
+		return new DashboardModelEntity({ id: entity.getId(), user, gridElements: [] });
 	}
 }

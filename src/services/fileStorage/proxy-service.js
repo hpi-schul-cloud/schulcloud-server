@@ -208,7 +208,7 @@ const fileStorageService = {
 		}
 
 		let file = await FileModel.findOne(props).lean().exec();
-		if (!file) file = FileModel.create(props);
+		if (!file) file = await FileModel.create(props);
 
 		prepareSecurityCheck(file, creatorId, strategy).catch(asyncErrorHandler);
 		prepareThumbnailGeneration(file, strategy, creatorId, data, props).catch(asyncErrorHandler);

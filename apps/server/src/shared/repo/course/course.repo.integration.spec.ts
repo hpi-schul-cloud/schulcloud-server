@@ -3,8 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityId, SortOrder } from '@shared/domain';
-import { userFactory, courseFactory, cleanUpCollections } from '@shared/testing';
+import { userFactory, courseFactory, cleanupCollections } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -32,7 +33,7 @@ describe('course repo', () => {
 	});
 
 	afterEach(async () => {
-		await cleanUpCollections(em);
+		await cleanupCollections(em);
 	});
 
 	it('should be defined', () => {
@@ -249,6 +250,62 @@ describe('course repo', () => {
 			const [, count] = await repo.findAllForTeacher(user.id);
 
 			expect(count).toEqual(0);
+		});
+	});
+
+	describe('findOne', () => {
+		it('should find any course', async () => {
+			const course = courseFactory.build({ students: [] });
+
+			await em.persistAndFlush([course]);
+
+			const result = await repo.findOne(course.id);
+
+			expect(result).toEqual(course);
+		});
+
+		it('should find course of student', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user] });
+
+			await em.persistAndFlush([course]);
+
+			const result = await repo.findOne(course.id, user.id);
+
+			expect(result).toEqual(course);
+		});
+
+		it('should find course of teacher', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+
+			await em.persistAndFlush([course]);
+
+			const result = await repo.findOne(course.id, user.id);
+
+			expect(result).toEqual(course);
+		});
+
+		it('should find course of substitutionTeacher', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ substitutionTeachers: [user] });
+
+			await em.persistAndFlush([course]);
+
+			const result = await repo.findOne(course.id, user.id);
+
+			expect(result).toEqual(course);
+		});
+
+		it('should "not" find course user is not in', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build();
+
+			await em.persistAndFlush([course, user]);
+
+			const callFunction = () => repo.findOne(course.id, user.id);
+
+			await expect(callFunction).rejects.toThrow(NotFoundError);
 		});
 	});
 });

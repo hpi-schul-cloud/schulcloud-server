@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common/';
 import { IDashboardRepo, CourseRepo } from '@shared/repo';
 import {
 	DashboardEntity,
@@ -6,13 +7,11 @@ import {
 	LearnroomTypes,
 	LearnroomMetadata,
 	EntityId,
-	ILearnroom,
 	Course,
 	IFindOptions,
 	SortOrder,
 	Counted,
 } from '@shared/domain';
-import { NotFound } from '@feathersjs/errors';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -90,11 +89,11 @@ describe('dashboard uc', () => {
 		it('should synchronize which courses are on the board', async () => {
 			const userId = 'userId';
 			const dashboard = new DashboardEntity('someid', { grid: [], userId });
-			const dashboardRepoSpy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((id: EntityId) => {
+			const dashboardRepoSpy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation(() => {
 				return Promise.resolve(dashboard);
 			});
 			const courses = new Array(5).map(() => ({} as Course));
-			const courseRepoSpy = jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation((id, filters?, options?) => {
+			const courseRepoSpy = jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => {
 				return Promise.resolve([courses, 5]);
 			});
 			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
@@ -170,7 +169,7 @@ describe('dashboard uc', () => {
 			});
 
 			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
-			await expect(callFut).rejects.toThrow(NotFound);
+			await expect(callFut).rejects.toThrow(NotFoundException);
 		});
 	});
 
@@ -240,7 +239,7 @@ describe('dashboard uc', () => {
 			});
 
 			const callFut = () => service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');
-			await expect(callFut).rejects.toThrow(NotFound);
+			await expect(callFut).rejects.toThrow(NotFoundException);
 		});
 	});
 });
