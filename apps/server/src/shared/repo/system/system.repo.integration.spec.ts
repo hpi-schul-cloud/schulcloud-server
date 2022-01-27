@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain';
+import { System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { userFactory } from '@shared/testing';
 import { SystemRepo } from './system.repo';
@@ -25,20 +25,20 @@ describe('user repo', () => {
 	});
 
 	it('should be defined', () => {
-		expect(repo).toBeDefined();
+		expect(repo.toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
 	});
 
 	describe('findById', () => {
 		afterEach(async () => {
-			await em.nativeDelete(User, {});
+			await em.nativeDelete(System, {});
 		});
 
 		it('should return right keys', async () => {
-			const user = userFactory.build();
+			const system = userFactory.build();
 
-			await em.persistAndFlush([user]);
-			const result = await repo.findById(user.id);
+			await em.persistAndFlush([system]);
+			const result = await repo.findById(system.id);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id'].sort()
 			);

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ILogger, Logger } from '@src/core/logger';
 import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
-import { Response } from 'express';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
@@ -26,7 +25,7 @@ export class OauthUc {
 	}
 
 	// 0- start Oauth Process
-	async startOauth(query: AuthorizationQuery, res: Response, systemId: string): Promise<OAuthResponse> {
+	async startOauth(query: AuthorizationQuery, systemId: string): Promise<OAuthResponse> {
 		// get the authorization code
 		const code: string = this.extractCode(query);
 		// get the Tokens using the authorization token
@@ -48,11 +47,14 @@ export class OauthUc {
 		return response;
 	}
 
+	/**
+	 * @query query input that has either a code or an error
+	 * @return authorization code or throws an error
+	 */
 	extractCode(query: AuthorizationQuery): string {
 		if (query.code) return query.code;
 		if (query.error) throw new Error(query.error);
-		// TODO: fix the error message
-		throw new Error('Error while .........');
+		throw new Error('Authorization Query Object has no authorization code or error');
 	}
 
 	mapSystemConfigtoPayload(system: System, code: string): Payload {
@@ -121,7 +123,6 @@ export class OauthUc {
 	}
 }
 
-interface IJWT {
-	hmmmm: string;
+export interface IJWT {
 	uuid: string;
 }

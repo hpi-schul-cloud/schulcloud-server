@@ -17,7 +17,7 @@ export class OauthController {
 		@Res() res: Response,
 		@Param('systemid') systemid: string
 	): Promise<unknown> {
-		const dto: OAuthResponse = await this.oauthUc.startOauth(query, res, systemid);
+		const dto: OAuthResponse = await this.oauthUc.startOauth(query, systemid);
 		const response: Response = OAuthResponseMapper.mapToResponse(dto, res);
 		return response.redirect(dto.redirectUri);
 	}
