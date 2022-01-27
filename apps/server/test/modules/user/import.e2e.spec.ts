@@ -142,6 +142,7 @@ describe('ImportUser Controller (e2e)', () => {
 					const usermatch = userFactory.build({ school });
 					const importuser = importUserFactory.build({ school });
 					await em.persistAndFlush([usermatch, importuser]);
+					em.clear();
 					const response = await request(app.getHttpServer()).get('/user/import').expect(200);
 					expect(response.body).toMatchObject(ImportUserListResponse);
 				});
@@ -171,24 +172,22 @@ describe('ImportUser Controller (e2e)', () => {
 		describe('Business Errors', () => {
 			describe('[setMatch]', () => {
 				describe('When set a match on import user', () => {
-					it('should fail for different school of match- and import-user');
-					it('should fail for different school of current- and import-user');
+					it.todo('should fail for different school of match- and import-user');
+					it.todo('should fail for different school of current- and import-user');
 				});
 
 				describe('When set a match with a user twice', () => {
-					it('should fail', () => {
-						// expect().toThrowError(UserAlreadyAssignedToImportUserError)
-					});
+					it.todo('should fail');
 				});
 			});
 			describe('[removeMatch]', () => {
 				describe('When remove a match on import user', () => {
-					it('should fail for different school of current- and import-user');
+					it.todo('should fail for different school of current- and import-user');
 				});
 			});
 			describe('[updateFlag]', () => {
 				describe('When remove a match on import user', () => {
-					it('should fail for different school of current- and import-user');
+					it.todo('should fail for different school of current- and import-user');
 				});
 			});
 		});
@@ -238,6 +237,7 @@ describe('ImportUser Controller (e2e)', () => {
 				describe('[DELETE] user/import/:id/match', () => {
 					it.todo('should remove a match');
 					it.todo('should not fail when importuser is not having a match');
+					it.todo('should not fail when removing matches multiple times from different import users'); // TODO
 					it.todo('should respond importUser with all properties');
 				});
 			});
