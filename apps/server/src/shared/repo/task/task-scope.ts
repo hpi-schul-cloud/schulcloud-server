@@ -50,7 +50,7 @@ export class TaskScope extends Scope<Task> {
 
 	excludeDraftsOfOthers(creatorId: EntityId): TaskScope {
 		this.addQuery({
-			$or: [{ $and: [{ creator: creatorId }, this.getByDraftQuery(true)] }, this.getByDraftQuery(false)],
+			$or: [this.getByDraftForCreatorQuery(creatorId), this.getByDraftQuery(false)],
 		});
 
 		return this;
@@ -58,6 +58,13 @@ export class TaskScope extends Scope<Task> {
 
 	byAvailable(availableDate: Date): TaskScope {
 		this.addQuery({ availableDate: { $lte: availableDate } });
+
+		return this;
+	}
+
+	noFutureAvailableDate(): TaskScope {
+		const query = { availableDate: { $lte: new Date(Date.now()) } };
+		this.addQuery(query);
 
 		return this;
 	}
@@ -80,6 +87,12 @@ export class TaskScope extends Scope<Task> {
 
 	private getByDraftQuery(isDraft: boolean): FilterQuery<Task> {
 		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+
+		return query;
+	}
+
+	private getByDraftForCreatorQuery(creatorId: EntityId): FilterQuery<Task> {
+		const query = { $and: [{ creator: creatorId }, this.getByDraftQuery(true)] };
 
 		return query;
 	}

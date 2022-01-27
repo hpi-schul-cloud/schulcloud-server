@@ -15,6 +15,7 @@ const createExpectedResponse = (
 	expectedStatus.maxSubmissions = status.maxSubmissions;
 	expectedStatus.submitted = status.submitted;
 	expectedStatus.isDraft = status.isDraft;
+	expectedStatus.isFinished = status.isFinished;
 	expectedStatus.isSubstitutionTeacher = status.isSubstitutionTeacher;
 
 	const expected = Object.create(TaskResponse.prototype) as TaskResponse;
@@ -61,6 +62,7 @@ describe('task.mapper', () => {
 				maxSubmissions: 0,
 				submitted: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			};
 
