@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
-import { OAuthResponse } from './dto/oauth.response';
+import { OAuthResponse } from './dto/oauth-response';
 
 @ApiTags('Oauth')
 @Controller('oauth')

@@ -8,9 +8,9 @@ import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
-import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
+import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
-import { OAuthResponse } from '../controller/dto/oauth.response';
+import { OAuthResponse } from '../controller/dto/oauth-response';
 
 @Injectable()
 export class OauthUc {

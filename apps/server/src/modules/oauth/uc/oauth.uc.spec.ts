@@ -10,7 +10,7 @@ import jwtDecode from 'jwt-decode';
 import { ObjectId } from 'bson';
 import { IJWT, OauthUc } from '.';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
-import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
+import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { TokenRequestParams } from '../controller/dto/token-request-params';
 
 describe('OAuthUc', () => {
