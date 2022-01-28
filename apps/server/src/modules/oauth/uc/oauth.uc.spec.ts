@@ -9,9 +9,9 @@ import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { ObjectId } from 'bson';
 import { IJWT, OauthUc } from '.';
-import { Payload } from '../controller/dto/payload';
+import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
-import { Data } from '../controller/dto/data';
+import { TokenRequestParams } from '../controller/dto/token-request-params';
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
@@ -45,16 +45,16 @@ describe('OAuthUc', () => {
 		createdAt: defaultDate,
 		updatedAt: defaultDate,
 	};
-	const defaultPayloadData: Data = {
+	const defaultPayloadData: TokenRequestParams = {
 		code: defaultAuthCode,
 		client_id: '12345',
 		client_secret: 'mocksecret',
 		grant_type: 'authorization_code',
 		redirect_uri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 	};
-	const defaultPayload: Payload = {
+	const defaultPayload: TokenRequestPayload = {
 		token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
-		data: defaultPayloadData,
+		tokenRequestParams: defaultPayloadData,
 	};
 
 	beforeEach(async () => {
@@ -139,7 +139,7 @@ describe('OAuthUc', () => {
 			const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
 				defaultPayload.token_endpoint,
 				{},
-				{ params: { ...defaultPayload.data } }
+				{ params: { ...defaultPayload.tokenRequestParams } }
 			);
 			expect(responseToken).toBeCalledWith(defaultSystem, defaultQuery.code);
 			expect(responseToken.data.access_token).toBeDefined();
