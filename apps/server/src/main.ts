@@ -36,7 +36,7 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors();
-	await enableOpenApiDocs(nestApp, 'docs');
+	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
 
