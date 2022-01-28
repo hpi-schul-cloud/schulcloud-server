@@ -108,10 +108,9 @@ export class OauthUc {
 	// 2- decode the Token to extract the UUID
 	async decodeToken(token: string): Promise<string> {
 		const decodedJwt: IJWT = await jwtDecode(token);
-		console.log(`This is the uuid >>>> ${decodedJwt.uuid}`);
 		const { uuid } = decodedJwt;
-		if (!uuid /** test not empty string or id format */) {
-			throw Error('...');
+		if (!uuid || uuid.length === 0) {
+			throw Error('Filed to extract uuid');
 		}
 		return uuid;
 	}
