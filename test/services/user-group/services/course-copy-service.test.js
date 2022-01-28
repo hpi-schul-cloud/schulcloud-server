@@ -7,7 +7,7 @@ const { BadRequest } = require('../../../../src/errors');
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('course share service', () => {
+describe('course share service', () => {
 	let app;
 	let server;
 
