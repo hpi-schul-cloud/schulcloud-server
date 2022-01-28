@@ -13,5 +13,6 @@ export * from './submission.entity';
 export * from './task.entity';
 export * from './team.entity';
 export * from './user.entity';
+export * from './system.entity';
 
 export * from './all-entities';

@@ -17,6 +17,11 @@ export class UserRepo {
 		return user;
 	}
 
+	async findByLdapId(ldapId: string): Promise<User> {
+		const user = await this.em.findOneOrFail(User, { ldapId });
+		return user;
+	}
+
 	private async populateRoles(roles: Role[]): Promise<void> {
 		for (let i = 0; i < roles.length; i += 1) {
 			const role = roles[i];
