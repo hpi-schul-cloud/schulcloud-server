@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const { nanoid } = require('nanoid');
 
-const { GeneralError } = require('../../../errors');
+const { GeneralError, NotFound } = require('../../../errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
@@ -119,8 +119,12 @@ class CourseShareService {
 	}
 
 	// If provided with param shareToken then return course name
-	find(params) {
-		return courseModel.findOne({ shareToken: params.query.shareToken }).then((course) => course.name);
+	async find(params) {
+		const course = await courseModel.findOne({ shareToken: params.query.shareToken });
+		if (!course) {
+			throw new NotFound('could not find sharetoken');
+		}
+		return course.name;
 	}
 
 	// otherwise create a shareToken for given courseId and the respective lessons.
