@@ -28,7 +28,7 @@ export class OauthUc {
 	async startOauth(query: AuthorizationQuery, systemId: string): Promise<OAuthResponse> {
 		try {
 			// get the authorization code
-			const code: string = this.extractCode(query);
+			const code: string = this.checkAuthorizationCode(query);
 			// get the Tokens using the authorization token
 			const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
 			// extract the uuid from the token
@@ -61,7 +61,7 @@ export class OauthUc {
 	 * @query query input that has either a code or an error
 	 * @return authorization code or throws an error
 	 */
-	extractCode(query: AuthorizationQuery): string {
+	checkAuthorizationCode(query: AuthorizationQuery): string {
 		if (query.code) return query.code;
 		if (query.error) throw new Error(query.error);
 		throw new Error('Authorization Query Object has no authorization code or error');
