@@ -48,9 +48,9 @@ export class OauthUc {
 		} catch (error) {
 			this.logger.log(error);
 		}
-		// send response back
+		// send error response back
 		const HOST = Configuration.get('HOST') as string;
-		const redirectUri = HOST.concat('/dashboard');
+		const redirectUri = HOST.concat('/login');
 		const response: OAuthResponse = new OAuthResponse({
 			error: 'OAuth Login Failed.',
 			redirectUri,
