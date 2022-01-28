@@ -12,7 +12,6 @@ import { Logger } from '@nestjs/common';
 import { MailService, Mail } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 
@@ -50,10 +49,6 @@ async function bootstrap() {
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
-
-	// override console logger for commons configuration
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	((<unknown>Configuration) as { options: { logger: unknown } }).options.logger = Logger;
 
 	// mount instances
 	const rootExpress = express();
