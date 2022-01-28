@@ -14,7 +14,7 @@ export class OauthController {
 	async startOauthFlow(
 		@Query() query: AuthorizationQuery,
 		@Res() res: Response,
-		@Param('systemid') systemid: string
+		@Param('systemid', ParseObjectIdPipe) systemid: string
 	): Promise<unknown> {
 		const oauthResponse: OAuthResponse = await this.oauthUc.startOauth(query, systemid);
 		if (oauthResponse.jwt) res.cookie('jwt', oauthResponse.jwt);
