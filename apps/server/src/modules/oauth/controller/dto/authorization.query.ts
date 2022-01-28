@@ -1,11 +1,13 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AuthorizationQuery {
-	@IsString()
 	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
 	code?: string;
 
-	@IsString()
 	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
 	error?: string;
 }
