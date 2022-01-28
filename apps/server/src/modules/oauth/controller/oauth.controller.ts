@@ -4,7 +4,6 @@ import { Response } from 'express';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
 import { OAuthResponse } from './dto/oauth.response';
-import { OAuthResponseMapper } from './mapper/oauth-response.mapper';
 
 @ApiTags('Oauth')
 @Controller('oauth')
@@ -17,8 +16,8 @@ export class OauthController {
 		@Res() res: Response,
 		@Param('systemid') systemid: string
 	): Promise<unknown> {
-		const dto: OAuthResponse = await this.oauthUc.startOauth(query, systemid);
-		const response: Response = OAuthResponseMapper.mapToResponse(dto, res);
-		return response.redirect(dto.redirectUri);
+		const oauthResponse: OAuthResponse = await this.oauthUc.startOauth(query, systemid);
+		if (oauthResponse.jwt) res.cookie('jwt', oauthResponse.jwt);
+		return res.redirect(oauthResponse.redirectUri);
 	}
 }

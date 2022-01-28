@@ -1,13 +1,10 @@
 export class OAuthResponse {
-	constructor({ jwt, error, redirectUri }: OAuthResponse) {
+	constructor({ jwt, redirectUri }: OAuthResponse) {
 		this.jwt = jwt;
-		this.error = error;
 		this.redirectUri = redirectUri;
 	}
 
 	jwt?: string;
-
-	error?: string;
 
 	redirectUri: string;
 }

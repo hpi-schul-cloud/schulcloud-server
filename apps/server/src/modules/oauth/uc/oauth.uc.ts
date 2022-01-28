@@ -52,8 +52,7 @@ export class OauthUc {
 		const HOST = Configuration.get('HOST') as string;
 		const redirectUri = HOST.concat('/login');
 		const response: OAuthResponse = new OAuthResponse({
-			error: 'OAuth Login Failed.',
-			redirectUri,
+			redirectUri: `${redirectUri}?error=OauthLoginFailed`,
 		});
 		return response;
 	}
