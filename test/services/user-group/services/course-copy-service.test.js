@@ -2,12 +2,12 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
-const { NotFound } = require('../../../../src/errors');
+const { BadRequest } = require('../../../../src/errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe('course share service', () => {
+describe.only('course share service', () => {
 	let app;
 	let server;
 
@@ -59,7 +59,7 @@ describe('course share service', () => {
 				await app.service('/courses-share').find(params);
 				throw new Error('should have failed');
 			} catch (err) {
-				expect(err).to.be.instanceOf(NotFound);
+				expect(err).to.be.instanceOf(BadRequest);
 			}
 		});
 	});

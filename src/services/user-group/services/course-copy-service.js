@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const { nanoid } = require('nanoid');
 
-const { GeneralError, NotFound } = require('../../../errors');
+const { GeneralError, BadRequest } = require('../../../errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
@@ -122,7 +122,7 @@ class CourseShareService {
 	async find(params) {
 		const course = await courseModel.findOne({ shareToken: params.query.shareToken });
 		if (!course) {
-			throw new NotFound('could not find sharetoken');
+			throw new BadRequest('could not find sharetoken');
 		}
 		return course.name;
 	}
