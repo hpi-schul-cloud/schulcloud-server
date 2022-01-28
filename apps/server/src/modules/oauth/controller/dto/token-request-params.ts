@@ -1,4 +1,4 @@
-export class Data {
+export class TokenRequestParams {
 	client_id?: string;
 
 	client_secret?: string;

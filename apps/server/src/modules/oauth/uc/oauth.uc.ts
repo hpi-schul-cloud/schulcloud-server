@@ -7,7 +7,7 @@ import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Payload } from '../controller/dto/payload';
+import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauthTokenResponse';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
 import { OAuthResponse } from '../controller/dto/oauth.response';
@@ -67,10 +67,10 @@ export class OauthUc {
 		throw new Error('Authorization Query Object has no authorization code or error');
 	}
 
-	mapSystemConfigtoPayload(system: System, code: string): Payload {
-		const payload: Payload = {
+	mapSystemConfigtoPayload(system: System, code: string): TokenRequestPayload {
+		const tokenRequestPayload: TokenRequestPayload = {
 			token_endpoint: system.oauthconfig?.token_endpoint,
-			data: {
+			tokenRequestParams: {
 				client_id: system.oauthconfig?.client_id,
 				client_secret: system.oauthconfig?.client_secret,
 				redirect_uri: system.oauthconfig?.token_redirect_uri,
@@ -80,26 +80,26 @@ export class OauthUc {
 		};
 		if (
 			!(
-				payload.token_endpoint &&
-				payload.data.client_id &&
-				payload.data.client_secret &&
-				payload.data.redirect_uri &&
-				payload.data.grant_type
+				tokenRequestPayload.token_endpoint &&
+				tokenRequestPayload.tokenRequestParams.client_id &&
+				tokenRequestPayload.tokenRequestParams.client_secret &&
+				tokenRequestPayload.tokenRequestParams.redirect_uri &&
+				tokenRequestPayload.tokenRequestParams.grant_type
 			)
 		) {
 			throw new Error('check environment variables');
 		}
-		return payload;
+		return tokenRequestPayload;
 	}
 
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string, systemId: string) {
 		const system: System = await this.systemRepo.findById(systemId);
-		const payload: Payload = this.mapSystemConfigtoPayload(system, code);
+		const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
 		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
-			payload.token_endpoint,
+			tokenRequestPayload.token_endpoint,
 			{},
-			{ params: { ...payload.data } }
+			{ params: { ...tokenRequestPayload.tokenRequestParams } }
 		);
 		return responseToken.data;
 	}
