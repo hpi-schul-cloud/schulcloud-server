@@ -6,7 +6,6 @@ import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
@@ -38,21 +37,16 @@ export class OauthUc {
 			// create JWT for the user
 			const jwt: string = await this.getJWTForUser(user);
 			// send response back
-			const HOST = Configuration.get('HOST') as string;
-			const redirectUri = HOST.concat('/dashboard');
 			const response: OAuthResponse = new OAuthResponse({
 				jwt,
-				redirectUri,
 			});
 			return response;
 		} catch (error) {
 			this.logger.log(error);
 		}
 		// send error response back
-		const HOST = Configuration.get('HOST') as string;
-		const redirectUri = HOST.concat('/login');
 		const response: OAuthResponse = new OAuthResponse({
-			redirectUri: `${redirectUri}?error=OauthLoginFailed`,
+			errorcode: 'OauthLoginFailed',
 		});
 		return response;
 	}
