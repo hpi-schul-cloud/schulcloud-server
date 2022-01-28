@@ -719,8 +719,8 @@ describe('ImportUserRepo', () => {
 		beforeAll(async () => {
 			await em.getDriver().ensureIndexes();
 		});
-		describe('on user', () => {
-			it('[SPARSE] should unset multiple items', async () => {
+		describe('on user (match_userId)', () => {
+			it('[SPARSE] should allow to unset items (acceppt null or undefined multiple times)', async () => {
 				const school = schoolFactory.build();
 				await em.persistAndFlush(school);
 				const users = userFactory.buildList(10, { school });

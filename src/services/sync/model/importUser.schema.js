@@ -22,7 +22,12 @@ const importUserSchema = new Schema(
 		classNames: [{ type: String }],
 
 		// a match is an assigned local user
-		match_userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true, sparse: true },
+		match_userId: {
+			type: Schema.Types.ObjectId,
+			ref: 'user',
+			unique: true,
+			partialFilterExpression: { match_userId: { $type: 'objectId' } },
+		},
 		match_matchedBy: { type: String, enum: ['admin', 'auto'] },
 
 		flagged: { type: Boolean },

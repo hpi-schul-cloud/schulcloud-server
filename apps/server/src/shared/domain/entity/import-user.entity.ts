@@ -1,4 +1,4 @@
-import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, wrap } from '@mikro-orm/core';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 
@@ -98,15 +98,15 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	 * Update user-match together with matchedBy, take the field as read-only
 	 * @read
 	 */
-	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
-	@Index({ options: { unique: true, sparse: true } })
+	@ManyToOne('User', { fieldName: 'match_userId', eager: true, nullable: true })
+	@Index({ options: { unique: true, partialFilterExpression: { match_userId: { $type: 'objectId' } } } })
 	user?: User;
 
 	/**
 	 * References who set the user, take the field as read-only
 	 * @private
 	 */
-	@Enum({ fieldName: 'match_matchedBy' })
+	@Enum({ fieldName: 'match_matchedBy', nullable: true })
 	matchedBy?: MatchCreator;
 
 	@Property({ type: Boolean })
