@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { Response } from 'express';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
