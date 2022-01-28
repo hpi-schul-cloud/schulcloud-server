@@ -35,6 +35,5 @@ export const ALL_ENTITIES = [
 	SchoolNews,
 	TeamNews,
 	System,
-	// TODO move import user entities?
 	ImportUser,
 ];

@@ -29,6 +29,7 @@ export class ImportUserController {
 	): Promise<ImportUserListResponse> {
 		const options: IFindOptions<ImportUser> = { pagination: paginationQuery };
 		if (sortingQuery.sortBy) {
+			// TODO map sortingQuery.sortBy
 			options.order = { [sortingQuery.sortBy]: sortingQuery.sortOrder || SortOrder.asc };
 		}
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
