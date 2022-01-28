@@ -26,24 +26,35 @@ export class OauthUc {
 
 	// 0- start Oauth Process
 	async startOauth(query: AuthorizationQuery, systemId: string): Promise<OAuthResponse> {
-		// get the authorization code
-		const code: string = this.extractCode(query);
-		// get the Tokens using the authorization token
-		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
-		// extract the uuid from the token
-		const uuid = await this.decodeToken(queryToken.id_token);
-		// get the user using the uuid
-		const user: User = await this.findUserById(uuid);
-		// create JWT for the user
-		const jwt: string = await this.getJWTForUser(user);
+		try {
+			// get the authorization code
+			const code: string = this.extractCode(query);
+			// get the Tokens using the authorization token
+			const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
+			// extract the uuid from the token
+			const uuid = await this.decodeToken(queryToken.id_token);
+			// get the user using the uuid
+			const user: User = await this.findUserById(uuid);
+			// create JWT for the user
+			const jwt: string = await this.getJWTForUser(user);
+			// send response back
+			const HOST = Configuration.get('HOST') as string;
+			const redirectUri = HOST.concat('/dashboard');
+			const response: OAuthResponse = new OAuthResponse({
+				jwt,
+				redirectUri,
+			});
+			return response;
+		} catch (error) {
+			this.logger.log(error);
+		}
 		// send response back
 		const HOST = Configuration.get('HOST') as string;
 		const redirectUri = HOST.concat('/dashboard');
 		const response: OAuthResponse = new OAuthResponse({
-			jwt,
+			error: 'OAuth Login Failed.',
 			redirectUri,
 		});
-		// res.cookie('jwt', jwt);
 		return response;
 	}
 
