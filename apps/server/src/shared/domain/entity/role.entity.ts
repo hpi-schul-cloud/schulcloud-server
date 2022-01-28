@@ -10,8 +10,7 @@ export interface IRoleProperties {
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ name: 'primaryRoleSearchOperation' })
-	@Unique()
+	@Index({ options: { unique: true } })
 	name: string;
 
 	// @Enum({ items: ['a', 'b', 'c'] }) in array with no permission is valid => validator function

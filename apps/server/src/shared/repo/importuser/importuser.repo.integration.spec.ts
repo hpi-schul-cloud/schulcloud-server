@@ -21,7 +21,7 @@ describe('ImportUserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
 			providers: [ImportUserRepo],
 		}).compile();
 		repo = module.get(ImportUserRepo);
@@ -712,6 +712,51 @@ describe('ImportUserRepo', () => {
 			const [results2, count2] = await repo.findImportUsers(school, {}, {});
 			expect(results2.length).toEqual(10);
 			expect(count2).toEqual(10);
+		});
+	});
+
+	describe('Indexes', () => {
+		beforeAll(async () => {
+			await em.getDriver().ensureIndexes();
+		});
+		describe('on user', () => {
+			it('[SPARSE] should unset multiple items', async () => {
+				const school = schoolFactory.build();
+				await em.persistAndFlush(school);
+				const users = userFactory.buildList(10, { school });
+				await em.persistAndFlush(users);
+				const importUsers = importUserFactory.buildList(10, {
+					school,
+				});
+				// eslint-disable-next-line no-restricted-syntax
+				for (const [i, importuser] of importUsers.entries()) {
+					importuser.setMatch(users[i], MatchCreator.AUTO);
+				}
+				await em.persistAndFlush(importUsers);
+				em.clear();
+				const [reloadedImportUsers, count] = await repo.findImportUsers(school);
+				const result = reloadedImportUsers.map(async (importuser) => {
+					expect(importuser.user).toBeDefined();
+					expect(importuser.matchedBy).toBeDefined();
+					importuser.revokeMatch();
+					await em.persistAndFlush(importuser);
+				});
+				await Promise.all(result);
+			});
+			it('[UNIQUE] should prohibit same match of one user ', async () => {
+				await em.getDriver().ensureIndexes();
+				const school = schoolFactory.build();
+				await em.persistAndFlush(school);
+				const user = userFactory.build({ school });
+				await em.persistAndFlush(user);
+				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
+				await em.persistAndFlush(importUser);
+				const importUserWithSameMatch = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
+
+				await expect(async () => em.persistAndFlush(importUserWithSameMatch)).rejects.toThrowError(
+					'duplicate key error'
+				);
+			});
 		});
 	});
 });

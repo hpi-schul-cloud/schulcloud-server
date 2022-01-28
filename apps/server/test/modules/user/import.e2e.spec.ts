@@ -7,7 +7,7 @@ import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser } from '@shared/domain';
+import { ICurrentUser, ImportUser, School, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ImportUserListResponse, UpdateMatchParams } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
@@ -17,17 +17,18 @@ describe('ImportUser Controller (e2e)', () => {
 	let orm: MikroORM;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
-	const school = schoolFactory.build();
 
-	const authenticatedUser = async (permissions: UserImportPermissions[]) => {
+	const authenticatedUser = async (permissions: UserImportPermissions[] = []) => {
+		const school = schoolFactory.build();
 		const roles = [roleFactory.build({ name: 'administrator', permissions })];
+		await em.persistAndFlush([school, ...roles]);
 		const user = userFactory.build({
 			school,
 			roles,
 		});
 		await em.persistAndFlush([user]);
 		em.clear();
-		return user;
+		return { user, roles, school };
 	};
 
 	beforeAll(async () => {
@@ -60,6 +61,7 @@ describe('ImportUser Controller (e2e)', () => {
 	describe('[GET] /user/import', () => {
 		let importusers: ImportUser[];
 		beforeAll(async () => {
+			const { school } = await authenticatedUser();
 			importusers = importUserFactory.buildList(10, { school });
 			await em.persistAndFlush(importusers);
 		});
@@ -69,32 +71,28 @@ describe('ImportUser Controller (e2e)', () => {
 		});
 
 		describe('Generic Errors', () => {
-			beforeEach(async () => {
-				const user = await authenticatedUser([]);
-				currentUser = mapUserToCurrentUser(user);
-			});
 			describe('When authorization is missing', () => {
-				it('GET /user/import is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
+				let user: User;
+				beforeEach(async () => {
+					({ user } = await authenticatedUser());
 					currentUser = mapUserToCurrentUser(user);
+				});
+				it('GET /user/import is UNAUTHORIZED', async () => {
 					await request(app.getHttpServer()).get('/user/import').expect(401);
 				});
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(401);
+				});
 				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
 					const id = new ObjectId().toString();
 					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
 				});
 				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
 					const id = new ObjectId().toString();
 					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
 				});
 				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
@@ -102,8 +100,10 @@ describe('ImportUser Controller (e2e)', () => {
 			});
 
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW', () => {
+				let user: User;
+				let school: School;
 				beforeEach(async () => {
-					const user = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]);
+					({ school, user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
 					currentUser = mapUserToCurrentUser(user);
 				});
 				it('GET /user/import responds with importusers', async () => {
@@ -112,59 +112,54 @@ describe('ImportUser Controller (e2e)', () => {
 					await em.persistAndFlush([usermatch, importuser]);
 					await request(app.getHttpServer()).get('/user/import').expect(200);
 				});
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(200);
+				});
 				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
 					const id = new ObjectId().toString();
 					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
 				});
 				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
 					const id = new ObjectId().toString();
 					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
 				});
 				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
 				});
 			});
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
+				let user: User;
+				let school: School;
 				beforeEach(async () => {
-					const user = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
+					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
 				});
-				it('GET /user/import responds with importusers', async () => {
+				it('GET /user/import is UNAUTHORIZED', async () => {
 					const usermatch = userFactory.build({ school });
 					const importuser = importUserFactory.build({ school });
 					await em.persistAndFlush([usermatch, importuser]);
 					em.clear();
-					const response = await request(app.getHttpServer()).get('/user/import').expect(200);
-					expect(response.body).toMatchObject(ImportUserListResponse);
+					await request(app.getHttpServer()).get('/user/import').expect(401);
 				});
-				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(401);
+				});
+				it('PATCH /user/import/:id/match is allowed', async () => {
 					const id = new ObjectId().toString();
 					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
-					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(200);
 				});
-				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
+				it('DELETE /user/import/:id/match is allowed', async () => {
 					const id = new ObjectId().toString();
-					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(200);
 				});
-				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
-					const user = await authenticatedUser([]);
-					currentUser = mapUserToCurrentUser(user);
+				it('PATCH /user/import/:id/flag is allowed', async () => {
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
-					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(200);
 				});
 			});
 		});

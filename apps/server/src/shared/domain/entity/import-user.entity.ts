@@ -1,4 +1,4 @@
-import { Entity, Enum, IdentifiedReference, ManyToOne, Property, wrap } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 
@@ -99,6 +99,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	 * @read
 	 */
 	@ManyToOne('User', { fieldName: 'match_userId', eager: true })
+	@Index({ options: { unique: true, sparse: true } })
 	user?: User;
 
 	/**

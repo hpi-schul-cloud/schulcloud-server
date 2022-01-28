@@ -14,8 +14,7 @@ export interface IUserProperties {
 @Entity({ tableName: 'users' })
 export class User extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ name: 'externalUserIdentifier' })
-	@Unique()
+	@Index({ options: { unique: true } })
 	email: string;
 
 	@Property()
