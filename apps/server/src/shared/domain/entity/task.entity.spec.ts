@@ -11,6 +11,7 @@ import {
 
 import { Task } from './task.entity';
 import { Submission } from './submission.entity';
+import { User } from './user.entity';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -43,6 +44,51 @@ describe('Task Entity', () => {
 			const task = taskFactory.build();
 			Object.assign(task, { private: undefined });
 			expect(task.isDraft()).toEqual(false);
+		});
+	});
+
+	describe('isFinished', () => {
+		let user: User;
+
+		beforeEach(() => {
+			user = userFactory.build();
+		});
+
+		it('should return true if finished contains user', () => {
+			const task = taskFactory.finished(user).build();
+			expect(task.isFinishedForUser(user)).toEqual(true);
+		});
+
+		it('should return true if course is finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			jest.spyOn(course, 'isFinished').mockReturnValue(true);
+			expect(task.isFinishedForUser(user)).toEqual(true);
+		});
+
+		it('should return false if finished does not contain user & course is not finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			jest.spyOn(course, 'isFinished').mockReturnValue(false);
+			expect(task.isFinishedForUser(user)).toEqual(false);
+		});
+
+		it('should return false if finished is undefined & course is not finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+
+			Object.assign(task, { finished: undefined });
+			jest.spyOn(course, 'isFinished').mockReturnValue(false);
+			expect(task.isFinishedForUser(user)).toEqual(false);
+		});
+
+		it('should return true if finished is undefined & course is finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+
+			Object.assign(task, { finished: undefined });
+			jest.spyOn(course, 'isFinished').mockReturnValue(true);
+			expect(task.isFinishedForUser(user)).toEqual(true);
 		});
 	});
 
