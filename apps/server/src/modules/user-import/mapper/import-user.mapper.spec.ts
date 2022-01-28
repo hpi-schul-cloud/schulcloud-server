@@ -1,6 +1,6 @@
 import { MikroORM, Reference } from '@mikro-orm/core';
 import { MatchCreator, MatchCreatorScope, RoleName } from '@shared/domain';
-import { importUserFactory, setupEntities, userFactory } from '@shared/testing';
+import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ImportUserFilterQuery, MatchFilterQuery, RoleNameFilterQuery, UserMatchResponse } from '../controller/dto';
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
@@ -52,13 +52,14 @@ describe('[ImportUserMapper]', () => {
 		});
 		describe('when user and matchedBy is defined', () => {
 			it('should map match', () => {
-				const user = userFactory.build();
-				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school: user.school });
+				const school = schoolFactory.buildWithId();
+				const user = userFactory.build({ school });
+				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 				const mockResponse = Object.create(UserMatchResponse, {}) as UserMatchResponse;
 				const userMapperSpy = jest.spyOn(UserMatchMapper, 'mapToResponse').mockReturnValue(mockResponse);
 				const result = ImportUserMapper.mapToResponse(importUser);
 				expect(result.match).toEqual(mockResponse);
-				expect(userMapperSpy).toBeCalledWith(new Reference(user), MatchCreator.AUTO);
+				expect(userMapperSpy).toBeCalledWith(user, MatchCreator.AUTO);
 				userMapperSpy.mockRestore();
 			});
 		});
