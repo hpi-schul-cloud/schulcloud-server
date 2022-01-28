@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property, Index, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Index } from '@mikro-orm/core';
 import type { Role } from './role.entity';
 import type { School } from './school.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -14,7 +14,7 @@ export interface IUserProperties {
 @Entity({ tableName: 'users' })
 export class User extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ options: { unique: true } })
+	@Index({ name: 'externalUserIdentifier', options: { unique: true } })
 	email: string;
 
 	@Property()
