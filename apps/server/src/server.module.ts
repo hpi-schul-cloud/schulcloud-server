@@ -1,5 +1,5 @@
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ALL_ENTITIES } from '@shared/domain';
@@ -41,7 +41,7 @@ const serverModules = [
 	}),
 ];
 
-const defaultMikroOrmOptions = {
+const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
