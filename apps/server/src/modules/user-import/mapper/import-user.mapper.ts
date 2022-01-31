@@ -1,5 +1,7 @@
+import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { ImportUser, IImportUserScope, User } from '@shared/domain';
+import { SortingQuery } from '@shared/controller';
+import { ImportUser, IImportUserScope, SortOrderMap } from '@shared/domain';
 import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
@@ -7,6 +9,23 @@ import { RoleNameMapper } from './role-name.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
 export class ImportUserMapper {
+	static mapSortingQueryToDomain(sortingQuery: SortingQuery): SortOrderMap<ImportUser> | undefined {
+		const { sortBy } = sortingQuery;
+		const knownSortByKeys = sortBy as Partial<keyof ImportUser>;
+		const sortOrderMap: SortOrderMap<ImportUser> = {};
+		if (StringValidator.isNotEmptyString(knownSortByKeys)) {
+			switch (knownSortByKeys) {
+				case 'firstName':
+				case 'lastName':
+					sortOrderMap[knownSortByKeys] = sortingQuery.sortOrder;
+					return sortOrderMap;
+				default:
+					throw new BadRequestException();
+			}
+		}
+		return undefined;
+	}
+
 	static mapToResponse(importUser: ImportUser): ImportUserResponse {
 		const dto = new ImportUserResponse({
 			importUserId: importUser.id,

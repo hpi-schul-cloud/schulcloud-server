@@ -28,10 +28,8 @@ export class ImportUserController {
 		@Query() paginationQuery: PaginationQuery
 	): Promise<ImportUserListResponse> {
 		const options: IFindOptions<ImportUser> = { pagination: paginationQuery };
-		if (sortingQuery.sortBy) {
-			// TODO map sortingQuery.sortBy
-			options.order = { [sortingQuery.sortBy]: sortingQuery.sortOrder || SortOrder.asc };
-		}
+		options.order = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
+
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;

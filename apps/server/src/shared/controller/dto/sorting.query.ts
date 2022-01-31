@@ -15,5 +15,5 @@ export class SortingQuery {
 	@IsOptional()
 	@IsEnum(SortOrder)
 	@ApiPropertyOptional({ enum: SortOrder })
-	sortOrder?: SortOrder;
+	sortOrder: SortOrder = SortOrder.asc;
 }
