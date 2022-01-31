@@ -9,7 +9,12 @@ import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, us
 import { UserImportPermissions } from '@src/modules/user-import/constants';
 import { ICurrentUser, ImportUser, MatchCreator, School, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UpdateMatchParams } from '@src/modules/user-import/controller/dto';
+import {
+	ImportUserResponse,
+	MatchCreatorResponse,
+	UpdateMatchParams,
+	UserMatchResponse,
+} from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -242,77 +247,132 @@ describe('ImportUser Controller (e2e)', () => {
 		});
 
 		describe('Acceptance Criteria', () => {
-			describe('[findAllImportUsers]', () => {
-				it('should return importUsers of current school', async () => {});
-				it.todo('should return importUsers as ImportUsersListResponse');
-				it.todo('should return importUsers with all properties');
-
-				describe('when use sorting', () => {
-					it.todo('should sort by firstname asc');
-					it.todo('should sort by firstname desc');
-					it.todo('should sort by lastname asc');
-					it.todo('should sort by lastname desc');
+			const expectAllPropertiesExist = (data: ImportUserResponse, matchExists: boolean) => {
+				expect(data).toEqual(
+					expect.objectContaining({
+						importUserId: expect.any(String),
+						firstName: expect.stringMatching('John'),
+						lastName: expect.stringMatching('Doe'),
+						loginName: expect.stringMatching('john'),
+						roleNames: expect.any(Array),
+						classNames: expect.any(Array),
+						flagged: expect.any(Boolean),
+					} as Partial<Record<keyof ImportUserResponse, unknown>>)
+				);
+				expect(data.roleNames.length).toBeGreaterThanOrEqual(1);
+				expect(data.classNames.length).toBeGreaterThanOrEqual(1);
+				if (matchExists === true) {
+					expect(data.match).toBeDefined();
+					expect(data.match?.userId).toEqual(expect.any(String));
+					expect(data.match?.firstName).toEqual(expect.stringMatching('John'));
+					expect(data.match?.lastName).toEqual(expect.stringMatching('Doe'));
+					expect(data.match?.loginName).toEqual(expect.stringMatching('user-'));
+					expect(data.match?.roleNames).toEqual(expect.any(Array));
+					expect(data.match?.matchedBy).toEqual(expect.stringMatching(/(admin|auto)/));
+					// expect(data.match?.roleNames.length).toBeGreaterThanOrEqual(1); // TODO
+				}
+			};
+			describe('find', () => {
+				let user: User;
+				let school: School;
+				beforeEach(async () => {
+					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
+					currentUser = mapUserToCurrentUser(user);
 				});
-				describe('when use pagination', () => {
-					it.todo('should skip importUsers');
-					it.todo('should limit importUsers');
-					it.todo('should have total higher than current page');
-				});
 
-				describe('when apply filters', () => {
-					it.todo('should filter by firstname');
-					it.todo('should filter by lastname');
-					it.todo('should filter by username');
-					it.todo('should filter by one role of student, teacher, or admin');
-					it.todo('should filter by class');
-					it.todo('should filter by match type none');
-					it.todo('should filter by match type admin');
-					it.todo('should filter by match type auto');
-					it.todo('should filter by multiple match types');
-					it.todo('should filter by flag enabled');
-				});
-			});
+				describe('[findAllUnmatchedUsers]', () => {
+					describe('[GET] user/import/unassigned', () => {
+						it.todo('should respond with users of own school');
+						it.todo('should not respond with assigned users');
+						it.todo('should respond userMatch with all properties');
 
-			describe('[setMatch]', () => {
-				describe('[PATCH] user/import/:id/match', () => {
-					it.todo('should set a match');
-					it.todo('should update an existing match');
-					it.todo('should respond importUser with all properties');
-					it.todo('should respond importUser with MANUAL match type');
-				});
-			});
+						describe('when use pagination', () => {
+							it.todo('should skip users');
+							it.todo('should limit users');
+							it.todo('should have total higher than current page');
+						});
 
-			describe('[removeMatch]', () => {
-				describe('[DELETE] user/import/:id/match', () => {
-					it.todo('should remove a match');
-					it.todo('should not fail when importuser is not having a match');
-					it.todo('should not fail when removing matches multiple times from different import users'); // TODO
-					it.todo('should respond importUser with all properties');
+						describe('when apply filters', () => {
+							it.todo('should match name in firstname');
+							it.todo('should match name in lastname');
+						});
+					});
 				});
-			});
-			describe('[updateFlag]', () => {
-				describe('[PATCH] user/import/:id/flag', () => {
-					it.todo('should add a flag');
-					it.todo('should remove a flag');
-					it.todo('should respond importUser with all properties');
-				});
-			});
+				describe('[findAllImportUsers]', () => {
+					it('should return importUsers of current school', async () => {});
+					it.todo('should return importUsers as ImportUsersListResponse');
+					it.todo('should return importUsers with all properties');
 
-			describe('[findAllUnmatchedUsers]', () => {
-				describe('[GET] user/import/unassigned', () => {
-					it.todo('should respond with users of own school');
-					it.todo('should not respond with assigned users');
-					it.todo('should respond userMatch with all properties');
-
+					describe('when use sorting', () => {
+						it.todo('should sort by firstname asc');
+						it.todo('should sort by firstname desc');
+						it.todo('should sort by lastname asc');
+						it.todo('should sort by lastname desc');
+					});
 					describe('when use pagination', () => {
-						it.todo('should skip users');
-						it.todo('should limit users');
+						it.todo('should skip importUsers');
+						it.todo('should limit importUsers');
 						it.todo('should have total higher than current page');
 					});
 
 					describe('when apply filters', () => {
-						it.todo('should match name in firstname');
-						it.todo('should match name in lastname');
+						it.todo('should filter by firstname');
+						it.todo('should filter by lastname');
+						it.todo('should filter by username');
+						it.todo('should filter by one role of student, teacher, or admin');
+						it.todo('should filter by class');
+						it.todo('should filter by match type none');
+						it.todo('should filter by match type admin');
+						it.todo('should filter by match type auto');
+						it.todo('should filter by multiple match types');
+						it.todo('should filter by flag enabled');
+					});
+				});
+			});
+			describe('updates', () => {
+				let user: User;
+				let school: School;
+				beforeEach(async () => {
+					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+					currentUser = mapUserToCurrentUser(user);
+				});
+
+				describe('[setMatch]', () => {
+					describe('[PATCH] user/import/:id/match', () => {
+						it('should set a match', async () => {
+							const userMatch = userFactory.build({
+								school,
+								roles: roleFactory.buildList(1, { name: 'teacher' }),
+							});
+							const unmatchedImportUser = importUserFactory.build({ school, classNames: ['firstClass', 'otherClass'] });
+							await em.persistAndFlush([userMatch, unmatchedImportUser]);
+							em.clear();
+							const params: UpdateMatchParams = { userId: userMatch.id };
+							const result = await request(app.getHttpServer())
+								.patch(`/user/import/${unmatchedImportUser.id}/match`)
+								.send(params)
+								.expect(200);
+							expectAllPropertiesExist(result.body as ImportUserResponse, true);
+						});
+						it.todo('should update an existing match');
+						it.todo('should respond importUser with all properties');
+						it.todo('should respond importUser with MANUAL match type');
+					});
+				});
+
+				describe('[removeMatch]', () => {
+					describe('[DELETE] user/import/:id/match', () => {
+						it.todo('should remove a match');
+						it.todo('should not fail when importuser is not having a match');
+						it.todo('should not fail when removing matches multiple times from different import users'); // TODO
+						it.todo('should respond importUser with all properties');
+					});
+				});
+				describe('[updateFlag]', () => {
+					describe('[PATCH] user/import/:id/flag', () => {
+						it.todo('should add a flag');
+						it.todo('should remove a flag');
+						it.todo('should respond importUser with all properties');
 					});
 				});
 			});
