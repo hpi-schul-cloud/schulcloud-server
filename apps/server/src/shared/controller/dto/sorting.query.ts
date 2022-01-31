@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 enum SortOrder {
@@ -6,11 +6,11 @@ enum SortOrder {
 	desc = 'desc',
 }
 
-export class SortingQuery {
-	@IsOptional()
-	@IsString()
-	@ApiPropertyOptional({ type: String })
-	sortBy?: string;
+export abstract class SortingQuery<T> {
+	/**
+	 * Set type and Decorators in extending classes
+	 */
+	abstract sortBy?: T;
 
 	@IsOptional()
 	@IsEnum(SortOrder)

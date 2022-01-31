@@ -1,29 +1,27 @@
 import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { SortingQuery } from '@shared/controller';
 import { ImportUser, IImportUserScope, SortOrderMap } from '@shared/domain';
 import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
+import { ImportUserSortByQuery, ImportUserSortingQuery } from '../controller/dto/import-user-sorting.query';
 import { ImportUserMatchMapper } from './match.mapper';
 
 import { RoleNameMapper } from './role-name.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
 export class ImportUserMapper {
-	static mapSortingQueryToDomain(sortingQuery: SortingQuery): SortOrderMap<ImportUser> | undefined {
+	static mapSortingQueryToDomain(sortingQuery: ImportUserSortingQuery): SortOrderMap<ImportUser> | undefined {
 		const { sortBy } = sortingQuery;
-		const knownSortByKeys = sortBy as Partial<keyof ImportUser>;
-		const sortOrderMap: SortOrderMap<ImportUser> = {};
-		if (StringValidator.isNotEmptyString(knownSortByKeys)) {
-			switch (knownSortByKeys) {
-				case 'firstName':
-				case 'lastName':
-					sortOrderMap[knownSortByKeys] = sortingQuery.sortOrder;
-					return sortOrderMap;
-				default:
-					throw new BadRequestException();
-			}
+		if (sortBy == null) return undefined;
+		const result: SortOrderMap<ImportUser> = {};
+		switch (sortBy) {
+			case ImportUserSortByQuery.FIRSTNAME:
+			case ImportUserSortByQuery.LASTNAME:
+				result[sortBy] = sortingQuery.sortOrder;
+				break;
+			default:
+				throw new BadRequestException();
 		}
-		return undefined;
+		return result;
 	}
 
 	static mapToResponse(importUser: ImportUser): ImportUserResponse {

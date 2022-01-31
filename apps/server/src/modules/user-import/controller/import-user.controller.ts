@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationQuery, SortingQuery, ParseObjectIdPipe } from '@shared/controller';
-import { ICurrentUser, IFindOptions, SortOrder, ImportUser, User } from '@shared/domain';
+import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
+import { ICurrentUser, IFindOptions, ImportUser, User } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ImportUserFilterQuery } from './dto/import-user-filter.query';
 import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
@@ -13,6 +13,7 @@ import { UserFilterQuery } from './dto/user-filter.query';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
 import { UpdateFlagParams } from './dto/update-flag.params';
+import { ImportUserSortingQuery } from './dto/import-user-sorting.query';
 
 @ApiTags('UserImport')
 @Authenticate('jwt')
@@ -24,12 +25,11 @@ export class ImportUserController {
 	async findAllImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: ImportUserFilterQuery,
-		@Query() sortingQuery: SortingQuery,
+		@Query() sortingQuery: ImportUserSortingQuery,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<ImportUserListResponse> {
 		const options: IFindOptions<ImportUser> = { pagination: paginationQuery };
 		options.order = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
-
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
 		const { skip, limit } = paginationQuery;
