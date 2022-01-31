@@ -39,7 +39,7 @@ export class TaskWithStatusVo {
 	}
 }
 
-export type TaskParentDescriptions = { name: string; description: string; color: string };
+export type TaskParentDescriptions = { courseName: string; lessonName: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
 @Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
@@ -202,18 +202,18 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	// TODO: based on the parent relationship
-	getDescriptions(): TaskParentDescriptions {
+	getParentData(): TaskParentDescriptions {
 		let descriptions: TaskParentDescriptions;
 		if (this.course) {
 			descriptions = {
-				name: this.course.name,
-				description: this.lesson ? this.lesson.name : '',
+				courseName: this.course.name,
+				lessonName: this.lesson ? this.lesson.name : '',
 				color: this.course.color,
 			};
 		} else {
 			descriptions = {
-				name: '',
-				description: '',
+				courseName: '',
+				lessonName: '',
 				color: '#ACACAC',
 			};
 		}

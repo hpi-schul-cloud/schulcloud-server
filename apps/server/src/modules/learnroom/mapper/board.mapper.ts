@@ -16,7 +16,7 @@ export class BoardMapper {
 		board.elements.forEach((element) => {
 			if (element.type === 'task') {
 				const { task: boardTask, status } = element.content as TaskWithStatusVo;
-				const boardTaskDesc = boardTask.getDescriptions();
+				const boardTaskDesc = boardTask.getParentData();
 				const boardTaskStatus = BoardTaskStatusMapper.mapToResponse(status);
 
 				const mappedTask = new BoardTaskResponse({
