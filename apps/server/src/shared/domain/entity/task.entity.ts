@@ -9,6 +9,7 @@ import type { User } from './user.entity';
 
 export interface ITaskProperties {
 	name: string;
+	description?: string;
 	availableDate?: Date;
 	dueDate?: Date;
 	private?: boolean;
@@ -48,6 +49,9 @@ export class Task extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Property()
+	description: string;
+
+	@Property()
 	availableDate?: Date;
 
 	@Property()
@@ -76,6 +80,7 @@ export class Task extends BaseEntityWithTimestamps {
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
+		this.description = props.description || '';
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;
