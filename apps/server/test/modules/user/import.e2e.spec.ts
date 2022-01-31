@@ -7,9 +7,9 @@ import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser, School, User } from '@shared/domain';
+import { ICurrentUser, ImportUser, MatchCreator, School, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ImportUserListResponse, UpdateMatchParams } from '@src/modules/user-import/controller/dto';
+import { UpdateMatchParams } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -148,18 +148,26 @@ describe('ImportUser Controller (e2e)', () => {
 					await request(app.getHttpServer()).get('/user/import/unassigned').expect(401);
 				});
 				it('PATCH /user/import/:id/match is allowed', async () => {
-					const id = new ObjectId().toString();
-					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
-					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(200);
+					const userMatch = userFactory.build({ school });
+					const importUser = importUserFactory.build({ school });
+					await em.persistAndFlush([userMatch, importUser]);
+					em.clear();
+					const params: UpdateMatchParams = { userId: user.id };
+					await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/match`).send(params).expect(200);
 				});
 				it('DELETE /user/import/:id/match is allowed', async () => {
-					const id = new ObjectId().toString();
-					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(200);
+					const userMatch = userFactory.build({ school });
+					const importUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
+					await em.persistAndFlush([userMatch, importUser]);
+					em.clear();
+					await request(app.getHttpServer()).delete(`/user/import/${importUser.id}/match`).send().expect(200);
 				});
 				it('PATCH /user/import/:id/flag is allowed', async () => {
-					const id = new ObjectId().toString();
+					const importUser = importUserFactory.build({ school });
+					await em.persistAndFlush(importUser);
+					em.clear();
 					const params: UpdateFlagParams = { flagged: true };
-					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(200);
+					await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/flag`).send(params).expect(200);
 				});
 			});
 		});
