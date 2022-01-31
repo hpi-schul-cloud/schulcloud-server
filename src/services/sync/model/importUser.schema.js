@@ -2,14 +2,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const userMatchSchema = new Schema(
-	{
-		userId: { type: Schema.Types.ObjectId, ref: 'user', unique: true, sparse: true },
-		matchedBy: { type: String, enum: ['admin', 'auto'] },
-	},
-	{ timestamps: true }
-);
-
 const importUserSchema = new Schema(
 	{
 		schoolId: {
@@ -28,8 +20,15 @@ const importUserSchema = new Schema(
 		email: { type: String, required: true, lowercase: true },
 		roles: [{ type: String }],
 		classNames: [{ type: String }],
-		match: userMatchSchema,
-		flagged: { type: Boolean, default: false, required: true },
+
+		// a match is an assigned local user
+		match_userId: {
+			type: Schema.Types.ObjectId,
+			ref: 'user',
+		},
+		match_matchedBy: { type: String, enum: ['admin', 'auto'] },
+
+		flagged: { type: Boolean },
 	},
 	{
 		timestamps: true,
@@ -39,6 +38,10 @@ const importUserSchema = new Schema(
 importUserSchema.index({ schoolId: 1, ldapId: 1 }, { unique: true });
 importUserSchema.index({ schoolId: 1, ldapDn: 1 }, { unique: true });
 importUserSchema.index({ schoolId: 1, email: 1 }, { unique: true });
+importUserSchema.index(
+	{ match_userId: 1 },
+	{ unique: true, partialFilterExpression: { match_userId: { $type: 'objectId' } } }
+);
 
 const importUserModel = mongoose.model('importUser', importUserSchema);
 
