@@ -283,7 +283,7 @@ describe('TaskUC', () => {
 		});
 
 		it('should return read status vo for tasks', async () => {
-			const student = userFactory.build();
+			const student = user;
 			const task = taskFactory.finished(student).build();
 			const mockRestore = findAllMock({ tasks: [task] });
 			const status = task.createStudentStatusForUser(student);
@@ -555,7 +555,14 @@ describe('TaskUC', () => {
 			const [result] = await service.findAll(user.id, paginationQuery);
 			expect(result[0]).toEqual({
 				task,
-				status: { submitted: 0, maxSubmissions: 1, graded: 0, isDraft: false, isSubstitutionTeacher: false },
+				status: {
+					submitted: 0,
+					maxSubmissions: 1,
+					graded: 0,
+					isDraft: false,
+					isFinished: false,
+					isSubstitutionTeacher: false,
+				},
 			});
 			expect(result[0].task.course).toBeDefined();
 
@@ -597,6 +604,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -622,6 +630,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -648,6 +657,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -677,6 +687,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: 1,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -756,6 +767,7 @@ describe('TaskUC', () => {
 					maxSubmissions: course.getNumberOfStudents(),
 					graded: 0,
 					isDraft: true,
+					isFinished: false,
 					isSubstitutionTeacher: false,
 				},
 			});
@@ -813,6 +825,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -839,6 +852,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -865,6 +879,7 @@ describe('TaskUC', () => {
 				submitted: 1,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -894,6 +909,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -925,6 +941,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
@@ -953,6 +970,7 @@ describe('TaskUC', () => {
 				submitted: 2,
 				maxSubmissions: course.getNumberOfStudents(),
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 
