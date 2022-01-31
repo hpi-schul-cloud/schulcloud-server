@@ -75,7 +75,7 @@ class UserAction extends BaseConsumerAction {
 			// revoke other previously auto-matched import users
 			await Promise.all(
 				foundImportUsers.map((foundImportUser) => {
-					if (foundImportUser.match && foundImportUser.match.matchedBy === 'auto') {
+					if (foundImportUser.match_userId && foundImportUser.match_matchedBy === 'auto') {
 						delete foundImportUser.match_userId;
 						delete foundImportUser.match_matchedBy;
 						return UserRepo.createOrUpdateImportUser(
