@@ -173,31 +173,77 @@ describe('ImportUser Controller (e2e)', () => {
 		});
 
 		describe('Business Errors', () => {
+			let user: User;
+			let school: School;
+			beforeEach(async () => {
+				({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+				currentUser = mapUserToCurrentUser(user);
+			});
 			describe('[setMatch]', () => {
 				describe('When set a match on import user', () => {
-					it.todo('should fail for different school of match- and import-user');
-					it.todo('should fail for different school of current- and import-user');
+					it('should fail for different school of match- and import-user', async () => {
+						const importUser = importUserFactory.build({ school });
+						const otherSchool = schoolFactory.build();
+						const userMatch = userFactory.build({ school: otherSchool });
+						await em.persistAndFlush([userMatch, importUser]);
+						em.clear();
+						const params: UpdateMatchParams = { userId: userMatch.id };
+						await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/match`).send(params).expect(403);
+					});
+					it('should fail for different school of current-/authenticated- and import-user', async () => {
+						const otherSchool = schoolFactory.build();
+						const importUser = importUserFactory.build({ school: otherSchool });
+						const userMatch = userFactory.build({ school: otherSchool });
+						await em.persistAndFlush([userMatch, importUser]);
+						em.clear();
+						const params: UpdateMatchParams = { userId: userMatch.id };
+						await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/match`).send(params).expect(403);
+					});
 				});
 
-				describe('When set a match with a user twice', () => {
-					it.todo('should fail');
+				describe('When set a match with a single user twice', () => {
+					it('should fail', async () => {
+						const userMatch = userFactory.build({ school });
+						const importUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
+						const unmatchedImportUser = importUserFactory.build({ school });
+						await em.persistAndFlush([userMatch, importUser]);
+						em.clear();
+						const params: UpdateMatchParams = { userId: userMatch.id };
+						await request(app.getHttpServer())
+							.patch(`/user/import/${unmatchedImportUser.id}/match`)
+							.send(params)
+							.expect(400);
+					});
 				});
 			});
 			describe('[removeMatch]', () => {
 				describe('When remove a match on import user', () => {
-					it.todo('should fail for different school of current- and import-user');
+					it('should fail for different school of current- and import-user', async () => {
+						const otherSchool = schoolFactory.build();
+						const importUser = importUserFactory.build({ school: otherSchool });
+						await em.persistAndFlush(importUser);
+						em.clear();
+						await request(app.getHttpServer()).delete(`/user/import/${importUser.id}/match`).send().expect(403);
+					});
 				});
 			});
 			describe('[updateFlag]', () => {
-				describe('When remove a match on import user', () => {
-					it.todo('should fail for different school of current- and import-user');
+				describe('When change flag on import user', () => {
+					it('should fail for different school of current- and import-user', async () => {
+						const otherSchool = schoolFactory.build();
+						const importUser = importUserFactory.build({ school: otherSchool });
+						await em.persistAndFlush(importUser);
+						em.clear();
+						const params: UpdateFlagParams = { flagged: true };
+						await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/flag`).send(params).expect(403);
+					});
 				});
 			});
 		});
 
 		describe('Acceptance Criteria', () => {
 			describe('[findAllImportUsers]', () => {
-				it.todo('should return importUsers of current school');
+				it('should return importUsers of current school', async () => {});
 				it.todo('should return importUsers as ImportUsersListResponse');
 				it.todo('should return importUsers with all properties');
 
