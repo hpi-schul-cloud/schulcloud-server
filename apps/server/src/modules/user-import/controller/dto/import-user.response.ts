@@ -1,9 +1,8 @@
-/* istanbul ignore file */ // TODO remove when implementation exists
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';
+import type { UserMatchResponse } from '.';
 import { RoleNameResponse } from './role-name.response';
-import { UserMatchResponse } from './user-match.response';
 
 export class ImportUserResponse {
 	constructor(props: ImportUserResponse) {
@@ -14,6 +13,7 @@ export class ImportUserResponse {
 		this.roleNames = props.roleNames;
 		this.classNames = props.classNames;
 		if (props.match != null) this.match = props.match;
+		if (props.flagged === true) this.flagged = true;
 	}
 
 	@IsMongoId()
@@ -53,6 +53,9 @@ export class ImportUserResponse {
 
 	@ApiPropertyOptional({ description: 'assignemnt to a local user account' })
 	match?: UserMatchResponse;
+
+	@ApiProperty({ description: 'manual flag to apply it as filter' })
+	flagged = false;
 }
 
 export class ImportUserListResponse extends PaginationResponse<ImportUserResponse[]> {

@@ -1,5 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { PermissionService } from '.';
@@ -97,5 +98,61 @@ describe('resolvePermissions', () => {
 		const user = userFactory.build({ roles: [role] });
 
 		expect(() => service.resolvePermissions(user)).toThrowError();
+	});
+
+	describe('School authorization', () => {
+		describe('[hasUserAllSchoolPermissions]', () => {
+			it('should fail, when no permissions are given to be checked', () => {
+				const user = userFactory.build();
+				const result = service.hasUserAllSchoolPermissions(user, []);
+				expect(result).toEqual(false);
+			});
+			it('should fail, when no permissions (array) is given to be checked', () => {
+				const user = userFactory.build();
+				const result = service.hasUserAllSchoolPermissions(user, 'foo' as unknown as []);
+				expect(result).toEqual(false);
+			});
+			it('should succeed when user has all given permissions', () => {
+				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
+				const user = userFactory.build({ roles: [role] });
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				expect(result).toEqual(true);
+			});
+			it('should fail when user has some given permissions only', () => {
+				const role = roleFactory.build({ permissions: ['permission1'] });
+				const user = userFactory.build({ roles: [role] });
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				expect(result).toEqual(false);
+			});
+			it('should fail when user has none given permissions', () => {
+				const role = roleFactory.build({ permissions: [] });
+				const user = userFactory.build({ roles: [role] });
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				expect(result).toEqual(false);
+			});
+			it('should fail when user has only different than the given permissions', () => {
+				const role = roleFactory.build({ permissions: ['permission3'] });
+				const user = userFactory.build({ roles: [role] });
+				const result = service.hasUserAllSchoolPermissions(user, ['permission1']);
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('[checkUserHasAllSchoolPermissions]', () => {
+			it('should throw when hasUserAllSchoolPermissions is false', () => {
+				const user = userFactory.build();
+				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(false);
+				expect(() => service.checkUserHasAllSchoolPermissions(user, ['permission1'])).toThrowError(
+					UnauthorizedException
+				);
+				spy.mockRestore();
+			});
+			it('should not throw when hasUserAllSchoolPermissions is true', () => {
+				const user = userFactory.build();
+				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(true);
+				service.checkUserHasAllSchoolPermissions(user, ['permission1']);
+				spy.mockRestore();
+			});
+		});
 	});
 });

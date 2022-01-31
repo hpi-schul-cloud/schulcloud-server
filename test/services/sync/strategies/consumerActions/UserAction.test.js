@@ -299,8 +299,8 @@ describe('User Actions', () => {
 			findImportUsersBySchoolAndNameStub.resolves([]);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
-			expect(userUpdateObject.match.userId).to.equal(localUserId);
-			expect(userUpdateObject.match.matchedBy).to.equal('auto');
+			expect(userUpdateObject.match_userId).to.equal(localUserId);
+			expect(userUpdateObject.match_matchedBy).to.equal('auto');
 		});
 
 		it('should not create match, when multiple import users with same name exists', async () => {
@@ -314,7 +314,8 @@ describe('User Actions', () => {
 			findImportUsersBySchoolAndNameStub.resolves(['dummyImportUser']);
 
 			await userAction.autoMatchImportUser(schoolId, userUpdateObject);
-			expect(userUpdateObject.match).to.be.undefined;
+			expect(userUpdateObject.match_userId).to.be.undefined;
+			expect(userUpdateObject.match_matchedBy).to.be.undefined;
 		});
 
 		it('should revoke any previously auto-matched import user, when they have the same name', async () => {
@@ -330,10 +331,8 @@ describe('User Actions', () => {
 				{
 					systemId: 'dummySystem',
 					ldapId: 'dummyLdap',
-					match: {
-						userId: 'dummyUser',
-						matchedBy: 'auto',
-					},
+					match_userId: 'dummyUser',
+					match_matchedBy: 'auto',
 				},
 			];
 			findImportUsersBySchoolAndNameStub.resolves(importUsers);

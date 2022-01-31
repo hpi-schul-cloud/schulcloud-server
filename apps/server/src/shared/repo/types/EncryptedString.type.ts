@@ -20,12 +20,12 @@ export class EncryptedStringType extends Type<string, string> {
 
 	convertToDatabaseValue(value: string | undefined, platform: Platform): string {
 		// keep nullish values
-		if (!value) {
-			return value as string;
+		if (value == null) {
+			return value as unknown as string;
 		}
 
 		// encrypt non-empty strings only
-		if (value?.length === 0) {
+		if (value.length === 0) {
 			return '';
 		}
 		const encryptedString = this.encryptionService.encrypt(value);
@@ -35,12 +35,12 @@ export class EncryptedStringType extends Type<string, string> {
 
 	convertToJSValue(value: string | undefined, platform: Platform): string {
 		// keep nullish values
-		if (!value) {
-			return value as string;
+		if (value == null) {
+			return value as unknown as string;
 		}
 
 		// decrypt non-empty strings only
-		if (value?.length === 0) {
+		if (value.length === 0) {
 			return '';
 		}
 
