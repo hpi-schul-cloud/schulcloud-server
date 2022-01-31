@@ -11,6 +11,7 @@ import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
 import { OAuthResponse } from '../controller/dto/oauth-response';
+import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
 
 @Injectable()
 export class OauthUc {
@@ -29,7 +30,7 @@ export class OauthUc {
 		try {
 			// get the authorization code
 			const code: string = this.checkAuthorizationCode(query);
-			// get the Tokens using the authorization token
+			// get the Tokens using the authorization code
 			const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
 			// extract the uuid from the token
 			const uuid = await this.decodeToken(queryToken.id_token);
@@ -67,35 +68,37 @@ export class OauthUc {
 		throw new Error('Authorization Query Object has no authorization code or error');
 	}
 
-	mapSystemConfigtoPayload(system: System, code: string): TokenRequestPayload {
-		const tokenRequestPayload: TokenRequestPayload = {
-			token_endpoint: system.oauthconfig?.token_endpoint,
-			tokenRequestParams: {
-				client_id: system.oauthconfig?.client_id,
-				client_secret: system.oauthconfig?.client_secret,
-				redirect_uri: system.oauthconfig?.token_redirect_uri,
-				grant_type: system.oauthconfig?.grant_type,
-				code,
-			},
-		};
-		if (
-			!(
-				tokenRequestPayload.token_endpoint &&
-				tokenRequestPayload.tokenRequestParams.client_id &&
-				tokenRequestPayload.tokenRequestParams.client_secret &&
-				tokenRequestPayload.tokenRequestParams.redirect_uri &&
-				tokenRequestPayload.tokenRequestParams.grant_type
-			)
-		) {
-			throw new Error('check environment variables');
-		}
-		return tokenRequestPayload;
-	}
+	// mapSystemConfigtoPayload(system: System, code: string): TokenRequestPayload {
+	// 	const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(system, code);
+	// 	const tokenRequestPayload: TokenRequestPayload = {
+	// 		token_endpoint: system.oauthconfig?.token_endpoint,
+	// 		tokenRequestParams: {
+	// 			client_id: system.oauthconfig?.client_id,
+	// 			client_secret: system.oauthconfig?.client_secret,
+	// 			redirect_uri: system.oauthconfig?.token_redirect_uri,
+	// 			grant_type: system.oauthconfig?.grant_type,
+	// 			code,
+	// 		},
+	// 	};
+	// 	if (
+	// 		!(
+	// 			tokenRequestPayload.token_endpoint &&
+	// 			tokenRequestPayload.tokenRequestParams.client_id &&
+	// 			tokenRequestPayload.tokenRequestParams.client_secret &&
+	// 			tokenRequestPayload.tokenRequestParams.redirect_uri &&
+	// 			tokenRequestPayload.tokenRequestParams.grant_type
+	// 		)
+	// 	) {
+	// 		throw new Error('check environment variables');
+	// 	}
+	// 	return tokenRequestPayload;
+	// }
 
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string, systemId: string) {
 		const system: System = await this.systemRepo.findById(systemId);
-		const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
+		// const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
+		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(system, code);
 		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
 			tokenRequestPayload.token_endpoint,
 			{},
