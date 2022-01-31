@@ -698,6 +698,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for legacy course overview."
+		},
+		"FEATURE_COURSE_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for course sharing feature."
 		}
 	},
 	"required": [
