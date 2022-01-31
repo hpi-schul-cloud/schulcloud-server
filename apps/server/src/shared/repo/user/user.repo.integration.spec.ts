@@ -64,6 +64,7 @@ describe('user repo', () => {
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
 			const user = userFactory.build({ roles: roles1 });
+
 			await em.persistAndFlush([user]);
 			em.clear();
 
