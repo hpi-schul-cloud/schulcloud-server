@@ -17,7 +17,9 @@ import { UserImportPermissions } from '@src/modules/user-import/constants';
 import { ICurrentUser, ImportUser, MatchCreator, School, User } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import {
+	ImportUserListResponse,
 	ImportUserResponse,
+	MatchCreatorResponse,
 	UpdateMatchParams,
 	UserMatchListResponse,
 	UserMatchResponse,
@@ -254,15 +256,17 @@ describe('ImportUser Controller (e2e)', () => {
 		});
 
 		describe('Acceptance Criteria', () => {
-			const expectAllUserMatchResponsePropertiesExist = (match?: UserMatchResponse) => {
+			const expectAllUserMatchResponsePropertiesExist = (match?: UserMatchResponse, withMatch = true) => {
 				expect(match).toBeDefined();
 				expect(match?.userId).toEqual(expect.any(String));
 				expect(match?.firstName).toEqual(expect.stringMatching('John'));
 				expect(match?.lastName).toEqual(expect.stringMatching('Doe'));
 				expect(match?.loginName).toEqual(expect.stringMatching('user-'));
 				expect(match?.roleNames).toEqual(expect.any(Array));
-				// expect(match?.matchedBy).toEqual(expect.stringMatching(/(admin|auto)/)); // TODO
-				// expect(match?.roleNames.length).toBeGreaterThanOrEqual(1); // TODO
+				expect(match?.roleNames.length).toBeGreaterThanOrEqual(1);
+				if (withMatch === true) {
+					expect(['admin', 'auto']).toContain(match?.matchedBy);
+				}
 			};
 			const expectAllImportUserResponsePropertiesExist = (data: ImportUserResponse, matchExists: boolean) => {
 				expect(data).toEqual(
@@ -279,7 +283,9 @@ describe('ImportUser Controller (e2e)', () => {
 				expect(data.roleNames.length).toBeGreaterThanOrEqual(1);
 				expect(data.classNames.length).toBeGreaterThanOrEqual(1);
 				if (matchExists === true) {
-					expectAllUserMatchResponsePropertiesExist(data.match);
+					expectAllUserMatchResponsePropertiesExist(data.match, true);
+				} else {
+					expect(data.match).toBeUndefined();
 				}
 			};
 			describe('find', () => {
@@ -315,12 +321,14 @@ describe('ImportUser Controller (e2e)', () => {
 							expect(listResponse.data.some((elem) => elem.userId === currentSchoolsUser.id)).toEqual(false);
 						});
 						it('should respond userMatch with all properties', async () => {
-							const currentSchoolsUser = userFactory.build({ school });
+							const currentSchoolsUser = userFactory.withRole('teacher').build({
+								school,
+							});
 							await em.persistAndFlush([currentSchoolsUser]);
 							em.clear();
 							const response = await request(app.getHttpServer()).get('/user/import/unassigned').expect(200);
 							const listResponse = response.body as UserMatchListResponse;
-							expectAllUserMatchResponsePropertiesExist(listResponse.data[0]);
+							expectAllUserMatchResponsePropertiesExist(listResponse.data[0], false);
 						});
 
 						describe('when use pagination', () => {
@@ -336,9 +344,31 @@ describe('ImportUser Controller (e2e)', () => {
 					});
 				});
 				describe('[findAllImportUsers]', () => {
-					it('should return importUsers of current school', async () => {});
-					it.todo('should return importUsers as ImportUsersListResponse');
-					it.todo('should return importUsers with all properties');
+					it('should return importUsers of current school', async () => {
+						const otherSchoolsImportUser = importUserFactory.build();
+						const currentSchoolsImportUser = importUserFactory.build({
+							school,
+						});
+						await em.persistAndFlush([otherSchoolsImportUser, currentSchoolsImportUser]);
+						em.clear();
+						const response = await request(app.getHttpServer()).get('/user/import').expect(200);
+						const listResponse = response.body as ImportUserListResponse;
+						expect(listResponse.data.some((elem) => elem.importUserId === currentSchoolsImportUser.id)).toEqual(true);
+						expect(listResponse.data.some((elem) => elem.importUserId === otherSchoolsImportUser.id)).toEqual(false);
+						expectAllImportUserResponsePropertiesExist(listResponse.data[0], false);
+					});
+					it('should return importUsers with all properties', async () => {
+						const otherSchoolsImportUser = importUserFactory.build();
+						const userMatch = userFactory.withRole('teacher').build({ school });
+						const currentSchoolsImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
+						await em.persistAndFlush([otherSchoolsImportUser, currentSchoolsImportUser]);
+						em.clear();
+						const response = await request(app.getHttpServer()).get('/user/import').expect(200);
+						const listResponse = response.body as ImportUserListResponse;
+						expect(listResponse.data.some((elem) => elem.importUserId === currentSchoolsImportUser.id)).toEqual(true);
+						expect(listResponse.data.some((elem) => elem.importUserId === otherSchoolsImportUser.id)).toEqual(false);
+						expectAllImportUserResponsePropertiesExist(listResponse.data[0], true);
+					});
 
 					describe('when use sorting', () => {
 						it.todo('should sort by firstname asc');
@@ -376,33 +406,77 @@ describe('ImportUser Controller (e2e)', () => {
 
 				describe('[setMatch]', () => {
 					describe('[PATCH] user/import/:id/match', () => {
-						it('should set a match', async () => {
-							const userMatch = userFactory.build({
+						it('should set a manual match', async () => {
+							const userToBeMatched = userFactory.withRole('student').build({
 								school,
-								roles: roleFactory.buildList(1, { name: 'teacher' }),
 							});
-							const unmatchedImportUser = importUserFactory.build({ school, classNames: ['firstClass', 'otherClass'] });
-							await em.persistAndFlush([userMatch, unmatchedImportUser]);
+							const unmatchedImportUser = importUserFactory.build({
+								school,
+							});
+							await em.persistAndFlush([userToBeMatched, unmatchedImportUser]);
 							em.clear();
-							const params: UpdateMatchParams = { userId: userMatch.id };
+							const params: UpdateMatchParams = { userId: userToBeMatched.id };
 							const result = await request(app.getHttpServer())
 								.patch(`/user/import/${unmatchedImportUser.id}/match`)
 								.send(params)
 								.expect(200);
-							expectAllImportUserResponsePropertiesExist(result.body as ImportUserResponse, true);
+							const importUserResponse = result.body as ImportUserResponse;
+							expectAllImportUserResponsePropertiesExist(importUserResponse, true);
+							expect(importUserResponse.match?.matchedBy).toEqual(MatchCreatorResponse.MANUAL);
+							expect(importUserResponse.match?.userId).toEqual(userToBeMatched.id);
 						});
-						it.todo('should update an existing match');
-						it.todo('should respond importUser with all properties');
-						it.todo('should respond importUser with MANUAL match type');
+						it('should update an existing auto match to manual', async () => {
+							const userMatch = userFactory.withRole('student').build({
+								school,
+							});
+							const manualUserMatch = userFactory.withRole('student').build({
+								school,
+							});
+							const alreadyMatchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
+								school,
+							});
+							await em.persistAndFlush([userMatch, alreadyMatchedImportUser]);
+							em.clear();
+							const params: UpdateMatchParams = { userId: manualUserMatch.id };
+							const result = await request(app.getHttpServer())
+								.patch(`/user/import/${alreadyMatchedImportUser.id}/match`)
+								.send(params)
+								.expect(200);
+							const elem = result.body as ImportUserResponse;
+							expectAllImportUserResponsePropertiesExist(elem, true);
+							expect(elem.match?.matchedBy).toEqual(MatchCreatorResponse.MANUAL);
+							expect(elem.match?.userId).toEqual(manualUserMatch.id);
+						});
 					});
 				});
 
 				describe('[removeMatch]', () => {
 					describe('[DELETE] user/import/:id/match', () => {
-						it.todo('should remove a match');
-						it.todo('should not fail when importuser is not having a match');
-						it.todo('should not fail when removing matches multiple times from different import users'); // TODO
-						it.todo('should respond importUser with all properties');
+						it('should remove a match', async () => {
+							const userMatch = userFactory.withRole('student').build({
+								school,
+							});
+							const importUserWithMatch = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
+								school,
+							});
+							await em.persistAndFlush([importUserWithMatch]);
+							em.clear();
+							const result = await request(app.getHttpServer())
+								.delete(`/user/import/${importUserWithMatch.id}/match`)
+								.expect(200);
+							expectAllImportUserResponsePropertiesExist(result.body as ImportUserResponse, false);
+						});
+						it('should not fail when importuser is not having a match', async () => {
+							const importUserWithMatch = importUserFactory.build({
+								school,
+							});
+							await em.persistAndFlush([importUserWithMatch]);
+							em.clear();
+							const result = await request(app.getHttpServer())
+								.delete(`/user/import/${importUserWithMatch.id}/match`)
+								.expect(200);
+							expectAllImportUserResponsePropertiesExist(result.body as ImportUserResponse, false);
+						});
 					});
 				});
 				describe('[updateFlag]', () => {
