@@ -18,7 +18,8 @@ export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequenc
 		school: schoolFactory.build(),
 		system: systemFactory.build(),
 		ldapDn: `uid=john${sequence},cn=schueler,cn=users,ou=1,dc=training,dc=ucs`,
-		ldapId: uuidv4(),
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+		ldapId: uuidv4() as unknown as string,
 		firstName: `John${sequence}`,
 		lastName: `Doe${sequence}`,
 		email: `user-${sequence}@example.com`,

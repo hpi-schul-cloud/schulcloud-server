@@ -11,11 +11,11 @@ export class ImportUserMatchMapper {
 
 	static mapMatchCreatorToResponse(matchCreator: MatchCreator): MatchCreatorResponse {
 		switch (matchCreator) {
-			case MatchCreator.AUTO:
-				return MatchCreatorResponse.AUTO;
 			case MatchCreator.MANUAL:
-			default:
 				return MatchCreatorResponse.MANUAL;
+			case MatchCreator.AUTO:
+			default:
+				return MatchCreatorResponse.AUTO;
 		}
 	}
 }

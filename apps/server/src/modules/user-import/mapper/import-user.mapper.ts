@@ -1,8 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { ImportUser, IImportUserScope, SortOrderMap } from '@shared/domain';
-import { ImportUserResponse, ImportUserFilterQuery } from '../controller/dto';
-import { ImportUserSortByQuery, ImportUserSortingQuery } from '../controller/dto/import-user-sorting.query';
+import {
+	ImportUserResponse,
+	ImportUserFilterQuery,
+	ImportUserSortByQuery,
+	ImportUserSortingQuery,
+} from '../controller/dto';
+
 import { ImportUserMatchMapper } from './match.mapper';
 
 import { RoleNameMapper } from './role-name.mapper';

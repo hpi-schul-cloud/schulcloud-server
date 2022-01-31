@@ -21,7 +21,7 @@ describe('[UserMatchMapper]', () => {
 		it('should map name to fullname if trimmed string not empty ', () => {
 			const query: UserFilterQuery = { name: ' Nala ' };
 			const result = UserMatchMapper.mapToDomain(query);
-			expect(result.fullName).toEqual(query.name);
+			expect(result.name).toEqual(query.name);
 		});
 		it('should fail for whitespace name string', () => {
 			const query: UserFilterQuery = { name: ' ' };
@@ -31,7 +31,7 @@ describe('[UserMatchMapper]', () => {
 		it('should skip name mapper if no name is provided without failing', () => {
 			const query: UserFilterQuery = {};
 			const result = UserMatchMapper.mapToDomain(query);
-			expect(result.fullName).toEqual(undefined);
+			expect(result.name).toEqual(undefined);
 		});
 	});
 	describe('[mapToResponse] from domain', () => {

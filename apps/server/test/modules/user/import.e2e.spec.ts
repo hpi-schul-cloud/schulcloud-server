@@ -9,12 +9,7 @@ import { importUserFactory, mapUserToCurrentUser, roleFactory, schoolFactory, us
 import { UserImportPermissions } from '@src/modules/user-import/constants';
 import { ICurrentUser, ImportUser, MatchCreator, School, User } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	ImportUserResponse,
-	MatchCreatorResponse,
-	UpdateMatchParams,
-	UserMatchResponse,
-} from '@src/modules/user-import/controller/dto';
+import { ImportUserResponse, UpdateMatchParams } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -282,7 +277,12 @@ describe('ImportUser Controller (e2e)', () => {
 
 				describe('[findAllUnmatchedUsers]', () => {
 					describe('[GET] user/import/unassigned', () => {
-						it.todo('should respond with users of own school');
+						it.skip('should respond with users of own school', async () => {
+							const otherSchoolImportUser = importUserFactory.build();
+							const thisSchoolImportUser = importUserFactory.build({ school });
+							await em.persistAndFlush([otherSchoolImportUser, thisSchoolImportUser]);
+							em.clear();
+						});
 						it.todo('should not respond with assigned users');
 						it.todo('should respond userMatch with all properties');
 

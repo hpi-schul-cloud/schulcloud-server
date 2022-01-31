@@ -37,10 +37,10 @@ describe('[ImportUserMatchMapper]', () => {
 			const result = ImportUserMatchMapper.mapMatchCreatorToResponse(matchCreator);
 			expect(result).toEqual(MatchCreatorResponse.MANUAL);
 		});
-		it('should map manual to response for all other input', () => {
+		it('should map auto to response for all other input', () => {
 			const matchCreator = 'foo' as unknown as MatchCreator;
 			const result = ImportUserMatchMapper.mapMatchCreatorToResponse(matchCreator);
-			expect(result).toEqual(MatchCreatorResponse.MANUAL);
+			expect(result).toEqual(MatchCreatorResponse.AUTO);
 		});
 	});
 });

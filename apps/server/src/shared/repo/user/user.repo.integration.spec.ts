@@ -127,32 +127,32 @@ describe('user repo', () => {
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
 			// full first name
-			const [result1, count1] = await repo.findWithoutImportUser(school, { fullName: 'papa' });
+			const [result1, count1] = await repo.findWithoutImportUser(school, { name: 'papa' });
 			expect(result1).toContain(user);
 			expect(result1).not.toContain(otherUser);
 			expect(count1).toEqual(1);
 			// full last name
-			const [result2, count2] = await repo.findWithoutImportUser(school, { fullName: 'pane' });
+			const [result2, count2] = await repo.findWithoutImportUser(school, { name: 'pane' });
 			expect(result2).toContain(user);
 			expect(result2).not.toContain(otherUser);
 			expect(count2).toEqual(1);
 			// partial first and last name
-			const [result3, count3] = await repo.findWithoutImportUser(school, { fullName: 'pa' });
+			const [result3, count3] = await repo.findWithoutImportUser(school, { name: 'pa' });
 			expect(result3).toContain(user);
 			expect(result3).not.toContain(otherUser);
 			expect(count3).toEqual(1);
 			// partial first name
-			const [result4, count4] = await repo.findWithoutImportUser(school, { fullName: 'pap' });
+			const [result4, count4] = await repo.findWithoutImportUser(school, { name: 'pap' });
 			expect(result4).toContain(user);
 			expect(result4).not.toContain(otherUser);
 			expect(count4).toEqual(1);
 			// partial last name
-			const [result5, count5] = await repo.findWithoutImportUser(school, { fullName: 'ane' });
+			const [result5, count5] = await repo.findWithoutImportUser(school, { name: 'ane' });
 			expect(result5).toContain(user);
 			expect(result5).not.toContain(otherUser);
 			expect(count5).toEqual(1);
 			// no match
-			const [result6, count6] = await repo.findWithoutImportUser(school, { fullName: 'Fox' });
+			const [result6, count6] = await repo.findWithoutImportUser(school, { name: 'Fox' });
 			expect(result6).not.toContain(user);
 			expect(result6).not.toContain(otherUser);
 			expect(count6).toEqual(0);

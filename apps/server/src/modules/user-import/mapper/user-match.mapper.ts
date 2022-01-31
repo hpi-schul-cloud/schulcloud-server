@@ -9,7 +9,7 @@ export class UserMatchMapper {
 		const scope: INameMatch = {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {
-				scope.fullName = query.name;
+				scope.name = query.name;
 			} else {
 				throw Error('invalid name from query');
 			}
@@ -18,7 +18,7 @@ export class UserMatchMapper {
 	}
 
 	static mapToResponse(user: User, matchCreator?: MatchCreator): UserMatchResponse {
-		const domainRoles = user.roles.getItems();
+		const domainRoles = user.roles.getItems(true);
 		const domainRoleNames = domainRoles.map((role) => role.name);
 		const roleNames: RoleNameResponse[] = domainRoleNames
 			.map((roleName) => {

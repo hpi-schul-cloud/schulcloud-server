@@ -35,8 +35,8 @@ export class UserRepo {
 		const permittedMatch = { schoolId };
 
 		const queryFilterMatch: { $or?: unknown[] } = {};
-		if (filters?.fullName && StringValidator.isNotEmptyString(filters.fullName, true)) {
-			const escapedName = filters.fullName.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+		if (filters?.name && StringValidator.isNotEmptyString(filters.name, true)) {
+			const escapedName = filters.name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 			// TODO make db agnostic
 			if (StringValidator.isNotEmptyString(escapedName, true)) {
 				queryFilterMatch.$or = [

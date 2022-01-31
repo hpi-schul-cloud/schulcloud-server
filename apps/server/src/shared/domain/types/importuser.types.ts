@@ -17,5 +17,8 @@ export interface IImportUserScope {
 }
 
 export interface INameMatch {
-	fullName?: string;
+	/**
+	 * Match filter for lastName or firstName
+	 */
+	name?: string;
 }

@@ -4,3 +4,4 @@ export * from './match-creator.response';
 export * from './role-name.response';
 export * from './update-match.params';
 export * from './user-match.response';
+export * from './import-user-sorting.query';
