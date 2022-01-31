@@ -61,17 +61,10 @@ describe('user repo', () => {
 
 		it('should populate user roles recursively if requested', async () => {
 			const roles3 = roleFactory.buildList(1);
-			await em.persistAndFlush(roles3);
-
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
-			await em.persistAndFlush(roles2);
-
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
-			await em.persistAndFlush(roles1);
-
 			const user = userFactory.build({ roles: roles1 });
 			await em.persistAndFlush([user]);
-
 			em.clear();
 
 			const result = await repo.findById(user.id, true);
