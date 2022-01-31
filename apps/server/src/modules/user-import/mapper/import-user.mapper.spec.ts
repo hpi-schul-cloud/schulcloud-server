@@ -1,5 +1,7 @@
 import { MikroORM, Reference } from '@mikro-orm/core';
-import { MatchCreator, MatchCreatorScope, RoleName } from '@shared/domain';
+import { BadRequestException } from '@nestjs/common';
+import { SortingQuery } from '@shared/controller';
+import { MatchCreator, MatchCreatorScope, RoleName, SortOrder } from '@shared/domain';
 import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ImportUserFilterQuery, MatchFilterQuery, RoleNameFilterQuery, UserMatchResponse } from '../controller/dto';
 import { ImportUserMapper } from './import-user.mapper';
@@ -16,6 +18,34 @@ describe('[ImportUserMapper]', () => {
 
 	afterAll(async () => {
 		await orm.close();
+	});
+
+	describe('[mapSortingQueryToDomain] from query to domain', () => {
+		it('should accept firstName', () => {
+			const sortingQuery: SortingQuery = { sortBy: 'firstName', sortOrder: SortOrder.desc };
+			const result = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
+			expect(result).toEqual({ firstName: 'desc' });
+		});
+		it('should accept lastName', () => {
+			const sortingQuery: SortingQuery = { sortBy: 'lastName', sortOrder: SortOrder.desc };
+			const result = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
+			expect(result).toEqual({ lastName: 'desc' });
+		});
+		it('should accept asc order', () => {
+			const sortingQuery: SortingQuery = { sortBy: 'firstName', sortOrder: SortOrder.asc };
+			const result = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
+			expect(result).toEqual({ firstName: 'asc' });
+		});
+		it('should not accept loginName or others', () => {
+			const sortingQuery: SortingQuery = { sortBy: 'loginName', sortOrder: SortOrder.desc };
+			expect(() => ImportUserMapper.mapSortingQueryToDomain(sortingQuery)).toThrowError(BadRequestException);
+		});
+		describe('when sortBy is not given', () => {
+			it('should return undefined', () => {
+				const sortingQuery: SortingQuery = { sortOrder: SortOrder.desc };
+				expect(ImportUserMapper.mapSortingQueryToDomain(sortingQuery)).toBeUndefined();
+			});
+		});
 	});
 
 	describe('[mapToResponse] from domain', () => {
