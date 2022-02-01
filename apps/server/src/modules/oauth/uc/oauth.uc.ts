@@ -98,7 +98,6 @@ export class OauthUc {
 	async getJWTForUser(user: User): Promise<string> {
 		const jwt: string = await this.jwtService.generateJwt(user.id);
 		return jwt;
-		// console.log(SupportJWTService.create(user._id));
 	}
 }
 

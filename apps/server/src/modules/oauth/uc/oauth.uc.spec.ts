@@ -2,13 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '@src/core/logger';
 
 import { UserRepo } from '@shared/repo/user/user.repo';
+import { roleFactory, userFactory } from '@shared/testing';
 import { SystemRepo } from '@shared/repo/system';
-import { EntityId, System, User, OauthConfig } from '@shared/domain';
+import { EntityId, System, User, OauthConfig, School, Role } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization';
-import axios, { AxiosResponse } from 'axios';
-import jwtDecode from 'jwt-decode';
+import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
-import { IJWT, OauthUc } from '.';
+import { NotFoundException } from '@nestjs/common';
+import { Collection } from '@mikro-orm/core';
+import { OauthUc } from '.';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { TokenRequestParams } from '../controller/dto/token-request-params';
@@ -22,10 +24,26 @@ describe('OAuthUc', () => {
 	const defaultAuthCode = '43534543jnj543342jn2';
 	const defaultQuery = { code: defaultAuthCode };
 	const defaultErrorQuery = { error: 'Default Error' };
-	const defaultSystemId = '123456789';
+	const defaultScool: School = {
+		name: '',
+		_id: new ObjectId(),
+		id: '',
+	};
+	const defaultUser: User = {
+		email: '',
+		roles: new Collection<Role>([]),
+		school: defaultScool,
+		_id: new ObjectId(),
+		id: '',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+	const defaultUserId = '123456789';
 	const defaultDate = new Date();
-	const token =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoxMjN9.BZN-sB8PQTfr-xdA1D2TAXWDLTI6fnBkCz_KfW3mCgk';
+	const defaultJWT =
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
+	const wrongJWT =
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 	const defaultOauthConfig: OauthConfig = {
 		client_id: '12345',
 		client_secret: 'mocksecret',
@@ -56,6 +74,18 @@ describe('OAuthUc', () => {
 		token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
 		tokenRequestParams: defaultPayloadData,
 	};
+	const defaultTokenResponse: OauthTokenResponse = {
+		access_token: '',
+		refresh_token: '',
+		id_token: 'zzzz',
+	};
+	const defaultAxiosResponse: AxiosResponse<OauthTokenResponse> = {
+		data: defaultTokenResponse,
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -65,28 +95,37 @@ describe('OAuthUc', () => {
 				{
 					provide: SystemRepo,
 					useValue: {
-						findById(id: EntityId) {
+						findById() {
 							return defaultSystem;
 						},
 					},
 				},
 				{
 					provide: UserRepo,
-					useValue: {},
+					useValue: {
+						findByLdapId(id: string) {
+							if (id === defaultUserId) return defaultUser;
+							throw new NotFoundException();
+						},
+					},
 				},
 				{
 					provide: FeathersJwtProvider,
 					useValue: {
 						generateJwt(user: User) {
-							return user;
+							return defaultJWT;
 						},
-						// const jwt = (await this.jwtService.generateJwt(user.id)) as string;
 					},
 				},
 			],
 		}).compile();
 
 		service = await module.resolve<OauthUc>(OauthUc);
+		jest.mock('axios', () =>
+			jest.fn(() => {
+				return Promise.resolve(defaultAxiosResponse);
+			})
+		);
 		userRepo = await module.resolve<UserRepo>(UserRepo);
 		systemRepo = await module.resolve<SystemRepo>(SystemRepo);
 		jwtService = await module.resolve<FeathersJwtProvider>(FeathersJwtProvider);
@@ -99,79 +138,65 @@ describe('OAuthUc', () => {
 	// TODO ALOT ALOT
 	describe('startOauth', () => {
 		it('should extract query to code as string', () => {
-			const extractCodeMock = jest.fn(() => 'mock-code');
-			service.extractCode = extractCodeMock;
-			const extract = service.extractCode(defaultQuery);
-			expect(extract).toBeCalledWith('asdf');
+			const checkAuthorizationCodeMock = jest.fn(() => 'mock-code');
+			service.checkAuthorizationCode = checkAuthorizationCodeMock;
+			const extract = service.checkAuthorizationCode(defaultQuery);
+			// 	expect(extract).toBeCalledWith('asdf');
 		});
 	});
 
 	// DONE.
-	describe('extractCode', () => {
+	describe('checkAuthorizationCode', () => {
 		it('should extract code from query', () => {
-			const extract = service.extractCode(defaultQuery);
+			const extract = service.checkAuthorizationCode(defaultQuery);
 			expect(extract).toBe(defaultAuthCode);
 		});
 		it('should throw an error from a query that contains an error', () => {
 			expect(() => {
-				return service.extractCode(defaultErrorQuery);
+				return service.checkAuthorizationCode(defaultErrorQuery);
 			}).toThrow(defaultErrorQuery.error);
 		});
 		it('should throw an error from a falsy query', () => {
 			expect(() => {
-				return service.extractCode({});
+				return service.checkAuthorizationCode({});
 			}).toThrow(Error);
 		});
 	});
 
-	// Done.
-	describe('mapSystemConfigtoPayload', () => {
-		it('should map config to payload ', () => {
-			const payload = service.mapSystemConfigtoPayload(defaultSystem, defaultAuthCode);
-			expect(payload).toBeDefined();
-			expect(payload).toStrictEqual(defaultPayload);
-		});
-	});
-
-	// TODO
-	describe('requestToken', () => {
-		it('should return refresh Token and access token ', async () => {
-			const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
-				defaultPayload.token_endpoint,
-				{},
-				{ params: { ...defaultPayload.tokenRequestParams } }
-			);
-			expect(responseToken).toBeCalledWith(defaultSystem, defaultQuery.code);
-			expect(responseToken.data.access_token).toBeDefined();
-			expect(responseToken.data.id_token).toBeDefined();
-		});
-	});
-
-	// TODO
+	// DONE
 	describe('decodeToken', () => {
 		it('should get uuid from id_token', () => {
-			// TODO
-			const decodedJwt: IJWT = jwtDecode(token);
-			expect(decodedJwt).toBeCalledWith(token);
-			expect(decodedJwt.uuid).toBe('123');
+			const uuid: string = service.decodeToken(defaultJWT);
+			expect(uuid).toStrictEqual('123');
+		});
+
+		it('should throw an error for id_token that does not exist an uuid', () => {
+			expect(() => {
+				const uuid: string = service.decodeToken(wrongJWT);
+				return uuid;
+			}).toThrow(Error);
 		});
 	});
 
 	// TODO
 	describe('findUserById', () => {
-		it('should map config to payload ', () => {
-			// TODO
-			const payload = service.extractCode(defaultQuery);
-			const code = '43534543jnj543342jn2';
+		it('should return the user according to the uuid(LdapId)', async () => {
+			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
+			await service.findUserById(defaultUserId);
+			expect(resolveUserSpy).toHaveBeenCalled();
+		});
+		// TODO
+		it('should throw an error if no uuid found', () => {
+			expect(async () => {
+				// await service.findUserById('123');
+			}).toThrow(NotFoundException);
 		});
 	});
 
 	// TODO
 	describe('getJWTForUser', () => {
-		it('should map config to payload ', () => {
+		it('should return a JWT for a user', () => {
 			// TODO
-			const payload = service.extractCode(defaultQuery);
-			const code = '43534543jnj543342jn2';
 		});
 	});
 });
