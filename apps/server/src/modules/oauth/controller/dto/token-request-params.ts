@@ -1,11 +1,28 @@
+import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
+
 export class TokenRequestParams {
-	client_id?: string;
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	client_id!: string;
 
-	client_secret?: string;
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	client_secret!: string;
 
-	redirect_uri?: string;
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	redirect_uri!: string;
 
-	grant_type?: string;
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	grant_type!: string;
 
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
 	code!: string;
 }

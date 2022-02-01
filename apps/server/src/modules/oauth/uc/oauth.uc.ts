@@ -32,23 +32,21 @@ export class OauthUc {
 			// get the Tokens using the authorization code
 			const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
 			// extract the uuid from the token
-			const uuid = await this.decodeToken(queryToken.id_token);
+			const uuid = this.decodeToken(queryToken.id_token);
 			// get the user using the uuid
 			const user: User = await this.findUserById(uuid);
 			// create JWT for the user
 			const jwt: string = await this.getJWTForUser(user);
 			// send response back
-			const response: OAuthResponse = new OAuthResponse({
-				jwt,
-			});
+			const response: OAuthResponse = new OAuthResponse();
+			response.jwt = jwt;
 			return response;
 		} catch (error) {
 			this.logger.log(error);
 		}
 		// send error response back
-		const response: OAuthResponse = new OAuthResponse({
-			errorcode: 'OauthLoginFailed',
-		});
+		const response: OAuthResponse = new OAuthResponse();
+		response.errorcode = 'OauthLoginFailed';
 		return response;
 	}
 
@@ -63,7 +61,7 @@ export class OauthUc {
 	}
 
 	// 1- use Authorization Code to get a valid Token
-	async requestToken(code: string, systemId: string) {
+	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
 		// const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(system, code);
@@ -76,8 +74,9 @@ export class OauthUc {
 	}
 
 	// 2- decode the Token to extract the UUID
-	async decodeToken(token: string): Promise<string> {
-		const decodedJwt: IJWT = await jwtDecode(token);
+	decodeToken(token: string): string {
+		const decodedJwt: IJWT = jwtDecode(token);
+		if (!decodedJwt || !decodedJwt.uuid) throw Error('Filed to extract uuid');
 		const { uuid } = decodedJwt;
 		if (!uuid || uuid.length === 0) {
 			throw Error('Filed to extract uuid');
