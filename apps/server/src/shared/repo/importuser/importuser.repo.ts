@@ -11,6 +11,9 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async findById(id: EntityId): Promise<ImportUser> {
 		if (!ObjectId.isValid(id)) throw new Error('invalid id');
 		const importUser = await this.em.findOneOrFail(ImportUser, { id });
+		if (importUser.user != null) {
+			await this.em.populate(importUser.user, 'roles');
+		}
 		return importUser;
 	}
 

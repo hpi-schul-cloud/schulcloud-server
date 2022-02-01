@@ -56,7 +56,7 @@ export class UserImportUc {
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE];
 		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
 
-		const userMatch = await this.userRepo.findById(userMatchId);
+		const userMatch = await this.userRepo.findById(userMatchId, true);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school

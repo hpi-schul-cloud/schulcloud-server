@@ -1,8 +1,17 @@
 import { User, IUserProperties } from '@shared/domain';
+import { DeepPartial } from 'fishery';
 import { schoolFactory } from './school.factory';
 import { BaseFactory } from './base.factory';
+import { roleFactory } from './role.factory';
 
-export const userFactory = BaseFactory.define<User, IUserProperties>(User, ({ sequence }) => {
+class UserFactory extends BaseFactory<User, IUserProperties> {
+	withRole(name: string): this {
+		const params: DeepPartial<IUserProperties> = { roles: roleFactory.buildList(1, { name }) };
+		return this.params(params);
+	}
+}
+
+export const userFactory = UserFactory.define(User, ({ sequence }) => {
 	return {
 		firstName: 'John',
 		lastName: `Doe ${sequence}`,
