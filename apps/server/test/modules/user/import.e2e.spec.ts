@@ -14,17 +14,25 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser, MatchCreator, School, User } from '@shared/domain';
+import { ICurrentUser, ImportUser, MatchCreator, RoleName, School, SortOrder, User } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import {
+	ImportUserFilterQuery,
 	ImportUserListResponse,
 	ImportUserResponse,
+	ImportUserSortByQuery,
+	ImportUserSortingQuery,
 	MatchCreatorResponse,
+	MatchFilterQuery,
+	RoleNameFilterQuery,
+	RoleNameResponse,
 	UpdateMatchParams,
 	UserMatchListResponse,
 	UserMatchResponse,
 } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
+import { PaginationQuery, SortingQuery } from '@shared/controller';
+import { UserFilterQuery } from '@src/modules/user-import/controller/dto/user-filter.query';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
@@ -332,14 +340,61 @@ describe('ImportUser Controller (e2e)', () => {
 						});
 
 						describe('when use pagination', () => {
-							it.todo('should skip users');
-							it.todo('should limit users');
-							it.todo('should have total higher than current page');
+							it('should skip users', async () => {
+								const unassignedUsers = userFactory.buildList(10, { school });
+								await em.persistAndFlush(unassignedUsers);
+								const query: PaginationQuery = { skip: 3 };
+								const response = await request(app.getHttpServer())
+									.get('/user/import/unassigned')
+									.query(query)
+									.expect(200);
+								const result = response.body as UserMatchListResponse;
+								expect(result.total).toBeGreaterThanOrEqual(10);
+								expect(result.data.length).toBeGreaterThanOrEqual(7);
+							});
+							it('should limit users', async () => {
+								const unassignedUsers = userFactory.buildList(10, { school });
+								await em.persistAndFlush(unassignedUsers);
+								const query: PaginationQuery = { limit: 3 };
+								const response = await request(app.getHttpServer())
+									.get('/user/import/unassigned')
+									.query(query)
+									.expect(200);
+								const result = response.body as UserMatchListResponse;
+								expect(result.total).toBeGreaterThanOrEqual(10);
+								expect(result.data).toHaveLength(3);
+							});
 						});
 
 						describe('when apply filters', () => {
-							it.todo('should match name in firstname');
-							it.todo('should match name in lastname');
+							it('should match name in firstname', async () => {
+								const users = userFactory.buildList(10, { school });
+								const searchUser = userFactory.build({ school, firstName: 'Peter' });
+								users.push(searchUser);
+								await em.persistAndFlush(users);
+								const query: UserFilterQuery = { name: 'ETE' };
+								const response = await request(app.getHttpServer())
+									.get('/user/import/unassigned')
+									.query(query)
+									.expect(200);
+								const result = response.body as UserMatchListResponse;
+								expect(result.total).toEqual(1);
+								expect(result.data.some((u) => u.userId === searchUser.id)).toEqual(true);
+							});
+							it('should match name in lastname', async () => {
+								const users = userFactory.buildList(10, { school });
+								const searchUser = userFactory.build({ school, firstName: 'Peter', lastName: 'fox' });
+								users.push(searchUser);
+								await em.persistAndFlush(users);
+								const query: UserFilterQuery = { name: 'X' };
+								const response = await request(app.getHttpServer())
+									.get('/user/import/unassigned')
+									.query(query)
+									.expect(200);
+								const result = response.body as UserMatchListResponse;
+								expect(result.total).toEqual(1);
+								expect(result.data.some((u) => u.userId === searchUser.id)).toEqual(true);
+							});
 						});
 					});
 				});
@@ -357,7 +412,7 @@ describe('ImportUser Controller (e2e)', () => {
 						expect(listResponse.data.some((elem) => elem.importUserId === otherSchoolsImportUser.id)).toEqual(false);
 						expectAllImportUserResponsePropertiesExist(listResponse.data[0], false);
 					});
-					it('should return importUsers with all properties', async () => {
+					it('should return importUsers with all properties including match and roles', async () => {
 						const otherSchoolsImportUser = importUserFactory.build();
 						const userMatch = userFactory.withRole('teacher').build({ school });
 						const currentSchoolsImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
@@ -371,28 +426,207 @@ describe('ImportUser Controller (e2e)', () => {
 					});
 
 					describe('when use sorting', () => {
-						it.todo('should sort by firstname asc');
-						it.todo('should sort by firstname desc');
-						it.todo('should sort by lastname asc');
-						it.todo('should sort by lastname desc');
+						it('should sort by firstname asc', async () => {
+							const currentSchoolsImportUsers = importUserFactory.buildList(10, {
+								school,
+							});
+							currentSchoolsImportUsers[3].firstName = 'Anne';
+							currentSchoolsImportUsers[7].firstName = 'Zoe';
+							await em.persistAndFlush(currentSchoolsImportUsers);
+							em.clear();
+							const query: ImportUserSortingQuery = {
+								sortBy: ImportUserSortByQuery.FIRSTNAME,
+								sortOrder: SortOrder.asc,
+							};
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const listResponse = response.body as ImportUserListResponse;
+							const smallIndex = listResponse.data.findIndex((elem) => elem.firstName === 'Anne');
+							const higherIndex = listResponse.data.findIndex((elem) => elem.firstName === 'Zoe');
+							expect(smallIndex).toBeLessThan(higherIndex);
+						});
+						it('should sort by firstname desc', async () => {
+							const currentSchoolsImportUsers = importUserFactory.buildList(10, {
+								school,
+							});
+							currentSchoolsImportUsers[3].firstName = 'Anne';
+							currentSchoolsImportUsers[7].firstName = 'Zoe';
+							await em.persistAndFlush(currentSchoolsImportUsers);
+							em.clear();
+							const query: ImportUserSortingQuery = {
+								sortBy: ImportUserSortByQuery.FIRSTNAME,
+								sortOrder: SortOrder.desc,
+							};
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const listResponse = response.body as ImportUserListResponse;
+							const smallIndex = listResponse.data.findIndex((elem) => elem.firstName === 'Zoe');
+							const higherIndex = listResponse.data.findIndex((elem) => elem.firstName === 'Anne');
+							expect(smallIndex).toBeLessThan(higherIndex);
+						});
+						it('should sort by lastname asc', async () => {
+							const currentSchoolsImportUsers = importUserFactory.buildList(10, {
+								school,
+							});
+							currentSchoolsImportUsers[3].lastName = 'Schmidt';
+							currentSchoolsImportUsers[7].lastName = 'Müller';
+							await em.persistAndFlush(currentSchoolsImportUsers);
+							em.clear();
+							const query: ImportUserSortingQuery = {
+								sortBy: ImportUserSortByQuery.LASTNAME,
+								sortOrder: SortOrder.asc,
+							};
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const listResponse = response.body as ImportUserListResponse;
+							const smallIndex = listResponse.data.findIndex((elem) => elem.lastName === 'Müller');
+							const higherIndex = listResponse.data.findIndex((elem) => elem.lastName === 'Schmidt');
+							expect(smallIndex).toBeLessThan(higherIndex);
+						});
+						it('should sort by lastname desc', async () => {
+							const currentSchoolsImportUsers = importUserFactory.buildList(10, {
+								school,
+							});
+							currentSchoolsImportUsers[3].lastName = 'Schmidt';
+							currentSchoolsImportUsers[7].lastName = 'Müller';
+							await em.persistAndFlush(currentSchoolsImportUsers);
+							em.clear();
+							const query: ImportUserSortingQuery = {
+								sortBy: ImportUserSortByQuery.LASTNAME,
+								sortOrder: SortOrder.desc,
+							};
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const listResponse = response.body as ImportUserListResponse;
+							const smallIndex = listResponse.data.findIndex((elem) => elem.lastName === 'Schmidt');
+							const higherIndex = listResponse.data.findIndex((elem) => elem.lastName === 'Müller');
+							expect(smallIndex).toBeLessThan(higherIndex);
+						});
 					});
 					describe('when use pagination', () => {
-						it.todo('should skip importUsers');
-						it.todo('should limit importUsers');
-						it.todo('should have total higher than current page');
+						it('should skip importusers', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							await em.persistAndFlush(importUsers);
+							const query: PaginationQuery = { skip: 3 };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.total).toBeGreaterThanOrEqual(10);
+							expect(result.data.length).toBeGreaterThanOrEqual(7);
+						});
+						it('should limit importusers', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							await em.persistAndFlush(importUsers);
+							const query: PaginationQuery = { limit: 3 };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.total).toBeGreaterThanOrEqual(10);
+							expect(result.data).toHaveLength(3);
+						});
 					});
 
 					describe('when apply filters', () => {
-						it.todo('should filter by firstname');
-						it.todo('should filter by lastname');
-						it.todo('should filter by username');
-						it.todo('should filter by one role of student, teacher, or admin');
-						it.todo('should filter by class');
-						it.todo('should filter by match type none');
-						it.todo('should filter by match type admin');
-						it.todo('should filter by match type auto');
-						it.todo('should filter by multiple match types');
-						it.todo('should filter by flag enabled');
+						it('should filter by firstname', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].firstName = 'Klaus-Peter';
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { firstName: 's-p' };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.length).toEqual(1);
+							expect(result.data[0].firstName).toEqual('Klaus-Peter');
+						});
+						it('should filter by lastname', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].lastName = 'Weimann';
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { lastName: 'Mann' };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.length).toEqual(1);
+							expect(result.data[0].lastName).toEqual('Weimann');
+						});
+						it('should filter by username', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].ldapDn = 'uid=EinarWeimann12,...';
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { loginName: 'Mann1' };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.length).toEqual(1);
+							expect(result.data[0].loginName).toEqual('EinarWeimann12');
+						});
+						it('should filter by one role of student, teacher, or admin', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].roleNames = [RoleName.TEACHER];
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { role: RoleNameFilterQuery.TEACHER };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.length).toEqual(1);
+							expect(result.data[0].roleNames).toContain(RoleNameResponse.TEACHER);
+						});
+						it('should filter by class', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].classNames = ['class1', 'second'];
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { classes: 'ss1' };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.length).toEqual(1);
+							expect(result.data[0].classNames).toContain('class1');
+						});
+						it('should filter by match type none', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.NONE] };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.AUTO)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.MANUAL)).toEqual(true);
+							expect(result.data.length).toBeGreaterThanOrEqual(9);
+						});
+						it('should filter by match type admin (manual)', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.MANUAL] };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.MANUAL)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.MANUAL)).toEqual(false);
+							expect(result.data.length).toEqual(1);
+						});
+						it('should filter by match type auto', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.AUTO] };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.AUTO)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.AUTO)).toEqual(false);
+							expect(result.data.length).toEqual(1);
+						});
+						it('should filter by multiple match types', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
+							importUsers[1].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.AUTO, MatchFilterQuery.MANUAL] };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.MANUAL)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.AUTO)).toEqual(true);
+							expect(result.data.length).toEqual(2);
+						});
+						it('should filter by flag enabled', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].flagged = true;
+							await em.persistAndFlush(importUsers);
+							const query: ImportUserFilterQuery = { flagged: true };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.some((iu) => iu.flagged === false)).toEqual(false);
+							expect(result.data.some((iu) => iu.flagged === true)).toEqual(true);
+							expect(result.data.length).toEqual(1);
+						});
 					});
 				});
 			});
@@ -429,13 +663,13 @@ describe('ImportUser Controller (e2e)', () => {
 							const userMatch = userFactory.withRole('student').build({
 								school,
 							});
-							const manualUserMatch = userFactory.withRole('student').build({
-								school,
-							});
 							const alreadyMatchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
 								school,
 							});
-							await em.persistAndFlush([userMatch, alreadyMatchedImportUser]);
+							const manualUserMatch = userFactory.withRole('student').build({
+								school,
+							});
+							await em.persistAndFlush([userMatch, alreadyMatchedImportUser, manualUserMatch]);
 							em.clear();
 							const params: UpdateMatchParams = { userId: manualUserMatch.id };
 							const result = await request(app.getHttpServer())
@@ -467,13 +701,13 @@ describe('ImportUser Controller (e2e)', () => {
 							expectAllImportUserResponsePropertiesExist(result.body as ImportUserResponse, false);
 						});
 						it('should not fail when importuser is not having a match', async () => {
-							const importUserWithMatch = importUserFactory.build({
+							const importUserWithoutMatch = importUserFactory.build({
 								school,
 							});
-							await em.persistAndFlush([importUserWithMatch]);
+							await em.persistAndFlush([importUserWithoutMatch]);
 							em.clear();
 							const result = await request(app.getHttpServer())
-								.delete(`/user/import/${importUserWithMatch.id}/match`)
+								.delete(`/user/import/${importUserWithoutMatch.id}/match`)
 								.expect(200);
 							expectAllImportUserResponsePropertiesExist(result.body as ImportUserResponse, false);
 						});
@@ -481,9 +715,37 @@ describe('ImportUser Controller (e2e)', () => {
 				});
 				describe('[updateFlag]', () => {
 					describe('[PATCH] user/import/:id/flag', () => {
-						it.todo('should add a flag');
-						it.todo('should remove a flag');
-						it.todo('should respond importUser with all properties');
+						it('should add a flag', async () => {
+							const importUser = importUserFactory.build({
+								school,
+							});
+							await em.persistAndFlush([importUser]);
+							em.clear();
+							const params: UpdateFlagParams = { flagged: true };
+							const result = await request(app.getHttpServer())
+								.patch(`/user/import/${importUser.id}/flag`)
+								.send(params)
+								.expect(200);
+							const response = result.body as ImportUserResponse;
+							expectAllImportUserResponsePropertiesExist(response, false);
+							expect(response.flagged).toEqual(true);
+						});
+						it('should remove a flag', async () => {
+							const importUser = importUserFactory.build({
+								school,
+								flagged: true,
+							});
+							await em.persistAndFlush([importUser]);
+							em.clear();
+							const params: UpdateFlagParams = { flagged: false };
+							const result = await request(app.getHttpServer())
+								.patch(`/user/import/${importUser.id}/flag`)
+								.send(params)
+								.expect(200);
+							const response = result.body as ImportUserResponse;
+							expectAllImportUserResponsePropertiesExist(response, false);
+							expect(response.flagged).toEqual(false);
+						});
 					});
 				});
 			});
