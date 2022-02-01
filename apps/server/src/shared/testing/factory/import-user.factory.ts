@@ -24,6 +24,7 @@ export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequenc
 		lastName: `Doe${sequence}`,
 		email: `user-${sequence}@example.com`,
 		roleNames: [RoleName.STUDENT],
+		classNames: ['firstClass'],
 		flagged: false,
 	};
 });

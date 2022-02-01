@@ -3,7 +3,6 @@ import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { Counted, EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
-import { userFactory } from '@shared/testing';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
