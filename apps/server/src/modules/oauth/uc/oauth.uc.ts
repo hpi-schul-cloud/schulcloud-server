@@ -79,7 +79,7 @@ export class OauthUc {
 		if (!decodedJwt || !decodedJwt.uuid) throw Error('Filed to extract uuid');
 		const { uuid } = decodedJwt;
 		if (!uuid || uuid.length === 0) {
-			throw Error('Filed to extract uuid');
+			throw Error('Failed to extract uuid');
 		}
 		return uuid;
 	}

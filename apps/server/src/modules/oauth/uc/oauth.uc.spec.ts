@@ -2,13 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '@src/core/logger';
 
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { roleFactory, userFactory } from '@shared/testing';
 import { SystemRepo } from '@shared/repo/system';
-import { EntityId, System, User, OauthConfig, School, Role } from '@shared/domain';
+import { System, User, OauthConfig, School, Role } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
-import { NotFoundException } from '@nestjs/common';
 import { Collection } from '@mikro-orm/core';
 import { OauthUc } from '.';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
@@ -95,7 +93,7 @@ describe('OAuthUc', () => {
 				{
 					provide: SystemRepo,
 					useValue: {
-						findById() {
+						findById(id: string) {
 							return defaultSystem;
 						},
 					},
@@ -104,8 +102,7 @@ describe('OAuthUc', () => {
 					provide: UserRepo,
 					useValue: {
 						findByLdapId(id: string) {
-							if (id === defaultUserId) return defaultUser;
-							throw new NotFoundException();
+							return defaultUser;
 						},
 					},
 				},
@@ -141,7 +138,9 @@ describe('OAuthUc', () => {
 			const checkAuthorizationCodeMock = jest.fn(() => 'mock-code');
 			service.checkAuthorizationCode = checkAuthorizationCodeMock;
 			const extract = service.checkAuthorizationCode(defaultQuery);
-			// 	expect(extract).toBeCalledWith('asdf');
+			const checkDecodeTokenMock = jest.fn(() => 'mock-code');
+			service.decodeToken = checkDecodeTokenMock;
+			// service.startOauth(defaultQuery, defaultSystem.id);
 		});
 	});
 
@@ -178,25 +177,24 @@ describe('OAuthUc', () => {
 		});
 	});
 
-	// TODO
+	// Think DONEff
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
-			await service.findUserById(defaultUserId);
+			const user: User = await service.findUserById(defaultUserId);
 			expect(resolveUserSpy).toHaveBeenCalled();
-		});
-		// TODO
-		it('should throw an error if no uuid found', () => {
-			expect(async () => {
-				// await service.findUserById('123');
-			}).toThrow(NotFoundException);
+			expect(user).toBe(defaultUser);
 		});
 	});
 
 	// TODO
 	describe('getJWTForUser', () => {
-		it('should return a JWT for a user', () => {
+		it('should return a JWT for a user', async () => {
 			// TODO
+			const resolveJWTSpy = jest.spyOn(jwtService, 'generateJwt');
+			const jwt = await service.getJWTForUser(defaultUser);
+			expect(resolveJWTSpy).toHaveBeenCalled();
+			expect(jwt).toStrictEqual(defaultJWT);
 		});
 	});
 });
