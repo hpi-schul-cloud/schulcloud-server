@@ -12,7 +12,7 @@ export class TokenRequestPayloadMapper {
 
 	static mapCreateTokenRequestPayload(system: System, params: TokenRequestParams): TokenRequestPayload {
 		const dto = {
-			token_endpoint: system.oauthconfig?.token_endpoint,
+			token_endpoint: system.oauthconfig.token_endpoint,
 			tokenRequestParams: params,
 		};
 		return dto;
