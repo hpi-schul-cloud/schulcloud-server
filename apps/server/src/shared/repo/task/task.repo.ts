@@ -10,6 +10,11 @@ import { TaskScope } from './task-scope';
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	async findById(id: EntityId): Promise<Task> {
+		const task = await this.em.findOneOrFail(Task, { id });
+		return task;
+	}
+
 	async findAllFinishedByParentIds(
 		parentIds: {
 			creatorId: EntityId;
@@ -183,5 +188,10 @@ export class TaskRepo {
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 
 		return [taskEntities, count];
+	}
+
+	async finishTask(userId: EntityId, task: Task): Promise<void> {
+		await this.em.nativeUpdate(Task, { id: task.id }, { $addToSet: { archived: userId } });
+		// return Promise.resolve();
 	}
 }

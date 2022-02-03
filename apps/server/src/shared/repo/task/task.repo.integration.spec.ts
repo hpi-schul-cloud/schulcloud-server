@@ -1550,4 +1550,19 @@ describe('TaskRepo', () => {
 			});
 		});
 	});
+
+	describe('finishTask', () => {
+		describe('when task is not finished', () => {
+			it('should finish task', async () => {
+				const user = userFactory.build();
+				const task = taskFactory.build({ finished: [] });
+				await em.persistAndFlush(task);
+
+				await repo.finishTask(user.id, task);
+				em.clear();
+				const otherTask = await em.findOneOrFail(Task, { id: task.id });
+				// expect(task.finished).toContain(user); */
+			});
+		});
+	});
 });
