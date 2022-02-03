@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User } from '@shared/domain';
+import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User, Task } from '@shared/domain';
 
 import { TaskRepo, UserRepo } from '@shared/repo';
 
@@ -77,6 +77,58 @@ export class TaskUC {
 		}
 
 		return response;
+	}
+
+	async finishTask(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.userRepo.findById(userId, true);
+		const task = await this.taskRepo.findById(taskId);
+
+		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
+			throw new UnauthorizedException();
+		}
+
+		if (!task.finished.contains(user)) {
+			task.finished.add(user);
+			await this.taskRepo.save(task);
+		}
+
+		// add status
+		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
+			user,
+			TaskDashBoardPermission.teacherDashboard
+		)
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
+	async restoreTask(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.userRepo.findById(userId, true);
+		const task = await this.taskRepo.findById(taskId);
+
+		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
+			throw new UnauthorizedException();
+		}
+
+		if (task.finished.contains(user)) {
+			task.finished.remove(user);
+			await this.taskRepo.save(task);
+		}
+
+		// add status
+		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
+			user,
+			TaskDashBoardPermission.teacherDashboard
+		)
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
 	}
 
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {

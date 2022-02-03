@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, Task } from '@shared/domain';
 import {
@@ -1551,18 +1551,32 @@ describe('TaskRepo', () => {
 		});
 	});
 
-	describe('finishTask', () => {
-		describe('when task is not finished', () => {
-			it('should finish task', async () => {
-				const user = userFactory.build();
-				const task = taskFactory.build({ finished: [] });
-				await em.persistAndFlush(task);
+	describe('findById', () => {
+		it('should find a task by its id', async () => {
+			const task = taskFactory.build({ name: 'important task' });
+			await em.persistAndFlush(task);
+			em.clear();
 
-				await repo.finishTask(user.id, task);
-				em.clear();
-				const otherTask = await em.findOneOrFail(Task, { id: task.id });
-				// expect(task.finished).toContain(user); */
-			});
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.name).toEqual('important task');
+		});
+
+		it('should throw error if the task cannot be found by id', async () => {
+			const unknownId = new ObjectId().toHexString();
+			await expect(async () => {
+				await repo.findById(unknownId);
+			}).rejects.toThrow();
+		});
+	});
+
+	describe('save', () => {
+		it('should persist a task in the database', async () => {
+			const task = taskFactory.build({ name: 'important task' });
+			await repo.save(task);
+			em.clear();
+
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.name).toEqual('important task');
 		});
 	});
 });

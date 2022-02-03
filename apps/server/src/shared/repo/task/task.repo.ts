@@ -12,7 +12,12 @@ export class TaskRepo {
 
 	async findById(id: EntityId): Promise<Task> {
 		const task = await this.em.findOneOrFail(Task, { id });
+		await this.em.populate(task, ['course', 'lesson', 'submissions']);
 		return task;
+	}
+
+	async save(task: Task): Promise<void> {
+		await this.em.persistAndFlush(task);
 	}
 
 	async findAllFinishedByParentIds(
@@ -188,10 +193,5 @@ export class TaskRepo {
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 
 		return [taskEntities, count];
-	}
-
-	async finishTask(userId: EntityId, task: Task): Promise<void> {
-		await this.em.nativeUpdate(Task, { id: task.id }, { $addToSet: { archived: userId } });
-		// return Promise.resolve();
 	}
 }
