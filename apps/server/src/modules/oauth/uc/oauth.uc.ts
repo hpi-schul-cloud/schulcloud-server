@@ -6,6 +6,8 @@ import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
@@ -55,6 +57,7 @@ export class OauthUc {
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
+		this.decryptSecret(system);
 		// const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(system, code);
 		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
@@ -63,6 +66,18 @@ export class OauthUc {
 			{ params: { ...tokenRequestPayload.tokenRequestParams } }
 		);
 		return responseToken.data;
+	}
+
+	decryptSecret(system: System): string {
+		const key: string = Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY') as string;
+		if (!key) {
+			this.logger.error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
+			throw new Error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
+		}
+		const encryptionService = new SymetricKeyEncryptionService(key);
+		// console.log('client secret: >>>>>>>>>>>>>>>', encryptionService.encrypt(system.oauthconfig.client_secret));
+		system.oauthconfig.client_secret = encryptionService.decrypt(system.oauthconfig.client_secret);
+		return system.oauthconfig.client_secret;
 	}
 
 	// 2- decode the Token to extract the UUID
