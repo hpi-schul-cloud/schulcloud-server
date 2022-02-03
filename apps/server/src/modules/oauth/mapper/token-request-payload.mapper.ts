@@ -4,8 +4,8 @@ import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { TokenRequestParamsMapper } from './token-request-params.mapper';
 
 export class TokenRequestPayloadMapper {
-	static mapToResponse(system: System, code: string): TokenRequestPayload {
-		const params = TokenRequestParamsMapper.mapToResponse(system, code);
+	static mapToResponse(system: System, decryptedClientSecret: string, code: string): TokenRequestPayload {
+		const params = TokenRequestParamsMapper.mapToResponse(system, decryptedClientSecret, code);
 		const dto = this.mapCreateTokenRequestPayload(system, params);
 		return dto;
 	}

@@ -61,9 +61,13 @@ export class OauthUc {
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
-		const decryptedClientSecret = this.oAuthEncryptionService.decrypt(system.oauthconfig.client_secret);
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthconfig.client_secret);
 		// const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(system, code);
+		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
+			system,
+			decryptedClientSecret,
+			code
+		);
 
 		const responseToken = await lastValueFrom(
 			this.httpService.post<OauthTokenResponse>(

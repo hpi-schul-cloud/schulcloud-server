@@ -5,6 +5,7 @@ import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { TokenRequestParamsMapper } from './token-request-params.mapper';
 import { TokenRequestPayloadMapper } from './token-request-payload.mapper';
 
+const defaultdecryptedClientSecret = 'mocksecret';
 const expectedParams: TokenRequestParams = {
 	code: '43534543jnj543342jn2',
 	client_id: '12345',
@@ -41,7 +42,11 @@ describe('TokenRequestPayload.Mapper', () => {
 	describe('token-request-payload', () => {
 		describe('mapToResponse', () => {
 			it('should map the Payload to dto', () => {
-				const result = TokenRequestPayloadMapper.mapToResponse(defaultSystem, defaultAuthCode);
+				const result = TokenRequestPayloadMapper.mapToResponse(
+					defaultSystem,
+					defaultdecryptedClientSecret,
+					defaultAuthCode
+				);
 				expect(result).toStrictEqual(expectedPayload);
 			});
 			describe('mapCreateTokenRequestPayload', () => {
@@ -57,12 +62,20 @@ describe('TokenRequestParams.Mapper', () => {
 	describe('token-request-payload', () => {
 		describe('mapToResponse', () => {
 			it('should map the Payload to dto', () => {
-				const result = TokenRequestParamsMapper.mapToResponse(defaultSystem, defaultAuthCode);
+				const result = TokenRequestParamsMapper.mapToResponse(
+					defaultSystem,
+					defaultdecryptedClientSecret,
+					defaultAuthCode
+				);
 				expect(result).toStrictEqual(expectedParams);
 			});
 			describe('mapCreateTokenRequestPayload', () => {
 				it('should create the Payload', () => {
-					const result = TokenRequestParamsMapper.mapCreateTokenRequestParams(defaultSystem, defaultAuthCode);
+					const result = TokenRequestParamsMapper.mapCreateTokenRequestParams(
+						defaultSystem,
+						defaultdecryptedClientSecret,
+						defaultAuthCode
+					);
 					expect(result).toStrictEqual(expectedParams);
 				});
 			});
