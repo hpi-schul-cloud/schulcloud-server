@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ILogger, Logger } from '@src/core/logger';
+import { HttpService } from '@nestjs/axios';
 import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { SystemRepo } from '@shared/repo/system';
@@ -8,6 +9,7 @@ import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
+import { Observer, lastValueFrom } from 'rxjs';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
@@ -21,7 +23,9 @@ export class OauthUc {
 	constructor(
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo,
-		private readonly jwtService: FeathersJwtProvider
+		private readonly jwtService: FeathersJwtProvider,
+		private httpService: HttpService,
+		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService
 	) {
 		this.logger = new Logger(OauthUc.name);
 	}
@@ -57,27 +61,18 @@ export class OauthUc {
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
-		this.decryptSecret(system);
+		const decryptedClientSecret = this.oAuthEncryptionService.decrypt(system.oauthconfig.client_secret);
 		// const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(system, code);
-		const responseToken: AxiosResponse<OauthTokenResponse> = await axios.post(
-			tokenRequestPayload.token_endpoint,
-			{},
-			{ params: { ...tokenRequestPayload.tokenRequestParams } }
+
+		const responseToken = await lastValueFrom(
+			this.httpService.post<OauthTokenResponse>(
+				tokenRequestPayload.token_endpoint,
+				{},
+				{ params: { ...tokenRequestPayload.tokenRequestParams } }
+			)
 		);
 		return responseToken.data;
-	}
-
-	decryptSecret(system: System): string {
-		const key: string = Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY') as string;
-		if (!key) {
-			this.logger.error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
-			throw new Error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
-		}
-		const encryptionService = new SymetricKeyEncryptionService(key);
-		// console.log('client secret: >>>>>>>>>>>>>>>', encryptionService.encrypt(system.oauthconfig.client_secret));
-		system.oauthconfig.client_secret = encryptionService.decrypt(system.oauthconfig.client_secret);
-		return system.oauthconfig.client_secret;
 	}
 
 	// 2- decode the Token to extract the UUID
