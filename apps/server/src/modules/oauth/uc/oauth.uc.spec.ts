@@ -8,6 +8,7 @@ import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import { Collection } from '@mikro-orm/core';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { OauthUc } from '.';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
@@ -87,9 +88,24 @@ describe('OAuthUc', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule],
+			imports: [LoggerModule, HttpModule],
 			providers: [
 				OauthUc,
+				{
+					provide: 'OAuthEncryptionService',
+					useValue: {
+						// TODO
+					},
+				},
+				{
+					provide: HttpService,
+					useValue: {
+						post: () => {
+							return defaultAxiosResponse;
+						},
+						// TODO
+					},
+				},
 				{
 					provide: SystemRepo,
 					useValue: {
@@ -177,7 +193,7 @@ describe('OAuthUc', () => {
 		});
 	});
 
-	// Think DONEff
+	// Think DONE
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
@@ -186,7 +202,6 @@ describe('OAuthUc', () => {
 			expect(user).toBe(defaultUser);
 		});
 	});
-
 	// TODO
 	describe('getJWTForUser', () => {
 		it('should return a JWT for a user', async () => {
