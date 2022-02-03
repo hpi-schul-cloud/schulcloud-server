@@ -26,27 +26,19 @@ export class OauthUc {
 
 	// 0- start Oauth Process
 	async startOauth(query: AuthorizationQuery, systemId: string): Promise<OAuthResponse> {
-		try {
-			// get the authorization code
-			const code: string = this.checkAuthorizationCode(query);
-			// get the Tokens using the authorization code
-			const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
-			// extract the uuid from the token
-			const uuid = this.decodeToken(queryToken.id_token);
-			// get the user using the uuid
-			const user: User = await this.findUserById(uuid);
-			// create JWT for the user
-			const jwt: string = await this.getJWTForUser(user);
-			// send response back
-			const response: OAuthResponse = new OAuthResponse();
-			response.jwt = jwt;
-			return response;
-		} catch (error) {
-			this.logger.log(error);
-		}
-		// send error response back
+		// get the authorization code
+		const code: string = this.checkAuthorizationCode(query);
+		// get the Tokens using the authorization code
+		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
+		// extract the uuid from the token
+		const uuid = this.decodeToken(queryToken.id_token);
+		// get the user using the uuid
+		const user: User = await this.findUserById(uuid);
+		// create JWT for the user
+		const jwt: string = await this.getJWTForUser(user);
+		// send response back
 		const response: OAuthResponse = new OAuthResponse();
-		response.errorcode = 'OauthLoginFailed';
+		response.jwt = jwt;
 		return response;
 	}
 
