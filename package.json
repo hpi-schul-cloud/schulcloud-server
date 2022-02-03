@@ -58,7 +58,7 @@
 		"nest:start:files-storage": "nest start files-storage",
 		"nest:start:files-storage:dev": "nest start files-storage --watch",
 		"nest:start:files-storage:debug": "nest start files-storage --debug --watch",
-		"nest:start:files-storage:prod": "node dist/apps/server/files-storage",
+		"nest:start:files-storage:prod": "node dist/apps/server/files-storage.server",
 		"nest:start:console": "nest start console --",
 		"nest:start:console:dev": "nest start console --watch --",
 		"nest:start:console:debug": "nest start console --debug --watch --",
