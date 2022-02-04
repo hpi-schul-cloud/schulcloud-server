@@ -75,4 +75,40 @@ describe('user repo', () => {
 			expect(result.roles[0].roles[0].roles.getItems()).toEqual(roles3);
 		});
 	});
+
+	it('should be defined', () => {
+		expect(repo).toBeDefined();
+		expect(typeof repo.findByLdapId).toEqual('function');
+	});
+
+	describe('findByLdapId', () => {
+		afterEach(async () => {
+			await em.nativeDelete(User, {});
+		});
+
+		it('should return right keys', async () => {
+			const user = userFactory.build();
+
+			await em.persistAndFlush([user]);
+			const result = await repo.findByLdapId(user.ldapId);
+			expect(Object.keys(result).sort()).toEqual(
+				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id'].sort()
+			);
+		});
+
+		it('should return one role that matched by id', async () => {
+			const userA = userFactory.build();
+			const userB = userFactory.build();
+
+			await em.persistAndFlush([userA, userB]);
+			const result = await repo.findByLdapId(userA.ldapId);
+			expect(result).toEqual(userA);
+		});
+
+		it('should throw an error if roles by id doesnt exist', async () => {
+			const idA = new ObjectId().toHexString();
+
+			await expect(repo.findByLdapId(idA)).rejects.toThrow(NotFoundError);
+		});
+	});
 });
