@@ -69,16 +69,15 @@ class UserAction extends BaseConsumerAction {
 			userUpdateObject.lastName
 		);
 		if (foundImportUsers.length === 0) {
-			userUpdateObject.match = {
-				userId: userMatch._id,
-				matchedBy: 'auto',
-			};
+			userUpdateObject.match_userId = userMatch._id;
+			userUpdateObject.match_matchedBy = 'auto';
 		} else {
 			// revoke other previously auto-matched import users
 			await Promise.all(
 				foundImportUsers.map((foundImportUser) => {
-					if (foundImportUser.match && foundImportUser.match.matchedBy === 'auto') {
-						delete foundImportUser.match;
+					if (foundImportUser.match_userId && foundImportUser.match_matchedBy === 'auto') {
+						delete foundImportUser.match_userId;
+						delete foundImportUser.match_matchedBy;
 						return UserRepo.createOrUpdateImportUser(
 							schoolId,
 							foundImportUser.systemId,

@@ -1,10 +1,13 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
+import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, Role, User } from '@shared/domain';
+import { StringValidator } from '@shared/common';
+import { Counted, EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
 export class UserRepo {
-	constructor(private readonly em: EntityManager) {}
+	constructor(private readonly em: EntityManager<MongoDriver>) {}
 
 	async findById(id: EntityId, populateRoles = false): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
@@ -15,6 +18,117 @@ export class UserRepo {
 		}
 
 		return user;
+	}
+
+	/**
+	 * used for importusers module to request users not referenced in importusers
+	 */
+	async findWithoutImportUser(
+		school: School,
+		filters?: INameMatch,
+		options?: IFindOptions<User>
+	): Promise<Counted<User[]>> {
+		const { _id: schoolId } = school;
+		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
+
+		const permittedMatch = { schoolId };
+
+		const queryFilterMatch: { $or?: unknown[] } = {};
+		if (filters?.name && StringValidator.isNotEmptyString(filters.name, true)) {
+			const escapedName = filters.name.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+			// TODO make db agnostic
+			if (StringValidator.isNotEmptyString(escapedName, true)) {
+				queryFilterMatch.$or = [
+					{
+						firstName: {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							$regex: escapedName,
+							$options: 'i',
+						},
+					},
+					{
+						lastName: {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							$regex: escapedName,
+							$options: 'i',
+						},
+					},
+				];
+			}
+		}
+
+		const pipeline: unknown[] = [
+			{ $match: permittedMatch },
+			{
+				$lookup: {
+					from: 'importusers',
+					localField: '_id',
+					foreignField: 'match_userId',
+					as: 'importusers',
+				},
+			},
+			{
+				$match: {
+					importusers: {
+						$size: 0,
+					},
+				},
+			},
+			{ $match: queryFilterMatch },
+			{
+				$project: {
+					importusers: 0,
+				},
+			},
+		];
+
+		const countPipeline = [...pipeline];
+		countPipeline.push({ $group: { _id: null, count: { $sum: 1 } } });
+		const total = (await this.em.aggregate(User, countPipeline)) as { count: number }[];
+		const count = total.length > 0 ? total[0].count : 0;
+		const { pagination, order } = options || {};
+
+		if (order) {
+			const orderQuery: QueryOrderMap = {};
+			if (order.firstName) {
+				switch (order.firstName) {
+					case SortOrder.desc:
+						orderQuery.firstName = QueryOrderNumeric.DESC;
+						break;
+					case SortOrder.asc:
+					default:
+						orderQuery.firstName = QueryOrderNumeric.ASC;
+						break;
+				}
+			}
+			if (order.lastName) {
+				switch (order.lastName) {
+					case SortOrder.desc:
+						orderQuery.lastName = QueryOrderNumeric.DESC;
+						break;
+					case SortOrder.asc:
+					default:
+						orderQuery.lastName = QueryOrderNumeric.ASC;
+						break;
+				}
+			}
+			pipeline.push({ $sort: orderQuery });
+		}
+
+		if (pagination?.skip) {
+			pipeline.push({ $skip: pagination?.skip });
+		}
+		if (pagination?.limit) {
+			pipeline.push({ $limit: pagination?.limit });
+		}
+
+		const userDocuments = await this.em.aggregate(User, pipeline);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
+		await this.em.populate(users, 'roles');
+		return [users, count];
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
+
+// TODO move to authorization module
 
 @Injectable()
 export class PermissionService {
@@ -40,5 +42,21 @@ export class PermissionService {
 		permissions = [...new Set(permissions)];
 
 		return permissions;
+	}
+
+	hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
+		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
+			return false;
+		}
+		const usersPermissions = this.resolvePermissions(user);
+		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
+		return hasPermissions;
+	}
+
+	checkUserHasAllSchoolPermissions(user: User, requiredPermissions: string[]): void {
+		const hasPermission = this.hasUserAllSchoolPermissions(user, requiredPermissions);
+		if (hasPermission !== true) {
+			throw new UnauthorizedException();
+		}
 	}
 }

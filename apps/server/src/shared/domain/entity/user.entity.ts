@@ -5,8 +5,8 @@ import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IUserProperties {
 	email: string;
-	firstName?: string;
-	lastName?: string;
+	firstName: string;
+	lastName: string;
 	school: School;
 	roles: Role[];
 }
@@ -18,10 +18,10 @@ export class User extends BaseEntityWithTimestamps {
 	email: string;
 
 	@Property()
-	firstName?: string;
+	firstName: string;
 
 	@Property()
-	lastName?: string;
+	lastName: string;
 
 	@Index({ name: 'roleIdBasedSearches' })
 	@ManyToMany('Role', undefined, { fieldName: 'roles' })
