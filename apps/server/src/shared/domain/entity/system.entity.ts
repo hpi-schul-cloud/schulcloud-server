@@ -8,27 +8,6 @@ export interface ISystemProperties {
 	alias?: string;
 	oauthconfig?: OauthConfig;
 }
-@Entity({ tableName: 'systems' })
-export class System extends BaseEntityWithTimestamps {
-	constructor(props: System) {
-		super();
-		this.type = props.type;
-		if (props.url != null) this.url = props.url;
-		if (props.alias != null) this.alias = props.alias;
-	}
-
-	@Property({})
-	type: string; // see legacy enum for valid values
-
-	@Property()
-	url?: string;
-
-	@Property()
-	alias?: string;
-
-	@Property()
-	oauthconfig!: OauthConfig;
-}
 
 export class OauthConfig {
 	constructor(system: System) {
@@ -69,4 +48,25 @@ export class OauthConfig {
 
 	@Property()
 	scope: string;
+}
+@Entity({ tableName: 'systems' })
+export class System extends BaseEntityWithTimestamps {
+	constructor(props: System) {
+		super();
+		this.type = props.type;
+		if (props.url != null) this.url = props.url;
+		if (props.alias != null) this.alias = props.alias;
+	}
+
+	@Property({})
+	type: string; // see legacy enum for valid values
+
+	@Property()
+	url?: string;
+
+	@Property()
+	alias?: string;
+
+	@Property()
+	oauthconfig!: OauthConfig;
 }
