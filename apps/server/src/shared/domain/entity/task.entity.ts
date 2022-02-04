@@ -222,14 +222,10 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	finishForUser(user: User) {
-		if (!this.isFinishedForUser(user)) {
-			this.finished.add(user);
-		}
+		this.finished.add(user);
 	}
 
 	restoreForUser(user: User) {
-		if (this.isFinishedForUser(user)) {
-			this.finished.remove(user);
-		}
+		this.finished.remove(user);
 	}
 }
