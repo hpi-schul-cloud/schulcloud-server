@@ -1,4 +1,5 @@
 import {
+	CreateBucketCommand,
 	DeleteObjectCommand,
 	GetObjectCommand,
 	ListObjectsCommand,
@@ -7,6 +8,7 @@ import {
 	S3Client,
 } from '@aws-sdk/client-s3';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
 import { join } from 'path';
 import { Readable } from 'stream';
 import { S3Config } from '../interface/config';
@@ -15,7 +17,25 @@ import { IStorageClient } from '../interface/storage-client';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
-	constructor(@Inject('S3_Client') readonly client: S3Client, @Inject('S3_Config') readonly config: S3Config) {}
+	constructor(
+		@Inject('S3_Client') readonly client: S3Client,
+		@Inject('S3_Config') readonly config: S3Config,
+		private logger: Logger
+	) {
+		this.logger.setContext('S3Client');
+	}
+
+	async createBucket() {
+		try {
+			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
+			await this.client.send(req);
+		} catch (error) {
+			if (error instanceof Error) {
+				this.logger.error(`${error.message} "${this.config.bucket}"`);
+			}
+			throw error;
+		}
+	}
 
 	public async getFile(path: string) {
 		try {
@@ -60,6 +80,11 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return res;
 		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (error.Code && error.Code === 'NoSuchBucket') {
+				await this.createBucket();
+				return this.uploadFile(folder, file);
+			}
 			throw new InternalServerErrorException(error);
 		}
 	}

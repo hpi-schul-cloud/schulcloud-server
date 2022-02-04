@@ -3,6 +3,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { ALL_ENTITIES } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { LoggerModule } from '@src/core/logger';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
@@ -21,6 +22,7 @@ const config: S3Config = {
 @Module({
 	imports: [
 		AuthModule,
+		LoggerModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
