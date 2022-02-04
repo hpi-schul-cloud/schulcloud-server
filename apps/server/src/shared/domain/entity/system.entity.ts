@@ -4,9 +4,9 @@ import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ISystemProperties {
 	type: string;
-	url?: string;
-	alias?: string;
-	oauthconfig?: OauthConfig;
+	url: string;
+	alias: string;
+	oauthconfig: OauthConfig;
 }
 
 export class OauthConfig {
@@ -51,13 +51,6 @@ export class OauthConfig {
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
-	constructor(props: System) {
-		super();
-		this.type = props.type;
-		if (props.url != null) this.url = props.url;
-		if (props.alias != null) this.alias = props.alias;
-	}
-
 	@Property({})
 	type: string; // see legacy enum for valid values
 
@@ -69,4 +62,12 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property()
 	oauthconfig!: OauthConfig;
+
+	constructor(props: ISystemProperties) {
+		super();
+		this.type = props.type;
+		this.url = props.url;
+		this.alias = props.alias;
+		this.oauthconfig = props.oauthconfig;
+	}
 }
