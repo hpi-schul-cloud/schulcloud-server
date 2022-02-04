@@ -9,18 +9,46 @@ export interface ISystemProperties {
 	oauthconfig?: OauthConfig;
 }
 
-export interface OauthConfig {
+export class OauthConfig {
+	constructor(system: System) {
+		this.client_id = system.oauthconfig.client_id;
+		this.client_secret = system.oauthconfig.client_secret;
+		this.token_endpoint = system.oauthconfig.token_endpoint;
+		this.grant_type = system.oauthconfig.grant_type;
+		this.token_redirect_uri = system.oauthconfig.token_redirect_uri;
+		this.scope = system.oauthconfig.scope;
+		this.response_type = system.oauthconfig.response_type;
+		this.auth_endpoint = system.oauthconfig.auth_endpoint;
+		this.auth_redirect_uri = system.oauthconfig.auth_redirect_uri;
+	}
+
+	@Property()
 	client_id: string;
+
+	@Property()
 	client_secret: string;
+
+	@Property()
 	auth_redirect_uri: string;
+
+	@Property()
 	token_redirect_uri: string;
+
+	@Property()
 	grant_type: string;
+
+	@Property()
 	token_endpoint: string;
+
+	@Property()
 	auth_endpoint: string;
+
+	@Property()
 	response_type: string;
+
+	@Property()
 	scope: string;
 }
-
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
 	constructor(props: System) {
