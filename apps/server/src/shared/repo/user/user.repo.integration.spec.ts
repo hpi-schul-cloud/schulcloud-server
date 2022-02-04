@@ -40,7 +40,7 @@ describe('user repo', () => {
 			await em.persistAndFlush([user]);
 			const result = await repo.findById(user.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id'].sort()
+				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
 			);
 		});
 
@@ -92,23 +92,22 @@ describe('user repo', () => {
 			await em.persistAndFlush([user]);
 			const result = await repo.findByLdapId(user.ldapId);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id'].sort()
+				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
 			);
 		});
+	});
+	it('should return one role that matched by id', async () => {
+		const userA = userFactory.build();
+		const userB = userFactory.build();
 
-		it('should return one role that matched by id', async () => {
-			const userA = userFactory.build();
-			const userB = userFactory.build();
+		await em.persistAndFlush([userA, userB]);
+		const result = await repo.findByLdapId(userA.ldapId);
+		expect(result).toEqual(userA);
+	});
 
-			await em.persistAndFlush([userA, userB]);
-			const result = await repo.findByLdapId(userA.ldapId);
-			expect(result).toEqual(userA);
-		});
+	it('should throw an error if roles by id doesnt exist', async () => {
+		const idA = new ObjectId().toHexString();
 
-		it('should throw an error if roles by id doesnt exist', async () => {
-			const idA = new ObjectId().toHexString();
-
-			await expect(repo.findByLdapId(idA)).rejects.toThrow(NotFoundError);
-		});
+		await expect(repo.findByLdapId(idA)).rejects.toThrow(NotFoundError);
 	});
 });

@@ -9,5 +9,6 @@ export const userFactory = BaseFactory.define<User, IUserProperties>(User, ({ se
 		email: `user-${sequence}@example.com`,
 		roles: [],
 		school: schoolFactory.build(),
+		ldapId: '1111',
 	};
 });

@@ -3,12 +3,13 @@ import { LoggerModule } from '@src/core/logger';
 
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { SystemRepo } from '@shared/repo/system';
-import { System, User, OauthConfig, School, Role } from '@shared/domain';
+import { User, School, Role } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { OauthUc } from '.';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
@@ -44,25 +45,6 @@ describe('OAuthUc', () => {
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
 	const wrongJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-	const defaultOauthConfig: OauthConfig = {
-		client_id: '12345',
-		client_secret: 'mocksecret',
-		token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
-		grant_type: 'authorization_code',
-		token_redirect_uri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
-		scope: 'openid uuid',
-		response_type: 'code',
-		auth_endpoint: 'mock_auth_endpoint',
-		auth_redirect_uri: '',
-	};
-	const defaultSystem: System = {
-		type: 'iserv',
-		oauthconfig: defaultOauthConfig,
-		id: '',
-		_id: new ObjectId(),
-		createdAt: defaultDate,
-		updatedAt: defaultDate,
-	};
 	const defaultPayloadData: TokenRequestParams = {
 		code: defaultAuthCode,
 		client_id: '12345',
@@ -111,7 +93,7 @@ describe('OAuthUc', () => {
 					provide: SystemRepo,
 					useValue: {
 						findById(id: string) {
-							return defaultSystem;
+							return systemFactory.build();
 						},
 					},
 				},
