@@ -96,7 +96,7 @@ describe('user repo', () => {
 			);
 		});
 	});
-	it('should return one role that matched by id', async () => {
+	it('should return user matched by id', async () => {
 		const userA = userFactory.build();
 		const userB = userFactory.build();
 
@@ -105,7 +105,7 @@ describe('user repo', () => {
 		expect(result).toEqual(userA);
 	});
 
-	it('should throw an error if roles by id doesnt exist', async () => {
+	it('should throw an error if user by ldapid doesnt exist', async () => {
 		const idA = new ObjectId().toHexString();
 
 		await expect(repo.findByLdapId(idA)).rejects.toThrow(NotFoundError);
