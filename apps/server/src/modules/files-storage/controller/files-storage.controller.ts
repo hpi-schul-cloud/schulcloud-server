@@ -1,13 +1,12 @@
 import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Express } from 'express';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import { FileUploadDto } from './dto/file-upload.dto';
 
-@ApiBearerAuth()
 @ApiTags('files-storage')
 @Authenticate('jwt')
 @Controller('files-storage')
@@ -26,7 +25,7 @@ export class FilesStorageController {
 		@UploadedFile() file: Express.Multer.File,
 		@CurrentUser() currentUser: ICurrentUser
 	) {
-		const res = this.filesStorageUC.upload(currentUser, body.meta, file);
+		const res = this.filesStorageUC.upload(currentUser.userId, body.meta, file);
 		return res;
 	}
 
@@ -37,7 +36,7 @@ export class FilesStorageController {
 		@Param('uuid') uuid: string,
 		@CurrentUser() currentUser: ICurrentUser
 	) {
-		const res = await this.filesStorageUC.download(currentUser, schoolId, uuid);
+		const res = await this.filesStorageUC.download(currentUser.userId, schoolId, uuid);
 		return res;
 	}
 }

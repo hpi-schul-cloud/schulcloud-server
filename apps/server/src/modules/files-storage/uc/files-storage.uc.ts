@@ -1,5 +1,4 @@
-import { ForbiddenException, Injectable, StreamableFile } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import * as path from 'path';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileMetaDto } from '../controller/dto/file-upload.dto';
@@ -7,22 +6,12 @@ import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
-	constructor(private readonly uploadService: S3ClientAdapter) {}
+	constructor(private readonly storageClient: S3ClientAdapter) {}
 
-	/**
-	 * upload file to private bucket storage
-	 * @param currentUser
-	 * @param metadata
-	 * @param file
-	 * @returns
-	 */
-	async upload(currentUser: ICurrentUser, metadata: FileMetaDto, file: Express.Multer.File) {
-		// 5f2987e020834114b8efd6f8
-		// check permissions
-		// this.hasPermissions(currentUser, metadata.schoolId);
-
-		const { schoolId } = currentUser;
-
+	async upload(userId: string, metadata: FileMetaDto, file: Express.Multer.File) {
+		// @TODO check permissions of schoolId by user
+		// @TODO scan virus on demand?
+		// @TODO add thumbnail on demand
 		const reqFile: IFile = {
 			fileName: file.originalname,
 			buffer: file.buffer,
@@ -30,34 +19,17 @@ export class FilesStorageUC {
 			contentType: file.mimetype,
 		};
 
-		const folder = path.join(schoolId, metadata.targetId);
-		const result = await this.uploadService.uploadFile(folder, reqFile);
-
+		const folder = path.join(metadata.schoolId, metadata.targetId);
+		const result = await this.storageClient.uploadFile(folder, reqFile);
+		// @TODO add metadata to mongodb
 		return result;
 	}
 
-	/**
-	 * * get file from private bucket storage
-	 * @param currentUser
-	 * @param schoolId
-	 * @param uuid
-	 * @returns
-	 */
-	async download(currentUser: ICurrentUser, schoolId: string, uuid: string) {
-		// 5f2987e020834114b8efd6f8
-		// check permissions
-		// this.hasPermissions(currentUser, schoolId);
-
-		schoolId = currentUser.schoolId;
+	async download(userId: string, schoolId: string, uuid: string) {
+		// @TODO check permissions of schoolId by user
 		const patch = path.join(schoolId, uuid);
 
-		const res = await this.uploadService.getFile(patch);
+		const res = await this.storageClient.getFile(patch);
 		return new StreamableFile(res.data, { type: res.contentType });
-	}
-
-	hasPermissions(currentUser: ICurrentUser, schoolId: string) {
-		if (schoolId !== currentUser.schoolId) {
-			throw new ForbiddenException();
-		}
 	}
 }
