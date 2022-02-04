@@ -36,6 +36,7 @@ describe('OAuthUc', () => {
 		id: '',
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		ldapId: '1111',
 	};
 	const defaultUserId = '123456789';
 	const defaultDate = new Date();

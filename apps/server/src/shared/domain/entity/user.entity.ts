@@ -36,7 +36,7 @@ export class User extends BaseEntityWithTimestamps {
 	ldapDn?: string;
 
 	@Property()
-	ldapId?: string;
+	ldapId!: string;
 
 	constructor(props: IUserProperties) {
 		super();
