@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ILogger, Logger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
-import axios, { AxiosResponse } from 'axios';
 import jwtDecode from 'jwt-decode';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
-import { Observer, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
