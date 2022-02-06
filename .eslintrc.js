@@ -102,6 +102,7 @@ module.exports = {
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
+				'@typescript-eslint/unbound-method': 'error',
 			},
 			overrides: [
 				{
@@ -109,6 +110,11 @@ module.exports = {
 					env: {
 						jest: true,
 					},
+				},
+				rules: {
+					// you should turn the original rule off *only* for test files
+					'@typescript-eslint/unbound-method': 'off',
+					'jest/unbound-method': 'error',
 				},
 			],
 		},
