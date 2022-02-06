@@ -87,10 +87,8 @@ export class TaskUC {
 			throw new UnauthorizedException();
 		}
 
-		if (!task.finished.contains(user)) {
-			task.finished.add(user);
-			await this.taskRepo.save(task);
-		}
+		task.finishForUser(user);
+		await this.taskRepo.save(task);
 
 		// add status
 		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
@@ -113,10 +111,8 @@ export class TaskUC {
 			throw new UnauthorizedException();
 		}
 
-		if (task.finished.contains(user)) {
-			task.finished.remove(user);
-			await this.taskRepo.save(task);
-		}
+		task.restoreForUser(user);
+		await this.taskRepo.save(task);
 
 		// add status
 		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
