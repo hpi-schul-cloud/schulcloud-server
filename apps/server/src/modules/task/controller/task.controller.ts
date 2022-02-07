@@ -51,7 +51,7 @@ export class TaskController {
 		@Param('id', ParseObjectIdPipe) taskId: string,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<TaskResponse> {
-		const task = await this.taskUc.finishTask(currentUser.userId, taskId);
+		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, true);
 
 		const response = TaskMapper.mapToResponse(task);
 
@@ -63,7 +63,7 @@ export class TaskController {
 		@Param('id', ParseObjectIdPipe) taskId: string,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<TaskResponse> {
-		const task = await this.taskUc.restoreTask(currentUser.userId, taskId);
+		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, taskId, false);
 
 		const response = TaskMapper.mapToResponse(task);
 

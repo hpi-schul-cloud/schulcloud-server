@@ -79,39 +79,18 @@ export class TaskUC {
 		return response;
 	}
 
-	async finishTask(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
-		const user = await this.userRepo.findById(userId, true);
-		const task = await this.taskRepo.findById(taskId);
+	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
+		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
 
 		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
 			throw new UnauthorizedException();
 		}
 
-		task.finishForUser(user);
-		await this.taskRepo.save(task);
-
-		// add status
-		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
-			user,
-			TaskDashBoardPermission.teacherDashboard
-		)
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
-
-		const result = new TaskWithStatusVo(task, status);
-
-		return result;
-	}
-
-	async restoreTask(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
-		const user = await this.userRepo.findById(userId, true);
-		const task = await this.taskRepo.findById(taskId);
-
-		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
-			throw new UnauthorizedException();
+		if (isFinished) {
+			task.finishForUser(user);
+		} else {
+			task.restoreForUser(user);
 		}
-
-		task.restoreForUser(user);
 		await this.taskRepo.save(task);
 
 		// add status

@@ -14,9 +14,9 @@ import {
 	setupEntities,
 } from '@shared/testing';
 import { TaskRepo, UserRepo } from '@shared/repo';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TaskUC } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 let user!: User;
 let currentPermissions!: TaskDashBoardPermission[];
@@ -117,13 +117,15 @@ describe('TaskUC', () => {
 			return spy;
 		},
 		hasOneOfTaskDashboardPermissions: () => {
-			const spy = authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation((_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
-				const hasPermission: boolean = Array.isArray(permission)
-					? permission.some((p) => currentPermissions.includes(p))
-					: currentPermissions.includes(permission);
+			const spy = authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation(
+				(_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
+					const hasPermission: boolean = Array.isArray(permission)
+						? permission.some((p) => currentPermissions.includes(p))
+						: currentPermissions.includes(permission);
 
-				return hasPermission;
-			});
+					return hasPermission;
+				}
+			);
 
 			return spy;
 		},
@@ -948,9 +950,9 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('finish/restore task', () => {
+	describe('updateTaskFinished', () => {
 		let task: Task;
-	
+
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			task = taskFactory.buildWithId();
@@ -958,150 +960,85 @@ describe('TaskUC', () => {
 			taskRepo.findById.mockResolvedValue(task);
 			taskRepo.save.mockResolvedValue();
 		});
-		
-		describe('finishTask', () => {	
-			it('should check for permission to finish the task', async () => {
-				await service.finishTask(user.id, task.id);
-				expect(authorizationService.hasTaskPermission).toBeCalledWith(user, task, TaskParentPermission.read);
+
+		it('should check for permission to finish the task', async () => {
+			await service.changeFinishedForUser(user.id, task.id, true);
+			expect(authorizationService.hasTaskPermission).toBeCalledWith(user, task, TaskParentPermission.read);
+		});
+
+		it('should throw UnauthorizedException when not permitted', async () => {
+			authorizationService.hasTaskPermission.mockReturnValue(false);
+			await expect(async () => {
+				await service.changeFinishedForUser(user.id, task.id, true);
+			}).rejects.toThrow(UnauthorizedException);
+		});
+
+		it('should finish the task for the user', async () => {
+			task.finishForUser = jest.fn();
+			await service.changeFinishedForUser(user.id, task.id, true);
+			expect(task.finishForUser).toBeCalled();
+		});
+
+		it('should restore the task for the user', async () => {
+			task.restoreForUser = jest.fn();
+			await service.changeFinishedForUser(user.id, task.id, false);
+			expect(task.restoreForUser).toBeCalled();
+		});
+
+		it('should save the task', async () => {
+			await service.changeFinishedForUser(user.id, task.id, true);
+			expect(taskRepo.save).toBeCalledWith(task);
+		});
+
+		it('should return the task and its status', async () => {
+			const result = await service.changeFinishedForUser(user.id, task.id, true);
+			expect(result.task).toEqual(task);
+			expect(result.status).toBeDefined();
+		});
+
+		describe('with teacherDashboard permission', () => {
+			beforeEach(() => {
+				authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation(
+					(_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
+						return permission === TaskDashBoardPermission.teacherDashboard;
+					}
+				);
 			});
 
-			it('should throw UnauthorizedException when not permitted', async () => {
-				authorizationService.hasTaskPermission.mockReturnValue(false);
-				await expect(async () => {
-					await service.finishTask(user.id, task.id);
-				}).rejects.toThrow(UnauthorizedException);
+			it('should create teacher status', async () => {
+				task.createTeacherStatusForUser = jest.fn();
+				await service.changeFinishedForUser(user.id, task.id, true);
+				expect(task.createTeacherStatusForUser).toBeCalled();
 			});
-	
-			it('should finish the task for the user', async () => {
-				task.finishForUser = jest.fn();
-				await service.finishTask(user.id, task.id);
-				expect(task.finishForUser).toBeCalled();
-			});
-	
-			it('should save the task', async () => {
-				await service.finishTask(user.id, task.id);
-				expect(taskRepo.save).toBeCalledWith(task);
-			});
-	
-			it('should return the task and its status', async () => {
-				const result = await service.finishTask(user.id, task.id);
+
+			it('should return task and teacher status', async () => {
+				task.createTeacherStatusForUser = jest.fn().mockReturnValue(mockStatus);
+				const result = await service.changeFinishedForUser(user.id, task.id, true);
 				expect(result.task).toEqual(task);
-				expect(result.status).toBeDefined();
-			});
-	
-			describe('with teacherDashboard permission', () => {
-				beforeEach(() => {
-					authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation((_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
-						return permission === TaskDashBoardPermission.teacherDashboard;
-					});
-				});
-	
-				it('should create teacher status', async () => {
-					task.createTeacherStatusForUser = jest.fn();
-					await service.finishTask(user.id, task.id);
-					expect(task.createTeacherStatusForUser).toBeCalled();
-				});
-	
-				it('should return task and teacher status', async () => {
-					task.createTeacherStatusForUser = jest.fn().mockReturnValue(mockStatus);
-					const result = await service.finishTask(user.id, task.id);
-					expect(result.task).toEqual(task);
-					expect(result.status).toEqual(mockStatus);
-				});
-			});
-	
-			describe('with studentDashboard permission', () => {
-				beforeEach(() => {
-					authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation((_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
-						return permission === TaskDashBoardPermission.studentDashboard;
-					});
-				});
-				
-				it('should create teacher status', async () => {
-					task.createStudentStatusForUser = jest.fn();
-					await service.finishTask(user.id, task.id);
-					expect(task.createStudentStatusForUser).toBeCalled();
-				});
-	
-				it('should return task and student status', async () => {
-					task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
-					const result = await service.finishTask(user.id, task.id);
-					expect(result.task).toEqual(task);
-					expect(result.status).toEqual(mockStatus);
-				});
+				expect(result.status).toEqual(mockStatus);
 			});
 		});
-		
-		describe('restoreTask', () => {	
-			it('should check for permission to restore the task', async () => {
-				await service.restoreTask(user.id, task.id);
-				expect(authorizationService.hasTaskPermission).toBeCalledWith(user, task, TaskParentPermission.read);
+
+		describe('with studentDashboard permission', () => {
+			beforeEach(() => {
+				authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation(
+					(_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
+						return permission === TaskDashBoardPermission.studentDashboard;
+					}
+				);
 			});
 
-			it('should throw UnauthorizedException when not permitted', async () => {
-				authorizationService.hasTaskPermission.mockReturnValue(false);
-				await expect(async () => {
-					await service.restoreTask(user.id, task.id);
-				}).rejects.toThrow(UnauthorizedException);
+			it('should create teacher status', async () => {
+				task.createStudentStatusForUser = jest.fn();
+				await service.changeFinishedForUser(user.id, task.id, true);
+				expect(task.createStudentStatusForUser).toBeCalled();
 			});
-	
-			it('should restore the task for the user', async () => {
-				task.restoreForUser = jest.fn();
-				await service.restoreTask(user.id, task.id);
-				expect(task.restoreForUser).toBeCalled();
-			});
-	
-			it('should save the task', async () => {
-				await service.restoreTask(user.id, task.id);
-				expect(taskRepo.save).toBeCalledWith(task);
-			});
-	
-			it('should return the task and its status', async () => {
-				const result = await service.restoreTask(user.id, task.id);
+
+			it('should return task and student status', async () => {
+				task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
+				const result = await service.changeFinishedForUser(user.id, task.id, true);
 				expect(result.task).toEqual(task);
-				expect(result.status).toBeDefined();
-			});
-	
-			describe('with teacherDashboard permission', () => {
-				beforeEach(() => {
-					authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation((_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
-						return permission === TaskDashBoardPermission.teacherDashboard;
-					});
-				});
-	
-				it('should create teacher status', async () => {
-					task.createTeacherStatusForUser = jest.fn();
-					await service.restoreTask(user.id, task.id);
-					expect(task.createTeacherStatusForUser).toBeCalled();
-				});
-	
-				it('should return task and teacher status', async () => {
-					task.createTeacherStatusForUser = jest.fn().mockReturnValue(mockStatus);
-					const result = await service.restoreTask(user.id, task.id);
-					expect(result.task).toEqual(task);
-					expect(result.status).toEqual(mockStatus);
-				});
-			});
-	
-			describe('with studentDashboard permission', () => {
-				beforeEach(() => {
-					authorizationService.hasOneOfTaskDashboardPermissions.mockImplementation((_: User, permission: TaskDashBoardPermission | TaskDashBoardPermission[]) => {
-						return permission === TaskDashBoardPermission.studentDashboard;
-					});
-				});
-				
-				it('should create teacher status', async () => {
-					task.createStudentStatusForUser = jest.fn();
-					await service.restoreTask(user.id, task.id);
-					expect(task.createStudentStatusForUser).toBeCalled();
-				});
-	
-				it('should return task and student status', async () => {
-					task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
-					const result = await service.restoreTask(user.id, task.id);
-					expect(result.task).toEqual(task);
-					expect(result.status).toEqual(mockStatus);
-				});
+				expect(result.status).toEqual(mockStatus);
 			});
 		});
 	});
