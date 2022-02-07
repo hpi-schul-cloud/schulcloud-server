@@ -3,17 +3,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getMockRes } from '@jest-mock/express';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { OauthController } from './oauth.controller';
+import { System } from '@shared/domain';
+import { OauthSSOController } from './oauth-sso.controller';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
 
 describe('OAuthController', () => {
 	Configuration.set('HOST', 'https://mock.de');
-	let controller: OauthController;
+	let controller: OauthSSOController;
 	let oauthUc: OauthUc;
 	const generateMock = async (oauthUcMock) => {
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [OauthController],
+			controllers: [OauthSSOController],
 			imports: [],
 			providers: [
 				{
@@ -24,7 +25,7 @@ describe('OAuthController', () => {
 			],
 		}).compile();
 
-		controller = module.get(OauthController);
+		controller = module.get(OauthSSOController);
 		oauthUc = module.get(OauthUc);
 	};
 
@@ -38,14 +39,14 @@ describe('OAuthController', () => {
 	describe('startOauthFlow', () => {
 		const defaultAuthCode = '43534543jnj543342jn2';
 		const query: AuthorizationQuery = { code: defaultAuthCode };
-		const system = systemFactory.build();
+		const system: System = systemFactory.build();;
 		system.id = '4345345';
 		it('should redirect to mock.de', async () => {
 			const { res } = getMockRes();
 			await generateMock({
 				startOauth: jest.fn(() => ({ jwt: '1111' })),
 			});
-			const redirect = await controller.startOauthFlow(query, res, system.id);
+			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
@@ -57,7 +58,7 @@ describe('OAuthController', () => {
 			await generateMock({
 				startOauth: jest.fn(() => ({ errorcode: 'some-error-happend' })),
 			});
-			const redirect = await controller.startOauthFlow(query, res, system.id);
+			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).not.toHaveBeenCalled();
@@ -71,7 +72,7 @@ describe('OAuthController', () => {
 					throw new Error('something bad happened');
 				}),
 			});
-			const redirect = await controller.startOauthFlow(query, res, system.id);
+			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).not.toHaveBeenCalled();

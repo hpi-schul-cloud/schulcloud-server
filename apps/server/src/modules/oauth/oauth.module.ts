@@ -6,7 +6,7 @@ import { UserRepo } from '@shared/repo';
 import { SystemRepo } from '@shared/repo/system';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
-import { OauthController } from './controller/oauth.controller';
+import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
 
 const logger = new Logger();
@@ -19,7 +19,7 @@ if (!key) {
 
 @Module({
 	imports: [LoggerModule, AuthorizationModule, HttpModule],
-	controllers: [OauthController],
+	controllers: [OauthSSOController],
 	providers: [
 		OauthUc,
 		SystemRepo,
