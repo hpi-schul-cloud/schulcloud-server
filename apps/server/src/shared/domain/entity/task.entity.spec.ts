@@ -599,4 +599,56 @@ describe('Task Entity', () => {
 			});
 		});
 	});
+
+	describe('finishForUser', () => {
+		it('should add the user to the finished collection', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build();
+			task.finishForUser(user);
+			expect(task.isFinishedForUser(user)).toBe(true);
+		});
+
+		it('should make sure the user is added only once', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build();
+			task.finishForUser(user);
+			task.finishForUser(user);
+			expect(task.finished.count()).toBe(1);
+		});
+
+		it('should not overwrite other users in the finished collection', () => {
+			const user1 = userFactory.build();
+			const user2 = userFactory.build();
+			const task = taskFactory.build({ finished: [user1] });
+			task.finishForUser(user2);
+			expect(task.isFinishedForUser(user1)).toBe(true);
+			expect(task.isFinishedForUser(user2)).toBe(true);
+		});
+	});
+
+	describe('restoreForUser', () => {
+		it('should remove the user from the finished collection', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build({ finished: [user] });
+			task.restoreForUser(user);
+			expect(task.isFinishedForUser(user)).toBe(false);
+		});
+
+		it('should make sure the task can be restored even if already done ', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build({ finished: [user] });
+			task.restoreForUser(user);
+			task.restoreForUser(user);
+			expect(task.finished.count()).toBe(0);
+		});
+
+		it('should not remove other users from the finished collection', () => {
+			const user1 = userFactory.build();
+			const user2 = userFactory.build();
+			const task = taskFactory.build({ finished: [user1, user2] });
+			task.restoreForUser(user2);
+			expect(task.isFinishedForUser(user1)).toBe(true);
+			expect(task.isFinishedForUser(user2)).toBe(false);
+		});
+	});
 });

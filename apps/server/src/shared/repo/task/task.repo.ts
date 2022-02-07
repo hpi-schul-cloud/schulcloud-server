@@ -10,6 +10,16 @@ import { TaskScope } from './task-scope';
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	async findById(id: EntityId): Promise<Task> {
+		const task = await this.em.findOneOrFail(Task, { id });
+		await this.em.populate(task, ['course', 'lesson', 'submissions']);
+		return task;
+	}
+
+	async save(task: Task): Promise<void> {
+		await this.em.persistAndFlush(task);
+	}
+
 	async findAllFinishedByParentIds(
 		parentIds: {
 			creatorId: EntityId;
