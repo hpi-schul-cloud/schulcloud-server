@@ -5,7 +5,7 @@ export class TokenRequestPayload {
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	token_endpoint!: string;
+	tokenEndpoint!: string;
 
 	@IsDefined()
 	@IsNotEmpty()

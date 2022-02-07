@@ -15,19 +15,18 @@ const expectedParams: TokenRequestParams = {
 };
 const defaultAuthCode = '43534543jnj543342jn2';
 const defaultOauthConfig: OauthConfig = {
-	client_id: '12345',
-	client_secret: 'mocksecret',
-	token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
-	grant_type: 'authorization_code',
-	token_redirect_uri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
+	clientId: '12345',
+	clientSecret: 'mocksecret',
+	tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+	grantType: 'authorization_code',
+	tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 	scope: 'openid uuid',
-	response_type: 'code',
-	auth_endpoint: 'mock_auth_endpoint',
-	auth_redirect_uri: '',
+	responseType: 'code',
+	authEndpoint: 'mock_authEndpoint',
 };
 const defaultSystem: System = {
 	type: 'iserv',
-	oauthconfig: defaultOauthConfig,
+	oauthConfig: defaultOauthConfig,
 	id: '',
 	_id: new ObjectId(),
 	createdAt: new Date(),
@@ -35,7 +34,7 @@ const defaultSystem: System = {
 };
 describe('TokenRequestPayload.Mapper', () => {
 	const expectedPayload: TokenRequestPayload = {
-		token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
+		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 		tokenRequestParams: expectedParams,
 	};
 

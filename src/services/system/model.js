@@ -29,12 +29,12 @@ const systemSchema = new Schema(
 		alias: { type: String },
 		oaClientId: { type: String }, // just for oauth2-systems
 		oaClientSecret: { type: String }, // just for oauth2-systems
-		oauthconfig: {
+		oauthConfig: {
 			type: {
-				client_id: { type: String, required: true },
-				auth_endpoint: { type: String, required: true },
-				code_redirect_uri: { type: String, required: true },
-				response_type: { type: String, required: true },
+				clientId: { type: String, required: true },
+				authEndpoint: { type: String, required: true },
+				codeRedirectUri: { type: String, required: true },
+				responseType: { type: String, required: true },
 				scope: { type: String, required: true },
 			},
 			required: false,

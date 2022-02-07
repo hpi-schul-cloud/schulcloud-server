@@ -4,12 +4,12 @@ export class OauthTokenResponse {
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	accessToken!: string;
+	access_token!: string;
 
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	refreshToken!: string;
+	refresh_token!: string;
 
 	@IsDefined()
 	@IsString()

@@ -6,16 +6,15 @@ export const systemFactory = BaseFactory.define<System, ISystemProperties>(Syste
 		type: 'iserv',
 		url: 'http://mock.de',
 		alias: 'bb',
-		oauthconfig: {
-			client_id: '12345',
-			client_secret: 'mocksecret',
-			token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
-			grant_type: 'authorization_code',
-			token_redirect_uri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
+		oauthConfig: {
+			clientId: '12345',
+			clientSecret: 'mocksecret',
+			tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+			grantType: 'authorization_code',
+			tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 			scope: 'openid uuid',
-			response_type: 'code',
-			auth_endpoint: 'mock_auth_endpoint',
-			auth_redirect_uri: '',
+			responseType: 'code',
+			authEndpoint: 'mock_authEndpoint',
 		},
 	};
 });
