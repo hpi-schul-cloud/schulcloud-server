@@ -53,12 +53,12 @@ describe('OAuthUc', () => {
 		redirect_uri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 	};
 	const defaultPayload: TokenRequestPayload = {
-		token_endpoint: 'http://mock.de/mock/auth/public/mockToken',
+		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 		tokenRequestParams: defaultPayloadData,
 	};
 	const defaultTokenResponse: OauthTokenResponse = {
-		accessToken: '',
-		refreshToken: '',
+		access_token: '',
+		refresh_token: '',
 		id_token: 'zzzz',
 	};
 	const defaultAxiosResponse: AxiosResponse<OauthTokenResponse> = {

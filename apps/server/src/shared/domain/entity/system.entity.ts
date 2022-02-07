@@ -6,45 +6,41 @@ export interface ISystemProperties {
 	type: string;
 	url: string;
 	alias: string;
-	oauthconfig: OauthConfig;
+	oauthConfig: OauthConfig;
 }
 
 export class OauthConfig {
 	constructor(system: System) {
-		this.client_id = system.oauthconfig.client_id;
-		this.client_secret = system.oauthconfig.client_secret;
-		this.token_endpoint = system.oauthconfig.token_endpoint;
-		this.grant_type = system.oauthconfig.grant_type;
-		this.token_redirect_uri = system.oauthconfig.token_redirect_uri;
-		this.scope = system.oauthconfig.scope;
-		this.response_type = system.oauthconfig.response_type;
-		this.auth_endpoint = system.oauthconfig.auth_endpoint;
-		this.auth_redirect_uri = system.oauthconfig.auth_redirect_uri;
+		this.clientId = system.oauthConfig.clientId;
+		this.clientSecret = system.oauthConfig.clientSecret;
+		this.tokenEndpoint = system.oauthConfig.tokenEndpoint;
+		this.grantType = system.oauthConfig.grantType;
+		this.tokenRedirectUri = system.oauthConfig.tokenRedirectUri;
+		this.scope = system.oauthConfig.scope;
+		this.responseType = system.oauthConfig.responseType;
+		this.authEndpoint = system.oauthConfig.authEndpoint;
 	}
 
 	@Property()
-	client_id: string;
+	clientId: string;
 
 	@Property()
-	client_secret: string;
+	clientSecret: string;
 
 	@Property()
-	auth_redirect_uri: string;
+	tokenRedirectUri: string;
 
 	@Property()
-	token_redirect_uri: string;
+	grantType: string;
 
 	@Property()
-	grant_type: string;
+	tokenEndpoint: string;
 
 	@Property()
-	token_endpoint: string;
+	authEndpoint: string;
 
 	@Property()
-	auth_endpoint: string;
-
-	@Property()
-	response_type: string;
+	responseType: string;
 
 	@Property()
 	scope: string;
@@ -61,13 +57,13 @@ export class System extends BaseEntityWithTimestamps {
 	alias?: string;
 
 	@Property()
-	oauthconfig!: OauthConfig;
+	oauthConfig!: OauthConfig;
 
 	constructor(props: ISystemProperties) {
 		super();
 		this.type = props.type;
 		this.url = props.url;
 		this.alias = props.alias;
-		this.oauthconfig = props.oauthconfig;
+		this.oauthConfig = props.oauthConfig;
 	}
 }

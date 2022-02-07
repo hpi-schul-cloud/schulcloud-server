@@ -19,7 +19,7 @@ describe('token-request-params', () => {
 
 describe('token-request-payload', () => {
 	const tokenRequestPayload = new TokenRequestPayload();
-	tokenRequestPayload.token_endpoint = 'asdfgh';
+	tokenRequestPayload.tokenEndpoint = 'asdfgh';
 	tokenRequestPayload.tokenRequestParams = tokenRequestParam;
 
 	it('should validate', async () => {
@@ -30,9 +30,9 @@ describe('token-request-payload', () => {
 
 describe('oauth-token-response', () => {
 	const oauthTokenResponse = new OauthTokenResponse();
-	oauthTokenResponse.accessToken = '12345';
+	oauthTokenResponse.access_token = '12345';
 	oauthTokenResponse.id_token = 'asdf';
-	oauthTokenResponse.refreshToken = '1111';
+	oauthTokenResponse.refresh_token = '1111';
 
 	it('should validate', async () => {
 		const validationErrors = await validate(oauthTokenResponse);
