@@ -83,9 +83,6 @@ export class OauthUc {
 		const decodedJwt: IJWT = jwtDecode(token);
 		if (!decodedJwt || !decodedJwt.uuid) throw new ValidationError('Filed to extract uuid');
 		const { uuid } = decodedJwt;
-		if (!uuid || uuid.length === 0) {
-			throw new ValidationError('Failed to extract uuid');
-		}
 		return uuid;
 	}
 
