@@ -30,11 +30,14 @@ const systemSchema = new Schema(
 		oaClientId: { type: String }, // just for oauth2-systems
 		oaClientSecret: { type: String }, // just for oauth2-systems
 		oauthconfig: {
-			client_id: { type: String, required: true },
-			auth_endpoint: { type: String, required: true },
-			code_redirect_uri: { type: String, required: true },
-			response_type: { type: String, required: true },
-			scope: { type: String, required: true },
+			type: {
+				client_id: { type: String, required: true },
+				auth_endpoint: { type: String, required: true },
+				code_redirect_uri: { type: String, required: true },
+				response_type: { type: String, required: true },
+				scope: { type: String, required: true },
+			},
+			required: false,
 		},
 		ldapConfig: {
 			active: { type: Boolean },
