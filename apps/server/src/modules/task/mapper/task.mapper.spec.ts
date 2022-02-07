@@ -27,9 +27,9 @@ const createExpectedResponse = (
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
 
-	expected.courseName = descriptions.name;
+	expected.courseName = descriptions.courseName;
 	expected.displayColor = descriptions.color;
-	expected.description = descriptions.description;
+	expected.description = descriptions.lessonName;
 
 	return expected;
 };
@@ -50,12 +50,12 @@ describe('task.mapper', () => {
 			const task = taskFactory.buildWithId({ availableDate: new Date(), dueDate: new Date() });
 
 			const descriptions: TaskParentDescriptions = {
-				name: 'course #1',
+				courseName: 'course #1',
 				color: '#F0F0F0',
-				description: 'a task description',
+				lessonName: 'a task description',
 			};
 
-			const spy = jest.spyOn(task, 'getDescriptions').mockReturnValue(descriptions);
+			const spy = jest.spyOn(task, 'getParentData').mockReturnValue(descriptions);
 
 			const status = {
 				graded: 0,
