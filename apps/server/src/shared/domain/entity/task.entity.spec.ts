@@ -565,13 +565,13 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getDescriptions', () => {
+	describe('getParentData', () => {
 		describe('when a course is set', () => {
 			it('should return the name and color of the course', () => {
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				expect(task.getDescriptions().name).toEqual(course.name);
-				expect(task.getDescriptions().color).toEqual(course.color);
+				expect(task.getParentData().courseName).toEqual(course.name);
+				expect(task.getParentData().color).toEqual(course.color);
 			});
 
 			describe('when a lesson is set', () => {
@@ -579,14 +579,14 @@ describe('Task Entity', () => {
 					const course = courseFactory.build();
 					const lesson = lessonFactory.build({ course });
 					const task = taskFactory.build({ course, lesson });
-					expect(task.getDescriptions().description).toEqual(lesson.name);
+					expect(task.getParentData().lessonName).toEqual(lesson.name);
 				});
 			});
 			describe('when no lesson is set', () => {
 				it('should return an empty string as description', () => {
 					const course = courseFactory.build();
 					const task = taskFactory.build({ course });
-					expect(task.getDescriptions().description).toEqual('');
+					expect(task.getParentData().lessonName).toEqual('');
 				});
 			});
 		});
@@ -594,8 +594,8 @@ describe('Task Entity', () => {
 		describe('when no course is set', () => {
 			it('should return the default name and color', () => {
 				const task = taskFactory.build();
-				expect(task.getDescriptions().name).toEqual('');
-				expect(task.getDescriptions().color).toEqual('#ACACAC');
+				expect(task.getParentData().courseName).toEqual('');
+				expect(task.getParentData().color).toEqual('#ACACAC');
 			});
 		});
 	});
