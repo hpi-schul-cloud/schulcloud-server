@@ -4,15 +4,15 @@ export class OauthTokenResponse {
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	access_token!: string;
+	accessToken!: string;
 
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	refresh_token!: string;
+	refreshToken!: string;
 
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	id_token!: string;
+	idToken!: string;
 }

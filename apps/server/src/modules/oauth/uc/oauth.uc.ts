@@ -35,7 +35,7 @@ export class OauthUc {
 		// get the Tokens using the authorization code
 		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
 		// extract the uuid from the token
-		const uuid = this.decodeToken(queryToken.id_token);
+		const uuid = this.decodeToken(queryToken.idToken);
 		// get the user using the uuid
 		const user: User = await this.findUserById(uuid);
 		// create JWT for the user
