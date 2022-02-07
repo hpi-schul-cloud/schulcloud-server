@@ -107,14 +107,15 @@ module.exports = {
 			overrides: [
 				{
 					files: ['**/*spec.ts'],
+					plugins: ['jest'],
 					env: {
 						jest: true,
 					},
-				},
-				rules: {
-					// you should turn the original rule off *only* for test files
-					'@typescript-eslint/unbound-method': 'off',
-					'jest/unbound-method': 'error',
+					rules: {
+						// you should turn the original rule off *only* for test files
+						'@typescript-eslint/unbound-method': 'off',
+						'jest/unbound-method': 'error',
+					},
 				},
 			],
 		},

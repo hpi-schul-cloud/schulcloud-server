@@ -206,6 +206,7 @@
 		"eslint-config-prettier": "^8.1.0",
 		"eslint-import-resolver-typescript": "^2.4.0",
 		"eslint-plugin-import": "^2.23.3",
+		"eslint-plugin-jest": "^26.1.0",
 		"eslint-plugin-jsx-a11y": "^6.4.1",
 		"eslint-plugin-no-only-tests": "^2.6.0",
 		"eslint-plugin-prettier": "^3.3.1",
