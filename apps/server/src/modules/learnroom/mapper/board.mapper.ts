@@ -16,7 +16,7 @@ export class BoardMapper {
 		board.elements.forEach((element) => {
 			if (element.type === 'task') {
 				const { task: boardTask, status } = element.content as TaskWithStatusVo;
-				const boardTaskDesc = boardTask.getDescriptions();
+				const boardTaskDesc = boardTask.getParentData();
 				const boardTaskStatus = BoardTaskStatusMapper.mapToResponse(status);
 
 				const mappedTask = new BoardTaskResponse({
@@ -32,8 +32,7 @@ export class BoardMapper {
 				mappedTask.availableDate = boardTask.availableDate;
 				mappedTask.duedate = boardTask.dueDate;
 				mappedTask.displayColor = boardTaskDesc.color;
-				mappedTask.description = boardTaskDesc.description;
-
+				mappedTask.description = boardTask.description;
 				const boardElementResponse = new BoardElementResponse({ type: 'task', content: mappedTask });
 				elements.push(boardElementResponse);
 			} else if (element.type === 'lesson') {
