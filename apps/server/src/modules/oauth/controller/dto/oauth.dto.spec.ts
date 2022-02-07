@@ -31,7 +31,7 @@ describe('token-request-payload', () => {
 describe('oauth-token-response', () => {
 	const oauthTokenResponse = new OauthTokenResponse();
 	oauthTokenResponse.accessToken = '12345';
-	oauthTokenResponse.idToken = 'asdf';
+	oauthTokenResponse.id_token = 'asdf';
 	oauthTokenResponse.refreshToken = '1111';
 
 	it('should validate', async () => {

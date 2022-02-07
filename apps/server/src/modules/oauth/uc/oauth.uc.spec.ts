@@ -59,7 +59,7 @@ describe('OAuthUc', () => {
 	const defaultTokenResponse: OauthTokenResponse = {
 		accessToken: '',
 		refreshToken: '',
-		idToken: 'zzzz',
+		id_token: 'zzzz',
 	};
 	const defaultAxiosResponse: AxiosResponse<OauthTokenResponse> = {
 		data: defaultTokenResponse,
@@ -163,12 +163,12 @@ describe('OAuthUc', () => {
 
 	// DONE
 	describe('decodeToken', () => {
-		it('should get uuid from idToken', () => {
+		it('should get uuid from id_token', () => {
 			const uuid: string = service.decodeToken(defaultJWT);
 			expect(uuid).toStrictEqual('123');
 		});
 
-		it('should throw an error for idToken that does not exist an uuid', () => {
+		it('should throw an error for id_token that does not exist an uuid', () => {
 			expect(() => {
 				const uuid: string = service.decodeToken(wrongJWT);
 				return uuid;

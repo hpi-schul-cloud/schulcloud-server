@@ -14,5 +14,5 @@ export class OauthTokenResponse {
 	@IsDefined()
 	@IsString()
 	@IsNotEmpty()
-	idToken!: string;
+	id_token!: string;
 }

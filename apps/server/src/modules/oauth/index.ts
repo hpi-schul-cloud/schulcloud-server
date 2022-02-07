@@ -1,1 +1,1 @@
-export * from './ouath.module';
+export * from './oauth.module';
