@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, Task } from '@shared/domain';
 import {
@@ -1549,6 +1549,35 @@ describe('TaskRepo', () => {
 
 				expect(tasks).toHaveLength(0);
 			});
+		});
+	});
+
+	describe('findById', () => {
+		it('should find a task by its id', async () => {
+			const task = taskFactory.build({ name: 'important task' });
+			await em.persistAndFlush(task);
+			em.clear();
+
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.name).toEqual('important task');
+		});
+
+		it('should throw error if the task cannot be found by id', async () => {
+			const unknownId = new ObjectId().toHexString();
+			await expect(async () => {
+				await repo.findById(unknownId);
+			}).rejects.toThrow();
+		});
+	});
+
+	describe('save', () => {
+		it('should persist a task in the database', async () => {
+			const task = taskFactory.build({ name: 'important task' });
+			await repo.save(task);
+			em.clear();
+
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.name).toEqual('important task');
 		});
 	});
 });

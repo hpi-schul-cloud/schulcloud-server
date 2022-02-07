@@ -176,6 +176,7 @@
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.44.0",
 		"@compodoc/compodoc": "^1.1.16",
+		"@golevelup/ts-jest": "^0.3.2",
 		"@nestjs/cli": "^8.1.4",
 		"@nestjs/schematics": "^7.2.7",
 		"@nestjs/testing": "^8.2.6",
@@ -203,6 +204,7 @@
 		"eslint-config-prettier": "^8.1.0",
 		"eslint-import-resolver-typescript": "^2.4.0",
 		"eslint-plugin-import": "^2.23.3",
+		"eslint-plugin-jest": "^26.1.0",
 		"eslint-plugin-jsx-a11y": "^6.4.1",
 		"eslint-plugin-no-only-tests": "^2.6.0",
 		"eslint-plugin-prettier": "^3.3.1",
