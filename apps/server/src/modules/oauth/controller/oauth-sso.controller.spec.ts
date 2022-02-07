@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { response, Response } from 'express';
-import { OauthController } from './oauth.controller';
+import { OauthSSOController } from './oauth-sso.controller';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
 
 describe('OAuthController', () => {
-	let controller: OauthController;
+	let controller: OauthSSOController;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [OauthController],
+			controllers: [OauthSSOController],
 			imports: [],
 			providers: [
 				{
@@ -23,20 +23,20 @@ describe('OAuthController', () => {
 			],
 		}).compile();
 
-		controller = module.get(OauthController);
+		controller = module.get(OauthSSOController);
 	});
 
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
 
-	describe('startOauthFlow', () => {
+	describe('startOauthAuthorizationCodeFlow', () => {
 		const query: AuthorizationQuery = { code: 'qwertz' };
 		const systemid = '98765';
 		// const res = getMockRes();
 
 		// it('should redirect to www.mock.de', async () => {
-		// 	const redirect = await controller.startOauthFlow(query, res, systemid);
+		// 	const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, systemid);
 		// 	const expected = [{ query }, { res }, { systemid }];
 		// 	expect(redirect).toBeCalledWith(...expected);
 		// });

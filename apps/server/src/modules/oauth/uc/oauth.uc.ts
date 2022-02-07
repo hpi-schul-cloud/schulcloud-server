@@ -8,6 +8,7 @@ import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
+import { ValidationError } from '@mikro-orm/core';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
@@ -52,8 +53,8 @@ export class OauthUc {
 	 */
 	checkAuthorizationCode(query: AuthorizationQuery): string {
 		if (query.code) return query.code;
-		if (query.error) throw new Error(query.error);
-		throw new Error('Authorization Query Object has no authorization code or error');
+		if (query.error) throw new ValidationError(query.error);
+		throw new ValidationError('Authorization Query Object has no authorization code or error');
 	}
 
 	// 1- use Authorization Code to get a valid Token
@@ -80,10 +81,10 @@ export class OauthUc {
 	// 2- decode the Token to extract the UUID
 	decodeToken(token: string): string {
 		const decodedJwt: IJWT = jwtDecode(token);
-		if (!decodedJwt || !decodedJwt.uuid) throw Error('Filed to extract uuid');
+		if (!decodedJwt || !decodedJwt.uuid) throw new ValidationError('Filed to extract uuid');
 		const { uuid } = decodedJwt;
 		if (!uuid || uuid.length === 0) {
-			throw Error('Failed to extract uuid');
+			throw new ValidationError('Failed to extract uuid');
 		}
 		return uuid;
 	}

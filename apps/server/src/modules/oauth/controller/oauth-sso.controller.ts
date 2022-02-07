@@ -8,17 +8,17 @@ import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
 import { OAuthResponse } from './dto/oauth-response';
 
-@ApiTags('Oauth')
-@Controller('oauth')
-export class OauthController {
+@ApiTags('SSO')
+@Controller('sso')
+export class OauthSSOController {
 	private logger: ILogger;
 
 	constructor(private readonly oauthUc: OauthUc) {
-		this.logger = new Logger(OauthController.name);
+		this.logger = new Logger(OauthSSOController.name);
 	}
 
-	@Get(':systemid')
-	async startOauthFlow(
+	@Get('oauth/:systemid')
+	async startOauthAuthorizationCodeFlow(
 		@Query() query: AuthorizationQuery,
 		@Res() res: Response,
 		@Param('systemid', ParseObjectIdPipe) systemid: string
