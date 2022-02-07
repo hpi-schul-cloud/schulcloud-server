@@ -36,7 +36,6 @@ export class OauthController {
 			oauthResponse = new OAuthResponse();
 			oauthResponse.errorcode = 'OauthLoginFailed';
 		}
-		if (oauthResponse.errorcode) res.redirect(`${HOST}/login?error=${oauthResponse.errorcode}`);
-		return res.redirect(`${HOST}/login?error=unknown.error`);
+		return res.redirect(`${HOST}/login?error=${oauthResponse.errorcode as string}`);
 	}
 }
