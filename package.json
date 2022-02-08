@@ -5,7 +5,10 @@
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
-		"feathers"
+		"feathers",
+		"nest",
+		"jest",
+		"domain driven design"
 	],
 	"license": "AGPL-3.0",
 	"repository": {},
