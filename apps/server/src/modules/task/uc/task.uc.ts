@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User } from '@shared/domain';
+import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User, Task } from '@shared/domain';
 
 import { TaskRepo, UserRepo } from '@shared/repo';
 
@@ -77,6 +77,33 @@ export class TaskUC {
 		}
 
 		return response;
+	}
+
+	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
+		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
+
+		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
+			throw new UnauthorizedException();
+		}
+
+		if (isFinished) {
+			task.finishForUser(user);
+		} else {
+			task.restoreForUser(user);
+		}
+		await this.taskRepo.save(task);
+
+		// add status
+		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
+			user,
+			TaskDashBoardPermission.teacherDashboard
+		)
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
 	}
 
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {

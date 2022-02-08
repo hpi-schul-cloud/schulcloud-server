@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, Task } from '@shared/domain';
 import {
@@ -1294,6 +1294,30 @@ describe('TaskRepo', () => {
 			expect(tasks.map((t) => t.id)).toEqual([task4.id, task1.id, task2.id, task3.id]);
 		});
 
+		it('should sort it by _id if dueDate is similar.', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ untilDate: undefined });
+
+			const dueDate = Date.now();
+			const task1 = taskFactory.build({ course, finished: [user], dueDate });
+			const task2 = taskFactory.build({ course, finished: [user], dueDate });
+			const task3 = taskFactory.build({ course, finished: [user], dueDate });
+			const task4 = taskFactory.build({ course, finished: [user], dueDate });
+
+			await em.persistAndFlush([task1, task2, task3, task4]);
+			em.clear();
+
+			const [tasks] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [course.id],
+				lessonIdsOfOpenCourses: [],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(tasks.map((t) => t.id)).toEqual([task1.id, task2.id, task3.id, task4.id].sort());
+		});
+
 		it('should populate course', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ teachers: [user], name: 'test' });
@@ -1548,6 +1572,35 @@ describe('TaskRepo', () => {
 
 				expect(tasks).toHaveLength(0);
 			});
+		});
+	});
+
+	describe('findById', () => {
+		it('should find a task by its id', async () => {
+			const task = taskFactory.build({ name: 'important task' });
+			await em.persistAndFlush(task);
+			em.clear();
+
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.name).toEqual('important task');
+		});
+
+		it('should throw error if the task cannot be found by id', async () => {
+			const unknownId = new ObjectId().toHexString();
+			await expect(async () => {
+				await repo.findById(unknownId);
+			}).rejects.toThrow();
+		});
+	});
+
+	describe('save', () => {
+		it('should persist a task in the database', async () => {
+			const task = taskFactory.build({ name: 'important task' });
+			await repo.save(task);
+			em.clear();
+
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.name).toEqual('important task');
 		});
 	});
 });
