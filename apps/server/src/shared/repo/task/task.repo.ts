@@ -74,7 +74,10 @@ export class TaskRepo {
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		const order = { dueDate: SortOrder.desc };
+		// The dueDate can be similar to solve pagination request missmatches we must sort it over id too.
+		// Because after executing limit() in mongoDB it is resort by similar dueDates.
+		// It exist indexes for dueDate and for _id but no combined index, because it is to expensive for only small performance boost.
+		const order = { dueDate: SortOrder.desc, id: SortOrder.asc };
 
 		const [tasks, count] = await this.em.findAndCount(Task, scope.query, {
 			offset: pagination?.skip,
