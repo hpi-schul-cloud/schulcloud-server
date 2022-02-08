@@ -34,7 +34,7 @@ describe('FilesRepo', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(BaseFile, {});;
+		await em.nativeDelete(BaseFile, {});
 	});
 
 	afterAll(async () => {
