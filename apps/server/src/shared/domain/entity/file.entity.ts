@@ -19,7 +19,7 @@ export abstract class BaseFile extends BaseEntityWithTimestamps {
 	@Property()
 	isDirectory!: boolean;
 
-	@Property()
+	@ManyToOne('User', { fieldName: 'owner' })
 	creator?: User;
 }
 
