@@ -91,7 +91,7 @@ describe('user repo', () => {
 			const user = userFactory.build();
 
 			await em.persistAndFlush([user]);
-			const result = await repo.findByLdapId(user.ldapId);
+			const result = await repo.findByLdapId(user.ldapId as string);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
 			);
@@ -102,7 +102,7 @@ describe('user repo', () => {
 			const userB = userFactory.build();
 
 			await em.persistAndFlush([userA, userB]);
-			const result = await repo.findByLdapId(userA.ldapId);
+			const result = await repo.findByLdapId(userA.ldapId as string);
 			expect(result).toEqual(userA);
 		});
 
