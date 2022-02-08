@@ -422,7 +422,8 @@
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
-			"pattern": ".{16}.*"
+			"pattern": ".{16}.*",
+			"required": ["LDAP_PASSWORD_ENCRYPTION_KEY"]
 		},
 		"SENTRY_DSN": {
 			"type": "string",
