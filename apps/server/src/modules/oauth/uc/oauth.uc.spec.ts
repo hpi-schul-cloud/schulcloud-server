@@ -13,9 +13,7 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
 import { OauthUc } from '.';
-import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
-import { TokenRequestParams } from '../controller/dto/token-request-params';
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
@@ -42,22 +40,10 @@ describe('OAuthUc', () => {
 		ldapId: '1111',
 	};
 	const defaultUserId = '123456789';
-	const defaultDate = new Date();
 	const defaultJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
 	const wrongJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-	const defaultPayloadData: TokenRequestParams = {
-		code: defaultAuthCode,
-		client_id: '12345',
-		client_secret: 'mocksecret',
-		grant_type: 'authorization_code',
-		redirect_uri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
-	};
-	const defaultPayload: TokenRequestPayload = {
-		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-		tokenRequestParams: defaultPayloadData,
-	};
 	const defaultTokenResponse: OauthTokenResponse = {
 		access_token: 'zzzz',
 		refresh_token: 'zzzz',
@@ -105,7 +91,7 @@ describe('OAuthUc', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findByLdapId(id: string) {
+						findByLdapId() {
 							return defaultUser;
 						},
 					},
@@ -113,7 +99,7 @@ describe('OAuthUc', () => {
 				{
 					provide: FeathersJwtProvider,
 					useValue: {
-						generateJwt(user: User) {
+						generateJwt() {
 							return defaultJWT;
 						},
 					},
