@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Task, TaskWithStatusVo, User } from '@shared/domain';
-import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { EntityId, Course, Task, TaskWithStatusVo, User, Lesson } from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 
 // TODO: move this somewhere else
 export interface Board {
@@ -13,13 +13,14 @@ export interface Board {
 export type BoardElement = {
 	// TODO: should become fullblown class
 	type: string;
-	content: TaskWithStatusVo;
+	content: TaskWithStatusVo | Lesson;
 };
 
 @Injectable()
 export class RoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
+		private readonly lessonRepo: LessonRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly userRepo: UserRepo
 	) {}
@@ -30,29 +31,35 @@ export class RoomsUc {
 		const course = await this.courseRepo.findOne(roomId, userId);
 		const isTeacher = this.isTeacher(user, course);
 		const taskFilter = this.taskFilter(isTeacher);
-		const [tasks] = await this.taskRepo.findBySingleParent(course.id, taskFilter);
+		const lessonFilter = this.lessonFilter(isTeacher);
+		const [tasks] = await this.taskRepo.findBySingleParent(user.id, course.id, taskFilter);
 		const tasksWithStatusVos = this.addStatusToTasks(isTeacher, tasks, user);
+		const [lessons] = await this.lessonRepo.findAllByCourseIds([course.id], lessonFilter);
+		const boardElements = this.buildBoardElements(tasksWithStatusVos, lessons);
 
-		const board = this.buildBoard(course, tasksWithStatusVos);
+		const board = this.buildBoard(course, boardElements);
 		return board;
 	}
 
-	private taskFilter(isTeacher: boolean): { draft?: boolean } {
-		const filters: { draft?: boolean } = {};
+	private taskFilter(isTeacher: boolean): { draft?: boolean; noFutureAvailableDate?: boolean } {
+		const filters: { draft?: boolean; noFutureAvailableDate?: boolean } = {};
 		if (!isTeacher) {
 			filters.draft = false;
+			filters.noFutureAvailableDate = true;
+			return filters;
 		}
+		filters.draft = true;
 		return filters;
 	}
 
 	// TODO: move somewhere else
-	private buildBoard(room: Course, tasks: TaskWithStatusVo[]): Board {
+	private buildBoard(room: Course, boardElements: BoardElement[]): Board {
 		const roomMetadata = room.getMetadata();
 		const board = {
 			roomId: roomMetadata.id,
 			displayColor: roomMetadata.displayColor,
 			title: roomMetadata.title,
-			elements: tasks.map((task) => ({ type: 'task', content: task })),
+			elements: boardElements,
 		};
 		return board;
 	}
@@ -78,5 +85,21 @@ export class RoomsUc {
 			});
 		}
 		return tasksWithStatusVos;
+	}
+
+	private lessonFilter(isTeacher: boolean): { hidden?: boolean } {
+		const filters: { hidden?: boolean } = {};
+		if (!isTeacher) {
+			filters.hidden = false;
+		}
+		return filters;
+	}
+
+	private buildBoardElements(tasks: TaskWithStatusVo[], lessons: Lesson[]): BoardElement[] {
+		const boardTasks = tasks.map((task) => ({ type: 'task', content: task }));
+		const boardLessons = lessons.map((lesson) => ({ type: 'lesson', content: lesson }));
+		const result = [...boardTasks, ...boardLessons];
+		result.sort();
+		return result;
 	}
 }

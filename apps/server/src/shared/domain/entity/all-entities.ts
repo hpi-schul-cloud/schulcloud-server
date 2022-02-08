@@ -1,4 +1,4 @@
-import { ImportUser, UserMatch } from './import-user.entity';
+import { ImportUser } from './import-user.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -35,7 +35,5 @@ export const ALL_ENTITIES = [
 	SchoolNews,
 	TeamNews,
 	System,
-	// TODO move import user entities?
 	ImportUser,
-	UserMatch,
 ];

@@ -4,6 +4,7 @@ import { Transform, TransformFnParams } from 'class-transformer';
 /**
  * Decorator to transform a boolish string value to a boolean.
  * Accepts: '1', 'true', '0', 'false' with type string only.
+ * Place after IsBoolean decorator.
  * @returns
  * @throws {NotImplementedException} for other values
  */

@@ -47,6 +47,14 @@ export class OauthConfig {
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
+	constructor(props: ISystemProperties) {
+		super();
+		this.type = props.type;
+		this.url = props.url;
+		this.alias = props.alias;
+		this.oauthConfig = props.oauthConfig;
+	}
+
 	@Property({})
 	type: string; // see legacy enum for valid values
 
@@ -58,12 +66,4 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property()
 	oauthConfig!: OauthConfig;
-
-	constructor(props: ISystemProperties) {
-		super();
-		this.type = props.type;
-		this.url = props.url;
-		this.alias = props.alias;
-		this.oauthConfig = props.oauthConfig;
-	}
 }

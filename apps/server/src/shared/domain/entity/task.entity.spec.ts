@@ -11,6 +11,7 @@ import {
 
 import { Task } from './task.entity';
 import { Submission } from './submission.entity';
+import { User } from './user.entity';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -43,6 +44,51 @@ describe('Task Entity', () => {
 			const task = taskFactory.build();
 			Object.assign(task, { private: undefined });
 			expect(task.isDraft()).toEqual(false);
+		});
+	});
+
+	describe('isFinished', () => {
+		let user: User;
+
+		beforeEach(() => {
+			user = userFactory.build();
+		});
+
+		it('should return true if finished contains user', () => {
+			const task = taskFactory.finished(user).build();
+			expect(task.isFinishedForUser(user)).toEqual(true);
+		});
+
+		it('should return true if course is finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			jest.spyOn(course, 'isFinished').mockReturnValue(true);
+			expect(task.isFinishedForUser(user)).toEqual(true);
+		});
+
+		it('should return false if finished does not contain user & course is not finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+			jest.spyOn(course, 'isFinished').mockReturnValue(false);
+			expect(task.isFinishedForUser(user)).toEqual(false);
+		});
+
+		it('should return false if finished is undefined & course is not finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+
+			Object.assign(task, { finished: undefined });
+			jest.spyOn(course, 'isFinished').mockReturnValue(false);
+			expect(task.isFinishedForUser(user)).toEqual(false);
+		});
+
+		it('should return true if finished is undefined & course is finished', () => {
+			const course = courseFactory.build();
+			const task = taskFactory.build({ course });
+
+			Object.assign(task, { finished: undefined });
+			jest.spyOn(course, 'isFinished').mockReturnValue(true);
+			expect(task.isFinishedForUser(user)).toEqual(true);
 		});
 	});
 
@@ -519,13 +565,13 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getDescriptions', () => {
+	describe('getParentData', () => {
 		describe('when a course is set', () => {
 			it('should return the name and color of the course', () => {
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
-				expect(task.getDescriptions().name).toEqual(course.name);
-				expect(task.getDescriptions().color).toEqual(course.color);
+				expect(task.getParentData().courseName).toEqual(course.name);
+				expect(task.getParentData().color).toEqual(course.color);
 			});
 
 			describe('when a lesson is set', () => {
@@ -533,14 +579,14 @@ describe('Task Entity', () => {
 					const course = courseFactory.build();
 					const lesson = lessonFactory.build({ course });
 					const task = taskFactory.build({ course, lesson });
-					expect(task.getDescriptions().description).toEqual(lesson.name);
+					expect(task.getParentData().lessonName).toEqual(lesson.name);
 				});
 			});
 			describe('when no lesson is set', () => {
 				it('should return an empty string as description', () => {
 					const course = courseFactory.build();
 					const task = taskFactory.build({ course });
-					expect(task.getDescriptions().description).toEqual('');
+					expect(task.getParentData().lessonName).toEqual('');
 				});
 			});
 		});
@@ -548,9 +594,61 @@ describe('Task Entity', () => {
 		describe('when no course is set', () => {
 			it('should return the default name and color', () => {
 				const task = taskFactory.build();
-				expect(task.getDescriptions().name).toEqual('');
-				expect(task.getDescriptions().color).toEqual('#ACACAC');
+				expect(task.getParentData().courseName).toEqual('');
+				expect(task.getParentData().color).toEqual('#ACACAC');
 			});
+		});
+	});
+
+	describe('finishForUser', () => {
+		it('should add the user to the finished collection', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build();
+			task.finishForUser(user);
+			expect(task.isFinishedForUser(user)).toBe(true);
+		});
+
+		it('should make sure the user is added only once', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build();
+			task.finishForUser(user);
+			task.finishForUser(user);
+			expect(task.finished.count()).toBe(1);
+		});
+
+		it('should not overwrite other users in the finished collection', () => {
+			const user1 = userFactory.build();
+			const user2 = userFactory.build();
+			const task = taskFactory.build({ finished: [user1] });
+			task.finishForUser(user2);
+			expect(task.isFinishedForUser(user1)).toBe(true);
+			expect(task.isFinishedForUser(user2)).toBe(true);
+		});
+	});
+
+	describe('restoreForUser', () => {
+		it('should remove the user from the finished collection', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build({ finished: [user] });
+			task.restoreForUser(user);
+			expect(task.isFinishedForUser(user)).toBe(false);
+		});
+
+		it('should make sure the task can be restored even if already done ', () => {
+			const user = userFactory.build();
+			const task = taskFactory.build({ finished: [user] });
+			task.restoreForUser(user);
+			task.restoreForUser(user);
+			expect(task.finished.count()).toBe(0);
+		});
+
+		it('should not remove other users from the finished collection', () => {
+			const user1 = userFactory.build();
+			const user2 = userFactory.build();
+			const task = taskFactory.build({ finished: [user1, user2] });
+			task.restoreForUser(user2);
+			expect(task.isFinishedForUser(user1)).toBe(true);
+			expect(task.isFinishedForUser(user2)).toBe(false);
 		});
 	});
 });

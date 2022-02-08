@@ -9,3 +9,4 @@ export * from './storageprovider.factory';
 export * from './submission.factory';
 export * from './task.factory';
 export * from './user.factory';
+export * from './import-user.factory';

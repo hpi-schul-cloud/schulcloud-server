@@ -34,7 +34,7 @@ export class TaskResponse {
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	description?: string;
+	description?: string; // TODO: change this, since this is NOT the tasks description, but the name of its lesson
 
 	@ApiPropertyOptional()
 	displayColor?: string;

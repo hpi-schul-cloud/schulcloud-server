@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User } from '@shared/domain';
+import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User, Task } from '@shared/domain';
 
 import { TaskRepo, UserRepo } from '@shared/repo';
 
@@ -79,6 +79,33 @@ export class TaskUC {
 		return response;
 	}
 
+	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
+		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
+
+		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
+			throw new UnauthorizedException();
+		}
+
+		if (isFinished) {
+			task.finishForUser(user);
+		} else {
+			task.restoreForUser(user);
+		}
+		await this.taskRepo.save(task);
+
+		// add status
+		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
+			user,
+			TaskDashBoardPermission.teacherDashboard
+		)
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.read);
 		const openCourses = courses.filter((c) => !c.isFinished());
@@ -89,10 +116,11 @@ export class TaskUC {
 
 		const [tasks, total] = await this.taskRepo.findAllByParentIds(
 			{
+				creatorId: user.id,
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ draft: false, afterDueDateOrNone: dueDate, finished: notFinished },
+			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
@@ -120,7 +148,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ finished: notFinished },
+			{ finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },

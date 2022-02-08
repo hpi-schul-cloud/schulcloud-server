@@ -9,6 +9,7 @@ import type { User } from './user.entity';
 
 export interface ITaskProperties {
 	name: string;
+	description?: string;
 	availableDate?: Date;
 	dueDate?: Date;
 	private?: boolean;
@@ -25,6 +26,7 @@ export interface ITaskStatus {
 	graded: number;
 	isDraft: boolean;
 	isSubstitutionTeacher: boolean;
+	isFinished: boolean;
 }
 
 export class TaskWithStatusVo {
@@ -38,13 +40,16 @@ export class TaskWithStatusVo {
 	}
 }
 
-export type TaskParentDescriptions = { name: string; description: string; color: string };
+export type TaskParentDescriptions = { courseName: string; lessonName: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
 @Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
 export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
+
+	@Property()
+	description: string;
 
 	@Property()
 	availableDate?: Date;
@@ -75,6 +80,7 @@ export class Task extends BaseEntityWithTimestamps {
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
+		this.description = props.description || '';
 		this.availableDate = props.availableDate;
 		this.dueDate = props.dueDate;
 		if (props.private !== undefined) this.private = props.private;
@@ -83,6 +89,10 @@ export class Task extends BaseEntityWithTimestamps {
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
+	}
+
+	isFinishedForUser(user: User): boolean {
+		return !!(this.finished?.contains(user) || this.course?.isFinished());
 	}
 
 	isDraft(): boolean {
@@ -141,6 +151,7 @@ export class Task extends BaseEntityWithTimestamps {
 		const graded = this.getNumberOfGradedUsers();
 		const maxSubmissions = this.getMaxSubmissions();
 		const isDraft = this.isDraft();
+		const isFinished = this.isFinishedForUser(user);
 		// only point that need the parameter
 		// const isSubstitutionTeacher = this.isSubstitutionTeacher(userId);
 		// work with getParent()
@@ -155,6 +166,7 @@ export class Task extends BaseEntityWithTimestamps {
 			maxSubmissions,
 			isDraft,
 			isSubstitutionTeacher,
+			isFinished,
 		};
 
 		return status;
@@ -178,6 +190,7 @@ export class Task extends BaseEntityWithTimestamps {
 		const maxSubmissions = 1;
 		const isDraft = this.isDraft();
 		const isSubstitutionTeacher = false;
+		const isFinished = this.isFinishedForUser(user);
 
 		const status = {
 			submitted: isSubmitted ? 1 : 0,
@@ -185,6 +198,7 @@ export class Task extends BaseEntityWithTimestamps {
 			maxSubmissions,
 			isDraft,
 			isSubstitutionTeacher,
+			isFinished,
 			// TODO: visibility of parent is missed ..but isSubstitutionTeacher and this is not really a part from task,
 			// for this we must add parent relationship
 		};
@@ -193,22 +207,30 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	// TODO: based on the parent relationship
-	getDescriptions(): TaskParentDescriptions {
+	getParentData(): TaskParentDescriptions {
 		let descriptions: TaskParentDescriptions;
 		if (this.course) {
 			descriptions = {
-				name: this.course.name,
-				description: this.lesson ? this.lesson.name : '',
+				courseName: this.course.name,
+				lessonName: this.lesson ? this.lesson.name : '',
 				color: this.course.color,
 			};
 		} else {
 			descriptions = {
-				name: '',
-				description: '',
+				courseName: '',
+				lessonName: '',
 				color: '#ACACAC',
 			};
 		}
 
 		return descriptions;
+	}
+
+	finishForUser(user: User) {
+		this.finished.add(user);
+	}
+
+	restoreForUser(user: User) {
+		this.finished.remove(user);
 	}
 }

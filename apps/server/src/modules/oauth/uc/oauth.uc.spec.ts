@@ -38,6 +38,8 @@ describe('OAuthUc', () => {
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		ldapId: '1111',
+		firstName: '',
+		lastName: ''
 	};
 	const defaultUserId = '123456789';
 	const defaultJWT =

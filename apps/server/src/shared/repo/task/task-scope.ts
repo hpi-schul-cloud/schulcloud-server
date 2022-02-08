@@ -1,3 +1,4 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityId, Task } from '@shared/domain';
 import { Scope } from '../scope';
 
@@ -41,11 +42,40 @@ export class TaskScope extends Scope<Task> {
 	}
 
 	byDraft(isDraft: boolean): TaskScope {
-		// FIXME - WE DON'T WANT THIS!!! NON-OPTIONAL BOOLEAN PROPERTIES HAVE TO BE DEFINED.
-		// additionally handle undefined and null as false
-		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+		const query = this.getByDraftQuery(isDraft);
 		this.addQuery(query);
 
+		return this;
+	}
+
+	excludeDraftsOfOthers(creatorId: EntityId): TaskScope {
+		this.addQuery({
+			$or: [this.getByDraftForCreatorQuery(creatorId), this.getByDraftQuery(false)],
+		});
+
+		return this;
+	}
+
+	byAvailable(availableDate: Date): TaskScope {
+		this.addQuery({ availableDate: { $lte: availableDate } });
+
+		return this;
+	}
+
+	noFutureAvailableDate(): TaskScope {
+		const query = { availableDate: { $lte: new Date(Date.now()) } };
+		this.addQuery(query);
+
+		return this;
+	}
+
+	excludeUnavailableOfOthers(creatorId: EntityId, availableOn: Date): TaskScope {
+		this.addQuery({
+			$or: [
+				{ creator: creatorId },
+				{ $and: [{ creator: { $ne: creatorId } }, { availableDate: { $lte: availableOn } }] },
+			],
+		});
 		return this;
 	}
 
@@ -53,5 +83,17 @@ export class TaskScope extends Scope<Task> {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
 
 		return this;
+	}
+
+	private getByDraftQuery(isDraft: boolean): FilterQuery<Task> {
+		const query = isDraft ? { private: { $eq: true } } : { private: { $ne: true } };
+
+		return query;
+	}
+
+	private getByDraftForCreatorQuery(creatorId: EntityId): FilterQuery<Task> {
+		const query = { $and: [{ creator: creatorId }, this.getByDraftQuery(true)] };
+
+		return query;
 	}
 }

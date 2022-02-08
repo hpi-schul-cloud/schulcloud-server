@@ -1,12 +1,12 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property, Index, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Index } from '@mikro-orm/core';
 import type { Role } from './role.entity';
 import type { School } from './school.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IUserProperties {
 	email: string;
-	firstName?: string;
-	lastName?: string;
+	firstName: string;
+	lastName: string;
 	school: School;
 	roles: Role[];
 	ldapId: string;
@@ -15,15 +15,14 @@ export interface IUserProperties {
 @Entity({ tableName: 'users' })
 export class User extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ name: 'externalUserIdentifier' })
-	@Unique()
+	@Index({ name: 'externalUserIdentifier', options: { unique: true } })
 	email: string;
 
 	@Property()
-	firstName?: string;
+	firstName: string;
 
 	@Property()
-	lastName?: string;
+	lastName: string;
 
 	@Index({ name: 'roleIdBasedSearches' })
 	@ManyToMany('Role', undefined, { fieldName: 'roles' })
@@ -34,10 +33,7 @@ export class User extends BaseEntityWithTimestamps {
 	school!: School;
 
 	@Property()
-	ldapDn?: string;
-
-	@Property()
-	ldapId!: string;
+	ldapId: string;
 
 	constructor(props: IUserProperties) {
 		super();
