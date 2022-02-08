@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from '@src/core/logger';
 
@@ -10,6 +11,7 @@ import { ObjectId } from 'bson';
 import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { of } from 'rxjs';
 import { OauthUc } from '.';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
@@ -57,9 +59,9 @@ describe('OAuthUc', () => {
 		tokenRequestParams: defaultPayloadData,
 	};
 	const defaultTokenResponse: OauthTokenResponse = {
-		access_token: '',
-		refresh_token: '',
-		id_token: 'zzzz',
+		access_token: 'zzzz',
+		refresh_token: 'zzzz',
+		id_token: defaultJWT,
 	};
 	const defaultAxiosResponse: AxiosResponse<OauthTokenResponse> = {
 		data: defaultTokenResponse,
@@ -69,6 +71,8 @@ describe('OAuthUc', () => {
 		config: {},
 	};
 
+	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [LoggerModule, HttpModule],
@@ -77,24 +81,25 @@ describe('OAuthUc', () => {
 				{
 					provide: 'OAuthEncryptionService',
 					useValue: {
-						// TODO
+						decrypt: () => {
+							return defaultDecryptedSecret;
+						},
 					},
 				},
 				{
 					provide: HttpService,
 					useValue: {
 						post: () => {
-							return defaultAxiosResponse;
+							return of(defaultAxiosResponse);
 						},
-						// TODO
 					},
 				},
 				{
 					provide: SystemRepo,
 					useValue: {
-						findById(id: string) {
+						findById: jest.fn(() => {
 							return systemFactory.build();
-						},
+						}),
 					},
 				},
 				{
@@ -131,19 +136,13 @@ describe('OAuthUc', () => {
 		expect(service).toBeDefined();
 	});
 
-	// TODO ALOT ALOT
 	describe('startOauth', () => {
-		it('should extract query to code as string', () => {
-			const checkAuthorizationCodeMock = jest.fn(() => 'mock-code');
-			service.checkAuthorizationCode = checkAuthorizationCodeMock;
-			const extract = service.checkAuthorizationCode(defaultQuery);
-			const checkDecodeTokenMock = jest.fn(() => 'mock-code');
-			service.decodeToken = checkDecodeTokenMock;
-			// service.startOauth(defaultQuery, defaultSystem.id);
+		it('should extract query to code as string', async () => {
+			const response = await service.startOauth(defaultQuery, '1234');
+			expect(response).toEqual({ jwt: defaultJWT });
 		});
 	});
 
-	// DONE.
 	describe('checkAuthorizationCode', () => {
 		it('should extract code from query', () => {
 			const extract = service.checkAuthorizationCode(defaultQuery);
@@ -160,8 +159,15 @@ describe('OAuthUc', () => {
 			}).toThrow(Error);
 		});
 	});
+	describe('requestToken', () => {
+		it('should get token from the external server', async () => {
+			const defaultSystem = systemFactory.build();
+			const responseToken = await service.requestToken(defaultAuthCode, defaultSystem.id);
+			expect(systemRepo.findById).toBeCalledWith(defaultSystem.id);
+			expect(responseToken).toStrictEqual(defaultTokenResponse);
+		});
+	});
 
-	// DONE
 	describe('decodeToken', () => {
 		it('should get uuid from id_token', () => {
 			const uuid: string = service.decodeToken(defaultJWT);
@@ -176,7 +182,6 @@ describe('OAuthUc', () => {
 		});
 	});
 
-	// Think DONE
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
@@ -185,10 +190,9 @@ describe('OAuthUc', () => {
 			expect(user).toBe(defaultUser);
 		});
 	});
-	// TODO
+
 	describe('getJWTForUser', () => {
 		it('should return a JWT for a user', async () => {
-			// TODO
 			const resolveJWTSpy = jest.spyOn(jwtService, 'generateJwt');
 			const jwt = await service.getJWTForUser(defaultUser);
 			expect(resolveJWTSpy).toHaveBeenCalled();

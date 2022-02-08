@@ -61,20 +61,19 @@ export class OauthUc {
 	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
-		// const tokenRequestPayload: TokenRequestPayload = this.mapSystemConfigtoPayload(system, code);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			system,
 			decryptedClientSecret,
 			code
 		);
 
-		const responseToken = await lastValueFrom(
-			this.httpService.post<OauthTokenResponse>(
-				tokenRequestPayload.tokenEndpoint,
-				{},
-				{ params: { ...tokenRequestPayload.tokenRequestParams } }
-			)
+		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
+			tokenRequestPayload.tokenEndpoint,
+			{},
+			{ params: { ...tokenRequestPayload.tokenRequestParams } }
 		);
+
+		const responseToken = await lastValueFrom(responseTokenObservable);
 		return responseToken.data;
 	}
 
