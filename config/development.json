@@ -12,5 +12,6 @@
 	"FEATURE_MONGOOSE_LOGGING_ENABLED": true,
 	"FEATURE_LERNSTORE_ENABLED": false,
 	"FEATURE_S3_BUCKET_CORS": false,
-	"S3_KEY": "abcdefghijklmnop"
+	"S3_KEY": "abcdefghijklmnop",
+	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12"
 }
