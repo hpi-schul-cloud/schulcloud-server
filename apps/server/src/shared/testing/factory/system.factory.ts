@@ -5,7 +5,7 @@ export const systemFactory = BaseFactory.define<System, ISystemProperties>(Syste
 	return {
 		type: 'iserv',
 		url: 'http://mock.de',
-		alias: 'bb',
+		alias: `system #${sequence}`,
 		oauthConfig: {
 			clientId: '12345',
 			clientSecret: 'mocksecret',

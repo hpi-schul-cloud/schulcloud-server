@@ -1,9 +1,11 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder } from '@shared/domain';
+import { MatchCreator, SortOrder, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { importUserFactory, schoolFactory, userFactory, roleFactory, cleanupCollections } from '@shared/testing';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -83,35 +85,43 @@ describe('user repo', () => {
 	});
 
 	describe('findByLdapId', () => {
+		let sys: System;
+		let userA: User;
+		let userB: User;
+		beforeEach(async () => {
+			sys = systemFactory.build();
+			await em.persistAndFlush([sys]);
+			const school = schoolFactory.build({ systems: [sys] });
+			// const school = schoolFactory.withSystem().build();
+
+			userA = userFactory.build({ school, ldapId: '111' });
+			userB = userFactory.build({ ldapId: '111' });
+			await em.persistAndFlush([userA, userB]);
+		});
 		afterEach(async () => {
 			await cleanupCollections(em);
 		});
-
 		it('should return right keys', async () => {
-			const user = userFactory.build();
-
-			await em.persistAndFlush([user]);
-			const result = await repo.findByLdapId(user.ldapId as string);
+			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
 			);
 		});
 
 		it('should return user matched by id', async () => {
-			const userA = userFactory.build();
-			const userB = userFactory.build();
-
 			await em.persistAndFlush([userA, userB]);
-			const result = await repo.findByLdapId(userA.ldapId as string);
+			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(result).toEqual(userA);
 		});
 
 		it('should throw an error if user by ldapid doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
 
-			await expect(repo.findByLdapId(idA)).rejects.toThrow(NotFoundError);
+			await expect(repo.findByLdapId(idA, idB)).rejects.toThrow(NotFoundException);
 		});
 	});
+
 	describe('findWithoutImportUser', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);

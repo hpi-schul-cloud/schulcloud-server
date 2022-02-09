@@ -9,7 +9,7 @@ export interface IUserProperties {
 	lastName: string;
 	school: School;
 	roles: Role[];
-	ldapId: string;
+	ldapId?: string;
 }
 
 @Entity({ tableName: 'users' })
@@ -41,7 +41,7 @@ export class User extends BaseEntityWithTimestamps {
 		this.lastName = props.lastName;
 		this.email = props.email;
 		this.school = props.school;
-		this.ldapId = props.ldapId;
 		this.roles.set(props.roles);
+		this.ldapId = props.ldapId;
 	}
 }

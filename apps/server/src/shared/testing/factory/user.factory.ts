@@ -18,6 +18,5 @@ export const userFactory = UserFactory.define(User, ({ sequence }) => {
 		email: `user-${sequence}@example.com`,
 		roles: [],
 		school: schoolFactory.build(),
-		ldapId: '1111',
 	};
 });

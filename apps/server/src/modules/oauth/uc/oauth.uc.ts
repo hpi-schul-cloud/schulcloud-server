@@ -38,7 +38,7 @@ export class OauthUc {
 		// extract the uuid from the token
 		const uuid = this.decodeToken(queryToken.id_token);
 		// get the user using the uuid
-		const user: User = await this.findUserById(uuid);
+		const user: User = await this.findUserById(uuid, systemId);
 		// create JWT for the user
 		const jwt: string = await this.getJWTForUser(user);
 		// send response back
@@ -88,8 +88,8 @@ export class OauthUc {
 	// 1.1- Token Validation? (later)
 
 	// 3- get user using the UUID (userHelpers.js?)
-	async findUserById(uuid: string): Promise<User> {
-		const user = await this.userRepo.findByLdapId(uuid);
+	async findUserById(uuid: string, systemId: string): Promise<User> {
+		const user = await this.userRepo.findByLdapId(uuid, systemId);
 		return user;
 	}
 

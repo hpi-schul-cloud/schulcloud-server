@@ -4,7 +4,7 @@ import { LoggerModule } from '@src/core/logger';
 
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { SystemRepo } from '@shared/repo/system';
-import { User, School, Role } from '@shared/domain';
+import { User, School, Role, System } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
@@ -28,6 +28,7 @@ describe('OAuthUc', () => {
 		name: '',
 		_id: new ObjectId(),
 		id: '',
+		systems: new Collection<System>([]),
 	};
 	const defaultUser: User = {
 		email: '',
@@ -42,6 +43,7 @@ describe('OAuthUc', () => {
 		lastName: '',
 	};
 	const defaultUserId = '123456789';
+	const defaultSystemId = '987654321';
 	const defaultJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
 	const wrongJWT =
@@ -173,7 +175,7 @@ describe('OAuthUc', () => {
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
-			const user: User = await service.findUserById(defaultUserId);
+			const user: User = await service.findUserById(defaultUserId, defaultSystemId);
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
