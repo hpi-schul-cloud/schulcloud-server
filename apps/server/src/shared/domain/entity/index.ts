@@ -15,5 +15,6 @@ export * from './team.entity';
 export * from './user.entity';
 export * from './import-user.entity';
 export * from './system.entity';
+export * from './fileRecord.entity';
 
 export * from './all-entities';

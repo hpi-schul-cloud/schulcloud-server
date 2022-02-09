@@ -13,6 +13,15 @@ import { Task } from './task.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
 import { System } from './system.entity';
+import {
+	FileRecord,
+	TeamFileRecord,
+	CourseFileRecord,
+	UserFileRecord,
+	SchoolFileRecord,
+	DashboardModelFileRecord,
+	TaskFileRecord,
+} from './fileRecord.entity';
 
 export const ALL_ENTITIES = [
 	Course,
@@ -36,4 +45,11 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	System,
 	ImportUser,
+	FileRecord,
+	TeamFileRecord,
+	CourseFileRecord,
+	UserFileRecord,
+	SchoolFileRecord,
+	DashboardModelFileRecord,
+	TaskFileRecord,
 ];
