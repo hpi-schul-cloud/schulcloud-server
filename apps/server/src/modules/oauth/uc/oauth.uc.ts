@@ -9,6 +9,7 @@ import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.pro
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
 import { ValidationError } from '@mikro-orm/core';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
@@ -60,6 +61,10 @@ export class OauthUc {
 	// 1- use Authorization Code to get a valid Token
 	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
+		if (!Configuration.has('LDAP_PASSWORD_ENCRYPTION_KEY')) {
+			this.logger.error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
+			throw new Error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
+		}
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			system,

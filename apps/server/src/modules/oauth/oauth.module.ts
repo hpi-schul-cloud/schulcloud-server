@@ -12,10 +12,6 @@ import { OauthUc } from './uc/oauth.uc';
 const logger = new Logger();
 
 const key: string = Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY') as string;
-if (!Configuration.has('LDAP_PASSWORD_ENCRYPTION_KEY')) {
-	logger.error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
-	throw new Error('LDAP_PASSWORD_ENCRYPTION_KEY not found');
-}
 
 @Module({
 	imports: [LoggerModule, AuthorizationModule, HttpModule],
