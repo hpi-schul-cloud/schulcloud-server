@@ -9,10 +9,7 @@ import { AuthorizationModule } from '../authorization';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthUc } from './uc/oauth.uc';
 
-let key: string | undefined;
-if (Configuration.has('LDAP_PASSWORD_ENCRYPTION_KEY')) {
-	key = Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY') as string;
-}
+const key = Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY') as string;
 
 @Module({
 	imports: [LoggerModule, AuthorizationModule, HttpModule],
