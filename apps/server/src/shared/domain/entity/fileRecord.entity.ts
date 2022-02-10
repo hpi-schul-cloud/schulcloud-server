@@ -1,6 +1,15 @@
-import { Entity, ManyToOne, Enum, Property, Index } from '@mikro-orm/core';
-// import uuid from 'uuid';
-
+import {
+	Entity,
+	ManyToOne,
+	Enum,
+	Property,
+	Index,
+	IdentifiedReference,
+	Reference,
+	Embeddable,
+	Embedded,
+} from '@mikro-orm/core';
+import { v4 as uuid } from 'uuid';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { User } from './user.entity';
 import type { School } from './school.entity';
@@ -9,22 +18,14 @@ import type { Team } from './team.entity';
 import type { DashboardModelEntity } from './dashboard.model.entity';
 import type { Task } from './task.entity';
 
-export enum SecurityCheckStatusTypes {
+export enum FileSecurityCheckStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
 	WONTCHECK = 'wont-check',
 }
 
-export interface ISecurityCheck {
-	status: SecurityCheckStatusTypes;
-	reason: string; // default 'not yet scanned'
-	requestToken: string; // default: uuidv4
-	createdAt: Date;
-	updatedAt: Date;
-}
-
-export enum FileRecordTargetEntity {
+export enum FileRecordTargetType {
 	'User' = 'users',
 	'School' = 'schools',
 	'Course' = 'courses',
@@ -36,12 +37,47 @@ export enum FileRecordTargetEntity {
 
 export type FileRecordTarget = School | User | Course | Task | DashboardModelEntity | Team;
 
+export interface IFileSecurityCheckProperties {
+	status?: FileSecurityCheckStatus;
+	reason?: string;
+	requestToken?: string;
+}
+@Embeddable()
+class FileSecurityCheck {
+	@Enum()
+	status: FileSecurityCheckStatus = FileSecurityCheckStatus.PENDING;
+
+	@Property()
+	reason = 'not yet scanned';
+
+	@Property()
+	requestToken: string = uuid();
+
+	@Property()
+	createdAt = new Date();
+
+	@Property({ onUpdate: () => new Date() })
+	updatedAt = new Date();
+
+	constructor(props: IFileSecurityCheckProperties) {
+		if (props.status !== undefined) {
+			this.status = props.status;
+		}
+		if (props.reason !== undefined) {
+			this.reason = props.reason;
+		}
+		if (props.requestToken !== undefined) {
+			this.requestToken = props.requestToken;
+		}
+	}
+}
+
 export interface IFileRecordProperties {
 	size: number;
 	name: string;
-	type: string;
-	securityCheck?: ISecurityCheck;
-	targetEntity: FileRecordTargetEntity;
+	type: string; // TODO mime-type enum?
+	securityCheck?: FileSecurityCheck;
+	targetType: FileRecordTargetType;
 	target: FileRecordTarget;
 	creator: User;
 	lockedForUser?: User;
@@ -50,10 +86,10 @@ export interface IFileRecordProperties {
 
 @Entity({
 	tableName: 'filerecord',
-	discriminatorColumn: 'targetEntity',
+	discriminatorColumn: 'targetType',
 	abstract: true,
 })
-@Index({ name: 'FileRecordTargetRelationship', properties: ['target', 'targetEntity'] })
+@Index({ name: 'FileRecordTargetRelationship', properties: ['target', 'targetType'] })
 export abstract class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	size: number;
@@ -63,126 +99,110 @@ export abstract class FileRecord extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Property()
-	type: string; // make enum sense on this place?
+	type: string; // TODO mime-type enum?
 
-	@Property()
-	securityCheck: ISecurityCheck | null;
+	@Embedded(() => FileSecurityCheck, { object: true, nullable: true })
+	securityCheck?: FileSecurityCheck;
 
-	@Index()
 	@Enum()
-	targetEntity!: FileRecordTargetEntity;
+	targetType: FileRecordTargetType;
 
-	@Index()
-	@Property()
-	target!: FileRecordTarget;
+	target: FileRecordTarget;
 
 	@Index()
 	@ManyToOne('User')
-	creator: User;
+	creator: IdentifiedReference<User>;
 
 	// todo: permissions
 
 	// for wopi, is this still needed?
-	@Property()
-	lockedForUser: User | null;
+	@ManyToOne('User')
+	lockedForUser?: IdentifiedReference<User>;
 
-	@Property()
-	school: School;
+	@ManyToOne('School')
+	school: IdentifiedReference<School>;
 
 	constructor(props: IFileRecordProperties) {
 		super();
 		this.size = props.size;
 		this.name = props.name;
 		this.type = props.type;
-		this.securityCheck = props.securityCheck || null;
-		this.targetEntity = props.targetEntity;
+		this.securityCheck = props.securityCheck;
+		this.targetType = props.targetType;
 		this.target = props.target;
-		this.creator = props.creator;
-		this.lockedForUser = props.lockedForUser || null;
-		this.school = props.school;
-	}
-
-	static createInstance(targetEntity: FileRecordTargetEntity, props: IFileRecordProperties): FileRecord {
-		let fileRecord: FileRecord;
-		if (targetEntity === FileRecordTargetEntity.User) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			fileRecord = new UserFileRecord(props);
-		} else if (targetEntity === FileRecordTargetEntity.Course) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			fileRecord = new CourseFileRecord(props);
-		} else if (targetEntity === FileRecordTargetEntity.Team) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			fileRecord = new TeamFileRecord(props);
-		} else if (targetEntity === FileRecordTargetEntity.Task) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			fileRecord = new TaskFileRecord(props);
-		} else if (targetEntity === FileRecordTargetEntity.DashboardModelEntity) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			fileRecord = new DashboardModelFileRecord(props);
-		} else {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			fileRecord = new SchoolFileRecord(props);
+		this.creator = Reference.create(props.creator);
+		if (props.lockedForUser !== undefined) {
+			this.lockedForUser = Reference.create(props.lockedForUser);
 		}
-
-		return fileRecord;
+		this.school = Reference.create(props.school);
 	}
 
-	initilizeSecurityCheck(requestToken?: string): ISecurityCheck {
-		const check: ISecurityCheck = {
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			reason: 'not yet scanned',
-			requestToken: requestToken || 'uuidv4', // todo import right package
-			status: SecurityCheckStatusTypes.PENDING,
-		};
+	// static createInstance(targetType: FileRecordTargetType, props: IFileRecordProperties): FileRecord {
+	// 	let fileRecord: FileRecord;
+	// 	if (targetType === FileRecordTargetType.User) {
+	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	// 		fileRecord = new UserFileRecord(props);
+	// 	} else if (targetType === FileRecordTargetType.Course) {
+	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	// 		fileRecord = new CourseFileRecord(props);
+	// 	} else if (targetType === FileRecordTargetType.Team) {
+	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	// 		fileRecord = new TeamFileRecord(props);
+	// 	} else if (targetType === FileRecordTargetType.Task) {
+	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	// 		fileRecord = new TaskFileRecord(props);
+	// 	} else if (targetType === FileRecordTargetType.DashboardModelEntity) {
+	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	// 		fileRecord = new DashboardModelFileRecord(props);
+	// 	} else {
+	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	// 		fileRecord = new SchoolFileRecord(props);
+	// 	}
 
-		this.securityCheck = check;
+	// 	return fileRecord;
+	// }
 
-		return check;
-	}
-
-	updateSecurityCheckStatus(status: SecurityCheckStatusTypes, reason: string): void {
+	updateSecurityCheckStatus(status: FileSecurityCheckStatus, reason: string): void {
 		if (!this.securityCheck) {
-			this.initilizeSecurityCheck();
-		}
-		if (this.securityCheck) {
+			this.securityCheck = new FileSecurityCheck({ status, reason });
+		} else {
 			this.securityCheck.status = status;
 			this.securityCheck.reason = reason;
 		}
 	}
 }
 
-@Entity({ discriminatorValue: FileRecordTargetEntity.School })
+@Entity({ discriminatorValue: FileRecordTargetType.School })
 export class SchoolFileRecord extends FileRecord {
-	@ManyToOne('School')
-	target!: School;
+	@ManyToOne('School', { wrappedReference: true })
+	target!: IdentifiedReference<School>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetEntity.Course })
+@Entity({ discriminatorValue: FileRecordTargetType.Course })
 export class CourseFileRecord extends FileRecord {
-	@ManyToOne('Course')
-	target!: Course;
+	@ManyToOne('Course', { wrappedReference: true })
+	target!: IdentifiedReference<Course>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetEntity.Team })
+@Entity({ discriminatorValue: FileRecordTargetType.Team })
 export class TeamFileRecord extends FileRecord {
-	@ManyToOne('Team')
-	target!: Team;
+	@ManyToOne('Team', { wrappedReference: true })
+	target!: IdentifiedReference<Team>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetEntity.DashboardModelEntity })
+@Entity({ discriminatorValue: FileRecordTargetType.DashboardModelEntity })
 export class DashboardModelFileRecord extends FileRecord {
-	@ManyToOne('DashboardModelEntity')
-	target!: DashboardModelEntity;
+	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
+	target!: IdentifiedReference<DashboardModelEntity>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetEntity.Task })
+@Entity({ discriminatorValue: FileRecordTargetType.Task })
 export class TaskFileRecord extends FileRecord {
 	@ManyToOne('Task')
 	target!: Task;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetEntity.User })
+@Entity({ discriminatorValue: FileRecordTargetType.User })
 export class UserFileRecord extends FileRecord {
 	@ManyToOne('User')
 	target!: User;
