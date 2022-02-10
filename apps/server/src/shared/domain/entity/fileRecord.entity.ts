@@ -30,7 +30,7 @@ export enum FileRecordTargetType {
 	'School' = 'schools',
 	'Course' = 'courses',
 	'Team' = 'teams',
-	'DashboardModelEntity' = 'dashboard', // without s
+	'DashboardModel' = 'dashboard', // without s
 	'Task' = 'tasks',
 	// card
 }
@@ -43,7 +43,7 @@ export interface IFileSecurityCheckProperties {
 	requestToken?: string;
 }
 @Embeddable()
-class FileSecurityCheck {
+export class FileSecurityCheck {
 	@Enum()
 	status: FileSecurityCheckStatus = FileSecurityCheckStatus.PENDING;
 
@@ -107,7 +107,7 @@ export abstract class FileRecord extends BaseEntityWithTimestamps {
 	@Enum()
 	targetType: FileRecordTargetType;
 
-	target: FileRecordTarget;
+	target!: FileRecordTarget;
 
 	@Index()
 	@ManyToOne('User')
@@ -172,38 +172,38 @@ export abstract class FileRecord extends BaseEntityWithTimestamps {
 	}
 }
 
-@Entity({ discriminatorValue: FileRecordTargetType.School })
+@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.School })
 export class SchoolFileRecord extends FileRecord {
 	@ManyToOne('School', { wrappedReference: true })
 	target!: IdentifiedReference<School>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetType.Course })
+@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.Course })
 export class CourseFileRecord extends FileRecord {
 	@ManyToOne('Course', { wrappedReference: true })
 	target!: IdentifiedReference<Course>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetType.Team })
+@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.Team })
 export class TeamFileRecord extends FileRecord {
 	@ManyToOne('Team', { wrappedReference: true })
 	target!: IdentifiedReference<Team>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetType.DashboardModelEntity })
+@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.DashboardModel })
 export class DashboardModelFileRecord extends FileRecord {
 	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
 	target!: IdentifiedReference<DashboardModelEntity>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetType.Task })
+@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.Task })
 export class TaskFileRecord extends FileRecord {
-	@ManyToOne('Task')
-	target!: Task;
+	@ManyToOne('Task', { wrappedReference: true })
+	target!: IdentifiedReference<Task>;
 }
 
-@Entity({ discriminatorValue: FileRecordTargetType.User })
+@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.User })
 export class UserFileRecord extends FileRecord {
-	@ManyToOne('User')
-	target!: User;
+	@ManyToOne('User', { wrappedReference: true })
+	target!: IdentifiedReference<User>;
 }

@@ -21,7 +21,8 @@ import {
 	SchoolFileRecord,
 	DashboardModelFileRecord,
 	TaskFileRecord,
-} from './fileRecord.entity';
+	FileSecurityCheck,
+} from './filerecord.entity';
 
 export const ALL_ENTITIES = [
 	Course,
@@ -52,4 +53,5 @@ export const ALL_ENTITIES = [
 	SchoolFileRecord,
 	DashboardModelFileRecord,
 	TaskFileRecord,
+	FileSecurityCheck,
 ];
