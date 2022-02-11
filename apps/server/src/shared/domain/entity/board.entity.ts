@@ -1,6 +1,6 @@
 import { Entity, Collection, ManyToMany, ManyToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { BoardElement } from './boardelement.entity';
+import type { BoardElement } from './boardelement.entity';
 import type { Course } from './course.entity';
 
 export type BoardProps = {

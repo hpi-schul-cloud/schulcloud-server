@@ -1,6 +1,7 @@
 import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
-import { Task, Lesson } from '.';
-import { EntityId } from '..';
+import { Lesson } from './lesson.entity';
+import { Task } from './task.entity';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export type BoardElementReference = Task | Lesson;
