@@ -1,22 +1,8 @@
-import {
-	Entity,
-	ManyToOne,
-	Enum,
-	Property,
-	Index,
-	IdentifiedReference,
-	Reference,
-	Embeddable,
-	Embedded,
-} from '@mikro-orm/core';
+import { Entity, Enum, Property, Index, Embeddable, Embedded } from '@mikro-orm/core';
 import { v4 as uuid } from 'uuid';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { User } from './user.entity';
-import type { School } from './school.entity';
-import type { Course } from './course.entity';
-import type { Team } from './team.entity';
-import type { DashboardModelEntity } from './dashboard.model.entity';
-import type { Task } from './task.entity';
+import type { EntityId } from '../types/entity-id';
 
 export enum FileSecurityCheckStatus {
 	PENDING = 'pending',
@@ -34,9 +20,6 @@ export enum FileRecordTargetType {
 	'Task' = 'tasks',
 	// card
 }
-
-export type FileRecordTarget = School | User | Course | Task | DashboardModelEntity | Team;
-
 export interface IFileSecurityCheckProperties {
 	status?: FileSecurityCheckStatus;
 	reason?: string;
@@ -78,19 +61,20 @@ export interface IFileRecordProperties {
 	type: string; // TODO mime-type enum?
 	securityCheck?: FileSecurityCheck;
 	targetType: FileRecordTargetType;
-	target: FileRecordTarget;
-	creator: User;
-	lockedForUser?: User;
-	school: School;
+	targetId: EntityId | ObjectId;
+	creatorId: EntityId | ObjectId;
+	lockedForUserId?: EntityId | ObjectId;
+	schoolId: EntityId | ObjectId;
 }
 
-@Entity({
-	tableName: 'filerecord',
-	discriminatorColumn: 'targetType',
-	abstract: true,
-})
-@Index({ name: 'FileRecordTargetRelationship', properties: ['target', 'targetType'] })
-export abstract class FileRecord extends BaseEntityWithTimestamps {
+/**
+ * Note: The file record entity will not manage any entity relations by itself.
+ * That's why we do not map any relations in the entity class
+ * and instead just use the plain object ids.
+ */
+@Entity({ tableName: 'filerecord' })
+@Index({ name: 'FileRecordTargetRelationship', properties: ['_targetId', 'targetType'] })
+export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	size: number;
 
@@ -107,20 +91,37 @@ export abstract class FileRecord extends BaseEntityWithTimestamps {
 	@Enum()
 	targetType: FileRecordTargetType;
 
-	target!: FileRecordTarget;
+	@Property({ fieldName: 'target' })
+	_targetId: ObjectId;
+
+	get targetId(): EntityId {
+		return this._targetId.toHexString();
+	}
 
 	@Index()
-	@ManyToOne('User')
-	creator: IdentifiedReference<User>;
+	@Property({ fieldName: 'creator' })
+	_creatorId: ObjectId;
+
+	get creatorId(): EntityId {
+		return this._creatorId.toHexString();
+	}
 
 	// todo: permissions
 
 	// for wopi, is this still needed?
-	@ManyToOne('User')
-	lockedForUser?: IdentifiedReference<User>;
+	@Property({ fieldName: 'lockedForUser' })
+	_lockedForUserId?: ObjectId;
 
-	@ManyToOne('School')
-	school: IdentifiedReference<School>;
+	get lockedForUserId(): EntityId | undefined {
+		return this._lockedForUserId?.toHexString();
+	}
+
+	@Property({ fieldName: 'school' })
+	_schoolId: ObjectId;
+
+	get schoolId(): EntityId {
+		return this._schoolId?.toHexString();
+	}
 
 	constructor(props: IFileRecordProperties) {
 		super();
@@ -129,38 +130,13 @@ export abstract class FileRecord extends BaseEntityWithTimestamps {
 		this.type = props.type;
 		this.securityCheck = props.securityCheck;
 		this.targetType = props.targetType;
-		this.target = props.target;
-		this.creator = Reference.create(props.creator);
-		if (props.lockedForUser !== undefined) {
-			this.lockedForUser = Reference.create(props.lockedForUser);
+		this._targetId = new ObjectId(props.targetId);
+		this._creatorId = new ObjectId(props.creatorId);
+		if (props.lockedForUserId !== undefined) {
+			this._lockedForUserId = new ObjectId(props.lockedForUserId);
 		}
-		this.school = Reference.create(props.school);
+		this._schoolId = new ObjectId(props.schoolId);
 	}
-
-	// static createInstance(targetType: FileRecordTargetType, props: IFileRecordProperties): FileRecord {
-	// 	let fileRecord: FileRecord;
-	// 	if (targetType === FileRecordTargetType.User) {
-	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	// 		fileRecord = new UserFileRecord(props);
-	// 	} else if (targetType === FileRecordTargetType.Course) {
-	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	// 		fileRecord = new CourseFileRecord(props);
-	// 	} else if (targetType === FileRecordTargetType.Team) {
-	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	// 		fileRecord = new TeamFileRecord(props);
-	// 	} else if (targetType === FileRecordTargetType.Task) {
-	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	// 		fileRecord = new TaskFileRecord(props);
-	// 	} else if (targetType === FileRecordTargetType.DashboardModelEntity) {
-	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	// 		fileRecord = new DashboardModelFileRecord(props);
-	// 	} else {
-	// 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-	// 		fileRecord = new SchoolFileRecord(props);
-	// 	}
-
-	// 	return fileRecord;
-	// }
 
 	updateSecurityCheckStatus(status: FileSecurityCheckStatus, reason: string): void {
 		if (!this.securityCheck) {
@@ -170,40 +146,4 @@ export abstract class FileRecord extends BaseEntityWithTimestamps {
 			this.securityCheck.reason = reason;
 		}
 	}
-}
-
-@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.School })
-export class SchoolFileRecord extends FileRecord {
-	@ManyToOne('School', { wrappedReference: true })
-	target!: IdentifiedReference<School>;
-}
-
-@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.Course })
-export class CourseFileRecord extends FileRecord {
-	@ManyToOne('Course', { wrappedReference: true })
-	target!: IdentifiedReference<Course>;
-}
-
-@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.Team })
-export class TeamFileRecord extends FileRecord {
-	@ManyToOne('Team', { wrappedReference: true })
-	target!: IdentifiedReference<Team>;
-}
-
-@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.DashboardModel })
-export class DashboardModelFileRecord extends FileRecord {
-	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
-	target!: IdentifiedReference<DashboardModelEntity>;
-}
-
-@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.Task })
-export class TaskFileRecord extends FileRecord {
-	@ManyToOne('Task', { wrappedReference: true })
-	target!: IdentifiedReference<Task>;
-}
-
-@Entity({ tableName: 'filerecord', discriminatorValue: FileRecordTargetType.User })
-export class UserFileRecord extends FileRecord {
-	@ManyToOne('User', { wrappedReference: true })
-	target!: IdentifiedReference<User>;
 }

@@ -1,4 +1,3 @@
-import { Constructor } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
@@ -29,21 +28,63 @@ export class FileRecordRepo {
 		return [fileRecords, count];
 	}
 
-	async save(fileRecord: FileRecord): Promise<void> {
-		await this.em.persistAndFlush(fileRecord);
+	async findByTargetType(
+		targetType: FileRecordTargetType,
+		options?: IFindOptions<FileRecord>
+	): Promise<Counted<FileRecord[]>> {
+		const { pagination } = options || {};
+
+		const scope = new FileRecordScope().byTargetType(targetType);
+		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
+
+		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		return [fileRecords, count];
 	}
 
-	getEntityClass<T extends FileRecord>(targetType: FileRecordTargetType): Constructor<T> | undefined {
-		let entityClass: Constructor<T> | undefined;
+	async findBySchoolIdAndTargetId(
+		schoolId: EntityId,
+		targetId: EntityId,
+		options?: IFindOptions<FileRecord>
+	): Promise<Counted<FileRecord[]>> {
+		const { pagination } = options || {};
 
-		const metaData = this.em.getMetadata();
-		const rootMeta = metaData.find('FileRecord');
-		if (rootMeta) {
-			const type = rootMeta.discriminatorMap ? rootMeta.discriminatorMap[targetType] : undefined;
-			const meta = type ? metaData.find(type) : rootMeta;
-			entityClass = meta?.class;
-		}
+		const scope = new FileRecordScope().bySchoolId(schoolId).byTargetId(targetId);
+		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
-		return entityClass;
+		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		return [fileRecords, count];
+	}
+
+	async findBySchoolIdAndTargetType(
+		schoolId: EntityId,
+		targetType: FileRecordTargetType,
+		options?: IFindOptions<FileRecord>
+	): Promise<Counted<FileRecord[]>> {
+		const { pagination } = options || {};
+
+		const scope = new FileRecordScope().bySchoolId(schoolId).byTargetType(targetType);
+		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
+
+		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy: order,
+		});
+
+		return [fileRecords, count];
+	}
+
+	async save(fileRecord: FileRecord): Promise<void> {
+		await this.em.persistAndFlush(fileRecord);
 	}
 }
