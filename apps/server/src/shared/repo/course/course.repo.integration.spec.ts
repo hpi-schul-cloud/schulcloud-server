@@ -63,6 +63,7 @@ describe('course repo', () => {
 				'teachers',
 				'updatedAt',
 				'students',
+				'primaryBoard',
 			].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
