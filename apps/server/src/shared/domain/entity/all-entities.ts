@@ -1,6 +1,7 @@
+import { ImportUser } from './import-user.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
-import { DashboardGridElementModel, DashboardModelEntity, DefaultGridReferenceModel } from './dashboard.model.entity';
+import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { BaseFile, Directory, File } from './file.entity';
 import { Lesson } from './lesson.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
@@ -11,13 +12,13 @@ import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
+import { System } from './system.entity';
 
 export const ALL_ENTITIES = [
 	Course,
 	CourseGroup,
 	DashboardModelEntity,
 	DashboardGridElementModel,
-	DefaultGridReferenceModel,
 	BaseFile,
 	File,
 	Directory,
@@ -33,4 +34,6 @@ export const ALL_ENTITIES = [
 	News,
 	SchoolNews,
 	TeamNews,
+	System,
+	ImportUser,
 ];

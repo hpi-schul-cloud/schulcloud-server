@@ -1,4 +1,4 @@
-import { DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
+import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
 import { ObjectId } from 'mongodb';
 
 /**
@@ -8,12 +8,13 @@ import { ObjectId } from 'mongodb';
  * @template T The entity to be built
  * @template U The properties interface of the entity
  * @template I The transient parameters that your factory supports
+ * @template C The class of the factory object being created.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class BaseFactory<T, U, I = any> {
-	protected readonly propsFactory: Factory<U>;
+export class BaseFactory<T, U, I = any, C = U> {
+	protected readonly propsFactory: Factory<U, I, C>;
 
-	constructor(private readonly EntityClass: { new (props: U): T }, propsFactory: Factory<U>) {
+	constructor(private readonly EntityClass: { new (props: U): T }, propsFactory: Factory<U, I, C>) {
 		this.propsFactory = propsFactory;
 	}
 
@@ -22,19 +23,19 @@ export class BaseFactory<T, U, I = any> {
 	 * @template T The entity to be built
 	 * @template U The properties interface of the entity
 	 * @template I The transient parameters that your factory supports
+	 * @template C The class of the factory object being created.
 	 * @param EntityClass The constructor of the entity to be built.
 	 * @param generator Your factory function - see `Factory.define()` in thoughtbot/fishery
 	 * @returns
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static define<T, U, I = any, F = BaseFactory<T, U>>(
-		this: new (EntityClass: { new (props: U): T }, propsFactory: Factory<U, I>) => F,
+	static define<T, U, I = any, C = U, F = BaseFactory<T, U, I, C>>(
+		this: new (EntityClass: { new (props: U): T }, propsFactory: Factory<U, I, C>) => F,
 		EntityClass: { new (props: U): T },
-		generator: GeneratorFn<U, I>
+		generator: GeneratorFn<U, I, C>
 	): F {
-		const propsFactory = Factory.define<U, I>(generator);
+		const propsFactory = Factory.define<U, I, C>(generator);
 		const factory = new this(EntityClass, propsFactory);
-
 		return factory;
 	}
 
@@ -43,8 +44,8 @@ export class BaseFactory<T, U, I = any> {
 	 * @param params
 	 * @returns an entity
 	 */
-	build(params: DeepPartial<U> = {}): T {
-		const props = this.propsFactory.build(params);
+	build(params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T {
+		const props = this.propsFactory.build(params, options);
 		const entity = new this.EntityClass(props);
 
 		return entity;
@@ -56,7 +57,7 @@ export class BaseFactory<T, U, I = any> {
 	 * @param id
 	 * @returns an entity
 	 */
-	buildWithId(params: DeepPartial<U> = {}, id?: string): T {
+	buildWithId(params?: DeepPartial<U>, id?: string): T {
 		const entity = this.build(params);
 		const entityWithId = Object.assign(entity, { _id: new ObjectId(id) });
 
@@ -69,10 +70,10 @@ export class BaseFactory<T, U, I = any> {
 	 * @param params
 	 * @returns a list of entities
 	 */
-	buildList(number: number, params: DeepPartial<U> = {}): T[] {
+	buildList(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
 		const list: T[] = [];
 		for (let i = 0; i < number; i += 1) {
-			list.push(this.build(params));
+			list.push(this.build(params, options));
 		}
 
 		return list;
@@ -85,6 +86,18 @@ export class BaseFactory<T, U, I = any> {
 	 */
 	afterBuild(afterBuildFn: HookFn<U>): this {
 		const newPropsFactory = this.propsFactory.afterBuild(afterBuildFn);
+		const newFactory = this.clone(newPropsFactory);
+
+		return newFactory;
+	}
+
+	/**
+	 * Extend the factory by adding default associations to be passed to the factory when "build" is called
+	 * @param associations
+	 * @returns a new factory
+	 */
+	associations(associations: Partial<U>): this {
+		const newPropsFactory = this.propsFactory.associations(associations);
 		const newFactory = this.clone(newPropsFactory);
 
 		return newFactory;
@@ -121,9 +134,9 @@ export class BaseFactory<T, U, I = any> {
 		this.propsFactory.rewindSequence();
 	}
 
-	protected clone<F extends BaseFactory<T, U>>(this: F, propsFactory: Factory<U>): F {
+	protected clone<F extends BaseFactory<T, U, I, C>>(this: F, propsFactory: Factory<U, I, C>): F {
 		const copy = new (this.constructor as {
-			new (EntityClass: { new (props: U): T }, propsFactory: Factory<U>): F;
+			new (EntityClass: { new (props: U): T }, propsFactory: Factory<U, I, C>): F;
 		})(this.EntityClass, propsFactory);
 
 		return copy;

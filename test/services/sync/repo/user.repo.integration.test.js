@@ -6,6 +6,7 @@ const UserRepo = require('../../../../src/services/sync/repo/user.repo');
 
 const accountModel = require('../../../../src/services/account/model');
 const { userModel } = require('../../../../src/services/user/model');
+const { importUserModel } = require('../../../../src/services/sync/model/importUser.schema');
 
 const appPromise = require('../../../../src/app');
 
@@ -185,6 +186,169 @@ describe('user repo', () => {
 			const res = await UserRepo.findByLdapDnsAndSchool(ldapDns, school._id);
 			expect(res[0]._id.toString()).to.be.equal(createdUsers[0]._id.toString());
 			expect(res[1]._id.toString()).to.be.equal(createdUsers[1]._id.toString());
+		});
+	});
+
+	describe('createOrUpdateImportUser', () => {
+		it('should create import user', async () => {
+			const school = await testObjects.createTestSchool();
+			const system = await testObjects.createTestSystem();
+			const user = {
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'new email',
+				ldapDn: 'new ldapdn',
+				ldapId: `ldapId${Math.random()}`,
+				roles: ['role1'],
+			};
+			await UserRepo.createOrUpdateImportUser(school._id, system._id, user.ldapId, user);
+			const res = await importUserModel.findOne({ schoolId: school._id, ldapId: user.ldapId }).lean().exec();
+			const attributesToCompare = ['firstName', 'lastName', 'email', 'ldapDn'];
+			attributesToCompare.forEach((attr) => expect(res[attr]).to.be.equal(user[attr]));
+			expect(res.roles).to.eql(user.roles);
+		});
+
+		it('should update import user', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				firstName: 'foo',
+				lastName: 'bar',
+				email: 'baz',
+				systems: [new ObjectId()],
+				roles: ['role1', 'role2'],
+			});
+
+			const user = {
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'new email',
+				ldapDn: 'new ldapdn',
+				ldapId: importUser.ldapId,
+				roles: ['role1'],
+			};
+			await UserRepo.createOrUpdateImportUser(school._id, testSystem._id, user.ldapId, user);
+			const res = await importUserModel.find({ schoolId: school._id, ldapId: user.ldapId }).lean().exec();
+			expect(res.length).to.equal(1);
+			const attributesToCompare = ['firstName', 'lastName', 'email', 'ldapDn'];
+			attributesToCompare.forEach((attr) => expect(res[0][attr]).to.be.equal(user[attr]));
+			expect(res[0].roles).to.eql(user.roles);
+			expect(res[0].system.toString()).to.equal(testSystem._id.toString());
+		});
+	});
+
+	describe('addClassToImportUsers', () => {
+		it('should create class to import users', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const importUser = await testObjects.createTestImportUser({ schoolId: school._id, system: testSystem._id });
+
+			const userLdapDns = [importUser.ldapDn];
+			const className = '1a';
+			await UserRepo.addClassToImportUsers(school._id, className, userLdapDns);
+
+			const res = await importUserModel.findOne({ schoolId: school._id, ldapDn: importUser.ldapDn }).lean().exec();
+			expect(res.classNames).to.eql([className]);
+		});
+
+		it('should add more classs to import users', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const classNames = ['1a', '1b'];
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				classNames,
+			});
+
+			const userLdapDns = [importUser.ldapDn];
+			const className = '1c';
+			await UserRepo.addClassToImportUsers(school._id, className, userLdapDns);
+
+			const res = await importUserModel.findOne({ schoolId: school._id, ldapDn: importUser.ldapDn }).lean().exec();
+			expect(res.classNames).to.eql([...classNames, className]);
+		});
+
+		it('should not add duplicate class name', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const classNames = ['1a', '2b'];
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				classNames,
+			});
+
+			const className = ['1a'];
+			const userLdapDns = [importUser.ldapDn];
+			await UserRepo.addClassToImportUsers(school._id, className, userLdapDns);
+
+			const res = await importUserModel.findOne({ schoolId: school._id, ldapDn: importUser.ldapDn }).lean().exec();
+			expect(res.classNames).to.eql(classNames);
+		});
+	});
+
+	describe('findImportUsersByName', () => {
+		it('should resolve importUsers with given firstName and lastName', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				firstName: 'jon',
+				lastName: 'doe',
+			});
+			const res = await UserRepo.findImportUsersBySchoolAndName(school._id, importUser.firstName, importUser.lastName);
+
+			expect(res.length).to.equal(1);
+			expect(res[0]._id.toString()).to.equal(importUser._id.toString());
+		});
+		it('should resolve with empty array for no match', async () => {
+			const testSystem = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool();
+			const importUser = await testObjects.createTestImportUser({
+				schoolId: school._id,
+				system: testSystem._id,
+				firstName: 'jon',
+				lastName: 'doe',
+			});
+
+			const wrongFirstNameRes = await UserRepo.findImportUsersBySchoolAndName(school._id, 'jane', importUser.lastName);
+			expect(wrongFirstNameRes.length).to.equal(0);
+
+			const wrongLastNameRes = await UserRepo.findImportUsersBySchoolAndName(school._id, importUser.firstName, 'doe2');
+			expect(wrongLastNameRes.length).to.equal(0);
+		});
+	});
+	describe('findUserBySchoolAndName', () => {
+		it('should resolve importUsers with given firstName and lastName', async () => {
+			const school = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({
+				schoolId: school._id,
+				firstName: 'jon',
+				lastName: 'doe',
+				email: 'user@test.test',
+			});
+			const res = await UserRepo.findUserBySchoolAndName(school._id, user.firstName, user.lastName);
+
+			expect(res.length).to.equal(1);
+			expect(res[0].firstName).to.equal(user.firstName);
+			expect(res[0].lastName).to.equal(user.lastName);
+			expect(res[0].email).to.equal(user.email);
+			expect(res[0].schoolId.toString()).to.equal(user.schoolId.toString());
+		});
+		it('should resolve with empty array for no match', async () => {
+			const school = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({
+				schoolId: school._id,
+				firstName: 'jon',
+				lastName: 'doe',
+			});
+			const res = await UserRepo.findUserBySchoolAndName(school._id, 'jane', user.lastName);
+
+			expect(res.length).to.equal(0);
 		});
 	});
 });

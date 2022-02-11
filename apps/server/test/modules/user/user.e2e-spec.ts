@@ -3,9 +3,9 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { ServerModule } from '@src/server.module';
+import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { createCurrentTestUser } from '@shared/testing';
+import { roleFactory, userFactory, mapUserToCurrentUser } from '@shared/testing';
 
 describe('User Controller (e2e)', () => {
 	let app: INestApplication;
@@ -13,13 +13,17 @@ describe('User Controller (e2e)', () => {
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [ServerModule],
+			imports: [ServerTestModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
-					const { currentUser } = createCurrentTestUser();
+
+					const roles = roleFactory.buildList(1, { permissions: [] });
+					const user = userFactory.build({ roles });
+
+					const currentUser = mapUserToCurrentUser(user);
 					req.user = currentUser;
 					return true;
 				},

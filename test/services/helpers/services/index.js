@@ -22,6 +22,7 @@ const submissions = require('./submissions');
 const teams = require('./teams');
 const testSystem = require('./testSystem');
 const users = require('./users');
+const importUsers = require('./importUsers');
 const years = require('./years');
 
 module.exports = (app, opt) => ({
@@ -50,4 +51,5 @@ module.exports = (app, opt) => ({
 	teams: teams(app, opt),
 	testSystem: testSystem(app, opt),
 	users: users(app, opt),
+	importUsers: importUsers(opt),
 });

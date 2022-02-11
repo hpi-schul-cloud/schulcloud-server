@@ -3,11 +3,20 @@ import { PaginationResponse } from '@shared/controller';
 import { EntityId } from '@shared/domain';
 
 export class CourseMetadataResponse {
-	constructor(id: EntityId, title: string, shortTitle: string, displayColor: string) {
+	constructor(
+		id: EntityId,
+		title: string,
+		shortTitle: string,
+		displayColor: string,
+		startDate?: Date,
+		untilDate?: Date
+	) {
 		this.id = id;
 		this.title = title;
 		this.shortTitle = shortTitle;
 		this.displayColor = displayColor;
+		this.startDate = startDate;
+		this.untilDate = untilDate;
 	}
 
 	@ApiProperty({
@@ -30,6 +39,16 @@ export class CourseMetadataResponse {
 		description: 'Color of the Grid element',
 	})
 	displayColor: string;
+
+	@ApiProperty({
+		description: 'Start date of the course',
+	})
+	startDate?: Date;
+
+	@ApiProperty({
+		description: 'End date of the course. After this the course counts as archived',
+	})
+	untilDate?: Date;
 }
 
 export class CourseMetadataListResponse extends PaginationResponse<CourseMetadataResponse[]> {

@@ -42,10 +42,30 @@ describe('CourseEntity', () => {
 
 			const result = course.getMetadata();
 
-			expect(result.name).toEqual('History');
-			expect(result.shortName).toEqual('Hi');
+			expect(result.title).toEqual('History');
+			expect(result.shortTitle).toEqual('Hi');
 			expect(result.displayColor).toEqual('#445566');
 			expect(result.id).toEqual(course.id);
+		});
+
+		it('should include start and enddate if course has them', () => {
+			const startDate = Date.now() - 200000;
+			const untilDate = Date.now() + 200000;
+			const course = courseFactory.build({
+				name: 'History',
+				color: '#445566',
+				startDate,
+				untilDate,
+			});
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('History');
+			expect(result.shortTitle).toEqual('Hi');
+			expect(result.displayColor).toEqual('#445566');
+			expect(result.id).toEqual(course.id);
+			expect(result.startDate).toEqual(startDate);
+			expect(result.untilDate).toEqual(untilDate);
 		});
 	});
 
@@ -67,29 +87,6 @@ describe('CourseEntity', () => {
 			const number = course.getNumberOfStudents();
 
 			expect(number).toEqual(0);
-		});
-	});
-
-	describe('getSubstitutionTeacherIds', () => {
-		it('should return all substitution teacher ids.', () => {
-			const teacher1 = userFactory.build();
-			const teacher2 = userFactory.build();
-			teacher1.id = '0123456789ab';
-			teacher2.id = '0123456789cd';
-
-			const course = courseFactory.build({ substitutionTeachers: [teacher1, teacher2] });
-
-			const ids = course.getSubstitutionTeacherIds();
-
-			expect(ids).toEqual([teacher1.id, teacher2.id]);
-		});
-
-		it('should work if no substitution teacher exist.', () => {
-			const course = courseFactory.build({ substitutionTeachers: [] });
-
-			const ids = course.getSubstitutionTeacherIds();
-
-			expect(ids).toEqual([]);
 		});
 	});
 

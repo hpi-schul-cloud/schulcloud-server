@@ -34,20 +34,27 @@ class ClassAction extends BaseConsumerAction {
 					systemId: classData.systemId,
 				}
 			);
-		} else if (!school.inMaintenance) {
-			let classId;
-			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
-			if (existingClass) {
-				classId = existingClass._id;
-				if (existingClass.name !== classData.name) {
-					await ClassRepo.updateClassName(existingClass._id, classData.name);
-				}
-			} else {
-				const createdClass = await ClassRepo.createClass(classData, school);
-				classId = createdClass._id;
-			}
-			await this.addUsersToClass(school._id, classId, classData.uniqueMembers);
 		}
+		if (school.inUserMigration === true) {
+			await UserRepo.addClassToImportUsers(school._id, classData.name, classData.uniqueMembers);
+			return;
+		}
+		if (school.inMaintenance) {
+			return;
+		}
+		// default: update classes
+		let classId;
+		const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
+		if (existingClass) {
+			classId = existingClass._id;
+			if (existingClass.name !== classData.name) {
+				await ClassRepo.updateClassName(existingClass._id, classData.name);
+			}
+		} else {
+			const createdClass = await ClassRepo.createClass(classData, school);
+			classId = createdClass._id;
+		}
+		await this.addUsersToClass(school._id, classId, classData.uniqueMembers);
 	}
 
 	async addUsersToClass(schoolId, classId, uniqueMembers) {

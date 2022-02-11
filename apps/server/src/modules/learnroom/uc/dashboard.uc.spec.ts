@@ -1,12 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IDashboardRepo } from '@shared/repo';
-import { DashboardEntity, GridElement, DefaultGridReference, EntityId } from '@shared/domain';
-import { NotFound } from '@feathersjs/errors';
+import { NotFoundException } from '@nestjs/common/';
+import { IDashboardRepo, CourseRepo } from '@shared/repo';
+import {
+	DashboardEntity,
+	GridElement,
+	LearnroomTypes,
+	LearnroomMetadata,
+	EntityId,
+	Course,
+	IFindOptions,
+	SortOrder,
+	Counted,
+} from '@shared/domain';
 import { DashboardUc } from './dashboard.uc';
+
+const learnroomMock = (id: string, name: string) => {
+	return {
+		getMetadata(): LearnroomMetadata {
+			return {
+				id,
+				type: LearnroomTypes.Course,
+				title: name,
+				shortTitle: name.substr(0, 2),
+				displayColor: '#ACACAC',
+			};
+		},
+	};
+};
 
 describe('dashboard uc', () => {
 	let service: DashboardUc;
 	let repo: IDashboardRepo;
+	let courseRepo: CourseRepo;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,11 +54,21 @@ describe('dashboard uc', () => {
 						},
 					},
 				},
+				{
+					provide: CourseRepo,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
+							throw new Error('Please write a mock for CourseRepo.findAllByUserId');
+						},
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(DashboardUc);
 		repo = module.get('DASHBOARD_REPO');
+		courseRepo = module.get(CourseRepo);
 	});
 
 	describe('getUsersDashboard', () => {
@@ -42,10 +77,39 @@ describe('dashboard uc', () => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
+			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => {
+				return Promise.resolve([[], 0]);
+			});
 			const dashboard = await service.getUsersDashboard('userId');
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 			expect(spy).toHaveBeenCalledWith('userId');
+		});
+
+		it('should synchronize which courses are on the board', async () => {
+			const userId = 'userId';
+			const dashboard = new DashboardEntity('someid', { grid: [], userId });
+			const dashboardRepoSpy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation(() => {
+				return Promise.resolve(dashboard);
+			});
+			const courses = new Array(5).map(() => ({} as Course));
+			const courseRepoSpy = jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => {
+				return Promise.resolve([courses, 5]);
+			});
+			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
+			const persistSpy = jest.spyOn(repo, 'persistAndFlush');
+
+			const result = await service.getUsersDashboard('userId');
+
+			expect(result instanceof DashboardEntity).toEqual(true);
+			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
+			expect(courseRepoSpy).toHaveBeenCalledWith(
+				userId,
+				{ onlyActiveCourses: true },
+				{ order: { name: SortOrder.asc } }
+			);
+			expect(syncSpy).toHaveBeenCalledWith(courses);
+			expect(persistSpy).toHaveBeenCalledWith(result);
 		});
 	});
 
@@ -56,10 +120,7 @@ describe('dashboard uc', () => {
 					grid: [
 						{
 							pos: { x: 1, y: 2 },
-							gridElement: GridElement.FromPersistedReference(
-								'elementId',
-								new DefaultGridReference('referenceId', 'Mathe')
-							),
+							gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 						},
 					],
 					userId: 'userId',
@@ -79,10 +140,7 @@ describe('dashboard uc', () => {
 							grid: [
 								{
 									pos: { x: 1, y: 2 },
-									gridElement: GridElement.FromPersistedReference(
-										'elementId',
-										new DefaultGridReference('referenceId', 'Mathe')
-									),
+									gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 								},
 							],
 							userId: 'userId',
@@ -102,10 +160,7 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: { x: 1, y: 2 },
-								gridElement: GridElement.FromPersistedReference(
-									'elementId',
-									new DefaultGridReference('referenceId', 'Mathe')
-								),
+								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
 							},
 						],
 						userId: 'differentId',
@@ -114,7 +169,7 @@ describe('dashboard uc', () => {
 			});
 
 			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
-			await expect(callFut).rejects.toThrow(NotFound);
+			await expect(callFut).rejects.toThrow(NotFoundException);
 		});
 	});
 
@@ -126,8 +181,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 3, y: 4 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-								new DefaultGridReference('referenceId1', 'Math'),
-								new DefaultGridReference('referenceId2', 'German'),
+								learnroomMock('referenceId1', 'Math'),
+								learnroomMock('referenceId2', 'German'),
 							]),
 						},
 					],
@@ -150,8 +205,8 @@ describe('dashboard uc', () => {
 								{
 									pos: { x: 3, y: 4 },
 									gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-										new DefaultGridReference('referenceId1', 'Math'),
-										new DefaultGridReference('referenceId2', 'German'),
+										learnroomMock('referenceId1', 'Math'),
+										learnroomMock('referenceId2', 'German'),
 									]),
 								},
 							],
@@ -173,8 +228,8 @@ describe('dashboard uc', () => {
 							{
 								pos: { x: 3, y: 4 },
 								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-									new DefaultGridReference('referenceId1', 'Math'),
-									new DefaultGridReference('referenceId2', 'German'),
+									learnroomMock('referenceId1', 'Math'),
+									learnroomMock('referenceId2', 'German'),
 								]),
 							},
 						],
@@ -184,7 +239,7 @@ describe('dashboard uc', () => {
 			});
 
 			const callFut = () => service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');
-			await expect(callFut).rejects.toThrow(NotFound);
+			await expect(callFut).rejects.toThrow(NotFoundException);
 		});
 	});
 });

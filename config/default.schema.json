@@ -265,24 +265,10 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
-		"FEATURE_ALERTS_STATUS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, user will see messages/incidents from e.g status.hpi-schul-cloud."
-		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"default": "https://status.hpi-schul-cloud.de",
+			"default": null,
 			"description": "The url of status message provider (should end without a slash)."
-		},
-		"ALERT_STATUS_API_URL": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"default": "https://status.hpi-schul-cloud.de/api/v1",
-			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
 			"type": "string",
@@ -359,7 +345,7 @@
 		"DOCUMENT_BASE_DIR": {
 			"type": "string",
 			"format": "uri",
-			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+			"default": "https://s3.hidrive.strato.com/cloud-instances/",
 			"description": "Storage url for global documents."
 		},
 		"SC_THEME": {
@@ -707,6 +693,16 @@
 			"type": "string",
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
+		},
+		"LEGACY_COURSE_OVERVIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for legacy course overview."
+		},
+		"FEATURE_COURSE_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for course sharing feature."
 		}
 	},
 	"required": [
@@ -714,7 +710,8 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
+		"LDAP_PASSWORD_ENCRYPTION_KEY"
 	],
 	"allOf": [
 		{

@@ -6,9 +6,11 @@ export class CourseMapper {
 		const courseMetadata = course.getMetadata();
 		const dto = new CourseMetadataResponse(
 			courseMetadata.id,
-			courseMetadata.name,
-			courseMetadata.shortName,
-			courseMetadata.displayColor
+			courseMetadata.title,
+			courseMetadata.shortTitle,
+			courseMetadata.displayColor,
+			courseMetadata.startDate,
+			courseMetadata.untilDate
 		);
 		return dto;
 	}

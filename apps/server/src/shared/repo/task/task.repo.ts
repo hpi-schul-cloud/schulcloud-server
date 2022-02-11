@@ -10,6 +10,16 @@ import { TaskScope } from './task-scope';
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	async findById(id: EntityId): Promise<Task> {
+		const task = await this.em.findOneOrFail(Task, { id });
+		await this.em.populate(task, ['course', 'lesson', 'submissions']);
+		return task;
+	}
+
+	async save(task: Task): Promise<void> {
+		await this.em.persistAndFlush(task);
+	}
+
 	async findAllFinishedByParentIds(
 		parentIds: {
 			creatorId: EntityId;
@@ -35,30 +45,39 @@ export class TaskRepo {
 		const closedForOpenCoursesAndLessons = new TaskScope();
 		closedForOpenCoursesAndLessons.addQuery(parentsOpen.query);
 		closedForOpenCoursesAndLessons.byDraft(false);
-		closedForOpenCoursesAndLessons.byClosed(parentIds.creatorId, true);
+		closedForOpenCoursesAndLessons.byFinished(parentIds.creatorId, true);
 
 		const allForFinishedCoursesAndLessons = new TaskScope();
 		allForFinishedCoursesAndLessons.addQuery(parentsFinished.query);
 		allForFinishedCoursesAndLessons.byDraft(false);
 
 		// must find also closed without course or lesson as parent
-		const closedForCreator = new TaskScope();
-		closedForCreator.byClosed(parentIds.creatorId, true);
-		closedForCreator.byCreatorId(parentIds.creatorId);
+		const closedWithoutParentForCreator = new TaskScope();
+		closedWithoutParentForCreator.byFinished(parentIds.creatorId, true);
+		closedWithoutParentForCreator.byOnlyCreatorId(parentIds.creatorId);
+
+		const closedDraftsForCreator = new TaskScope();
+		closedDraftsForCreator.addQuery(parentsOpen.query);
+		closedDraftsForCreator.byFinished(parentIds.creatorId, true);
+		closedDraftsForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForFinishedCoursesAndLessonsForCreator = new TaskScope();
 		allForFinishedCoursesAndLessonsForCreator.addQuery(parentsFinished.query);
 		allForFinishedCoursesAndLessonsForCreator.byCreatorId(parentIds.creatorId);
 
 		const allForCreator = new TaskScope('$or');
-		allForCreator.addQuery(closedForCreator.query);
+		allForCreator.addQuery(closedWithoutParentForCreator.query);
+		allForCreator.addQuery(closedDraftsForCreator.query);
 		allForCreator.addQuery(allForFinishedCoursesAndLessonsForCreator.query);
 
 		scope.addQuery(closedForOpenCoursesAndLessons.query);
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		const order = { dueDate: SortOrder.desc };
+		// The dueDate can be similar to solve pagination request missmatches we must sort it over id too.
+		// Because after executing limit() in mongoDB it is resort by similar dueDates.
+		// It exist indexes for dueDate and for _id but no combined index, because it is to expensive for only small performance boost.
+		const order = { dueDate: SortOrder.desc, id: SortOrder.asc };
 
 		const [tasks, count] = await this.em.findAndCount(Task, scope.query, {
 			offset: pagination?.skip,
@@ -88,7 +107,11 @@ export class TaskRepo {
 			courseIds?: EntityId[];
 			lessonIds?: EntityId[];
 		},
-		filters?: { draft?: boolean; afterDueDateOrNone?: Date; closed?: { userId: EntityId; value: boolean } },
+		filters?: {
+			afterDueDateOrNone?: Date;
+			finished?: { userId: EntityId; value: boolean };
+			availableOn?: Date;
+		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope();
@@ -109,16 +132,52 @@ export class TaskRepo {
 
 		scope.addQuery(parentIdScope.query);
 
-		if (filters?.closed) {
-			scope.byClosed(filters.closed.userId, filters.closed.value);
+		if (filters?.finished) {
+			scope.byFinished(filters.finished.userId, filters.finished.value);
 		}
 
-		if (filters?.draft !== undefined) {
-			scope.byDraft(filters.draft);
+		if (parentIds.creatorId) {
+			scope.excludeDraftsOfOthers(parentIds.creatorId);
+		} else {
+			scope.byDraft(false);
 		}
 
 		if (filters?.afterDueDateOrNone !== undefined) {
 			scope.afterDueDateOrNone(filters.afterDueDateOrNone);
+		}
+
+		if (filters?.availableOn !== undefined) {
+			if (parentIds.creatorId) {
+				scope.excludeUnavailableOfOthers(parentIds.creatorId, filters.availableOn);
+			} else {
+				scope.byAvailable(filters?.availableOn);
+			}
+		}
+
+		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+
+		return countedTaskList;
+	}
+
+	async findBySingleParent(
+		creatorId: EntityId,
+		courseId: EntityId,
+		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
+		options?: IFindOptions<Task>
+	): Promise<Counted<Task[]>> {
+		const scope = new TaskScope();
+		scope.byCourseIds([courseId]);
+
+		if (filters?.draft !== undefined) {
+			if (filters?.draft === true) {
+				scope.excludeDraftsOfOthers(creatorId);
+			} else {
+				scope.byDraft(false);
+			}
+		}
+
+		if (filters?.noFutureAvailableDate !== undefined) {
+			scope.noFutureAvailableDate();
 		}
 
 		const countedTaskList = await this.findTasksAndCount(scope.query, options);

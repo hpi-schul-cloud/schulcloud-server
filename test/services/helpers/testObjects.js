@@ -44,6 +44,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		teams,
 		testSystem,
 		users,
+		importUsers,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () =>
@@ -73,6 +74,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 				homeworks,
 				storageProviders,
 				files,
+				importUsers,
 			]
 				.reverse()
 				.map((factory) => factory.cleanup())
@@ -109,6 +111,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		testSystem: testSystem.info,
 		users: users.info,
 		years: years.info,
+		importUsers: importUsers.info,
 	});
 
 	const createTestTeamWithOwner = async (userData) => {
@@ -184,5 +187,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		generateObjectId,
 		TestEventEmitter,
 		performanceMessurceLimits,
+		createTestImportUser: importUsers.create,
 	};
 };

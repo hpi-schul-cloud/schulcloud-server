@@ -1,14 +1,24 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { DashboardEntity, EntityId, GridPositionWithGroupIndex, GridPosition } from '@shared/domain';
-import { IDashboardRepo } from '@shared/repo';
-import { NotFound } from '@feathersjs/errors';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { DashboardEntity, EntityId, GridPositionWithGroupIndex, GridPosition, SortOrder } from '@shared/domain';
+import { IDashboardRepo, CourseRepo } from '@shared/repo';
+// import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
 
 @Injectable()
 export class DashboardUc {
-	constructor(@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo) {}
+	constructor(
+		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
+		private readonly courseRepo: CourseRepo
+	) {}
 
 	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
+		const [courses] = await this.courseRepo.findAllByUserId(
+			userId,
+			{ onlyActiveCourses: true },
+			{ order: { name: SortOrder.asc } }
+		);
+		dashboard.setLearnRooms(courses);
+		await this.dashboardRepo.persistAndFlush(dashboard);
 		return dashboard;
 	}
 
@@ -45,7 +55,7 @@ export class DashboardUc {
 
 	private validateUsersMatch(dashboard: DashboardEntity, userId: EntityId) {
 		if (dashboard.getUserId() !== userId) {
-			throw new NotFound('no such dashboard found');
+			throw new NotFoundException('no such dashboard found');
 		}
 	}
 }
