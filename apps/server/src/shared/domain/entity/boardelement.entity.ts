@@ -27,7 +27,7 @@ export abstract class BoardElement extends BaseEntityWithTimestamps {
 	@Enum()
 	boardElementType!: BoardElementType;
 
-	protected constructor(props: BoardElementProps) {
+	constructor(props: BoardElementProps) {
 		super();
 		Object.assign(this, { target: props.target });
 	}
@@ -47,12 +47,22 @@ export abstract class BoardElement extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: BoardElementType.Task })
 export class TaskBoardElement extends BoardElement {
+	constructor(props: { target: Task }) {
+		super(props);
+		this.boardElementType = BoardElementType.Task;
+	}
+
 	@ManyToOne('Task')
 	target!: Task;
 }
 
 @Entity({ discriminatorValue: BoardElementType.Task })
 export class LessonBoardElement extends BoardElement {
+	constructor(props: { target: Lesson }) {
+		super(props);
+		this.boardElementType = BoardElementType.Lesson;
+	}
+
 	@ManyToOne('Lesson')
 	target!: Lesson;
 }
