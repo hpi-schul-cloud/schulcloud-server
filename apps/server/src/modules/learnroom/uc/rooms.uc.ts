@@ -3,14 +3,14 @@ import { EntityId, Course, Task, TaskWithStatusVo, User, Lesson } from '@shared/
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 
 // TODO: move this somewhere else
-export interface Board {
+export interface IBoard {
 	roomId: string;
 	displayColor: string;
 	title: string;
-	elements: BoardElement[];
+	elements: BoardElementType[];
 }
 
-export type BoardElement = {
+export type BoardElementType = {
 	// TODO: should become fullblown class
 	type: string;
 	content: TaskWithStatusVo | Lesson;
@@ -25,7 +25,7 @@ export class RoomsUc {
 		private readonly userRepo: UserRepo
 	) {}
 
-	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
+	async getBoard(roomId: EntityId, userId: EntityId): Promise<IBoard> {
 		const user = await this.userRepo.findById(userId, true);
 
 		const course = await this.courseRepo.findOne(roomId, userId);
@@ -53,7 +53,7 @@ export class RoomsUc {
 	}
 
 	// TODO: move somewhere else
-	private buildBoard(room: Course, boardElements: BoardElement[]): Board {
+	private buildBoard(room: Course, boardElements: BoardElementType[]): IBoard {
 		const roomMetadata = room.getMetadata();
 		const board = {
 			roomId: roomMetadata.id,
@@ -95,7 +95,7 @@ export class RoomsUc {
 		return filters;
 	}
 
-	private buildBoardElements(tasks: TaskWithStatusVo[], lessons: Lesson[]): BoardElement[] {
+	private buildBoardElements(tasks: TaskWithStatusVo[], lessons: Lesson[]): BoardElementType[] {
 		const boardTasks = tasks.map((task) => ({ type: 'task', content: task }));
 		const boardLessons = lessons.map((lesson) => ({ type: 'lesson', content: lesson }));
 		const result = [...boardTasks, ...boardLessons];

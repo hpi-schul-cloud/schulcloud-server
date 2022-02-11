@@ -6,12 +6,12 @@ import {
 	BoardTaskResponse,
 	BoardLessonResponse,
 } from '../controller/dto/roomBoardResponse';
-import { Board } from '../uc/rooms.uc';
+import { IBoard } from '../uc/rooms.uc';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
 export class BoardMapper {
-	mapToResponse(board: Board): BoardResponse {
+	mapToResponse(board: IBoard): BoardResponse {
 		const elements: BoardElementResponse[] = [];
 		board.elements.forEach((element) => {
 			if (element.type === 'task') {
