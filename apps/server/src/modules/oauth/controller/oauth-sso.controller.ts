@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
 import { OAuthResponse } from './dto/oauth-response';
@@ -32,9 +33,10 @@ export class OauthSSOController {
 				return res.redirect(`${HOST}/dashboard`);
 			}
 		} catch (error) {
-			this.logger.log(error);
+			this.logger.error(error);
 			oauthResponse = new OAuthResponse();
-			oauthResponse.errorcode = 'OauthLoginFailed';
+			if (error instanceof OAuthSSOError) oauthResponse.errorcode = error.errorcode;
+			else oauthResponse.errorcode = 'OauthLoginFailed';
 		}
 		return res.redirect(`${HOST}/login?error=${oauthResponse.errorcode as string}`);
 	}
