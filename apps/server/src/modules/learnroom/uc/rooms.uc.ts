@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Task, TaskWithStatusVo, User, Lesson } from '@shared/domain';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId, Course, Task, TaskWithStatusVo, User, Lesson, BoardElement, BoardElementType } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
-// TODO: move this somewhere else
-export interface IBoard {
+export interface RoomBoardDTO {
 	roomId: string;
 	displayColor: string;
 	title: string;
-	elements: BoardElementType[];
+	elements: RoomBoardElementDTO[];
 }
 
-export type BoardElementType = {
-	// TODO: should become fullblown class
+export type RoomBoardElementDTO = {
 	type: string;
 	content: TaskWithStatusVo | Lesson;
 };
@@ -22,10 +21,11 @@ export class RoomsUc {
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly taskRepo: TaskRepo,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly authorisationService: RoomsAuthorisationService
 	) {}
 
-	async getBoard(roomId: EntityId, userId: EntityId): Promise<IBoard> {
+	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userRepo.findById(userId, true);
 
 		const course = await this.courseRepo.findOne(roomId, userId);
@@ -53,7 +53,7 @@ export class RoomsUc {
 	}
 
 	// TODO: move somewhere else
-	private buildBoard(room: Course, boardElements: BoardElementType[]): IBoard {
+	private buildBoard(room: Course, boardElements: RoomBoardElementDTO[]): RoomBoardDTO {
 		const roomMetadata = room.getMetadata();
 		const board = {
 			roomId: roomMetadata.id,
@@ -95,7 +95,7 @@ export class RoomsUc {
 		return filters;
 	}
 
-	private buildBoardElements(tasks: TaskWithStatusVo[], lessons: Lesson[]): BoardElementType[] {
+	private buildBoardElements(tasks: TaskWithStatusVo[], lessons: Lesson[]): RoomBoardElementDTO[] {
 		const boardTasks = tasks.map((task) => ({ type: 'task', content: task }));
 		const boardLessons = lessons.map((lesson) => ({ type: 'lesson', content: lesson }));
 		const result = [...boardTasks, ...boardLessons];

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, ICurrentUser } from '@shared/domain';
-import { BoardMapper } from '../mapper/board.mapper';
-import { RoomsUc, IBoard } from '../uc/rooms.uc';
+import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
+import { RoomsUc, RoomBoardDTO } from '../uc/rooms.uc';
 import { BoardResponse } from './dto/roomBoardResponse';
 import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {
 	let controller: RoomsController;
-	let mapper: BoardMapper;
+	let mapper: RoomBoardResponseMapper;
 	let uc: RoomsUc;
 
 	beforeEach(async () => {
@@ -19,16 +19,16 @@ describe('rooms controller', () => {
 					provide: RoomsUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						getBoard(roomId: EntityId, userId: EntityId): Promise<IBoard> {
+						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 							throw new Error('please write mock for RoomsUc.getBoard');
 						},
 					},
 				},
 				{
-					provide: BoardMapper,
+					provide: RoomBoardResponseMapper,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						mapToResponse(board: IBoard): BoardResponse {
+						mapToResponse(board: RoomBoardDTO): BoardResponse {
 							throw new Error('please write mock for Boardmapper.mapToResponse');
 						},
 					},
@@ -36,7 +36,7 @@ describe('rooms controller', () => {
 			],
 		}).compile();
 		controller = module.get(RoomsController);
-		mapper = module.get(BoardMapper);
+		mapper = module.get(RoomBoardResponseMapper);
 		uc = module.get(RoomsUc);
 	});
 
@@ -45,7 +45,7 @@ describe('rooms controller', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 
-				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as IBoard;
+				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as RoomBoardDTO;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => {
 					return Promise.resolve(ucResult);
 				});

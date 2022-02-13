@@ -8,7 +8,8 @@ import { DashboardUc } from './uc/dashboard.uc';
 import { CourseUc } from './uc/course.uc';
 import { RoomsController } from './controller/rooms.controller';
 import { RoomsUc } from './uc/rooms.uc';
-import { BoardMapper } from './mapper/board.mapper';
+import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
+import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 
 @Module({
 	imports: [],
@@ -26,7 +27,8 @@ import { BoardMapper } from './mapper/board.mapper';
 		RoomsUc,
 		TaskRepo,
 		UserRepo,
-		BoardMapper,
+		RoomBoardResponseMapper,
+		RoomsAuthorisationService,
 	],
 })
 export class LearnroomModule {}

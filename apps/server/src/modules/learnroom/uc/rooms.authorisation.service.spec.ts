@@ -2,7 +2,6 @@ import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { taskFactory, courseFactory, lessonFactory, userFactory, setupEntities } from '@shared/testing';
-import exp from 'constants';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('rooms authorisation service', () => {

@@ -4,6 +4,7 @@ import { Course, EntityId, Lesson, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { MikroORM } from '@mikro-orm/core';
 import { RoomsUc } from './rooms.uc';
+import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
@@ -58,6 +59,19 @@ describe('rooms usecase', () => {
 					useValue: {
 						findById() {
 							throw new Error('Please write a mock for UserRepo.findById');
+						},
+					},
+				},
+				{
+					provide: RoomsAuthorisationService,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						hasTaskReadPermission(user: User, task: Task): boolean {
+							throw new Error('Please write a mock for RoomsAuthorisationService.hasTaskReadPermission');
+						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						hasLessonReadPermission(user: User, lesson: Lesson): boolean {
+							throw new Error('Please write a mock for RoomsAuthorisationService.hasLessonReadPermission');
 						},
 					},
 				},

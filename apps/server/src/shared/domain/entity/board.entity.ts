@@ -18,6 +18,10 @@ export class Board extends BaseEntityWithTimestamps {
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<BoardElement>(this);
 
+	getElements() {
+		return this.references.getItems();
+	}
+
 	syncTasksFromList(taskList: Task[]) {
 		// should this be in an external domain service, to not having to know about tasks?
 		this.removeTasksNotInList(taskList);
