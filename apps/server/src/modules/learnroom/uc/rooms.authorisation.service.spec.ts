@@ -232,7 +232,7 @@ describe('rooms authorisation service', () => {
 			it('should be true for teacher of course', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ teachers: [user] });
-				const lesson = lessonFactory.buildWithId({ course });
+				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
 				const result = service.hasLessonReadPermission(user, lesson);
 				expect(result).toEqual(true);
@@ -241,7 +241,7 @@ describe('rooms authorisation service', () => {
 			it('should be true for substitutionTeacher of course', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
-				const lesson = lessonFactory.buildWithId({ course });
+				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
 				const result = service.hasLessonReadPermission(user, lesson);
 				expect(result).toEqual(true);
@@ -250,7 +250,7 @@ describe('rooms authorisation service', () => {
 			it('should be false for student of course', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ students: [user] });
-				const lesson = lessonFactory.buildWithId({ course });
+				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
 				const result = service.hasLessonReadPermission(user, lesson);
 				expect(result).toEqual(false);
@@ -259,7 +259,7 @@ describe('rooms authorisation service', () => {
 			it('should be false for user outside course', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
-				const lesson = lessonFactory.buildWithId({ course });
+				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
 				const result = service.hasLessonReadPermission(user, lesson);
 				expect(result).toEqual(false);
