@@ -16,7 +16,7 @@ export type BoardElementProps = {
 };
 
 @Entity({
-	discriminatorColumn: 'targetModel',
+	discriminatorColumn: 'boardElementType',
 	abstract: true,
 })
 export abstract class BoardElement extends BaseEntityWithTimestamps {
