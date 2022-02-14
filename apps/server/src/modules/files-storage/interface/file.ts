@@ -1,6 +1,6 @@
 export interface IFile {
-	fileName: string;
-	buffer: Buffer | Blob;
+	name: string;
+	buffer: Buffer | Blob | ReadableStream;
 	size: number;
-	contentType: string;
+	type: string;
 }

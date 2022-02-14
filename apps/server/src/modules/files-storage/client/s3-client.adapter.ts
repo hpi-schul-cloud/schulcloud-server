@@ -6,7 +6,9 @@ import {
 	PutObjectCommand,
 	PutObjectCommandOutput,
 	S3Client,
+	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { join } from 'path';
@@ -44,8 +46,12 @@ export class S3ClientAdapter implements IStorageClient {
 				Key: path,
 			});
 			const data = await this.client.send(req);
-
-			return { data: data.Body as Readable, contentType: data.ContentType };
+			return {
+				data: data.Body as Readable,
+				contentType: data.ContentType,
+				contentLength: data.ContentLength,
+				etag: data.ETag,
+			};
 		} catch (error) {
 			throw new NotFoundException('ENTITY_NOT_FOUND');
 		}
@@ -73,8 +79,8 @@ export class S3ClientAdapter implements IStorageClient {
 			const req = new PutObjectCommand({
 				Body: file.buffer,
 				Bucket: this.config.bucket,
-				Key: join(folder, file.fileName),
-				ContentType: file.contentType,
+				Key: join(folder, file.name),
+				ContentType: file.type,
 			});
 			const res = await this.client.send(req);
 
@@ -84,6 +90,36 @@ export class S3ClientAdapter implements IStorageClient {
 			if (error.Code && error.Code === 'NoSuchBucket') {
 				await this.createBucket();
 				return this.uploadFile(folder, file);
+			}
+			throw new InternalServerErrorException(error);
+		}
+	}
+
+	public async uploadFileAsStream(folder: string, file: IFile): Promise<ServiceOutputTypes> {
+		try {
+			const req = {
+				Body: file.buffer,
+				Bucket: this.config.bucket,
+				Key: join(folder, file.name),
+				ContentType: file.type,
+			};
+			const res = new Upload({
+				client: this.client,
+				params: req,
+			});
+
+			/* 		res.on('httpUploadProgress', (progress) => {
+				console.log('httpUploadProgress', progress);
+			}); */
+
+			const a = await res.done();
+
+			return a;
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (error.Code && error.Code === 'NoSuchBucket') {
+				await this.createBucket();
+				return this.uploadFileAsStream(folder, file);
 			}
 			throw new InternalServerErrorException(error);
 		}

@@ -4,6 +4,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { ALL_ENTITIES } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { LoggerModule } from '@src/core/logger';
+import { FileRecordRepo } from '@shared/repo';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
@@ -54,6 +55,7 @@ const config: S3Config = {
 			}),
 		},
 		S3ClientAdapter,
+		FileRecordRepo,
 	],
 })
 export class FilesStorageModule {}
