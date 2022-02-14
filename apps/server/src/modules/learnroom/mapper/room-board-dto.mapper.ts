@@ -1,18 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Course, Board, User, TaskWithStatusVo, Lesson, BoardElementType, BoardElement, Task } from '@shared/domain';
 import { RoomsAuthorisationService } from '../uc/rooms.authorisation.service';
-
-export type RoomBoardDTO = {
-	roomId: string;
-	displayColor: string;
-	title: string;
-	elements: RoomBoardElementDTO[];
-};
-
-export type RoomBoardElementDTO = {
-	type: string;
-	content: TaskWithStatusVo | Lesson;
-};
+import { RoomBoardDTO, RoomBoardElementDTO } from '../types/room-board.types';
 
 @Injectable()
 export class RoomBoardDTOMapper {

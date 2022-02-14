@@ -10,6 +10,7 @@ import { RoomsController } from './controller/rooms.controller';
 import { RoomsUc } from './uc/rooms.uc';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
+import { RoomBoardDTOMapper } from './mapper/room-board-dto.mapper';
 
 @Module({
 	imports: [],
@@ -29,6 +30,7 @@ import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 		UserRepo,
 		RoomBoardResponseMapper,
 		RoomsAuthorisationService,
+		RoomBoardDTOMapper,
 	],
 })
 export class LearnroomModule {}
