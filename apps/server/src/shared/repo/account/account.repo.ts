@@ -1,5 +1,7 @@
+import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 
@@ -7,29 +9,40 @@ import { Account } from '@shared/domain/entity/account.entity';
 export class AccountRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findOne(accountId: EntityId): Promise<Account> {
-		const account = await this.em.findOneOrFail(Account, { id: accountId });
+	private get repo(): EntityRepository<Account> {
+		return this.em.getRepository(Account);
+	}
 
+	async create(account: Account): Promise<Account> {
+		await this.repo.persistAndFlush(account);
 		return account;
 	}
 
-	create() {
-		// TODO
-		throw new Error('Not implemented');
+	async read(accountId: EntityId): Promise<Account> {
+		const account = await this.findOne(accountId);
+		return account;
 	}
 
-	update() {
-		// TODO
-		throw new Error('Not implemented');
+	async update(account: Account): Promise<Account> {
+		await this.repo.persistAndFlush(account);
+		return account;
 	}
 
-	patch() {
-		// TODO
-		throw new Error('Not implemented');
+	async remove(accountId: EntityId): Promise<Account> {
+		const account = await this.findOne(accountId);
+		await this.em.removeAndFlush(account);
+		return account;
 	}
 
-	remove() {
-		// TODO
-		throw new Error('Not implemented');
+	private async findOne(accountId: EntityId): Promise<Account> {
+		const account = await this.repo.findOneOrFail(
+			{ id: accountId },
+			{
+				failHandler: (entityName: string, where: Record<string, unknown>) => {
+					return new EntityNotFoundError(entityName, where);
+				},
+			}
+		);
+		return account;
 	}
 }
