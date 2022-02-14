@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, taskFactory, userFactory, boardFactory, setupEntities } from '@shared/testing';
 import { Course, EntityId, User, Board } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/repo';
 import { MikroORM } from '@mikro-orm/core';
 import { RoomBoardDTO } from '../types';
 import { RoomsUc } from './rooms.uc';
@@ -13,6 +13,7 @@ describe('rooms usecase', () => {
 	let lessonRepo: LessonRepo;
 	let taskRepo: TaskRepo;
 	let userRepo: UserRepo;
+	let boardRepo: BoardRepo;
 	let orm: MikroORM;
 	let mapper: RoomBoardDTOMapper;
 
@@ -66,6 +67,15 @@ describe('rooms usecase', () => {
 					},
 				},
 				{
+					provide: BoardRepo,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						save(board: Board): Promise<void> {
+							throw new Error('Please write a mock for BoardRepo.save');
+						},
+					},
+				},
+				{
 					provide: RoomBoardDTOMapper,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -82,6 +92,7 @@ describe('rooms usecase', () => {
 		lessonRepo = module.get(LessonRepo);
 		taskRepo = module.get(TaskRepo);
 		userRepo = module.get(UserRepo);
+		boardRepo = module.get(BoardRepo);
 		mapper = module.get(RoomBoardDTOMapper);
 	});
 
@@ -110,6 +121,7 @@ describe('rooms usecase', () => {
 			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
 			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
 			const mapperSpy = jest.spyOn(mapper, 'mapDTO').mockImplementation(() => dto);
+			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
 
 			return {
 				user,
@@ -126,6 +138,7 @@ describe('rooms usecase', () => {
 				syncLessonsSpy,
 				syncTasksSpy,
 				mapperSpy,
+				persistSpy,
 			};
 		};
 
@@ -171,13 +184,11 @@ describe('rooms usecase', () => {
 			expect(syncTasksSpy).toHaveBeenCalledWith(tasks);
 		});
 
-		it.todo(
-			'should persist board' /* , async () => {
-			const { room, user } = setup();
+		it('should persist board', async () => {
+			const { room, user, persistSpy, board } = setup();
 			await uc.getBoard(room.id, user.id);
-			throw new Error('not yet implemented');
-		} */
-		);
+			expect(persistSpy).toHaveBeenCalledWith(board);
+		});
 
 		it('should call to construct result dto from room, board, and user', async () => {
 			const { room, user, board, mapperSpy } = setup();

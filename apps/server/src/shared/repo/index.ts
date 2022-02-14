@@ -12,6 +12,7 @@ export * from './mongo.patterns';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
+export * from './board';
 export * from './files';
 export * from './lesson';
 export * from './news';

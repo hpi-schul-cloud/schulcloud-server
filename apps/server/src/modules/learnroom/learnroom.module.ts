@@ -1,6 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { DashboardRepo, DashboardModelMapper, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import {
+	DashboardRepo,
+	DashboardModelMapper,
+	CourseRepo,
+	LessonRepo,
+	TaskRepo,
+	UserRepo,
+	BoardRepo,
+} from '@shared/repo';
 
 import { DashboardController } from './controller/dashboard.controller';
 import { CourseController } from './controller/course.controller';
@@ -28,6 +36,7 @@ import { RoomBoardDTOMapper } from './mapper/room-board-dto.mapper';
 		RoomsUc,
 		TaskRepo,
 		UserRepo,
+		BoardRepo,
 		RoomBoardResponseMapper,
 		RoomsAuthorisationService,
 		RoomBoardDTOMapper,
