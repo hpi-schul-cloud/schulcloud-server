@@ -9,6 +9,7 @@ export * from './scope';
 
 export * from './mongo.patterns';
 
+export * from './account';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';

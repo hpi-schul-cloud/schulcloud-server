@@ -19,7 +19,7 @@ export class AccountRepo {
 	}
 
 	async read(accountId: EntityId): Promise<Account> {
-		const account = await this.findOne(accountId);
+		const account = await this.findOneById(accountId);
 		return account;
 	}
 
@@ -28,13 +28,13 @@ export class AccountRepo {
 		return account;
 	}
 
-	async remove(accountId: EntityId): Promise<Account> {
-		const account = await this.findOne(accountId);
+	async delete(accountId: EntityId): Promise<Account> {
+		const account = await this.findOneById(accountId);
 		await this.em.removeAndFlush(account);
 		return account;
 	}
 
-	private async findOne(accountId: EntityId): Promise<Account> {
+	private async findOneById(accountId: EntityId): Promise<Account> {
 		const account = await this.repo.findOneOrFail(
 			{ id: accountId },
 			{

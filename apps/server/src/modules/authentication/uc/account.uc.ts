@@ -1,37 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { Account, EntityId } from '@shared/domain';
 import { AccountRepo } from '@shared/repo/account';
 
 @Injectable()
 export class AccountUc {
-	constructor(private accountRepo: AccountRepo) {}
+	constructor(private readonly accountRepo: AccountRepo) {}
 
-	find() {
-		// TODO
-		throw new Error('Not implemented');
+	findOneById(accountId: EntityId): Promise<Account> {
+		return this.accountRepo.read(accountId);
 	}
 
-	get() {
-		// TODO
-		throw new Error('Not implemented');
+	create(account: Account): Promise<Account> {
+		return this.accountRepo.create(account);
 	}
 
-	create() {
-		// TODO
-		throw new Error('Not implemented');
+	update(account: Account): Promise<Account> {
+		return this.accountRepo.update(account);
 	}
 
-	update() {
-		// TODO
-		throw new Error('Not implemented');
-	}
-
-	patch() {
-		// TODO
-		throw new Error('Not implemented');
-	}
-
-	remove() {
-		// TODO
-		throw new Error('Not implemented');
+	remove(accountId: EntityId): Promise<Account> {
+		return this.accountRepo.delete(accountId);
 	}
 }
