@@ -20,7 +20,8 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	credentialHash?: string;
 
-	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true, mapToPk: true, index: true })
+	// TODO set index to true after we removed the account model from feathers
+	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true, mapToPk: true })
 	userId!: ObjectId;
 
 	@OneToOne({ entity: () => System, owner: true, orphanRemoval: true, mapToPk: true, nullable: true })
