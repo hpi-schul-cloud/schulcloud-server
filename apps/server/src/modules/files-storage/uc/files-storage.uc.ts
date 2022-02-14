@@ -11,7 +11,7 @@ import { IFile } from '../interface/file';
 export class FilesStorageUC {
 	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async upload(userId: string, metadata: FileMetaDto, file: Express.Multer.File) {
+	async upload(userId: string, params: FileMetaDto, file: Express.Multer.File) {
 		// @TODO check permissions of schoolId by user
 		// @TODO scan virus on demand?
 		// @TODO add thumbnail on demand
@@ -23,11 +23,12 @@ export class FilesStorageUC {
 				type: file.mimetype,
 			};
 
-			const folder = path.join(metadata.schoolId, metadata.targetId);
-			const result = await this.storageClient.uploadFile(folder, reqFile);
-			// @TODO add metadata to mongodb
+			const record = this.getFileRecord(userId, params, reqFile);
+			await this.fileRecordRepo.save(record);
 
-			return result;
+			const folder = path.join(params.schoolId, record.id);
+			const result = await this.storageClient.uploadFile(folder, reqFile);
+			return { result, record };
 		} catch (error) {
 			throw new BadRequestException(error);
 		}
