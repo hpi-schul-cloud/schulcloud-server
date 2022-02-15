@@ -14,7 +14,6 @@ import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { AccountUc } from './modules/authentication/uc/account.uc';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -50,8 +49,6 @@ async function bootstrap() {
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-	feathersExpress.services['nest-account-service'] = nestApp.get(AccountUc);
 
 	// mount instances
 	const rootExpress = express();
