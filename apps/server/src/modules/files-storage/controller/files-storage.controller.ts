@@ -1,15 +1,4 @@
-import {
-	Body,
-	Controller,
-	Get,
-	Headers,
-	Param,
-	Post,
-	Req,
-	StreamableFile,
-	UploadedFile,
-	UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
@@ -37,13 +26,12 @@ export class FilesStorageController {
 		return res;
 	}
 
-	@ApiConsumes('application/octet-stream', 'multipart/form-data')
+	@ApiConsumes('multipart/form-data')
 	@Post('upload-stream/:schoolId/:targetType/:targetId')
 	async uploadAsStream(
 		@Body() _: FileDto,
 		@Param() params: FileMetaDto,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Headers('x-file-name') _fileName: string,
 		@Req() req: Request
 	) {
 		const res = this.filesStorageUC.uploadAsStream(currentUser.userId, params, req);

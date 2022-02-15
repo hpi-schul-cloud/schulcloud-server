@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Request } from 'express';
 import { FileRecordRepo } from '@shared/repo';
 import { FileRecord } from '@shared/domain';
+import busboy from 'busboy';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
 import { IFile } from '../interface/file';
@@ -36,21 +37,45 @@ export class FilesStorageUC {
 
 	async uploadAsStream(userId: string, params: FileMetaDto, req: Request) {
 		try {
-			const size = Number(req.get('content-length'));
-			const contentType = req.get('content-type') || 'application/octet-stream';
-			const fileName = req.get('x-file-name') || 'unnamed';
-			const file: IFile = {
-				name: fileName,
-				buffer: req as unknown as ReadableStream,
-				size,
-				type: contentType,
-			};
-			const record = this.getFileRecord(userId, params, file);
-			await this.fileRecordRepo.save(record);
+			let record!: FileRecord;
 
-			const folder = path.join(params.schoolId, record.id);
-			const res = await this.storageClient.uploadFileAsStream(folder, file);
-			return { res, record };
+			const result = await new Promise((resolve, reject) => {
+				const bb = busboy({ headers: req.headers });
+				bb.on('file', (name, file, info) => {
+					const { filename, mimeType } = info;
+
+					const size = Number(req.get('content-length'));
+					const contentType = mimeType;
+					const fileName = filename;
+					const fileR: IFile = {
+						name: fileName,
+						buffer: file,
+						size,
+						type: contentType,
+					};
+					record = this.getFileRecord(userId, params, fileR);
+					this.fileRecordRepo
+						.save(record)
+						.then(async () => {
+							const folder = path.join(params.schoolId, record.id);
+							return this.storageClient.uploadFileAsStream(folder, fileR);
+						})
+						.catch((e) => {
+							reject(e);
+						});
+				});
+
+				bb.on('close', () => {
+					resolve(record);
+				});
+				bb.on('error', (e) => {
+					reject(e);
+				});
+
+				req.pipe(bb);
+			});
+
+			return result;
 		} catch (error) {
 			throw new BadRequestException(error);
 		}
