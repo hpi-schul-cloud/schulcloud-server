@@ -2,12 +2,12 @@ import { userFactory, courseFactory, boardFactory, taskFactory, lessonFactory, s
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { User, Task, Lesson, TaskWithStatusVo, Board, Course } from '@shared/domain';
-import { RoomBoardDTOMapper } from './room-board-dto.mapper';
-import { RoomsAuthorisationService } from '../uc/rooms.authorisation.service';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('RoomBoardDTOMapper', () => {
 	let orm: MikroORM;
-	let mapper: RoomBoardDTOMapper;
+	let mapper: RoomBoardDTOFactory;
 	let authorisationService: RoomsAuthorisationService;
 
 	beforeAll(async () => {
@@ -22,7 +22,7 @@ describe('RoomBoardDTOMapper', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [],
 			providers: [
-				RoomBoardDTOMapper,
+				RoomBoardDTOFactory,
 				{
 					provide: RoomsAuthorisationService,
 					useValue: {
@@ -40,7 +40,7 @@ describe('RoomBoardDTOMapper', () => {
 		}).compile();
 
 		authorisationService = module.get(RoomsAuthorisationService);
-		mapper = module.get(RoomBoardDTOMapper);
+		mapper = module.get(RoomBoardDTOFactory);
 	});
 
 	describe('mapDTO', () => {
@@ -49,7 +49,7 @@ describe('RoomBoardDTOMapper', () => {
 			const room = courseFactory.buildWithId({ teachers: [user] });
 			const board = boardFactory.buildWithId({ course: room });
 
-			const result = mapper.mapDTO({ room, board, user });
+			const result = mapper.createDTO({ room, board, user });
 			expect(result.roomId).toEqual(room.id);
 		});
 
@@ -58,7 +58,7 @@ describe('RoomBoardDTOMapper', () => {
 			const room = courseFactory.buildWithId({ teachers: [user] });
 			const board = boardFactory.buildWithId({ course: room });
 
-			const result = mapper.mapDTO({ room, board, user });
+			const result = mapper.createDTO({ room, board, user });
 			expect(result.displayColor).toEqual(room.color);
 		});
 
@@ -67,7 +67,7 @@ describe('RoomBoardDTOMapper', () => {
 			const room = courseFactory.buildWithId({ teachers: [user] });
 			const board = boardFactory.buildWithId({ course: room });
 
-			const result = mapper.mapDTO({ room, board, user });
+			const result = mapper.createDTO({ room, board, user });
 			expect(result.title).toEqual(room.name);
 		});
 
@@ -95,7 +95,7 @@ describe('RoomBoardDTOMapper', () => {
 			});
 
 			it('should set each allowed task for teacher', () => {
-				const result = mapper.mapDTO({ room, board, user: teacher });
+				const result = mapper.createDTO({ room, board, user: teacher });
 				const resultTasks = result.elements.map((el) => {
 					const content = el.content as TaskWithStatusVo;
 					return content.task;
@@ -104,7 +104,7 @@ describe('RoomBoardDTOMapper', () => {
 			});
 
 			it('should set each allowed task for substitution teacher', () => {
-				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				const resultTasks = result.elements.map((el) => {
 					const content = el.content as TaskWithStatusVo;
 					return content.task;
@@ -113,7 +113,7 @@ describe('RoomBoardDTOMapper', () => {
 			});
 
 			it('should set each allowed task for student', () => {
-				const result = mapper.mapDTO({ room, board, user: student });
+				const result = mapper.createDTO({ room, board, user: student });
 				const resultTasks = result.elements.map((el) => {
 					const content = el.content as TaskWithStatusVo;
 					return content.task;
@@ -124,21 +124,21 @@ describe('RoomBoardDTOMapper', () => {
 			it('should add status for teacher to task', () => {
 				const teacherStatusSpy = jest.spyOn(tasks[0], 'createTeacherStatusForUser');
 
-				mapper.mapDTO({ room, board, user: teacher });
+				mapper.createDTO({ room, board, user: teacher });
 				expect(teacherStatusSpy).toBeCalled();
 			});
 
 			it('should add status for substitutionTeacher to task', () => {
 				const teacherStatusSpy = jest.spyOn(tasks[0], 'createTeacherStatusForUser');
 
-				mapper.mapDTO({ room, board, user: substitutionTeacher });
+				mapper.createDTO({ room, board, user: substitutionTeacher });
 				expect(teacherStatusSpy).toBeCalled();
 			});
 
 			it('should add status for student to task', () => {
 				const studentStatusSpy = jest.spyOn(tasks[0], 'createStudentStatusForUser');
 
-				mapper.mapDTO({ room, board, user: student });
+				mapper.createDTO({ room, board, user: student });
 				expect(studentStatusSpy).toBeCalled();
 			});
 		});
@@ -167,17 +167,17 @@ describe('RoomBoardDTOMapper', () => {
 			});
 
 			it('should not set forbidden tasks for student', () => {
-				const result = mapper.mapDTO({ room, board, user: teacher });
+				const result = mapper.createDTO({ room, board, user: teacher });
 				expect(result.elements.length).toEqual(0);
 			});
 
 			it('should not set forbidden tasks for teacher', () => {
-				const result = mapper.mapDTO({ room, board, user: student });
+				const result = mapper.createDTO({ room, board, user: student });
 				expect(result.elements.length).toEqual(0);
 			});
 
 			it('should not set forbidden tasks for substitutionTeacher', () => {
-				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				expect(result.elements.length).toEqual(0);
 			});
 		});
@@ -206,19 +206,19 @@ describe('RoomBoardDTOMapper', () => {
 			});
 
 			it('should set lessons for student', () => {
-				const result = mapper.mapDTO({ room, board, user: student });
+				const result = mapper.createDTO({ room, board, user: student });
 				const resultLessons = result.elements.map((el) => el.content as Lesson);
 				expect(resultLessons).toEqual(lessons);
 			});
 
 			it('should set lessons for teacher', () => {
-				const result = mapper.mapDTO({ room, board, user: teacher });
+				const result = mapper.createDTO({ room, board, user: teacher });
 				const resultLessons = result.elements.map((el) => el.content as Lesson);
 				expect(resultLessons).toEqual(lessons);
 			});
 
 			it('should set lessons for substitutionTeacher', () => {
-				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				const resultLessons = result.elements.map((el) => el.content as Lesson);
 				expect(resultLessons).toEqual(lessons);
 			});
@@ -248,17 +248,17 @@ describe('RoomBoardDTOMapper', () => {
 			});
 
 			it('should not set forbidden tasks for student', () => {
-				const result = mapper.mapDTO({ room, board, user: teacher });
+				const result = mapper.createDTO({ room, board, user: teacher });
 				expect(result.elements.length).toEqual(0);
 			});
 
 			it('should not set forbidden tasks for teacher', () => {
-				const result = mapper.mapDTO({ room, board, user: student });
+				const result = mapper.createDTO({ room, board, user: student });
 				expect(result.elements.length).toEqual(0);
 			});
 
 			it('should not set forbidden tasks for substitutionTeacher', () => {
-				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				expect(result.elements.length).toEqual(0);
 			});
 		});

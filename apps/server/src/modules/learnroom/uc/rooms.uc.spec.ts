@@ -5,7 +5,7 @@ import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/r
 import { MikroORM } from '@mikro-orm/core';
 import { RoomBoardDTO } from '../types';
 import { RoomsUc } from './rooms.uc';
-import { RoomBoardDTOMapper } from '../mapper/room-board-dto.mapper';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
@@ -15,7 +15,7 @@ describe('rooms usecase', () => {
 	let userRepo: UserRepo;
 	let boardRepo: BoardRepo;
 	let orm: MikroORM;
-	let mapper: RoomBoardDTOMapper;
+	let factory: RoomBoardDTOFactory;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -80,10 +80,10 @@ describe('rooms usecase', () => {
 					},
 				},
 				{
-					provide: RoomBoardDTOMapper,
+					provide: RoomBoardDTOFactory,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						mapDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+						createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
 							throw new Error('Please write a mock for RoomBoardDTOMapper.mapDTO');
 						},
 					},
@@ -97,7 +97,7 @@ describe('rooms usecase', () => {
 		taskRepo = module.get(TaskRepo);
 		userRepo = module.get(UserRepo);
 		boardRepo = module.get(BoardRepo);
-		mapper = module.get(RoomBoardDTOMapper);
+		factory = module.get(RoomBoardDTOFactory);
 	});
 
 	describe('getBoard', () => {
@@ -124,7 +124,7 @@ describe('rooms usecase', () => {
 				.mockImplementation(() => Promise.resolve([lessons, 3]));
 			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
 			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
-			const mapperSpy = jest.spyOn(mapper, 'mapDTO').mockImplementation(() => dto);
+			const mapperSpy = jest.spyOn(factory, 'createDTO').mockImplementation(() => dto);
 			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
 
 			return {

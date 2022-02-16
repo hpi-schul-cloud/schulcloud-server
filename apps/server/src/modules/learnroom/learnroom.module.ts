@@ -18,7 +18,7 @@ import { RoomsController } from './controller/rooms.controller';
 import { RoomsUc } from './uc/rooms.uc';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
-import { RoomBoardDTOMapper } from './mapper/room-board-dto.mapper';
+import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 
 @Module({
 	imports: [],
@@ -39,7 +39,7 @@ import { RoomBoardDTOMapper } from './mapper/room-board-dto.mapper';
 		BoardRepo,
 		RoomBoardResponseMapper,
 		RoomsAuthorisationService,
-		RoomBoardDTOMapper,
+		RoomBoardDTOFactory,
 	],
 })
 export class LearnroomModule {}

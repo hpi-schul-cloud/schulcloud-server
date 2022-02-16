@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/repo';
-import { RoomBoardDTOMapper } from '../mapper/room-board-dto.mapper';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomBoardDTO } from '../types/room-board.types';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class RoomsUc {
 		private readonly taskRepo: TaskRepo,
 		private readonly userRepo: UserRepo,
 		private readonly boardRepo: BoardRepo,
-		private readonly mapper: RoomBoardDTOMapper
+		private readonly factory: RoomBoardDTOFactory
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
@@ -24,7 +24,7 @@ export class RoomsUc {
 		board.syncLessonsFromList(courseLessons);
 		board.syncTasksFromList(courseTasks);
 		await this.boardRepo.save(board);
-		const dto = this.mapper.mapDTO({ room: course, board, user });
+		const dto = this.factory.createDTO({ room: course, board, user });
 		return dto;
 	}
 }
