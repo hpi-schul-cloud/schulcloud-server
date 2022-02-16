@@ -46,8 +46,8 @@ describe('RoomBoardDTOMapper', () => {
 	describe('mapDTO', () => {
 		it('should set roomid', () => {
 			const user = userFactory.buildWithId();
-			const board = boardFactory.buildWithId();
-			const room = courseFactory.buildWithId({ primaryBoard: board, teachers: [user] });
+			const room = courseFactory.buildWithId({ teachers: [user] });
+			const board = boardFactory.buildWithId({ course: room });
 
 			const result = mapper.mapDTO({ room, board, user });
 			expect(result.roomId).toEqual(room.id);
@@ -55,8 +55,8 @@ describe('RoomBoardDTOMapper', () => {
 
 		it('should set displayColor', () => {
 			const user = userFactory.buildWithId();
-			const board = boardFactory.buildWithId();
-			const room = courseFactory.buildWithId({ primaryBoard: board, teachers: [user] });
+			const room = courseFactory.buildWithId({ teachers: [user] });
+			const board = boardFactory.buildWithId({ course: room });
 
 			const result = mapper.mapDTO({ room, board, user });
 			expect(result.displayColor).toEqual(room.color);
@@ -64,8 +64,8 @@ describe('RoomBoardDTOMapper', () => {
 
 		it('should set title', () => {
 			const user = userFactory.buildWithId();
-			const board = boardFactory.buildWithId();
-			const room = courseFactory.buildWithId({ primaryBoard: board, teachers: [user] });
+			const room = courseFactory.buildWithId({ teachers: [user] });
+			const board = boardFactory.buildWithId({ course: room });
 
 			const result = mapper.mapDTO({ room, board, user });
 			expect(result.title).toEqual(room.name);
@@ -74,6 +74,7 @@ describe('RoomBoardDTOMapper', () => {
 		describe('when board contains allowed tasks', () => {
 			let teacher: User;
 			let student: User;
+			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
 			let tasks: Task[];
@@ -81,15 +82,38 @@ describe('RoomBoardDTOMapper', () => {
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
-				board = boardFactory.buildWithId();
-				room = courseFactory.buildWithId({ teachers: [teacher], students: [student], primaryBoard: board });
+				substitutionTeacher = userFactory.buildWithId();
+				room = courseFactory.buildWithId({
+					teachers: [teacher],
+					students: [student],
+					substitutionTeachers: [substitutionTeacher],
+				});
+				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
 				board.syncTasksFromList(tasks);
 				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
 			});
 
-			it('should set each allowed task', () => {
+			it('should set each allowed task for teacher', () => {
 				const result = mapper.mapDTO({ room, board, user: teacher });
+				const resultTasks = result.elements.map((el) => {
+					const content = el.content as TaskWithStatusVo;
+					return content.task;
+				});
+				expect(resultTasks).toEqual(tasks);
+			});
+
+			it('should set each allowed task for substitution teacher', () => {
+				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				const resultTasks = result.elements.map((el) => {
+					const content = el.content as TaskWithStatusVo;
+					return content.task;
+				});
+				expect(resultTasks).toEqual(tasks);
+			});
+
+			it('should set each allowed task for student', () => {
+				const result = mapper.mapDTO({ room, board, user: student });
 				const resultTasks = result.elements.map((el) => {
 					const content = el.content as TaskWithStatusVo;
 					return content.task;
@@ -104,6 +128,13 @@ describe('RoomBoardDTOMapper', () => {
 				expect(teacherStatusSpy).toBeCalled();
 			});
 
+			it('should add status for substitutionTeacher to task', () => {
+				const teacherStatusSpy = jest.spyOn(tasks[0], 'createTeacherStatusForUser');
+
+				mapper.mapDTO({ room, board, user: substitutionTeacher });
+				expect(teacherStatusSpy).toBeCalled();
+			});
+
 			it('should add status for student to task', () => {
 				const studentStatusSpy = jest.spyOn(tasks[0], 'createStudentStatusForUser');
 
@@ -115,6 +146,7 @@ describe('RoomBoardDTOMapper', () => {
 		describe('when board contains forbidden tasks', () => {
 			let teacher: User;
 			let student: User;
+			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
 			let tasks: Task[];
@@ -122,8 +154,13 @@ describe('RoomBoardDTOMapper', () => {
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
-				board = boardFactory.buildWithId();
-				room = courseFactory.buildWithId({ teachers: [teacher], students: [student], primaryBoard: board });
+				substitutionTeacher = userFactory.buildWithId();
+				room = courseFactory.buildWithId({
+					teachers: [teacher],
+					students: [student],
+					substitutionTeachers: [substitutionTeacher],
+				});
+				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
 				board.syncTasksFromList(tasks);
 				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
@@ -138,11 +175,17 @@ describe('RoomBoardDTOMapper', () => {
 				const result = mapper.mapDTO({ room, board, user: student });
 				expect(result.elements.length).toEqual(0);
 			});
+
+			it('should not set forbidden tasks for substitutionTeacher', () => {
+				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				expect(result.elements.length).toEqual(0);
+			});
 		});
 
 		describe('when board contains allowed lessons', () => {
 			let teacher: User;
 			let student: User;
+			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
 			let lessons: Lesson[];
@@ -150,8 +193,13 @@ describe('RoomBoardDTOMapper', () => {
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
-				board = boardFactory.buildWithId();
-				room = courseFactory.buildWithId({ teachers: [teacher], students: [student], primaryBoard: board });
+				substitutionTeacher = userFactory.buildWithId();
+				room = courseFactory.buildWithId({
+					teachers: [teacher],
+					students: [student],
+					substitutionTeachers: [substitutionTeacher],
+				});
+				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
 				board.syncLessonsFromList(lessons);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
@@ -160,19 +208,26 @@ describe('RoomBoardDTOMapper', () => {
 			it('should set lessons for student', () => {
 				const result = mapper.mapDTO({ room, board, user: student });
 				const resultLessons = result.elements.map((el) => el.content as Lesson);
-				expect(result.elements).toEqual(resultLessons);
+				expect(resultLessons).toEqual(lessons);
 			});
 
 			it('should set lessons for teacher', () => {
 				const result = mapper.mapDTO({ room, board, user: teacher });
 				const resultLessons = result.elements.map((el) => el.content as Lesson);
-				expect(result.elements).toEqual(resultLessons);
+				expect(resultLessons).toEqual(lessons);
+			});
+
+			it('should set lessons for substitutionTeacher', () => {
+				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
+				const resultLessons = result.elements.map((el) => el.content as Lesson);
+				expect(resultLessons).toEqual(lessons);
 			});
 		});
 
-		describe('when board contains allowed lessons', () => {
+		describe('when board contains forbidden lessons', () => {
 			let teacher: User;
 			let student: User;
+			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
 			let lessons: Lesson[];
@@ -180,8 +235,13 @@ describe('RoomBoardDTOMapper', () => {
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
-				board = boardFactory.buildWithId();
-				room = courseFactory.buildWithId({ teachers: [teacher], students: [student], primaryBoard: board });
+				substitutionTeacher = userFactory.buildWithId();
+				room = courseFactory.buildWithId({
+					teachers: [teacher],
+					students: [student],
+					substitutionTeachers: [substitutionTeacher],
+				});
+				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
 				board.syncLessonsFromList(lessons);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => false);
@@ -194,6 +254,11 @@ describe('RoomBoardDTOMapper', () => {
 
 			it('should not set forbidden tasks for teacher', () => {
 				const result = mapper.mapDTO({ room, board, user: student });
+				expect(result.elements.length).toEqual(0);
+			});
+
+			it('should not set forbidden tasks for substitutionTeacher', () => {
+				const result = mapper.mapDTO({ room, board, user: substitutionTeacher });
 				expect(result.elements.length).toEqual(0);
 			});
 		});
