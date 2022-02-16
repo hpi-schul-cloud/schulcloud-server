@@ -1,6 +1,5 @@
 import { userFactory, courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { Course } from './course.entity';
-import { Board } from './board.entity';
 
 const DEFAULT = {
 	color: '#ACACAC',
@@ -67,14 +66,6 @@ describe('CourseEntity', () => {
 			expect(result.id).toEqual(course.id);
 			expect(result.startDate).toEqual(startDate);
 			expect(result.untilDate).toEqual(untilDate);
-		});
-	});
-
-	describe('getBoard', () => {
-		it('should return empty board as default', async () => {
-			const course = courseFactory.build();
-			const result = await course.getBoard();
-			expect(result instanceof Board).toBe(true);
 		});
 	});
 

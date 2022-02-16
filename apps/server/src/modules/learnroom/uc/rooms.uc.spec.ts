@@ -70,6 +70,10 @@ describe('rooms usecase', () => {
 					provide: BoardRepo,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findByCourseId(courseId: EntityId): Promise<Board> {
+							throw new Error('Please write a mock for BoardRepo.findByCourseId');
+						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						save(board: Board): Promise<void> {
 							throw new Error('Please write a mock for BoardRepo.save');
 						},
@@ -99,10 +103,10 @@ describe('rooms usecase', () => {
 	describe('getBoard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const board = boardFactory.buildWithId();
-			const room = courseFactory.buildWithId({ students: [user], primaryBoard: board });
+			const room = courseFactory.buildWithId({ students: [user] });
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
+			const board = boardFactory.buildWithId({ course: room });
 			const dto = {
 				roomId: room.id,
 				displayColor: room.color,
@@ -113,7 +117,7 @@ describe('rooms usecase', () => {
 			board.syncTasksFromList(tasks);
 			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
-			const boardSpy = jest.spyOn(room, 'getBoard').mockImplementation(() => Promise.resolve(board));
+			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
 			const tasksSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([tasks, 3]));
 			const lessonsSpy = jest
 				.spyOn(lessonRepo, 'findAllByCourseIds')

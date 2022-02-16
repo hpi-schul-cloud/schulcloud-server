@@ -1,14 +1,4 @@
-import {
-	Entity,
-	Property,
-	Index,
-	ManyToOne,
-	ManyToMany,
-	Collection,
-	OneToOne,
-	IdentifiedReference,
-	wrap,
-} from '@mikro-orm/core';
+import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
 
 import { ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
@@ -16,7 +6,6 @@ import { LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
-import { Board } from './board.entity';
 
 export interface ICourseProperties {
 	name?: string;
@@ -29,7 +18,6 @@ export interface ICourseProperties {
 	color?: string;
 	startDate?: Date;
 	untilDate?: Date;
-	primaryBoard?: Board;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -69,9 +57,6 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
 	startDate?: Date;
 
-	@OneToOne('Board', undefined, { wrappedReference: true })
-	primaryBoard: IdentifiedReference<Board>;
-
 	@Index({ name: 'activeCourses' })
 	@Property()
 	untilDate?: Date;
@@ -87,13 +72,6 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 		if (props.color) this.color = props.color;
 		if (props.untilDate) this.untilDate = props.untilDate;
 		if (props.startDate) this.startDate = props.startDate;
-		const board = props.primaryBoard || new Board({ references: [] });
-		this.primaryBoard = wrap(board).toReference();
-	}
-
-	async getBoard(): Promise<Board> {
-		const board = await this.primaryBoard.load();
-		return board;
 	}
 
 	getNumberOfStudents(): number {

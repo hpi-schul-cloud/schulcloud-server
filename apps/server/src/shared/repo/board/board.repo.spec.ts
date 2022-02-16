@@ -1,7 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board } from '@shared/domain';
-import { boardFactory, lessonBoardElementFactory, taskBoardElementFactory, cleanupCollections } from '@shared/testing';
+import {
+	courseFactory,
+	boardFactory,
+	lessonBoardElementFactory,
+	taskBoardElementFactory,
+	cleanupCollections,
+} from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
@@ -28,6 +34,32 @@ describe('BoardRepo', () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 		await em.nativeDelete(Board, {});
+	});
+
+	describe('findByCourseId', () => {
+		it('should return existing board', async () => {
+			const course = courseFactory.build();
+			const taskElement = taskBoardElementFactory.build({ target: { course } });
+			const lessonElement = lessonBoardElementFactory.build({ target: { course } });
+			const board = boardFactory.build({ course, references: [taskElement, lessonElement] });
+			await em.persistAndFlush(board);
+
+			const result = await repo.findByCourseId(course.id);
+			expect(result.id).toEqual(board.id);
+		});
+
+		it('should return fresh board if none exists yet', async () => {
+			const course = courseFactory.build();
+			await em.persistAndFlush(course);
+
+			const result = await repo.findByCourseId(course.id);
+			expect(result).toHaveProperty('id');
+		});
+
+		it('should throw for course that doesnt exist', async () => {
+			const call = () => repo.findByCourseId('FAKEcourseId');
+			await expect(call).rejects.toThrow();
+		});
 	});
 
 	it('should persist board with content', async () => {

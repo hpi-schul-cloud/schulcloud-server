@@ -20,7 +20,7 @@ export class RoomsUc {
 		const course = await this.courseRepo.findOne(roomId, userId);
 		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([course.id]);
 		const [courseTasks] = await this.taskRepo.findBySingleParent(user.id, course.id);
-		const board = await course.getBoard();
+		const board = await this.boardRepo.findByCourseId(course.id);
 		board.syncLessonsFromList(courseLessons);
 		board.syncTasksFromList(courseTasks);
 		await this.boardRepo.save(board);

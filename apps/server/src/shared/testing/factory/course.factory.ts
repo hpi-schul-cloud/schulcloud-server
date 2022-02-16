@@ -4,7 +4,6 @@ import { Course, School, ICourseProperties } from '@shared/domain';
 
 import { schoolFactory } from './school.factory';
 import { BaseFactory } from './base.factory';
-import { boardFactory } from './board.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
@@ -37,6 +36,5 @@ export const courseFactory = CourseFactory.define(Course, ({ sequence, params })
 		description: `course #${sequence} description`,
 		color: '#FFFFFF',
 		school,
-		primaryBoard: boardFactory.build(),
 	};
 });

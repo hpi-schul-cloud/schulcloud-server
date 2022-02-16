@@ -1,11 +1,13 @@
-import { Entity, Collection, ManyToMany } from '@mikro-orm/core';
+import { Entity, Collection, ManyToMany, OneToOne, IdentifiedReference, wrap } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { BoardElement, BoardElementType } from './boardelement.entity';
 import type { Task } from './task.entity';
 import type { Lesson } from './lesson.entity';
+import type { Course } from './course.entity';
 
 export type BoardProps = {
 	references: BoardElement[];
+	course: Course;
 };
 
 @Entity({ tableName: 'board' })
@@ -13,7 +15,11 @@ export class Board extends BaseEntityWithTimestamps {
 	constructor(props: BoardProps) {
 		super();
 		this.references.set(props.references);
+		this.course = wrap(props.course).toReference();
 	}
+
+	@OneToOne('Course', undefined, { wrappedReference: true, fieldName: 'courseId' })
+	course: IdentifiedReference<Course>;
 
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<BoardElement>(this);
