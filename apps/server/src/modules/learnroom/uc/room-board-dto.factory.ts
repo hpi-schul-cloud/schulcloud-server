@@ -1,5 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Course, Board, User, TaskWithStatusVo, Lesson, BoardElementType, BoardElement, Task } from '@shared/domain';
+import {
+	Course,
+	Board,
+	User,
+	TaskWithStatusVo,
+	Lesson,
+	BoardElementType,
+	BoardElement,
+	Task,
+	ITaskStatus,
+} from '@shared/domain';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 import { RoomBoardDTO, RoomBoardElementDTO } from '../types/room-board.types';
 
@@ -31,14 +41,14 @@ class DtoCreator {
 
 	manufacture(): RoomBoardDTO {
 		const elements = this.board.getElements();
-		const filtered = this.filterElements(elements);
+		const filtered = this.filterByPermission(elements);
 
-		const mapped = this.mapToElementDTOs(filtered);
-		const dto = this.buildDTOWithElements(mapped);
+		const mappedElements = this.mapToElementDTOs(filtered);
+		const dto = this.buildDTOWithElements(mappedElements);
 		return dto;
 	}
 
-	private filterElements(elements: BoardElement[]) {
+	private filterByPermission(elements: BoardElement[]) {
 		const filtered = elements.filter((element) => {
 			let result = false;
 			if (element.boardElementType === BoardElementType.Task) {
@@ -62,21 +72,40 @@ class DtoCreator {
 		const results: RoomBoardElementDTO[] = [];
 		elements.forEach((element) => {
 			if (element.boardElementType === BoardElementType.Task) {
-				const type = 'task';
-				const task = element.target as Task;
-				const content = new TaskWithStatusVo(
-					task,
-					this.isTeacher() ? task.createTeacherStatusForUser(this.user) : task.createStudentStatusForUser(this.user)
-				);
-				results.push({ type, content });
+				const mapped = this.mapTaskElement(element);
+				results.push(mapped);
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
-				const type = 'lesson';
-				const content = element.target as Lesson;
-				results.push({ type, content });
+				const mapped = this.mapLessonElement(element);
+				results.push(mapped);
 			}
 		});
 		return results;
+	}
+
+	private mapTaskElement(element: BoardElement): RoomBoardElementDTO {
+		const task = element.target as Task;
+
+		const status = this.createTaskStatus(task);
+
+		const content = new TaskWithStatusVo(task, status);
+		return { type: 'task', content };
+	}
+
+	private createTaskStatus(task: Task): ITaskStatus {
+		let status: ITaskStatus;
+		if (this.isTeacher()) {
+			status = task.createTeacherStatusForUser(this.user);
+		} else {
+			status = task.createStudentStatusForUser(this.user);
+		}
+		return status;
+	}
+
+	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
+		const type = 'lesson';
+		const content = element.target as Lesson;
+		return { type, content };
 	}
 
 	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
@@ -93,8 +122,6 @@ class DtoCreator {
 @Injectable()
 export class RoomBoardDTOFactory {
 	constructor(private readonly authorisationService: RoomsAuthorisationService) {}
-
-	// TODO: Refactoring
 
 	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({ room, board, user, authorisationService: this.authorisationService });
