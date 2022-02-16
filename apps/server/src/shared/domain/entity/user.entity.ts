@@ -9,6 +9,7 @@ export interface IUserProperties {
 	lastName: string;
 	school: School;
 	roles: Role[];
+	ldapId?: string;
 }
 
 @Entity({ tableName: 'users' })
@@ -31,6 +32,9 @@ export class User extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
+	@Property()
+	ldapId?: string;
+
 	constructor(props: IUserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -38,5 +42,6 @@ export class User extends BaseEntityWithTimestamps {
 		this.email = props.email;
 		this.school = props.school;
 		this.roles.set(props.roles);
+		this.ldapId = props.ldapId;
 	}
 }

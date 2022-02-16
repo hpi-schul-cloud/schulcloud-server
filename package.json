@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.3.0",
+	"version": "27.4.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -89,6 +89,7 @@
 		"@mikro-orm/nestjs": "^4.3.1",
 		"@nestjs/common": "^8.2.6",
 		"@nestjs/core": "^8.2.6",
+		"@nestjs/axios": "^0.0.5",
 		"@nestjs/jwt": "^8.0.0",
 		"@nestjs/microservices": "^8.2.6",
 		"@nestjs/passport": "^8.0.1",
@@ -179,6 +180,7 @@
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.44.0",
 		"@compodoc/compodoc": "^1.1.16",
+		"@jest-mock/express": "^1.4.5",
 		"@golevelup/ts-jest": "^0.3.2",
 		"@nestjs/cli": "^8.1.4",
 		"@nestjs/schematics": "^7.2.7",
