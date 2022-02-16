@@ -8,13 +8,22 @@ export class BoardRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findByCourseId(courseId: EntityId): Promise<Board> {
+		const board = this.getOrCreateCourseBoard(courseId);
+		return board;
+	}
+
+	private async getOrCreateCourseBoard(courseId: EntityId): Promise<Board> {
 		let board = await this.em.findOne(Board, { course: courseId });
 		if (!board) {
-			// TODO: find a way to not require access to the course collection
-			const course = await this.em.findOneOrFail(Course, courseId);
-			board = new Board({ course, references: [] });
-			await this.em.persistAndFlush(board);
+			board = await this.createBoardForCourse(courseId);
 		}
+		return board;
+	}
+
+	private async createBoardForCourse(courseId: EntityId): Promise<Board> {
+		const course = await this.em.findOneOrFail(Course, courseId);
+		const board = new Board({ course, references: [] });
+		await this.em.persistAndFlush(board);
 		return board;
 	}
 
