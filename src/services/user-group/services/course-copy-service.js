@@ -83,11 +83,14 @@ class CourseCopyService {
 					newCourseId: res._id,
 					userId: params.account.userId,
 					shareToken: lesson.shareToken,
+					asd: lesson.asd
 				})
 			)
 		).catch((err) => {
 			logger.warning(err);
-			throw new GeneralError('Can not copy one or many lessons.', err);
+			// throw new GeneralError('Can not copy one or many lessons.', err);
+			throw new BadRequest('Can not copy one or many lessons.', {...err, id: res._id});
+			
 		});
 
 		await Promise.all(
@@ -100,13 +103,15 @@ class CourseCopyService {
 						undefined,
 						equalIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
 						this.app,
-						params.account.userId
+						params.account.userId,
 					);
 				}
 				return false;
 			})
 		).catch((err) => {
-			throw new GeneralError('Can not copy one or many homeworks.', err);
+			// throw new GeneralError('Can not copy one or many homeworks.', err);
+			throw new BadRequest('Can not copy one or many homeworks.', {...err, id: res._id});
+
 		});
 
 		return res;
