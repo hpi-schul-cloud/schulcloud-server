@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EntityId } from '@shared/domain';
 import { FileRecordTargetType } from '@shared/domain/entity/filerecord.entity';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsMongoId, ValidateNested } from 'class-validator';
@@ -6,11 +7,11 @@ import { IsEnum, IsMongoId, ValidateNested } from 'class-validator';
 export class FileMetaDto {
 	@ApiProperty()
 	@IsMongoId()
-	schoolId!: string;
+	schoolId!: EntityId;
 
 	@ApiProperty()
 	@IsMongoId()
-	targetId!: string;
+	targetId!: EntityId;
 
 	@ApiProperty({ enum: FileRecordTargetType })
 	@IsEnum(FileRecordTargetType)
@@ -35,7 +36,7 @@ export class FileUploadDto {
 export class FileDownloadDto {
 	@ApiProperty()
 	@IsMongoId()
-	fileRecordId!: string;
+	fileRecordId!: EntityId;
 
 	@ApiProperty()
 	fileName!: string;

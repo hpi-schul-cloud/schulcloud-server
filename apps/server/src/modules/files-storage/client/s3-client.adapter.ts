@@ -1,13 +1,4 @@
-import {
-	CreateBucketCommand,
-	DeleteObjectCommand,
-	GetObjectCommand,
-	ListObjectsCommand,
-	PutObjectCommand,
-	PutObjectCommandOutput,
-	S3Client,
-	ServiceOutputTypes,
-} from '@aws-sdk/client-s3';
+import { CreateBucketCommand, GetObjectCommand, S3Client, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
@@ -15,7 +6,7 @@ import { join } from 'path';
 import { Readable } from 'stream';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';
-import { IStorageClient } from '../interface/storage-client';
+import { IGetFileResponse, IStorageClient } from '../interface/storage-client';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -39,7 +30,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async getFile(path: string) {
+	public async getFile(path: string): Promise<IGetFileResponse> {
 		try {
 			const req = new GetObjectCommand({
 				Bucket: this.config.bucket,
@@ -57,45 +48,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async deleteFolder(folder: string) {
-		const data = await this.listFiles(folder);
-		if (data.Contents) {
-			return Promise.all(data.Contents.map((item) => this.deleteFile(item.Key || '')));
-		}
-		return false;
-	}
-
-	public async listFiles(folder: string) {
-		const req = new ListObjectsCommand({
-			Bucket: this.config.bucket,
-			Prefix: folder,
-		});
-		const res = this.client.send(req);
-		return res;
-	}
-
-	public async uploadFile(folder: string, file: IFile): Promise<PutObjectCommandOutput> {
-		try {
-			const req = new PutObjectCommand({
-				Body: file.buffer,
-				Bucket: this.config.bucket,
-				Key: join(folder, file.name),
-				ContentType: file.type,
-			});
-			const res = await this.client.send(req);
-
-			return res;
-		} catch (error) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (error.Code && error.Code === 'NoSuchBucket') {
-				await this.createBucket();
-				return this.uploadFile(folder, file);
-			}
-			throw new InternalServerErrorException(error);
-		}
-	}
-
-	public async uploadFileAsStream(folder: string, file: IFile): Promise<ServiceOutputTypes> {
+	public async uploadFile(folder: string, file: IFile): Promise<ServiceOutputTypes> {
 		try {
 			const req = {
 				Body: file.buffer,
@@ -108,10 +61,6 @@ export class S3ClientAdapter implements IStorageClient {
 				params: req,
 			});
 
-			/* 		res.on('httpUploadProgress', (progress) => {
-				console.log('httpUploadProgress', progress);
-			}); */
-
 			const a = await res.done();
 
 			return a;
@@ -119,17 +68,9 @@ export class S3ClientAdapter implements IStorageClient {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (error.Code && error.Code === 'NoSuchBucket') {
 				await this.createBucket();
-				return this.uploadFileAsStream(folder, file);
+				return this.uploadFile(folder, file);
 			}
 			throw new InternalServerErrorException(error);
 		}
-	}
-
-	public async deleteFile(path: string) {
-		const req = new DeleteObjectCommand({
-			Bucket: this.config.bucket,
-			Key: path,
-		});
-		return this.client.send(req);
 	}
 }

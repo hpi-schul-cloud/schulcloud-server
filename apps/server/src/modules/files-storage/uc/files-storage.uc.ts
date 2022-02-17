@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import * as path from 'path';
 import { Request } from 'express';
 import { FileRecordRepo } from '@shared/repo';
-import { FileRecord } from '@shared/domain';
+import { EntityId, FileRecord } from '@shared/domain';
 import busboy from 'busboy';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
@@ -12,36 +12,17 @@ import { IFile } from '../interface/file';
 export class FilesStorageUC {
 	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async upload(userId: string, params: FileMetaDto, file: Express.Multer.File) {
+	async upload(userId: EntityId, params: FileMetaDto, req: Request) {
 		// @TODO check permissions of schoolId by user
 		// @TODO scan virus on demand?
 		// @TODO add thumbnail on demand
-		try {
-			const reqFile: IFile = {
-				name: file.originalname,
-				buffer: file.buffer,
-				size: file.size,
-				type: file.mimetype,
-			};
-
-			const record = this.getFileRecord(userId, params, reqFile);
-			await this.fileRecordRepo.save(record);
-
-			const folder = path.join(params.schoolId, record.id);
-			const result = await this.storageClient.uploadFile(folder, reqFile);
-			return { result, record };
-		} catch (error) {
-			throw new BadRequestException(error);
-		}
-	}
-
-	async uploadAsStream(userId: string, params: FileMetaDto, req: Request) {
 		try {
 			let record!: FileRecord;
 
 			const result = await new Promise((resolve, reject) => {
 				const bb = busboy({ headers: req.headers });
-				bb.on('file', (name, file, info) => {
+				// eslint-disable-next-line @typescript-eslint/no-misused-promises
+				bb.on('file', async (_name, file, info): Promise<void> => {
 					const { filename, mimeType } = info;
 
 					const size = Number(req.get('content-length'));
@@ -54,15 +35,12 @@ export class FilesStorageUC {
 						type: contentType,
 					};
 					record = this.getFileRecord(userId, params, fileR);
-					this.fileRecordRepo
-						.save(record)
-						.then(async () => {
-							const folder = path.join(params.schoolId, record.id);
-							return this.storageClient.uploadFileAsStream(folder, fileR);
-						})
-						.catch((e) => {
-							reject(e);
-						});
+					await this.fileRecordRepo.save(record);
+
+					const folder = path.join(params.schoolId, record.id);
+					const s3Res = await this.storageClient.uploadFile(folder, fileR);
+
+					return resolve({ s3Res, record });
 				});
 
 				bb.on('close', () => {
@@ -81,7 +59,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	async download(userId: string, params: FileDownloadDto) {
+	async download(userId: EntityId, params: FileDownloadDto) {
 		try {
 			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 			if (entity.name !== params.fileName) {
@@ -89,8 +67,8 @@ export class FilesStorageUC {
 			}
 
 			// @TODO check permissions of schoolId by user
-			const patch = path.join(entity.schoolId, entity.id, entity.name);
-			const res = await this.storageClient.getFile(patch);
+			const pathToFile = path.join(entity.schoolId, entity.id, entity.name);
+			const res = await this.storageClient.getFile(pathToFile);
 
 			return res;
 		} catch (error) {
@@ -98,7 +76,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	getFileRecord(userId: string, params: FileMetaDto, file: IFile) {
+	getFileRecord(userId: EntityId, params: FileMetaDto, file: IFile) {
 		const entity = new FileRecord({
 			size: file.size,
 			name: file.name,
