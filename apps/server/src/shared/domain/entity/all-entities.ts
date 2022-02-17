@@ -1,6 +1,8 @@
 import { ImportUser } from './import-user.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
+import { BoardElement, TaskBoardElement, LessonBoardElement } from './boardelement.entity';
+import { Board } from './board.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { BaseFile, Directory, File } from './file.entity';
 import { Lesson } from './lesson.entity';
@@ -19,6 +21,10 @@ export const ALL_ENTITIES = [
 	Account,
 	Course,
 	CourseGroup,
+	Board,
+	BoardElement,
+	TaskBoardElement,
+	LessonBoardElement,
 	DashboardModelEntity,
 	DashboardGridElementModel,
 	BaseFile,
