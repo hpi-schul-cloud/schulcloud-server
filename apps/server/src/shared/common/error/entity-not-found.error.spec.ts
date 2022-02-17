@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { EntityNotFoundError } from './entity-not-found.error';
 
 describe('Entity Not Found Error', () => {
-	it('should possible to create', () => {
+	it('should be possible to create', () => {
 		const error = new EntityNotFoundError('entityName');
 		expect(error).toBeDefined();
 	});
