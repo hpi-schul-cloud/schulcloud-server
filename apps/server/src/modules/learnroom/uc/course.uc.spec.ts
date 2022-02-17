@@ -1,12 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MikroORM } from '@mikro-orm/core';
 import { CourseRepo } from '@shared/repo';
 import { Course, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
-import { courseFactory } from '@shared/testing';
+import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseUc } from './course.uc';
 
 describe('course uc', () => {
 	let service: CourseUc;
 	let repo: CourseRepo;
+	let orm: MikroORM;
+
+	beforeAll(async () => {
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
