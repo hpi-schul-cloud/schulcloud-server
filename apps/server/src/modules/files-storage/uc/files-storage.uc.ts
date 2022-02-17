@@ -15,12 +15,12 @@ import { IFile } from '../interface/file';
 export class FilesStorageUC {
 	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async upload(userId: EntityId, params: FileMetaDto, req: Request): Promise<FileRecord> {
+	async upload(userId: EntityId, params: FileMetaDto, req: Request): Promise<unknown> {
 		// @TODO check permissions of schoolId by user
 		// @TODO scan virus on demand?
 		// @TODO add thumbnail on demand
 		try {
-			const result: FileRecord = await new Promise((resolve, reject) => {
+			const result = await new Promise((resolve, reject) => {
 				const requestStream = busboy({ headers: req.headers });
 
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
