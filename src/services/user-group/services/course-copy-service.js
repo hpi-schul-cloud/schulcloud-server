@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const { nanoid } = require('nanoid');
 
-const { GeneralError, BadRequest } = require('../../../errors');
+const { GeneralError, BadRequest, Unprocessable } = require('../../../errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
@@ -76,7 +76,7 @@ class CourseCopyService {
 			throw new GeneralError('Can not fetch data to copy this course.', err);
 		});
 
-		await Promise.all(
+		const copyLessons = await Promise.allSettled(
 			lessons.map((lesson) =>
 				createLesson(this.app, {
 					lessonId: lesson._id,
@@ -85,12 +85,12 @@ class CourseCopyService {
 					shareToken: lesson.shareToken,
 				})
 			)
-		).catch((err) => {
-			logger.warning(err);
-			throw new BadRequest('Can not copy one or many lessons.', {...err, id: res._id});
-		});
+		);
+		if (copyLessons.some((r) => r.status === 'rejected')) {
+			throw new Unprocessable('Can not copy one or many lessons.');
+		}
 
-		await Promise.all(
+		const results = await Promise.allSettled(
 			homeworks.map((homework) => {
 				// homeworks that are part of a lesson are copied in LessonCopyService
 				if (!homework.lessonId) {
@@ -100,15 +100,15 @@ class CourseCopyService {
 						undefined,
 						equalIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
 						this.app,
-						params.account.userId,
+						params.account.userId
 					);
 				}
 				return false;
 			})
-		).catch((err) => {
-			throw new BadRequest('Can not copy one or many homeworks.', {...err, id: res._id});
-
-		});
+		);
+		if (results.some((r) => r.status === 'rejected')) {
+			throw new Unprocessable('Can not copy one or many homeworks.');
+		}
 
 		return res;
 	}
