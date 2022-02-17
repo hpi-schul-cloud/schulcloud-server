@@ -15,8 +15,10 @@ import { Task } from './task.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
 import { System } from './system.entity';
+import { Account } from './account.entity';
 
 export const ALL_ENTITIES = [
+	Account,
 	Course,
 	CourseGroup,
 	Board,
