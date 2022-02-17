@@ -13,5 +13,5 @@
 	"FEATURE_LERNSTORE_ENABLED": false,
 	"FEATURE_S3_BUCKET_CORS": false,
 	"S3_KEY": "abcdefghijklmnop",
-	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12"
+	"AES_KEY": "thisisnotsecure12"
 }
