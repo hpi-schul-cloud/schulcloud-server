@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, taskFactory, setupEntities } from '@shared/testing';
-import { BoardMapper } from './board.mapper';
+import { RoomBoardResponseMapper } from './room-board-response.mapper';
 import { BoardResponse, BoardElementResponse } from '../controller/dto/roomBoardResponse';
 
-describe('board mapper', () => {
-	let mapper: BoardMapper;
+describe('room board response mapper', () => {
+	let mapper: RoomBoardResponseMapper;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -13,10 +13,10 @@ describe('board mapper', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [],
-			providers: [BoardMapper],
+			providers: [RoomBoardResponseMapper],
 		}).compile();
 
-		mapper = module.get(BoardMapper);
+		mapper = module.get(RoomBoardResponseMapper);
 	});
 	describe('mapToResponse', () => {
 		it('should map plain board into response', () => {
