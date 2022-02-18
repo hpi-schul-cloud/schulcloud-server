@@ -87,7 +87,7 @@ export class FilesStorageUC {
 			}
 
 			// @TODO check permissions of schoolId by user
-			const pathToFile = path.join(entity.schoolId, entity.id, entity.name);
+			const pathToFile = path.join(entity.schoolId, entity.id);
 			const res = await this.storageClient.getFile(pathToFile);
 
 			return res;
