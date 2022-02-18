@@ -15,6 +15,7 @@ export const systemFactory = BaseFactory.define<System, ISystemProperties>(Syste
 			scope: 'openid uuid',
 			responseType: 'code',
 			authEndpoint: 'mock_authEndpoint',
+			provider: 'mock_type',
 		},
 	};
 });

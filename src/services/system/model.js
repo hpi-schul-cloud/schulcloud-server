@@ -36,6 +36,7 @@ const systemSchema = new Schema(
 				codeRedirectUri: { type: String, required: true },
 				responseType: { type: String, required: true },
 				scope: { type: String, required: true },
+				provider: { type: String, required: true },
 			},
 			required: false,
 		},
