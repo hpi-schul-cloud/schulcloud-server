@@ -1,13 +1,10 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-
 import { Counted, EntityId, FileRecord, FileRecordTargetType, IFindOptions, SortOrder } from '@shared/domain';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()
-export class FileRecordRepo {
-	constructor(private readonly em: EntityManager) {}
-
+export class FileRecordRepo extends BaseRepo<FileRecord> {
 	async findOneById(id: EntityId): Promise<FileRecord> {
 		const fileRecord = await this.em.findOneOrFail(FileRecord, id);
 		return fileRecord;
