@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordRepo } from '@shared/repo';
 import { Request } from 'express';
-import { FileRecord, FileRecordTargetType } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import * as path from 'path';
@@ -10,19 +10,19 @@ import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FilesStorageUC } from './files-storage.uc';
 import { IGetFileResponse } from '../interface/storage-client';
-import { IFile } from '../interface/file';
 
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
 	let service: FilesStorageUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
-	let request: Request;
+	let request: DeepMocked<Request>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
 	let fileDownloadParams: FileDownloadDto;
 	let fileUploadParams: FileMetaDto;
 	let response: IGetFileResponse;
+	const userId: EntityId = '620abb23697023333eadea99';
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -77,12 +77,84 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('upload()', () => {
-		/* 	it('should call getFileRecord() of client', async () => {
-			request.pipe = jest.fn().mockRejectedValue(false);
-			await service.upload('123', fileUploadParams, request);
+		beforeEach(() => {
+			request.get.mockReturnValue('1234');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			request.pipe.mockImplementation((requestStream: any) =>
+				requestStream.emit('file', 'file', Buffer.from('abc'), {
+					filename: 'text.txt',
+					encoding: '7-bit',
+					mimeType: 'text/text',
+				})
+			);
+
+			fileRecordRepo.save.mockImplementation((entity: FileRecord) => {
+				entity.id = '620abb23697023333eadea99';
+				return Promise.resolve();
+			});
+		});
+
+		it('should call request.get()', async () => {
+			await service.upload(userId, fileUploadParams, request);
+			expect(request.get).toBeCalledWith('content-length');
+			expect(request.get).toHaveBeenCalledTimes(1);
+		});
+
+		it('should call request.pipe()', async () => {
+			await service.upload(userId, fileUploadParams, request);
 			expect(request.pipe).toHaveBeenCalledTimes(1);
-			// console.log(r);
-		}); */
+		});
+
+		it('should call fileRecordRepo.save', async () => {
+			await service.upload(userId, fileUploadParams, request);
+			expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
+		});
+
+		it('should call fileRecordRepo.uploadFile', async () => {
+			await service.upload(userId, fileUploadParams, request);
+			expect(storageClient.uploadFile).toHaveBeenCalledTimes(1);
+		});
+
+		it('should call fileRecordRepo.uploadFile with params', async () => {
+			await service.upload(userId, fileUploadParams, request);
+			expect(storageClient.uploadFile).toBeCalledWith('620abb23697023333eadea00/620abb23697023333eadea99', {
+				buffer: Buffer.from('abc'),
+				name: 'text.txt',
+				size: 1234,
+				type: 'text/text',
+			});
+		});
+
+		it('should return instance of FileRecord', async () => {
+			const result = await service.upload(userId, fileUploadParams, request);
+			expect(result).toBeInstanceOf(FileRecord);
+		});
+
+		describe('Error Handling()', () => {
+			beforeEach(() => {
+				storageClient.uploadFile.mockRejectedValue(new Error());
+			});
+
+			it('should throw Error', async () => {
+				await expect(service.upload(userId, fileUploadParams, request)).rejects.toThrow();
+			});
+
+			it('should call fileRecordRepo.removeAndFlush', async () => {
+				await expect(service.upload(userId, fileUploadParams, request)).rejects.toThrow();
+				expect(fileRecordRepo.removeAndFlush).toHaveBeenCalledTimes(1);
+				expect(fileRecordRepo.removeAndFlush).toBeCalledWith(
+					expect.objectContaining({
+						id: '620abb23697023333eadea99',
+						name: 'text.txt',
+						size: 1234,
+						targetType: 'users',
+						type: 'text/text',
+						createdAt: expect.any(Date) as Date,
+						updatedAt: expect.any(Date) as Date,
+					})
+				);
+			});
+		});
 	});
 
 	describe('download()', () => {
@@ -93,55 +165,47 @@ describe('FilesStorageUC', () => {
 
 		describe('calls to fileRecordRepo.findOneById()', () => {
 			it('should call once', async () => {
-				await service.download('123', fileDownloadParams);
+				await service.download(userId, fileDownloadParams);
 				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call with fileRecordId', async () => {
-				await service.download('123', fileDownloadParams);
+				await service.download(userId, fileDownloadParams);
 				expect(fileRecordRepo.findOneById).toBeCalledWith(fileDownloadParams.fileRecordId);
 			});
 
 			it('should throw error if params with other filename', async () => {
 				const paramsWithOtherFilename = { fileRecordId: '620abb23697023333eadea00', fileName: 'other-name.txt' };
-				await expect(service.download('123', paramsWithOtherFilename)).rejects.toThrow();
+				await expect(service.download(userId, paramsWithOtherFilename)).rejects.toThrow();
 			});
 
 			it('should throw error if entity not found', async () => {
 				fileRecordRepo.findOneById.mockRejectedValue(new Error());
-				await expect(service.download('123', fileDownloadParams)).rejects.toThrow();
+				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 			});
 		});
 
 		describe('calls to storageClient.getFile()', () => {
 			it('should call once', async () => {
-				await service.download('123', fileDownloadParams);
+				await service.download(userId, fileDownloadParams);
 				expect(storageClient.getFile).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call with pathToFile', async () => {
-				await service.download('123', fileDownloadParams);
+				await service.download(userId, fileDownloadParams);
 				const pathToFile = path.join(fileRecord.schoolId, fileRecord.id, fileRecord.name);
 				expect(storageClient.getFile).toBeCalledWith(pathToFile);
 			});
 
 			it('should return file response', async () => {
-				const result = await service.download('123', fileDownloadParams);
+				const result = await service.download(userId, fileDownloadParams);
 				expect(result).toStrictEqual(response);
 			});
 
 			it('should throw error if entity not found', async () => {
 				storageClient.getFile.mockRejectedValue(new Error());
-				await expect(service.download('123', fileDownloadParams)).rejects.toThrow();
+				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 			});
-		});
-	});
-
-	describe('getFileRecord()', () => {
-		it('should return new FileRecord entity', () => {
-			const file = createMock<IFile>({ size: 100, name: 'text.doc', type: 'text/text' });
-			const result = service.getFileRecord('620abb23697023333eadea00', fileUploadParams, file);
-			expect(result).toBeInstanceOf(FileRecord);
 		});
 	});
 });

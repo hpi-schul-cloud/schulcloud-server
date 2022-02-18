@@ -31,29 +31,25 @@ export class S3ClientAdapter implements IStorageClient {
 	}
 
 	public async getFile(path: string): Promise<IGetFileResponse> {
-		try {
-			const req = new GetObjectCommand({
-				Bucket: this.config.bucket,
-				Key: path,
-			});
-			const data = await this.client.send(req);
-			return {
-				data: data.Body as Readable,
-				contentType: data.ContentType,
-				contentLength: data.ContentLength,
-				etag: data.ETag,
-			};
-		} catch (error) {
-			throw new NotFoundException('ENTITY_NOT_FOUND');
-		}
+		const req = new GetObjectCommand({
+			Bucket: this.config.bucket,
+			Key: path,
+		});
+		const data = await this.client.send(req);
+		return {
+			data: data.Body as Readable,
+			contentType: data.ContentType,
+			contentLength: data.ContentLength,
+			etag: data.ETag,
+		};
 	}
 
-	public async uploadFile(folder: string, file: IFile): Promise<ServiceOutputTypes> {
+	public async uploadFile(path: string, file: IFile): Promise<ServiceOutputTypes> {
 		try {
 			const req = {
 				Body: file.buffer,
 				Bucket: this.config.bucket,
-				Key: join(folder, file.name),
+				Key: path,
 				ContentType: file.type,
 			};
 			const res = new Upload({
@@ -68,9 +64,9 @@ export class S3ClientAdapter implements IStorageClient {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (error.Code && error.Code === 'NoSuchBucket') {
 				await this.createBucket();
-				return this.uploadFile(folder, file);
+				return this.uploadFile(path, file);
 			}
-			throw new InternalServerErrorException(error);
+			throw error;
 		}
 	}
 }

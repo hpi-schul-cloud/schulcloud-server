@@ -114,7 +114,7 @@ describe('S3ClientAdapter', () => {
 			type: 'text/text',
 			size: 100,
 		};
-		const path = 'test';
+		const path = 'test/test.txt';
 
 		it('should call send() of client', async () => {
 			await service.uploadFile(path, file);

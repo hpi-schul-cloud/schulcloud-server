@@ -3,10 +3,8 @@ import * as path from 'path';
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
-
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord } from '@shared/domain';
-
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
 import { IFile } from '../interface/file';
@@ -15,7 +13,7 @@ import { IFile } from '../interface/file';
 export class FilesStorageUC {
 	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async upload(userId: EntityId, params: FileMetaDto, req: Request): Promise<unknown> {
+	async upload(userId: EntityId, params: FileMetaDto, req: Request) {
 		// @TODO check permissions of schoolId by user
 		// @TODO scan virus on demand?
 		// @TODO add thumbnail on demand
@@ -26,15 +24,17 @@ export class FilesStorageUC {
 				// eslint-disable-next-line @typescript-eslint/no-misused-promises
 				requestStream.on('file', async (_name, file, info): Promise<void> => {
 					const fileDescription = this.createFileDescription(file, info, req);
-					const record = await this.uploadFile(userId, params, fileDescription);
-
-					resolve(record);
+					try {
+						const record = await this.uploadFile(userId, params, fileDescription);
+						resolve(record);
+					} catch (error) {
+						reject(error);
+					}
 				});
 
 				requestStream.on('error', (e) => {
 					reject(e);
 				});
-
 				req.pipe(requestStream);
 			});
 
@@ -44,7 +44,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
+	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
 		const size = Number(req.get('content-length'));
 		const fileDescription: IFile = {
 			name: info.filename,
@@ -56,7 +56,7 @@ export class FilesStorageUC {
 		return fileDescription;
 	}
 
-	private async uploadFile(userId: EntityId, params: FileMetaDto, fileDescription: IFile): Promise<FileRecord> {
+	private async uploadFile(userId: EntityId, params: FileMetaDto, fileDescription: IFile) {
 		const entity = new FileRecord({
 			size: fileDescription.size,
 			name: fileDescription.name,
@@ -66,13 +66,17 @@ export class FilesStorageUC {
 			creatorId: userId,
 			schoolId: params.schoolId,
 		});
-		await this.fileRecordRepo.save(entity);
+		try {
+			await this.fileRecordRepo.save(entity);
+			// todo on error roll back
+			const folder = path.join(params.schoolId, entity.id);
+			await this.storageClient.uploadFile(folder, fileDescription);
 
-		// todo on error roll back
-		const folder = path.join(params.schoolId, entity.id);
-		await this.storageClient.uploadFile(folder, fileDescription);
-
-		return entity;
+			return entity;
+		} catch (error) {
+			await this.fileRecordRepo.removeAndFlush(entity);
+			throw error;
+		}
 	}
 
 	async download(userId: EntityId, params: FileDownloadDto) {
