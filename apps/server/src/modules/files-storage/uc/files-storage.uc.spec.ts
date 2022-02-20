@@ -193,7 +193,7 @@ describe('FilesStorageUC', () => {
 
 			it('should call with pathToFile', async () => {
 				await service.download(userId, fileDownloadParams);
-				const pathToFile = path.join(fileRecord.schoolId, fileRecord.id, fileRecord.name);
+				const pathToFile = path.join(fileRecord.schoolId, fileRecord.id);
 				expect(storageClient.getFile).toBeCalledWith(pathToFile);
 			});
 
