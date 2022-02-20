@@ -133,4 +133,16 @@ describe('FileRecordRepo', () => {
 			expect(results.map((o) => o.targetId)).toEqual([task.id, task.id, task.id]);
 		});
 	});
+
+	describe('when updating an existing entity', () => {
+		it('should update the updatedAt property', async () => {
+			const fileRecord = fileRecordFactory.build();
+			await em.persistAndFlush(fileRecord);
+			const origUpdatedAt = fileRecord.updatedAt;
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			fileRecord.name = `updated-${fileRecord.name}`;
+			await repo.save(fileRecord);
+			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
+		});
+	});
 });
