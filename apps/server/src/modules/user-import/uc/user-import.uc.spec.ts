@@ -7,6 +7,7 @@ import { ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 
 describe('[ImportUserModule]', () => {
 	describe('UserUc', () => {
@@ -362,30 +363,54 @@ describe('[ImportUserModule]', () => {
 
 		describe('[saveAllUsersMatches]', () => {
 			it('Should request authorization service', async () => {
-				const user = userFactory.buildWithId();
-				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+				const system = systemFactory.buildWithId();
+				const school = schoolFactory.buildWithId({ systems: [system] });
+				const currentUser = userFactory.buildWithId({ school });
+
+				const userMatch1 = userFactory.buildWithId({ school });
+				const userMatch2 = userFactory.buildWithId({ school });
+				const importUser1 = importUserFactory.buildWithId({
+					school,
+					user: userMatch1,
+					matchedBy: MatchCreator.AUTO,
+				});
+				const importUser2 = importUserFactory.buildWithId({
+					school,
+					user: userMatch2,
+					matchedBy: MatchCreator.MANUAL,
+				});
+
+				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValueOnce(currentUser);
 				const permissionServiceSpy = jest
 					.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 					.mockReturnValue();
 				const importUserRepoFindImportUsersSpy = jest
 					.spyOn(importUserRepo, 'findImportUsers')
-					.mockResolvedValueOnce([[], 0]); // TODO return importUser data including matches
+					.mockResolvedValueOnce([[importUser1, importUser2], 2]);
 
+				userMatch1.ldapId = importUser1.ldapId;
+				userMatch2.ldapId = importUser2.ldapId;
+				const userRepoPersistAndFlushSpy = jest.spyOn(userRepo, 'persistAndFlush').mockResolvedValueOnce(userMatch1);
 				const importUserRepoDeleteImportUsersBySchoolSpy = jest.spyOn(importUserRepo, 'deleteImportUsersBySchool');
+				const schoolRepoPersistSpy = jest
+					.spyOn(schoolRepo, 'persistAndFlush')
+					.mockReturnValueOnce(Promise.resolve({ ...school, inUserMigration: false }));
 
-				const schoolRepoPersistSpy = jest.spyOn(schoolRepo, 'persistAndFlush');
+				const result = await uc.saveAllUsersMatches(currentUser.id);
 
-				const result = await uc.saveAllUsersMatches(user.id);
+				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
 
-				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [
+					UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE,
+				]);
 
-				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]);
 				const filters = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
-				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(user.school, filters, {});
+				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(school, filters, {});
+				expect(userRepoPersistAndFlushSpy).toHaveBeenCalledTimes(2);
+				expect(userRepoPersistAndFlushSpy.mock.calls).toEqual([[userMatch1], [userMatch2]]);
 
-				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(user.school);
+				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(school);
 
-				const { school } = user;
 				school.inUserMigration = false;
 				expect(schoolRepoPersistSpy).toHaveBeenCalledWith(school);
 

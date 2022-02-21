@@ -150,7 +150,7 @@ export class UserImportUc {
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
 			importUsers.map(async (importUser) => {
-				if (importUser.user && importUser.user.id) {
+				if (importUser.user) {
 					importUser.user.ldapId = importUser.ldapId;
 					await this.userRepo.persistAndFlush(importUser.user);
 				}
