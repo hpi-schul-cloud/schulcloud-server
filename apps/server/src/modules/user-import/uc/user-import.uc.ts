@@ -1,26 +1,28 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
+	Counted,
 	EntityId,
 	IFindOptions,
-	Counted,
-	ImportUser,
 	IImportUserScope,
-	MatchCreator,
+	ImportUser,
 	INameMatch,
-	User,
+	MatchCreator,
+	MatchCreatorScope,
 	PermissionService,
+	User,
 } from '@shared/domain';
 
-import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';
 
 @Injectable()
 export class UserImportUc {
 	constructor(
 		private readonly importUserRepo: ImportUserRepo,
-		private readonly userRepo: UserRepo,
-		private readonly permissionService: PermissionService
+		private readonly permissionService: PermissionService,
+		private readonly schoolRepo: SchoolRepo,
+		private readonly userRepo: UserRepo
 	) {}
 
 	/**
@@ -134,5 +136,33 @@ export class UserImportUc {
 
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
+	}
+
+	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
+		const currentUser = await this.userRepo.findById(currentUserId, true);
+
+		const permissions = [
+			UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE,
+			UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE,
+		];
+		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
+
+		const query: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+		// TODO batch/paginated import?
+		const options: IFindOptions<ImportUser> = {};
+		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
+		if (total > 0) {
+			importUsers.map(async (importUser) => {
+				if (importUser.user && importUser.user.id) {
+					importUser.user.ldapId = importUser.ldapId;
+					await this.userRepo.persistAndFlush(importUser.user);
+				}
+			});
+		}
+		const { school } = currentUser;
+		await this.importUserRepo.deleteImportUsersBySchool(school);
+
+		school.inUserMigration = false;
+		await this.schoolRepo.persistAndFlush(school);
 	}
 }

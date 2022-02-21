@@ -18,6 +18,7 @@ export * from './files';
 export * from './lesson';
 export * from './news';
 export * from './role';
+export * from './school';
 export * from './storageprovider';
 export * from './submission';
 export * from './task';
