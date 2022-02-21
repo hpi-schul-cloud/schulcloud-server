@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { FileRecord, ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FilesStorageUC } from '../uc/files-storage.uc';
-import { FileDownloadDto, FileDto, FileMetaDto } from './dto/file.dto';
+import { FileRecordResponse, FileDownloadDto, FileDto, FileMetaDto } from './dto';
 
 @ApiTags('files-storage')
 @Authenticate('jwt')
@@ -20,9 +20,11 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	) {
-		const res = this.filesStorageUC.upload(currentUser.userId, params, req);
+		const res = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
-		return res;
+		const response = new FileRecordResponse(res as FileRecord);
+
+		return response;
 	}
 
 	@ApiProperty({ type: String })
