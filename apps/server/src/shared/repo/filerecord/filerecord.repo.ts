@@ -1,13 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mongodb';
+
 import { Counted, EntityId, FileRecord, IFindOptions, SortOrder } from '@shared/domain';
-import { BaseRepo } from '@shared/repo/base.repo';
+
 import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()
-export class FileRecordRepo extends BaseRepo<FileRecord> {
+export class FileRecordRepo {
+	constructor(private readonly em: EntityManager) {}
+
 	async findOneById(id: EntityId): Promise<FileRecord> {
 		const fileRecord = await this.em.findOneOrFail(FileRecord, id);
 		return fileRecord;
+	}
+
+	async save(fileRecord: FileRecord): Promise<void> {
+		await this.em.persistAndFlush(fileRecord);
+	}
+
+	async delete(fileRecord: FileRecord): Promise<void> {
+		await this.em.removeAndFlush(fileRecord);
 	}
 
 	async findBySchoolIdAndTargetId(
@@ -27,9 +39,5 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		});
 
 		return [fileRecords, count];
-	}
-
-	async save(fileRecord: FileRecord): Promise<void> {
-		await this.em.persistAndFlush(fileRecord);
 	}
 }

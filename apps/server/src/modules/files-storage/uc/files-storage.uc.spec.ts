@@ -120,7 +120,11 @@ describe('FilesStorageUC', () => {
 
 		it('should call fileRecordRepo.uploadFile with params', async () => {
 			await service.upload(userId, fileUploadParams, request);
-			expect(storageClient.uploadFile).toBeCalledWith('620abb23697023333eadea00/620abb23697023333eadea99', {
+
+			// should be work without path join also for windows
+			const storagePath = path.join('620abb23697023333eadea00', '620abb23697023333eadea99');
+
+			expect(storageClient.uploadFile).toBeCalledWith(storagePath, {
 				buffer: Buffer.from('abc'),
 				name: 'text.txt',
 				size: 1234,
@@ -144,8 +148,8 @@ describe('FilesStorageUC', () => {
 
 			it('should call fileRecordRepo.removeAndFlush', async () => {
 				await expect(service.upload(userId, fileUploadParams, request)).rejects.toThrow();
-				expect(fileRecordRepo.removeAndFlush).toHaveBeenCalledTimes(1);
-				expect(fileRecordRepo.removeAndFlush).toBeCalledWith(
+
+				expect(fileRecordRepo.delete).toBeCalledWith(
 					expect.objectContaining({
 						id: '620abb23697023333eadea99',
 						name: 'text.txt',

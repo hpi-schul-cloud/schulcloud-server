@@ -4,7 +4,7 @@ import { cleanupCollections, fileRecordFactory, schoolFactory, taskFactory } fro
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { FileRecordTargetType, School, Task } from '@shared/domain';
+import { FileRecord, FileRecordTargetType, School, Task } from '@shared/domain';
 import { FileRecordRepo } from './filerecord.repo';
 
 describe('FileRecordRepo', () => {
@@ -47,8 +47,51 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const result = await repo.findOneById(fileRecord.id);
+
 			expect(result).toBeDefined();
 			expect(result.id).toEqual(fileRecord.id);
+		});
+	});
+
+	describe('save', () => {
+		it('should save the passed entity', async () => {
+			const fileRecord = fileRecordFactory.build();
+
+			await repo.save(fileRecord);
+			em.clear();
+
+			const result = await repo.findOneById(fileRecord.id);
+
+			expect(result).toBeInstanceOf(FileRecord);
+		});
+
+		it('should update the updatedAt property', async () => {
+			const fileRecord = fileRecordFactory.build();
+			await em.persistAndFlush(fileRecord);
+			const origUpdatedAt = fileRecord.updatedAt;
+
+			await new Promise((resolve) => setTimeout(resolve, 20));
+			fileRecord.name = `updated-${fileRecord.name}`;
+
+			await repo.save(fileRecord);
+			// load also from DB and test if value is set
+
+			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
+		});
+	});
+
+	describe('delete', () => {
+		it('should delete existing entity', async () => {
+			const fileRecord = fileRecordFactory.build();
+			await em.persistAndFlush(fileRecord);
+
+			const exist = await repo.findOneById(fileRecord.id);
+			expect(exist).toBeInstanceOf(FileRecord);
+
+			await repo.delete(fileRecord);
+
+			const notExistAnymore = await em.findOne(FileRecord, fileRecord.id);
+			expect(notExistAnymore).not.toBeInstanceOf(FileRecord);
 		});
 	});
 
@@ -64,24 +107,15 @@ describe('FileRecordRepo', () => {
 				targetType: FileRecordTargetType.Task,
 				targetId: task.id,
 			});
+
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
+
 			const [results, count] = await repo.findBySchoolIdAndTargetId(school1.id, task.id);
+
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
 			expect(results.map((o) => o.targetId)).toEqual([task.id, task.id, task.id]);
-		});
-	});
-
-	describe('when updating an existing entity', () => {
-		it('should update the updatedAt property', async () => {
-			const fileRecord = fileRecordFactory.build();
-			await em.persistAndFlush(fileRecord);
-			const origUpdatedAt = fileRecord.updatedAt;
-			await new Promise((resolve) => setTimeout(resolve, 20));
-			fileRecord.name = `updated-${fileRecord.name}`;
-			await repo.save(fileRecord);
-			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
 		});
 	});
 });

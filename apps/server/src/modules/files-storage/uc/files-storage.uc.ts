@@ -74,7 +74,7 @@ export class FilesStorageUC {
 
 			return entity;
 		} catch (error) {
-			await this.fileRecordRepo.removeAndFlush(entity);
+			await this.fileRecordRepo.delete(entity);
 			throw error;
 		}
 	}
