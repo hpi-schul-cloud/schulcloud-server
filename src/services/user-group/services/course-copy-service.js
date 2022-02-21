@@ -191,7 +191,9 @@ class CourseShareService {
 					return copyService
 						.create(tempCourse)
 						.then((res) => res)
-						.catch((err) => err);
+						.catch((err) => {
+							throw err;
+						});
 				});
 		});
 	}
