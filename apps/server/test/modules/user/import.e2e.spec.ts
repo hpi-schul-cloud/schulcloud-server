@@ -748,6 +748,19 @@ describe('ImportUser Controller (e2e)', () => {
 						});
 					});
 				});
+				describe('[migrate]', () => {
+					describe('POST user/import/migrate', () => {
+						it('should migrate', async () => {
+							const importUser = importUserFactory.build({
+								school,
+							});
+							await em.persistAndFlush([importUser]);
+							em.clear();
+
+							const result = await request(app.getHttpServer()).post(`/user/import/migrate`).expect(200);
+						});
+					});
+				});
 			});
 		});
 	});
