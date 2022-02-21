@@ -18,7 +18,6 @@ import { System } from './system.entity';
 import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { Account } from './account.entity';
 
-
 export const ALL_ENTITIES = [
 	Account,
 	Course,
