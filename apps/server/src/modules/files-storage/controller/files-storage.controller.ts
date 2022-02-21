@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Body, Controller, Get, Param, Post, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { FileRecord, ICurrentUser } from '@shared/domain';

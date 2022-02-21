@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
 import { FileRecordTargetType } from '@shared/domain/entity/filerecord.entity';

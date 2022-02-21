@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { FileRecord, FileRecordTargetType } from '@shared/domain/'; // we do not want entity on this place in future or?
