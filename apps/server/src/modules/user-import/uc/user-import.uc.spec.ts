@@ -5,9 +5,9 @@ import { MatchCreator, MatchCreatorScope, PermissionService } from '@shared/doma
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
-import { systemFactory } from '@shared/testing/factory/system.factory';
 
 describe('[ImportUserModule]', () => {
 	describe('UserUc', () => {
