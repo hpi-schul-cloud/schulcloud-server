@@ -417,6 +417,7 @@ describe('[ImportUserModule]', () => {
 				userRepoByIdSpy.mockRestore();
 				permissionServiceSpy.mockRestore();
 				importUserRepoFindImportUsersSpy.mockRestore();
+				userRepoPersistAndFlushSpy.mockRestore();
 				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
 				schoolRepoPersistSpy.mockRestore();
 			});
