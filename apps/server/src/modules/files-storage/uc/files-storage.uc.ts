@@ -28,7 +28,7 @@ export class FilesStorageUC {
 						const record = await this.uploadFile(userId, params, fileDescription);
 						resolve(record);
 					} catch (error) {
-						reject(error);
+						requestStream.emit('error', error);
 					}
 				});
 
