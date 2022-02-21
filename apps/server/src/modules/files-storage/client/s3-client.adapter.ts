@@ -1,8 +1,7 @@
 import { CreateBucketCommand, GetObjectCommand, S3Client, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { join } from 'path';
 import { Readable } from 'stream';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';

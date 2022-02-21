@@ -6,6 +6,7 @@ import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import * as path from 'path';
+import { Busboy } from 'busboy';
 import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FilesStorageUC } from './files-storage.uc';
@@ -77,16 +78,18 @@ describe('FilesStorageUC', () => {
 	});
 
 	describe('upload()', () => {
+		const mockBusboyEvent = (requestStream: DeepMocked<Busboy>) => {
+			requestStream.emit('file', 'file', Buffer.from('abc'), {
+				filename: 'text.txt',
+				encoding: '7-bit',
+				mimeType: 'text/text',
+			});
+			return requestStream;
+		};
+
 		beforeEach(() => {
 			request.get.mockReturnValue('1234');
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			request.pipe.mockImplementation((requestStream: any) =>
-				requestStream.emit('file', 'file', Buffer.from('abc'), {
-					filename: 'text.txt',
-					encoding: '7-bit',
-					mimeType: 'text/text',
-				})
-			);
+			request.pipe.mockImplementation(mockBusboyEvent as never);
 
 			fileRecordRepo.save.mockImplementation((entity: FileRecord) => {
 				entity.id = '620abb23697023333eadea99';
