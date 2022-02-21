@@ -141,16 +141,13 @@ export class UserImportUc {
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 
-		const permissions = [
-			UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE,
-			UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE,
-		];
+		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE];
 		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
 
-		const query: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
 		const options: IFindOptions<ImportUser> = {};
-		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
+		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
 			importUsers.map(async (importUser) => {
 				if (importUser.user && importUser.user.id) {

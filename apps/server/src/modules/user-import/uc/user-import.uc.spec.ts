@@ -1,9 +1,9 @@
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import { MatchCreator, PermissionService } from '@shared/domain';
+import { MatchCreator, MatchCreatorScope, PermissionService } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
@@ -12,8 +12,9 @@ describe('[ImportUserModule]', () => {
 	describe('UserUc', () => {
 		let module: TestingModule;
 		let uc: UserImportUc;
-		let userRepo: UserRepo;
 		let importUserRepo: ImportUserRepo;
+		let schoolRepo: SchoolRepo;
+		let userRepo: UserRepo;
 		let permissionService: PermissionService;
 
 		beforeAll(async () => {
@@ -21,8 +22,9 @@ describe('[ImportUserModule]', () => {
 				imports: [MongoMemoryDatabaseModule.forRoot()],
 				providers: [
 					UserImportUc,
-					UserRepo,
 					ImportUserRepo,
+					SchoolRepo,
+					UserRepo,
 					{
 						provide: PermissionService,
 						useValue: {
@@ -34,8 +36,9 @@ describe('[ImportUserModule]', () => {
 				],
 			}).compile();
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
-			userRepo = module.get(UserRepo);
 			importUserRepo = module.get(ImportUserRepo);
+			schoolRepo = module.get(SchoolRepo);
+			userRepo = module.get(UserRepo);
 			permissionService = module.get(PermissionService);
 		});
 
@@ -45,8 +48,9 @@ describe('[ImportUserModule]', () => {
 
 		it('should be defined', () => {
 			expect(uc).toBeDefined();
-			expect(userRepo).toBeDefined();
 			expect(importUserRepo).toBeDefined();
+			expect(schoolRepo).toBeDefined();
+			expect(userRepo).toBeDefined();
 			expect(permissionService).toBeDefined();
 		});
 
@@ -71,6 +75,7 @@ describe('[ImportUserModule]', () => {
 				importUserRepoFindImportUsersSpy.mockRestore();
 			});
 		});
+
 		describe('[findAllUnmatchedUsers]', () => {
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
@@ -287,6 +292,7 @@ describe('[ImportUserModule]', () => {
 				});
 			});
 		});
+
 		describe('[removeMatch]', () => {
 			describe('When having permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When having same school for user and importuser', () => {
@@ -351,6 +357,43 @@ describe('[ImportUserModule]', () => {
 						importUserPersistAndFlushSpy.mockRestore();
 					});
 				});
+			});
+		});
+
+		describe('[saveAllUsersMatches]', () => {
+			it('Should request authorization service', async () => {
+				const user = userFactory.buildWithId();
+				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
+				const permissionServiceSpy = jest
+					.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+					.mockReturnValue();
+				const importUserRepoFindImportUsersSpy = jest
+					.spyOn(importUserRepo, 'findImportUsers')
+					.mockResolvedValueOnce([[], 0]); // TODO return importUser data including matches
+
+				const importUserRepoDeleteImportUsersBySchoolSpy = jest.spyOn(importUserRepo, 'deleteImportUsersBySchool');
+
+				const schoolRepoPersistSpy = jest.spyOn(schoolRepo, 'persistAndFlush');
+
+				const result = await uc.saveAllUsersMatches(user.id);
+
+				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
+
+				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]);
+				const filters = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(user.school, filters, {});
+
+				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(user.school);
+
+				const { school } = user;
+				school.inUserMigration = false;
+				expect(schoolRepoPersistSpy).toHaveBeenCalledWith(school);
+
+				userRepoByIdSpy.mockRestore();
+				permissionServiceSpy.mockRestore();
+				importUserRepoFindImportUsersSpy.mockRestore();
+				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
+				schoolRepoPersistSpy.mockRestore();
 			});
 		});
 	});
