@@ -73,12 +73,11 @@ export interface IFileRecordProperties {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: 'filerecord' })
-@Index({ name: 'FileRecordTargetRelationship', properties: ['_targetId', 'targetType'] })
+@Index({ properties: ['_schoolId', '_targetId'] })
 export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	size: number;
 
-	@Index()
 	@Property()
 	name: string;
 
@@ -98,7 +97,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._targetId.toHexString();
 	}
 
-	@Index()
 	@Property({ fieldName: 'creator' })
 	_creatorId: ObjectId;
 

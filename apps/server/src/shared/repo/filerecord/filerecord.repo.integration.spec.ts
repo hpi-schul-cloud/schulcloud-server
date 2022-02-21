@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, courseFactory, fileRecordFactory, schoolFactory, taskFactory } from '@shared/testing';
+import { cleanupCollections, fileRecordFactory, schoolFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { Course, FileRecordTargetType, School, Task } from '@shared/domain';
+import { FileRecordTargetType, School, Task } from '@shared/domain';
 import { FileRecordRepo } from './filerecord.repo';
 
 describe('FileRecordRepo', () => {
@@ -23,13 +23,11 @@ describe('FileRecordRepo', () => {
 
 	let school1: School;
 	let school2: School;
-	let course: Course;
 	let task: Task;
 
 	beforeEach(() => {
 		school1 = schoolFactory.buildWithId();
 		school2 = schoolFactory.buildWithId();
-		course = courseFactory.buildWithId();
 		task = taskFactory.buildWithId();
 	});
 
@@ -54,44 +52,6 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	describe('findByTargetId', () => {
-		it('should find an entity by its target id', async () => {
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				targetType: FileRecordTargetType.Course,
-				targetId: course.id,
-			});
-			const fileRecords2 = fileRecordFactory.buildList(3, {
-				targetType: FileRecordTargetType.Task,
-				targetId: task.id,
-			});
-			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
-			em.clear();
-			const [results, count] = await repo.findByTargetId(course.id);
-			expect(count).toEqual(3);
-			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.targetId)).toEqual([course.id, course.id, course.id]);
-		});
-	});
-
-	describe('findByTargetType', () => {
-		it('should find an entity by its target type', async () => {
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				targetType: FileRecordTargetType.Course,
-				targetId: course.id,
-			});
-			const fileRecords2 = fileRecordFactory.buildList(3, {
-				targetType: FileRecordTargetType.Task,
-				targetId: task.id,
-			});
-			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
-			em.clear();
-			const [results, count] = await repo.findByTargetType(FileRecordTargetType.Task);
-			expect(count).toEqual(3);
-			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.targetId)).toEqual([task.id, task.id, task.id]);
-		});
-	});
-
 	describe('findBySchoolIdAndTargetId', () => {
 		it('should find an entity by its school id and target id', async () => {
 			const fileRecords1 = fileRecordFactory.buildList(3, {
@@ -107,27 +67,6 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 			const [results, count] = await repo.findBySchoolIdAndTargetId(school1.id, task.id);
-			expect(count).toEqual(3);
-			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.targetId)).toEqual([task.id, task.id, task.id]);
-		});
-	});
-
-	describe('findBySchoolIdAndTargetType', () => {
-		it('should find an entity by its school id and target id', async () => {
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				schoolId: school1.id,
-				targetType: FileRecordTargetType.Course,
-				targetId: course.id,
-			});
-			const fileRecords2 = fileRecordFactory.buildList(3, {
-				schoolId: school2.id,
-				targetType: FileRecordTargetType.Task,
-				targetId: task.id,
-			});
-			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
-			em.clear();
-			const [results, count] = await repo.findBySchoolIdAndTargetType(school2.id, FileRecordTargetType.Task);
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
 			expect(results.map((o) => o.targetId)).toEqual([task.id, task.id, task.id]);

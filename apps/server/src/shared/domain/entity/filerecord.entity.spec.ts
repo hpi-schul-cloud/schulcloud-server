@@ -1,7 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import exp from 'constants';
 import { FileSecurityCheckStatus } from '.';
 import { IFileRecordProperties, FileRecord, FileRecordTargetType, FileSecurityCheck } from './filerecord.entity';
 
