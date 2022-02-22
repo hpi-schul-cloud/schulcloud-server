@@ -1,6 +1,5 @@
 // Global hooks that run for every service
 const { iff, isProvider } = require('feathers-hooks-common');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { SlowQuery } = require('./errors');
 const logger = require('./logger');

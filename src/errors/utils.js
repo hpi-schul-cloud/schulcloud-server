@@ -1,5 +1,4 @@
 const http = require('http');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { incomingMessageToJson } = require('../utils');
 
 const logger = require('../logger');
