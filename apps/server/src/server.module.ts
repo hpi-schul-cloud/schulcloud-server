@@ -1,8 +1,5 @@
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { DynamicModule, Module} from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ALL_ENTITIES } from '@shared/domain';
 import { MailModule } from '@shared/infra/mail';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { LearnroomModule } from '@src/modules/learnroom';
@@ -15,9 +12,9 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
-import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 import { ImportUserModule } from './modules/user-import/user-import.module';
 import { OauthModule } from './modules/oauth';
+import {CommonModule, defaultMikroOrmOptions} from "@src/common.module";
 
 const serverModules = [
 	CoreModule,
@@ -29,7 +26,6 @@ const serverModules = [
 	ImportUserModule,
 	LearnroomModule,
 	MailModule.forRoot({
-		uri: Configuration.get('RABBITMQ_URI') as string,
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
@@ -43,30 +39,14 @@ const serverModules = [
 	}),
 ];
 
-const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-	},
-};
 
 /**
  * Server Module used for production
  */
 @Module({
 	imports: [
+		CommonModule,
 		...serverModules,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			// TODO add mongoose options as mongo options (see database.js)
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
-
-			// debug: true, // use it for locally debugging of querys
-		}),
 	],
 	controllers: [ServerController],
 })

@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { FileSecurityCheckStatus } from '.';
-import { IFileRecordProperties, FileRecord, FileRecordParentType, FileSecurityCheck } from './filerecord.entity';
+import { FileRecordParentType, ScanStatus } from '.';
+import { IFileRecordProperties, FileRecord, FileSecurityCheck } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
 	let orm: MikroORM;
@@ -23,7 +23,6 @@ describe('FileRecord Entity', () => {
 				size: Math.round(Math.random() * 100000),
 				name: `file-record #1`,
 				mimeType: 'application/octet-stream',
-				securityCheck: new FileSecurityCheck({}),
 				parentType: FileRecordParentType.Course,
 				parentId: new ObjectId(),
 				creatorId: new ObjectId(),
@@ -70,32 +69,41 @@ describe('FileRecord Entity', () => {
 
 	describe('when embedding the security status', () => {
 		it('should set the embedded status property', () => {
-			const fileRecord = fileRecordFactory.build({ securityCheck: { status: FileSecurityCheckStatus.VERIFIED } });
-			expect(fileRecord.securityCheck?.status).toEqual(FileSecurityCheckStatus.VERIFIED);
+			const fileRecord = fileRecordFactory.build();
+			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
+			expect(fileRecord.securityCheck?.status).toEqual(ScanStatus.VERIFIED);
 		});
 
 		it('should set the embedded reason property', () => {
-			const fileRecord = fileRecordFactory.build({ securityCheck: { reason: 'scanned' } });
+			const fileRecord = fileRecordFactory.build();
+			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
 			expect(fileRecord.securityCheck?.reason).toEqual('scanned');
 		});
 
 		it('should set the embedded requestToken property', () => {
-			const fileRecord = fileRecordFactory.build({ securityCheck: { requestToken: '08154711' } });
-			expect(fileRecord.securityCheck?.requestToken).toEqual('08154711');
+			const fileRecord = fileRecordFactory.build();
+			//	fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
+			expect(fileRecord.securityCheck?.requestToken).toBeDefined();
+		});
+
+		it('should set to `undifined` the embedded requestToken property', () => {
+			const fileRecord = fileRecordFactory.build();
+			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
+			expect(fileRecord.securityCheck?.requestToken).toBeUndefined();
 		});
 	});
 
 	describe('when updating the security status', () => {
 		it('should create a status object if not exists', () => {
-			const fileRecord = fileRecordFactory.build({ securityCheck: undefined });
-			fileRecord.updateSecurityCheckStatus(FileSecurityCheckStatus.WONTCHECK, 'irrelevant');
+			const fileRecord = fileRecordFactory.build();
+			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'irrelevant');
 			expect(fileRecord.securityCheck).toBeDefined();
 		});
 
 		it('should set status and reason properties on the embedded object', () => {
 			const fileRecord = fileRecordFactory.build();
-			fileRecord.updateSecurityCheckStatus(FileSecurityCheckStatus.WONTCHECK, 'irrelevant');
-			expect(fileRecord.securityCheck?.status).toEqual(FileSecurityCheckStatus.WONTCHECK);
+			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'irrelevant');
+			expect(fileRecord.securityCheck?.status).toEqual(ScanStatus.WONT_CHECK);
 			expect(fileRecord.securityCheck?.reason).toEqual('irrelevant');
 		});
 	});

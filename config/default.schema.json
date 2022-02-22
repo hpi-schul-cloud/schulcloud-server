@@ -231,6 +231,12 @@
 			"description": "Files storage server properties, required always to be defined",
 			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
 			"properties": {
+				"SERVICE_BASE_URL": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4444",
+					"description": "The URI of the file service"
+				},
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",
@@ -359,17 +365,27 @@
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
-			"description": "Antivirus file endpoint",
+			"description": "Antivirus file endpoint, only used for legacy file implementation",
 			"format": "uri",
 			"pattern": ".*(?<!/)$"
 		},
 		"FILE_SECURITY_SERVICE_USERNAME": {
 			"type": "string",
-			"description": "Username for the antivirus service"
+			"description": "Username for the antivirus service, only used for legacy file implementation"
 		},
 		"FILE_SECURITY_SERVICE_PASSWORD": {
 			"type": "string",
-			"description": "Password for the antivirus service"
+			"description": "Password for the antivirus service, only used for legacy file implementation"
+		},
+		"ANTIVIRUS_EXCHANGE" : {
+			"type": "string",
+			"default": "antivirus",
+			"description": "rabbitmq exchange name for antivirus"
+		},
+		"ANTIVIRUS_ROUTING_KEY" : {
+			"type": "string",
+			"default": "scan_file",
+			"description": "rabbitmq routing key"
 		},
 		"DOCUMENT_BASE_DIR": {
 			"type": "string",

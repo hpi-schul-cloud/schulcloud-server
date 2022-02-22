@@ -14,6 +14,8 @@ import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../config';
 import { FilesStorageUC } from './uc/files-storage.uc';
+import { CommonModule } from '@src/common.module';
+import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 
 // The configurations lookup
 // config/development.json for development
@@ -32,7 +34,17 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 	},
 };
-const imports = [AuthModule, CoreModule];
+const imports = [
+	AuthModule,
+	CoreModule,
+	CommonModule,
+	AntivirusModule.forRoot({
+		enabled: Configuration.get('ENABLE_FILE_SECURITY_CHECK') as boolean,
+		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
+		exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
+	}),
+];
 const providers = [
 	FilesStorageUC,
 	{
@@ -60,19 +72,7 @@ const providers = [
 ];
 
 @Module({
-	imports: [
-		...imports,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			// TODO add mongoose options as mongo options (see database.js)
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
-			// debug: true, // use it for locally debugging of querys
-		}),
-	],
+	imports,
 	controllers: [FilesStorageController],
 	providers,
 })

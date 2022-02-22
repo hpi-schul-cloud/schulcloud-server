@@ -32,3 +32,12 @@ export class DownloadFileParams {
 	@IsString()
 	fileName!: string;
 }
+
+export class ScanResultDto {
+	@ApiProperty()
+	virus_detected!: boolean;
+
+	@ApiProperty()
+	virus_signature!: string;
+
+}
