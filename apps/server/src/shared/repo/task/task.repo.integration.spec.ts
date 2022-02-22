@@ -1294,6 +1294,30 @@ describe('TaskRepo', () => {
 			expect(tasks.map((t) => t.id)).toEqual([task4.id, task1.id, task2.id, task3.id]);
 		});
 
+		it('should sort it by _id if dueDate is similar.', async () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ untilDate: undefined });
+
+			const dueDate = Date.now();
+			const task1 = taskFactory.build({ course, finished: [user], dueDate });
+			const task2 = taskFactory.build({ course, finished: [user], dueDate });
+			const task3 = taskFactory.build({ course, finished: [user], dueDate });
+			const task4 = taskFactory.build({ course, finished: [user], dueDate });
+
+			await em.persistAndFlush([task1, task2, task3, task4]);
+			em.clear();
+
+			const [tasks] = await repo.findAllFinishedByParentIds({
+				creatorId: user.id,
+				openCourseIds: [course.id],
+				lessonIdsOfOpenCourses: [],
+				finishedCourseIds: [],
+				lessonIdsOfFinishedCourses: [],
+			});
+
+			expect(tasks.map((t) => t.id)).toEqual([task1.id, task2.id, task3.id, task4.id].sort());
+		});
+
 		it('should populate course', async () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ teachers: [user], name: 'test' });
