@@ -89,7 +89,6 @@ class CourseCopyService {
 		if (copyLessons.some((r) => r.status === 'rejected')) {
 			throw new Unprocessable('Can not copy one or many lessons.');
 		}
-
 		const results = await Promise.allSettled(
 			homeworks.map((homework) => {
 				// homeworks that are part of a lesson are copied in LessonCopyService
@@ -191,7 +190,9 @@ class CourseShareService {
 					return copyService
 						.create(tempCourse)
 						.then((res) => res)
-						.catch((err) => err);
+						.catch((err) => {
+							throw err;
+						});
 				});
 		});
 	}
