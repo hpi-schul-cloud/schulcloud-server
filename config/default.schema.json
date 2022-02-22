@@ -698,6 +698,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for legacy course overview."
+		},
+		"FEATURE_COURSE_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for course sharing feature."
 		}
 	},
 	"required": [
@@ -705,7 +710,8 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
+		"LDAP_PASSWORD_ENCRYPTION_KEY"
 	],
 	"allOf": [
 		{

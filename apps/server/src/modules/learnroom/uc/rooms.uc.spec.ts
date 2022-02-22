@@ -1,16 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, taskFactory, userFactory, setupEntities } from '@shared/testing';
-import { Course, EntityId } from '@shared/domain';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { courseFactory, lessonFactory, taskFactory, userFactory, boardFactory, setupEntities } from '@shared/testing';
+import { Course, EntityId, User, Board } from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/repo';
+import { MikroORM } from '@mikro-orm/core';
+import { RoomBoardDTO } from '../types';
 import { RoomsUc } from './rooms.uc';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
 	let courseRepo: CourseRepo;
+	let lessonRepo: LessonRepo;
 	let taskRepo: TaskRepo;
+	let userRepo: UserRepo;
+	let boardRepo: BoardRepo;
+	let orm: MikroORM;
+	let factory: RoomBoardDTOFactory;
 
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	beforeEach(async () => {
@@ -28,11 +40,51 @@ describe('rooms usecase', () => {
 					},
 				},
 				{
+					provide: LessonRepo,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findAllByCourseIds(courseIds: EntityId[]) {
+							throw new Error('Please write a mock for LessonRepo.findAllByCourseIds');
+						},
+					},
+				},
+				{
 					provide: TaskRepo,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findBySingleParent(courseId: EntityId) {
+						findBySingleParent(creatorId: EntityId, courseId: EntityId) {
 							throw new Error('Please write a mock for TaskRepo.findBySingleParent');
+						},
+					},
+				},
+				{
+					provide: UserRepo,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findById(id: EntityId, populateRoles?: boolean) {
+							throw new Error('Please write a mock for UserRepo.findById');
+						},
+					},
+				},
+				{
+					provide: BoardRepo,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						findByCourseId(courseId: EntityId): Promise<Board> {
+							throw new Error('Please write a mock for BoardRepo.findByCourseId');
+						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						save(board: Board): Promise<void> {
+							throw new Error('Please write a mock for BoardRepo.save');
+						},
+					},
+				},
+				{
+					provide: RoomBoardDTOFactory,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+							throw new Error('Please write a mock for RoomBoardDTOMapper.mapDTO');
 						},
 					},
 				},
@@ -41,80 +93,117 @@ describe('rooms usecase', () => {
 
 		uc = module.get(RoomsUc);
 		courseRepo = module.get(CourseRepo);
+		lessonRepo = module.get(LessonRepo);
 		taskRepo = module.get(TaskRepo);
+		userRepo = module.get(UserRepo);
+		boardRepo = module.get(BoardRepo);
+		factory = module.get(RoomBoardDTOFactory);
 	});
 
 	describe('getBoard', () => {
-		it('should get course for roomId', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.buildWithId({ teachers: [user] });
-			const task = taskFactory.finished(user).buildWithId({ course });
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const room = courseFactory.buildWithId({ students: [user] });
+			const tasks = taskFactory.buildList(3, { course: room });
+			const lessons = lessonFactory.buildList(3, { course: room });
+			const board = boardFactory.buildWithId({ course: room });
+			const dto = {
+				roomId: room.id,
+				displayColor: room.color,
+				title: room.name,
+				elements: [],
+			};
+			board.syncLessonsFromList(lessons);
+			board.syncTasksFromList(tasks);
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
+			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
+			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
+			const tasksSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([tasks, 3]));
+			const lessonsSpy = jest
+				.spyOn(lessonRepo, 'findAllByCourseIds')
+				.mockImplementation(() => Promise.resolve([lessons, 3]));
+			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
+			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
+			const mapperSpy = jest.spyOn(factory, 'createDTO').mockImplementation(() => dto);
+			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
 
-			const spy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+			return {
+				user,
+				board,
+				room,
+				tasks,
+				lessons,
+				dto,
+				userSpy,
+				roomSpy,
+				boardSpy,
+				tasksSpy,
+				lessonsSpy,
+				syncLessonsSpy,
+				syncTasksSpy,
+				mapperSpy,
+				persistSpy,
+			};
+		};
 
-			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, user.id);
+		it('should fetch correct user', async () => {
+			const { room, user, userSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(userSpy).toBeCalledWith(user.id, true);
 		});
 
-		it('should exclude drafts for students', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.buildWithId({ students: [user] });
-			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
-			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
-
-			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, { draft: false });
+		it('should fetch correct room filtered by user', async () => {
+			const { room, user, roomSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
 		});
 
-		it('should not exclude drafts for teachers', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.buildWithId({ teachers: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
-			const task = taskFactory.buildWithId({ course });
-			const spy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
-
-			await uc.getBoard(course.id, user.id);
-			expect(spy).toHaveBeenCalledWith(course.id, {});
+		it('should fetch all lessons of room', async () => {
+			const { room, user, lessonsSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(lessonsSpy).toHaveBeenCalledWith([room.id]);
 		});
 
-		it('should return board with tasks for teacher', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.buildWithId({ teachers: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
-			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
-
-			const result = await uc.getBoard(course.id, user.id);
-			expect(result.elements.length).toEqual(1);
+		it('should fetch all tasks of room', async () => {
+			const { room, user, tasksSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(tasksSpy).toHaveBeenCalledWith(user.id, room.id);
 		});
 
-		it('should return board with tasks for students', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.buildWithId({ students: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
-
-			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
-
-			const result = await uc.getBoard(course.id, user.id);
-			expect(result.elements.length).toEqual(1);
+		it('should access primary board of room', async () => {
+			const { room, user, boardSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(boardSpy).toHaveBeenCalled();
 		});
 
-		it('should return board with tasks for substitution teacher', async () => {
-			const user = userFactory.build();
-			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
-			jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(course));
+		it('should sync boards lessons with fetched lessons', async () => {
+			const { room, user, lessons, syncLessonsSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(syncLessonsSpy).toHaveBeenCalledWith(lessons);
+		});
 
-			const task = taskFactory.buildWithId({ course });
-			jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([[task], 1]));
+		it('should sync boards tasks with fetched tasks', async () => {
+			const { room, user, tasks, syncTasksSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(syncTasksSpy).toHaveBeenCalledWith(tasks);
+		});
 
-			const result = await uc.getBoard(course.id, user.id);
-			expect(result.elements.length).toEqual(1);
+		it('should persist board', async () => {
+			const { room, user, persistSpy, board } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(persistSpy).toHaveBeenCalledWith(board);
+		});
+
+		it('should call to construct result dto from room, board, and user', async () => {
+			const { room, user, board, mapperSpy } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(mapperSpy).toHaveBeenCalledWith({ room, user, board });
+		});
+
+		it('should return result dto', async () => {
+			const { room, user, dto } = setup();
+			const result = await uc.getBoard(room.id, user.id);
+			expect(result).toEqual(dto);
 		});
 	});
 });

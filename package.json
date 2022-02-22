@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "27.0.0",
+	"version": "27.5.0",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -80,10 +80,11 @@
 		"@feathersjs/feathers": "^4.5.11",
 		"@feathersjs/socketio": "^4.5.11",
 		"@golevelup/nestjs-rabbitmq": "^1.18.1",
-		"@hpi-schul-cloud/commons": "^1.3.3",
+		"@hpi-schul-cloud/commons": "^1.3.4",
 		"@mikro-orm/core": "^4.5.5",
 		"@mikro-orm/mongodb": "^4.5.5",
 		"@mikro-orm/nestjs": "^4.3.1",
+		"@nestjs/axios": "^0.0.5",
 		"@nestjs/common": "^8.2.3",
 		"@nestjs/core": "^8.2.3",
 		"@nestjs/jwt": "^8.0.0",
@@ -178,6 +179,8 @@
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.44.0",
 		"@compodoc/compodoc": "^1.1.16",
+		"@jest-mock/express": "^1.4.5",
+		"@golevelup/ts-jest": "^0.3.2",
 		"@nestjs/cli": "^8.1.4",
 		"@nestjs/schematics": "^7.2.7",
 		"@nestjs/testing": "^8.2.3",
@@ -205,6 +208,7 @@
 		"eslint-config-prettier": "^8.1.0",
 		"eslint-import-resolver-typescript": "^2.4.0",
 		"eslint-plugin-import": "^2.23.3",
+		"eslint-plugin-jest": "^26.1.0",
 		"eslint-plugin-jsx-a11y": "^6.4.1",
 		"eslint-plugin-no-only-tests": "^2.6.0",
 		"eslint-plugin-prettier": "^3.3.1",

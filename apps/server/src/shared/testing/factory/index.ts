@@ -1,3 +1,5 @@
+export * from './board.factory';
+export * from './boardelement.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './file.factory';
@@ -9,3 +11,4 @@ export * from './storageprovider.factory';
 export * from './submission.factory';
 export * from './task.factory';
 export * from './user.factory';
+export * from './import-user.factory';

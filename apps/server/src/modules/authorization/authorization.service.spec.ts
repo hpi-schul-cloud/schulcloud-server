@@ -21,16 +21,16 @@ describe('AuthorizationService', () => {
 				{
 					provide: FeathersAuthProvider,
 					useValue: {
-						getUserSchoolPermissions(user: EntityId, school: EntityId) {
+						getUserSchoolPermissions() {
 							return schoolPermissions;
 						},
-						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel, targetId: EntityId) {
+						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel) {
 							return targetModel === NewsTargetModel.Course ? coursePermissions : teamPermissions;
 						},
-						getPermittedSchools(user) {
+						getPermittedSchools() {
 							return [];
 						},
-						getPermittedTargets(user, targetModel, permissionsToCheck) {
+						getPermittedTargets() {
 							return [];
 						},
 					},
@@ -81,6 +81,17 @@ describe('AuthorizationService', () => {
 			const courseId = new ObjectId().toHexString();
 			await expect(
 				service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, teamPermissions)
+			).rejects.toThrow(UnauthorizedException);
+		});
+
+		it('should fail when there is not at least one permission given', async () => {
+			const courseId = new ObjectId().toHexString();
+
+			await expect(service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, [])).rejects.toThrow(
+				UnauthorizedException
+			);
+			await expect(
+				service.checkEntityPermissions(userId, NewsTargetModel.Course, courseId, undefined as unknown as string[])
 			).rejects.toThrow(UnauthorizedException);
 		});
 	});

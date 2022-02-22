@@ -1,3 +1,4 @@
+import { MikroORM } from '@mikro-orm/core';
 import { Task, ITaskStatus, TaskParentDescriptions } from '@shared/domain';
 import { taskFactory, setupEntities } from '@shared/testing';
 import { TaskResponse, TaskStatusResponse } from '../controller/dto';
@@ -14,6 +15,7 @@ const createExpectedResponse = (
 	expectedStatus.maxSubmissions = status.maxSubmissions;
 	expectedStatus.submitted = status.submitted;
 	expectedStatus.isDraft = status.isDraft;
+	expectedStatus.isFinished = status.isFinished;
 	expectedStatus.isSubstitutionTeacher = status.isSubstitutionTeacher;
 
 	const expected = Object.create(TaskResponse.prototype) as TaskResponse;
@@ -25,16 +27,22 @@ const createExpectedResponse = (
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
 
-	expected.courseName = descriptions.name;
+	expected.courseName = descriptions.courseName;
 	expected.displayColor = descriptions.color;
-	expected.description = descriptions.description;
+	expected.description = descriptions.lessonName;
 
 	return expected;
 };
 
 describe('task.mapper', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('mapToResponse', () => {
@@ -42,18 +50,19 @@ describe('task.mapper', () => {
 			const task = taskFactory.buildWithId({ availableDate: new Date(), dueDate: new Date() });
 
 			const descriptions: TaskParentDescriptions = {
-				name: 'course #1',
+				courseName: 'course #1',
 				color: '#F0F0F0',
-				description: 'a task description',
+				lessonName: 'a task description',
 			};
 
-			const spy = jest.spyOn(task, 'getDescriptions').mockReturnValue(descriptions);
+			const spy = jest.spyOn(task, 'getParentData').mockReturnValue(descriptions);
 
 			const status = {
 				graded: 0,
 				maxSubmissions: 0,
 				submitted: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			};
 
