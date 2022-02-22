@@ -4,14 +4,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { RoomsUc } from '../uc/rooms.uc';
-import { BoardMapper } from '../mapper/board.mapper';
+import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { BoardResponse } from './dto/roomBoardResponse';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
 @Controller('rooms')
 export class RoomsController {
-	constructor(private readonly roomsUc: RoomsUc, private readonly mapper: BoardMapper) {}
+	constructor(private readonly roomsUc: RoomsUc, private readonly mapper: RoomBoardResponseMapper) {}
 
 	@Get(':id/board')
 	async getRoomBoard(
