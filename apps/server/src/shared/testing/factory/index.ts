@@ -3,6 +3,7 @@ export * from './boardelement.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './file.factory';
+export * from './filerecord.factory';
 export * from './lesson.factory';
 export * from './news.factory';
 export * from './role.factory';
