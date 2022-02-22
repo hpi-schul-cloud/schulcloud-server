@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain';
 import { FileRecordTargetType } from '@shared/domain/entity/filerecord.entity';
 import { IsEnum, IsMongoId } from 'class-validator';
 
-export class FileMetaDto {
+export class UploadFileParams {
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;
@@ -24,7 +24,7 @@ export class FileDto {
 	file!: string;
 }
 
-export class FileDownloadDto {
+export class DownloadFileParams {
 	@ApiProperty()
 	@IsMongoId()
 	fileRecordId!: EntityId;

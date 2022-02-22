@@ -5,10 +5,10 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { LoggerModule } from '@src/core/logger';
 import { FileRecordRepo } from '@shared/repo';
+import { AuthModule } from '@src/modules/authentication/auth.module';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
-import { AuthModule } from '../authentication/auth.module';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../config';
 import { FilesStorageUC } from './uc/files-storage.uc';
 

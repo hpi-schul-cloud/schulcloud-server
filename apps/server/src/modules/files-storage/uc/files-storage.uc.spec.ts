@@ -5,9 +5,8 @@ import { Request } from 'express';
 import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
-import * as path from 'path';
 import { Busboy } from 'busboy';
-import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
+import { DownloadFileParams, UploadFileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FilesStorageUC } from './files-storage.uc';
 import { IGetFileResponse } from '../interface/storage-client';
@@ -20,8 +19,8 @@ describe('FilesStorageUC', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
-	let fileDownloadParams: FileDownloadDto;
-	let fileUploadParams: FileMetaDto;
+	let fileDownloadParams: DownloadFileParams;
+	let fileUploadParams: UploadFileParams;
 	let response: IGetFileResponse;
 	const userId: EntityId = '620abb23697023333eadea99';
 
@@ -122,7 +121,7 @@ describe('FilesStorageUC', () => {
 			await service.upload(userId, fileUploadParams, request);
 
 			// should be work without path join also for windows
-			const storagePath = path.join('620abb23697023333eadea00', '620abb23697023333eadea99');
+			const storagePath = ['620abb23697023333eadea00', '620abb23697023333eadea99'].join('/');
 
 			expect(storageClient.uploadFile).toBeCalledWith(storagePath, {
 				buffer: Buffer.from('abc'),
@@ -200,7 +199,7 @@ describe('FilesStorageUC', () => {
 
 			it('should call with pathToFile', async () => {
 				await service.download(userId, fileDownloadParams);
-				const pathToFile = path.join(fileRecord.schoolId, fileRecord.id);
+				const pathToFile = [fileRecord.schoolId, fileRecord.id].join('/');
 				expect(storageClient.getFile).toBeCalledWith(pathToFile);
 			});
 

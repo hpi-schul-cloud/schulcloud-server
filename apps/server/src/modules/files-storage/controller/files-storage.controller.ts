@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 
 import { Body, Controller, Get, Param, Post, Req, StreamableFile } from '@nestjs/common';
-import { ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileRecord, ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FilesStorageUC } from '../uc/files-storage.uc';
-import { FileRecordResponse, FileDownloadDto, FileDto, FileMetaDto } from './dto';
+import { FileRecordResponse, DownloadFileParams, FileDto, UploadFileParams } from './dto';
 
 @ApiTags('files-storage')
 @Authenticate('jwt')
@@ -18,10 +18,10 @@ export class FilesStorageController {
 	@Post('upload/:schoolId/:targetType/:targetId')
 	async uploadAsStream(
 		@Body() _: FileDto,
-		@Param() params: FileMetaDto,
+		@Param() params: UploadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
-	) {
+	): Promise<FileRecordResponse> {
 		const res = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
 		const response = new FileRecordResponse(res as FileRecord);
@@ -29,9 +29,11 @@ export class FilesStorageController {
 		return response;
 	}
 
-	@ApiProperty({ type: String })
 	@Get('/download/:fileRecordId/:fileName')
-	async download(@Param() params: FileDownloadDto, @CurrentUser() currentUser: ICurrentUser) {
+	async download(
+		@Param() params: DownloadFileParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<StreamableFile> {
 		const res = await this.filesStorageUC.download(currentUser.userId, params);
 		// @TODO set headers ?
 		return new StreamableFile(res.data, {

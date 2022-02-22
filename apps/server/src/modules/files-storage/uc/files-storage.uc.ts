@@ -1,19 +1,18 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import * as path from 'path';
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord } from '@shared/domain';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FileDownloadDto, FileMetaDto } from '../controller/dto/file.dto';
+import { DownloadFileParams, UploadFileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
 	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async upload(userId: EntityId, params: FileMetaDto, req: Request) {
+	async upload(userId: EntityId, params: UploadFileParams, req: Request) {
 		// @TODO check permissions of schoolId by user
 		// @TODO scan virus on demand?
 		// @TODO add thumbnail on demand
@@ -56,7 +55,7 @@ export class FilesStorageUC {
 		return fileDescription;
 	}
 
-	private async uploadFile(userId: EntityId, params: FileMetaDto, fileDescription: IFile) {
+	private async uploadFile(userId: EntityId, params: UploadFileParams, fileDescription: IFile) {
 		const entity = new FileRecord({
 			size: fileDescription.size,
 			name: fileDescription.name,
@@ -69,7 +68,7 @@ export class FilesStorageUC {
 		try {
 			await this.fileRecordRepo.save(entity);
 			// todo on error roll back
-			const folder = path.join(params.schoolId, entity.id);
+			const folder = [params.schoolId, entity.id].join('/');
 			await this.storageClient.uploadFile(folder, fileDescription);
 
 			return entity;
@@ -79,7 +78,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	async download(userId: EntityId, params: FileDownloadDto) {
+	async download(userId: EntityId, params: DownloadFileParams) {
 		try {
 			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 			if (entity.name !== params.fileName) {
@@ -87,7 +86,7 @@ export class FilesStorageUC {
 			}
 
 			// @TODO check permissions of schoolId by user
-			const pathToFile = path.join(entity.schoolId, entity.id);
+			const pathToFile = [entity.schoolId, entity.id].join('/');
 			const res = await this.storageClient.getFile(pathToFile);
 
 			return res;

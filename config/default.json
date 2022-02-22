@@ -33,12 +33,5 @@
 		"SECRET": "SECRET",
 		"STUDENT_ROOM_CREATION": false
 	},
-	"FILES_STORAGE": {
-		"S3_ENDPOINT": "http://localhost:9000",
-		"S3_ACCESS_KEY_ID": "miniouser",
-		"S3_SECRET_ACCESS_KEY": "miniouser",
-		"S3_BUCKET": "schulcloud",
-		"S3_REGION": "eu-central-1"
-	},
 	"REQUEST_TIMEOUT": 8000
 }
