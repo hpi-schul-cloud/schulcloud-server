@@ -1,4 +1,3 @@
-/*
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -6,7 +5,7 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 
-import { FilesStorageModule } from '@src/modules/files-storage/files-storage.module';
+import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser } from '@shared/domain';
@@ -51,7 +50,7 @@ describe('file-storage controller upload (e2e)', () => {
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [FilesStorageModule],
+				imports: [FilesStorageTestModule],
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue({
@@ -138,7 +137,7 @@ describe('file-storage controller upload (e2e)', () => {
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
-				imports: [FilesStorageModule],
+				imports: [FilesStorageTestModule],
 			})
 				.overrideGuard(JwtAuthGuard)
 				.useValue({
@@ -234,4 +233,3 @@ describe('file-storage controller upload (e2e)', () => {
 		});
 	});
 });
-*/
