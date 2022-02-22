@@ -97,7 +97,6 @@
 		"@nestjs/passport": "^8.0.1",
 		"@nestjs/platform-express": "^8.2.3",
 		"@nestjs/swagger": "^5.1.0",
-		"@sentry/node": "^6.2.0",
 		"ajv": "^8.8.2",
 		"amqp-connection-manager": "^3.2.2",
 		"amqplib": "^0.8.0",
