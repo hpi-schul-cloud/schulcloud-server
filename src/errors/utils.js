@@ -26,7 +26,6 @@ const asyncErrorLog = (err, message) => {
 	} else {
 		logger.error(err);
 	}
-
 };
 
 const isSilentError = (error) => error instanceof SilentError || (error && error.error instanceof SilentError); // TODO why checking error.error here
