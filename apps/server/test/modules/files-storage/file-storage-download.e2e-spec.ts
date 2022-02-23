@@ -33,9 +33,21 @@ class API {
 			status: response.status,
 		};
 	}
+
+	async getDownloadFile(routeName: string, query?: string | Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer())
+			.get(`/files-storage${routeName}`)
+			.query(query || {});
+
+		return {
+			result: response.body as FileRecordResponse,
+			error: response.body as HttpException,
+			status: response.status,
+		};
+	}
 }
 
-describe('file-storage controller upload (e2e)', () => {
+describe('file-storage controller download (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -91,22 +103,21 @@ describe('file-storage controller upload (e2e)', () => {
 
 		return user;
 	};
-	describe('upload with bad request data', () => {
-		it('should return status 400 for invalid schoolId', async () => {
+	describe('download with bad request data', () => {
+		it('should return status 400 for invalid recordId', async () => {
 			const user = setup();
-			const validId = new ObjectId().toHexString();
 
 			await em.persistAndFlush([user]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.postUploadFile(`/upload/123/users/${validId}`);
-			expect(response.error.message).toEqual(['schoolId must be a mongodb id']);
+			const response = await api.getDownloadFile('/download/123/text.txt');
+			expect(response.error.message).toEqual(['fileRecordId must be a mongodb id']);
 			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid targetId', async () => {
+		it('should return status 400 for wrong filename', async () => {
 			const user = setup();
 			const validId = new ObjectId().toHexString();
 
@@ -115,12 +126,14 @@ describe('file-storage controller upload (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.postUploadFile(`/upload/${validId}/users/123`);
-			expect(response.error.message).toEqual(['targetId must be a mongodb id']);
+			const { result } = await api.postUploadFile(`/upload/${validId}/users/${validId}`);
+			const response = await api.getDownloadFile(`/download/${result.id}/wrong-name.txt`);
+
+			expect(response.error.message).toEqual('File not found');
 			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid targetType', async () => {
+		it('should return status 400 for file not found', async () => {
 			const user = setup();
 			const validId = new ObjectId().toHexString();
 
@@ -129,15 +142,16 @@ describe('file-storage controller upload (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.postUploadFile(`/upload/${validId}/cookies/${validId}`);
-			expect(response.error.message).toEqual(['targetType must be a valid enum value']);
+			const response = await api.getDownloadFile(`/download/${validId}/wrong-name.txt`);
+
+			expect(response.error.message).toEqual(`The requested FileRecord: ${validId} has not been found.`);
 			expect(response.status).toEqual(400);
 		});
 	});
 
-	describe(`upload with valid request data`, () => {
+	describe(`download with valid request data`, () => {
 		const validId = new ObjectId().toHexString();
-		it('should return status 201 for successful upload', async () => {
+		it('should return status 201 for successful download', async () => {
 			const user = setup();
 
 			await em.persistAndFlush([user]);
@@ -145,61 +159,10 @@ describe('file-storage controller upload (e2e)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
+			const { result } = await api.postUploadFile(`/upload/${validId}/users/${validId}`);
+			const response = await api.getDownloadFile(`/download/${result.id}/${result.name}`);
 
-			expect(response.status).toEqual(201);
-		});
-
-		it('should return the new created file record', async () => {
-			const user = setup();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
-			expect(result).toStrictEqual(
-				expect.objectContaining({
-					id: expect.any(String) as string,
-					name: 'test.txt',
-					targetId: validId,
-					creatorId: currentUser.userId,
-					type: 'text/plain',
-					targetType: 'schools',
-				})
-			);
-		});
-
-		it('should read file name from upload stream', async () => {
-			const user = setup();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
-
-			expect(result.name).toEqual('test.txt');
-		});
-
-		it.skip('should set iterator number to file name if file already exist', async () => {
-			const user = setup();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			const file = fileRecordFactory.build({ name: 'test', targetId: validId });
-
-			await em.persistAndFlush([file]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.postUploadFile(`/upload/${validId}/school/${validId}`);
-
-			expect(result.name).toEqual('test (1)');
+			expect(response.status).toEqual(200);
 		});
 	});
 });

@@ -15,7 +15,10 @@ import { S3Config } from './interface/config';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../config';
 import { FilesStorageUC } from './uc/files-storage.uc';
 
-const config: S3Config = {
+// The configurations lookup
+// config/development.json for development
+// config/test.json for tests
+const config = {
 	endpoint: Configuration.get('FILES_STORAGE__S3_ENDPOINT') as string,
 	region: Configuration.get('FILES_STORAGE__S3_REGION') as string,
 	bucket: Configuration.get('FILES_STORAGE__S3_BUCKET') as string,
@@ -71,14 +74,14 @@ const providers = [
 		}),
 	],
 	controllers: [FilesStorageController],
-	providers: [...providers],
+	providers,
 })
 export class FilesStorageModule {}
 
 @Module({
 	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
 	controllers: [FilesStorageController],
-	providers: [...providers],
+	providers,
 })
 export class FilesStorageTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
