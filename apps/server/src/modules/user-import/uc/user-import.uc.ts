@@ -149,12 +149,13 @@ export class UserImportUc {
 		const options: IFindOptions<ImportUser> = {};
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
-			importUsers.map(async (importUser) => {
+			importUsers.forEach((importUser) => {
 				if (importUser.user) {
 					importUser.user.ldapId = importUser.ldapId;
-					await this.userRepo.persistAndFlush(importUser.user);
+					this.userRepo.persist(importUser.user);
 				}
 			});
+			await this.userRepo.flush();
 		}
 		const { school } = currentUser;
 		await this.importUserRepo.deleteImportUsersBySchool(school);
