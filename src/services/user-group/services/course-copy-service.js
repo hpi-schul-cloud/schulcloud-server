@@ -76,7 +76,7 @@ class CourseCopyService {
 			throw new GeneralError('Can not fetch data to copy this course.', err);
 		});
 
-		const copyLessons = await Promise.allSettled(
+		const lessonsResults = await Promise.allSettled(
 			lessons.map((lesson) =>
 				createLesson(this.app, {
 					lessonId: lesson._id,
@@ -86,10 +86,12 @@ class CourseCopyService {
 				})
 			)
 		);
-		if (copyLessons.some((r) => r.status === 'rejected')) {
+		if (lessonsResults.some((r) => r.status === 'rejected')) {
+			const rejected = lessonsResults.filter((result) => result.status === 'rejected').map((result) => result.reason);
+			logger.warn(rejected);
 			throw new Unprocessable('Can not copy one or many lessons.');
 		}
-		const results = await Promise.allSettled(
+		const homeworkResults = await Promise.allSettled(
 			homeworks.map((homework) => {
 				// homeworks that are part of a lesson are copied in LessonCopyService
 				if (!homework.lessonId) {
@@ -105,7 +107,9 @@ class CourseCopyService {
 				return false;
 			})
 		);
-		if (results.some((r) => r.status === 'rejected')) {
+		if (homeworkResults.some((r) => r.status === 'rejected')) {
+			const rejected = homeworkResults.filter((result) => result.status === 'rejected').map((result) => result.reason);
+			logger.warn(rejected);
 			throw new Unprocessable('Can not copy one or many homeworks.');
 		}
 
