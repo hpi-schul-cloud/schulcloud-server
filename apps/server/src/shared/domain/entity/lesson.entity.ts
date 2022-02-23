@@ -1,4 +1,5 @@
 import { Entity, ManyToOne, Property, Index } from '@mikro-orm/core';
+import { ILearnroomElement } from '@shared/domain/interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 
@@ -9,7 +10,7 @@ export interface ILessonProperties {
 }
 
 @Entity({ tableName: 'lessons' })
-export class Lesson extends BaseEntityWithTimestamps {
+export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement {
 	@Property()
 	name: string;
 
@@ -25,5 +26,13 @@ export class Lesson extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;
+	}
+
+	publish() {
+		this.hidden = false;
+	}
+
+	unpublish() {
+		this.hidden = true;
 	}
 }
