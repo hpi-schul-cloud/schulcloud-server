@@ -27,6 +27,7 @@ describe('TaskRepo', () => {
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [TaskRepo],
 		}).compile();
+
 		repo = module.get(TaskRepo);
 		em = module.get(EntityManager);
 	});
