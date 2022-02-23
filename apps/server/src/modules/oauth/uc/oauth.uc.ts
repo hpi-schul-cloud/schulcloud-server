@@ -9,6 +9,7 @@ import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.pro
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
 import { ValidationError } from '@mikro-orm/core';
+import QueryString from 'qs';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
@@ -69,8 +70,13 @@ export class OauthUc {
 
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
 			tokenRequestPayload.tokenEndpoint,
-			{},
-			{ params: { ...tokenRequestPayload.tokenRequestParams } }
+			QueryString.stringify(tokenRequestPayload.tokenRequestParams),
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			}
 		);
 
 		const responseToken = await lastValueFrom(responseTokenObservable);

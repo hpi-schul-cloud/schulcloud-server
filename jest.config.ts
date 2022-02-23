@@ -1,7 +1,7 @@
 // jest.config.ts
 import type { Config } from '@jest/types';
 
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
+const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('./tsconfig.json');
 
 // Sync object

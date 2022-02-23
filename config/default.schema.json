@@ -226,6 +226,35 @@
 				}
 			}
 		},
+		"FILES_STORAGE": {
+			"type": "object",
+			"description": "Files storage server properties, required always to be defined",
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
+			"properties": {
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_REGION": {
+					"type": "string",
+					"default": "eu-central-1",
+					"description": "Region name of bucket"
+				},
+				"S3_BUCKET": {
+					"type": "string",
+					"description": "Bucket name"
+				},
+				"S3_ACCESS_KEY_ID": {
+					"type": "string",
+					"description": "Access Key to S3"
+				},
+				"S3_SECRET_ACCESS_KEY": {
+					"type": "string",
+					"description": "Secret key to S3"
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -396,7 +425,7 @@
 		},
 		"ROCKET_CHAT_URI": {
 			"type": "string",
-			"default" : null,
+			"default": null,
 			"description": "rocketchat base uri"
 		},
 		"ROCKET_CHAT_ADMIN_ID": {
@@ -423,18 +452,6 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
 			"pattern": ".{16}.*"
-		},
-		"SENTRY_DSN": {
-			"type": "string",
-			"format": "uri",
-			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
-		},
-		"SENTRY_SAMPLE_RATE": {
-			"type": "number",
-			"default": 1.0,
-			"minimum": 0.0,
-			"maximum": 1.0,
-			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
 		},
 		"ETHERPAD_API_KEY": {
 			"type": "string",

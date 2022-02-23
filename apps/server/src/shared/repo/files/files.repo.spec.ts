@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { BaseFile, File } from '@shared/domain';
 import { fileFactory } from '@shared/testing';
-import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { FileStorageAdapter } from '@shared/infra/filestorage/filestorage.adapter';
+
 import { FilesRepo } from './files.repo';
 
 describe('FilesRepo', () => {
 	let repo: FilesRepo;
-	let fileStorageAdapter: FileStorageAdapter;
+	let fileStorageAdapter: DeepMocked<FileStorageAdapter>;
 	let em: EntityManager;
 	let module: TestingModule;
 
@@ -20,9 +23,7 @@ describe('FilesRepo', () => {
 				FilesRepo,
 				{
 					provide: FileStorageAdapter,
-					useValue: {
-						deleteFile: () => {},
-					},
+					useValue: createMock<FileStorageAdapter>(),
 				},
 			],
 		}).compile();
@@ -40,6 +41,13 @@ describe('FilesRepo', () => {
 		await module.close();
 	});
 
+	const setFileStorageAdapterMock = {
+		deleteFile: () => {
+			const spy = fileStorageAdapter.deleteFile.mockResolvedValue();
+			return spy;
+		},
+	};
+
 	describe('defined', () => {
 		it('repo should be defined', () => {
 			expect(repo).toBeDefined();
@@ -56,6 +64,8 @@ describe('FilesRepo', () => {
 		});
 
 		it('should return deleted files marked for cleanup', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
 			const file = fileFactory.build({ deletedAt: new Date() });
 			await em.persistAndFlush(file);
 			em.clear();
@@ -67,8 +77,12 @@ describe('FilesRepo', () => {
 			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
+
+			spy.mockRestore();
 		});
 		it('should return files for cleanuo, directly when deletion date matches', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
 			const cleanupThreshold = new Date();
 			const file = fileFactory.build({ deletedAt: cleanupThreshold });
 			await em.persistAndFlush(file);
@@ -78,9 +92,13 @@ describe('FilesRepo', () => {
 			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
+
+			spy.mockRestore();
 		});
 
 		it('should not return files for cleanup, which are not deleted', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
 			const file = fileFactory.build({ deletedAt: undefined });
 			await em.persistAndFlush(file);
 			const cleanupThreshold = new Date();
@@ -88,9 +106,13 @@ describe('FilesRepo', () => {
 
 			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
+
+			spy.mockRestore();
 		});
 
 		it('should not return files, which are deleted too recently', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
 			const cleanupThreshold = new Date();
 			const file = fileFactory.build({ deletedAt: new Date(cleanupThreshold.getTime() + 10) });
 			await em.persistAndFlush(file);
@@ -100,11 +122,15 @@ describe('FilesRepo', () => {
 
 			const result = await repo.findAllFilesForCleanup(cleanupThreshold);
 			expect(result.length).toEqual(0);
+
+			spy.mockRestore();
 		});
 	});
 
 	describe('deleteFile', () => {
 		it('should delete the file representation in the database', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
 			const file = fileFactory.build();
 			await em.persistAndFlush(file);
 
@@ -112,9 +138,13 @@ describe('FilesRepo', () => {
 
 			const fileAfterDeletion = await em.findOne(File, file.id);
 			expect(fileAfterDeletion).toBeNull();
+
+			spy.mockRestore();
 		});
 
 		it('should delete the file in the storage provider', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
 			const fileStorageAdapterSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
 
 			const file = fileFactory.build();
@@ -124,6 +154,8 @@ describe('FilesRepo', () => {
 
 			expect(fileStorageAdapterSpy).toBeCalledTimes(1);
 			expect(fileStorageAdapterSpy).toBeCalledWith(file);
+
+			spy.mockRestore();
 		});
 	});
 });
