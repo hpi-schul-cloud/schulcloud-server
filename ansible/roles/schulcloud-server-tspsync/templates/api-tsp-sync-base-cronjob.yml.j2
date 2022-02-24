@@ -19,7 +19,7 @@ spec:
             image: curlimages/curl:7.71.1
             envFrom:
             - secretRef:
-                name: api-secre
+                name: api-secret
             command:
             - curl
             - -H
