@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
 
+/**
+ * This repo is deprecated do not use it for new repos.
+ */
 @Injectable()
 export class BaseRepo<T extends BaseEntity> {
 	constructor(protected readonly em: EntityManager) {}

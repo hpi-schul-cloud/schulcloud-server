@@ -23,6 +23,7 @@ const defaultOauthConfig: OauthConfig = {
 	scope: 'openid uuid',
 	responseType: 'code',
 	authEndpoint: 'mock_authEndpoint',
+	provider: 'mock_provider',
 };
 const defaultSystem: System = {
 	type: 'iserv',
