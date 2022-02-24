@@ -49,7 +49,7 @@ export class S3ClientAdapter implements IStorageClient {
 				Body: file.buffer,
 				Bucket: this.config.bucket,
 				Key: path,
-				ContentType: file.type,
+				ContentType: file.mimeType,
 			};
 			const res = new Upload({
 				client: this.client,

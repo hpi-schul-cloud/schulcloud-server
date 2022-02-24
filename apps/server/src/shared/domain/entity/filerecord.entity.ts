@@ -11,7 +11,7 @@ export enum FileSecurityCheckStatus {
 	WONTCHECK = 'wont-check',
 }
 
-export enum FileRecordTargetType {
+export enum FileRecordParentType {
 	'User' = 'users',
 	'School' = 'schools',
 	'Course' = 'courses',
@@ -58,10 +58,10 @@ export class FileSecurityCheck {
 export interface IFileRecordProperties {
 	size: number;
 	name: string;
-	type: string; // TODO mime-type enum?
+	mimeType: string;
 	securityCheck?: FileSecurityCheck;
-	targetType: FileRecordTargetType;
-	targetId: EntityId | ObjectId;
+	parentType: FileRecordParentType;
+	parentId: EntityId | ObjectId;
 	creatorId: EntityId | ObjectId;
 	lockedForUserId?: EntityId | ObjectId;
 	schoolId: EntityId | ObjectId;
@@ -73,7 +73,7 @@ export interface IFileRecordProperties {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: 'filerecord' })
-@Index({ properties: ['_schoolId', '_targetId'] })
+@Index({ properties: ['_schoolId', '_parentId'] })
 export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	size: number;
@@ -82,19 +82,19 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Property()
-	type: string; // TODO mime-type enum?
+	mimeType: string; // TODO mime-type enum?
 
 	@Embedded(() => FileSecurityCheck, { object: true, nullable: true })
 	securityCheck?: FileSecurityCheck;
 
 	@Enum()
-	targetType: FileRecordTargetType;
+	parentType: FileRecordParentType;
 
-	@Property({ fieldName: 'target' })
-	_targetId: ObjectId;
+	@Property({ fieldName: 'parent' })
+	_parentId: ObjectId;
 
-	get targetId(): EntityId {
-		return this._targetId.toHexString();
+	get parentId(): EntityId {
+		return this._parentId.toHexString();
 	}
 
 	@Property({ fieldName: 'creator' })
@@ -125,10 +125,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		super();
 		this.size = props.size;
 		this.name = props.name;
-		this.type = props.type;
+		this.mimeType = props.mimeType;
 		this.securityCheck = props.securityCheck;
-		this.targetType = props.targetType;
-		this._targetId = new ObjectId(props.targetId);
+		this.parentType = props.parentType;
+		this._parentId = new ObjectId(props.parentId);
 		this._creatorId = new ObjectId(props.creatorId);
 		if (props.lockedForUserId !== undefined) {
 			this._lockedForUserId = new ObjectId(props.lockedForUserId);
