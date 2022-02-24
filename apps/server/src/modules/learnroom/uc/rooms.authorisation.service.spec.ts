@@ -47,6 +47,14 @@ describe('rooms authorisation service', () => {
 			const result = service.hasCourseReadPermission(user, course);
 			expect(result).toEqual(true);
 		});
+
+		it('should be false for user not in course', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+
+			const result = service.hasCourseReadPermission(user, course);
+			expect(result).toEqual(false);
+		});
 	});
 
 	describe('hasCourseWritePermission', () => {
@@ -71,6 +79,14 @@ describe('rooms authorisation service', () => {
 			const course = courseFactory.buildWithId({ students: [user] });
 
 			const result = service.hasCourseWritePermission(user, course);
+			expect(result).toEqual(false);
+		});
+
+		it('should be false for user not in course', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+
+			const result = service.hasCourseReadPermission(user, course);
 			expect(result).toEqual(false);
 		});
 	});
