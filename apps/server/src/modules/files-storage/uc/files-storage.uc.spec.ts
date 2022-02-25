@@ -1,15 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileRecordRepo } from '@shared/repo';
-import { Request } from 'express';
-import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
+import { Request } from 'express';
 import { Busboy } from 'busboy';
-import { DownloadFileParams, UploadFileParams } from '../controller/dto/file-storage.params';
+
+import { FileRecordRepo } from '@shared/repo';
+import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
+import { fileRecordFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+
+import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FilesStorageUC } from './files-storage.uc';
 import { IGetFileResponse } from '../interface/storage-client';
+
+import { FilesStorageUC } from './files-storage.uc';
 
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
@@ -20,7 +24,7 @@ describe('FilesStorageUC', () => {
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
 	let fileDownloadParams: DownloadFileParams;
-	let fileUploadParams: UploadFileParams;
+	let fileUploadParams: FileParams;
 	let response: IGetFileResponse;
 	const userId: EntityId = '620abb23697023333eadea99';
 
@@ -212,6 +216,72 @@ describe('FilesStorageUC', () => {
 				storageClient.getFile.mockRejectedValue(new Error());
 				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 			});
+		});
+	});
+});
+
+describe('FilesStorageUC_fileRecords', () => {
+	let orm: MikroORM;
+	let module: TestingModule;
+	let service: FilesStorageUC;
+	let fileRecordRepo: DeepMocked<FileRecordRepo>;
+
+	beforeAll(async () => {
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
+
+	beforeEach(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				FilesStorageUC,
+				{
+					provide: S3ClientAdapter,
+					useValue: createMock<S3ClientAdapter>(),
+				},
+				{
+					provide: FileRecordRepo,
+					useValue: createMock<FileRecordRepo>(),
+				},
+			],
+		}).compile();
+
+		service = module.get(FilesStorageUC);
+		// storageClient = module.get(S3ClientAdapter);
+		fileRecordRepo = module.get(FileRecordRepo);
+	});
+
+	const fileRecordRepoMock = {
+		findBySchoolIdAndTargetId: (fileRecords: FileRecord[] = []) => {
+			const spy = fileRecordRepo.findBySchoolIdAndTargetId.mockResolvedValue([fileRecords, fileRecords.length]);
+			return spy;
+		},
+		// findOneById,
+		// save
+		// delete
+	};
+
+	const setup = () => {
+		const school = schoolFactory.buildWithId();
+		const user = userFactory.buildWithId({ school });
+		const targetId = new ObjectId().toHexString();
+
+		return { schoolId: school.id, userId: user.id, targetId };
+	};
+
+	describe('fileRecordsOfTarget', () => {
+		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
+			const { schoolId, userId, targetId } = setup();
+
+			const fileRecords = fileRecordFactory.buildList(3, { targetId, schoolId });
+			const spy = fileRecordRepoMock.findBySchoolIdAndTargetId(fileRecords);
+
+			await service.fileRecordsOfTarget(userId, { schoolId, targetId, targetType: FileRecordTargetType.School });
+
+			expect(spy).toHaveBeenCalledWith(schoolId, targetId);
 		});
 	});
 });
