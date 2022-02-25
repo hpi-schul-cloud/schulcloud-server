@@ -13,9 +13,10 @@ import {
 	taskFactory,
 	cleanupCollections,
 	roleFactory,
+	boardFactory,
 	mapUserToCurrentUser,
 } from '@shared/testing';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, Task } from '@shared/domain';
 
 describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
@@ -66,4 +67,47 @@ describe('Rooms Controller (e2e)', () => {
 		const body = response.body as BoardResponse;
 		expect(body.roomId).toEqual(course.id);
 	});
+
+	/* describe('[PATCH] ElementVisibility', () => {
+		it('should return 200', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const board = boardFactory.buildWithId({ course });
+			const task = taskFactory.draft().build({ course });
+			board.syncTasksFromList([task]);
+
+			await em.persistAndFlush([course, board, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const params = { visibility: true };
+
+			const response = await request(app.getHttpServer())
+				.patch(`/rooms/${course.id}/elements/${task.id}/visibility`)
+				.send(params);
+
+			expect(response.status).toEqual(200);
+		});
+
+		it.only('should update visibility of element', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const board = boardFactory.buildWithId({ course });
+			const task = taskFactory.draft().build({ course });
+			board.syncTasksFromList([task]);
+
+			await em.persistAndFlush([course, board, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const params = { visibility: true };
+
+			await request(app.getHttpServer()).patch(`/rooms/${course.id}/elements/${task.id}/visibility`).send(params);
+			const updatedTask = await em.findOneOrFail(Task, task.id);
+
+			expect(updatedTask.isDraft()).toEqual(false);
+		});
+	}); */
 });
