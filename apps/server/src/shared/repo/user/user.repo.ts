@@ -12,11 +12,11 @@ export class UserRepo extends BaseRepo<User> {
 		super(em);
 	}
 
-	async findById(id: EntityId, populateRoles = false): Promise<User> {
+	async findById(id: EntityId, populate = false): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
 
-		if (populateRoles) {
-			await this.em.populate(user, ['roles']);
+		if (populate) {
+			await this.em.populate(user, ['roles', 'school.systems']);
 			await this.populateRoles(user.roles.getItems());
 		}
 

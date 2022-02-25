@@ -10,15 +10,17 @@ import {
 	MatchCreator,
 	MatchCreatorScope,
 	PermissionService,
+	School,
 	User,
 } from '@shared/domain';
 
-import { ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { ImportUserRepo, SchoolRepo, UserRepo, AccountRepo } from '@shared/repo';
 import { UserImportPermissions } from '../constants';
 
 @Injectable()
 export class UserImportUc {
 	constructor(
+		private readonly accountRepo: AccountRepo,
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly permissionService: PermissionService,
 		private readonly schoolRepo: SchoolRepo,
@@ -144,23 +146,38 @@ export class UserImportUc {
 		const permissions = [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE];
 		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, permissions);
 
+		const { school } = currentUser;
+
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
 		const options: IFindOptions<ImportUser> = {};
-		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
+		const [importUsers, total] = await this.importUserRepo.findImportUsers(school, filters, options);
 		if (total > 0) {
-			importUsers.forEach((importUser) => {
+			importUsers.map(async (importUser) => {
 				if (importUser.user) {
 					importUser.user.ldapId = importUser.ldapId;
 					this.userRepo.persist(importUser.user);
+					await this.updateAccount(importUser, school);
 				}
 			});
 			await this.userRepo.flush();
+			await this.accountRepo.flush();
 		}
-		const { school } = currentUser;
+
 		await this.importUserRepo.deleteImportUsersBySchool(school);
 
 		school.inUserMigration = false;
 		await this.schoolRepo.persistAndFlush(school);
+	}
+
+	private async updateAccount(importUser: ImportUser, school: School) {
+		if (!importUser.user || !importUser.loginName) {
+			return;
+		}
+		const account = await this.accountRepo.findOneByUserId(importUser.user);
+		account.systemId = importUser.system._id;
+		account.password = undefined;
+		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
+		this.accountRepo.persist(account);
 	}
 }

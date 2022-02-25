@@ -1,14 +1,14 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { AccountScope } from '@shared/repo/account/account.scope';
 
 @Injectable()
-export class AccountRepo {
-	constructor(private readonly em: EntityManager) {}
-
+export class AccountRepo extends BaseRepo<Account> {
 	private get repo(): EntityRepository<Account> {
 		return this.em.getRepository(Account);
 	}
@@ -43,6 +43,13 @@ export class AccountRepo {
 				},
 			}
 		);
+		return account;
+	}
+
+	async findOneByUserId(user: User): Promise<Account> {
+		const scope = new AccountScope();
+		scope.byUser(user);
+		const account = await this.repo.findOneOrFail(scope.query);
 		return account;
 	}
 }
