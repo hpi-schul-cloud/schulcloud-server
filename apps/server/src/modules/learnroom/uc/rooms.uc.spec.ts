@@ -257,8 +257,8 @@ describe('rooms usecase', () => {
 		describe('when visibility is false', () => {
 			it('should unpublish element', async () => {
 				const { user, room, visibleTask } = setup(true);
-				await uc.updateVisibilityOfBoardElement(room.id, visibleTask.id, user.id, true);
-				expect(visibleTask.isDraft()).toEqual(false);
+				await uc.updateVisibilityOfBoardElement(room.id, visibleTask.id, user.id, false);
+				expect(visibleTask.isDraft()).toEqual(true);
 			});
 		});
 
