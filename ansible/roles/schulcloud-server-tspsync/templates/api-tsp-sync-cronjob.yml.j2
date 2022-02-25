@@ -6,7 +6,7 @@ metadata:
     app: api-tsp-sync-cronjob
   name: api-tsp-sync-cronjob
 spec:
-  schedule: "9 3 * * *"
+  schedule: "{{ SERVER_TSP_SYNC_CRONJOB|default("9 3 * * *", true) }}"
   jobTemplate:
     spec:
       template:
