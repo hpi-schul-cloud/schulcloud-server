@@ -90,7 +90,7 @@ describe('Rooms Controller (e2e)', () => {
 			expect(response.status).toEqual(200);
 		});
 
-		it('should update visibility of element', async () => {
+		it('should make task visible', async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
@@ -108,6 +108,26 @@ describe('Rooms Controller (e2e)', () => {
 			const updatedTask = await em.findOneOrFail(Task, task.id);
 
 			expect(updatedTask.isDraft()).toEqual(false);
+		});
+
+		it('should make task invisibible', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const board = boardFactory.buildWithId({ course });
+			const task = taskFactory.build({ course });
+			board.syncTasksFromList([task]);
+
+			await em.persistAndFlush([course, board, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const params = { visibility: false };
+
+			await request(app.getHttpServer()).patch(`/rooms/${course.id}/elements/${task.id}/visibility`).send(params);
+			const updatedTask = await em.findOneOrFail(Task, task.id);
+
+			expect(updatedTask.isDraft()).toEqual(true);
 		});
 	});
 });
