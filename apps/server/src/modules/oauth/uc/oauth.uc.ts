@@ -54,9 +54,12 @@ export class OauthUc {
 	 */
 	checkAuthorizationCode(query: AuthorizationQuery): string {
 		if (query.code) return query.code;
-		if (query.error)
+		let errorCode = 'sso_auth_code_step';
+		if (query.error) {
+			errorCode = `sso_oauth_${query.error}`;
 			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
-		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso.auth.code.step');
+		}
+		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
 	// 1- use Authorization Code to get a valid Token
@@ -87,7 +90,7 @@ export class OauthUc {
 	// 2- decode the Token to extract the UUID
 	decodeToken(token: string): string {
 		const decodedJwt: IJWT = jwtDecode(token);
-		if (!decodedJwt || !decodedJwt.uuid) throw new OAuthSSOError('Filed to extract uuid', 'sso.jwt.problem');
+		if (!decodedJwt || !decodedJwt.uuid) throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
 		const { uuid } = decodedJwt;
 		return uuid;
 	}
@@ -96,7 +99,12 @@ export class OauthUc {
 
 	// 3- get user using the UUID (userHelpers.js?)
 	async findUserById(uuid: string, systemId: string): Promise<User> {
-		const user = await this.userRepo.findByLdapId(uuid, systemId);
+		let user: User;
+		try {
+			user = await this.userRepo.findByLdapId(uuid, systemId);
+		} catch (error) {
+			throw new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound');
+		}
 		return user;
 	}
 

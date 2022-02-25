@@ -36,7 +36,7 @@ export class OauthSSOController {
 			this.logger.error(error);
 			oauthResponse = new OAuthResponse();
 			if (error instanceof OAuthSSOError) oauthResponse.errorcode = error.errorcode;
-			else oauthResponse.errorcode = 'OauthLoginFailed';
+			else oauthResponse.errorcode = 'oauth_login_failed';
 		}
 		return res.redirect(`${HOST}/login?error=${oauthResponse.errorcode as string}`);
 	}
