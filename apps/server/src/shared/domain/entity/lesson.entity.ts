@@ -6,6 +6,7 @@ export interface ILessonProperties {
 	name: string;
 	hidden?: boolean;
 	course: Course;
+	position?: number;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -20,10 +21,14 @@ export class Lesson extends BaseEntityWithTimestamps {
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
+	@Property()
+	position: number;
+
 	constructor(props: ILessonProperties) {
 		super();
 		this.name = props.name;
 		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;
+		this.position = props.position || 0;
 	}
 }
