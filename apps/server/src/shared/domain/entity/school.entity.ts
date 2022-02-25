@@ -25,7 +25,7 @@ export class School extends BaseEntity {
 	systems = new Collection<System>(this);
 
 	@Property()
-	ldapSchoolIdentifier!: string;
+	ldapSchoolIdentifier?: string;
 
 	/* @Property()
     systems?: System[]; */

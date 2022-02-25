@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionService } from '@shared/domain';
-import { ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { AccountRepo, ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
 
@@ -11,6 +11,10 @@ describe('ImportUserController', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				UserImportUc,
+				{
+					provide: AccountRepo,
+					useValue: {},
+				},
 				{
 					provide: PermissionService,
 					useValue: {},
