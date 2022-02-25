@@ -41,13 +41,13 @@ export class FilesStorageController {
 		});
 	}
 
-	@Get('/listOfTargetFiles/:schoolId/:targetType/:targetId')
-	async listOfTargetFiles(
+	@Get('/filesofParent/:schoolId/:targetType/:targetId')
+	async filesOfParent(
 		@Param() params: FileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.fileRecordsOfTarget(currentUser.userId, params);
+		const [fileRecords, total] = await this.filesStorageUC.fileRecordsOfParent(currentUser.userId, params);
 
 		const responseFileRecords = fileRecords.map((fileRecord) => {
 			return new FileRecordResponse(fileRecord);

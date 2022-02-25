@@ -272,14 +272,14 @@ describe('FilesStorageUC_fileRecords', () => {
 		return { schoolId: school.id, userId: user.id, targetId };
 	};
 
-	describe('fileRecordsOfTarget', () => {
+	describe('fileRecordsOfParent', () => {
 		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
 			const { schoolId, userId, targetId } = setup();
 
 			const fileRecords = fileRecordFactory.buildList(3, { targetId, schoolId });
 			const spy = fileRecordRepoMock.findBySchoolIdAndTargetId(fileRecords);
 
-			await service.fileRecordsOfTarget(userId, { schoolId, targetId, targetType: FileRecordTargetType.School });
+			await service.fileRecordsOfParent(userId, { schoolId, targetId, targetType: FileRecordTargetType.School });
 
 			expect(spy).toHaveBeenCalledWith(schoolId, targetId);
 		});
