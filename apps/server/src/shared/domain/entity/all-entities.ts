@@ -15,8 +15,11 @@ import { Task } from './task.entity';
 import { Team } from './team.entity';
 import { User } from './user.entity';
 import { System } from './system.entity';
+import { FileRecord, FileSecurityCheck } from './filerecord.entity';
+import { Account } from './account.entity';
 
 export const ALL_ENTITIES = [
+	Account,
 	Course,
 	CourseGroup,
 	Board,
@@ -42,4 +45,6 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	System,
 	ImportUser,
+	FileRecord,
+	FileSecurityCheck,
 ];
