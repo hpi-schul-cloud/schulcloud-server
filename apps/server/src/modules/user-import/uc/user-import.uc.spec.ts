@@ -397,6 +397,8 @@ describe('[ImportUserModule]', () => {
 			beforeEach(() => {
 				system = systemFactory.buildWithId();
 				school = schoolFactory.buildWithId({ systems: [system] });
+				school.ldapSchoolIdentifier = 'foo';
+
 				currentUser = userFactory.buildWithId({ school });
 				account = accountFactory.buildWithId({ userId: currentUser._id });
 
@@ -449,7 +451,7 @@ describe('[ImportUserModule]', () => {
 
 				userMatch1.ldapId = importUser1.ldapId;
 				userMatch2.ldapId = importUser2.ldapId;
-				const userRepoPersistSpy = jest.spyOn(userRepo, 'persist').mockReturnValueOnce(userMatch1);
+				const userRepoPersistSpy = jest.spyOn(userRepo, 'persist').mockReturnValue(userMatch1);
 
 				await uc.saveAllUsersMatches(currentUser.id);
 
