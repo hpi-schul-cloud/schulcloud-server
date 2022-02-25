@@ -68,7 +68,7 @@ describe('Rooms Controller (e2e)', () => {
 		expect(body.roomId).toEqual(course.id);
 	});
 
-	/* describe('[PATCH] ElementVisibility', () => {
+	describe('[PATCH] ElementVisibility', () => {
 		it('should return 200', async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
@@ -90,7 +90,7 @@ describe('Rooms Controller (e2e)', () => {
 			expect(response.status).toEqual(200);
 		});
 
-		it.only('should update visibility of element', async () => {
+		it('should update visibility of element', async () => {
 			const roles = roleFactory.buildList(1, { permissions: [] });
 			const teacher = userFactory.build({ roles });
 			const course = courseFactory.build({ teachers: [teacher] });
@@ -109,5 +109,5 @@ describe('Rooms Controller (e2e)', () => {
 
 			expect(updatedTask.isDraft()).toEqual(false);
 		});
-	}); */
+	});
 });
