@@ -89,7 +89,7 @@
 		"@feathersjs/socketio": "^4.5.11",
 		"@golevelup/nestjs-rabbitmq": "^1.22.0",
 		"@hpi-schul-cloud/commons": "^1.3.4",
-		"@mikro-orm/core": "^4.5.10",
+		"@mikro-orm/core": "^5.0.4",
 		"@mikro-orm/mongodb": "^4.5.10",
 		"@mikro-orm/nestjs": "^4.3.1",
 		"@nestjs/common": "^8.2.6",
