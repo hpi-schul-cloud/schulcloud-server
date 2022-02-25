@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
-import { FileRecordTargetType } from '@shared/domain/entity/filerecord.entity';
+import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
 import { IsEnum, IsMongoId } from 'class-validator';
 
 export class FileParams {
@@ -10,11 +10,11 @@ export class FileParams {
 
 	@ApiProperty()
 	@IsMongoId()
-	targetId!: EntityId;
+	parentId!: EntityId;
 
-	@ApiProperty({ enum: FileRecordTargetType })
-	@IsEnum(FileRecordTargetType)
-	targetType!: FileRecordTargetType;
+	@ApiProperty({ enum: FileRecordParentType })
+	@IsEnum(FileRecordParentType)
+	parentType!: FileRecordParentType;
 }
 
 export class FileDto {

@@ -151,7 +151,7 @@ describe('file-storage controller download (e2e)', () => {
 
 	describe(`download with valid request data`, () => {
 		const validId = new ObjectId().toHexString();
-		it('should return status 201 for successful download', async () => {
+		it('should return status 200 for successful download', async () => {
 			const user = setup();
 
 			await em.persistAndFlush([user]);

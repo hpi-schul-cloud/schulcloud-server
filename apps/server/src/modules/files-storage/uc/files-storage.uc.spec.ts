@@ -6,7 +6,7 @@ import { Request } from 'express';
 import { Busboy } from 'busboy';
 
 import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
@@ -33,8 +33,8 @@ describe('FilesStorageUC', () => {
 		fileDownloadParams = { fileRecordId: '620abb23697023333eadea00', fileName: 'test.txt' };
 		fileUploadParams = {
 			schoolId: '620abb23697023333eadea00',
-			targetId: '620abb23697023333eadea00',
-			targetType: FileRecordTargetType.User,
+			parentId: '620abb23697023333eadea00',
+			parentType: FileRecordParentType.User,
 		};
 
 		fileRecord = fileRecordFactory.buildWithId({ name: 'test.txt' });
@@ -131,7 +131,7 @@ describe('FilesStorageUC', () => {
 				buffer: Buffer.from('abc'),
 				name: 'text.txt',
 				size: 1234,
-				type: 'text/text',
+				mimeType: 'text/text',
 			});
 		});
 
@@ -157,8 +157,8 @@ describe('FilesStorageUC', () => {
 						id: '620abb23697023333eadea99',
 						name: 'text.txt',
 						size: 1234,
-						targetType: 'users',
-						type: 'text/text',
+						parentType: 'users',
+						mimeType: 'text/text',
 						createdAt: expect.any(Date) as Date,
 						updatedAt: expect.any(Date) as Date,
 					})

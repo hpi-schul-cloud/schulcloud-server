@@ -14,7 +14,7 @@ export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC) {}
 
 	@ApiConsumes('multipart/form-data')
-	@Post('upload/:schoolId/:targetType/:targetId')
+	@Post('upload/:schoolId/:parentType/:parentId')
 	async uploadAsStream(
 		@Body() _: FileDto,
 		@Param() params: FileParams,

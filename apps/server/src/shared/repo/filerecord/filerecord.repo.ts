@@ -29,7 +29,7 @@ export class FileRecordRepo {
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 
-		const scope = new FileRecordScope().bySchoolId(schoolId).byTargetId(targetId);
+		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(targetId);
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
 		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {

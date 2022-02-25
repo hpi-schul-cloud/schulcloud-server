@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { FileSecurityCheckStatus } from '.';
-import { IFileRecordProperties, FileRecord, FileRecordTargetType, FileSecurityCheck } from './filerecord.entity';
+import { IFileRecordProperties, FileRecord, FileRecordParentType, FileSecurityCheck } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
 	let orm: MikroORM;
@@ -22,22 +22,22 @@ describe('FileRecord Entity', () => {
 			props = {
 				size: Math.round(Math.random() * 100000),
 				name: `file-record #1`,
-				type: 'application/octet-stream',
+				mimeType: 'application/octet-stream',
 				securityCheck: new FileSecurityCheck({}),
-				targetType: FileRecordTargetType.Course,
-				targetId: new ObjectId(),
+				parentType: FileRecordParentType.Course,
+				parentId: new ObjectId(),
 				creatorId: new ObjectId(),
 				schoolId: new ObjectId(),
 			};
 		});
 
 		it('should provide the target id as entity id', () => {
-			const targetId = new ObjectId();
+			const parentId = new ObjectId();
 			const fileRecord = new FileRecord({
 				...props,
-				targetId,
+				parentId,
 			});
-			expect(fileRecord.targetId).toEqual(targetId.toHexString());
+			expect(fileRecord.parentId).toEqual(parentId.toHexString());
 		});
 
 		it('should provide the creator id as entity id', () => {

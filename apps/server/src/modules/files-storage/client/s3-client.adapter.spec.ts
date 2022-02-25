@@ -111,7 +111,7 @@ describe('S3ClientAdapter', () => {
 		const file: IFile = {
 			buffer,
 			name: 'test.txt',
-			type: 'text/text',
+			mimeType: 'text/text',
 			size: 100,
 		};
 		const path = 'test/test.txt';

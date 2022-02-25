@@ -106,7 +106,7 @@ describe('file-storage controller upload (e2e)', () => {
 			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid targetId', async () => {
+		it('should return status 400 for invalid parentId', async () => {
 			const user = setup();
 			const validId = new ObjectId().toHexString();
 
@@ -116,11 +116,11 @@ describe('file-storage controller upload (e2e)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.postUploadFile(`/upload/${validId}/users/123`);
-			expect(response.error.message).toEqual(['targetId must be a mongodb id']);
+			expect(response.error.message).toEqual(['parentId must be a mongodb id']);
 			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid targetType', async () => {
+		it('should return status 400 for invalid parentType', async () => {
 			const user = setup();
 			const validId = new ObjectId().toHexString();
 
@@ -130,7 +130,7 @@ describe('file-storage controller upload (e2e)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.postUploadFile(`/upload/${validId}/cookies/${validId}`);
-			expect(response.error.message).toEqual(['targetType must be a valid enum value']);
+			expect(response.error.message).toEqual(['parentType must be a valid enum value']);
 			expect(response.status).toEqual(400);
 		});
 	});
@@ -163,10 +163,10 @@ describe('file-storage controller upload (e2e)', () => {
 				expect.objectContaining({
 					id: expect.any(String) as string,
 					name: 'test.txt',
-					targetId: validId,
+					parentId: validId,
 					creatorId: currentUser.userId,
 					type: 'text/plain',
-					targetType: 'schools',
+					parentType: 'schools',
 				})
 			);
 		});
@@ -190,7 +190,7 @@ describe('file-storage controller upload (e2e)', () => {
 			await em.persistAndFlush([user]);
 			em.clear();
 
-			const file = fileRecordFactory.build({ name: 'test', targetId: validId });
+			const file = fileRecordFactory.build({ name: 'test', parentId: validId });
 
 			await em.persistAndFlush([file]);
 			em.clear();
