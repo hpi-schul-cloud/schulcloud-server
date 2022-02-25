@@ -417,7 +417,7 @@ describe('[ImportUserModule]', () => {
 				userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValueOnce(currentUser);
 				permissionServiceSpy = jest.spyOn(permissionService, 'checkUserHasAllSchoolPermissions').mockReturnValue();
 				importUserRepoFindImportUsersSpy = jest.spyOn(importUserRepo, 'findImportUsers').mockResolvedValue([[], 0]);
-				accountRepoFindByUserIdSpy = jest.spyOn(accountRepo, 'findOneByUserId').mockResolvedValue(account);
+				accountRepoFindByUserIdSpy = jest.spyOn(accountRepo, 'findOneByUser').mockResolvedValue(account);
 				importUserRepoDeleteImportUsersBySchoolSpy = jest.spyOn(importUserRepo, 'deleteImportUsersBySchool');
 				schoolRepoPersistSpy = jest
 					.spyOn(schoolRepo, 'persistAndFlush')
