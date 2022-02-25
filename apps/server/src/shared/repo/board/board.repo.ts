@@ -1,15 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
 
-import {
-	EntityId,
-	Board,
-	Course,
-	BoardElement,
-	TaskBoardElement,
-	LessonBoardElement,
-	BoardElementType,
-} from '@shared/domain';
+import { EntityId, Board, Course, TaskBoardElement, LessonBoardElement } from '@shared/domain';
 
 @Injectable()
 export class BoardRepo {
@@ -39,7 +31,6 @@ export class BoardRepo {
 	async findById(id: EntityId): Promise<Board> {
 		const board = await this.em.findOneOrFail(Board, { id });
 		await this.populateBoard(board);
-		// todo: consistent population
 		return board;
 	}
 
