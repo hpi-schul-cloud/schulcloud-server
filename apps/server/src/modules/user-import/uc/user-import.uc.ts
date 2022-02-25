@@ -154,11 +154,7 @@ export class UserImportUc {
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(school, filters, options);
 		if (total > 0) {
 			importUsers.map(async (importUser) => {
-				if (importUser.user) {
-					importUser.user.ldapId = importUser.ldapId;
-					this.userRepo.persist(importUser.user);
-					await this.updateAccount(importUser, school);
-				}
+				await this.updateUserAndAccount(importUser, school);
 			});
 			await this.userRepo.flush();
 			await this.accountRepo.flush();
@@ -170,10 +166,13 @@ export class UserImportUc {
 		await this.schoolRepo.persistAndFlush(school);
 	}
 
-	private async updateAccount(importUser: ImportUser, school: School) {
+	private async updateUserAndAccount(importUser: ImportUser, school: School) {
 		if (!importUser.user || !importUser.loginName) {
 			return;
 		}
+		importUser.user.ldapId = importUser.ldapId;
+		this.userRepo.persist(importUser.user);
+
 		const account = await this.accountRepo.findOneByUserId(importUser.user);
 		account.systemId = importUser.system._id;
 		account.password = undefined;
