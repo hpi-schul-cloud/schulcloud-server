@@ -167,13 +167,13 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: School) {
-		if (!importUser.user || !importUser.loginName) {
+		if (!importUser.user || !importUser.loginName || !school.ldapSchoolIdentifier) {
 			return;
 		}
 		importUser.user.ldapId = importUser.ldapId;
 		this.userRepo.persist(importUser.user);
 
-		const account = await this.accountRepo.findOneByUserId(importUser.user);
+		const account = await this.accountRepo.findOneByUser(importUser.user);
 		account.systemId = importUser.system._id;
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;

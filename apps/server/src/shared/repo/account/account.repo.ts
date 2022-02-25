@@ -46,7 +46,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		return account;
 	}
 
-	async findOneByUserId(user: User): Promise<Account> {
+	async findOneByUser(user: User): Promise<Account> {
 		const scope = new AccountScope();
 		scope.byUser(user);
 		const account = await this.repo.findOneOrFail(scope.query);
