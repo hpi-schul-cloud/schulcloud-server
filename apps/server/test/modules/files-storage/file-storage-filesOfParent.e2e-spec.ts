@@ -8,7 +8,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordListResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FileRecordTargetType, ICurrentUser } from '@shared/domain';
+import { FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
 	userFactory,
 	roleFactory,
@@ -188,8 +188,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 			const fileRecords = fileRecordFactory.buildList(1, {
 				schoolId,
-				targetId: schoolId,
-				targetType: FileRecordTargetType.School,
+				parentId: schoolId,
+				parentType: FileRecordParentType.School,
 			});
 
 			await em.persistAndFlush(fileRecords);
@@ -205,8 +205,8 @@ describe(`${baseRouteName} (api)`, () => {
 				creatorId: expect.any(String) as string,
 				id: expect.any(String) as string,
 				name: expect.any(String) as string,
-				targetId: expect.any(String) as string,
-				targetType: 'schools',
+				parentId: expect.any(String) as string,
+				parentType: 'schools',
 				type: 'application/octet-stream', // fuh why ???
 			});
 		});
@@ -216,10 +216,10 @@ describe(`${baseRouteName} (api)`, () => {
 
 			const fileRecords = fileRecordFactory.buildList(3, {
 				schoolId,
-				targetId: schoolId,
-				targetType: FileRecordTargetType.School,
+				parentId: schoolId,
+				parentType: FileRecordParentType.School,
 			});
-			const otherFileRecords = fileRecordFactory.buildList(3, { schoolId, targetType: FileRecordTargetType.School });
+			const otherFileRecords = fileRecordFactory.buildList(3, { schoolId, parentType: FileRecordParentType.School });
 
 			await em.persistAndFlush([...otherFileRecords, ...fileRecords]);
 			em.clear();

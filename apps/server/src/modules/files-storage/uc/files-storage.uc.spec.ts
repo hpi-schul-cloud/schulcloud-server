@@ -255,8 +255,8 @@ describe('FilesStorageUC_fileRecords', () => {
 	});
 
 	const fileRecordRepoMock = {
-		findBySchoolIdAndTargetId: (fileRecords: FileRecord[] = []) => {
-			const spy = fileRecordRepo.findBySchoolIdAndTargetId.mockResolvedValue([fileRecords, fileRecords.length]);
+		findBySchoolIdAndParentId: (fileRecords: FileRecord[] = []) => {
+			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 			return spy;
 		},
 		// findOneById,
@@ -267,21 +267,21 @@ describe('FilesStorageUC_fileRecords', () => {
 	const setup = () => {
 		const school = schoolFactory.buildWithId();
 		const user = userFactory.buildWithId({ school });
-		const targetId = new ObjectId().toHexString();
+		const parentId = new ObjectId().toHexString();
 
-		return { schoolId: school.id, userId: user.id, targetId };
+		return { schoolId: school.id, userId: user.id, parentId };
 	};
 
 	describe('fileRecordsOfParent', () => {
 		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
-			const { schoolId, userId, targetId } = setup();
+			const { schoolId, userId, parentId } = setup();
 
-			const fileRecords = fileRecordFactory.buildList(3, { targetId, schoolId });
-			const spy = fileRecordRepoMock.findBySchoolIdAndTargetId(fileRecords);
+			const fileRecords = fileRecordFactory.buildList(3, { parentId, schoolId });
+			const spy = fileRecordRepoMock.findBySchoolIdAndParentId(fileRecords);
 
-			await service.fileRecordsOfParent(userId, { schoolId, targetId, targetType: FileRecordTargetType.School });
+			await service.fileRecordsOfParent(userId, { schoolId, parentId, parentType: FileRecordParentType.School });
 
-			expect(spy).toHaveBeenCalledWith(schoolId, targetId);
+			expect(spy).toHaveBeenCalledWith(schoolId, parentId);
 		});
 	});
 });

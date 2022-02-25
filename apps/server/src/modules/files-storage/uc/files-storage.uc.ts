@@ -96,7 +96,7 @@ export class FilesStorageUC {
 	}
 
 	async fileRecordsOfParent(userId: EntityId, params: FileParams): Promise<Counted<FileRecord[]>> {
-		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndTargetId(params.schoolId, params.targetId);
+		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		return countedFileRecords;
 	}
