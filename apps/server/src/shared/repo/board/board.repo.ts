@@ -45,23 +45,16 @@ export class BoardRepo {
 
 	private async populateBoard(board: Board) {
 		await board.references.init();
-		/* const foundElements = await this.em.find(BoardElement, {
-			id: { $in: board.references.getItems().map((el) => el.id) },
-		});
-		await board.references.init({ where: { boardElementType: BoardElementType.Task } });
 		const elements = board.references.getItems();
 		const discriminatorColumn = 'target';
 		const taskElements = elements.filter((el) => el instanceof TaskBoardElement);
 		await this.em.populate(taskElements, discriminatorColumn);
 		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
-		await this.em.populate(lessonElements, discriminatorColumn); */
+		await this.em.populate(lessonElements, discriminatorColumn);
 		return board;
 	}
 
 	async save(board: Board): Promise<void> {
-		/* const taskElements = board.getElements().filter((el) => el instanceof TaskBoardElement);
-		await this.em.persistAndFlush(taskElements);
-		await this.em.persistAndFlush(board.getElements().filter((el) => el instanceof LessonBoardElement)); */
 		await this.em.persistAndFlush(board);
 		return Promise.resolve();
 	}
