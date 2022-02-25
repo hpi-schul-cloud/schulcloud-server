@@ -95,7 +95,7 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	describe('findBySchoolIdAndTargetId', () => {
+	describe('findBySchoolIdAndParentId', () => {
 		it('should find an entity by its school id and target id', async () => {
 			const fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: school1.id,

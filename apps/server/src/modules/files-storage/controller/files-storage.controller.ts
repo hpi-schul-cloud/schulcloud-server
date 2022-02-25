@@ -41,7 +41,7 @@ export class FilesStorageController {
 		});
 	}
 
-	@Get('/filesofParent/:schoolId/:targetType/:targetId')
+	@Get('/filesOfParent/:schoolId/:parentType/:parentId')
 	async filesOfParent(
 		@Param() params: FileParams,
 		@CurrentUser() currentUser: ICurrentUser,

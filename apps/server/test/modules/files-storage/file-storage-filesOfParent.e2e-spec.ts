@@ -6,9 +6,9 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordListResponse } from '@src/modules/files-storage/controller/dto';
+import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FileRecordParentType, ICurrentUser } from '@shared/domain';
+import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
 	userFactory,
 	roleFactory,
@@ -105,7 +105,7 @@ describe(`${baseRouteName} (api)`, () => {
 			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid targetId', async () => {
+		it('should return status 400 for invalid parentId', async () => {
 			const user = setup();
 			const validId = new ObjectId().toHexString();
 
@@ -115,11 +115,11 @@ describe(`${baseRouteName} (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get(`/${validId}/users/123`);
-			expect(response.error.message).toEqual(['targetId must be a mongodb id']);
+			expect(response.error.message).toEqual(['parentId must be a mongodb id']);
 			expect(response.status).toEqual(400);
 		});
 
-		it('should return status 400 for invalid targetType', async () => {
+		it('should return status 400 for invalid parentType', async () => {
 			const user = setup();
 			const validId = new ObjectId().toHexString();
 
@@ -129,7 +129,7 @@ describe(`${baseRouteName} (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get(`/${validId}/cookies/${validId}`);
-			expect(response.error.message).toEqual(['targetType must be a valid enum value']);
+			expect(response.error.message).toEqual(['parentType must be a valid enum value']);
 			expect(response.status).toEqual(400);
 		});
 	});
@@ -171,7 +171,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 		});
 
-		// query params do not work
+		// query params do not work why?
 		it.skip('should pass the pagination qurey params', async () => {
 			const { user, schoolId } = await setup();
 
@@ -228,7 +228,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 			const { result } = await api.get(`/${schoolId}/schools/${schoolId}`);
 
+			const resultData: FileRecordResponse[] = result.data;
+			const ids: EntityId[] = resultData.map((o) => o.id);
+
 			expect(result.total).toEqual(3);
+			expect(ids.sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
 		});
 	});
 });
