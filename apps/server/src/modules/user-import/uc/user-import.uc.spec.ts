@@ -387,13 +387,13 @@ describe('[ImportUserModule]', () => {
 			let userMatch2: User;
 			let importUser1: ImportUser;
 			let importUser2: ImportUser;
-			let userRepoByIdSpy;
-			let permissionServiceSpy;
-			let importUserRepoFindImportUsersSpy;
-			let importUserRepoDeleteImportUsersBySchoolSpy;
-			let schoolRepoPersistSpy;
-			let userRepoFlushSpy;
-			let accountRepoFindByUserIdSpy;
+			let userRepoByIdSpy: jest.SpyInstance;
+			let permissionServiceSpy: jest.SpyInstance;
+			let importUserRepoFindImportUsersSpy: jest.SpyInstance;
+			let importUserRepoDeleteImportUsersBySchoolSpy: jest.SpyInstance;
+			let schoolRepoPersistSpy: jest.SpyInstance;
+			let userRepoFlushSpy: jest.SpyInstance;
+			let accountRepoFindByUserIdSpy: jest.SpyInstance;
 			beforeEach(() => {
 				system = systemFactory.buildWithId();
 				school = schoolFactory.buildWithId({ systems: [system] });
