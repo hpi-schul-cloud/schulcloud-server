@@ -24,10 +24,10 @@ describe('[ImportUserModule]', () => {
 		let module: TestingModule;
 		let uc: UserImportUc;
 		let accountRepo: DeepMocked<AccountRepo>;
-		let importUserRepo: ImportUserRepo;
-		let schoolRepo: SchoolRepo;
-		let userRepo: UserRepo;
-		let permissionService: PermissionService;
+		let importUserRepo: DeepMocked<ImportUserRepo>;
+		let schoolRepo: DeepMocked<SchoolRepo>;
+		let userRepo: DeepMocked<UserRepo>;
+		let permissionService: DeepMocked<PermissionService>;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
@@ -38,16 +38,21 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<AccountRepo>(),
 					},
 					UserImportUc,
-					ImportUserRepo,
-					SchoolRepo,
-					UserRepo,
+					{
+						provide: ImportUserRepo,
+						useValue: createMock<ImportUserRepo>(),
+					},
+					{
+						provide: SchoolRepo,
+						useValue: createMock<SchoolRepo>(),
+					},
+					{
+						provide: UserRepo,
+						useValue: createMock<UserRepo>(),
+					},
 					{
 						provide: PermissionService,
-						useValue: {
-							checkUserHasAllSchoolPermissions(): Promise<void> {
-								throw new Error();
-							},
-						},
+						useValue: createMock<PermissionService>(),
 					},
 				],
 			}).compile();
@@ -416,15 +421,15 @@ describe('[ImportUserModule]', () => {
 					matchedBy: MatchCreator.MANUAL,
 					system,
 				});
-				userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValueOnce(currentUser);
-				permissionServiceSpy = jest.spyOn(permissionService, 'checkUserHasAllSchoolPermissions').mockReturnValue();
-				importUserRepoFindImportUsersSpy = jest.spyOn(importUserRepo, 'findImportUsers').mockResolvedValue([[], 0]);
-				accountRepoFindByUserIdSpy = jest.spyOn(accountRepo, 'findOneByUser').mockResolvedValue(account);
-				importUserRepoDeleteImportUsersBySchoolSpy = jest.spyOn(importUserRepo, 'deleteImportUsersBySchool');
-				schoolRepoPersistSpy = jest
-					.spyOn(schoolRepo, 'persistAndFlush')
-					.mockReturnValueOnce(Promise.resolve({ ...school, inUserMigration: false }));
-				userRepoFlushSpy = jest.spyOn(userRepo, 'flush').mockResolvedValueOnce();
+				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
+				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
+				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
+				accountRepoFindByUserIdSpy = accountRepo.findOneByUser.mockResolvedValue(account);
+				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
+				schoolRepoPersistSpy = schoolRepo.persistAndFlush.mockReturnValueOnce(
+					Promise.resolve({ ...school, inUserMigration: false })
+				);
+				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
 			});
 			afterEach(() => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
