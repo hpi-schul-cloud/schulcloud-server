@@ -27,6 +27,12 @@ class SchoolAction extends BaseConsumerAction {
 			return;
 		}
 
+		// don't create school as new if exists, but not set for ldap yet (not ready to migrate)
+		const checkedSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.ldapSchoolIdentifier);
+		if (checkedSchool) {
+			return;
+		}
+
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
 		const createdSchool = await SchoolRepo.createSchool(schoolData);
