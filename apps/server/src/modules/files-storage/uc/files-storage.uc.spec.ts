@@ -81,7 +81,7 @@ describe('FilesStorageUC', () => {
 			requestStream.emit('file', 'file', Buffer.from('abc'), {
 				filename: 'text.txt',
 				encoding: '7-bit',
-				mimeType: 'text/text',
+				mimeType: 'text/plain',
 			});
 			return requestStream;
 		};
@@ -127,7 +127,7 @@ describe('FilesStorageUC', () => {
 				buffer: Buffer.from('abc'),
 				name: 'text.txt',
 				size: 1234,
-				mimeType: 'text/text',
+				mimeType: 'text/plain',
 			});
 		});
 
@@ -154,7 +154,7 @@ describe('FilesStorageUC', () => {
 						name: 'text.txt',
 						size: 1234,
 						parentType: 'users',
-						mimeType: 'text/text',
+						mimeType: 'text/plain',
 						createdAt: expect.any(Date) as Date,
 						updatedAt: expect.any(Date) as Date,
 					})

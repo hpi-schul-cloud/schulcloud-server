@@ -10,6 +10,5 @@ import { InterceptorModule } from './interceptor';
  */
 @Module({
 	imports: [LoggerModule, ErrorModule, ValidationModule, InterceptorModule],
-	exports: [LoggerModule, ErrorModule, ValidationModule, InterceptorModule],
 })
 export class CoreModule {}
