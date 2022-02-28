@@ -30,6 +30,6 @@ export class FileRecordResponse {
 	@ApiProperty()
 	type: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: FileRecordParentType })
 	parentType: FileRecordParentType;
 }
