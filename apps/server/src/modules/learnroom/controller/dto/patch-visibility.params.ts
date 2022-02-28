@@ -7,7 +7,7 @@ import { IsBoolean } from 'class-validator';
 export class PatchVisibilityParams {
 	@IsBoolean()
 	@ApiProperty({
-		description: 'Title of the Group grid element',
+		description: 'true to publish the element, false to unpublish',
 	})
 	visibility!: boolean;
 }

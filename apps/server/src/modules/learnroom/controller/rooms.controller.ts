@@ -13,9 +13,9 @@ import { BoardResponse, PatchVisibilityParams } from './dto';
 export class RoomsController {
 	constructor(private readonly roomsUc: RoomsUc, private readonly mapper: RoomBoardResponseMapper) {}
 
-	@Get(':id/board')
+	@Get(':roomid/board')
 	async getRoomBoard(
-		@Param('id', ParseObjectIdPipe) roomId: string,
+		@Param('roomid', ParseObjectIdPipe) roomId: string,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
 		const board = await this.roomsUc.getBoard(roomId, currentUser.userId);
