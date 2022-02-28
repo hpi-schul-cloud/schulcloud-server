@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
 import { EntityId } from '../types/entity-id';
+import { ILearnroomElement } from '../interface/learnroom';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -44,7 +45,7 @@ export type TaskParentDescriptions = { courseName: string; lessonName: string; c
 
 @Entity({ tableName: 'homeworks' })
 @Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
-export class Task extends BaseEntityWithTimestamps {
+export class Task extends BaseEntityWithTimestamps implements ILearnroomElement {
 	@Property()
 	name: string;
 
@@ -232,5 +233,14 @@ export class Task extends BaseEntityWithTimestamps {
 
 	restoreForUser(user: User) {
 		this.finished.remove(user);
+	}
+
+	publish() {
+		this.private = false;
+		this.availableDate = new Date(Date.now());
+	}
+
+	unpublish() {
+		this.private = true;
 	}
 }
