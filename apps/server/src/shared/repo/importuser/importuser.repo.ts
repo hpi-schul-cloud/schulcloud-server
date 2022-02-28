@@ -61,4 +61,8 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		await this.em.populate(userMatches, 'roles');
 		return [importUserEntities, count];
 	}
+
+	async deleteImportUsersBySchool(school: School): Promise<void> {
+		await this.em.nativeDelete(ImportUser, { school });
+	}
 }
