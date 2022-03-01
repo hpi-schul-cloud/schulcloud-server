@@ -3,12 +3,12 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { ALL_ENTITIES } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { LoggerModule } from '@src/core/logger';
 import { FileRecordRepo } from '@shared/repo';
 import { AuthModule } from '@src/modules/authentication/auth.module';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { CoreModule } from '@src/core';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
@@ -32,7 +32,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 	},
 };
-const imports = [AuthModule, LoggerModule];
+const imports = [AuthModule, CoreModule];
 const providers = [
 	FilesStorageUC,
 	{

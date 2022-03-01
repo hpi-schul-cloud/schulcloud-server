@@ -23,6 +23,74 @@ describe('rooms authorisation service', () => {
 		service = module.get(RoomsAuthorisationService);
 	});
 
+	describe('hasCourseReadPermission', () => {
+		it('should be true for teacher', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ teachers: [user] });
+
+			const result = service.hasCourseReadPermission(user, course);
+			expect(result).toEqual(true);
+		});
+
+		it('should be true for substitutionTeacher', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+
+			const result = service.hasCourseReadPermission(user, course);
+			expect(result).toEqual(true);
+		});
+
+		it('should be true for student', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ students: [user] });
+
+			const result = service.hasCourseReadPermission(user, course);
+			expect(result).toEqual(true);
+		});
+
+		it('should be false for user not in course', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+
+			const result = service.hasCourseReadPermission(user, course);
+			expect(result).toEqual(false);
+		});
+	});
+
+	describe('hasCourseWritePermission', () => {
+		it('should be true for teacher', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ teachers: [user] });
+
+			const result = service.hasCourseWritePermission(user, course);
+			expect(result).toEqual(true);
+		});
+
+		it('should be true for substitutionTeacher', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+
+			const result = service.hasCourseWritePermission(user, course);
+			expect(result).toEqual(true);
+		});
+
+		it('should be false for student', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ students: [user] });
+
+			const result = service.hasCourseWritePermission(user, course);
+			expect(result).toEqual(false);
+		});
+
+		it('should be false for user not in course', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+
+			const result = service.hasCourseReadPermission(user, course);
+			expect(result).toEqual(false);
+		});
+	});
+
 	describe('hasTaskReadPermission', () => {
 		describe('when task has no course', () => {
 			it('should be true for creator', () => {

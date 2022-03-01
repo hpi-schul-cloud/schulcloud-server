@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { MikroORM } from '@mikro-orm/core';
 import { Request } from 'express';
+import { MikroORM } from '@mikro-orm/core';
 import { Busboy } from 'busboy';
 
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
-import { fileRecordFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { fileRecordFactory, setupEntities } from '@shared/testing';
 
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -85,7 +84,7 @@ describe('FilesStorageUC', () => {
 			requestStream.emit('file', 'file', Buffer.from('abc'), {
 				filename: 'text.txt',
 				encoding: '7-bit',
-				mimeType: 'text/text',
+				mimeType: 'text/plain',
 			});
 			return requestStream;
 		};
@@ -131,7 +130,7 @@ describe('FilesStorageUC', () => {
 				buffer: Buffer.from('abc'),
 				name: 'text.txt',
 				size: 1234,
-				mimeType: 'text/text',
+				mimeType: 'text/plain',
 			});
 		});
 
@@ -158,7 +157,7 @@ describe('FilesStorageUC', () => {
 						name: 'text.txt',
 						size: 1234,
 						parentType: 'users',
-						mimeType: 'text/text',
+						mimeType: 'text/plain',
 						createdAt: expect.any(Date) as Date,
 						updatedAt: expect.any(Date) as Date,
 					})
@@ -218,66 +217,12 @@ describe('FilesStorageUC', () => {
 			});
 		});
 	});
-});
-
-describe('FilesStorageUC_fileRecords', () => {
-	let orm: MikroORM;
-	let module: TestingModule;
-	let service: FilesStorageUC;
-	let fileRecordRepo: DeepMocked<FileRecordRepo>;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
-		module = await Test.createTestingModule({
-			providers: [
-				FilesStorageUC,
-				{
-					provide: S3ClientAdapter,
-					useValue: createMock<S3ClientAdapter>(),
-				},
-				{
-					provide: FileRecordRepo,
-					useValue: createMock<FileRecordRepo>(),
-				},
-			],
-		}).compile();
-
-		service = module.get(FilesStorageUC);
-		// storageClient = module.get(S3ClientAdapter);
-		fileRecordRepo = module.get(FileRecordRepo);
-	});
-
-	const fileRecordRepoMock = {
-		findBySchoolIdAndParentId: (fileRecords: FileRecord[] = []) => {
-			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
-			return spy;
-		},
-		// findOneById,
-		// save
-		// delete
-	};
-
-	const setup = () => {
-		const school = schoolFactory.buildWithId();
-		const user = userFactory.buildWithId({ school });
-		const parentId = new ObjectId().toHexString();
-
-		return { schoolId: school.id, userId: user.id, parentId };
-	};
 
 	describe('fileRecordsOfParent', () => {
 		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
-			const { schoolId, userId, parentId } = setup();
-
+			const { schoolId, parentId } = fileUploadParams;
 			const fileRecords = fileRecordFactory.buildList(3, { parentId, schoolId });
-			const spy = fileRecordRepoMock.findBySchoolIdAndParentId(fileRecords);
+			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
 			await service.fileRecordsOfParent(userId, { schoolId, parentId, parentType: FileRecordParentType.School });
 

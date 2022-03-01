@@ -1,3 +1,4 @@
+export * from './account.factory';
 export * from './board.factory';
 export * from './boardelement.factory';
 export * from './course.factory';

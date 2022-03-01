@@ -91,6 +91,9 @@ export class FilesStorageUC {
 
 			return res;
 		} catch (error) {
+			if (error instanceof NotFoundException) {
+				throw error;
+			}
 			throw new BadRequestException(error);
 		}
 	}

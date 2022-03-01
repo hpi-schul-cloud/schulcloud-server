@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, HttpException, INestApplication, ValidationPipe } from '@nestjs/common';
+import { ExecutionContext, INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
@@ -17,6 +17,7 @@ import {
 	fileRecordFactory,
 	schoolFactory,
 } from '@shared/testing';
+import { ApiValidationError } from '@shared/common';
 
 const baseRouteName = '/files-storage/filesOfParent';
 
@@ -35,7 +36,7 @@ class API {
 
 		return {
 			result: response.body as FileRecordListResponse,
-			error: response.body as HttpException,
+			error: response.body as ApiValidationError,
 			status: response.status,
 		};
 	}
@@ -101,7 +102,12 @@ describe(`${baseRouteName} (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get(`/123/users/${validId}`);
-			expect(response.error.message).toEqual(['schoolId must be a mongodb id']);
+			expect(response.error.validationErrors).toEqual([
+				{
+					errors: ['schoolId must be a mongodb id'],
+					field: 'schoolId',
+				},
+			]);
 			expect(response.status).toEqual(400);
 		});
 
@@ -115,7 +121,12 @@ describe(`${baseRouteName} (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get(`/${validId}/users/123`);
-			expect(response.error.message).toEqual(['parentId must be a mongodb id']);
+			expect(response.error.validationErrors).toEqual([
+				{
+					errors: ['parentId must be a mongodb id'],
+					field: 'parentId',
+				},
+			]);
 			expect(response.status).toEqual(400);
 		});
 
@@ -129,7 +140,12 @@ describe(`${baseRouteName} (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get(`/${validId}/cookies/${validId}`);
-			expect(response.error.message).toEqual(['parentType must be a valid enum value']);
+			expect(response.error.validationErrors).toEqual([
+				{
+					errors: ['parentType must be a valid enum value'],
+					field: 'parentType',
+				},
+			]);
 			expect(response.status).toEqual(400);
 		});
 	});
