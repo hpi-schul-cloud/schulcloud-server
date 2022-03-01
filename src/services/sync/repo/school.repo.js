@@ -25,10 +25,10 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 
 const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) => {
 	if (!officialSchoolNumber) {
-		return {};
+		return;
 	}
-	const school = await schoolModel.findOne({ officialSchoolNumber }).lean({ virtuals: true }).exec();
-	return school;
+	// eslint-disable-next-line consistent-return
+	return schoolModel.findOne({ officialSchoolNumber }).lean({ virtuals: true }).exec();
 };
 
 const getYears = async () => yearModel.find().lean().exec();
