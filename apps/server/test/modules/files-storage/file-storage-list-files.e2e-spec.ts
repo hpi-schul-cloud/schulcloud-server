@@ -19,7 +19,7 @@ import {
 } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
 
-const baseRouteName = '/files-storage/filesOfParent';
+const baseRouteName = '/file/list';
 
 class API {
 	app: INestApplication;

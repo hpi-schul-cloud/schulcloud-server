@@ -22,7 +22,7 @@ class API {
 
 	async postUploadFile(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.post(`/files-storage${routeName}`)
+			.post(`/file${routeName}`)
 			.attach('file', Buffer.from('abcd'), 'test.txt')
 			.set('connection', 'keep-alive')
 			.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
@@ -37,7 +37,7 @@ class API {
 
 	async getDownloadFile(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.get(`/files-storage${routeName}`)
+			.get(`/file${routeName}`)
 			.query(query || {});
 
 		return {

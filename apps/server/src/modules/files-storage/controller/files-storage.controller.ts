@@ -7,15 +7,15 @@ import { Request } from 'express';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecordListResponse } from './dto';
 
-@ApiTags('files-storage')
+@ApiTags('file')
 @Authenticate('jwt')
-@Controller('files-storage')
+@Controller('file')
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC) {}
 
 	@ApiConsumes('multipart/form-data')
-	@Post('upload/:schoolId/:parentType/:parentId')
-	async uploadAsStream(
+	@Post('/upload/:schoolId/:parentType/:parentId')
+	async upload(
 		@Body() _: FileDto,
 		@Param() params: FileParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -41,8 +41,8 @@ export class FilesStorageController {
 		});
 	}
 
-	@Get('/filesOfParent/:schoolId/:parentType/:parentId')
-	async filesOfParent(
+	@Get('/list/:schoolId/:parentType/:parentId')
+	async list(
 		@Param() params: FileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
