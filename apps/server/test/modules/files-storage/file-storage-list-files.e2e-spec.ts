@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication, ValidationPipe } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
@@ -48,6 +48,7 @@ describe(`${baseRouteName} (api)`, () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
+	let validId: string;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -64,11 +65,6 @@ describe(`${baseRouteName} (api)`, () => {
 			.compile();
 
 		app = module.createNestApplication();
-		app.useGlobalPipes(
-			new ValidationPipe({
-				transform: true,
-			})
-		);
 		await app.init();
 		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
@@ -82,25 +78,19 @@ describe(`${baseRouteName} (api)`, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+		const roles = roleFactory.buildList(1, { permissions: [] });
+		const school = schoolFactory.build();
+		const user = userFactory.build({ roles, school });
+
+		await em.persistAndFlush([user]);
+		em.clear();
+
+		currentUser = mapUserToCurrentUser(user);
+		validId = user.school.id;
 	});
 
 	describe('with bad request data', () => {
-		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles });
-
-			return user;
-		};
-
 		it('should return status 400 for invalid schoolId', async () => {
-			const user = setup();
-			const validId = new ObjectId().toHexString();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
 			const response = await api.get(`/123/users/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
@@ -112,14 +102,6 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid parentId', async () => {
-			const user = setup();
-			const validId = new ObjectId().toHexString();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
 			const response = await api.get(`/${validId}/users/123`);
 			expect(response.error.validationErrors).toEqual([
 				{
@@ -131,14 +113,6 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid parentType', async () => {
-			const user = setup();
-			const validId = new ObjectId().toHexString();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
 			const response = await api.get(`/${validId}/cookies/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
@@ -151,33 +125,14 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe(`with valid request data`, () => {
-		const setup = async () => {
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const school = schoolFactory.build();
-			const user = userFactory.build({ roles, school });
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			return { schoolId: school.id, user };
-		};
-
 		it('should return status 200 for successful request', async () => {
-			const { schoolId, user } = await setup();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const response = await api.get(`/${schoolId}/schools/${schoolId}`);
+			const response = await api.get(`/${validId}/schools/${validId}`);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should return a paginated result as default', async () => {
-			const { user, schoolId } = await setup();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.get(`/${schoolId}/schools/${schoolId}`);
+			const { result } = await api.get(`/${validId}/schools/${validId}`);
 
 			expect(result).toEqual({
 				total: 0,
@@ -189,31 +144,23 @@ describe(`${baseRouteName} (api)`, () => {
 
 		// query params do not work why?
 		it.skip('should pass the pagination qurey params', async () => {
-			const { user, schoolId } = await setup();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.get(`/${schoolId}/schools/${schoolId}`, { limit: 100, skip: 100 });
+			const { result } = await api.get(`/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
 
 			expect(result.limit).toEqual(100);
 			expect(result.skip).toEqual(100);
 		});
 
 		it('should return right type of data', async () => {
-			const { user, schoolId } = await setup();
-
 			const fileRecords = fileRecordFactory.buildList(1, {
-				schoolId,
-				parentId: schoolId,
+				schoolId: validId,
+				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
 
 			await em.persistAndFlush(fileRecords);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.get(`/${schoolId}/schools/${schoolId}`);
+			const { result } = await api.get(`/${validId}/schools/${validId}`);
 
 			expect(Array.isArray(result.data)).toBe(true);
 			expect(result.data[0]).toBeDefined();
@@ -228,21 +175,20 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return elements of requested scope', async () => {
-			const { user, schoolId } = await setup();
-
 			const fileRecords = fileRecordFactory.buildList(3, {
-				schoolId,
-				parentId: schoolId,
+				schoolId: validId,
+				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
-			const otherFileRecords = fileRecordFactory.buildList(3, { schoolId, parentType: FileRecordParentType.School });
+			const otherFileRecords = fileRecordFactory.buildList(3, {
+				schoolId: validId,
+				parentType: FileRecordParentType.School,
+			});
 
 			await em.persistAndFlush([...otherFileRecords, ...fileRecords]);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
-
-			const { result } = await api.get(`/${schoolId}/schools/${schoolId}`);
+			const { result } = await api.get(`/${validId}/schools/${validId}`);
 
 			const resultData: FileRecordResponse[] = result.data;
 			const ids: EntityId[] = resultData.map((o) => o.id);
