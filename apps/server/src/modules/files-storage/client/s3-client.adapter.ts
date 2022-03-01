@@ -1,7 +1,7 @@
 import { CreateBucketCommand, GetObjectCommand, S3Client, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { ILogger, Logger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';
@@ -9,12 +9,10 @@ import { IGetFileResponse, IStorageClient } from '../interface/storage-client';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
-	constructor(
-		@Inject('S3_Client') readonly client: S3Client,
-		@Inject('S3_Config') readonly config: S3Config,
-		private logger: Logger
-	) {
-		this.logger.setContext('S3Client');
+	private logger: ILogger;
+
+	constructor(@Inject('S3_Client') readonly client: S3Client, @Inject('S3_Config') readonly config: S3Config) {
+		this.logger = new Logger('S3Client');
 	}
 
 	async createBucket() {
@@ -49,7 +47,7 @@ export class S3ClientAdapter implements IStorageClient {
 				Body: file.buffer,
 				Bucket: this.config.bucket,
 				Key: path,
-				ContentType: file.type,
+				ContentType: file.mimeType,
 			};
 			const res = new Upload({
 				client: this.client,

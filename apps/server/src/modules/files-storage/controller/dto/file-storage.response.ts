@@ -2,16 +2,16 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { FileRecord, FileRecordTargetType } from '@shared/domain/'; // we do not want entity on this place in future or?
+import { FileRecord, FileRecordParentType } from '@shared/domain/'; // we do not want entity on this place in future or?
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
-		this.targetId = fileRecord.targetId;
+		this.parentId = fileRecord.parentId;
 		this.creatorId = fileRecord.creatorId;
-		this.type = fileRecord.type;
-		this.targetType = fileRecord.targetType;
+		this.type = fileRecord.mimeType;
+		this.parentType = fileRecord.parentType;
 	}
 
 	@ApiProperty()
@@ -22,7 +22,7 @@ export class FileRecordResponse {
 	name: string;
 
 	@ApiProperty()
-	targetId: string;
+	parentId: string;
 
 	@ApiProperty()
 	creatorId: string;
@@ -30,6 +30,6 @@ export class FileRecordResponse {
 	@ApiProperty()
 	type: string;
 
-	@ApiProperty()
-	targetType: FileRecordTargetType;
+	@ApiProperty({ enum: FileRecordParentType })
+	parentType: FileRecordParentType;
 }

@@ -43,7 +43,6 @@ describe('S3ClientAdapter', () => {
 
 		service = module.get(S3ClientAdapter);
 		client = module.get('S3_Client');
-		logger = module.get(Logger);
 	});
 
 	it('should be defined', () => {
@@ -65,7 +64,6 @@ describe('S3ClientAdapter', () => {
 			client.send = jest.fn().mockRejectedValue(e);
 
 			await expect(service.createBucket()).rejects.toThrow();
-			expect(logger.error).toBeCalledWith(`Bad Request "${config.bucket}"`);
 		});
 	});
 
@@ -111,7 +109,7 @@ describe('S3ClientAdapter', () => {
 		const file: IFile = {
 			buffer,
 			name: 'test.txt',
-			type: 'text/text',
+			mimeType: 'text/plain',
 			size: 100,
 		};
 		const path = 'test/test.txt';
@@ -123,7 +121,7 @@ describe('S3ClientAdapter', () => {
 					input: {
 						Body: buffer,
 						Bucket: 'test-bucket',
-						ContentType: 'text/text',
+						ContentType: 'text/plain',
 						Key: 'test/test.txt',
 					},
 				})

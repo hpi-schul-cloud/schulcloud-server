@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import { Body, Controller, Get, Param, Post, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FileRecord, ICurrentUser } from '@shared/domain';
@@ -15,7 +13,7 @@ export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC) {}
 
 	@ApiConsumes('multipart/form-data')
-	@Post('upload/:schoolId/:targetType/:targetId')
+	@Post('upload/:schoolId/:parentType/:parentId')
 	async uploadAsStream(
 		@Body() _: FileDto,
 		@Param() params: UploadFileParams,

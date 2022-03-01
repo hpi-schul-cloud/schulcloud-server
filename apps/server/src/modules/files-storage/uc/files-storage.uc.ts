@@ -49,7 +49,7 @@ export class FilesStorageUC {
 			name: info.filename,
 			buffer: file,
 			size,
-			type: info.mimeType, // IFile rename in contentType or mimeType ?
+			mimeType: info.mimeType,
 		};
 
 		return fileDescription;
@@ -59,9 +59,9 @@ export class FilesStorageUC {
 		const entity = new FileRecord({
 			size: fileDescription.size,
 			name: fileDescription.name,
-			type: fileDescription.type,
-			targetType: params.targetType,
-			targetId: params.targetId,
+			mimeType: fileDescription.mimeType,
+			parentType: params.parentType,
+			parentId: params.parentId,
 			creatorId: userId,
 			schoolId: params.schoolId,
 		});
@@ -91,6 +91,9 @@ export class FilesStorageUC {
 
 			return res;
 		} catch (error) {
+			if (error instanceof NotFoundException) {
+				throw error;
+			}
 			throw new BadRequestException(error);
 		}
 	}

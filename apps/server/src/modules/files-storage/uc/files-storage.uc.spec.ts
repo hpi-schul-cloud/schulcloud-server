@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordRepo } from '@shared/repo';
 import { Request } from 'express';
-import { EntityId, FileRecord, FileRecordTargetType } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { Busboy } from 'busboy';
@@ -29,8 +29,8 @@ describe('FilesStorageUC', () => {
 		fileDownloadParams = { fileRecordId: '620abb23697023333eadea00', fileName: 'test.txt' };
 		fileUploadParams = {
 			schoolId: '620abb23697023333eadea00',
-			targetId: '620abb23697023333eadea00',
-			targetType: FileRecordTargetType.User,
+			parentId: '620abb23697023333eadea00',
+			parentType: FileRecordParentType.User,
 		};
 
 		fileRecord = fileRecordFactory.buildWithId({ name: 'test.txt' });
@@ -81,7 +81,7 @@ describe('FilesStorageUC', () => {
 			requestStream.emit('file', 'file', Buffer.from('abc'), {
 				filename: 'text.txt',
 				encoding: '7-bit',
-				mimeType: 'text/text',
+				mimeType: 'text/plain',
 			});
 			return requestStream;
 		};
@@ -127,7 +127,7 @@ describe('FilesStorageUC', () => {
 				buffer: Buffer.from('abc'),
 				name: 'text.txt',
 				size: 1234,
-				type: 'text/text',
+				mimeType: 'text/plain',
 			});
 		});
 
@@ -153,8 +153,8 @@ describe('FilesStorageUC', () => {
 						id: '620abb23697023333eadea99',
 						name: 'text.txt',
 						size: 1234,
-						targetType: 'users',
-						type: 'text/text',
+						parentType: 'users',
+						mimeType: 'text/plain',
 						createdAt: expect.any(Date) as Date,
 						updatedAt: expect.any(Date) as Date,
 					})
