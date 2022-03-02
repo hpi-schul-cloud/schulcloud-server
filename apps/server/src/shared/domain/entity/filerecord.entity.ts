@@ -72,7 +72,7 @@ export interface IFileRecordProperties {
  * That's why we do not map any relations in the entity class
  * and instead just use the plain object ids.
  */
-@Entity({ tableName: 'filerecord' })
+@Entity({ tableName: 'filerecords' })
 @Index({ properties: ['_schoolId', '_parentId'] })
 export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()

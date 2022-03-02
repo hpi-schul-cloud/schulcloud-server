@@ -35,8 +35,10 @@ export class DownloadFileParams {
 
 export class ScanResultDto {
 	@ApiProperty()
+	@Allow()
 	virus_detected!: boolean;
 
 	@ApiProperty()
+	@Allow()
 	virus_signature!: string;
 }

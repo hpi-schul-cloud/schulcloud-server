@@ -42,6 +42,6 @@ export class FileRecordRepo {
 	}
 
 	async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
-		return this.em.findOneOrFail(FileRecord, new FileRecordScope().bySecurityCheckRequestToken(token).query)
+		return this.em.findOneOrFail(FileRecord, new FileRecordScope().bySecurityCheckRequestToken(token).query);
 	}
 }

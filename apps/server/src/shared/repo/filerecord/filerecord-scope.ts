@@ -14,7 +14,7 @@ export class FileRecordScope extends Scope<FileRecord> {
 	}
 
 	bySecurityCheckRequestToken(token: string): FileRecordScope {
-		this.addQuery({ securityCheck: {requestToken : token} });
+		this.addQuery({ securityCheck: { requestToken: token } });
 		return this;
 	}
 }

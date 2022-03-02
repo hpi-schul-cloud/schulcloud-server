@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 import { FileRecord } from '@shared/domain';
+import { ApiVersionPath, FilesStorageInternalActions } from '@src/modules/files-storage/files-storage.const';
 
 interface AntivirusServiceOptions {
 	enabled: boolean;
@@ -19,8 +20,15 @@ export class AntivirusService {
 
 	public async send(fileRecord: FileRecord): Promise<void> {
 		if (this.options.enabled && fileRecord.securityCheck.requestToken) {
-			const downloadUri = `${this.options.filesServiceBaseUrl}/api/v3/files-storage/downloadBySecurityCheckRequestToken?token=${fileRecord.securityCheck.requestToken}`;
-			const callbackUri = `${this.options.filesServiceBaseUrl}/api/v3/files-storage/updateSecurityStatus?token=${fileRecord.securityCheck.requestToken}`;
+			const downloadUri = this.makeUrl(
+				FilesStorageInternalActions.downloadBySecurityToken,
+				fileRecord.securityCheck.requestToken
+			);
+			const callbackUri = this.makeUrl(
+				FilesStorageInternalActions.updateSecurityStatus,
+				fileRecord.securityCheck.requestToken
+			);
+
 			await this.amqpConnection.publish(
 				this.options.exchange,
 				this.options.routingKey,
@@ -28,5 +36,11 @@ export class AntivirusService {
 				{ persistent: true }
 			);
 		}
+	}
+
+	private makeUrl(path: string, token: string) {
+		const newPath = path.replace(':token', encodeURIComponent(token));
+		const url = new URL(`${ApiVersionPath}${newPath}`, this.options.filesServiceBaseUrl);
+		return url;
 	}
 }

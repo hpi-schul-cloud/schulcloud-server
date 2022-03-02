@@ -1,10 +1,12 @@
-import { Global, Module, NotFoundException } from '@nestjs/common';
+import { DynamicModule, Global, Module, NotFoundException } from '@nestjs/common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
@@ -51,3 +53,32 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	exports: [RabbitMQModule],
 })
 export class CommonModule {}
+
+@Global()
+@Module({
+	imports: [
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+		RabbitMQModule.forRoot(RabbitMQModule, {
+			exchanges: [
+				{
+					name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
+					type: 'direct',
+				},
+				{
+					name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+					type: 'direct',
+				},
+			],
+			uri: Configuration.get('RABBITMQ_URI') as string,
+		}),
+	],
+	exports: [RabbitMQModule],
+})
+export class CommonTestModule {
+	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+		return {
+			module: CommonTestModule,
+			imports: [MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
+		};
+	}
+}

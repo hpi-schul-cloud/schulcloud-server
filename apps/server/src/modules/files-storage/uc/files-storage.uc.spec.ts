@@ -221,16 +221,4 @@ describe('FilesStorageUC', () => {
 			});
 		});
 	});
-
-	describe('fileRecordsOfParent', () => {
-		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
-			const { schoolId, parentId } = fileUploadParams;
-			const fileRecords = fileRecordFactory.buildList(3, { parentId, schoolId });
-			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
-
-			await service.fileRecordsOfParent(userId, { schoolId, parentId, parentType: FileRecordParentType.School });
-
-			expect(spy).toHaveBeenCalledWith(schoolId, parentId);
-		});
-	});
 });

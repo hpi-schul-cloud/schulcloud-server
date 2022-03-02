@@ -3,10 +3,10 @@ import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
 import { FileRecordRepo } from '@shared/repo';
-import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileParams, ScanResultDto } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
@@ -19,8 +19,6 @@ export class FilesStorageUC {
 
 	async upload(userId: EntityId, params: FileParams, req: Request) {
 		// @TODO check permissions of schoolId by user
-		// @TODO scan virus on demand?
-		// @TODO add thumbnail on demand
 		try {
 			const result = await new Promise((resolve, reject) => {
 				const requestStream = busboy({ headers: req.headers });
@@ -83,18 +81,23 @@ export class FilesStorageUC {
 		}
 	}
 
+	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
+		const pathToFile = [schoolId, fileRecordId].join('/');
+		const res = await this.storageClient.getFile(pathToFile);
+
+		return res;
+	}
+
 	async download(userId: EntityId, params: DownloadFileParams) {
 		try {
+			// @TODO check permissions of schoolId by user
 			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 			if (entity.name !== params.fileName) {
 				throw new NotFoundException('File not found');
-			} else if (entity.securityCheck.status == ScanStatus.BLOCKED) {
-				throw new NotFoundException('File not found');
+			} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+				throw new Error('File is blocked');
 			}
-
-			// @TODO check permissions of schoolId by user
-			const pathToFile = [entity.schoolId, entity.id].join('/');
-			const res = await this.storageClient.getFile(pathToFile);
+			const res = await this.downloadFile(entity.schoolId, entity.id);
 
 			return res;
 		} catch (error) {
@@ -105,29 +108,14 @@ export class FilesStorageUC {
 		}
 	}
 
-	async fileRecordsOfParent(userId: EntityId, params: FileParams): Promise<Counted<FileRecord[]>> {
-		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-
-		return countedFileRecords;
-	}
-
-	async downloadBySecurityCheckRequestToken(token: string) {
+	async downloadBySecurityToken(token: string) {
 		try {
 			const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-
-			const pathToFile = [entity.schoolId, entity.id].join('/');
-			const res = await this.storageClient.getFile(pathToFile);
+			const res = await this.downloadFile(entity.schoolId, entity.id);
 
 			return res;
 		} catch (error) {
 			throw new BadRequestException(error);
 		}
-	}
-
-	async updateSecurityStatus(token: string, scanResultDto: ScanResultDto) {
-		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
-		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
-		await this.fileRecordRepo.save(entity);
 	}
 }

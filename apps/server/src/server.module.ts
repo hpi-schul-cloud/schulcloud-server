@@ -1,4 +1,4 @@
-import { DynamicModule, Module} from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MailModule } from '@shared/infra/mail';
 import { RocketChatModule } from '@src/modules/rocketchat';
@@ -10,11 +10,11 @@ import { NewsModule } from '@src/modules/news';
 import { FilesModule } from '@src/modules/files';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { CommonModule, CommonTestModule, defaultMikroOrmOptions } from '@src/common.module';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { ImportUserModule } from './modules/user-import/user-import.module';
 import { OauthModule } from './modules/oauth';
-import {CommonModule, defaultMikroOrmOptions} from "@src/common.module";
 
 const serverModules = [
 	CoreModule,
@@ -39,15 +39,11 @@ const serverModules = [
 	}),
 ];
 
-
 /**
  * Server Module used for production
  */
 @Module({
-	imports: [
-		CommonModule,
-		...serverModules,
-	],
+	imports: [CommonModule, ...serverModules],
 	controllers: [ServerController],
 })
 export class ServerModule {}
@@ -61,15 +57,7 @@ export class ServerModule {}
  * // TODO use instead of ServerModule when NODE_ENV=test
  */
 @Module({
-	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+	imports: [...serverModules, CommonTestModule],
 	controllers: [ServerController],
 })
-export class ServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: ServerTestModule,
-			imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
-			controllers: [ServerController],
-		};
-	}
-}
+export class ServerTestModule {}
