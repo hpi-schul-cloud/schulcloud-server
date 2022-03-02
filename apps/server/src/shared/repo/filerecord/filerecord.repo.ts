@@ -22,14 +22,14 @@ export class FileRecordRepo {
 		await this.em.removeAndFlush(fileRecord);
 	}
 
-	async findBySchoolIdAndTargetId(
+	async findBySchoolIdAndParentId(
 		schoolId: EntityId,
-		targetId: EntityId,
+		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 
-		const scope = new FileRecordScope().bySchoolId(schoolId).byTargetId(targetId);
+		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId);
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
 		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {

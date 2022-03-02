@@ -16,6 +16,17 @@ You find the whole [documentation published as GitHub Page](https://hpi-schul-cl
 1. Have a MongoDB started, run `mongod` 
 2. Have some seed data in datase, use `npm run setup` to reset the db and apply seed data
 3. Have RabbitMQ started, run `docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management`. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login). 
+4. Have MinIO (S3 compatible object storage), run [optional if you need files-storage module]
+
+```bash
+docker run \
+  --name minioS3storage \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -e "MINIO_ROOT_USER=`miniouser`" \
+  -e "MINIO_ROOT_PASSWORD=miniouser" \
+  quay.io/minio/minio server /data --console-address ":9001"
+```
 
 ## How to start the application
 
@@ -28,6 +39,14 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:start:dev` run application without build from sources in dev-mode with hot-reload
 - `nest:start:debug` run application in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:prod` start applicaiton in production mode, requires `nest:build` to be executed beforehand
+
+### It exist a **file storage** module. It start such as a microservice on port :4444
+
+- `nest:start:files-storage` starts the nest **file storage**
+- `nest:start:files-storage:dev` run **file storage** without build from sources in dev-mode with hot-reload
+- `nest:start:files-storage:debug` run **file storage** in dev-mode with hot-reload and debug port opened on port :9229
+- `nest:start:files-storage:prod` start **file storage** in production mode, requires `nest:build` to be executed beforehand
+
 
 ### How to build and serve the documentation
 

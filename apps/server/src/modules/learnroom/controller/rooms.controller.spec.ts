@@ -23,6 +23,14 @@ describe('rooms controller', () => {
 						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 							throw new Error('please write mock for RoomsUc.getBoard');
 						},
+						updateVisibilityOfBoardElement(
+							roomId: EntityId,
+							elementId: EntityId,
+							userId: EntityId,
+							visibility: boolean
+						): Promise<void> {
+							throw new Error('please write mock for RoomsUc.updateVisibilityOfBoardElement');
+						},
 					},
 				},
 				{
@@ -81,6 +89,17 @@ describe('rooms controller', () => {
 
 				expect(result).toEqual(mapperResult);
 			});
+		});
+	});
+
+	describe('patchVisibility', () => {
+		it('should call uc', async () => {
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => {
+				return Promise.resolve();
+			});
+			await controller.patchElementVisibility('roomid', 'elementId', { visibility: true }, currentUser);
+			expect(ucSpy).toHaveBeenCalled();
 		});
 	});
 });

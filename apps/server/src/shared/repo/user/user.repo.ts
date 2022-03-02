@@ -2,18 +2,21 @@ import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { Counted, EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
-export class UserRepo {
-	constructor(private readonly em: EntityManager<MongoDriver>) {}
+export class UserRepo extends BaseRepo<User> {
+	constructor(protected readonly em: EntityManager<MongoDriver>) {
+		super(em);
+	}
 
-	async findById(id: EntityId, populateRoles = false): Promise<User> {
+	async findById(id: EntityId, populate = false): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
 
-		if (populateRoles) {
-			await this.em.populate(user, ['roles']);
+		if (populate) {
+			await this.em.populate(user, ['roles', 'school.systems']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
