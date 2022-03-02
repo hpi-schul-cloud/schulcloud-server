@@ -50,6 +50,8 @@ class Accounts {
 	}
 
 	patch(id, data, params) {
+		console.log('data', data);
+		console.log('params', params);
 		return this.app.service('accountModel').patch(id, data, prepareInternalParams(params));
 	}
 

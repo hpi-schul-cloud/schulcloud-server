@@ -9,7 +9,7 @@ export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTime
 @Entity({ tableName: 'account' })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
-	username!: string;
+	username: string;
 
 	@Property({ nullable: true })
 	password?: string;
@@ -21,11 +21,11 @@ export class Account extends BaseEntityWithTimestamps {
 	credentialHash?: string;
 
 	// TODO set index to true after we removed the account model from feathers
-	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true, mapToPk: true })
-	userId!: ObjectId;
+	@OneToOne('User', undefined, { fieldName: 'userId' })
+	user: User;
 
-	@OneToOne({ entity: () => System, owner: true, orphanRemoval: true, mapToPk: true, nullable: true })
-	systemId?: ObjectId;
+	@OneToOne('System', undefined, { fieldName: 'systemId' })
+	system: System;
 
 	@Property({ nullable: true })
 	lasttriedFailedLogin? = new Date(0);
@@ -42,8 +42,8 @@ export class Account extends BaseEntityWithTimestamps {
 		this.password = props.password;
 		this.token = props.token;
 		this.credentialHash = props.credentialHash;
-		this.userId = props.userId;
-		this.systemId = props.systemId;
+		this.user = props.user;
+		this.system = props.system;
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
 		this.expiresAt = props.expiresAt;
 		this.activated = props.activated;

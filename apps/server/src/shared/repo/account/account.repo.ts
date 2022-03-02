@@ -5,6 +5,8 @@ import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 
+// const bcrypt = require('bcryptjs');
+
 @Injectable()
 export class AccountRepo {
 	constructor(private readonly em: EntityManager) {}
@@ -14,6 +16,7 @@ export class AccountRepo {
 	}
 
 	async create(account: Account): Promise<Account> {
+		// account.password = await bcrypt.hash(account.password);
 		await this.repo.persistAndFlush(account);
 		return account;
 	}
@@ -25,6 +28,11 @@ export class AccountRepo {
 
 	async update(account: Account): Promise<Account> {
 		await this.repo.persistAndFlush(account);
+		return account;
+	}
+
+	async findByUserId(userId: EntityId): Promise<Account> {
+		const account = await this.repo.findOneOrFail({ user: userId });
 		return account;
 	}
 
