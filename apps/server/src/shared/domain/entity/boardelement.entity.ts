@@ -56,7 +56,7 @@ export class TaskBoardElement extends BoardElement {
 	target!: Task;
 }
 
-@Entity({ discriminatorValue: BoardElementType.Task })
+@Entity({ discriminatorValue: BoardElementType.Lesson })
 export class LessonBoardElement extends BoardElement {
 	constructor(props: { target: Lesson }) {
 		super(props);

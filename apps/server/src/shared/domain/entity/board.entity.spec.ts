@@ -19,6 +19,24 @@ describe('Board Entity', () => {
 		await orm.close();
 	});
 
+	describe('getByTargetId', () => {
+		it('should return target', () => {
+			const task = taskFactory.buildWithId();
+			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
+			const board = boardFactory.buildWithId({ references: [taskElement] });
+
+			const result = board.getByTargetId(task.id);
+			expect(result).toEqual(task);
+		});
+
+		it('should throw when target doesnt exist', () => {
+			const board = boardFactory.buildWithId({ references: [] });
+
+			const call = () => board.getByTargetId('this-does-not-exist');
+			expect(call).toThrow();
+		});
+	});
+
 	describe('syncTasksFromList', () => {
 		it('should remove tasks from board that are not in list', () => {
 			const task = taskFactory.buildWithId();

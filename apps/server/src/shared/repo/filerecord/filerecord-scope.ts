@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Scope } from '../scope';
 
 export class FileRecordScope extends Scope<FileRecord> {
-	byTargetId(targetId: EntityId): FileRecordScope {
-		this.addQuery({ _targetId: new ObjectId(targetId) });
+	byParentId(parentId: EntityId): FileRecordScope {
+		this.addQuery({ _parentId: new ObjectId(parentId) });
 		return this;
 	}
 
