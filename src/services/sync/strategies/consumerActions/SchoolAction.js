@@ -27,6 +27,14 @@ class SchoolAction extends BaseConsumerAction {
 			return;
 		}
 
+		if (schoolData.officialSchoolNumber) {
+			// school without ldapId exists in our db - don't create as new
+			const checkSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.officialSchoolNumber);
+			if (checkSchool) {
+				return;
+			}
+		}
+
 		// default: create new school
 		schoolData.fileStorageType = this.getDefaultFileStorageType();
 		const createdSchool = await SchoolRepo.createSchool(schoolData);
