@@ -1,5 +1,4 @@
 import { Module, DynamicModule } from '@nestjs/common';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { MailService } from './mail.service';
 
 interface MailModuleOptions {
@@ -18,7 +17,6 @@ export class MailModule {
 					provide: 'MAIL_SERVICE_OPTIONS',
 					useValue: { exchange: options.exchange, routingKey: options.routingKey },
 				},
-				AmqpConnection,
 			],
 			exports: [MailService],
 		};
