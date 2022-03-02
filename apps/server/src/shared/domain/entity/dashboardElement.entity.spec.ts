@@ -96,18 +96,6 @@ describe('dashboardElement', () => {
 				}
 			});
 		});
-		describe('when Element has emoji in title', () => {
-			it('should show only Emoji in avatar if Emoji is first character', () => {
-				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', '🙂 Dashboard'));
-				const content = element.getContent();
-				expect(content.shortTitle).toEqual('🙂');
-			});
-			it('should show Emoji in avatar if Emoji is second character', () => {
-				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'A🙂 Dashboard'));
-				const content = element.getContent();
-				expect(content.shortTitle).toEqual('A🙂');
-			});
-		});
 	});
 
 	describe('removeReferenceByIndex', () => {
