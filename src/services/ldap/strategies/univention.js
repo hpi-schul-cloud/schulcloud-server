@@ -8,7 +8,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	/**
 	 * @public
 	 * @see AbstractLDAPStrategy#getSchools
-	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
+	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName, officialSchoolNumber
 	 * @memberof UniventionLDAPStrategy
 	 */
 	getSchools() {
