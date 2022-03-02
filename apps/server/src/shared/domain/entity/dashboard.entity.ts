@@ -123,11 +123,22 @@ export class GridElement implements IGridElement {
 			return metadata;
 		}
 		const groupData = this.references.map((reference) => reference.getMetadata());
-		const checkShortTitle = this.title ? this.title.substr(0, 2) : '';
+		let explicitShortTitle = '';
+		if (this.title) {
+			const titleArray = [...this.title];
+			const pattern = /\p{Emoji}/u;
+			const firstElement = titleArray[0];
+			const secondElement = titleArray[1];
+			if (pattern.test(firstElement)) {
+				explicitShortTitle = firstElement;
+			} else {
+				explicitShortTitle = firstElement + secondElement;
+			}
+		}
 		const groupMetadata = {
 			groupId: this.getId(),
 			title: this.title,
-			shortTitle: checkShortTitle,
+			shortTitle: explicitShortTitle,
 			displayColor: 'exampleColor',
 			group: groupData,
 		};
