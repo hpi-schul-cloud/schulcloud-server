@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
@@ -24,11 +23,6 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
-	nestApp.useGlobalPipes(
-		new ValidationPipe({
-			transform: true,
-		})
-	);
 
 	await nestApp.init();
 

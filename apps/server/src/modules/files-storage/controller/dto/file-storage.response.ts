@@ -1,17 +1,17 @@
 /* istanbul ignore file */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
-import { FileRecord, FileRecordTargetType } from '@shared/domain/'; // we do not want entity on this place in future or?
+import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
+import { FileRecord, FileRecordParentType } from '@shared/domain/'; // we do not want entity on this place in future or?
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
-		this.targetId = fileRecord.targetId;
+		this.parentId = fileRecord.parentId;
 		this.creatorId = fileRecord.creatorId;
-		this.type = fileRecord.type;
-		this.targetType = fileRecord.targetType;
+		this.type = fileRecord.mimeType;
+		this.parentType = fileRecord.parentType;
 	}
 
 	@ApiProperty()
@@ -22,7 +22,7 @@ export class FileRecordResponse {
 	name: string;
 
 	@ApiProperty()
-	targetId: string;
+	parentId: string;
 
 	@ApiProperty()
 	creatorId: string;
@@ -31,5 +31,15 @@ export class FileRecordResponse {
 	type: string;
 
 	@ApiProperty()
-	targetType: FileRecordTargetType;
+	parentType: FileRecordParentType;
+}
+
+export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {
+	constructor(data: FileRecordResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [FileRecordResponse] })
+	data: FileRecordResponse[];
 }

@@ -4,3 +4,4 @@ export * from './movePosition.params';
 export * from './patchGroup.params';
 export * from './roomBoardResponse';
 export * from './roomBoardResponse-taskStatus';
+export * from './patch-visibility.params';

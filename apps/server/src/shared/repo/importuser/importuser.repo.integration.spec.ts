@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MatchCreator, MatchCreatorScope, RoleName, School } from '@shared/domain';
+import { MatchCreator, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
 import { NotFoundError } from '@mikro-orm/core';
 import { ImportUserRepo } from '.';
 
@@ -85,6 +85,12 @@ describe('ImportUserRepo', () => {
 			await em.persistAndFlush([importUser]);
 			const result = await repo.hasMatch(user);
 			expect(result).toBeNull();
+		});
+		it('should throw error for wrong id given', async () => {
+			const { user } = await persistedReferences();
+			const importUser = importUserFactory.build();
+			await em.persistAndFlush([importUser]);
+			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrowError('invalid user match id');
 		});
 	});
 
