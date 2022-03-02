@@ -47,7 +47,6 @@ class LDAPSyncer extends Syncer {
 
 	async processLdapSchools() {
 		const ldapSchools = await this.ldapService.getSchools(this.system.ldapConfig);
-		// possible to compare schools with our db, and remove those which have no ldapId but officialSchoolNumber....
 		this.stats.schools += ldapSchools.length;
 		const years = await SchoolRepo.getYears();
 		const currentYear = new SchoolYearFacade(years).defaultYear;

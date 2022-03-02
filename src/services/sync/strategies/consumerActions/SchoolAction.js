@@ -27,10 +27,12 @@ class SchoolAction extends BaseConsumerAction {
 			return;
 		}
 
-		// we have a school but it has no ldapId - should not be synced
-		const checkSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.officialSchoolNumber);
-		if (checkSchool) {
-			return;
+		if (schoolData.officialSchoolNumber) {
+			// school without ldapId exists in our db - don't create as new
+			const checkSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.officialSchoolNumber);
+			if (checkSchool) {
+				return;
+			}
 		}
 
 		// default: create new school
