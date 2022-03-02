@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
 import { FileRecord, FileRecordParentType } from '@shared/domain/'; // we do not want entity on this place in future or?
 
 export class FileRecordResponse {
@@ -30,6 +30,16 @@ export class FileRecordResponse {
 	@ApiProperty()
 	type: string;
 
-	@ApiProperty({ enum: FileRecordParentType })
+	@ApiProperty()
 	parentType: FileRecordParentType;
+}
+
+export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {
+	constructor(data: FileRecordResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [FileRecordResponse] })
+	data: FileRecordResponse[];
 }

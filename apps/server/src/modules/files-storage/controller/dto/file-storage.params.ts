@@ -1,11 +1,9 @@
-/* istanbul ignore file */
-
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
 import { Allow, IsEnum, IsMongoId, IsString } from 'class-validator';
 
-export class UploadFileParams {
+export class FileParams {
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;

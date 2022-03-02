@@ -1,22 +1,23 @@
-import { Body, Controller, Get, Param, Post, Req, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { PaginationQuery } from '@shared/controller';
 import { FileRecord, ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FilesStorageUC } from '../uc/files-storage.uc';
-import { FileRecordResponse, DownloadFileParams, FileDto, UploadFileParams } from './dto';
+import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecordListResponse } from './dto';
 
-@ApiTags('files-storage')
+@ApiTags('file')
 @Authenticate('jwt')
-@Controller('files-storage')
+@Controller('file')
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC) {}
 
 	@ApiConsumes('multipart/form-data')
-	@Post('upload/:schoolId/:parentType/:parentId')
-	async uploadAsStream(
+	@Post('/upload/:schoolId/:parentType/:parentId')
+	async upload(
 		@Body() _: FileDto,
-		@Param() params: UploadFileParams,
+		@Param() params: FileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	): Promise<FileRecordResponse> {
@@ -38,5 +39,24 @@ export class FilesStorageController {
 			type: res.contentType,
 			disposition: `attachment; filename="${params.fileName}"`,
 		});
+	}
+
+	@Get('/list/:schoolId/:parentType/:parentId')
+	async list(
+		@Param() params: FileParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() paginationQuery: PaginationQuery
+	): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.fileRecordsOfParent(currentUser.userId, params);
+
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return new FileRecordResponse(fileRecord);
+		});
+
+		const { skip, limit } = paginationQuery;
+
+		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
+
+		return response;
 	}
 }

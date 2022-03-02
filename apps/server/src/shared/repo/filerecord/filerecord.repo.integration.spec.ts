@@ -95,7 +95,7 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	describe('findBySchoolIdAndTargetId', () => {
+	describe('findBySchoolIdAndParentId', () => {
 		it('should find an entity by its school id and target id', async () => {
 			const fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: school1.id,
@@ -111,7 +111,7 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndTargetId(school1.id, task.id);
+			const [results, count] = await repo.findBySchoolIdAndParentId(school1.id, task.id);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);

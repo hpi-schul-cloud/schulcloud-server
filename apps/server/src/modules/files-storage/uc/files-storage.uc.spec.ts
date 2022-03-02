@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileRecordRepo } from '@shared/repo';
 import { Request } from 'express';
-import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { Busboy } from 'busboy';
-import { DownloadFileParams, UploadFileParams } from '../controller/dto/file-storage.params';
+
+import { FileRecordRepo } from '@shared/repo';
+import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
+import { fileRecordFactory, setupEntities } from '@shared/testing';
+
+import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { FilesStorageUC } from './files-storage.uc';
 import { IGetFileResponse } from '../interface/storage-client';
+
+import { FilesStorageUC } from './files-storage.uc';
 
 describe('FilesStorageUC', () => {
 	let module: TestingModule;
@@ -20,7 +23,7 @@ describe('FilesStorageUC', () => {
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
 	let fileDownloadParams: DownloadFileParams;
-	let fileUploadParams: UploadFileParams;
+	let fileUploadParams: FileParams;
 	let response: IGetFileResponse;
 	const userId: EntityId = '620abb23697023333eadea99';
 
@@ -212,6 +215,18 @@ describe('FilesStorageUC', () => {
 				storageClient.getFile.mockRejectedValue(new Error());
 				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 			});
+		});
+	});
+
+	describe('fileRecordsOfParent', () => {
+		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
+			const { schoolId, parentId } = fileUploadParams;
+			const fileRecords = fileRecordFactory.buildList(3, { parentId, schoolId });
+			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+
+			await service.fileRecordsOfParent(userId, { schoolId, parentId, parentType: FileRecordParentType.School });
+
+			expect(spy).toHaveBeenCalledWith(schoolId, parentId);
 		});
 	});
 });
