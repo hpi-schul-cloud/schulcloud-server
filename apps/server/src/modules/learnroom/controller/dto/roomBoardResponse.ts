@@ -45,6 +45,24 @@ export class BoardTaskResponse {
 	status: BoardTaskStatusResponse;
 }
 
+export class BoardTaskMetadataResponse {
+	constructor({ id, name, allowed }: BoardTaskMetadataResponse) {
+		this.id = id;
+		this.name = name;
+		this.allowed = allowed;
+	}
+
+	@ApiProperty()
+	id: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	name: string;
+
+	@ApiProperty()
+	allowed: boolean;
+}
+
 export class BoardLessonResponse {
 	constructor({ id, name, hidden, createdAt, updatedAt }: BoardLessonResponse) {
 		this.id = id;
@@ -89,7 +107,7 @@ export class BoardElementResponse {
 	@ApiProperty({
 		description: 'Content of the Board, either: a task or a lesson specific for the board',
 	})
-	content: BoardTaskResponse | BoardLessonResponse;
+	content: BoardTaskResponse | BoardTaskMetadataResponse | BoardLessonResponse;
 }
 
 // TODO: this and DashboardResponse should be combined

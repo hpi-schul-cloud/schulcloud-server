@@ -5,8 +5,9 @@ import {
 	BoardElementResponse,
 	BoardTaskResponse,
 	BoardLessonResponse,
+	BoardTaskMetadataResponse,
 } from '../controller/dto/roomBoardResponse';
-import { RoomBoardDTO } from '../types';
+import { RoomBoardDTO, TaskMetadataDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class RoomBoardResponseMapper {
 	mapToResponse(board: RoomBoardDTO): BoardResponse {
 		const elements: BoardElementResponse[] = [];
 		board.elements.forEach((element) => {
-			if (element.type === 'task') {
+			if (element.type === RoomBoardElementTypes.Task) {
 				const { task: boardTask, status } = element.content as TaskWithStatusVo;
 				const boardTaskDesc = boardTask.getParentData();
 				const boardTaskStatus = BoardTaskStatusMapper.mapToResponse(status);
@@ -35,7 +36,7 @@ export class RoomBoardResponseMapper {
 				mappedTask.description = boardTask.description;
 				const boardElementResponse = new BoardElementResponse({ type: 'task', content: mappedTask });
 				elements.push(boardElementResponse);
-			} else if (element.type === 'lesson') {
+			} else if (element.type === RoomBoardElementTypes.Lesson) {
 				const boardLesson = element.content as Lesson;
 
 				const mappedLesson = new BoardLessonResponse({
@@ -50,6 +51,15 @@ export class RoomBoardResponseMapper {
 				mappedLesson.courseName = lessonCourse.name;
 
 				const boardElementResponse = new BoardElementResponse({ type: 'lesson', content: mappedLesson });
+				elements.push(boardElementResponse);
+			} else if (element.type === RoomBoardElementTypes.TaskMetadata) {
+				const data = element.content as TaskMetadataDTO;
+				const mapped = new BoardTaskMetadataResponse({
+					id: data.id,
+					name: data.name,
+					allowed: data.allowed,
+				});
+				const boardElementResponse = new BoardElementResponse({ type: 'taskMetadata', content: mapped });
 				elements.push(boardElementResponse);
 			}
 		});
