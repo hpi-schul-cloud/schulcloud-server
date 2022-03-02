@@ -81,5 +81,20 @@ describe('LessonRepo', () => {
 			expect(total).toBe(1);
 			expect(result).toHaveLength(1);
 		});
+
+		it('should order by position', async () => {
+			const course = courseFactory.build();
+			const lessons = [
+				lessonFactory.build({ course, position: 2 }),
+				lessonFactory.build({ course, position: 0 }),
+				lessonFactory.build({ course, position: 1 }),
+			];
+			await em.persistAndFlush(lessons);
+			em.clear();
+
+			const expectedOrder = [lessons[1], lessons[2], lessons[0]].map((lesson) => lesson.id);
+			const [results, total] = await repo.findAllByCourseIds([course.id]);
+			expect(results.map((lesson) => lesson.id)).toEqual(expectedOrder);
+		});
 	});
 });

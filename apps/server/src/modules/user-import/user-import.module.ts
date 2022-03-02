@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { ImportUserRepo, UserRepo } from '@shared/repo';
+import { AccountRepo, ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
 import { PermissionService } from '@shared/domain';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
@@ -8,7 +8,7 @@ import { UserImportUc } from './uc/user-import.uc';
 @Module({
 	imports: [LoggerModule],
 	controllers: [ImportUserController],
-	providers: [UserImportUc, ImportUserRepo, UserRepo, PermissionService],
+	providers: [AccountRepo, UserImportUc, ImportUserRepo, PermissionService, SchoolRepo, UserRepo],
 	exports: [],
 })
 /**

@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board } from '@shared/domain';
+import { Board, Lesson, Task } from '@shared/domain';
 import {
 	courseFactory,
 	boardFactory,
@@ -44,6 +44,8 @@ describe('BoardRepo', () => {
 			const board = boardFactory.build({ course, references: [taskElement, lessonElement] });
 			await em.persistAndFlush(board);
 
+			em.clear();
+
 			const result = await repo.findByCourseId(course.id);
 			expect(result.id).toEqual(board.id);
 		});
@@ -51,7 +53,7 @@ describe('BoardRepo', () => {
 		it('should return fresh board if none exists yet', async () => {
 			const course = courseFactory.build();
 			await em.persistAndFlush(course);
-
+			em.clear();
 			const result = await repo.findByCourseId(course.id);
 			expect(result).toHaveProperty('id');
 		});
@@ -96,5 +98,29 @@ describe('BoardRepo', () => {
 
 		const result = await repo.findById(board.id);
 		expect(result.references.isInitialized()).toEqual(true);
+	});
+
+	it('should populate lesson in element', async () => {
+		const lessonElement = lessonBoardElementFactory.build();
+		const board = boardFactory.build({ references: [lessonElement] });
+		await repo.save(board);
+
+		em.clear();
+
+		const result = await repo.findById(board.id);
+		const lesson = result.references.getItems()[0].target as Lesson;
+		expect(lesson.hidden).toBeDefined();
+	});
+
+	it('should populate task in element', async () => {
+		const taskElement = taskBoardElementFactory.build();
+		const board = boardFactory.build({ references: [taskElement] });
+		await repo.save(board);
+
+		em.clear();
+
+		const result = await repo.findById(board.id);
+		const task = result.references.getItems()[0].target as Task;
+		expect(task.name).toBeDefined();
 	});
 });

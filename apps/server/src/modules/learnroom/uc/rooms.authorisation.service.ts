@@ -8,13 +8,13 @@ export enum TaskParentPermission {
 
 @Injectable()
 export class RoomsAuthorisationService {
-	private hasCourseWritePermission(user: User, course: Course): boolean {
+	hasCourseWritePermission(user: User, course: Course): boolean {
 		const hasPermission = course.substitutionTeachers.contains(user) || course.teachers.contains(user);
 
 		return hasPermission;
 	}
 
-	private hasCourseReadPermission(user: User, course: Course): boolean {
+	hasCourseReadPermission(user: User, course: Course): boolean {
 		const hasPermission =
 			course.students.contains(user) || course.substitutionTeachers.contains(user) || course.teachers.contains(user);
 

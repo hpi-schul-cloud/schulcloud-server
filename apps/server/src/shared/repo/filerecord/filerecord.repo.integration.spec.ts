@@ -4,7 +4,7 @@ import { cleanupCollections, fileRecordFactory, schoolFactory, taskFactory } fro
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { FileRecord, FileRecordTargetType, School, Task } from '@shared/domain';
+import { FileRecord, FileRecordParentType, School, Task } from '@shared/domain';
 import { FileRecordRepo } from './filerecord.repo';
 
 describe('FileRecordRepo', () => {
@@ -95,27 +95,27 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	describe('findBySchoolIdAndTargetId', () => {
+	describe('findBySchoolIdAndParentId', () => {
 		it('should find an entity by its school id and target id', async () => {
 			const fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: school1.id,
-				targetType: FileRecordTargetType.Task,
-				targetId: task.id,
+				parentType: FileRecordParentType.Task,
+				parentId: task.id,
 			});
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: school2.id,
-				targetType: FileRecordTargetType.Task,
-				targetId: task.id,
+				parentType: FileRecordParentType.Task,
+				parentId: task.id,
 			});
 
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndTargetId(school1.id, task.id);
+			const [results, count] = await repo.findBySchoolIdAndParentId(school1.id, task.id);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.targetId)).toEqual([task.id, task.id, task.id]);
+			expect(results.map((o) => o.parentId)).toEqual([task.id, task.id, task.id]);
 		});
 	});
 });

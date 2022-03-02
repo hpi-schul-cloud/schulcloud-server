@@ -3,16 +3,16 @@ import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
 import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord } from '@shared/domain';
+import { Counted, EntityId, FileRecord } from '@shared/domain';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, UploadFileParams } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
 	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async upload(userId: EntityId, params: UploadFileParams, req: Request) {
+	async upload(userId: EntityId, params: FileParams, req: Request) {
 		// @TODO check permissions of schoolId by user
 		// @TODO scan virus on demand?
 		// @TODO add thumbnail on demand
@@ -49,19 +49,19 @@ export class FilesStorageUC {
 			name: info.filename,
 			buffer: file,
 			size,
-			type: info.mimeType, // IFile rename in contentType or mimeType ?
+			mimeType: info.mimeType,
 		};
 
 		return fileDescription;
 	}
 
-	private async uploadFile(userId: EntityId, params: UploadFileParams, fileDescription: IFile) {
+	private async uploadFile(userId: EntityId, params: FileParams, fileDescription: IFile) {
 		const entity = new FileRecord({
 			size: fileDescription.size,
 			name: fileDescription.name,
-			type: fileDescription.type,
-			targetType: params.targetType,
-			targetId: params.targetId,
+			mimeType: fileDescription.mimeType,
+			parentType: params.parentType,
+			parentId: params.parentId,
 			creatorId: userId,
 			schoolId: params.schoolId,
 		});
@@ -91,7 +91,16 @@ export class FilesStorageUC {
 
 			return res;
 		} catch (error) {
+			if (error instanceof NotFoundException) {
+				throw error;
+			}
 			throw new BadRequestException(error);
 		}
+	}
+
+	async fileRecordsOfParent(userId: EntityId, params: FileParams): Promise<Counted<FileRecord[]>> {
+		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+
+		return countedFileRecords;
 	}
 }

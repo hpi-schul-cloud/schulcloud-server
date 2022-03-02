@@ -1,26 +1,25 @@
-/* istanbul ignore file */
-
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
-import { FileRecordTargetType } from '@shared/domain/entity/filerecord.entity';
-import { IsEnum, IsMongoId } from 'class-validator';
+import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
+import { Allow, IsEnum, IsMongoId, IsString } from 'class-validator';
 
-export class UploadFileParams {
+export class FileParams {
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;
 
 	@ApiProperty()
 	@IsMongoId()
-	targetId!: EntityId;
+	parentId!: EntityId;
 
-	@ApiProperty({ enum: FileRecordTargetType })
-	@IsEnum(FileRecordTargetType)
-	targetType!: FileRecordTargetType;
+	@ApiProperty({ enum: FileRecordParentType })
+	@IsEnum(FileRecordParentType)
+	parentType!: FileRecordParentType;
 }
 
 export class FileDto {
 	@ApiProperty({ type: 'string', format: 'binary' })
+	@Allow()
 	file!: string;
 }
 
@@ -30,5 +29,6 @@ export class DownloadFileParams {
 	fileRecordId!: EntityId;
 
 	@ApiProperty()
+	@IsString()
 	fileName!: string;
 }
