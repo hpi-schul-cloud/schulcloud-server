@@ -27,9 +27,9 @@ class SchoolAction extends BaseConsumerAction {
 			return;
 		}
 
-		// don't create school as new if exists, but not set for ldap yet (not ready to migrate)
-		const checkedSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.ldapSchoolIdentifier);
-		if (checkedSchool) {
+		// we have a school but it has no ldapId - should not be synced
+		const checkSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.officialSchoolNumber);
+		if (checkSchool) {
 			return;
 		}
 

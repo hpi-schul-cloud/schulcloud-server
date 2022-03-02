@@ -30,6 +30,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			.then((data) =>
 				data.map((obj) => ({
 					ldapOu: obj.ou,
+					officialSchoolNumber: obj.ou,
 					displayName: obj.displayName,
 				}))
 			);
