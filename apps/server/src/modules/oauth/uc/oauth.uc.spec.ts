@@ -144,6 +144,11 @@ describe('OAuthUc', () => {
 				return service.checkAuthorizationCode(defaultErrorQuery);
 			}).toThrow('Authorization Query Object has no authorization code or error');
 		});
+		it('should throw an error from a query with error', () => {
+			expect(() => {
+				return service.checkAuthorizationCode({ error: 'default_error' });
+			}).toThrow(OAuthSSOError);
+		});
 		it('should throw an error from a falsy query', () => {
 			expect(() => {
 				return service.checkAuthorizationCode({});
