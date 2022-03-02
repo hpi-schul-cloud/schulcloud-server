@@ -41,11 +41,12 @@ describe('School Actions', () => {
 			findSchoolByLdapIdAndSystemStub.returns(null);
 
 			const findSchoolByOfficialSchoolNumberStub = sinon.stub(SchoolRepo, 'findSchoolByOfficialSchoolNumber');
-			findSchoolByOfficialSchoolNumberStub.returns({ name: 'Test School', _id: 1 });
+			findSchoolByOfficialSchoolNumberStub.returns({ name: 'Test School' });
 
 			const createSchoolStub = sinon.stub(SchoolRepo, 'createSchool');
 
-			await schoolAction.action({ name: 'Test School' });
+			await schoolAction.action({ school: { name: 'Test School', officialSchoolNumber: '123' } });
+			expect(findSchoolByOfficialSchoolNumberStub.calledOnce).to.be.true;
 			expect(createSchoolStub.calledOnce).to.be.false;
 		});
 
