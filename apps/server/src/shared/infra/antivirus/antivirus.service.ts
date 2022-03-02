@@ -1,8 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
-import {FileRecord} from "@shared/domain";
-import {options} from "tsconfig-paths/lib/options";
+import { FileRecord } from '@shared/domain';
 
 interface AntivirusServiceOptions {
 	enabled: boolean;
@@ -19,10 +18,15 @@ export class AntivirusService {
 	) {}
 
 	public async send(fileRecord: FileRecord): Promise<void> {
-		if (this.options.enabled) {
-			let download_uri = this.options.filesServiceBaseUrl + '/api/v3/files-storage/downloadBySecurityCheckRequestToken?token='+ fileRecord.securityCheck?.requestToken;
-            let callback_uri = this.options.filesServiceBaseUrl + '/api/v3/files-storage/updateSecurityStatus?token=' + fileRecord.securityCheck?.requestToken;
-            await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, {download_uri, callback_uri}, { persistent: true });
+		if (this.options.enabled && fileRecord.securityCheck.requestToken) {
+			const downloadUri = `${this.options.filesServiceBaseUrl}/api/v3/files-storage/downloadBySecurityCheckRequestToken?token=${fileRecord.securityCheck.requestToken}`;
+			const callbackUri = `${this.options.filesServiceBaseUrl}/api/v3/files-storage/updateSecurityStatus?token=${fileRecord.securityCheck.requestToken}`;
+			await this.amqpConnection.publish(
+				this.options.exchange,
+				this.options.routingKey,
+				{ download_uri: downloadUri, callback_uri: callbackUri },
+				{ persistent: true }
+			);
 		}
 	}
 }

@@ -20,7 +20,6 @@ describe('S3ClientAdapter', () => {
 	let module: TestingModule;
 	let service: S3ClientAdapter;
 	let client: S3Client;
-	let logger: Logger;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({

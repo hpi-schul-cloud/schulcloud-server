@@ -1,7 +1,7 @@
-import {Body, Controller, Get, Param, Post, Put, Query, Req, StreamableFile} from '@nestjs/common';
-import { ApiConsumes, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Put, Query, StreamableFile } from '@nestjs/common';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ScanResultDto } from '@src/modules/files-storage/controller/dto';
 import { FilesStorageUC } from '../uc/files-storage.uc';
-import {ScanResultDto} from "@src/modules/files-storage/controller/dto";
 
 @ApiTags('files-storage')
 @Controller('files-storage')

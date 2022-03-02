@@ -1,5 +1,5 @@
 import { Module, DynamicModule } from '@nestjs/common';
-import {AntivirusService} from "./antivirus.service";
+import { AntivirusService } from './antivirus.service';
 
 interface AntivirusModuleOptions {
 	enabled: boolean;
@@ -17,7 +17,12 @@ export class AntivirusModule {
 				AntivirusService,
 				{
 					provide: 'ANTIVIRUS_SERVICE_OPTIONS',
-					useValue: { enabled: options.enabled, filesServiceBaseUrl:options.filesServiceBaseUrl, exchange: options.exchange, routingKey: options.routingKey },
+					useValue: {
+						enabled: options.enabled,
+						filesServiceBaseUrl: options.filesServiceBaseUrl,
+						exchange: options.exchange,
+						routingKey: options.routingKey,
+					},
 				},
 			],
 			exports: [AntivirusService],

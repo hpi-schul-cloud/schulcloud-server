@@ -7,7 +7,7 @@ import { Busboy } from 'busboy';
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { IGetFileResponse } from '../interface/storage-client';
@@ -55,6 +55,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: FileRecordRepo,
 					useValue: createMock<FileRecordRepo>(),
+				},
+				{
+					provide: AntivirusService,
+					useValue: createMock<AntivirusService>(),
 				},
 			],
 		}).compile();

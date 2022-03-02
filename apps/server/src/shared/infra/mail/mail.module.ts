@@ -1,6 +1,6 @@
 import { Module, DynamicModule } from '@nestjs/common';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { MailService } from './mail.service';
-import {AmqpConnection, RabbitMQModule} from "@golevelup/nestjs-rabbitmq";
 
 interface MailModuleOptions {
 	exchange: string;

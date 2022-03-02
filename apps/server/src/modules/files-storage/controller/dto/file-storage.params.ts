@@ -39,5 +39,4 @@ export class ScanResultDto {
 
 	@ApiProperty()
 	virus_signature!: string;
-
 }

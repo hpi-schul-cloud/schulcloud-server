@@ -1,7 +1,6 @@
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { ALL_ENTITIES } from '@shared/domain';
+import { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { FileRecordRepo } from '@shared/repo';
 import { AuthModule } from '@src/modules/authentication/auth.module';
@@ -9,13 +8,12 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { CoreModule } from '@src/core';
+import { CommonModule } from '@src/common.module';
+import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
-import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../config';
 import { FilesStorageUC } from './uc/files-storage.uc';
-import { CommonModule } from '@src/common.module';
-import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 
 // The configurations lookup
 // config/development.json for development
