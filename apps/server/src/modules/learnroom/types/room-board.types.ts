@@ -7,7 +7,7 @@ export type RoomBoardDTO = {
 	elements: RoomBoardElementDTO[];
 };
 
-export type TaskMetadataDTO = {
+export type LockedTaskDTO = {
 	id: EntityId;
 	name: string;
 	allowed: boolean;
@@ -15,11 +15,11 @@ export type TaskMetadataDTO = {
 
 export enum RoomBoardElementTypes {
 	'Task' = 'task',
-	'TaskMetadata' = 'taskMetadata',
+	'LockedTask' = 'lockedtask',
 	'Lesson' = 'lesson',
 }
 
 export type RoomBoardElementDTO = {
 	type: RoomBoardElementTypes;
-	content: TaskWithStatusVo | TaskMetadataDTO | Lesson;
+	content: TaskWithStatusVo | LockedTaskDTO | Lesson;
 };

@@ -59,7 +59,7 @@ describe('room board response mapper', () => {
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 		});
 
-		it('should map taskMetadata on board to response', () => {
+		it('should map locked task on board to response', () => {
 			const course = courseFactory.buildWithId();
 			const task = taskFactory.buildWithId({ course });
 			const board = {
@@ -68,7 +68,7 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				courseName: course.name,
 				elements: [
-					{ type: RoomBoardElementTypes.TaskMetadata, content: { id: task.id, name: task.name, allowed: false } },
+					{ type: RoomBoardElementTypes.LockedTask, content: { id: task.id, name: task.name, allowed: false } },
 				],
 			};
 

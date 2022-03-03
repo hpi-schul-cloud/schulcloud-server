@@ -45,8 +45,8 @@ export class BoardTaskResponse {
 	status: BoardTaskStatusResponse;
 }
 
-export class BoardTaskMetadataResponse {
-	constructor({ id, name, allowed }: BoardTaskMetadataResponse) {
+export class LockedTaskResponse {
+	constructor({ id, name, allowed }: LockedTaskResponse) {
 		this.id = id;
 		this.name = name;
 		this.allowed = allowed;
@@ -107,7 +107,7 @@ export class BoardElementResponse {
 	@ApiProperty({
 		description: 'Content of the Board, either: a task or a lesson specific for the board',
 	})
-	content: BoardTaskResponse | BoardTaskMetadataResponse | BoardLessonResponse;
+	content: BoardTaskResponse | LockedTaskResponse | BoardLessonResponse;
 }
 
 // TODO: this and DashboardResponse should be combined

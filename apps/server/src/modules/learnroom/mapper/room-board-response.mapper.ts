@@ -5,9 +5,9 @@ import {
 	BoardElementResponse,
 	BoardTaskResponse,
 	BoardLessonResponse,
-	BoardTaskMetadataResponse,
+	LockedTaskResponse,
 } from '../controller/dto/roomBoardResponse';
-import { RoomBoardDTO, TaskMetadataDTO, RoomBoardElementTypes } from '../types';
+import { RoomBoardDTO, LockedTaskDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
@@ -52,14 +52,14 @@ export class RoomBoardResponseMapper {
 
 				const boardElementResponse = new BoardElementResponse({ type: 'lesson', content: mappedLesson });
 				elements.push(boardElementResponse);
-			} else if (element.type === RoomBoardElementTypes.TaskMetadata) {
-				const data = element.content as TaskMetadataDTO;
-				const mapped = new BoardTaskMetadataResponse({
+			} else if (element.type === RoomBoardElementTypes.LockedTask) {
+				const data = element.content as LockedTaskDTO;
+				const mapped = new LockedTaskResponse({
 					id: data.id,
 					name: data.name,
 					allowed: data.allowed,
 				});
-				const boardElementResponse = new BoardElementResponse({ type: 'taskMetadata', content: mapped });
+				const boardElementResponse = new BoardElementResponse({ type: 'lockedTask', content: mapped });
 				elements.push(boardElementResponse);
 			}
 		});

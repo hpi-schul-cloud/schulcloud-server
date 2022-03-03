@@ -11,7 +11,7 @@ import {
 	ITaskStatus,
 } from '@shared/domain';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomBoardDTO, RoomBoardElementDTO, TaskMetadataDTO, RoomBoardElementTypes } from '../types/room-board.types';
+import { RoomBoardDTO, RoomBoardElementDTO, LockedTaskDTO, RoomBoardElementTypes } from '../types/room-board.types';
 
 class DtoCreator {
 	room: Course;
@@ -112,12 +112,12 @@ class DtoCreator {
 	}
 
 	private mapTaskMetadataOnly(task: Task): RoomBoardElementDTO {
-		const content: TaskMetadataDTO = {
+		const content: LockedTaskDTO = {
 			id: task.id,
 			name: task.name,
 			allowed: false,
 		};
-		const result = { type: RoomBoardElementTypes.TaskMetadata, content };
+		const result = { type: RoomBoardElementTypes.LockedTask, content };
 		return result;
 	}
 
