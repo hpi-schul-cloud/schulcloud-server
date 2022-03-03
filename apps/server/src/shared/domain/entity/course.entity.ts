@@ -88,24 +88,23 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	}
 
 	getMetadata(): LearnroomMetadata {
-		const nameArray = [...this.name];
-		const pattern = /\p{Emoji}/u;
-		const firstElement = nameArray[0];
-		const secondElement = nameArray[1];
-		let explicitShortTitle = '';
-		if (pattern.test(firstElement)) {
-			explicitShortTitle = firstElement;
-		} else {
-			explicitShortTitle = firstElement + secondElement;
-		}
 		return {
 			id: this.id,
 			type: LearnroomTypes.Course,
 			title: this.name,
-			shortTitle: explicitShortTitle,
+			shortTitle: this.getShortTitle(),
 			displayColor: this.color,
 			untilDate: this.untilDate,
 			startDate: this.startDate,
 		};
+	}
+
+	private getShortTitle(): string {
+		const [firstChar, secondChar] = [...this.name];
+		const pattern = /\p{Emoji}/u;
+		if (pattern.test(firstChar)) {
+			return firstChar;
+		}
+		return firstChar + secondChar;
 	}
 }
