@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CommonTestModule } from '@src/common.module';
 import { MailModule } from './mail.module';
 import { MailService } from './mail.service';
 
@@ -12,7 +13,7 @@ describe('MailModule', () => {
 
 	it('should be initializable with forRoot', async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [MailModule.forRoot(mailModuleOptions)],
+			imports: [CommonTestModule, MailModule.forRoot(mailModuleOptions)],
 		}).compile();
 
 		const mailService = module.get(MailService);

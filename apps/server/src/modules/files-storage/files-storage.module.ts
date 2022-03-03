@@ -15,7 +15,7 @@ import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
 import { FilesStorageUC } from './uc/files-storage.uc';
 import { FileRecordUC } from './uc/file-record.uc';
-import { FilesStorageInternalController } from './controller/files-storage-internal.controller';
+import { FileSecurityController } from './controller/file-security.controller';
 
 // The configurations lookup
 // config/development.json for development
@@ -65,7 +65,7 @@ const providers = [
 	FileRecordRepo,
 ];
 
-const controllers = [FilesStorageController, FilesStorageInternalController];
+const controllers = [FilesStorageController, FileSecurityController];
 
 @Module({
 	imports: [...imports, CommonModule],

@@ -112,6 +112,20 @@ describe('FileRecord Entity', () => {
 		it('should set the requestToken via the constructor', () => {
 			const securityCheck = new FileSecurityCheck({ requestToken: '08154711' });
 			expect(securityCheck.requestToken).toEqual('08154711');
+			expect(securityCheck.status).toEqual(securityCheck.status);
+			expect(securityCheck.reason).toEqual(securityCheck.reason);
+		});
+		it('should set the status via the constructor', () => {
+			const securityCheck = new FileSecurityCheck({ status: ScanStatus.PENDING });
+			expect(securityCheck.status).toEqual(ScanStatus.PENDING);
+			expect(securityCheck.requestToken).toEqual(securityCheck.requestToken);
+			expect(securityCheck.reason).toEqual(securityCheck.reason);
+		});
+		it('should set the reason via the constructor', () => {
+			const securityCheck = new FileSecurityCheck({ reason: 'test-reason' });
+			expect(securityCheck.reason).toEqual('test-reason');
+			expect(securityCheck.status).toEqual(securityCheck.status);
+			expect(securityCheck.requestToken).toEqual(securityCheck.requestToken);
 		});
 	});
 });

@@ -40,5 +40,5 @@ export class ScanResultDto {
 
 	@ApiProperty()
 	@Allow()
-	virus_signature!: string;
+	virus_signature?: string;
 }

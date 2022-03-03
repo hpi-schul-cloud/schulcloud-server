@@ -1,5 +1,5 @@
 export enum FilesStorageInternalActions {
-	downloadBySecurityToken = '/file/internal/downloadBySecurityToken/:token',
-	updateSecurityStatus = '/file/internal/updateSecurityStatus/:token',
+	downloadBySecurityToken = '/file-security/download/:token',
+	updateSecurityStatus = '/file-security/update-status/:token',
 }
-export const ApiVersionPath = '/api/v3';
+export const API_VERSION_PATH = '/api/v3';

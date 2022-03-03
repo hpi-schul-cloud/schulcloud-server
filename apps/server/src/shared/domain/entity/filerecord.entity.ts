@@ -136,9 +136,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.securityCheck = new FileSecurityCheck({});
 	}
 
-	updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
+	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
 		this.securityCheck.status = status;
-		this.securityCheck.reason = reason || 'Clean';
+		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
 	}

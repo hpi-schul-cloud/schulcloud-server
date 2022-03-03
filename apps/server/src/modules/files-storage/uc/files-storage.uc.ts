@@ -72,7 +72,7 @@ export class FilesStorageUC {
 			await this.fileRecordRepo.save(entity);
 			// todo on error roll back
 			const folder = [params.schoolId, entity.id].join('/');
-			await this.storageClient.uploadFile(folder, fileDescription);
+			await this.storageClient.create(folder, fileDescription);
 			await this.antivirusService.send(entity);
 			return entity;
 		} catch (error) {
@@ -83,7 +83,7 @@ export class FilesStorageUC {
 
 	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
 		const pathToFile = [schoolId, fileRecordId].join('/');
-		const res = await this.storageClient.getFile(pathToFile);
+		const res = await this.storageClient.get(pathToFile);
 
 		return res;
 	}
@@ -115,6 +115,9 @@ export class FilesStorageUC {
 
 			return res;
 		} catch (error) {
+			if (error instanceof NotFoundException) {
+				throw error;
+			}
 			throw new BadRequestException(error);
 		}
 	}
