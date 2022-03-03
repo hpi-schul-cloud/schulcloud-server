@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
-import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
+import {EntityId, IFindOptions, Task, Counted, SortOrder, Account} from '@shared/domain';
 
 import { TaskScope } from './task-scope';
 
@@ -196,5 +196,11 @@ export class TaskRepo {
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 
 		return [taskEntities, count];
+	}
+
+	async delete(taskId: EntityId): Promise<Task> {
+		const task = await this.findById(taskId);
+		await this.em.removeAndFlush(task);
+		return task;
 	}
 }

@@ -169,4 +169,14 @@ export class TaskUC {
 
 		return oneWeekAgo;
 	}
+
+	async delete(userId: EntityId, taskId: EntityId) {
+		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
+
+		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.write)) {
+			throw new UnauthorizedException();
+		}
+
+		await this.taskRepo.delete(taskId);
+	}
 }

@@ -2,7 +2,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { ICurrentUser } from '@shared/domain';
 import { PaginationQuery } from '@shared/controller/';
-import { Controller, Get, Param, Patch, Query } from '@nestjs/common';
+import {Controller, Delete, Get, Param, Patch, Query} from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
@@ -68,5 +68,14 @@ export class TaskController {
 		const response = TaskMapper.mapToResponse(task);
 
 		return response;
+	}
+
+	@Delete(':id')
+	async delete(
+		@Param('id', ParseObjectIdPipe) taskId: string,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<string> {
+		await this.taskUc.delete(currentUser.userId, taskId)
+		return 'deleted';
 	}
 }
