@@ -8,7 +8,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	/**
 	 * @public
 	 * @see AbstractLDAPStrategy#getSchools
-	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
+	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName, officialSchoolNumber
 	 * @memberof UniventionLDAPStrategy
 	 */
 	getSchools() {
@@ -30,6 +30,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			.then((data) =>
 				data.map((obj) => ({
 					ldapOu: obj.ou,
+					officialSchoolNumber: obj.ou,
 					displayName: obj.displayName,
 				}))
 			);
