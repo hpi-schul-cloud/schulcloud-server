@@ -6,7 +6,7 @@ import { User } from './user.entity';
 
 export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
 
-@Entity({ tableName: 'account' })
+@Entity({ tableName: 'accounts' })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
 	username: string;
