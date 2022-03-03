@@ -8,8 +8,10 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { CoreModule } from '@src/core';
-import { CommonModule, CommonTestModule } from '@src/common.module';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
+import { ALL_ENTITIES } from '@shared/domain';
+import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
@@ -67,16 +69,44 @@ const providers = [
 
 const controllers = [FilesStorageController, FileSecurityController];
 
+export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
+	},
+};
+
 @Module({
-	imports: [...imports, CommonModule],
+	imports: [
+		...imports,
+		RabbitMQWrapperModule,
+		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
+			type: 'mongo',
+			// TODO add mongoose options as mongo options (see database.js)
+			clientUrl: DB_URL,
+			password: DB_PASSWORD,
+			user: DB_USERNAME,
+			entities: ALL_ENTITIES,
+
+			// debug: true, // use it for locally debugging of querys
+		}),
+	],
 	controllers,
 	providers,
 })
 export class FilesStorageModule {}
 
 @Module({
-	imports: [...imports, CommonTestModule],
+	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }), RabbitMQWrapperTestModule],
 	controllers,
 	providers,
 })
-export class FilesStorageTestModule {}
+export class FilesStorageTestModule {
+	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+		return {
+			module: FilesStorageTestModule,
+			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
+		};
+	}
+}

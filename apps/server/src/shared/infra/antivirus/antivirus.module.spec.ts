@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommonTestModule } from '@src/common.module';
+import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { AntivirusModule } from './antivirus.module';
 import { AntivirusService } from './antivirus.service';
 
@@ -13,7 +13,7 @@ describe('AntivirusModule', () => {
 
 	it('should be initializable with forRoot', async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [CommonTestModule, AntivirusModule.forRoot(antivirusModuleOptions)],
+			imports: [RabbitMQWrapperTestModule, AntivirusModule.forRoot(antivirusModuleOptions)],
 		}).compile();
 
 		const antivirusService = module.get(AntivirusService);
