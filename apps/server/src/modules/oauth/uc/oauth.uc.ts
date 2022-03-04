@@ -45,6 +45,7 @@ export class OauthUc {
 		// send response back
 		const response: OAuthResponse = new OAuthResponse();
 		response.jwt = jwt;
+		response.idToken = queryToken.id_token;
 		return response;
 	}
 
