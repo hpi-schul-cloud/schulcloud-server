@@ -34,7 +34,10 @@ export class RoomBoardResponseMapper {
 				mappedTask.duedate = boardTask.dueDate;
 				mappedTask.displayColor = boardTaskDesc.color;
 				mappedTask.description = boardTask.description;
-				const boardElementResponse = new BoardElementResponse({ type: 'task', content: mappedTask });
+				const boardElementResponse = new BoardElementResponse({
+					type: RoomBoardElementTypes.TASK,
+					content: mappedTask,
+				});
 				elements.push(boardElementResponse);
 			} else if (element.type === RoomBoardElementTypes.LESSON) {
 				const boardLesson = element.content as Lesson;
@@ -50,7 +53,10 @@ export class RoomBoardResponseMapper {
 				const lessonCourse = boardLesson.course;
 				mappedLesson.courseName = lessonCourse.name;
 
-				const boardElementResponse = new BoardElementResponse({ type: 'lesson', content: mappedLesson });
+				const boardElementResponse = new BoardElementResponse({
+					type: RoomBoardElementTypes.LESSON,
+					content: mappedLesson,
+				});
 				elements.push(boardElementResponse);
 			} else if (element.type === RoomBoardElementTypes.LOCKEDTASK) {
 				const data = element.content as LockedTaskDTO;
@@ -58,7 +64,10 @@ export class RoomBoardResponseMapper {
 					id: data.id,
 					name: data.name,
 				});
-				const boardElementResponse = new BoardElementResponse({ type: 'lockedTask', content: mappedLockedTask });
+				const boardElementResponse = new BoardElementResponse({
+					type: RoomBoardElementTypes.LOCKEDTASK,
+					content: mappedLockedTask,
+				});
 				elements.push(boardElementResponse);
 			}
 		});

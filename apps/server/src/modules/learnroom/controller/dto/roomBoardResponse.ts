@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { RoomBoardElementTypes } from '../../types';
 import { BoardTaskStatusResponse } from './roomBoardResponse-taskStatus';
 
 export class BoardTaskResponse {
@@ -96,9 +97,10 @@ export class BoardElementResponse {
 	}
 
 	@ApiProperty({
-		description: 'ElementType. Can be any of: "task", "lesson".',
+		description: 'ElementType. Can be any of: "task", "lesson", "lockedlesson"',
+		enum: RoomBoardElementTypes,
 	})
-	type: string;
+	type: RoomBoardElementTypes;
 
 	@ApiProperty({
 		description: 'Content of the Board, either: a task or a lesson specific for the board',
