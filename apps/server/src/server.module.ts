@@ -94,7 +94,11 @@ export class ServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: ServerTestModule,
-			imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
+			imports: [
+				...serverModules,
+				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
+				RabbitMQWrapperTestModule,
+			],
 			controllers: [ServerController],
 		};
 	}

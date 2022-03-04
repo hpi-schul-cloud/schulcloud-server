@@ -9,44 +9,32 @@ import { Configuration } from '@hpi-schul-cloud/commons';
  *
  * Therefore, the combination of @Global() and export: [RabbitMQModule] is required.
  */
+
+const imports = [
+	RabbitMQModule.forRoot(RabbitMQModule, {
+		exchanges: [
+			{
+				name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
+				type: 'direct',
+			},
+			{
+				name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
+				type: 'direct',
+			},
+		],
+		uri: Configuration.get('RABBITMQ_URI') as string,
+	}),
+];
 @Global()
 @Module({
-	imports: [
-		RabbitMQModule.forRoot(RabbitMQModule, {
-			exchanges: [
-				{
-					name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
-					type: 'direct',
-				},
-				{
-					name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
-					type: 'direct',
-				},
-			],
-			uri: Configuration.get('RABBITMQ_URI') as string,
-		}),
-	],
+	imports,
 	exports: [RabbitMQModule],
 })
 export class RabbitMQWrapperModule {}
 
 @Global()
 @Module({
-	imports: [
-		RabbitMQModule.forRoot(RabbitMQModule, {
-			exchanges: [
-				{
-					name: Configuration.get('MAIL_SEND_EXCHANGE') as string,
-					type: 'direct',
-				},
-				{
-					name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
-					type: 'direct',
-				},
-			],
-			uri: Configuration.get('RABBITMQ_URI') as string,
-		}),
-	],
+	imports,
 	exports: [RabbitMQModule],
 })
 export class RabbitMQWrapperTestModule {}
