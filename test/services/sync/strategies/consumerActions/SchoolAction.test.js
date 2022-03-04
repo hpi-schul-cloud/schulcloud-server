@@ -26,11 +26,28 @@ describe('School Actions', () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.returns(null);
 
+			const findSchoolByOfficialSchoolNumberStub = sinon.stub(SchoolRepo, 'findSchoolByOfficialSchoolNumber');
+			findSchoolByOfficialSchoolNumberStub.returns(null);
+
 			const createSchoolStub = sinon.stub(SchoolRepo, 'createSchool');
 			createSchoolStub.returns({ _id: 1 });
 
 			await schoolAction.action({ name: 'Test School' });
 			expect(createSchoolStub.calledOnce).to.be.true;
+		});
+
+		it('should not create school if non-ldap school exists', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns(null);
+
+			const findSchoolByOfficialSchoolNumberStub = sinon.stub(SchoolRepo, 'findSchoolByOfficialSchoolNumber');
+			findSchoolByOfficialSchoolNumberStub.returns({ name: 'Test School' });
+
+			const createSchoolStub = sinon.stub(SchoolRepo, 'createSchool');
+
+			await schoolAction.action({ school: { name: 'Test School', officialSchoolNumber: '123' } });
+			expect(findSchoolByOfficialSchoolNumberStub.calledOnce).to.be.true;
+			expect(createSchoolStub.calledOnce).to.be.false;
 		});
 
 		it('update school name for existing school', async () => {

@@ -18,6 +18,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 		const schools = await this.app.service('ldap').searchCollection(this.config, this.config.rootPath || '', options);
 		return schools.map((idmSchool) => ({
 			ldapOu: idmSchool.dn,
+			officialSchoolNumber: '',
 			displayName: idmSchool.description || idmSchool.o,
 		}));
 	}
