@@ -469,6 +469,11 @@
 			"description": "Synchronous encryption key used to secure search user passwords",
 			"pattern": ".{16}.*"
 		},
+		"AES_KEY": {
+			"type": "string",
+			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
+			"pattern": ".{16}.*"
+		},
 		"ETHERPAD_API_KEY": {
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
@@ -744,7 +749,7 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LDAP_PASSWORD_ENCRYPTION_KEY"
+		"AES_KEY"
 	],
 	"allOf": [
 		{
