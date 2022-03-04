@@ -1,5 +1,5 @@
 import { Entity, Collection, ManyToMany, OneToOne, IdentifiedReference, wrap } from '@mikro-orm/core';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { BoardElement, BoardElementType } from './boardelement.entity';
 import { ILearnroomElement } from '../interface';
@@ -28,15 +28,37 @@ export class Board extends BaseEntityWithTimestamps {
 	references = new Collection<BoardElement>(this);
 
 	getByTargetId(id: EntityId): ILearnroomElement {
-		const element = this.getElements().find((el) => el.target.id === id);
-		if (element) {
-			return element.target;
-		}
-		throw new NotFoundException('board does not contain such element');
+		const element = this.getElementByTargetId(id);
+		return element.target;
 	}
 
 	getElements() {
 		return this.references.getItems();
+	}
+
+	reorderElements(ids: EntityId[]) {
+		const existingElements = this.getElements().map((el) => el.target.id);
+		const listsEqual = this.checkIdListsEqual(ids, existingElements);
+		if (!listsEqual) {
+			throw new BadRequestException('elements did not match. please fetch the elements of the board before reordering');
+		}
+
+		const elements = ids.map((id) => this.getElementByTargetId(id));
+
+		this.references.set(elements);
+	}
+
+	private checkIdListsEqual(first: EntityId[], second: EntityId[]): boolean {
+		const firstSorted = first.sort();
+		const secondSorted = second.sort();
+		const isEqual = JSON.stringify(firstSorted) === JSON.stringify(secondSorted);
+		return isEqual;
+	}
+
+	private getElementByTargetId(id: EntityId): BoardElement {
+		const element = this.getElements().find((el) => el.target.id === id);
+		if (!element) throw new NotFoundException('board does not contain such element');
+		return element;
 	}
 
 	syncTasksFromList(taskList: Task[]) {

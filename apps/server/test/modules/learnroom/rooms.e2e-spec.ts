@@ -14,6 +14,7 @@ import {
 	cleanupCollections,
 	roleFactory,
 	boardFactory,
+	lessonFactory,
 	mapUserToCurrentUser,
 } from '@shared/testing';
 import { ICurrentUser, Task } from '@shared/domain';
@@ -128,6 +129,30 @@ describe('Rooms Controller (e2e)', () => {
 			const updatedTask = await em.findOneOrFail(Task, task.id);
 
 			expect(updatedTask.isDraft()).toEqual(true);
+		});
+	});
+
+	describe('[PATCH] order', () => {
+		it('should return 200', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const board = boardFactory.buildWithId({ course });
+			const tasks = taskFactory.buildList(3, { course });
+			const lessons = lessonFactory.buildList(3, { course });
+			board.syncTasksFromList(tasks);
+
+			await em.persistAndFlush([course, board, ...tasks, ...lessons]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const params = {
+				elements: [tasks[2], lessons[1], tasks[0], lessons[2], tasks[1], lessons[0]].map((el) => el.id),
+			};
+
+			const response = await request(app.getHttpServer()).patch(`/rooms/${course.id}/board/order`).send(params);
+
+			expect(response.status).toEqual(200);
 		});
 	});
 });
