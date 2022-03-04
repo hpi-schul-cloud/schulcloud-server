@@ -10,13 +10,12 @@ export type RoomBoardDTO = {
 export type LockedTaskDTO = {
 	id: EntityId;
 	name: string;
-	allowed: boolean;
 };
 
 export enum RoomBoardElementTypes {
-	'Task' = 'task',
-	'LockedTask' = 'lockedtask',
-	'Lesson' = 'lesson',
+	TASK = 'task',
+	LOCKEDTASK = 'lockedtask',
+	LESSON = 'lesson',
 }
 
 export type RoomBoardElementDTO = {

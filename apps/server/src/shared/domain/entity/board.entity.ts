@@ -37,18 +37,22 @@ export class Board extends BaseEntityWithTimestamps {
 	}
 
 	reorderElements(ids: EntityId[]) {
-		const existingElements = this.getElements().map((el) => el.target.id);
-		const listsEqual = this.checkIdListsEqual(ids, existingElements);
-		if (!listsEqual) {
-			throw new BadRequestException('elements did not match. please fetch the elements of the board before reordering');
-		}
+		this.validateReordering(ids);
 
 		const elements = ids.map((id) => this.getElementByTargetId(id));
 
 		this.references.set(elements);
 	}
 
-	private checkIdListsEqual(first: EntityId[], second: EntityId[]): boolean {
+	private validateReordering(reorderedIds: EntityId[]) {
+		const existingElements = this.getElements().map((el) => el.target.id);
+		const listsEqual = this.checkListsContainingEqualEntities(reorderedIds, existingElements);
+		if (!listsEqual) {
+			throw new BadRequestException('elements did not match. please fetch the elements of the board before reordering');
+		}
+	}
+
+	private checkListsContainingEqualEntities(first: EntityId[], second: EntityId[]): boolean {
 		const firstSorted = first.sort();
 		const secondSorted = second.sort();
 		const isEqual = JSON.stringify(firstSorted) === JSON.stringify(secondSorted);

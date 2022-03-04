@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { User, Task, Lesson, TaskWithStatusVo, Board, Course } from '@shared/domain';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomBoardElementTypes, LockedTaskDTO } from '../types';
+import { RoomBoardElementTypes } from '../types';
 
 describe('RoomBoardDTOMapper', () => {
 	let orm: MikroORM;
@@ -176,25 +176,19 @@ describe('RoomBoardDTOMapper', () => {
 			it('should set each invisible task as hiddenTaskDTO for student', () => {
 				const result = mapper.createDTO({ room, board, user: student });
 				const element = result.elements[0];
-				expect(element.type === RoomBoardElementTypes.LockedTask);
-				const content = element.content as LockedTaskDTO;
-				expect(content.allowed === false);
+				expect(element.type === RoomBoardElementTypes.LOCKEDTASK);
 			});
 
 			it('should not set forbidden tasks for teacher', () => {
 				const result = mapper.createDTO({ room, board, user: teacher });
 				const element = result.elements[0];
-				expect(element.type === RoomBoardElementTypes.LockedTask);
-				const content = element.content as LockedTaskDTO;
-				expect(content.allowed === false);
+				expect(element.type === RoomBoardElementTypes.LOCKEDTASK);
 			});
 
 			it('should not set forbidden tasks for substitutionTeacher', () => {
 				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				const element = result.elements[0];
-				expect(element.type === RoomBoardElementTypes.LockedTask);
-				const content = element.content as LockedTaskDTO;
-				expect(content.allowed === false);
+				expect(element.type === RoomBoardElementTypes.LOCKEDTASK);
 			});
 		});
 

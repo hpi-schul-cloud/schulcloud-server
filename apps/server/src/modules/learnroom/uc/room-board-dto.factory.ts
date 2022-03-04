@@ -98,7 +98,7 @@ class DtoCreator {
 		const status = this.createTaskStatus(task);
 
 		const content = new TaskWithStatusVo(task, status);
-		return { type: RoomBoardElementTypes.Task, content };
+		return { type: RoomBoardElementTypes.TASK, content };
 	}
 
 	private createTaskStatus(task: Task): ITaskStatus {
@@ -115,14 +115,13 @@ class DtoCreator {
 		const content: LockedTaskDTO = {
 			id: task.id,
 			name: task.name,
-			allowed: false,
 		};
-		const result = { type: RoomBoardElementTypes.LockedTask, content };
+		const result = { type: RoomBoardElementTypes.LOCKEDTASK, content };
 		return result;
 	}
 
 	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
-		const type = RoomBoardElementTypes.Lesson;
+		const type = RoomBoardElementTypes.LESSON;
 		const content = element.target as Lesson;
 		return { type, content };
 	}

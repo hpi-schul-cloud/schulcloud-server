@@ -51,7 +51,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				courseName: course.name,
-				elements: [{ type: RoomBoardElementTypes.Task, content: { task, status } }],
+				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -68,7 +68,7 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				courseName: course.name,
 				elements: [
-					{ type: RoomBoardElementTypes.LockedTask, content: { id: task.id, name: task.name, allowed: false } },
+					{ type: RoomBoardElementTypes.LOCKEDTASK, content: { id: task.id, name: task.name, allowed: false } },
 				],
 			};
 
@@ -85,7 +85,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				courseName: course.name,
-				elements: [{ type: RoomBoardElementTypes.Lesson, content: lesson }],
+				elements: [{ type: RoomBoardElementTypes.LESSON, content: lesson }],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -111,8 +111,8 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				courseName: course.name,
 				elements: [
-					{ type: RoomBoardElementTypes.Lesson, content: lesson },
-					{ type: RoomBoardElementTypes.Task, content: { task, status } },
+					{ type: RoomBoardElementTypes.LESSON, content: lesson },
+					{ type: RoomBoardElementTypes.TASK, content: { task, status } },
 				],
 			};
 

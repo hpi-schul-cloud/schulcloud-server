@@ -5,7 +5,7 @@ import {
 	BoardElementResponse,
 	BoardTaskResponse,
 	BoardLessonResponse,
-	LockedTaskResponse,
+	BoardLockedTaskResponse,
 } from '../controller/dto/roomBoardResponse';
 import { RoomBoardDTO, LockedTaskDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
@@ -15,7 +15,7 @@ export class RoomBoardResponseMapper {
 	mapToResponse(board: RoomBoardDTO): BoardResponse {
 		const elements: BoardElementResponse[] = [];
 		board.elements.forEach((element) => {
-			if (element.type === RoomBoardElementTypes.Task) {
+			if (element.type === RoomBoardElementTypes.TASK) {
 				const { task: boardTask, status } = element.content as TaskWithStatusVo;
 				const boardTaskDesc = boardTask.getParentData();
 				const boardTaskStatus = BoardTaskStatusMapper.mapToResponse(status);
@@ -36,7 +36,7 @@ export class RoomBoardResponseMapper {
 				mappedTask.description = boardTask.description;
 				const boardElementResponse = new BoardElementResponse({ type: 'task', content: mappedTask });
 				elements.push(boardElementResponse);
-			} else if (element.type === RoomBoardElementTypes.Lesson) {
+			} else if (element.type === RoomBoardElementTypes.LESSON) {
 				const boardLesson = element.content as Lesson;
 
 				const mappedLesson = new BoardLessonResponse({
@@ -52,14 +52,13 @@ export class RoomBoardResponseMapper {
 
 				const boardElementResponse = new BoardElementResponse({ type: 'lesson', content: mappedLesson });
 				elements.push(boardElementResponse);
-			} else if (element.type === RoomBoardElementTypes.LockedTask) {
+			} else if (element.type === RoomBoardElementTypes.LOCKEDTASK) {
 				const data = element.content as LockedTaskDTO;
-				const mapped = new LockedTaskResponse({
+				const mappedLockedTask = new BoardLockedTaskResponse({
 					id: data.id,
 					name: data.name,
-					allowed: data.allowed,
 				});
-				const boardElementResponse = new BoardElementResponse({ type: 'lockedTask', content: mapped });
+				const boardElementResponse = new BoardElementResponse({ type: 'lockedTask', content: mappedLockedTask });
 				elements.push(boardElementResponse);
 			}
 		});
