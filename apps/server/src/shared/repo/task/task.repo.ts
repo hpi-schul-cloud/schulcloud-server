@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
-import {EntityId, IFindOptions, Task, Counted, SortOrder, Account} from '@shared/domain';
-
+import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
 import { TaskScope } from './task-scope';
 
 @Injectable()
