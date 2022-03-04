@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId } from 'class-validator';
+import { IsArray, IsMongoId } from 'class-validator';
 
 /**
- * DTO for Patching a the group name of a grid element.
+ * DTO for Patching the order of elements within the board.
  */
 export class PatchOrderParams {
-	// TODO: check mongoId
-	/* @ApiProperty({
-		type: [String],
+	@IsArray()
+	@IsMongoId({ each: true })
+	@ApiProperty({
 		description: 'Array ids determining the new order',
-	}) */
+	})
 	elements!: string[];
 }

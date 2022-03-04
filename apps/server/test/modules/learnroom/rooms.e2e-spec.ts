@@ -141,6 +141,7 @@ describe('Rooms Controller (e2e)', () => {
 			const tasks = taskFactory.buildList(3, { course });
 			const lessons = lessonFactory.buildList(3, { course });
 			board.syncTasksFromList(tasks);
+			board.syncLessonsFromList(lessons);
 
 			await em.persistAndFlush([course, board, ...tasks, ...lessons]);
 			em.clear();

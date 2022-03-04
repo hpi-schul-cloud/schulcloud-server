@@ -5,8 +5,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ICurrentUser } from '@shared/domain';
 import { RoomsUc } from '../uc/rooms.uc';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
-import { BoardResponse, PatchVisibilityParams } from './dto';
-import { PatchOrderParams } from './dto/patchOrder.params';
+import { BoardResponse, PatchVisibilityParams, PatchOrderParams } from './dto';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
