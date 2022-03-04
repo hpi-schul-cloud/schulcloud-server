@@ -53,8 +53,8 @@ export class Board extends BaseEntityWithTimestamps {
 	}
 
 	private checkListsContainingEqualEntities(first: EntityId[], second: EntityId[]): boolean {
-		const firstSorted = first.sort();
-		const secondSorted = second.sort();
+		const firstSorted = [...first].sort();
+		const secondSorted = [...second].sort();
 		const isEqual = JSON.stringify(firstSorted) === JSON.stringify(secondSorted);
 		return isEqual;
 	}
