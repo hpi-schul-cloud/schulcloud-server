@@ -8,7 +8,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser } from '@shared/domain';
+import { FileRecord, ICurrentUser } from '@shared/domain';
 import { userFactory, cleanupCollections, mapUserToCurrentUser } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
 import S3rver from 's3rver';
@@ -221,10 +221,13 @@ describe('file-storage controller (e2e)', () => {
 		});
 
 		describe(`with valid request data`, () => {
-			it.skip('should return status 200 for successful download', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
-				const token = antivirusService.send.mock.calls[0][0].securityCheck.requestToken || '';
-				const response = await api.getDownloadFile(`/file-security/download/${token}`);
+			it('should return status 200 for successful download', async () => {
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+
+				const newRecord = await em.findOneOrFail(FileRecord, result.id);
+				const response = await api.getDownloadFile(
+					`/file-security/download/${newRecord.securityCheck.requestToken || ''}`
+				);
 
 				expect(response.status).toEqual(200);
 			});

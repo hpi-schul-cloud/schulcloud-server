@@ -8,7 +8,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordListResponse, ScanResultDto } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FileRecordParentType, ICurrentUser } from '@shared/domain';
+import { FileRecord, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
 	userFactory,
 	roleFactory,
@@ -107,7 +107,7 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe(`with valid request data`, () => {
-		it.skip('should return right type of data', async () => {
+		it('should return right type of data', async () => {
 			const fileRecord = fileRecordFactory.build({
 				schoolId: validId,
 				parentId: validId,
@@ -118,7 +118,9 @@ describe(`${baseRouteName} (api)`, () => {
 			em.clear();
 
 			const response = await api.put(`/update-status/${token}`, scanResult);
-			expect(fileRecord.securityCheck.status).toStrictEqual('verified');
+			const changedFileRecord = await em.findOneOrFail(FileRecord, fileRecord.id);
+
+			expect(changedFileRecord.securityCheck.status).toStrictEqual('verified');
 			expect(response.status).toEqual(200);
 		});
 	});
