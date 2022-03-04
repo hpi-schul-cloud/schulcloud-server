@@ -14,6 +14,7 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
 import { OauthUc } from '.';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
@@ -141,12 +142,17 @@ describe('OAuthUc', () => {
 		it('should throw an error from a query that contains an error', () => {
 			expect(() => {
 				return service.checkAuthorizationCode(defaultErrorQuery);
-			}).toThrow(defaultErrorQuery.error);
+			}).toThrow('Authorization Query Object has no authorization code or error');
+		});
+		it('should throw an error from a query with error', () => {
+			expect(() => {
+				return service.checkAuthorizationCode({ error: 'default_error' });
+			}).toThrow(OAuthSSOError);
 		});
 		it('should throw an error from a falsy query', () => {
 			expect(() => {
 				return service.checkAuthorizationCode({});
-			}).toThrow(Error);
+			}).toThrow(OAuthSSOError);
 		});
 	});
 	describe('requestToken', () => {
@@ -168,7 +174,7 @@ describe('OAuthUc', () => {
 			expect(() => {
 				const uuid: string = service.decodeToken(wrongJWT);
 				return uuid;
-			}).toThrow(Error);
+			}).toThrow(OAuthSSOError);
 		});
 	});
 

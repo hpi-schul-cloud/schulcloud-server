@@ -8,13 +8,13 @@ import { System, User } from '@shared/domain';
 import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
-import { ValidationError } from '@mikro-orm/core';
 import QueryString from 'qs';
 import { TokenRequestPayload } from '../controller/dto/token-request-payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { AuthorizationQuery } from '../controller/dto/authorization.query';
 import { OAuthResponse } from '../controller/dto/oauth-response';
 import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 
 @Injectable()
 export class OauthUc {
@@ -55,8 +55,12 @@ export class OauthUc {
 	 */
 	checkAuthorizationCode(query: AuthorizationQuery): string {
 		if (query.code) return query.code;
-		if (query.error) throw new ValidationError(query.error);
-		throw new ValidationError('Authorization Query Object has no authorization code or error');
+		let errorCode = 'sso_auth_code_step';
+		if (query.error) {
+			errorCode = `sso_oauth_${query.error}`;
+			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
+		}
+		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
 	// 1- use Authorization Code to get a valid Token
@@ -87,7 +91,7 @@ export class OauthUc {
 	// 2- decode the Token to extract the UUID
 	decodeToken(token: string): string {
 		const decodedJwt: IJWT = jwtDecode(token);
-		if (!decodedJwt || !decodedJwt.uuid) throw new ValidationError('Filed to extract uuid');
+		if (!decodedJwt || !decodedJwt.uuid) throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
 		const { uuid } = decodedJwt;
 		return uuid;
 	}
@@ -96,7 +100,12 @@ export class OauthUc {
 
 	// 3- get user using the UUID (userHelpers.js?)
 	async findUserById(uuid: string, systemId: string): Promise<User> {
-		const user = await this.userRepo.findByLdapId(uuid, systemId);
+		let user: User;
+		try {
+			user = await this.userRepo.findByLdapId(uuid, systemId);
+		} catch (error) {
+			throw new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound');
+		}
 		return user;
 	}
 

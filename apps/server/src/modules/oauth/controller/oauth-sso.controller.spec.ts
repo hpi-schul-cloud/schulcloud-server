@@ -7,6 +7,7 @@ import { System } from '@shared/domain';
 import { OauthSSOController } from './oauth-sso.controller';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationQuery } from './dto/authorization.query';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 
 describe('OAuthController', () => {
 	Configuration.set('HOST', 'https://mock.de');
@@ -65,7 +66,21 @@ describe('OAuthController', () => {
 			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=some-error-happend');
 		});
 
-		it('should handle thrown error', async () => {
+		it('should handle thrown OAuthSSOError', async () => {
+			const { res } = getMockRes();
+			await generateMock({
+				startOauth: jest.fn(() => {
+					throw new OAuthSSOError('something bad happened', 'oauth_login_failed');
+				}),
+			});
+			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			const expected = [query, system.id];
+			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
+			expect(res.cookie).not.toHaveBeenCalled();
+			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=oauth_login_failed');
+		});
+
+		it('should handle any thrown error', async () => {
 			const { res } = getMockRes();
 			await generateMock({
 				startOauth: jest.fn(() => {
@@ -76,7 +91,7 @@ describe('OAuthController', () => {
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).not.toHaveBeenCalled();
-			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=OauthLoginFailed');
+			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=oauth_login_failed');
 		});
 	});
 });
