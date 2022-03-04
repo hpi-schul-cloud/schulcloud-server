@@ -11,9 +11,7 @@ import { Account } from '@shared/domain/entity/account.entity';
 export class AccountRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	private get repo(): EntityRepository<Account> {
-		return this.em.getRepository(Account);
-	}
+	private repo: EntityRepository<Account> = this.em.getRepository(Account);
 
 	async create(account: Account): Promise<Account> {
 		// account.password = await bcrypt.hash(account.password);
