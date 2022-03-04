@@ -4,6 +4,7 @@ import busboy from 'busboy';
 import internal from 'stream';
 import { FileRecordRepo } from '@shared/repo';
 import { Counted, EntityId, FileRecord } from '@shared/domain';
+import path from 'path';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
@@ -37,7 +38,7 @@ export class FilesStorageUC {
 				req.pipe(requestStream);
 			});
 
-			return result;
+			return result as FileRecord;
 		} catch (error) {
 			throw new BadRequestException(error);
 		}
@@ -56,9 +57,12 @@ export class FilesStorageUC {
 	}
 
 	private async uploadFile(userId: EntityId, params: FileParams, fileDescription: IFile) {
+		const [fileRecords] = await this.fileRecordsOfParent(userId, params);
+		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
+
 		const entity = new FileRecord({
 			size: fileDescription.size,
-			name: fileDescription.name,
+			name: fileName,
 			mimeType: fileDescription.mimeType,
 			parentType: params.parentType,
 			parentId: params.parentId,
@@ -67,7 +71,6 @@ export class FilesStorageUC {
 		});
 		try {
 			await this.fileRecordRepo.save(entity);
-			// todo on error roll back
 			const folder = [params.schoolId, entity.id].join('/');
 			await this.storageClient.uploadFile(folder, fileDescription);
 
@@ -102,5 +105,20 @@ export class FilesStorageUC {
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		return countedFileRecords;
+	}
+
+	private checkFilenameExists(fileName: string, fileRecords: FileRecord[]) {
+		let start = 0;
+		const file = path.parse(fileName);
+		const { name } = file;
+		let dest = path.format(file);
+		// eslint-disable-next-line @typescript-eslint/no-loop-func
+		while (fileRecords.find((item: FileRecord) => item.name === dest)) {
+			start += 1;
+			file.base = start > 0 ? `${name} (${start})${file.ext}` : `${name}${file.ext}`;
+			dest = path.format(file);
+		}
+
+		return dest;
 	}
 }

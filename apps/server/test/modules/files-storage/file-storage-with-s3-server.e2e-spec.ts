@@ -156,10 +156,11 @@ describe('file-storage controller (e2e)', () => {
 				expect(result.name).toEqual('test.txt');
 			});
 
-			it.skip('should set iterator number to file name if file already exist', async () => {
-				const { result } = await api.postUploadFile(`/upload/${validId}/school/${validId}`);
+			it('should set iterator number to file name if file already exist', async () => {
+				await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
 
-				expect(result.name).toEqual('test (1)');
+				expect(result.name).toEqual('test (1).txt');
 			});
 		});
 	});
