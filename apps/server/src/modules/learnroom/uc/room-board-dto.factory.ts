@@ -91,7 +91,7 @@ class DtoCreator {
 			return this.mapTaskWithStatusVO(task);
 		}
 
-		return this.mapTaskMetadataOnly(task);
+		return this.mapLockedTask(task);
 	}
 
 	private mapTaskWithStatusVO(task: Task): RoomBoardElementDTO {
@@ -111,7 +111,7 @@ class DtoCreator {
 		return status;
 	}
 
-	private mapTaskMetadataOnly(task: Task): RoomBoardElementDTO {
+	private mapLockedTask(task: Task): RoomBoardElementDTO {
 		const content: LockedTaskDTO = {
 			id: task.id,
 			name: task.name,
