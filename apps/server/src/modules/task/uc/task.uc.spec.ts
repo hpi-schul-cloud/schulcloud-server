@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 import { PaginationQuery } from '@shared/controller';
 import { Course, Task, Lesson, User, ITaskStatus } from '@shared/domain';
@@ -1040,6 +1040,35 @@ describe('TaskUC', () => {
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
 			});
+		});
+	});
+
+	describe('delete task', () => {
+		let task: Task;
+
+		beforeEach(() => {
+			user = userFactory.buildWithId();
+			task = taskFactory.buildWithId();
+			userRepo.findById.mockResolvedValue(user);
+			taskRepo.findById.mockResolvedValue(task);
+			taskRepo.delete.mockResolvedValue();
+		});
+
+		it('should check for permission to finish the task', async () => {
+			await service.delete(user.id, task.id);
+			expect(authorizationService.hasTaskPermission).toBeCalledWith(user, task, TaskParentPermission.write);
+		});
+
+		it('should throw UnauthorizedException when not permitted', async () => {
+			authorizationService.hasTaskPermission.mockReturnValue(false);
+			await expect(async () => {
+				await service.delete(user.id, task.id);
+			}).rejects.toThrow(new ForbiddenException('USER_HAS_NOT_PERMISSIONS'));
+		});
+
+		it('should call TaskRepo.delete() with Task', async () => {
+			await service.delete(user.id, task.id);
+			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 	});
 });

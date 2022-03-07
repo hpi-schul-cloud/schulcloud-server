@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User, Task } from '@shared/domain';
 
 import { TaskRepo, UserRepo } from '@shared/repo';
@@ -174,9 +174,10 @@ export class TaskUC {
 		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
 
 		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.write)) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
 		}
 
-		await this.taskRepo.delete(taskId);
+		await this.taskRepo.delete(task);
+		return true;
 	}
 }

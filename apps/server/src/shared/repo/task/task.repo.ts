@@ -197,9 +197,7 @@ export class TaskRepo {
 		return [taskEntities, count];
 	}
 
-	async delete(taskId: EntityId): Promise<Task> {
-		const task = await this.findById(taskId);
+	async delete(task: Task): Promise<void> {
 		await this.em.removeAndFlush(task);
-		return task;
 	}
 }

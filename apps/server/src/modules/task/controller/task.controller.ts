@@ -73,8 +73,9 @@ export class TaskController {
 	async delete(
 		@Param('id', ParseObjectIdPipe) taskId: string,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<string> {
-		await this.taskUc.delete(currentUser.userId, taskId);
-		return 'deleted';
+	): Promise<boolean> {
+		const result = await this.taskUc.delete(currentUser.userId, taskId);
+
+		return result;
 	}
 }
