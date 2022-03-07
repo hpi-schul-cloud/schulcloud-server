@@ -740,7 +740,7 @@ describe('ImportUserRepo', () => {
 				}
 				await em.persistAndFlush(importUsers);
 				em.clear();
-				const [reloadedImportUsers, count] = await repo.findImportUsers(school);
+				const [reloadedImportUsers] = await repo.findImportUsers(school);
 				const result = reloadedImportUsers.map(async (importuser) => {
 					expect(importuser.user).toBeDefined();
 					expect(importuser.matchedBy).toBeDefined();

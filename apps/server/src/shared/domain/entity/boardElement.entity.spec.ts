@@ -2,12 +2,6 @@ import { taskFactory, lessonFactory, setupEntities } from '@shared/testing';
 import { TaskBoardElement, LessonBoardElement } from './boardelement.entity';
 import { BoardElementType } from '.';
 
-const DEFAULT = {
-	color: '#ACACAC',
-	name: 'Kurse',
-	description: '',
-};
-
 describe('TaskBoardElementEntity', () => {
 	beforeAll(async () => {
 		await setupEntities();

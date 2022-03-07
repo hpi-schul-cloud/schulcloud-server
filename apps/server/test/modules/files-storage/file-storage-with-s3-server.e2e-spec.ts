@@ -9,7 +9,7 @@ import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser } from '@shared/domain';
-import { userFactory, roleFactory, cleanupCollections, mapUserToCurrentUser, fileRecordFactory } from '@shared/testing';
+import { userFactory, cleanupCollections, mapUserToCurrentUser } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
 import S3rver from 's3rver';
 
