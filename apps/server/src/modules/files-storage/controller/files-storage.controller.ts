@@ -24,7 +24,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const res = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
-		const response = new FileRecordResponse(res as FileRecord);
+		const response = new FileRecordResponse(res);
 
 		return response;
 	}
