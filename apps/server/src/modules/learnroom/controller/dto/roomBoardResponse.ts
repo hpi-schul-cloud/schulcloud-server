@@ -97,7 +97,7 @@ export class BoardElementResponse {
 	}
 
 	@ApiProperty({
-		description: 'ElementType. Can be any of: "task", "lesson", "lockedlesson"',
+		description: 'the type of the element in the content. For possible types, please refer to the enum',
 		enum: RoomBoardElementTypes,
 	})
 	type: RoomBoardElementTypes;
