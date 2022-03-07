@@ -107,18 +107,18 @@ export class FilesStorageUC {
 		return countedFileRecords;
 	}
 
-	private checkFilenameExists(fileName: string, fileRecords: FileRecord[]) {
-		let start = 0;
-		const file = path.parse(fileName);
-		const { name } = file;
-		let dest = path.format(file);
+	private checkFilenameExists(filename: string, fileRecords: FileRecord[]): string {
+		let counter = 0;
+		const filenameObj = path.parse(filename);
+		const { name } = filenameObj;
+		let newFilename = path.format(filenameObj);
 		// eslint-disable-next-line @typescript-eslint/no-loop-func
-		while (fileRecords.find((item: FileRecord) => item.name === dest)) {
-			start += 1;
-			file.base = start > 0 ? `${name} (${start})${file.ext}` : `${name}${file.ext}`;
-			dest = path.format(file);
+		while (fileRecords.find((item: FileRecord) => item.name === newFilename)) {
+			counter += 1;
+			filenameObj.base = counter > 0 ? `${name} (${counter})${filenameObj.ext}` : `${name}${filenameObj.ext}`;
+			newFilename = path.format(filenameObj);
 		}
 
-		return dest;
+		return newFilename;
 	}
 }
