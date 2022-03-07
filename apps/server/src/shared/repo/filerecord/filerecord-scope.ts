@@ -12,4 +12,9 @@ export class FileRecordScope extends Scope<FileRecord> {
 		this.addQuery({ _schoolId: new ObjectId(schoolId) });
 		return this;
 	}
+
+	bySecurityCheckRequestToken(token: string): FileRecordScope {
+		this.addQuery({ securityCheck: { requestToken: token } });
+		return this;
+	}
 }

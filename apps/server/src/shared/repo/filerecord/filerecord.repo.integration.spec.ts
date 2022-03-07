@@ -95,7 +95,7 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
-	describe('findBySchoolIdAndTargetId', () => {
+	describe('findBySchoolIdAndParentId', () => {
 		it('should find an entity by its school id and target id', async () => {
 			const fileRecords1 = fileRecordFactory.buildList(3, {
 				schoolId: school1.id,
@@ -111,11 +111,40 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndTargetId(school1.id, task.id);
+			const [results, count] = await repo.findBySchoolIdAndParentId(school1.id, task.id);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
 			expect(results.map((o) => o.parentId)).toEqual([task.id, task.id, task.id]);
+		});
+	});
+
+	describe('findBySecurityCheckRequestToken', () => {
+		it('should find an entity by its requestToken', async () => {
+			const fileRecord = fileRecordFactory.build({
+				schoolId: school1.id,
+				parentType: FileRecordParentType.Task,
+				parentId: task.id,
+			});
+			const token = fileRecord.securityCheck.requestToken || '';
+			await em.persistAndFlush(fileRecord);
+			em.clear();
+			const result = await repo.findBySecurityCheckRequestToken(token);
+			expect(result).toBeInstanceOf(FileRecord);
+			expect(result.securityCheck.requestToken).toEqual(token);
+		});
+
+		it('should throw error by wrong requestToken', async () => {
+			const fileRecord = fileRecordFactory.build({
+				schoolId: school1.id,
+				parentType: FileRecordParentType.Task,
+				parentId: task.id,
+			});
+			const token = 'wrong-token';
+			await em.persistAndFlush(fileRecord);
+			em.clear();
+
+			await expect(repo.findBySecurityCheckRequestToken(token)).rejects.toThrow();
 		});
 	});
 });
