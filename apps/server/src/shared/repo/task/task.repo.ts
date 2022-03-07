@@ -3,7 +3,6 @@ import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
 import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
-
 import { TaskScope } from './task-scope';
 
 @Injectable()
@@ -196,5 +195,9 @@ export class TaskRepo {
 		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 
 		return [taskEntities, count];
+	}
+
+	async delete(task: Task): Promise<void> {
+		await this.em.removeAndFlush(task);
 	}
 }

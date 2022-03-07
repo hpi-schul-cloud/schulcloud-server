@@ -19,6 +19,7 @@ import {
 	mapUserToCurrentUser,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
+import { ObjectID } from 'bson';
 
 const tomorrow = new Date(Date.now() + 86400000);
 
@@ -421,6 +422,91 @@ describe('Task Controller (e2e)', () => {
 
 			const foundTask = await em.findOne(Task, { id: task.id });
 			expect(foundTask?.finished.getIdentifiers()).toEqual([student.id]);
+		});
+
+		describe('delete task', () => {
+			it('should delete task created by user', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer()).delete(`/tasks/${task.id}`).set('Accept', 'application/json').expect(200);
+
+				const foundTask = await em.findOne(Task, { id: task.id });
+				expect(foundTask).toEqual(null);
+			});
+
+			it('should throw 403 "Forbidden", if user(Student) has not permissions', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(student);
+
+				await request(app.getHttpServer()).delete(`/tasks/${task.id}`).set('Accept', 'application/json').expect(403);
+			});
+
+			it('should throw 404 if wrong task ID', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer())
+					.delete(`/tasks/${new ObjectID().toHexString()}`)
+					.set('Accept', 'application/json')
+					.expect(404);
+			});
+
+			it('should throw 404 if wrong task ID', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const r = await request(app.getHttpServer())
+					.delete(`/tasks/string`)
+					.set('Accept', 'application/json')
+					.expect(400);
+				expect(r.body).toEqual({
+					type: 'BAD_REQUEST',
+					title: 'Bad Request',
+					message: 'Invalid ObjectId',
+					code: 400,
+				});
+			});
 		});
 	});
 
