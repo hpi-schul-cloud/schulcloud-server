@@ -22,6 +22,8 @@ describe('FilesStorageUC', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
 	let fileRecord: FileRecord;
+	let fileRecords: FileRecord[];
+
 	let fileDownloadParams: DownloadFileParams;
 	let fileUploadParams: FileParams;
 	let response: IGetFileResponse;
@@ -29,14 +31,14 @@ describe('FilesStorageUC', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-		fileDownloadParams = { fileRecordId: '620abb23697023333eadea00', fileName: 'test.txt' };
+		fileDownloadParams = { fileRecordId: '620abb23697023333eadea00', fileName: 'text.txt' };
 		fileUploadParams = {
 			schoolId: '620abb23697023333eadea00',
 			parentId: '620abb23697023333eadea00',
 			parentType: FileRecordParentType.User,
 		};
 
-		fileRecord = fileRecordFactory.buildWithId({ name: 'test.txt' });
+		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
 		response = createMock<IGetFileResponse>();
 	});
 
@@ -73,6 +75,13 @@ describe('FilesStorageUC', () => {
 				'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20',
 			},
 		});
+		const { schoolId, parentId } = fileUploadParams;
+		fileRecords = [
+			fileRecordFactory.build({ parentId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.build({ parentId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.build({ parentId, schoolId, name: 'text-tree.txt' }),
+		];
+		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 	});
 
 	afterEach(async () => {
@@ -114,11 +123,6 @@ describe('FilesStorageUC', () => {
 			expect(request.pipe).toHaveBeenCalledTimes(1);
 		});
 
-		it('should call fileRecordRepo.save', async () => {
-			await service.upload(userId, fileUploadParams, request);
-			expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
-		});
-
 		it('should call fileRecordRepo.uploadFile', async () => {
 			await service.upload(userId, fileUploadParams, request);
 			expect(storageClient.create).toHaveBeenCalledTimes(1);
@@ -127,7 +131,6 @@ describe('FilesStorageUC', () => {
 		it('should call fileRecordRepo.uploadFile with params', async () => {
 			await service.upload(userId, fileUploadParams, request);
 
-			// should be work without path join also for windows
 			const storagePath = ['620abb23697023333eadea00', '620abb23697023333eadea99'].join('/');
 
 			expect(storageClient.create).toBeCalledWith(storagePath, {
@@ -141,6 +144,32 @@ describe('FilesStorageUC', () => {
 		it('should return instance of FileRecord', async () => {
 			const result = await service.upload(userId, fileUploadParams, request);
 			expect(result).toBeInstanceOf(FileRecord);
+		});
+
+		describe('save() with FileName Habdling', () => {
+			it('should call fileRecordRepo.save', async () => {
+				await service.upload(userId, fileUploadParams, request);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return filename with increment (1)', async () => {
+				const result = await service.upload(userId, fileUploadParams, request);
+				expect(result.name).toStrictEqual('text (1).txt');
+			});
+
+			it('should return filename with increment (2)', async () => {
+				fileRecords[1].name = 'text (1).txt';
+
+				const result = await service.upload(userId, fileUploadParams, request);
+				expect(result.name).toStrictEqual('text (2).txt');
+			});
+
+			it('should return filename with increment (1) but filename and filename (2) exists', async () => {
+				fileRecords[2].name = 'text (2).txt';
+
+				const result = await service.upload(userId, fileUploadParams, request);
+				expect(result.name).toStrictEqual('text (1).txt');
+			});
 		});
 
 		describe('Error Handling()', () => {
@@ -158,7 +187,7 @@ describe('FilesStorageUC', () => {
 				expect(fileRecordRepo.delete).toBeCalledWith(
 					expect.objectContaining({
 						id: '620abb23697023333eadea99',
-						name: 'text.txt',
+						name: 'text (1).txt',
 						size: 1234,
 						parentType: 'users',
 						mimeType: 'text/plain',
@@ -198,7 +227,7 @@ describe('FilesStorageUC', () => {
 				});
 
 				it('should throw error if securityCheck.status === "blocked"', async () => {
-					const blockedFileRecord = fileRecordFactory.buildWithId({ name: 'test.txt' });
+					const blockedFileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
 					blockedFileRecord.securityCheck.status = ScanStatus.BLOCKED;
 					fileRecordRepo.findOneById.mockResolvedValue(blockedFileRecord);
 					await expect(service.download(userId, fileDownloadParams)).rejects.toThrow('File is blocked');
