@@ -12,6 +12,7 @@ import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
+import { NotFoundException } from '@nestjs/common';
 import { OauthUc } from '.';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -96,7 +97,8 @@ describe('OAuthUc', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findByLdapId() {
+						findByLdapId(userId, systemId) {
+							if (userId === '') throw new NotFoundException();
 							return defaultUser;
 						},
 					},
@@ -184,6 +186,21 @@ describe('OAuthUc', () => {
 			const user: User = await service.findUserById(defaultUserId, defaultSystemId);
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
+		});
+		it('should return an error', () => {
+			// const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
+			// resolveUserSpy.mockImplementation(() => {
+			// 	throw new NotFoundException('something bad happened');
+			// });
+			// expect(async () => {
+			// 	try {
+			// 		const erruser: User = await service.findUserById('', defaultSystemId);
+			// 		return erruser;
+			// 	} catch (error) { throw new Error('shit') }
+			// }).toThrow(OAuthSSOError);
+			expect(async () => {
+				await service.findUserById('', '');
+			}).toThrowError(OAuthSSOError);
 		});
 	});
 
