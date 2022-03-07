@@ -3,19 +3,22 @@ import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
 import { FileRecordRepo } from '@shared/repo';
-import { Counted, EntityId, FileRecord } from '@shared/domain';
+import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
-	constructor(private readonly storageClient: S3ClientAdapter, private readonly fileRecordRepo: FileRecordRepo) {}
+	constructor(
+		private readonly storageClient: S3ClientAdapter,
+		private readonly fileRecordRepo: FileRecordRepo,
+		private readonly antivirusService: AntivirusService
+	) {}
 
 	async upload(userId: EntityId, params: FileParams, req: Request) {
 		// @TODO check permissions of schoolId by user
-		// @TODO scan virus on demand?
-		// @TODO add thumbnail on demand
 		try {
 			const result = await new Promise((resolve, reject) => {
 				const requestStream = busboy({ headers: req.headers });
@@ -69,8 +72,8 @@ export class FilesStorageUC {
 			await this.fileRecordRepo.save(entity);
 			// todo on error roll back
 			const folder = [params.schoolId, entity.id].join('/');
-			await this.storageClient.uploadFile(folder, fileDescription);
-
+			await this.storageClient.create(folder, fileDescription);
+			await this.antivirusService.send(entity);
 			return entity;
 		} catch (error) {
 			await this.fileRecordRepo.delete(entity);
@@ -78,16 +81,23 @@ export class FilesStorageUC {
 		}
 	}
 
+	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
+		const pathToFile = [schoolId, fileRecordId].join('/');
+		const res = await this.storageClient.get(pathToFile);
+
+		return res;
+	}
+
 	async download(userId: EntityId, params: DownloadFileParams) {
 		try {
+			// @TODO check permissions of schoolId by user
 			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 			if (entity.name !== params.fileName) {
 				throw new NotFoundException('File not found');
+			} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+				throw new Error('File is blocked');
 			}
-
-			// @TODO check permissions of schoolId by user
-			const pathToFile = [entity.schoolId, entity.id].join('/');
-			const res = await this.storageClient.getFile(pathToFile);
+			const res = await this.downloadFile(entity.schoolId, entity.id);
 
 			return res;
 		} catch (error) {
@@ -98,9 +108,17 @@ export class FilesStorageUC {
 		}
 	}
 
-	async fileRecordsOfParent(userId: EntityId, params: FileParams): Promise<Counted<FileRecord[]>> {
-		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+	async downloadBySecurityToken(token: string) {
+		try {
+			const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+			const res = await this.downloadFile(entity.schoolId, entity.id);
 
-		return countedFileRecords;
+			return res;
+		} catch (error) {
+			if (error instanceof NotFoundException) {
+				throw error;
+			}
+			throw new BadRequestException(error);
+		}
 	}
 }

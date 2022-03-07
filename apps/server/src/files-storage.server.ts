@@ -10,6 +10,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { enableOpenApiDocs } from './shared/controller/swagger';
 import { FilesStorageModule } from './modules/files-storage/files-storage.module';
+import { API_VERSION_PATH } from './modules/files-storage/files-storage.const';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -30,7 +31,7 @@ async function bootstrap() {
 	const rootExpress = express();
 
 	const port = 4444;
-	const basePath = '/api/v3';
+	const basePath = API_VERSION_PATH;
 
 	// exposed alias mounts
 	rootExpress.use(basePath, nestExpress);
