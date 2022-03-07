@@ -3,6 +3,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
@@ -24,6 +25,7 @@ async function bootstrap() {
 	// customize nest app settings
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
+	nestApp.use(cookieParser());
 
 	await nestApp.init();
 

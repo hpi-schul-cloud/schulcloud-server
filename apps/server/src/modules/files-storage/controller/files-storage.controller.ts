@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PaginationQuery } from '@shared/controller';
-import { FileRecord, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 import { FileRecordUC } from '../uc/file-record.uc';
@@ -32,13 +32,24 @@ export class FilesStorageController {
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Headers('accept') accept: string
 	): Promise<StreamableFile> {
 		const res = await this.filesStorageUC.download(currentUser.userId, params);
+
+		// TODO find out a better way to define inline or attachment
+		// This is just a straight-forward way of checking for an API request.
+		// Questions:
+		// - Should we decice by request Accept-Header?
+		// - Should we decide by response content-type?
+		// - Should we always use 'inline' over 'attachment'?
+		const isAttachment = accept ? accept.includes('application/json') : false;
+
 		// @TODO set headers ?
+
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `attachment; filename="${params.fileName}"`,
+			disposition: `${isAttachment ? 'attachment' : 'inline'}; filename="${params.fileName}"`,
 		});
 	}
 
