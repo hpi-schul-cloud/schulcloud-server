@@ -4,6 +4,7 @@ import busboy from 'busboy';
 import internal from 'stream';
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import path from 'path';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
@@ -40,7 +41,7 @@ export class FilesStorageUC {
 				req.pipe(requestStream);
 			});
 
-			return result;
+			return result as FileRecord;
 		} catch (error) {
 			throw new BadRequestException(error);
 		}
@@ -59,9 +60,12 @@ export class FilesStorageUC {
 	}
 
 	private async uploadFile(userId: EntityId, params: FileParams, fileDescription: IFile) {
+		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
+
 		const entity = new FileRecord({
 			size: fileDescription.size,
-			name: fileDescription.name,
+			name: fileName,
 			mimeType: fileDescription.mimeType,
 			parentType: params.parentType,
 			parentId: params.parentId,
@@ -70,7 +74,6 @@ export class FilesStorageUC {
 		});
 		try {
 			await this.fileRecordRepo.save(entity);
-			// todo on error roll back
 			const folder = [params.schoolId, entity.id].join('/');
 			await this.storageClient.create(folder, fileDescription);
 			await this.antivirusService.send(entity);
@@ -120,5 +123,20 @@ export class FilesStorageUC {
 			}
 			throw new BadRequestException(error);
 		}
+	}
+
+	private checkFilenameExists(filename: string, fileRecords: FileRecord[]): string {
+		let counter = 0;
+		const filenameObj = path.parse(filename);
+		const { name } = filenameObj;
+		let newFilename = path.format(filenameObj);
+		// eslint-disable-next-line @typescript-eslint/no-loop-func
+		while (fileRecords.find((item: FileRecord) => item.name === newFilename)) {
+			counter += 1;
+			filenameObj.base = counter > 0 ? `${name} (${counter})${filenameObj.ext}` : `${name}${filenameObj.ext}`;
+			newFilename = path.format(filenameObj);
+		}
+
+		return newFilename;
 	}
 }
