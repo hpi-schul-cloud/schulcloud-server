@@ -4,6 +4,7 @@ import { PaginationQuery } from '@shared/controller';
 import { FileRecord, ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
+import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecordListResponse } from './dto';
 
@@ -11,7 +12,7 @@ import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecord
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
-	constructor(private readonly filesStorageUC: FilesStorageUC) {}
+	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
 
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
@@ -47,7 +48,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.fileRecordsOfParent(currentUser.userId, params);
+		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent(currentUser.userId, params);
 
 		const responseFileRecords = fileRecords.map((fileRecord) => {
 			return new FileRecordResponse(fileRecord);

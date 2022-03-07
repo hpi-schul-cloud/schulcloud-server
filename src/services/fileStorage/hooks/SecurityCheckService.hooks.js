@@ -15,6 +15,10 @@ const parseData = (context) => {
 			context.data = JSON.parse(context.data);
 			return context;
 		}
+
+		if (context.data instanceof Object) {
+			return context;
+		}
 	}
 	throw new BadRequest('Expected request data to exist and to be a String or a Buffer.');
 };

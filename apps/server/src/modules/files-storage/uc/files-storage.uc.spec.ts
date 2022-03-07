@@ -5,9 +5,9 @@ import { MikroORM } from '@mikro-orm/core';
 import { Busboy } from 'busboy';
 
 import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { IGetFileResponse } from '../interface/storage-client';
@@ -57,6 +57,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: FileRecordRepo,
 					useValue: createMock<FileRecordRepo>(),
+				},
+				{
+					provide: AntivirusService,
+					useValue: createMock<AntivirusService>(),
 				},
 			],
 		}).compile();
@@ -121,7 +125,7 @@ describe('FilesStorageUC', () => {
 
 		it('should call fileRecordRepo.uploadFile', async () => {
 			await service.upload(userId, fileUploadParams, request);
-			expect(storageClient.uploadFile).toHaveBeenCalledTimes(1);
+			expect(storageClient.create).toHaveBeenCalledTimes(1);
 		});
 
 		it('should call fileRecordRepo.uploadFile with params', async () => {
@@ -129,7 +133,7 @@ describe('FilesStorageUC', () => {
 
 			const storagePath = ['620abb23697023333eadea00', '620abb23697023333eadea99'].join('/');
 
-			expect(storageClient.uploadFile).toBeCalledWith(storagePath, {
+			expect(storageClient.create).toBeCalledWith(storagePath, {
 				buffer: Buffer.from('abc'),
 				name: 'text.txt',
 				size: 1234,
@@ -170,7 +174,7 @@ describe('FilesStorageUC', () => {
 
 		describe('Error Handling()', () => {
 			beforeEach(() => {
-				storageClient.uploadFile.mockRejectedValue(new Error());
+				storageClient.create.mockRejectedValue(new Error());
 			});
 
 			it('should throw Error', async () => {
@@ -198,7 +202,7 @@ describe('FilesStorageUC', () => {
 	describe('download()', () => {
 		beforeEach(() => {
 			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
-			storageClient.getFile.mockResolvedValue(response);
+			storageClient.get.mockResolvedValue(response);
 		});
 
 		describe('calls to fileRecordRepo.findOneById()', () => {
@@ -211,28 +215,36 @@ describe('FilesStorageUC', () => {
 				await service.download(userId, fileDownloadParams);
 				expect(fileRecordRepo.findOneById).toBeCalledWith(fileDownloadParams.fileRecordId);
 			});
+			describe('Error Handling()', () => {
+				it('should throw error if params with other filename', async () => {
+					const paramsWithOtherFilename = { fileRecordId: '620abb23697023333eadea00', fileName: 'other-name.txt' };
+					await expect(service.download(userId, paramsWithOtherFilename)).rejects.toThrow('File not found');
+				});
 
-			it('should throw error if params with other filename', async () => {
-				const paramsWithOtherFilename = { fileRecordId: '620abb23697023333eadea00', fileName: 'other-name.txt' };
-				await expect(service.download(userId, paramsWithOtherFilename)).rejects.toThrow();
-			});
+				it('should throw error if entity not found', async () => {
+					fileRecordRepo.findOneById.mockRejectedValue(new Error());
+					await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
+				});
 
-			it('should throw error if entity not found', async () => {
-				fileRecordRepo.findOneById.mockRejectedValue(new Error());
-				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
+				it('should throw error if securityCheck.status === "blocked"', async () => {
+					const blockedFileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
+					blockedFileRecord.securityCheck.status = ScanStatus.BLOCKED;
+					fileRecordRepo.findOneById.mockResolvedValue(blockedFileRecord);
+					await expect(service.download(userId, fileDownloadParams)).rejects.toThrow('File is blocked');
+				});
 			});
 		});
 
 		describe('calls to storageClient.getFile()', () => {
 			it('should call once', async () => {
 				await service.download(userId, fileDownloadParams);
-				expect(storageClient.getFile).toHaveBeenCalledTimes(1);
+				expect(storageClient.get).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call with pathToFile', async () => {
 				await service.download(userId, fileDownloadParams);
 				const pathToFile = [fileRecord.schoolId, fileRecord.id].join('/');
-				expect(storageClient.getFile).toBeCalledWith(pathToFile);
+				expect(storageClient.get).toBeCalledWith(pathToFile);
 			});
 
 			it('should return file response', async () => {
@@ -241,18 +253,40 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should throw error if entity not found', async () => {
-				storageClient.getFile.mockRejectedValue(new Error());
+				storageClient.get.mockRejectedValue(new Error());
 				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 			});
 		});
 	});
 
-	describe('fileRecordsOfParent', () => {
-		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
-			const { schoolId, parentId } = fileUploadParams;
-			await service.fileRecordsOfParent(userId, { schoolId, parentId, parentType: FileRecordParentType.School });
+	describe('downloadBySecurityToken()', () => {
+		let token: string;
+		beforeEach(() => {
+			fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValue(fileRecord);
+			storageClient.get.mockResolvedValue(response);
+			token = fileRecord.securityCheck.requestToken || '';
+		});
 
-			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(schoolId, parentId);
+		describe('calls to fileRecordRepo.findBySecurityCheckRequestToken()', () => {
+			it('should return file response', async () => {
+				const result = await service.downloadBySecurityToken(token);
+				expect(result).toStrictEqual(response);
+			});
+
+			it('should call once', async () => {
+				await service.downloadBySecurityToken(token);
+				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call with params', async () => {
+				await service.downloadBySecurityToken(token);
+				expect(fileRecordRepo.findBySecurityCheckRequestToken).toHaveBeenCalledWith(token);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.findBySecurityCheckRequestToken.mockRejectedValue(new Error());
+				await expect(service.downloadBySecurityToken(token)).rejects.toThrow();
+			});
 		});
 	});
 });
