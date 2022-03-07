@@ -9,7 +9,7 @@ export interface IGetFileResponse {
 }
 
 export interface IStorageClient {
-	uploadFile(folder: string, file: IFile): unknown;
+	create(path: string, file: IFile): unknown;
 
-	getFile(path: string): unknown;
+	get(path: string): unknown;
 }
