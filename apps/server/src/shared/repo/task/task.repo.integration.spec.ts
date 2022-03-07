@@ -1607,7 +1607,7 @@ describe('TaskRepo', () => {
 
 	describe('delete', () => {
 		it('should remove a task in the database', async () => {
-			const task = taskFactory.build({ name: 'important task' });
+			const task = taskFactory.build();
 			await repo.save(task);
 			em.clear();
 			const { id } = task;

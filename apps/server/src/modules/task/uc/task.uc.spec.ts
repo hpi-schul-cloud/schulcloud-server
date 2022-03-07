@@ -1054,7 +1054,7 @@ describe('TaskUC', () => {
 			taskRepo.delete.mockResolvedValue();
 		});
 
-		it('should check for permission to finish the task', async () => {
+		it('should check for permission to delete the task', async () => {
 			await service.delete(user.id, task.id);
 			expect(authorizationService.hasTaskPermission).toBeCalledWith(user, task, TaskParentPermission.write);
 		});
