@@ -187,20 +187,10 @@ describe('OAuthUc', () => {
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
-		it('should return an error', () => {
-			// const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
-			// resolveUserSpy.mockImplementation(() => {
-			// 	throw new NotFoundException('something bad happened');
-			// });
-			// expect(async () => {
-			// 	try {
-			// 		const erruser: User = await service.findUserById('', defaultSystemId);
-			// 		return erruser;
-			// 	} catch (error) { throw new Error('shit') }
-			// }).toThrow(OAuthSSOError);
-			expect(async () => {
-				await service.findUserById('', '');
-			}).toThrowError(OAuthSSOError);
+		it('should return an error', async () => {
+			await expect(service.findUserById('', '')).rejects.toEqual(
+				new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound')
+			);
 		});
 	});
 
