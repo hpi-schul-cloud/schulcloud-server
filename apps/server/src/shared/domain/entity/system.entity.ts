@@ -19,6 +19,7 @@ export class OauthConfig {
 		this.scope = system.oauthConfig.scope;
 		this.responseType = system.oauthConfig.responseType;
 		this.authEndpoint = system.oauthConfig.authEndpoint;
+		this.provider = system.oauthConfig.provider;
 	}
 
 	@Property()
@@ -44,6 +45,9 @@ export class OauthConfig {
 
 	@Property()
 	scope: string;
+
+	@Property()
+	provider: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {

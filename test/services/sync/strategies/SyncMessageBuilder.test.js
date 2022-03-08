@@ -14,6 +14,7 @@ const federalState = 'NI';
 const exampleSchoolData = {
 	displayName: 'test school',
 	ldapOu: 'test ldap school id',
+	officialSchoolNumber: '123',
 };
 
 const exampleClassData = {
@@ -63,6 +64,7 @@ describe('Sync Message Builder', () => {
 						name: exampleSchoolData.displayName,
 						systems: [fakeLdapSystem._id],
 						ldapSchoolIdentifier: exampleSchoolData.ldapOu,
+						officialSchoolNumber: '123',
 						currentYear,
 						federalState,
 					},

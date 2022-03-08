@@ -4,6 +4,12 @@
       namespace: "{{ NAMESPACE }}"
       template: svc.yml.j2
 
+  - name: FileStorageService
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-svc.yml.j2
+
   - name: Configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -31,6 +37,12 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
+
+  - name: FileStorageDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-deployment.yml.j2
 
   - name: Delete Files CronJob
     kubernetes.core.k8s:

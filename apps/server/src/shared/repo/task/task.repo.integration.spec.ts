@@ -27,6 +27,7 @@ describe('TaskRepo', () => {
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [TaskRepo],
 		}).compile();
+
 		repo = module.get(TaskRepo);
 		em = module.get(EntityManager);
 	});
@@ -1601,6 +1602,20 @@ describe('TaskRepo', () => {
 
 			const foundTask = await repo.findById(task.id);
 			expect(foundTask.name).toEqual('important task');
+		});
+	});
+
+	describe('delete', () => {
+		it('should remove a task in the database', async () => {
+			const task = taskFactory.build();
+			await repo.save(task);
+			em.clear();
+			const { id } = task;
+			await repo.delete(task);
+
+			await expect(async () => {
+				await repo.findById(id);
+			}).rejects.toThrow(`Task not found ({ id: '${id}' })`);
 		});
 	});
 });
