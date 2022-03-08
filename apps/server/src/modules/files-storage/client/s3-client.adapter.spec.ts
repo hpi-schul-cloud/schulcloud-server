@@ -20,7 +20,6 @@ describe('S3ClientAdapter', () => {
 	let module: TestingModule;
 	let service: S3ClientAdapter;
 	let client: S3Client;
-	let logger: Logger;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -69,7 +68,7 @@ describe('S3ClientAdapter', () => {
 
 	describe('getFile', () => {
 		it('should call send() of client', async () => {
-			await service.getFile(pathToFile);
+			await service.get(pathToFile);
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: { Bucket: config.bucket, Key: pathToFile },
@@ -86,7 +85,7 @@ describe('S3ClientAdapter', () => {
 			};
 
 			client.send = jest.fn().mockResolvedValue(resultObj);
-			const result = await service.getFile(pathToFile);
+			const result = await service.get(pathToFile);
 
 			expect(result).toStrictEqual({
 				contentLength: 'data.ContentLength',
@@ -100,11 +99,11 @@ describe('S3ClientAdapter', () => {
 			const e = new Error('Bad Request');
 			client.send = jest.fn().mockRejectedValue(e);
 
-			await expect(service.getFile(pathToFile)).rejects.toThrow();
+			await expect(service.get(pathToFile)).rejects.toThrow();
 		});
 	});
 
-	describe('uploadFile', () => {
+	describe('create', () => {
 		const buffer = Buffer.from('ddd');
 		const file: IFile = {
 			buffer,
@@ -115,7 +114,7 @@ describe('S3ClientAdapter', () => {
 		const path = 'test/test.txt';
 
 		it('should call send() of client', async () => {
-			await service.uploadFile(path, file);
+			await service.create(path, file);
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: {
@@ -130,7 +129,7 @@ describe('S3ClientAdapter', () => {
 
 		it('should return data', async () => {
 			client.send = jest.fn().mockResolvedValue(true);
-			const result = await service.uploadFile(path, file);
+			const result = await service.create(path, file);
 
 			expect(result).toStrictEqual(true);
 		});
@@ -139,22 +138,22 @@ describe('S3ClientAdapter', () => {
 			const e = new Error('Bad Request');
 			client.send = jest.fn().mockRejectedValue(e);
 
-			await expect(service.uploadFile(path, file)).rejects.toThrow();
+			await expect(service.create(path, file)).rejects.toThrow();
 		});
 
 		it('should call createBucket() if error from client error.Code === "NoSuchBucket" ', async () => {
 			const e = { Code: 'NoSuchBucket' };
 			client.send = jest.fn().mockRejectedValueOnce(e);
 			service.createBucket = jest.fn();
-			await service.uploadFile(path, file);
+			await service.create(path, file);
 			expect(service.createBucket).toBeCalled();
 		});
 
 		it('should call itself if error from client error.Code === "NoSuchBucket" ', async () => {
 			const e = { Code: 'NoSuchBucket' };
 			client.send = jest.fn().mockRejectedValueOnce(e);
-			const mock = jest.spyOn(service, 'uploadFile');
-			await service.uploadFile(path, file);
+			const mock = jest.spyOn(service, 'create');
+			await service.create(path, file);
 			expect(mock).toBeCalledTimes(2);
 		});
 	});
