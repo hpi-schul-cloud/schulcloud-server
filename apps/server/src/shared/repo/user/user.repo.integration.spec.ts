@@ -42,7 +42,19 @@ describe('user repo', () => {
 			await em.persistAndFlush([user]);
 			const result = await repo.findById(user.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'roles',
+					'firstName',
+					'lastName',
+					'email',
+					'school',
+					'_id',
+					'ldapId',
+					'forcePasswordChange',
+					'preferences',
+				].sort()
 			);
 		});
 
@@ -104,7 +116,19 @@ describe('user repo', () => {
 		it('should return right keys', async () => {
 			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'roles',
+					'firstName',
+					'lastName',
+					'email',
+					'school',
+					'_id',
+					'ldapId',
+					'forcePasswordChange',
+					'preferences',
+				].sort()
 			);
 		});
 
