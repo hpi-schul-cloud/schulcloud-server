@@ -256,4 +256,47 @@ describe('user repo', () => {
 			expect(count).toEqual(2);
 		});
 	});
+
+	describe('update', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+		});
+
+		it('should fail if user does not exist', async () => {
+			const user = userFactory.build();
+			await expect(repo.update(user)).rejects.toThrow(NotFoundError);
+		});
+
+		it('should update all fields', async () => {
+			const userA = userFactory.withRole('Role-1').build();
+			const userB = userFactory.withRole('Role-2').build();
+
+			userA.forcePasswordChange = true;
+			userB.forcePasswordChange = false;
+
+			userB.firstName = 'Bob';
+
+			const updateTime = userA.updatedAt;
+			expect(userA.createdAt).not.toBe(userB.createdAt);
+			expect(userA.email).not.toBe(userB.email);
+			expect(userA.firstName).not.toBe(userB.firstName);
+			expect(userA.lastName).not.toBe(userB.lastName);
+			expect(userA.school).not.toBe(userB.school);
+			expect(userA.roles).not.toContain(userB.roles);
+
+			await em.persistAndFlush([userA, userB]);
+
+			userB.id = userA.id;
+			const updatedUserB = await repo.update(userB);
+
+			expect(userA.createdAt).toBe(updatedUserB.createdAt);
+			expect(userA.email).toBe(updatedUserB.email);
+			expect(userA.firstName).toBe(updatedUserB.firstName);
+			expect(userA.lastName).toBe(updatedUserB.lastName);
+			expect(userA.school).toBe(updatedUserB.school);
+			expect(userA.roles).toEqual(updatedUserB.roles);
+
+			expect(updatedUserB.updatedAt.getTime()).toBeGreaterThan(updateTime.getTime());
+		});
+	});
 });

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common/error';
-import { Account, EntityId } from '@shared/domain';
+import { EntityNotFoundError, ValidationError } from '@shared/common/error';
+import { Account, EntityId, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
@@ -18,9 +18,9 @@ export class AccountUc {
 		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
 	);
 
-	findOneById(accountId: EntityId): Promise<Account> {
-		return this.accountRepo.read(accountId);
-	}
+	// findOneById(accountId: EntityId): Promise<Account> {
+	// 	return this.accountRepo.read(accountId);
+	// }
 
 	// create(account: Account): Promise<Account> {
 	// 	return this.accountRepo.create(account);
@@ -30,9 +30,9 @@ export class AccountUc {
 	// 	return this.accountRepo.update(account);
 	// }
 
-	remove(accountId: EntityId): Promise<Account> {
-		return this.accountRepo.delete(accountId);
-	}
+	// remove(accountId: EntityId): Promise<Account> {
+	// 	return this.accountRepo.delete(accountId);
+	// }
 
 	// permissions
 
@@ -46,10 +46,6 @@ export class AccountUc {
 
 		// if I change my password
 		// Check if it is own account
-		// const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
-
-		// set forcePasswordChange in user
-
 		const user = await this.userRepo.findById(userId);
 		const account = await this.accountRepo.findByUserId(userId);
 
@@ -70,23 +66,23 @@ export class AccountUc {
 
 		// check permission
 		// user rights
-		// globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_EDIT'),
-		// globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
-		// globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
-		// globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
-		// globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
-		// hook.app.service('users').get(hook.params.account.userId),
-		// [hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]
+		let account: Account;
+		try {
+			account = await this.accountRepo.findByUserId(userId);
+			await this.updatePassword(account, passwordNew);
+		} catch (err) {
+			throw new EntityNotFoundError('Account');
+		}
 
-		// only check result if also a password was really given
-		// if (!patternResult && password) {
-		//	throw new BadRequest('Dein Passwort stimmt mit dem Pattern nicht überein.');
-		// }
-
-		const account = await this.accountRepo.findByUserId(userId);
-
-		// TODO check user rights, password pattern,...
-		await this.updatePassword(account, passwordNew);
+		// set user must change password on next login
+		let user: User;
+		try {
+			user = await this.userRepo.findById(userId);
+			user.forcePasswordChange = true;
+			await this.userRepo.update(user);
+		} catch (err) {
+			throw new EntityNotFoundError('User');
+		}
 
 		return 'this.accountRepo.update(account);';
 	}
@@ -105,7 +101,7 @@ export class AccountUc {
 	// TODO remove schulcloud-server\src\utils\passwordHelpers.js
 	private checkPasswordStrength(password: string) {
 		// only check result if also a password was really given
-		if (password || !AccountUc.passwordPattern.test(password)) {
+		if (!password || !AccountUc.passwordPattern.test(password)) {
 			throw new ValidationError('Dein Passwort stimmt mit dem Pattern nicht überein.');
 		}
 	}

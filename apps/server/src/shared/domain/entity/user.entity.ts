@@ -34,13 +34,13 @@ export class User extends BaseEntityWithTimestamps {
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school!: School;
 
-	@Property()
+	@Property({ nullable: true })
 	ldapId?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
 
-	@Property()
+	@Property({ nullable: true })
 	preferences?: Record<string, unknown>;
 
 	constructor(props: IUserProperties) {
