@@ -1,8 +1,5 @@
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ALL_ENTITIES } from '@shared/domain';
 import { MailModule } from '@shared/infra/mail';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { LearnroomModule } from '@src/modules/learnroom';
@@ -11,13 +8,18 @@ import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
 import { NewsModule } from '@src/modules/news';
 import { FilesModule } from '@src/modules/files';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { ALL_ENTITIES } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
-import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 import { ImportUserModule } from './modules/user-import/user-import.module';
 import { OauthModule } from './modules/oauth';
+import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 
 const serverModules = [
 	CoreModule,
@@ -29,7 +31,6 @@ const serverModules = [
 	ImportUserModule,
 	LearnroomModule,
 	MailModule.forRoot({
-		uri: Configuration.get('RABBITMQ_URI') as string,
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
@@ -43,7 +44,7 @@ const serverModules = [
 	}),
 ];
 
-const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
@@ -55,6 +56,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
  */
 @Module({
 	imports: [
+		RabbitMQWrapperModule,
 		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
@@ -81,14 +83,22 @@ export class ServerModule {}
  * // TODO use instead of ServerModule when NODE_ENV=test
  */
 @Module({
-	imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+	imports: [
+		...serverModules,
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+		RabbitMQWrapperTestModule,
+	],
 	controllers: [ServerController],
 })
 export class ServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: ServerTestModule,
-			imports: [...serverModules, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
+			imports: [
+				...serverModules,
+				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
+				RabbitMQWrapperTestModule,
+			],
 			controllers: [ServerController],
 		};
 	}

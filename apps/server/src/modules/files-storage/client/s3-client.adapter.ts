@@ -27,7 +27,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async getFile(path: string): Promise<IGetFileResponse> {
+	public async get(path: string): Promise<IGetFileResponse> {
 		const req = new GetObjectCommand({
 			Bucket: this.config.bucket,
 			Key: path,
@@ -41,7 +41,7 @@ export class S3ClientAdapter implements IStorageClient {
 		};
 	}
 
-	public async uploadFile(path: string, file: IFile): Promise<ServiceOutputTypes> {
+	public async create(path: string, file: IFile): Promise<ServiceOutputTypes> {
 		try {
 			const req = {
 				Body: file.buffer,
@@ -61,7 +61,7 @@ export class S3ClientAdapter implements IStorageClient {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (error.Code && error.Code === 'NoSuchBucket') {
 				await this.createBucket();
-				return this.uploadFile(path, file);
+				return this.create(path, file);
 			}
 			throw error;
 		}
