@@ -21,16 +21,21 @@ describe('JwtExtractor', () => {
 		});
 
 		it('should return the token if exists in cookie', () => {
-			request.cookies = { jwt: '08154711' };
+			request.headers.cookie = 'jwt=08154711';
 			expect(extractor(request)).toEqual('08154711');
 		});
 
 		it('should return null if the cookie attribute name does not match', () => {
-			request.cookies = { token: '08154711' };
+			request.headers.cookie = 'token=08154711';
 			expect(extractor(request)).toEqual(null);
 		});
 
 		it('should return null if no cookies exist', () => {
+			expect(extractor(request)).toEqual(null);
+		});
+
+		it('should return null for empty cookies', () => {
+			request.headers.cookie = '';
 			expect(extractor(request)).toEqual(null);
 		});
 	});
