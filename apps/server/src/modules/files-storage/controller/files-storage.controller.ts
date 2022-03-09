@@ -32,24 +32,13 @@ export class FilesStorageController {
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
-		@CurrentUser() currentUser: ICurrentUser,
-		@Headers('accept') accept: string
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<StreamableFile> {
 		const res = await this.filesStorageUC.download(currentUser.userId, params);
-
-		// TODO find out a better way to define inline or attachment
-		// This is just a straight-forward way of checking for an API request.
-		// Questions:
-		// - Should we decice by request Accept-Header?
-		// - Should we decide by response content-type?
-		// - Should we always use 'inline' over 'attachment'?
-		const isAttachment = accept ? accept.includes('application/json') : false;
-
-		// @TODO set headers ?
-
+		// TODO set headers ?
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `${isAttachment ? 'attachment' : 'inline'}; filename="${params.fileName}"`,
+			disposition: 'inline',
 		});
 	}
 
