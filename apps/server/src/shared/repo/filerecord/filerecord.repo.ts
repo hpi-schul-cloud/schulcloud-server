@@ -9,7 +9,14 @@ import { FileRecordScope } from './filerecord-scope';
 export class FileRecordRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	// todo: how we handle this in future? It is used by test. I think we should not do this.
 	async findOneById(id: EntityId): Promise<FileRecord> {
+		const fileRecord = await this.em.findOneOrFail(FileRecord, id);
+		return fileRecord;
+	}
+
+	// todo: filter NOT expires != null
+	async findNotDeletedOneById(id: EntityId): Promise<FileRecord> {
 		const fileRecord = await this.em.findOneOrFail(FileRecord, id);
 		return fileRecord;
 	}
@@ -26,6 +33,7 @@ export class FileRecordRepo {
 		await this.em.removeAndFlush(fileRecord);
 	}
 
+	// todo: filter NOT expires != null
 	async findBySchoolIdAndParentId(
 		schoolId: EntityId,
 		parentId: EntityId,

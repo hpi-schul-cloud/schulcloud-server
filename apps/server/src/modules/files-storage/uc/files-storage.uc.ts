@@ -96,7 +96,7 @@ export class FilesStorageUC {
 	async download(userId: EntityId, params: DownloadFileParams) {
 		try {
 			// @TODO check permissions of schoolId by user
-			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
+			const entity = await this.fileRecordRepo.findNotDeletedOneById(params.fileRecordId);
 			if (entity.name !== params.fileName) {
 				throw new NotFoundException('File not found');
 			} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
@@ -156,7 +156,7 @@ export class FilesStorageUC {
 	}
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams, expires: Date): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const fileRecord = await this.fileRecordRepo.findNotDeletedOneById(params.fileRecordId);
 
 		// a 7 days offset is defined in TTL expires index
 		fileRecord.setExpires(expires);
