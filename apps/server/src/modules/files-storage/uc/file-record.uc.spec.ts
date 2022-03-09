@@ -7,7 +7,7 @@ import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ConflictException } from '@nestjs/common';
 import { FileParams, ScanResultDto, SingleFileParams } from '../controller/dto/file-storage.params';
-import { RenameFileData } from '../controller/dto/file-storage.data';
+import { RenameFileDto } from '../controller/dto/file-storage.dto';
 import { FileRecordUC } from './file-record.uc';
 
 describe('FileRecordUC', () => {
@@ -117,7 +117,7 @@ describe('FileRecordUC', () => {
 	describe('patch', () => {
 		let fileRecord: FileRecord;
 		let fileRecords: FileRecord[];
-		let data: RenameFileData;
+		let data: RenameFileDto;
 		let params: SingleFileParams;
 
 		beforeEach(() => {

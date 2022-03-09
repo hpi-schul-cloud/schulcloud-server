@@ -14,7 +14,7 @@ import {
 	FileRecordListResponse,
 	SingleFileParams,
 } from './dto';
-import { RenameFileData } from './dto/file-storage.data';
+import { RenameFileDto } from './dto/file-storage.dto';
 
 @ApiTags('file')
 @Authenticate('jwt')
@@ -72,10 +72,10 @@ export class FilesStorageController {
 	@Patch('/rename/:fileRecordId/')
 	async patchFilename(
 		@Param() params: SingleFileParams,
-		@Body() data: RenameFileData,
+		@Body() renameFileDto: RenameFileDto,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, data);
+		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileDto);
 
 		const response = new FileRecordResponse(res);
 
