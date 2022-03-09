@@ -12,15 +12,15 @@ export interface IStorageProviderProperties {
 @Entity({ tableName: 'storageproviders' })
 export class StorageProvider extends BaseEntityWithTimestamps {
 	@Property()
-	endpointUrl!: string;
+	endpointUrl: string;
 
 	@Property()
-	accessKeyId!: string;
+	accessKeyId: string;
 
 	@Property({ fieldName: 'secretAccessKey', type: EncryptedStringType })
-	secretAccessKey!: string;
+	secretAccessKey: string;
 
-	@Property()
+	@Property({ nullable: true })
 	region?: string;
 
 	constructor(props: IStorageProviderProperties) {

@@ -16,17 +16,14 @@ export class School extends BaseEntity {
 	}
 
 	@Property()
-	name!: string;
+	name: string;
 
-	@Property()
+	@Property({ nullable: true })
 	inUserMigration?: boolean;
 
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
 	systems = new Collection<System>(this);
 
-	@Property()
+	@Property({ nullable: true })
 	ldapSchoolIdentifier?: string;
-
-	/* @Property()
-    systems?: System[]; */
 }

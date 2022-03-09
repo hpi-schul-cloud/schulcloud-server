@@ -21,7 +21,7 @@ describe('ImportUserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [ImportUserRepo],
 		}).compile();
 		repo = module.get(ImportUserRepo);
@@ -87,7 +87,7 @@ describe('ImportUserRepo', () => {
 			expect(result).toBeNull();
 		});
 		it('should throw error for wrong id given', async () => {
-			const { user } = await persistedReferences();
+			await persistedReferences();
 			const importUser = importUserFactory.build();
 			await em.persistAndFlush([importUser]);
 			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrowError('invalid user match id');
@@ -740,7 +740,7 @@ describe('ImportUserRepo', () => {
 				}
 				await em.persistAndFlush(importUsers);
 				em.clear();
-				const [reloadedImportUsers, count] = await repo.findImportUsers(school);
+				const [reloadedImportUsers] = await repo.findImportUsers(school);
 				const result = reloadedImportUsers.map(async (importuser) => {
 					expect(importuser.user).toBeDefined();
 					expect(importuser.matchedBy).toBeDefined();

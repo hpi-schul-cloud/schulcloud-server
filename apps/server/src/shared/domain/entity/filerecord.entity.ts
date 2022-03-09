@@ -4,11 +4,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { EntityId } from '../types/entity-id';
 
-export enum FileSecurityCheckStatus {
+export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
-	WONTCHECK = 'wont-check',
+	WONT_CHECK = 'wont-check',
 }
 
 export enum FileRecordParentType {
@@ -21,25 +21,26 @@ export enum FileRecordParentType {
 	// card
 }
 export interface IFileSecurityCheckProperties {
-	status?: FileSecurityCheckStatus;
+	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
 }
 @Embeddable()
 export class FileSecurityCheck {
 	@Enum()
-	status: FileSecurityCheckStatus = FileSecurityCheckStatus.PENDING;
+	status: ScanStatus = ScanStatus.PENDING;
 
 	@Property()
 	reason = 'not yet scanned';
 
+	@Index()
 	@Property()
-	requestToken: string = uuid();
+	requestToken?: string = uuid();
 
 	@Property()
 	createdAt = new Date();
 
-	@Property({ onUpdate: () => new Date() })
+	@Property()
 	updatedAt = new Date();
 
 	constructor(props: IFileSecurityCheckProperties) {
@@ -59,7 +60,6 @@ export interface IFileRecordProperties {
 	size: number;
 	name: string;
 	mimeType: string;
-	securityCheck?: FileSecurityCheck;
 	parentType: FileRecordParentType;
 	parentId: EntityId | ObjectId;
 	creatorId: EntityId | ObjectId;
@@ -72,7 +72,7 @@ export interface IFileRecordProperties {
  * That's why we do not map any relations in the entity class
  * and instead just use the plain object ids.
  */
-@Entity({ tableName: 'filerecord' })
+@Entity({ tableName: 'filerecords' })
 @Index({ properties: ['_schoolId', '_parentId'] })
 export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
@@ -84,8 +84,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	mimeType: string; // TODO mime-type enum?
 
-	@Embedded(() => FileSecurityCheck, { object: true, nullable: true })
-	securityCheck?: FileSecurityCheck;
+	@Embedded(() => FileSecurityCheck, { object: true, nullable: false })
+	securityCheck: FileSecurityCheck;
 
 	@Enum()
 	parentType: FileRecordParentType;
@@ -107,7 +107,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	// todo: permissions
 
 	// for wopi, is this still needed?
-	@Property({ fieldName: 'lockedForUser' })
+	@Property({ fieldName: 'lockedForUser', nullable: true })
 	_lockedForUserId?: ObjectId;
 
 	get lockedForUserId(): EntityId | undefined {
@@ -118,7 +118,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	_schoolId: ObjectId;
 
 	get schoolId(): EntityId {
-		return this._schoolId?.toHexString();
+		return this._schoolId.toHexString();
 	}
 
 	constructor(props: IFileRecordProperties) {
@@ -126,7 +126,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.size = props.size;
 		this.name = props.name;
 		this.mimeType = props.mimeType;
-		this.securityCheck = props.securityCheck;
 		this.parentType = props.parentType;
 		this._parentId = new ObjectId(props.parentId);
 		this._creatorId = new ObjectId(props.creatorId);
@@ -134,14 +133,13 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			this._lockedForUserId = new ObjectId(props.lockedForUserId);
 		}
 		this._schoolId = new ObjectId(props.schoolId);
+		this.securityCheck = new FileSecurityCheck({});
 	}
 
-	updateSecurityCheckStatus(status: FileSecurityCheckStatus, reason: string): void {
-		if (!this.securityCheck) {
-			this.securityCheck = new FileSecurityCheck({ status, reason });
-		} else {
-			this.securityCheck.status = status;
-			this.securityCheck.reason = reason;
-		}
+	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
+		this.securityCheck.status = status;
+		this.securityCheck.reason = reason;
+		this.securityCheck.updatedAt = new Date();
+		this.securityCheck.requestToken = undefined;
 	}
 }

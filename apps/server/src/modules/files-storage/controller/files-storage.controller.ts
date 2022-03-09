@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PaginationQuery } from '@shared/controller';
-import { FileRecord, ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
+import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecordListResponse } from './dto';
 
@@ -11,7 +12,7 @@ import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecord
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
-	constructor(private readonly filesStorageUC: FilesStorageUC) {}
+	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
 
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
@@ -23,7 +24,7 @@ export class FilesStorageController {
 	): Promise<FileRecordResponse> {
 		const res = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
-		const response = new FileRecordResponse(res as FileRecord);
+		const response = new FileRecordResponse(res);
 
 		return response;
 	}
@@ -34,10 +35,10 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<StreamableFile> {
 		const res = await this.filesStorageUC.download(currentUser.userId, params);
-		// @TODO set headers ?
+		// TODO set headers ?
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `attachment; filename="${params.fileName}"`,
+			disposition: `inline; filename="${params.fileName}"`,
 		});
 	}
 
@@ -47,7 +48,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.fileRecordsOfParent(currentUser.userId, params);
+		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent(currentUser.userId, params);
 
 		const responseFileRecords = fileRecords.map((fileRecord) => {
 			return new FileRecordResponse(fileRecord);

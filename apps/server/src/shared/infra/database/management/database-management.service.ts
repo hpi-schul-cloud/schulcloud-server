@@ -1,3 +1,4 @@
+import { BaseEntity } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Collection, Db } from 'mongodb';
@@ -20,7 +21,7 @@ export class DatabaseManagementService {
 		if (jsonDocuments.length === 0) {
 			return 0;
 		}
-		const { insertedCount } = await collection.insertMany(jsonDocuments, {
+		const { insertedCount } = await collection.insertMany(jsonDocuments as BaseEntity[], {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
 		});
