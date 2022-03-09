@@ -34,6 +34,7 @@ export class FileRecordUC {
 		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
 		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
+
 		await this.fileRecordRepo.save(entity);
 	}
 }
