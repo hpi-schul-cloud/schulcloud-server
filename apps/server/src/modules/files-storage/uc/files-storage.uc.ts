@@ -9,7 +9,7 @@ import { EntityId, FileRecord, ScanStatus, Counted } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileRecordParams } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
@@ -153,5 +153,16 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.multiSave(fileRecords);
 
 		return [fileRecords, count];
+	}
+
+	async deleteOneFile(userId: EntityId, params: SingleFileParams, expires: Date): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+
+		// a 7 days offset is defined in TTL expires index
+		fileRecord.setExpires(expires);
+
+		await this.fileRecordRepo.save(fileRecord);
+
+		return fileRecord;
 	}
 }

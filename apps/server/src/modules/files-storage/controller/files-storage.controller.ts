@@ -103,5 +103,16 @@ export class FilesStorageController {
 		return response;
 	}
 
-	// delete single?
+	@Get('/delete/:fileRecordId')
+	async deleteFile(
+		@Param() params: SingleFileParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() expiresQuery: ExpiresQuery
+	): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params, expiresQuery.expires);
+
+		const response = new FileRecordResponse(fileRecord);
+
+		return response;
+	}
 }
