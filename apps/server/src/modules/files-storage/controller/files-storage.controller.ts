@@ -38,7 +38,7 @@ export class FilesStorageController {
 		// TODO set headers ?
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: 'inline',
+			disposition: `inline; filename="${params.fileName}"`,
 		});
 	}
 
