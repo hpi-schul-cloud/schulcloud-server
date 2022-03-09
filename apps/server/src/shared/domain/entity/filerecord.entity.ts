@@ -75,6 +75,10 @@ export interface IFileRecordProperties {
 @Entity({ tableName: 'filerecords' })
 @Index({ properties: ['_schoolId', '_parentId'] })
 export class FileRecord extends BaseEntityWithTimestamps {
+	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
+	@Property({ nullable: true })
+	expiresAt?: Date;
+
 	@Property()
 	size: number;
 
