@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { accountFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { accountFactory, importUserFactory, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 const mockAccounts: Account[] = [

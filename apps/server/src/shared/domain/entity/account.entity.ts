@@ -21,20 +21,20 @@ export class Account extends BaseEntityWithTimestamps {
 	credentialHash?: string;
 
 	// TODO set index to true after we removed the account model from feathers
-	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true, mapToPk: true })
-	userId!: ObjectId;
+	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true })
+	userId: ObjectId;
 
-	@OneToOne({ entity: () => System, owner: true, orphanRemoval: true, mapToPk: true, nullable: true })
+	@OneToOne({ entity: () => System, owner: true, orphanRemoval: true, nullable: true })
 	systemId?: ObjectId;
 
 	@Property({ nullable: true })
-	lasttriedFailedLogin? = new Date(0);
+	lasttriedFailedLogin?: Date;
 
 	@Property({ nullable: true })
 	expiresAt?: Date;
 
 	@Property({ nullable: true })
-	activated? = false;
+	activated?: boolean;
 
 	constructor(props: IAccountProperties) {
 		super();

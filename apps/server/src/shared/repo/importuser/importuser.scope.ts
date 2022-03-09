@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common';
-import { EntityId, ImportUser, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
+import { ImportUser, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
 import { MongoPatterns } from '../mongo.patterns';
 import { Scope } from '../scope';
 
@@ -9,14 +10,14 @@ export class ImportUserScope extends Scope<ImportUser> {
 	bySchool(school: School): ImportUserScope {
 		const schoolId = school._id;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
-		this.addQuery({ school: schoolId });
+		this.addQuery({ school });
 		return this;
 	}
 
 	byUserMatch(user: User): ImportUserScope {
 		const userId = user._id;
 		if (!ObjectId.isValid(userId)) throw new Error('invalid user match id');
-		this.addQuery({ user: userId });
+		this.addQuery({ user });
 		return this;
 	}
 
@@ -99,13 +100,13 @@ export class ImportUserScope extends Scope<ImportUser> {
 	byMatches(matches: MatchCreatorScope[]) {
 		const queries = matches
 			.map((match) => {
-				if (match === MatchCreatorScope.MANUAL) return { match_matchedBy: 'admin' };
-				if (match === MatchCreatorScope.AUTO) return { match_matchedBy: 'auto' };
-				if (match === MatchCreatorScope.NONE) return { match_matchedBy: { $exists: false } };
+				if (match === MatchCreatorScope.MANUAL) return { matchedBy: 'admin' };
+				if (match === MatchCreatorScope.AUTO) return { matchedBy: 'auto' };
+				if (match === MatchCreatorScope.NONE) return { matchedBy: { $exists: false } };
 				return null;
 			})
 			.filter((match) => match != null);
-		if (queries.length > 0) this.addQuery({ $or: queries });
+		if (queries.length > 0) this.addQuery({ $or: queries as FilterQuery<ImportUser>[] });
 		return this;
 	}
 
