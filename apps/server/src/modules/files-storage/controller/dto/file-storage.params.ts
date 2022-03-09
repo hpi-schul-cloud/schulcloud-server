@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
 import { Allow, IsEnum, IsMongoId, IsString } from 'class-validator';
 
-export class FileParams {
+export class FileRecordParams {
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;
@@ -17,7 +17,7 @@ export class FileParams {
 	parentType!: FileRecordParentType;
 }
 
-export class FileDto {
+export class FileParams {
 	@ApiProperty({ type: 'string', format: 'binary' })
 	@Allow()
 	file!: string;

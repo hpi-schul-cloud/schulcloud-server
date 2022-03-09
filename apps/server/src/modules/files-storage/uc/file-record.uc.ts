@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { FileRecordRepo } from '@shared/repo';
 import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import {
-	FileParams,
+	FileRecordParams,
 	SingleFileParams,
 	ScanResultParams,
 	RenameFileParams,
@@ -24,7 +24,7 @@ export class FileRecordUC {
 		return entity;
 	}
 
-	async fileRecordsOfParent(userId: EntityId, params: FileParams): Promise<Counted<FileRecord[]>> {
+	async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		return countedFileRecords;

@@ -7,7 +7,7 @@ import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ConflictException } from '@nestjs/common';
 import {
-	FileParams,
+	FileRecordParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -19,7 +19,7 @@ describe('FileRecordUC', () => {
 	let service: FileRecordUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let orm: MikroORM;
-	let fileParams: FileParams;
+	let fileParams: FileRecordParams;
 	const userId: EntityId = '620abb23697023333eadea99';
 	const scanResult: ScanResultParams = { virus_detected: false };
 	const scanResultWithVirus: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };

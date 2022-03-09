@@ -9,8 +9,8 @@ import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
 	FileRecordResponse,
 	DownloadFileParams,
-	FileDto,
 	FileParams,
+	FileRecordParams,
 	FileRecordListResponse,
 	SingleFileParams,
 	RenameFileParams,
@@ -25,8 +25,8 @@ export class FilesStorageController {
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
 	async upload(
-		@Body() _: FileDto,
-		@Param() params: FileParams,
+		@Body() _: FileParams,
+		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	): Promise<FileRecordResponse> {
@@ -52,7 +52,7 @@ export class FilesStorageController {
 
 	@Get('/list/:schoolId/:parentType/:parentId')
 	async list(
-		@Param() params: FileParams,
+		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQuery
 	): Promise<FileRecordListResponse> {

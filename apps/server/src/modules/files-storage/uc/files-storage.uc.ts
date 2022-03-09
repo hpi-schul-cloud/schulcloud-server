@@ -7,7 +7,7 @@ import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import path from 'path';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileParams } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileRecordParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class FilesStorageUC {
 		private readonly antivirusService: AntivirusService
 	) {}
 
-	async upload(userId: EntityId, params: FileParams, req: Request) {
+	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
 		// @TODO check permissions of schoolId by user
 		try {
 			const result = await new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ export class FilesStorageUC {
 		return fileDescription;
 	}
 
-	private async uploadFile(userId: EntityId, params: FileParams, fileDescription: IFile) {
+	private async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: IFile) {
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
 
