@@ -6,7 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordResponse, RenameFileDto } from '@src/modules/files-storage/controller/dto';
+import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecord, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
@@ -28,7 +28,7 @@ class API {
 		this.app = app;
 	}
 
-	async patch(requestString: string, body?: RenameFileDto | Record<string, unknown>) {
+	async patch(requestString: string, body?: RenameFileParams | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
 			.patch(`${baseRouteName}${requestString}`)
 			.set('Accept', 'application/json')

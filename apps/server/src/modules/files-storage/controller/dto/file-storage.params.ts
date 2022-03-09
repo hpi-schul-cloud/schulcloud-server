@@ -33,7 +33,7 @@ export class DownloadFileParams {
 	fileName!: string;
 }
 
-export class ScanResultDto {
+export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
 	virus_detected!: boolean;
@@ -46,4 +46,10 @@ export class SingleFileParams {
 	@ApiProperty()
 	@IsMongoId()
 	fileRecordId!: EntityId;
+}
+
+export class RenameFileParams {
+	@ApiProperty()
+	@IsString()
+	fileName!: string;
 }

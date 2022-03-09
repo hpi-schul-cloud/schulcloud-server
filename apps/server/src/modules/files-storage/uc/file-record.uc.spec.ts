@@ -6,8 +6,12 @@ import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ConflictException } from '@nestjs/common';
-import { FileParams, ScanResultDto, SingleFileParams } from '../controller/dto/file-storage.params';
-import { RenameFileDto } from '../controller/dto/file-storage.dto';
+import {
+	FileParams,
+	RenameFileParams,
+	ScanResultParams,
+	SingleFileParams,
+} from '../controller/dto/file-storage.params';
 import { FileRecordUC } from './file-record.uc';
 
 describe('FileRecordUC', () => {
@@ -17,8 +21,8 @@ describe('FileRecordUC', () => {
 	let orm: MikroORM;
 	let fileParams: FileParams;
 	const userId: EntityId = '620abb23697023333eadea99';
-	const scanResult: ScanResultDto = { virus_detected: false };
-	const scanResultWithVirus: ScanResultDto = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
+	const scanResult: ScanResultParams = { virus_detected: false };
+	const scanResultWithVirus: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -117,7 +121,7 @@ describe('FileRecordUC', () => {
 	describe('patch', () => {
 		let fileRecord: FileRecord;
 		let fileRecords: FileRecord[];
-		let data: RenameFileDto;
+		let data: RenameFileParams;
 		let params: SingleFileParams;
 
 		beforeEach(() => {
