@@ -42,9 +42,8 @@ export class ScanResultDto {
 	@Allow()
 	virus_signature?: string;
 }
-
-export class RenameParams {
+export class SingleFileParams {
 	@ApiProperty()
-	@IsString()
-	fileName!: string;
+	@IsMongoId()
+	fileRecordId!: EntityId;
 }

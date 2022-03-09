@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
+import { PaginationQuery } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
@@ -12,8 +12,9 @@ import {
 	FileDto,
 	FileParams,
 	FileRecordListResponse,
-	RenameParams,
+	SingleFileParams,
 } from './dto';
+import { RenameFileData } from './dto/file-storage.data';
 
 @ApiTags('file')
 @Authenticate('jwt')
@@ -68,13 +69,13 @@ export class FilesStorageController {
 		return response;
 	}
 
-	@Patch(':id/rename')
+	@Patch('/rename/:fileRecordId/')
 	async patchFilename(
-		@Param('id', ParseObjectIdPipe) fileRecordId: string,
-		@Body() params: RenameParams,
+		@Param() params: SingleFileParams,
+		@Body() data: RenameFileData,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const res = await this.fileRecordUC.patchFilename(currentUser.userId, fileRecordId, params);
+		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, data);
 
 		const response = new FileRecordResponse(res);
 

@@ -6,7 +6,8 @@ import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ConflictException } from '@nestjs/common';
-import { FileParams, ScanResultDto, RenameParams } from '../controller/dto/file-storage.params';
+import { FileParams, ScanResultDto, SingleFileParams } from '../controller/dto/file-storage.params';
+import { RenameFileData } from '../controller/dto/file-storage.data';
 import { FileRecordUC } from './file-record.uc';
 
 describe('FileRecordUC', () => {
@@ -116,41 +117,41 @@ describe('FileRecordUC', () => {
 	describe('patch', () => {
 		let fileRecord: FileRecord;
 		let fileRecords: FileRecord[];
-		let params: RenameParams;
-		let fileRecordId: EntityId;
+		let data: RenameFileData;
+		let params: SingleFileParams;
 
 		beforeEach(() => {
 			fileRecords = fileRecordFactory.buildList(3, fileParams);
 			fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt' });
 			fileRecords.push(fileRecord);
-			fileRecordId = fileRecord.id;
-			params = { fileName: 'test_new_name.txt' };
+			params = { fileRecordId: fileRecord.id };
+			data = { fileName: 'test_new_name.txt' };
 			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 3]);
 			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
 		});
 
 		it('should call repo method findById with right parameters', async () => {
-			await service.patchFilename(userId, fileRecordId, params);
+			await service.patchFilename(userId, params, data);
 			expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(fileRecord.id);
 		});
 
 		it('should call repo method findBySchoolIdAndParentId with right parameters', async () => {
-			await service.patchFilename(userId, fileRecordId, params);
+			await service.patchFilename(userId, params, data);
 			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.parentId);
 		});
 
 		it('should call repo method save()', async () => {
-			await service.patchFilename(userId, fileRecordId, params);
+			await service.patchFilename(userId, params, data);
 			expect(fileRecordRepo.save).toHaveBeenCalled();
 		});
 
 		it('should return fileRecord with new file name', async () => {
-			const result = await service.patchFilename(userId, fileRecordId, params);
+			const result = await service.patchFilename(userId, params, data);
 			expect(result.name).toStrictEqual('test_new_name.txt');
 		});
 
 		it('should throw ConflictException if file name exist', async () => {
-			await expect(service.patchFilename(userId, fileRecordId, { fileName: 'test.txt' })).rejects.toThrow(
+			await expect(service.patchFilename(userId, params, { fileName: 'test.txt' })).rejects.toThrow(
 				new ConflictException('FILE_NAME_EXISTS')
 			);
 		});

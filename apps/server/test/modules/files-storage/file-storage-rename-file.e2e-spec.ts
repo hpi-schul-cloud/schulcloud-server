@@ -19,6 +19,8 @@ import {
 } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
 
+const baseRouteName = '/file/rename/';
+
 class API {
 	app: INestApplication;
 
@@ -28,7 +30,7 @@ class API {
 
 	async patch(requestString: string, body?: RenameParams | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.patch(`${requestString}`)
+			.patch(`${baseRouteName}${requestString}`)
 			.set('Accept', 'application/json')
 			.send(body || {});
 
@@ -40,7 +42,7 @@ class API {
 	}
 }
 
-describe(`/file/:id/rename (api)`, () => {
+describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -97,18 +99,18 @@ describe(`/file/:id/rename (api)`, () => {
 
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid fileRecordId', async () => {
-			const response = await api.patch(`/file/invalid_id/rename`, { fileName: 'test_new_name.txt' });
-			expect(response.error).toEqual({
-				code: 400,
-				message: 'Invalid ObjectId',
-				title: 'Bad Request',
-				type: 'BAD_REQUEST',
-			});
+			const response = await api.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+			expect(response.error.validationErrors).toEqual([
+				{
+					errors: ['fileRecordId must be a mongodb id'],
+					field: 'fileRecordId',
+				},
+			]);
 			expect(response.status).toEqual(400);
 		});
 
 		it('should return status 400 for empty filename', async () => {
-			const response = await api.patch(`/file/${fileRecord.id}/rename`, { fileName: undefined });
+			const response = await api.patch(`${fileRecord.id}`, { fileName: undefined });
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['fileName must be a string'],
@@ -119,7 +121,7 @@ describe(`/file/:id/rename (api)`, () => {
 		});
 
 		it('should return status 409 if filename exists', async () => {
-			const response = await api.patch(`/file/${fileRecord.id}/rename`, { fileName: 'test.txt' });
+			const response = await api.patch(`${fileRecord.id}`, { fileName: 'test.txt' });
 			expect(response.error).toEqual({ code: 409, message: 'FILE_NAME_EXISTS', title: 'Conflict', type: 'CONFLICT' });
 			expect(response.status).toEqual(409);
 		});
@@ -127,7 +129,7 @@ describe(`/file/:id/rename (api)`, () => {
 
 	describe(`with valid request data`, () => {
 		it('should return status 200 for successful request', async () => {
-			const response = await api.patch(`/file/${fileRecord.id}/rename`, { fileName: 'test_1.txt' });
+			const response = await api.patch(`${fileRecord.id}`, { fileName: 'test_1.txt' });
 			expect(response.result.name).toEqual('test_1.txt');
 			expect(response.status).toEqual(200);
 		});

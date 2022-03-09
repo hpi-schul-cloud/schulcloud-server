@@ -1,19 +1,20 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { FileRecordRepo } from '@shared/repo';
 import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
-import { FileParams, RenameParams, ScanResultDto } from '../controller/dto/file-storage.params';
+import { FileParams, SingleFileParams, ScanResultDto } from '../controller/dto/file-storage.params';
+import { RenameFileData } from '../controller/dto/file-storage.data';
 
 @Injectable()
 export class FileRecordUC {
 	constructor(private readonly fileRecordRepo: FileRecordRepo) {}
 
-	async patchFilename(userId: EntityId, fileRecordId: EntityId, params: RenameParams) {
-		const entity = await this.fileRecordRepo.findOneById(fileRecordId);
+	async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileData) {
+		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
-		if (fileRecords.find((item) => item.name === params.fileName)) {
+		if (fileRecords.find((item) => item.name === data.fileName)) {
 			throw new ConflictException('FILE_NAME_EXISTS');
 		} else {
-			entity.name = params.fileName;
+			entity.name = data.fileName;
 			await this.fileRecordRepo.save(entity);
 		}
 		return entity;
