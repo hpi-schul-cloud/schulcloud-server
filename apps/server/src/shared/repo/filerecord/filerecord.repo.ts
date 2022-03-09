@@ -18,6 +18,10 @@ export class FileRecordRepo {
 		await this.em.persistAndFlush(fileRecord);
 	}
 
+	async multiSave(fileRecords: FileRecord[]): Promise<void> {
+		await this.em.persistAndFlush(fileRecords);
+	}
+
 	async delete(fileRecord: FileRecord): Promise<void> {
 		await this.em.removeAndFlush(fileRecord);
 	}

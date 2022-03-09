@@ -9,11 +9,11 @@ import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
 	FileRecordResponse,
 	DownloadFileParams,
-	FileParams,
 	FileRecordParams,
-	FileRecordListResponse,
 	SingleFileParams,
 	RenameFileParams,
+	FileRecordListResponse,
+	ExpiresQuery,
 } from './dto';
 
 @ApiTags('file')
@@ -25,7 +25,7 @@ export class FilesStorageController {
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
 	async upload(
-		@Body() _: FileParams,
+		@Body() _: FileRecordParams,
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
@@ -81,4 +81,27 @@ export class FilesStorageController {
 
 		return response;
 	}
+
+	@Get('/delete/:schoolId/:parentType/:parentId')
+	async delete(
+		@Param() params: FileRecordParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() expiresQuery: ExpiresQuery
+	): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(
+			currentUser.userId,
+			params,
+			expiresQuery.expires
+		);
+
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return new FileRecordResponse(fileRecord);
+		});
+
+		const response = new FileRecordListResponse(responseFileRecords, total);
+
+		return response;
+	}
+
+	// delete single?
 }

@@ -77,7 +77,7 @@ export interface IFileRecordProperties {
 export class FileRecord extends BaseEntityWithTimestamps {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
-	expiresAt?: Date;
+	expires?: Date;
 
 	@Property()
 	size: number;
@@ -145,5 +145,13 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
+	}
+
+	setExpires(date: Date): void {
+		this.expires = date;
+	}
+
+	removeExpires(): void {
+		this.expires = undefined;
 	}
 }

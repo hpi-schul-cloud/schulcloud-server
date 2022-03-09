@@ -2,10 +2,12 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
-import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import path from 'path';
+
+import { FileRecordRepo } from '@shared/repo';
+import { EntityId, FileRecord, ScanStatus, Counted } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, FileRecordParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
@@ -138,5 +140,18 @@ export class FilesStorageUC {
 		}
 
 		return newFilename;
+	}
+
+	async deleteFilesOfParent(userId: EntityId, params: FileParams, expires: Date): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+
+		fileRecords.forEach((fileRecord) => {
+			// a 7 days offset is defined in TTL expires index
+			fileRecord.setExpires(expires);
+		});
+
+		await this.fileRecordRepo.multiSave(fileRecords);
+
+		return [fileRecords, count];
 	}
 }

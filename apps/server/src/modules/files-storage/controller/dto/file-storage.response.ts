@@ -10,6 +10,7 @@ export class FileRecordResponse {
 		this.creatorId = fileRecord.creatorId;
 		this.type = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
+		this.expires = fileRecord.expires;
 	}
 
 	@ApiProperty()
@@ -30,6 +31,9 @@ export class FileRecordResponse {
 
 	@ApiProperty()
 	parentType: FileRecordParentType;
+
+	@ApiProperty()
+	expires?: Date;
 }
 
 export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {
