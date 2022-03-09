@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AccountRepo, ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { PermissionService } from '@shared/domain';
 import { ImportUserController } from './controller/import-user.controller';
+import { UserImportUc } from './uc/user-import.uc';
 
 @Module({
-	imports: [
-		AuthorizationModule,
-		LoggerModule,
-		// MikroOrmModule.forFeature({ entities: [ImportUser, System] })
-	],
+	imports: [LoggerModule],
 	controllers: [ImportUserController],
-	providers: [],
+	providers: [AccountRepo, UserImportUc, ImportUserRepo, PermissionService, SchoolRepo, UserRepo],
 	exports: [],
 })
 /**

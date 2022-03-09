@@ -1,85 +1,60 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, Course, Task, TaskWithStatusVo, User } from '@shared/domain';
-import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
-
-// TODO: move this somewhere else
-export interface Board {
-	roomId: string;
-	displayColor: string;
-	title: string;
-	elements: BoardElement[];
-}
-
-export type BoardElement = {
-	// TODO: should become fullblown class
-	type: string;
-	content: TaskWithStatusVo;
-};
+import { Injectable, ForbiddenException } from '@nestjs/common';
+import { EntityId, Board } from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/repo';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { RoomBoardDTO } from '../types/room-board.types';
 
 @Injectable()
 export class RoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
+		private readonly lessonRepo: LessonRepo,
 		private readonly taskRepo: TaskRepo,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly boardRepo: BoardRepo,
+		private readonly factory: RoomBoardDTOFactory,
+		private readonly authorisationService: RoomsAuthorisationService
 	) {}
 
-	async getBoard(roomId: EntityId, userId: EntityId): Promise<Board> {
+	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userRepo.findById(userId, true);
-
 		const course = await this.courseRepo.findOne(roomId, userId);
-		const isTeacher = this.isTeacher(user, course);
-		const taskFilter = this.taskFilter(isTeacher);
-		const [tasks] = await this.taskRepo.findBySingleParent(user.id, course.id, taskFilter);
-		const tasksWithStatusVos = this.addStatusToTasks(isTeacher, tasks, user);
+		let board = await this.boardRepo.findByCourseId(course.id);
 
-		const board = this.buildBoard(course, tasksWithStatusVos);
+		board = await this.updateBoard(board, roomId, userId);
+
+		const dto = this.factory.createDTO({ room: course, board, user });
+		return dto;
+	}
+
+	private async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
+		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
+		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId);
+		board.syncLessonsFromList(courseLessons);
+		board.syncTasksFromList(courseTasks);
+		await this.boardRepo.save(board);
 		return board;
 	}
 
-	private taskFilter(isTeacher: boolean): { draft?: boolean; noFutureAvailableDate?: boolean } {
-		const filters: { draft?: boolean; noFutureAvailableDate?: boolean } = {};
-		if (!isTeacher) {
-			filters.draft = false;
-			filters.noFutureAvailableDate = true;
-			return filters;
+	async updateVisibilityOfBoardElement(
+		roomId: EntityId,
+		elementId: EntityId,
+		userId: EntityId,
+		visibility: boolean
+	): Promise<void> {
+		const user = await this.userRepo.findById(userId);
+		const course = await this.courseRepo.findOne(roomId, userId);
+		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
+			throw new ForbiddenException('you are not allowed to edit this');
 		}
-		filters.draft = true;
-		return filters;
-	}
-
-	// TODO: move somewhere else
-	private buildBoard(room: Course, tasks: TaskWithStatusVo[]): Board {
-		const roomMetadata = room.getMetadata();
-		const board = {
-			roomId: roomMetadata.id,
-			displayColor: roomMetadata.displayColor,
-			title: roomMetadata.title,
-			elements: tasks.map((task) => ({ type: 'task', content: task })),
-		};
-		return board;
-	}
-
-	private isTeacher(user: User, course: Course): boolean {
-		if (course.teachers.contains(user) || course.substitutionTeachers.contains(user)) {
-			return true;
-		}
-		return false;
-	}
-
-	private addStatusToTasks(isTeacher: boolean, tasks: Task[], user: User): TaskWithStatusVo[] {
-		let tasksWithStatusVos: TaskWithStatusVo[];
-		if (isTeacher) {
-			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createTeacherStatusForUser(user);
-				return new TaskWithStatusVo(task, status);
-			});
+		const board = await this.boardRepo.findByCourseId(course.id);
+		const element = board.getByTargetId(elementId);
+		if (visibility) {
+			element.publish();
 		} else {
-			tasksWithStatusVos = tasks.map((task) => {
-				const status = task.createStudentStatusForUser(user);
-				return new TaskWithStatusVo(task, status);
-			});
+			element.unpublish();
 		}
-		return tasksWithStatusVos;
+		await this.boardRepo.save(board);
 	}
 }

@@ -29,6 +29,17 @@ const systemSchema = new Schema(
 		alias: { type: String },
 		oaClientId: { type: String }, // just for oauth2-systems
 		oaClientSecret: { type: String }, // just for oauth2-systems
+		oauthConfig: {
+			type: {
+				clientId: { type: String, required: true },
+				authEndpoint: { type: String, required: true },
+				codeRedirectUri: { type: String, required: true },
+				responseType: { type: String, required: true },
+				scope: { type: String, required: true },
+				provider: { type: String, required: true },
+			},
+			required: false,
+		},
 		ldapConfig: {
 			active: { type: Boolean },
 			federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },

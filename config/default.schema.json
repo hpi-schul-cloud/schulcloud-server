@@ -226,6 +226,41 @@
 				}
 			}
 		},
+		"FILES_STORAGE": {
+			"type": "object",
+			"description": "Files storage server properties, required always to be defined",
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
+			"properties": {
+				"SERVICE_BASE_URL": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4444",
+					"description": "The URI of the file service"
+				},
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_REGION": {
+					"type": "string",
+					"default": "eu-central-1",
+					"description": "Region name of bucket"
+				},
+				"S3_BUCKET": {
+					"type": "string",
+					"description": "Bucket name"
+				},
+				"S3_ACCESS_KEY_ID": {
+					"type": "string",
+					"description": "Access Key to S3"
+				},
+				"S3_SECRET_ACCESS_KEY": {
+					"type": "string",
+					"description": "Secret key to S3"
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -330,17 +365,27 @@
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
-			"description": "Antivirus file endpoint",
+			"description": "Antivirus file endpoint, only used for legacy file implementation",
 			"format": "uri",
 			"pattern": ".*(?<!/)$"
 		},
 		"FILE_SECURITY_SERVICE_USERNAME": {
 			"type": "string",
-			"description": "Username for the antivirus service"
+			"description": "Username for the antivirus service, only used for legacy file implementation"
 		},
 		"FILE_SECURITY_SERVICE_PASSWORD": {
 			"type": "string",
-			"description": "Password for the antivirus service"
+			"description": "Password for the antivirus service, only used for legacy file implementation"
+		},
+		"ANTIVIRUS_EXCHANGE" : {
+			"type": "string",
+			"default": "antivirus",
+			"description": "rabbitmq exchange name for antivirus"
+		},
+		"ANTIVIRUS_ROUTING_KEY" : {
+			"type": "string",
+			"default": "scan_file",
+			"description": "rabbitmq routing key"
 		},
 		"DOCUMENT_BASE_DIR": {
 			"type": "string",
@@ -396,7 +441,7 @@
 		},
 		"ROCKET_CHAT_URI": {
 			"type": "string",
-			"default" : null,
+			"default": null,
 			"description": "rocketchat base uri"
 		},
 		"ROCKET_CHAT_ADMIN_ID": {
@@ -424,17 +469,10 @@
 			"description": "Synchronous encryption key used to secure search user passwords",
 			"pattern": ".{16}.*"
 		},
-		"SENTRY_DSN": {
+		"AES_KEY": {
 			"type": "string",
-			"format": "uri",
-			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
-		},
-		"SENTRY_SAMPLE_RATE": {
-			"type": "number",
-			"default": 1.0,
-			"minimum": 0.0,
-			"maximum": 1.0,
-			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
+			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
+			"pattern": ".{16}.*"
 		},
 		"ETHERPAD_API_KEY": {
 			"type": "string",
@@ -698,6 +736,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for legacy course overview."
+		},
+		"FEATURE_COURSE_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for course sharing feature."
 		}
 	},
 	"required": [
@@ -705,7 +748,8 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
+		"AES_KEY"
 	],
 	"allOf": [
 		{

@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
 
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser, Task } from '@shared/domain';
 import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
@@ -19,6 +19,7 @@ import {
 	mapUserToCurrentUser,
 } from '@shared/testing';
 import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
+import { ObjectID } from 'bson';
 
 const tomorrow = new Date(Date.now() + 86400000);
 
@@ -200,6 +201,7 @@ describe('Task Controller (e2e)', () => {
 				maxSubmissions: course.getNumberOfStudents(),
 				graded: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 		});
@@ -341,6 +343,171 @@ describe('Task Controller (e2e)', () => {
 
 			expect(result.total).toEqual(0);
 		});
+
+		it('should finish own task', async () => {
+			const teacher = setup();
+			const task = taskFactory.build({ creator: teacher, finished: [] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/finish`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers()).toEqual([teacher.id]);
+		});
+
+		it('should finish task created by another user', async () => {
+			const teacher = setup();
+			const course = courseFactory.build({
+				teachers: [teacher],
+			});
+			const student = userFactory.build();
+			const task = taskFactory.build({ creator: student, course, finished: [student] });
+
+			await em.persistAndFlush([teacher, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/finish`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers().sort()).toEqual([student.id, teacher.id].sort());
+		});
+
+		it('should restore own task', async () => {
+			const teacher = setup();
+			const task = taskFactory.build({ creator: teacher, finished: [teacher] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/restore`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers()).toHaveLength(0);
+		});
+
+		it('should restore task created by another user', async () => {
+			const teacher = setup();
+			const course = courseFactory.build({
+				teachers: [teacher],
+			});
+			const student = userFactory.build();
+			const task = taskFactory.build({ creator: student, course, finished: [student, teacher] });
+
+			await em.persistAndFlush([teacher, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/restore`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers()).toEqual([student.id]);
+		});
+
+		describe('delete task', () => {
+			it('should delete task created by user', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer()).delete(`/tasks/${task.id}`).set('Accept', 'application/json').expect(200);
+
+				const foundTask = await em.findOne(Task, { id: task.id });
+				expect(foundTask).toEqual(null);
+			});
+
+			it('should throw 403 "Forbidden", if user(Student) has not permissions', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(student);
+
+				await request(app.getHttpServer()).delete(`/tasks/${task.id}`).set('Accept', 'application/json').expect(403);
+			});
+
+			it('should throw 404 if wrong task ID', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer())
+					.delete(`/tasks/${new ObjectID().toHexString()}`)
+					.set('Accept', 'application/json')
+					.expect(404);
+			});
+
+			it('should throw 404 if wrong task ID', async () => {
+				const teacher = setup();
+				const student = userFactory.build();
+				const course = courseFactory.build({
+					teachers: [teacher],
+					students: [student],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const r = await request(app.getHttpServer())
+					.delete(`/tasks/string`)
+					.set('Accept', 'application/json')
+					.expect(400);
+				expect(r.body).toEqual({
+					type: 'BAD_REQUEST',
+					title: 'Bad Request',
+					message: 'Invalid ObjectId',
+					code: 400,
+				});
+			});
+		});
 	});
 
 	describe('As user with read permissions in courses', () => {
@@ -470,6 +637,7 @@ describe('Task Controller (e2e)', () => {
 				maxSubmissions: 1,
 				graded: 0,
 				isDraft: false,
+				isFinished: false,
 				isSubstitutionTeacher: false,
 			});
 		});
@@ -633,6 +801,86 @@ describe('Task Controller (e2e)', () => {
 			const { result } = await api.get();
 
 			expect(result.total).toEqual(0);
+		});
+
+		it('should finish own task', async () => {
+			const student = setup();
+			const task = taskFactory.build({ creator: student, finished: [] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/finish`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers()).toEqual([student.id]);
+		});
+
+		it('should finish task created by another user', async () => {
+			const student = setup();
+			const course = courseFactory.build({
+				students: [student],
+			});
+			const teacher = userFactory.build();
+			const task = taskFactory.build({ creator: teacher, course, finished: [teacher] });
+
+			await em.persistAndFlush([student, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/finish`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers().sort()).toEqual([student.id, teacher.id].sort());
+		});
+
+		it('should restore own task', async () => {
+			const student = setup();
+			const task = taskFactory.build({ creator: student, finished: [student] });
+
+			await em.persistAndFlush([task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/restore`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers()).toHaveLength(0);
+		});
+
+		it('should finish task created by another user', async () => {
+			const student = setup();
+			const course = courseFactory.build({
+				students: [student],
+			});
+			const teacher = userFactory.build();
+			const task = taskFactory.build({ creator: teacher, course, finished: [teacher, student] });
+
+			await em.persistAndFlush([student, task]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+
+			await request(app.getHttpServer())
+				.patch(`/tasks/${task.id}/restore`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			const foundTask = await em.findOne(Task, { id: task.id });
+			expect(foundTask?.finished.getIdentifiers()).toEqual([teacher.id]);
 		});
 	});
 });

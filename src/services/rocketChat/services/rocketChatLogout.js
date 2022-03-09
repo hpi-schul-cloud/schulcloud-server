@@ -36,7 +36,6 @@ class RocketChatLogout {
 		this.get(context.userId).catch((err) => {
 			// catch it, but is used as event and async from request.
 			// do not throw this error up
-			// TODO create an eventErrorHandler for it, that log and send it to Sentry
 			logger.error('onAuthenticationRemoved', err);
 		});
 	}

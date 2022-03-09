@@ -1,7 +1,8 @@
-/* istanbul ignore file */ // TODO remove when implementation exists
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PaginationResponse } from '@shared/controller';
 import { IsMongoId } from 'class-validator';
 import { MatchCreatorResponse } from './match-creator.response';
+import { RoleNameResponse } from './role-name.response';
 
 export class UserMatchResponse {
 	constructor(props: UserMatchResponse) {
@@ -9,7 +10,8 @@ export class UserMatchResponse {
 		this.loginName = props.loginName;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
-		this.matchedBy = props.matchedBy;
+		this.roleNames = props.roleNames;
+		if (props.matchedBy != null) this.matchedBy = props.matchedBy;
 	}
 
 	@IsMongoId()
@@ -26,8 +28,24 @@ export class UserMatchResponse {
 	lastName: string;
 
 	@ApiProperty({
+		description: 'list of user roles from external system: student, teacher, admin',
+		enum: RoleNameResponse,
+	})
+	roleNames: RoleNameResponse[];
+
+	@ApiPropertyOptional({
 		description: 'match type: admin (manual) or auto (set, when names match exactly for a single user',
 		enum: MatchCreatorResponse,
 	})
-	matchedBy: MatchCreatorResponse;
+	matchedBy?: MatchCreatorResponse;
+}
+
+export class UserMatchListResponse extends PaginationResponse<UserMatchResponse[]> {
+	constructor(data: UserMatchResponse[], total: number, skip?: number, limit?: number) {
+		super(total, skip, limit);
+		this.data = data;
+	}
+
+	@ApiProperty({ type: [UserMatchResponse] })
+	data: UserMatchResponse[];
 }

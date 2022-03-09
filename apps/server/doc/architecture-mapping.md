@@ -122,6 +122,22 @@ Use the feathers module introduced above to get access to legacy services.
 
 It is important to introduce strong typing like it happened above in the FeathersAuthProvider. While the `FeathersServiceProvider` from the feathers module, has only an abstract implementation for all services, add a concrete service inside your module for a specific feathers-service, like above in `FeathersAuthProvider`.
 
+### Access NestJS injectable from Feathers
+
+To access a NestJS service from a legacy Feathers service you need to make the NestJS service known to the Feathers service-collection in `main.ts`. <br>
+This possibility should not be used for new features in Feathers, but it can help if you want to refactor a Feathers service to NestJs although other Feathers services depend on it.
+
+```TypeScript
+    // main.ts
+    async function bootstrap() {
+        // (...)
+        feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
+        // (...)
+    }
+```
+
+Afterwards you can access it the same way as you access other Feathers services with
+`app.service('/nest-rocket-chat');`
 
 ## Layered Architecture
 
