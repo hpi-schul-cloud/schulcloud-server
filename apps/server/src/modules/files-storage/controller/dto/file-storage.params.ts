@@ -42,3 +42,9 @@ export class ScanResultDto {
 	@Allow()
 	virus_signature?: string;
 }
+
+export class RenameParams {
+	@ApiProperty()
+	@IsString()
+	fileName!: string;
+}
