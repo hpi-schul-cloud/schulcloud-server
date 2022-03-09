@@ -30,9 +30,9 @@ export class User extends BaseEntityWithTimestamps {
 
 	@Index({ name: 'searchUserForSchool' })
 	@ManyToOne('School', { fieldName: 'schoolId' })
-	school!: School;
+	school: School;
 
-	@Property()
+	@Property({ nullable: true })
 	ldapId?: string;
 
 	constructor(props: IUserProperties) {

@@ -37,7 +37,7 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 		this.dashboard = wrap(dashboard).toReference();
 	}
 
-	@Property()
+	@Property({ nullable: true })
 	title?: string;
 
 	@Property()

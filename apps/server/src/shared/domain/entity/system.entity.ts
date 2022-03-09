@@ -62,12 +62,12 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({})
 	type: string; // see legacy enum for valid values
 
-	@Property()
+	@Property({ nullable: true })
 	url?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	alias?: string;
 
 	@Property()
-	oauthConfig!: OauthConfig;
+	oauthConfig: OauthConfig;
 }

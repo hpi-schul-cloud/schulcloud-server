@@ -107,7 +107,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	// todo: permissions
 
 	// for wopi, is this still needed?
-	@Property({ fieldName: 'lockedForUser' })
+	@Property({ fieldName: 'lockedForUser', nullable: true })
 	_lockedForUserId?: ObjectId;
 
 	get lockedForUserId(): EntityId | undefined {
@@ -118,7 +118,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	_schoolId: ObjectId;
 
 	get schoolId(): EntityId {
-		return this._schoolId?.toHexString();
+		return this._schoolId.toHexString();
 	}
 
 	constructor(props: IFileRecordProperties) {

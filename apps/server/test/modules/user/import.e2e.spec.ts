@@ -31,7 +31,7 @@ import {
 	UserMatchResponse,
 } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
-import { PaginationQuery, SortingQuery } from '@shared/controller';
+import { PaginationQuery } from '@shared/controller';
 import { UserFilterQuery } from '@src/modules/user-import/controller/dto/user-filter.query';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -766,7 +766,7 @@ describe('ImportUser Controller (e2e)', () => {
 						await em.persistAndFlush([importUser]);
 						em.clear();
 
-						const result = await request(app.getHttpServer()).post(`/user/import/migrate`).expect(201);
+						await request(app.getHttpServer()).post(`/user/import/migrate`).expect(201);
 					});
 				});
 			});

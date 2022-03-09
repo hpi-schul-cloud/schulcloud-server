@@ -38,13 +38,13 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Property()
 	displayAt: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	externalId?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	source?: 'internal' | 'rss';
 
-	@Property()
+	@Property({ nullable: true })
 	sourceDescription?: string;
 
 	/** id reference to a collection populated later with name */
@@ -60,7 +60,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'creatorId' })
 	creator!: User;
 
-	@ManyToOne('User', { fieldName: 'updaterId' })
+	@ManyToOne('User', { fieldName: 'updaterId', nullable: true })
 	updater?: User;
 
 	permissions: string[] = [];
@@ -96,16 +96,34 @@ export abstract class News extends BaseEntityWithTimestamps {
 export class SchoolNews extends News {
 	@ManyToOne('School')
 	target!: School;
+
+	constructor(props: INewsProperties) {
+		super(props);
+		this.targetModel = NewsTargetModel.School;
+	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
-	@ManyToOne('Course')
+	// FIXME Due to a weird behaviour in the mikro-orm validation we have to
+	// disable the validation by setting the reference nullable.
+	// Remove when fixed in mikro-orm.
+	@ManyToOne('Course', { nullable: true })
 	target!: Course;
+
+	constructor(props: INewsProperties) {
+		super(props);
+		this.targetModel = NewsTargetModel.Course;
+	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
 	@ManyToOne('Team')
 	target!: Team;
+
+	constructor(props: INewsProperties) {
+		super(props);
+		this.targetModel = NewsTargetModel.Team;
+	}
 }
