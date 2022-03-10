@@ -92,7 +92,7 @@ export class FilesStorageController {
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(
 			currentUser.userId,
 			params,
-			expiresQuery.expires
+			expiresQuery.daysUntilExpiration
 		);
 
 		const responseFileRecords = fileRecords.map((fileRecord) => {
@@ -110,7 +110,11 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() expiresQuery: ExpiresQuery
 	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params, expiresQuery.expires);
+		const fileRecord = await this.filesStorageUC.deleteOneFile(
+			currentUser.userId,
+			params,
+			expiresQuery.daysUntilExpiration
+		);
 
 		const response = new FileRecordResponse(fileRecord);
 

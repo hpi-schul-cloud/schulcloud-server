@@ -142,26 +142,40 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams, expires: Date): Promise<Counted<FileRecord[]>> {
+	private createDateFromOffset(expiresDays: number): Date {
+		const date = new Date(Date.now() + expiresDays * 24 * 60 * 60 * 1000);
+
+		return date;
+	}
+
+	async deleteFilesOfParent(
+		userId: EntityId,
+		params: FileRecordParams,
+		expiresDays: number
+	): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		fileRecords.forEach((fileRecord) => {
 			// a 7 days offset is defined in TTL expires index
-			fileRecord.setExpires(expires);
+			fileRecord.setExpires(this.createDateFromOffset(expiresDays));
 		});
 
-		await this.fileRecordRepo.multiSave(fileRecords);
+		await this.fileRecordRepo.save(fileRecords);
+
+		// update file storage with expires header
 
 		return [fileRecords, count];
 	}
 
-	async deleteOneFile(userId: EntityId, params: SingleFileParams, expires: Date): Promise<FileRecord> {
+	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays: number): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
 		// a 7 days offset is defined in TTL expires index
-		fileRecord.setExpires(expires);
+		fileRecord.setExpires(this.createDateFromOffset(expiresDays));
 
 		await this.fileRecordRepo.save(fileRecord);
+
+		// update file storage with expires header
 
 		return fileRecord;
 	}

@@ -9,6 +9,7 @@ import { FileRecordScope } from './filerecord-scope';
 export class FileRecordRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	// todo: should not find expires
 	async findOneById(id: EntityId): Promise<FileRecord> {
 		const fileRecord = await this.em.findOneOrFail(FileRecord, id);
 
@@ -16,11 +17,7 @@ export class FileRecordRepo {
 	}
 	// later findOneExpiresByIt
 
-	async save(fileRecord: FileRecord): Promise<void> {
-		await this.em.persistAndFlush(fileRecord);
-	}
-
-	async multiSave(fileRecords: FileRecord[]): Promise<void> {
+	async save(fileRecords: FileRecord | FileRecord[]): Promise<void> {
 		await this.em.persistAndFlush(fileRecords);
 	}
 

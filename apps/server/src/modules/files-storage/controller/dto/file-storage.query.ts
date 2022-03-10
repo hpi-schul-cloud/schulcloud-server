@@ -1,11 +1,13 @@
-import { IsDateString } from 'class-validator';
+import { IsInt, Max, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ExpiresQuery {
-	@IsDateString()
+	@IsInt()
+	@Min(0)
+	@Max(30)
 	@ApiPropertyOptional({
 		description:
-			'A optional query to modified the final deletion. Default is used the current date. After a 7 days offset the file is final removed.',
+			'A optional query to modified the final deletion. Default is used 7 days. The file is final removed after the time.',
 	})
-	expires: Date = new Date(); // do this work with mapping from datestring to date?
+	daysUntilExpiration = 7;
 }
