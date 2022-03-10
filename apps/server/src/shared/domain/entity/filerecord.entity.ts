@@ -75,6 +75,7 @@ export interface IFileRecordProperties {
 @Entity({ tableName: 'filerecords' })
 @Index({ properties: ['_schoolId', '_parentId'] })
 export class FileRecord extends BaseEntityWithTimestamps {
+	// todo is a offset of the setted date and should removed
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
 	expires?: Date;
