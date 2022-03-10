@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PaginationQuery } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
@@ -83,7 +83,7 @@ export class FilesStorageController {
 		return response;
 	}
 
-	@Get('/delete/:schoolId/:parentType/:parentId')
+	@Delete('/delete/:schoolId/:parentType/:parentId')
 	async delete(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -104,7 +104,7 @@ export class FilesStorageController {
 		return response;
 	}
 
-	@Get('/delete/:fileRecordId')
+	@Delete('/delete/:fileRecordId')
 	async deleteFile(
 		@Param() params: SingleFileParams,
 		@CurrentUser() currentUser: ICurrentUser,

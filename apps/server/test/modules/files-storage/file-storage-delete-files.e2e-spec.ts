@@ -29,9 +29,9 @@ class API {
 		this.app = app;
 	}
 
-	async get(requestString: string, query?: string | Record<string, unknown>) {
+	async delete(requestString: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.get(`${baseRouteName}${requestString}`)
+			.delete(`${baseRouteName}${requestString}`)
 			.set('Accept', 'application/json')
 			.query(query || {});
 
@@ -49,7 +49,6 @@ describe(`${baseRouteName} (api)`, () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
-	let validId: string;
 	let s3instance: S3rver;
 
 	beforeAll(async () => {
@@ -85,6 +84,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('delete files of parent', () => {
 		describe('with bad request data', () => {
+			let validId: string;
+
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const roles = roleFactory.buildList(1, { permissions: [] });
@@ -99,7 +100,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.get(`/123/users/${validId}`);
+				const response = await api.delete(`/123/users/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['schoolId must be a mongodb id'],
@@ -110,7 +111,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.get(`/${validId}/users/123`);
+				const response = await api.delete(`/${validId}/users/123`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
@@ -121,7 +122,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.get(`/${validId}/cookies/${validId}`);
+				const response = await api.delete(`/${validId}/cookies/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentType must be a valid enum value'],
@@ -133,6 +134,8 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		describe(`with valid request data`, () => {
+			let validId: string;
+
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const roles = roleFactory.buildList(1, { permissions: [] });
@@ -147,7 +150,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 200 for successful request', async () => {
-				const response = await api.get(`/${validId}/schools/${validId}`);
+				const response = await api.delete(`/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(200);
 			});
@@ -162,7 +165,7 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush(fileRecords);
 				em.clear();
 
-				const { result } = await api.get(`/${validId}/schools/${validId}`);
+				const { result } = await api.delete(`/${validId}/schools/${validId}`);
 
 				expect(Array.isArray(result.data)).toBe(true);
 				expect(result.data[0]).toBeDefined();
@@ -191,7 +194,7 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush([...otherFileRecords, ...fileRecords]);
 				em.clear();
 
-				const { result } = await api.get(`/${validId}/schools/${validId}`);
+				const { result } = await api.delete(`/${validId}/schools/${validId}`);
 
 				const resultData: FileRecordResponse[] = result.data;
 				const ids: EntityId[] = resultData.map((o) => o.id);
@@ -199,6 +202,44 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(result.total).toEqual(3);
 				expect(ids.sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
 			});
+		});
+
+		describe('with querys', () => {
+			let validId: EntityId;
+
+			beforeEach(async () => {
+				await cleanupCollections(em);
+				const roles = roleFactory.buildList(1, { permissions: [] });
+				const school = schoolFactory.build();
+				const user = userFactory.build({ roles, school });
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+				validId = user.school.id;
+
+				const fileRecords = fileRecordFactory.buildList(1, {
+					schoolId: validId,
+					parentId: validId,
+					parentType: FileRecordParentType.School,
+				});
+
+				await em.persistAndFlush(fileRecords);
+				em.clear();
+			});
+
+			it('should modified the expires date over daysUntilExpiration query', async () => {
+				const { result } = await api.delete(`/${validId}/schools/${validId}`, { daysUntilExpiration: 14 });
+				const day = result.data[0]?.expires?.getDay();
+				const dayNow = new Date().getDay();
+
+				expect(dayNow + 14).toEqual(day);
+			});
+
+			// should fail for less 1 day
+
+			// should fail for more then 30 days
 		});
 	});
 });
