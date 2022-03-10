@@ -14,6 +14,7 @@ import {
 	RenameFileParams,
 	FileRecordListResponse,
 	ExpiresQuery,
+	FileParams,
 } from './dto';
 
 @ApiTags('file')
@@ -25,7 +26,7 @@ export class FilesStorageController {
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
 	async upload(
-		@Body() _: FileRecordParams,
+		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request

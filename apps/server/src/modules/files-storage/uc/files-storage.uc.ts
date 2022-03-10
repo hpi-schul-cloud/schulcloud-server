@@ -142,7 +142,7 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	async deleteFilesOfParent(userId: EntityId, params: FileParams, expires: Date): Promise<Counted<FileRecord[]>> {
+	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams, expires: Date): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		fileRecords.forEach((fileRecord) => {
