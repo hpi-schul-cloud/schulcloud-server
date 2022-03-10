@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
 import { Allow, IsEnum, IsMongoId, IsString } from 'class-validator';
 
-export class FileParams {
+export class FileRecordParams {
 	@ApiProperty()
 	@IsMongoId()
 	schoolId!: EntityId;
@@ -17,7 +17,7 @@ export class FileParams {
 	parentType!: FileRecordParentType;
 }
 
-export class FileDto {
+export class FileParams {
 	@ApiProperty({ type: 'string', format: 'binary' })
 	@Allow()
 	file!: string;
@@ -33,7 +33,7 @@ export class DownloadFileParams {
 	fileName!: string;
 }
 
-export class ScanResultDto {
+export class ScanResultParams {
 	@ApiProperty()
 	@Allow()
 	virus_detected!: boolean;
@@ -41,4 +41,15 @@ export class ScanResultDto {
 	@ApiProperty()
 	@Allow()
 	virus_signature?: string;
+}
+export class SingleFileParams {
+	@ApiProperty()
+	@IsMongoId()
+	fileRecordId!: EntityId;
+}
+
+export class RenameFileParams {
+	@ApiProperty()
+	@IsString()
+	fileName!: string;
 }
