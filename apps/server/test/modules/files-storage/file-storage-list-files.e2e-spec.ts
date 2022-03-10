@@ -76,20 +76,20 @@ describe(`${baseRouteName} (api)`, () => {
 		await app.close();
 	});
 
-	beforeEach(async () => {
-		await cleanupCollections(em);
-		const roles = roleFactory.buildList(1, { permissions: [] });
-		const school = schoolFactory.build();
-		const user = userFactory.build({ roles, school });
-
-		await em.persistAndFlush([user]);
-		em.clear();
-
-		currentUser = mapUserToCurrentUser(user);
-		validId = user.school.id;
-	});
-
 	describe('with bad request data', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const school = schoolFactory.build();
+			const user = userFactory.build({ roles, school });
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			validId = user.school.id;
+		});
+
 		it('should return status 400 for invalid schoolId', async () => {
 			const response = await api.get(`/123/users/${validId}`);
 			expect(response.error.validationErrors).toEqual([
@@ -125,6 +125,19 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe(`with valid request data`, () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const school = schoolFactory.build();
+			const user = userFactory.build({ roles, school });
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			validId = user.school.id;
+		});
+
 		it('should return status 200 for successful request', async () => {
 			const response = await api.get(`/${validId}/schools/${validId}`);
 

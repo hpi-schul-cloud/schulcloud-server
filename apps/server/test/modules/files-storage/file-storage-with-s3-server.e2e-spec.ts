@@ -4,6 +4,8 @@ import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import S3rver from 's3rver';
+import { createMock } from '@golevelup/ts-jest';
 
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
@@ -11,9 +13,7 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecord, ICurrentUser } from '@shared/domain';
 import { userFactory, cleanupCollections, mapUserToCurrentUser } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
-import S3rver from 's3rver';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 class API {
 	app: INestApplication;
@@ -57,7 +57,6 @@ describe('file-storage controller (e2e)', () => {
 	let currentUser: ICurrentUser;
 	let api: API;
 	let s3instance: S3rver;
-	let antivirusService: DeepMocked<AntivirusService>;
 	const validId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -86,7 +85,6 @@ describe('file-storage controller (e2e)', () => {
 		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
-		antivirusService = app.get(AntivirusService);
 	});
 
 	afterAll(async () => {
