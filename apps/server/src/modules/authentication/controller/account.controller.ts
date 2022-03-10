@@ -29,7 +29,7 @@ export class AccountController {
 		@Param('id', ParseObjectIdPipe) userId: string,
 		@Body() { password }: Password
 	): Promise<string> {
-		await this.accountUc.changePasswordForUser(userId, password);
+		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 		return 'dummy response';
 	}
 }

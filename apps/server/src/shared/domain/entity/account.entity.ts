@@ -21,11 +21,11 @@ export class Account extends BaseEntityWithTimestamps {
 	credentialHash?: string;
 
 	// TODO set index to true after we removed the account model from feathers
-	@OneToOne('User', undefined, { fieldName: 'userId' })
+	@OneToOne({ entity: () => User, fieldName: 'userId' })
 	user: User;
 
-	@OneToOne('System', undefined, { fieldName: 'systemId' })
-	system: System;
+	@OneToOne({ entity: () => System, fieldName: 'systemId' })
+	system?: System;
 
 	@Property({ nullable: true })
 	lasttriedFailedLogin? = new Date(0);

@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
-import { Account, EntityId, User } from '@shared/domain';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Account, EntityId, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
@@ -12,7 +12,11 @@ type UserPreferences = {
 
 @Injectable()
 export class AccountUc {
-	constructor(private readonly accountRepo: AccountRepo, private readonly userRepo: UserRepo) {}
+	constructor(
+		private readonly accountRepo: AccountRepo,
+		private readonly userRepo: UserRepo,
+		private readonly permissionService: PermissionService
+	) {}
 
 	static passwordPattern = new RegExp(
 		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
@@ -46,12 +50,17 @@ export class AccountUc {
 
 		// if I change my password
 		// Check if it is own account
-		const user = await this.userRepo.findById(userId);
+
+		// const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
+
+		// set forcePasswordChange in user
+
+		const targetUser = await this.userRepo.findById(userId);
 		const account = await this.accountRepo.findByUserId(userId);
 
-		const userPreferences = <UserPreferences>user.preferences;
+		const userPreferences = <UserPreferences>targetUser.preferences;
 
-		if (!user.forcePasswordChange || !userPreferences.firstLogin) {
+		if (!targetUser.forcePasswordChange || !userPreferences.firstLogin) {
 			if (!passwordOld || !account.password || !(await this.checkPassword(passwordOld, account.password)))
 				throw new ValidationError('Dein Passwort ist nicht korrekt!');
 		}
@@ -61,25 +70,60 @@ export class AccountUc {
 		return 'this.accountRepo.update(account);';
 	}
 
-	async changePasswordForUser(userId: EntityId, passwordNew: string): Promise<string> {
+	private hasRole(user: User, roleName: string) {
+		return user.roles.getItems().some((role) => {
+			return role.name === roleName;
+		});
+	}
+
+	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
+		if (this.hasRole(currentUser, 'superhero')) {
+			return true;
+		}
+		if (!(currentUser.school.id === targetUser.school.id)) {
+			return false;
+		}
+
+		const permissionsToCheck: string[] = [];
+		if (this.hasRole(targetUser, 'student')) {
+			permissionsToCheck.push('STUDENT_EDIT');
+		}
+		if (this.hasRole(targetUser, 'teacher')) {
+			permissionsToCheck.push('TEACHER_EDIT');
+		}
+		if (permissionsToCheck.length === 0) {
+			// target user is neither student nor teacher. Undefined what to do
+			return false;
+		}
+
+		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
+	}
+
+	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<string> {
 		this.checkPasswordStrength(passwordNew);
 
 		// check permission
 		// user rights
-		let account: Account;
+		let targetAccount: Account;
+		let currentUser: User;
+		let targetUser: User;
 		try {
-			account = await this.accountRepo.findByUserId(userId);
-			await this.updatePassword(account, passwordNew);
+			targetAccount = await this.accountRepo.findByUserId(targetUserId);
+			targetUser = await this.userRepo.findById(targetUserId, true);
+			currentUser = await this.userRepo.findById(currentUserId, true);
 		} catch (err) {
+			// TODO correct error message
 			throw new EntityNotFoundError('Account');
 		}
 
+		if (!this.hasPermissionsToChangePassword(currentUser, targetUser)) {
+			throw new ForbiddenException("No permission to change this user's password");
+		}
+		await this.updatePassword(targetAccount, passwordNew);
 		// set user must change password on next login
-		let user: User;
 		try {
-			user = await this.userRepo.findById(userId);
-			user.forcePasswordChange = true;
-			await this.userRepo.update(user);
+			targetUser.forcePasswordChange = true;
+			targetUser = await this.userRepo.update(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
