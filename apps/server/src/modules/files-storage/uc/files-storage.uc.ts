@@ -151,7 +151,7 @@ export class FilesStorageUC {
 	async deleteFilesOfParent(
 		userId: EntityId,
 		params: FileRecordParams,
-		expiresDays: number
+		expiresDays = 7
 	): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
@@ -167,7 +167,7 @@ export class FilesStorageUC {
 		return [fileRecords, count];
 	}
 
-	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays: number): Promise<FileRecord> {
+	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays = 7): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
 		// a 7 days offset is defined in TTL expires index

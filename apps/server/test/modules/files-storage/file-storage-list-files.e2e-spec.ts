@@ -155,8 +155,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 		});
 
-		// query params do not work why?
-		it.skip('should pass the pagination qurey params', async () => {
+		it('should pass the pagination qurey params', async () => {
 			const { result } = await api.get(`/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
 
 			expect(result.limit).toEqual(100);

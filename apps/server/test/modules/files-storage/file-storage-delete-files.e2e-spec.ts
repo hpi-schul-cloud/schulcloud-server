@@ -6,7 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import S3rver from 's3rver';
 
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
@@ -43,6 +43,8 @@ class API {
 	}
 }
 
+const createRndInt = (max) => Math.floor(Math.random() * max);
+
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let orm: MikroORM;
@@ -52,13 +54,24 @@ describe(`${baseRouteName} (api)`, () => {
 	let s3instance: S3rver;
 
 	beforeAll(async () => {
+		const port = 10000 + createRndInt(10000);
+		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
+
 		s3instance = new S3rver({
-			directory: '/tmp/s3rver_test_directory',
+			directory: `/tmp/s3rver_test_directory`,
 			resetOnClose: true,
+			port,
 		});
 		await s3instance.run();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
+			providers: [
+				FilesStorageTestModule,
+				{
+					provide: 'S3_Config',
+					useValue: overridetS3Config,
+				},
+			],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -80,6 +93,7 @@ describe(`${baseRouteName} (api)`, () => {
 	afterAll(async () => {
 		await orm.close();
 		await app.close();
+		await s3instance.close();
 	});
 
 	describe('delete files of parent', () => {
@@ -231,7 +245,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should modified the expires date over daysUntilExpiration query', async () => {
 				const { result } = await api.delete(`/${validId}/schools/${validId}`, { daysUntilExpiration: 14 });
-				const day = result.data[0]?.expires?.getDay();
+				const day = result?.data[0]?.expires?.getDay();
 				const dayNow = new Date().getDay();
 
 				expect(dayNow + 14).toEqual(day);
