@@ -245,8 +245,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should modified the expires date over daysUntilExpiration query', async () => {
 				const { result } = await api.delete(`/${validId}/schools/${validId}`, { daysUntilExpiration: 14 });
-				const day = result?.data[0]?.expires?.getDay();
-				const dayNow = new Date().getDay();
+				const day = new Date(result.data[0]?.expires || '').getDate();
+				const dayNow = new Date().getDate();
 
 				expect(dayNow + 14).toEqual(day);
 			});
