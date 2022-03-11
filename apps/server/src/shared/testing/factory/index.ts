@@ -9,6 +9,7 @@ export * from './lesson.factory';
 export * from './news.factory';
 export * from './role.factory';
 export * from './school.factory';
+export * from './system.factory';
 export * from './storageprovider.factory';
 export * from './submission.factory';
 export * from './task.factory';

@@ -11,10 +11,11 @@ import {
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolFactory,
+	systemFactory,
 	userFactory,
 } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser, MatchCreator, RoleName, School, SortOrder, User } from '@shared/domain';
+import { ICurrentUser, ImportUser, MatchCreator, RoleName, School, System, SortOrder, User } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import {
 	ImportUserFilterQuery,
@@ -33,6 +34,7 @@ import {
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
 import { PaginationQuery } from '@shared/controller';
 import { UserFilterQuery } from '@src/modules/user-import/controller/dto/user-filter.query';
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
@@ -41,16 +43,17 @@ describe('ImportUser Controller (e2e)', () => {
 	let currentUser: ICurrentUser;
 
 	const authenticatedUser = async (permissions: UserImportPermissions[] = []) => {
-		const school = schoolFactory.build();
+		const system = systemFactory.buildWithId();
+		const school = schoolFactory.build({ officialSchoolNumber: 'foo' });
 		const roles = [roleFactory.build({ name: 'administrator', permissions })];
-		await em.persistAndFlush([school, ...roles]);
+		await em.persistAndFlush([school, system, ...roles]);
 		const user = userFactory.build({
 			school,
 			roles,
 		});
 		await em.persistAndFlush([user]);
 		em.clear();
-		return { user, roles, school };
+		return { user, roles, school, system };
 	};
 
 	beforeAll(async () => {
@@ -190,6 +193,13 @@ describe('ImportUser Controller (e2e)', () => {
 					em.clear();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/flag`).send(params).expect(200);
+				});
+			});
+			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE', () => {
+				let user: User;
+				beforeEach(async () => {
+					({ user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+					currentUser = mapUserToCurrentUser(user);
 				});
 			});
 		});
@@ -756,10 +766,16 @@ describe('ImportUser Controller (e2e)', () => {
 				let school: School;
 				beforeEach(async () => {
 					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+					school.officialSchoolNumber = 'foo';
+					school.inMaintenanceSince = new Date();
+					school.ldapSchoolIdentifier = 'foo';
+					school.inUserMigration = true;
 					currentUser = mapUserToCurrentUser(user);
 				});
 				describe('POST user/import/migrate', () => {
 					it('should migrate', async () => {
+						school.officialSchoolNumber = 'foo';
+
 						const importUser = importUserFactory.build({
 							school,
 						});
@@ -767,6 +783,49 @@ describe('ImportUser Controller (e2e)', () => {
 						em.clear();
 
 						await request(app.getHttpServer()).post(`/user/import/migrate`).expect(201);
+					});
+				});
+			});
+
+			describe('[startUserMigration]', () => {
+				let user: User;
+				let system: System;
+				describe('POST user/import/startUserMigration', () => {
+					it('should set in user migration mode', async () => {
+						({ user, system } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+						currentUser = mapUserToCurrentUser(user);
+						Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
+
+						await request(app.getHttpServer()).post(`/user/import/startUserMigration`).expect(201);
+					});
+				});
+			});
+
+			describe('[endSchoolMaintenance]', () => {
+				describe('POST user/import/startSync', () => {
+					it('should remove inMaintenanceSince from school', async () => {
+						const school = schoolFactory.buildWithId({
+							ldapSchoolIdentifier: 'foo',
+							inMaintenanceSince: new Date(),
+							inUserMigration: false,
+						});
+						const roles = [
+							roleFactory.build({
+								name: 'administrator',
+								permissions: [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE],
+							}),
+						];
+						await em.persistAndFlush([school, ...roles]);
+						const user = userFactory.build({
+							school,
+							roles,
+						});
+						await em.persistAndFlush([user]);
+						em.clear();
+
+						currentUser = mapUserToCurrentUser(user);
+
+						await request(app.getHttpServer()).post(`/user/import/startSync`).expect(201);
 					});
 				});
 			});
