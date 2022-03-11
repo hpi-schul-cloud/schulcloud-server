@@ -3,7 +3,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ExpiresQuery {
 	@IsInt()
-	@Min(0)
+	@Min(1)
 	@Max(30)
 	@IsOptional()
 	@ApiPropertyOptional({

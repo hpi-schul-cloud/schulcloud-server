@@ -7,7 +7,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import S3rver from 's3rver';
 import { createMock } from '@golevelup/ts-jest';
 
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecord, ICurrentUser } from '@shared/domain';
@@ -50,6 +50,8 @@ class API {
 	}
 }
 
+const createRndInt = (max) => Math.floor(Math.random() * max);
+
 describe('file-storage controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
@@ -60,13 +62,24 @@ describe('file-storage controller (e2e)', () => {
 	const validId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
+		const port = 10000 + createRndInt(10000);
+		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
+
 		s3instance = new S3rver({
 			directory: '/tmp/s3rver_test_directory',
 			resetOnClose: true,
+			port,
 		});
 		await s3instance.run();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
+			providers: [
+				FilesStorageTestModule,
+				{
+					provide: 'S3_Config',
+					useValue: overridetS3Config,
+				},
+			],
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())

@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import S3rver from 's3rver';
 
 import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
@@ -27,6 +27,19 @@ class API {
 
 	constructor(app: INestApplication) {
 		this.app = app;
+	}
+
+	async deleteFile(requestString: string, query?: string | Record<string, unknown>) {
+		const response = await request(this.app.getHttpServer())
+			.delete(`${baseRouteName}${requestString}`)
+			.set('Accept', 'application/json')
+			.query(query || {});
+
+		return {
+			result: response.body as FileRecordResponse,
+			error: response.body as ApiValidationError,
+			status: response.status,
+		};
 	}
 
 	async delete(requestString: string, query?: string | Record<string, unknown>) {
@@ -251,9 +264,174 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(dayNow + 14).toEqual(day);
 			});
 
-			// should fail for less 1 day
+			it('should throw an error if daysUntilExpiration query value is less then 1 (day)', async () => {
+				const response = await api.delete(`/${validId}/schools/${validId}`, { daysUntilExpiration: 0 });
 
-			// should fail for more then 30 days
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['daysUntilExpiration must not be less than 1'],
+						field: 'daysUntilExpiration',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+
+			it('should throw an error if daysUntilExpiration query value is greater then 30 (days)', async () => {
+				const response = await api.delete(`/${validId}/schools/${validId}`, { daysUntilExpiration: 31 });
+
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['daysUntilExpiration must not be greater than 30'],
+						field: 'daysUntilExpiration',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+		});
+	});
+
+	describe('delete single file', () => {
+		describe('with bad request data', () => {
+			beforeEach(async () => {
+				await cleanupCollections(em);
+				const roles = roleFactory.buildList(1, { permissions: [] });
+				const school = schoolFactory.build();
+				const user = userFactory.build({ roles, school });
+
+				await em.persistAndFlush([user]);
+				em.clear();
+			});
+
+			it('should return status 400 for invalid fileRecordId', async () => {
+				const response = await api.deleteFile(`/123`);
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['fileRecordId must be a mongodb id'],
+						field: 'fileRecordId',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+		});
+
+		describe(`with valid request data`, () => {
+			let fileRecordId: string;
+
+			beforeEach(async () => {
+				await cleanupCollections(em);
+				const roles = roleFactory.buildList(1, { permissions: [] });
+				const school = schoolFactory.build();
+				const user = userFactory.build({ roles, school });
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const fileRecord = fileRecordFactory.build({
+					schoolId: user.school.id,
+					parentId: user.school.id,
+					parentType: FileRecordParentType.School,
+				});
+
+				await em.persistAndFlush([fileRecord]);
+				em.clear();
+
+				fileRecordId = fileRecord.id;
+			});
+
+			it('should return status 200 for successful request', async () => {
+				const response = await api.deleteFile(`/${fileRecordId}`);
+
+				expect(response.status).toEqual(200);
+			});
+
+			it('should return right type of data', async () => {
+				const { result } = await api.deleteFile(`/${fileRecordId}`);
+
+				expect(result).toStrictEqual({
+					creatorId: expect.any(String) as string,
+					id: expect.any(String) as string,
+					name: expect.any(String) as string,
+					parentId: expect.any(String) as string,
+					parentType: 'schools',
+					type: 'application/octet-stream',
+					expires: expect.any(String) as string,
+				});
+			});
+
+			it('should return elements of requested scope', async () => {
+				const otherFileRecords = fileRecordFactory.buildList(3, {
+					schoolId: new ObjectId().toHexString(),
+					parentType: FileRecordParentType.School,
+				});
+
+				await em.persistAndFlush(otherFileRecords);
+				em.clear();
+
+				const { result } = await api.deleteFile(`/${fileRecordId}`);
+
+				expect(result.id).toEqual(fileRecordId);
+			});
+		});
+
+		describe('with querys', () => {
+			let fileRecordId: EntityId;
+
+			beforeEach(async () => {
+				await cleanupCollections(em);
+				const roles = roleFactory.buildList(1, { permissions: [] });
+				const school = schoolFactory.build();
+				const user = userFactory.build({ roles, school });
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const fileRecord = fileRecordFactory.build({
+					schoolId: user.school.id,
+					parentId: user.school.id,
+					parentType: FileRecordParentType.School,
+				});
+
+				await em.persistAndFlush([fileRecord]);
+				em.clear();
+
+				fileRecordId = fileRecord.id;
+			});
+
+			it('should modified the expires date over daysUntilExpiration query', async () => {
+				const { result } = await api.deleteFile(`/${fileRecordId}`, { daysUntilExpiration: 14 });
+				const day = new Date(result?.expires || '').getDate();
+				const dayNow = new Date().getDate();
+
+				expect(dayNow + 14).toEqual(day);
+			});
+
+			it('should throw an error if daysUntilExpiration query value is less then 1 (day)', async () => {
+				const response = await api.deleteFile(`/${fileRecordId}`, { daysUntilExpiration: 0 });
+
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['daysUntilExpiration must not be less than 1'],
+						field: 'daysUntilExpiration',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
+
+			it('should throw an error if daysUntilExpiration query value is greater then 30 (days)', async () => {
+				const response = await api.deleteFile(`/${fileRecordId}`, { daysUntilExpiration: 31 });
+
+				expect(response.error.validationErrors).toEqual([
+					{
+						errors: ['daysUntilExpiration must not be greater than 30'],
+						field: 'daysUntilExpiration',
+					},
+				]);
+				expect(response.status).toEqual(400);
+			});
 		});
 	});
 });
