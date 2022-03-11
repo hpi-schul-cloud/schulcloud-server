@@ -2,10 +2,11 @@ import { BaseEntity } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Collection, Db } from 'mongodb';
+import { MikroORM } from '@mikro-orm/core';
 
 @Injectable()
 export class DatabaseManagementService {
-	constructor(private em: EntityManager) {}
+	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
 
 	private get db(): Db {
 		return this.em.getConnection('write').getDb();
@@ -60,5 +61,10 @@ export class DatabaseManagementService {
 
 	async dropCollection(collectionName: string): Promise<void> {
 		await this.db.dropCollection(collectionName);
+		await this.orm.getSchemaGenerator().createSchema();
+	}
+
+	async syncIndexes(): Promise<void> {
+		return this.orm.getSchemaGenerator().ensureIndexes();
 	}
 }

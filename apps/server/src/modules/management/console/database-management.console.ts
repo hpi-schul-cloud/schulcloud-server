@@ -54,4 +54,14 @@ export class DatabaseManagementConsole {
 		this.consoleWriter.info(report);
 		return collections;
 	}
+
+	@Command({
+		command: 'sync-indexes',
+		options: [],
+		description: 'sync indexes from nest and mikroorm',
+	})
+	async syncIndexes() {
+		await this.databaseManagementUc.syncIndexes();
+		return 'sync of indexes is completed';
+	}
 }
