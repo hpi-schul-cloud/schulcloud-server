@@ -20,6 +20,10 @@ export class FileRecordRepo {
 		await this.em.persistAndFlush(fileRecords);
 	}
 
+	async delete(fileRecords: FileRecord | FileRecord[]): Promise<void> {
+		await this.em.removeAndFlush(fileRecords);
+	}
+
 	async findBySchoolIdAndParentId(
 		schoolId: EntityId,
 		parentId: EntityId,

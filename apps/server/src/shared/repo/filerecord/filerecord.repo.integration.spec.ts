@@ -87,6 +87,31 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
+	describe('delete', () => {
+		it('should delete single existing entity', async () => {
+			const fileRecord = fileRecordFactory.build();
+			await em.persistAndFlush(fileRecord);
+
+			const exist = await repo.findOneById(fileRecord.id);
+			expect(exist).toBeInstanceOf(FileRecord);
+
+			await repo.delete(fileRecord);
+			const notExistAnymore = await em.findOne(FileRecord, fileRecord.id);
+
+			expect(notExistAnymore).not.toBeInstanceOf(FileRecord);
+		});
+
+		it('should delete many existing entity', async () => {
+			const fileRecords = fileRecordFactory.buildList(3);
+			await em.persistAndFlush(fileRecords);
+
+			await repo.delete(fileRecords);
+			const notExistAnymore = await em.findOne(FileRecord, fileRecords[1].id);
+
+			expect(notExistAnymore).not.toBeInstanceOf(FileRecord);
+		});
+	});
+
 	describe('findBySchoolIdAndParentId', () => {
 		it('should only find searched parent', async () => {
 			const parentId1 = new ObjectId().toHexString();
