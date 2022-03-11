@@ -1,0 +1,27 @@
+{
+  "realm" : "master",
+  "users" : [ {
+    "id" : "cb18775a-d073-4a9b-97fc-5c37c916a7b9",
+    "createdTimestamp" : 1646827330389,
+    "username" : "admin",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "id" : "d37134cb-982c-40c8-8a91-7e2a2e3c6503",
+      "type" : "password",
+      "createdDate" : 1646827330527,
+      "secretData" : "{\"value\":\"jZPMGLPXO9bCNbUA6O48XmfqXmtlvjpqp/yYSseOrFviJ/v6Pzm0R4IZ+HqqzwC+mc2PeqESe0f3t2S03Go08g==\",\"salt\":\"p3Bg/049gEs9IVcmK3hEWA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-master", "admin" ],
+    "clientRoles" : {
+      "dBildungscloud-realm" : [ "manage-authorization", "manage-events", "view-identity-providers", "manage-users", "create-client", "manage-clients", "view-clients", "query-users", "query-groups", "query-clients", "view-authorization", "view-users", "query-realms", "view-events", "view-realm", "manage-realm", "manage-identity-providers" ],
+      "dBildunscloud-realm" : [ "manage-clients", "query-realms", "manage-authorization", "view-users", "view-identity-providers", "manage-events", "view-events", "query-clients", "query-groups", "create-client", "manage-users", "view-authorization", "view-clients", "query-users", "view-realm", "manage-realm", "manage-identity-providers" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
