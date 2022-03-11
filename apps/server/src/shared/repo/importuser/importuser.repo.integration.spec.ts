@@ -4,13 +4,14 @@ import { cleanupCollections, importUserFactory, schoolFactory, userFactory } fro
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MatchCreator, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
-import { NotFoundError } from '@mikro-orm/core';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
 	let module: TestingModule;
 	let repo: ImportUserRepo;
 	let em: EntityManager;
+	let orm: MikroORM;
 
 	const persistedReferences = async () => {
 		const school = schoolFactory.build();
@@ -26,6 +27,7 @@ describe('ImportUserRepo', () => {
 		}).compile();
 		repo = module.get(ImportUserRepo);
 		em = module.get(EntityManager);
+		orm = module.get(MikroORM);
 	});
 
 	afterAll(async () => {
@@ -750,7 +752,7 @@ describe('ImportUserRepo', () => {
 				await Promise.all(result);
 			});
 			it('[UNIQUE] should prohibit same match of one user ', async () => {
-				await em.getDriver().ensureIndexes();
+				await orm.getSchemaGenerator().ensureIndexes();
 				const school = schoolFactory.build();
 				await em.persistAndFlush(school);
 				const user = userFactory.build({ school });
