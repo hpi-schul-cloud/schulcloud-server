@@ -65,6 +65,7 @@ export interface IFileRecordProperties {
 	creatorId: EntityId | ObjectId;
 	lockedForUserId?: EntityId | ObjectId;
 	schoolId: EntityId | ObjectId;
+	expires?: Date;
 }
 
 /**
@@ -78,7 +79,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	// todo is a offset of the setted date and should removed
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
-	expires?: Date;
+	expires: Date | null;
 
 	@Property()
 	size: number;
@@ -139,6 +140,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		}
 		this._schoolId = new ObjectId(props.schoolId);
 		this.securityCheck = new FileSecurityCheck({});
+		this.expires = props.expires || null;
 	}
 
 	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
@@ -153,6 +155,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	removeExpires(): void {
-		this.expires = undefined;
+		this.expires = null;
 	}
 }

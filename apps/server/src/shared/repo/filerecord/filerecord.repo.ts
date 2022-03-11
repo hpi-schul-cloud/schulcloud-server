@@ -9,23 +9,17 @@ import { FileRecordScope } from './filerecord-scope';
 export class FileRecordRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	// todo: should not find expires
 	async findOneById(id: EntityId): Promise<FileRecord> {
-		const fileRecord = await this.em.findOneOrFail(FileRecord, id);
+		const scope = new FileRecordScope().byFileRecordId(id).byExpires();
+		const fileRecord = await this.em.findOneOrFail(FileRecord, scope.query);
 
 		return fileRecord;
 	}
-	// later findOneExpiresByIt
 
 	async save(fileRecords: FileRecord | FileRecord[]): Promise<void> {
 		await this.em.persistAndFlush(fileRecords);
 	}
 
-	async delete(fileRecord: FileRecord): Promise<void> {
-		await this.em.removeAndFlush(fileRecord);
-	}
-
-	// todo: filter NOT expires != null
 	async findBySchoolIdAndParentId(
 		schoolId: EntityId,
 		parentId: EntityId,
@@ -33,7 +27,7 @@ export class FileRecordRepo {
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 
-		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId);
+		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byExpires();
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
 		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {
@@ -46,6 +40,11 @@ export class FileRecordRepo {
 	}
 
 	async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
-		return this.em.findOneOrFail(FileRecord, new FileRecordScope().bySecurityCheckRequestToken(token).query);
+		// Must also find expires in future. Please do not add .byExpires().
+		const scope = new FileRecordScope().bySecurityCheckRequestToken(token);
+
+		const fileRecord = await this.em.findOneOrFail(FileRecord, scope.query);
+
+		return fileRecord;
 	}
 }
