@@ -130,7 +130,7 @@ describe('OAuthUc', () => {
 	describe('startOauth', () => {
 		it('should extract query to code as string', async () => {
 			const response = await service.startOauth(defaultQuery, '1234');
-			expect(response).toEqual({ jwt: defaultJWT });
+			expect(response).toEqual({ jwt: defaultJWT, idToken: defaultJWT });
 		});
 	});
 

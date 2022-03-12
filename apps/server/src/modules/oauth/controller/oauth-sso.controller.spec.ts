@@ -13,6 +13,8 @@ describe('OAuthController', () => {
 	Configuration.set('HOST', 'https://mock.de');
 	let controller: OauthSSOController;
 	let oauthUc: OauthUc;
+	const idToken = 'mockToken';
+
 	const generateMock = async (oauthUcMock) => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [OauthSSOController],
@@ -51,7 +53,9 @@ describe('OAuthController', () => {
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
-			expect(res.redirect).toBeCalledWith('https://mock.de/dashboard');
+			expect(res.redirect).toBeCalledWith(
+				'https://iserv.n21.dbildungscloud.de/iserv/auth/logout?id_token_hint=undefined&post_logout_redirect_uri=https://mock.de/dashboard'
+			);
 		});
 
 		it('should handle errorcode', async () => {
