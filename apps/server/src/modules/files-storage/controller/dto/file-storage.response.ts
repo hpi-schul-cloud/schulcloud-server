@@ -33,7 +33,7 @@ export class FileRecordResponse {
 	parentType: FileRecordParentType;
 
 	@ApiProperty()
-	expires?: Date;
+	expires?: Date | null;
 }
 
 export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {
