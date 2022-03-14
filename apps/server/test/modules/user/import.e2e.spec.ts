@@ -195,13 +195,6 @@ describe('ImportUser Controller (e2e)', () => {
 					await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/flag`).send(params).expect(200);
 				});
 			});
-			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE', () => {
-				let user: User;
-				beforeEach(async () => {
-					({ user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
-					currentUser = mapUserToCurrentUser(user);
-				});
-			});
 		});
 
 		describe('Business Errors', () => {
