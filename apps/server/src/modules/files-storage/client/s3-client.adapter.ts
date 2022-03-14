@@ -12,7 +12,7 @@ import { Readable } from 'stream';
 
 import { ILogger, Logger } from '@src/core/logger';
 
-import { S3Config, IGetFileResponse, IStorageClient, IExpires, IFile } from '../interface';
+import { S3Config, IGetFileResponse, IStorageClient, IFile } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -77,11 +77,11 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async setExpires(expires: IExpires): Promise<PutObjectCommandOutput> {
+	public async setExpires(path: string, expires: Date): Promise<PutObjectCommandOutput> {
 		const req = new PutObjectCommand({
 			Bucket: this.config.bucket,
-			Key: expires.path,
-			Expires: expires.date,
+			Key: path,
+			Expires: expires,
 		});
 
 		const response = await this.client.send(req);
@@ -89,10 +89,10 @@ export class S3ClientAdapter implements IStorageClient {
 		return response;
 	}
 
-	public async setManyExpires(listOfExpires: IExpires[]): Promise<PutObjectCommandOutput[]> {
-		const requests = listOfExpires.map((expires) => this.setExpires(expires));
+	public async setManyExpires(paths: string[], expires: Date): Promise<PutObjectCommandOutput[]> {
+		const requests = paths.map((path) => this.setExpires(path, expires));
 
-		const results = await Promise.all(requests); // todo: vs Promise.allSettled
+		const results = await Promise.all(requests);
 
 		return results;
 	}

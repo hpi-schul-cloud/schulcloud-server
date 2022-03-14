@@ -7,15 +7,13 @@ export interface IGetFileResponse {
 	contentLength: number | undefined;
 	etag: string | undefined;
 }
-export interface IExpires {
-	path: string;
-	date: Date;
-}
 
 export interface IStorageClient {
 	create(path: string, file: IFile): unknown;
 
 	get(path: string): unknown;
 
-	setExpires(expires: IExpires): unknown;
+	setExpires(path: string, expires: Date): unknown;
+
+	setManyExpires(path: string[], expires: Date): unknown;
 }

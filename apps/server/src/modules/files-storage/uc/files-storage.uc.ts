@@ -195,13 +195,9 @@ export class FilesStorageUC {
 		await this.setManyExpires(fileRecords, expiresDate);
 
 		try {
-			const listOfExpires = fileRecords.map((fileRecord) => {
-				const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
+			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
-				return { path: pathToFile, date: expiresDate };
-			});
-
-			await this.storageClient.setManyExpires(listOfExpires);
+			await this.storageClient.setManyExpires(paths, expiresDate);
 		} catch (err) {
 			await this.restoreManyExpires(fileRecords);
 
@@ -219,7 +215,7 @@ export class FilesStorageUC {
 
 		try {
 			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
-			await this.storageClient.setExpires({ path: pathToFile, date: expiresDate });
+			await this.storageClient.setExpires(pathToFile, expiresDate);
 		} catch (err) {
 			await this.restoreExpires(fileRecord);
 
