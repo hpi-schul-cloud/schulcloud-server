@@ -39,6 +39,7 @@ export class S3ClientAdapter implements IStorageClient {
 			Bucket: this.config.bucket,
 			Key: path,
 		});
+
 		const data = await this.client.send(req);
 
 		return {
@@ -69,6 +70,7 @@ export class S3ClientAdapter implements IStorageClient {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (error.Code && error.Code === 'NoSuchBucket') {
 				await this.createBucket();
+
 				return this.create(path, file);
 			}
 			throw error;
@@ -87,9 +89,10 @@ export class S3ClientAdapter implements IStorageClient {
 		return response;
 	}
 
-	public async setManyExpires(listOfExpires: IExpires[]): Promise<PromiseSettledResult<PutObjectCommandOutput>[]> {
+	public async setManyExpires(listOfExpires: IExpires[]): Promise<PutObjectCommandOutput[]> {
 		const requests = listOfExpires.map((expires) => this.setExpires(expires));
-		const results = await Promise.allSettled(requests); // todo: vs Promise.all
+
+		const results = await Promise.all(requests); // todo: vs Promise.allSettled
 
 		return results;
 	}
