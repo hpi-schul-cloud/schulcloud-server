@@ -14,6 +14,8 @@ import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
+	expiresDays = 7;
+
 	constructor(
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
@@ -86,8 +88,14 @@ export class FilesStorageUC {
 		}
 	}
 
-	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
+	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 		const pathToFile = [schoolId, fileRecordId].join('/');
+
+		return pathToFile;
+	}
+
+	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
+		const pathToFile = this.createPath(schoolId, fileRecordId);
 		const res = await this.storageClient.get(pathToFile);
 
 		return res;
@@ -151,31 +159,36 @@ export class FilesStorageUC {
 	async deleteFilesOfParent(
 		userId: EntityId,
 		params: FileRecordParams,
-		expiresDays = 7
+		expiresDays = this.expiresDays
 	): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		const expiresDate = this.createDateFromOffset(expiresDays);
 
 		fileRecords.forEach((fileRecord) => {
-			// a 7 days offset is defined in TTL expires index
-			fileRecord.setExpires(this.createDateFromOffset(expiresDays));
+			fileRecord.setExpires(expiresDate);
 		});
-
 		await this.fileRecordRepo.save(fileRecords);
 
-		// update file storage with expires header
+		const listOfExpires = fileRecords.map((fileRecord) => {
+			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
+
+			return { path: pathToFile, date: expiresDate };
+		});
+		await this.storageClient.setManyExpires(listOfExpires);
 
 		return [fileRecords, count];
 	}
+	// todo for both: how to handle, throw errors. If rollback needed? (storage is not avaible for example)
 
-	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays = 7): Promise<FileRecord> {
+	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays = this.expiresDays): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
-		// a 7 days offset is defined in TTL expires index
-		fileRecord.setExpires(this.createDateFromOffset(expiresDays));
+		const expiresDate = this.createDateFromOffset(expiresDays);
+		const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
+		fileRecord.setExpires(expiresDate);
 
 		await this.fileRecordRepo.save(fileRecord);
-
-		// update file storage with expires header
+		await this.storageClient.setExpires({ path: pathToFile, date: expiresDate });
 
 		return fileRecord;
 	}

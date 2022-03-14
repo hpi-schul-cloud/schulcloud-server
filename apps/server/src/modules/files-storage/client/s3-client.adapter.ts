@@ -1,11 +1,18 @@
-import { CreateBucketCommand, GetObjectCommand, S3Client, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import {
+	CreateBucketCommand,
+	GetObjectCommand,
+	S3Client,
+	ServiceOutputTypes,
+	PutObjectCommand,
+	PutObjectCommandOutput,
+} from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
-import { ILogger, Logger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { S3Config } from '../interface/config';
-import { IFile } from '../interface/file';
-import { IGetFileResponse, IStorageClient } from '../interface/storage-client';
+
+import { ILogger, Logger } from '@src/core/logger';
+
+import { S3Config, IGetFileResponse, IStorageClient, IExpires, IFile } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -33,6 +40,7 @@ export class S3ClientAdapter implements IStorageClient {
 			Key: path,
 		});
 		const data = await this.client.send(req);
+
 		return {
 			data: data.Body as Readable,
 			contentType: data.ContentType,
@@ -65,5 +73,24 @@ export class S3ClientAdapter implements IStorageClient {
 			}
 			throw error;
 		}
+	}
+
+	public async setExpires(expires: IExpires): Promise<PutObjectCommandOutput> {
+		const req = new PutObjectCommand({
+			Bucket: this.config.bucket,
+			Key: expires.path,
+			Expires: expires.date,
+		});
+
+		const response = await this.client.send(req);
+
+		return response;
+	}
+
+	public async setManyExpires(listOfExpires: IExpires[]): Promise<PromiseSettledResult<PutObjectCommandOutput>[]> {
+		const requests = listOfExpires.map((expires) => this.setExpires(expires));
+		const results = await Promise.allSettled(requests); // todo: vs Promise.all
+
+		return results;
 	}
 }
