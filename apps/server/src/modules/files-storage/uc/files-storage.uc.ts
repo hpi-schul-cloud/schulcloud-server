@@ -156,9 +156,7 @@ export class FilesStorageUC {
 		return date;
 	}
 
-	private async setExpires(fileRecordsInput: FileRecord | FileRecord[], expiresDate: Date): Promise<void> {
-		const fileRecords = Array.isArray(fileRecordsInput) ? fileRecordsInput : [fileRecordsInput];
-
+	private async setExpires(fileRecords: FileRecord[], expiresDate: Date): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.setExpires(expiresDate);
 		});
@@ -166,9 +164,7 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	private async restoreExpires(fileRecordsInput: FileRecord | FileRecord[]): Promise<void> {
-		const fileRecords = Array.isArray(fileRecordsInput) ? fileRecordsInput : [fileRecordsInput];
-
+	private async restoreExpires(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.removeExpires();
 		});
@@ -203,13 +199,13 @@ export class FilesStorageUC {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
 		const expiresDate = this.createDateFromOffset(expiresDays);
-		await this.setExpires(fileRecord, expiresDate);
+		await this.setExpires([fileRecord], expiresDate);
 
 		try {
 			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
-			await this.storageClient.delete(pathToFile, expiresDate);
+			await this.storageClient.delete([pathToFile], expiresDate);
 		} catch (err) {
-			await this.restoreExpires(fileRecord);
+			await this.restoreExpires([fileRecord]);
 
 			throw new InternalServerErrorException(err);
 		}
