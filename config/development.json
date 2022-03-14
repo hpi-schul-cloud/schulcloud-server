@@ -20,5 +20,13 @@
 		"S3_SECRET_ACCESS_KEY": "miniouser",
 		"S3_BUCKET": "schulcloud",
 		"S3_REGION": "eu-central-1"
+	},
+	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
+	"IDENTITY_MANAGEMENT": {
+		"URI": "http://localhost:8080/",
+		"TENANT": "dbc",
+		"ADMIN_CLIENTID": "admin-cli",
+		"ADMIN_USER": "admin",
+		"ADMIN_PASSWORD": "admin"
 	}
 }
