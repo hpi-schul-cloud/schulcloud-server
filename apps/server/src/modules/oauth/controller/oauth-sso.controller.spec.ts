@@ -47,14 +47,18 @@ describe('OAuthController', () => {
 		it('should redirect to mock.de', async () => {
 			const { res } = getMockRes();
 			await generateMock({
-				startOauth: jest.fn(() => ({ jwt: '1111' })),
+				startOauth: jest.fn(() => ({
+					jwt: '1111',
+					idToken: '2222',
+					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
+				})),
 			});
 			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
 			expect(res.redirect).toBeCalledWith(
-				'https://iserv.n21.dbildungscloud.de/iserv/auth/logout?id_token_hint=undefined&post_logout_redirect_uri=https://mock.de/dashboard'
+				'https://iserv.n21.dbildungscloud.de/iserv/auth/logout?id_token_hint=2222&post_logout_redirect_uri=https://mock.de/dashboard'
 			);
 		});
 

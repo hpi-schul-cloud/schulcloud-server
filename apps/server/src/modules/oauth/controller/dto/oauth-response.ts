@@ -15,4 +15,9 @@ export class OAuthResponse {
 	@IsString()
 	@IsNotEmpty()
 	idToken?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	logoutEndpoint?: string;
 }

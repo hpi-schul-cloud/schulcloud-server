@@ -31,9 +31,8 @@ export class OauthSSOController {
 			if (oauthResponse.jwt) {
 				res.cookie('jwt', oauthResponse.jwt);
 				const idToken = oauthResponse.idToken as string;
-				return res.redirect(
-					`https://iserv.n21.dbildungscloud.de/iserv/auth/logout?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`
-				);
+				const logoutEndpoint = oauthResponse.logoutEndpoint as string;
+				return res.redirect(`${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`);
 			}
 		} catch (error) {
 			this.logger.error(error);
