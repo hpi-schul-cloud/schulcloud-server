@@ -40,7 +40,7 @@
 		"URI": "http://localhost:8080/",
 		"TENANT": "dBildungscloud",
 		"ADMIN_CLIENTID": "admin-cli",
-		"ADMIN_USER": "admin",
-		"ADMIN_PASSWORD": "admin"
+		"ADMIN_USER": "dbildungscloud",
+		"ADMIN_PASSWORD": "dbildungscloud"
 	}
 }
