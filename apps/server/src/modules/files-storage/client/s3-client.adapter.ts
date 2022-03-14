@@ -5,6 +5,8 @@ import {
 	ServiceOutputTypes,
 	PutObjectCommand,
 	PutObjectCommandOutput,
+	CopyObjectCommand,
+	CopyObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
@@ -77,23 +79,24 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async setExpires(path: string, expires: Date): Promise<PutObjectCommandOutput> {
-		const req = new PutObjectCommand({
-			Bucket: this.config.bucket,
-			Key: path,
-			Expires: expires,
+	public async delete(pathsInput: string | string[], expires: Date): Promise<CopyObjectCommandOutput[]> {
+		this.logger.debug({ action: 'set expires', params: { pathsInput, expires, bucket: this.config.bucket } });
+
+		const paths = Array.isArray(pathsInput) ? pathsInput : [pathsInput];
+
+		const requests = paths.map((path) => {
+			const req = new CopyObjectCommand({
+				Bucket: this.config.bucket,
+				CopySource: path,
+				Key: path,
+				Expires: expires,
+			});
+
+			return this.client.send(req);
 		});
 
-		const response = await this.client.send(req);
+		const result = await Promise.all(requests);
 
-		return response;
-	}
-
-	public async setManyExpires(paths: string[], expires: Date): Promise<PutObjectCommandOutput[]> {
-		const requests = paths.map((path) => this.setExpires(path, expires));
-
-		const results = await Promise.all(requests);
-
-		return results;
+		return result;
 	}
 }

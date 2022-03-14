@@ -13,7 +13,5 @@ export interface IStorageClient {
 
 	get(path: string): unknown;
 
-	setExpires(path: string, expires: Date): unknown;
-
-	setManyExpires(path: string[], expires: Date): unknown;
+	delete(path: string | string[], expires: Date): unknown;
 }

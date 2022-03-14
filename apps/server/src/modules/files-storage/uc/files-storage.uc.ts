@@ -156,19 +156,9 @@ export class FilesStorageUC {
 		return date;
 	}
 
-	private async setExpires(fileRecord: FileRecord, expiresDate: Date): Promise<void> {
-		fileRecord.setExpires(expiresDate);
+	private async setExpires(fileRecordsInput: FileRecord | FileRecord[], expiresDate: Date): Promise<void> {
+		const fileRecords = Array.isArray(fileRecordsInput) ? fileRecordsInput : [fileRecordsInput];
 
-		await this.fileRecordRepo.save(fileRecord);
-	}
-
-	private async restoreExpires(fileRecord: FileRecord): Promise<void> {
-		fileRecord.removeExpires();
-
-		await this.fileRecordRepo.save(fileRecord);
-	}
-
-	private async setManyExpires(fileRecords: FileRecord[], expiresDate: Date): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.setExpires(expiresDate);
 		});
@@ -176,7 +166,9 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	private async restoreManyExpires(fileRecords: FileRecord[]): Promise<void> {
+	private async restoreExpires(fileRecordsInput: FileRecord | FileRecord[]): Promise<void> {
+		const fileRecords = Array.isArray(fileRecordsInput) ? fileRecordsInput : [fileRecordsInput];
+
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.removeExpires();
 		});
@@ -192,14 +184,14 @@ export class FilesStorageUC {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		const expiresDate = this.createDateFromOffset(expiresDays);
-		await this.setManyExpires(fileRecords, expiresDate);
+		await this.setExpires(fileRecords, expiresDate);
 
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
-			await this.storageClient.setManyExpires(paths, expiresDate);
+			await this.storageClient.delete(paths, expiresDate);
 		} catch (err) {
-			await this.restoreManyExpires(fileRecords);
+			await this.restoreExpires(fileRecords);
 
 			throw new InternalServerErrorException(err);
 		}
@@ -215,7 +207,7 @@ export class FilesStorageUC {
 
 		try {
 			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
-			await this.storageClient.setExpires(pathToFile, expiresDate);
+			await this.storageClient.delete(pathToFile, expiresDate);
 		} catch (err) {
 			await this.restoreExpires(fileRecord);
 
