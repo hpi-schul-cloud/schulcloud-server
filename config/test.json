@@ -6,7 +6,7 @@
 	"public": "../public/",
 	"services": {
 		"calendar": "https://schul.tech:3000",
-		"content": "https://content.schul-cloud.org",
+		"content": "https://content.schul-cloud.org"
 	},
 	"FORCE_SEND_EMAIL": true,
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
