@@ -3,9 +3,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 
 import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecordParentType, ScanStatus } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { FileParams, ScanResultDto } from '../controller/dto/file-storage.params';
+import { ConflictException } from '@nestjs/common';
+import {
+	FileRecordParams,
+	RenameFileParams,
+	ScanResultParams,
+	SingleFileParams,
+} from '../controller/dto/file-storage.params';
 import { FileRecordUC } from './file-record.uc';
 
 describe('FileRecordUC', () => {
@@ -13,10 +19,10 @@ describe('FileRecordUC', () => {
 	let service: FileRecordUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let orm: MikroORM;
-	let fileParams: FileParams;
+	let fileParams: FileRecordParams;
 	const userId: EntityId = '620abb23697023333eadea99';
-	const scanResult: ScanResultDto = { virus_detected: false };
-	const scanResultWithVirus: ScanResultDto = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
+	const scanResult: ScanResultParams = { virus_detected: false };
+	const scanResultWithVirus: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -109,6 +115,49 @@ describe('FileRecordUC', () => {
 			await service.updateSecurityStatus(token, scanResult);
 
 			expect(spy).toHaveBeenCalledWith(fileRecord);
+		});
+	});
+
+	describe('patch', () => {
+		let fileRecord: FileRecord;
+		let fileRecords: FileRecord[];
+		let data: RenameFileParams;
+		let params: SingleFileParams;
+
+		beforeEach(() => {
+			fileRecords = fileRecordFactory.buildList(3, fileParams);
+			fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt' });
+			fileRecords.push(fileRecord);
+			params = { fileRecordId: fileRecord.id };
+			data = { fileName: 'test_new_name.txt' };
+			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 3]);
+			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+		});
+
+		it('should call repo method findById with right parameters', async () => {
+			await service.patchFilename(userId, params, data);
+			expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(fileRecord.id);
+		});
+
+		it('should call repo method findBySchoolIdAndParentId with right parameters', async () => {
+			await service.patchFilename(userId, params, data);
+			expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.parentId);
+		});
+
+		it('should call repo method save()', async () => {
+			await service.patchFilename(userId, params, data);
+			expect(fileRecordRepo.save).toHaveBeenCalled();
+		});
+
+		it('should return fileRecord with new file name', async () => {
+			const result = await service.patchFilename(userId, params, data);
+			expect(result.name).toStrictEqual('test_new_name.txt');
+		});
+
+		it('should throw ConflictException if file name exist', async () => {
+			await expect(service.patchFilename(userId, params, { fileName: 'test.txt' })).rejects.toThrow(
+				new ConflictException('FILE_NAME_EXISTS')
+			);
 		});
 	});
 });

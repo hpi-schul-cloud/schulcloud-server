@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Put, StreamableFile } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
-import { ScanResultDto } from '@src/modules/files-storage/controller/dto';
+import { ScanResultParams } from '@src/modules/files-storage/controller/dto';
 import { FilesStorageInternalActions } from '../files-storage.const';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
@@ -23,7 +23,7 @@ export class FileSecurityController {
 
 	@ApiExcludeEndpoint()
 	@Put(FilesStorageInternalActions.updateSecurityStatus)
-	async updateSecurityStatus(@Body() scanResultDto: ScanResultDto, @Param('token') token: string) {
+	async updateSecurityStatus(@Body() scanResultDto: ScanResultParams, @Param('token') token: string) {
 		await this.fileRecordUC.updateSecurityStatus(token, scanResultDto);
 	}
 }
