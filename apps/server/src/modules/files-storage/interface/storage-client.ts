@@ -13,5 +13,5 @@ export interface IStorageClient {
 
 	get(path: string): unknown;
 
-	delete(path: string | string[], expires: Date): unknown;
+	delete(paths: string[], expires: Date): unknown;
 }

@@ -79,10 +79,8 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async delete(pathsInput: string | string[], expires: Date): Promise<CopyObjectCommandOutput[]> {
-		this.logger.debug({ action: 'set expires', params: { pathsInput, expires, bucket: this.config.bucket } });
-
-		const paths = Array.isArray(pathsInput) ? pathsInput : [pathsInput];
+	public async delete(paths: string[], expires: Date): Promise<CopyObjectCommandOutput[]> {
+		this.logger.debug({ action: 'set expires', params: { paths, expires, bucket: this.config.bucket } });
 
 		const requests = paths.map((path) => {
 			const req = new CopyObjectCommand({
