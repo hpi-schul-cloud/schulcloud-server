@@ -22,25 +22,7 @@ export class AccountUc {
 		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
 	);
 
-	// findOneById(accountId: EntityId): Promise<Account> {
-	// 	return this.accountRepo.read(accountId);
-	// }
-
-	// create(account: Account): Promise<Account> {
-	// 	return this.accountRepo.create(account);
-	// }
-
-	// update(account: Account): Promise<Account> {
-	// 	return this.accountRepo.update(account);
-	// }
-
-	// remove(accountId: EntityId): Promise<Account> {
-	// 	return this.accountRepo.delete(accountId);
-	// }
-
-	// permissions
-
-	// force password change (admin manipulates -> user must change afterwards) unit test
+	// reset force password change (admin manipulates -> user must change afterwards) unit test
 	// first login logic unit test
 	// change own password logic unit test
 	// password strength unit test
@@ -76,11 +58,18 @@ export class AccountUc {
 		});
 	}
 
+	private isDemoUser(currentUser: User) {
+		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
+	}
+
 	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
 		if (this.hasRole(currentUser, 'superhero')) {
 			return true;
 		}
 		if (!(currentUser.school.id === targetUser.school.id)) {
+			return false;
+		}
+		if (this.isDemoUser(currentUser)) {
 			return false;
 		}
 
@@ -99,26 +88,31 @@ export class AccountUc {
 		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
 	}
 
+	// TODO check for demo users (hook "securePatching")
 	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<string> {
 		this.checkPasswordStrength(passwordNew);
 
-		// check permission
-		// user rights
+		// load user data
 		let targetAccount: Account;
 		let currentUser: User;
 		let targetUser: User;
 		try {
 			targetAccount = await this.accountRepo.findByUserId(targetUserId);
-			targetUser = await this.userRepo.findById(targetUserId, true);
-			currentUser = await this.userRepo.findById(currentUserId, true);
 		} catch (err) {
-			// TODO correct error message
 			throw new EntityNotFoundError('Account');
 		}
+		try {
+			currentUser = await this.userRepo.findById(currentUserId, true);
+			targetUser = await this.userRepo.findById(targetUserId, true);
+		} catch (err) {
+			throw new EntityNotFoundError('User');
+		}
 
+		// check permission
 		if (!this.hasPermissionsToChangePassword(currentUser, targetUser)) {
 			throw new ForbiddenException("No permission to change this user's password");
 		}
+
 		await this.updatePassword(targetAccount, passwordNew);
 		// set user must change password on next login
 		try {

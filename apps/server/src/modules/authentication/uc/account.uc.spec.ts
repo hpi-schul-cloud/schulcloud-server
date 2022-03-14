@@ -19,12 +19,14 @@ describe('AccountUc', () => {
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
+	let mockDemoTeacherUser: User;
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
+	let mockDemoTeacherAccount: Account;
 	let mockOtherTeacherAccount: Account;
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
@@ -67,6 +69,9 @@ describe('AccountUc', () => {
 							if (userId === mockTeacherAccount.user.id) {
 								return Promise.resolve(mockTeacherAccount);
 							}
+							if (userId === mockDemoTeacherAccount.user.id) {
+								return Promise.resolve(mockDemoTeacherAccount);
+							}
 							if (userId === mockStudentAccount.user.id) {
 								return Promise.resolve(mockStudentAccount);
 							}
@@ -92,6 +97,9 @@ describe('AccountUc', () => {
 							}
 							if (userId === mockTeacherAccount.user.id) {
 								return Promise.resolve(mockTeacherAccount.user);
+							}
+							if (userId === mockDemoTeacherAccount.user.id) {
+								return Promise.resolve(mockDemoTeacherAccount.user);
 							}
 							if (userId === mockStudentAccount.user.id) {
 								return Promise.resolve(mockStudentAccount.user);
@@ -127,6 +135,10 @@ describe('AccountUc', () => {
 			school: mockSchool,
 			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
 		});
+		mockDemoTeacherUser = userFactory.buildWithId({
+			school: mockSchool,
+			roles: [new Role({ name: 'demoTeacher', permissions: ['STUDENT_EDIT'] })],
+		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
@@ -142,6 +154,7 @@ describe('AccountUc', () => {
 
 		mockSuperheroAccount = accountFactory.buildWithId({ user: mockSuperheroUser, password: 'hjkl' });
 		mockTeacherAccount = accountFactory.buildWithId({ user: mockTeacherUser, password: 'asdf' });
+		mockDemoTeacherAccount = accountFactory.buildWithId({ user: mockDemoTeacherUser, password: 'vbnm' });
 		mockOtherTeacherAccount = accountFactory.buildWithId({ user: mockOtherTeacherUser, password: 'uiop' });
 		mockAdminAccount = accountFactory.buildWithId({ user: mockAdminUser, password: 'qwer' });
 		mockStudentAccount = accountFactory.buildWithId({ user: mockStudentUser, password: '1234' });
@@ -177,38 +190,43 @@ describe('AccountUc', () => {
 			expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
 			expect(mockTeacherUser.forcePasswordChange).toBe(true);
 		});
-	});
 
-	describe('hasPermissionsToChangePassword', () => {
-		it('admin can edit teacher', async () => {
-			const previousPasswordHash = mockTeacherAccount.password;
-			await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, 'DummyPasswd!1');
-			expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
-		});
-		it('teacher can edit student', async () => {
-			const previousPasswordHash = mockStudentAccount.password;
-			await accountUc.changePasswordForUser(mockTeacherUser.id, mockStudentUser.id, 'DummyPasswd!1');
-			expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
-		});
-		it('admin can edit student', async () => {
-			const previousPasswordHash = mockStudentAccount.password;
-			await accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1');
-			expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
-		});
-		it('teacher cannot edit other teacher', async () => {
-			await expect(
-				accountUc.changePasswordForUser(mockTeacherUser.id, mockOtherTeacherUser.id, 'DummyPasswd!1')
-			).rejects.toThrow(ForbiddenException);
-		});
-		it("other school's admin cannot edit teacher", async () => {
-			await expect(
-				accountUc.changePasswordForUser(mockDifferentSchoolAdminUser.id, mockTeacherUser.id, 'DummyPasswd!1')
-			).rejects.toThrow(ForbiddenException);
-		});
-		it('superhero can edit admin', async () => {
-			const previousPasswordHash = mockAdminAccount.password;
-			await accountUc.changePasswordForUser(mockSuperheroUser.id, mockAdminUser.id, 'DummyPasswd!1');
-			expect(mockAdminAccount.password).not.toBe(previousPasswordHash);
+		describe('hasPermissionsToChangePassword', () => {
+			it('admin can edit teacher', async () => {
+				const previousPasswordHash = mockTeacherAccount.password;
+				await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, 'DummyPasswd!1');
+				expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
+			});
+			it('teacher can edit student', async () => {
+				const previousPasswordHash = mockStudentAccount.password;
+				await accountUc.changePasswordForUser(mockTeacherUser.id, mockStudentUser.id, 'DummyPasswd!1');
+				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
+			});
+			it('demo teacher cannot edit student', async () => {
+				await expect(
+					accountUc.changePasswordForUser(mockDemoTeacherUser.id, mockStudentUser.id, 'DummyPasswd!1')
+				).rejects.toThrow(ForbiddenException);
+			});
+			it('admin can edit student', async () => {
+				const previousPasswordHash = mockStudentAccount.password;
+				await accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1');
+				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
+			});
+			it('teacher cannot edit other teacher', async () => {
+				await expect(
+					accountUc.changePasswordForUser(mockTeacherUser.id, mockOtherTeacherUser.id, 'DummyPasswd!1')
+				).rejects.toThrow(ForbiddenException);
+			});
+			it("other school's admin cannot edit teacher", async () => {
+				await expect(
+					accountUc.changePasswordForUser(mockDifferentSchoolAdminUser.id, mockTeacherUser.id, 'DummyPasswd!1')
+				).rejects.toThrow(ForbiddenException);
+			});
+			it('superhero can edit admin', async () => {
+				const previousPasswordHash = mockAdminAccount.password;
+				await accountUc.changePasswordForUser(mockSuperheroUser.id, mockAdminUser.id, 'DummyPasswd!1');
+				expect(mockAdminAccount.password).not.toBe(previousPasswordHash);
+			});
 		});
 	});
 });

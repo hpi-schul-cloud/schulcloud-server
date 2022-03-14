@@ -6,10 +6,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-
-interface Password {
-	password: string;
-}
+import { Password } from './dto/password.param';
 
 @ApiTags('Account')
 @Authenticate('jwt')
