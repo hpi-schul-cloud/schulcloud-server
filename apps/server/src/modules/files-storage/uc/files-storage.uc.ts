@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
@@ -156,6 +156,34 @@ export class FilesStorageUC {
 		return date;
 	}
 
+	private async setExpires(fileRecord: FileRecord, expiresDate: Date): Promise<void> {
+		fileRecord.setExpires(expiresDate);
+
+		await this.fileRecordRepo.save(fileRecord);
+	}
+
+	private async restoreExpires(fileRecord: FileRecord): Promise<void> {
+		fileRecord.removeExpires();
+
+		await this.fileRecordRepo.save(fileRecord);
+	}
+
+	private async setManyExpires(fileRecords: FileRecord[], expiresDate: Date): Promise<void> {
+		fileRecords.forEach((fileRecord) => {
+			fileRecord.setExpires(expiresDate);
+		});
+
+		await this.fileRecordRepo.save(fileRecords);
+	}
+
+	private async restoreManyExpires(fileRecords: FileRecord[]): Promise<void> {
+		fileRecords.forEach((fileRecord) => {
+			fileRecord.removeExpires();
+		});
+
+		await this.fileRecordRepo.save(fileRecords);
+	}
+
 	async deleteFilesOfParent(
 		userId: EntityId,
 		params: FileRecordParams,
@@ -164,17 +192,21 @@ export class FilesStorageUC {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		const expiresDate = this.createDateFromOffset(expiresDays);
 
-		fileRecords.forEach((fileRecord) => {
-			fileRecord.setExpires(expiresDate);
-		});
-		await this.fileRecordRepo.save(fileRecords);
+		await this.setManyExpires(fileRecords, expiresDate);
 
 		const listOfExpires = fileRecords.map((fileRecord) => {
 			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
 
 			return { path: pathToFile, date: expiresDate };
 		});
-		await this.storageClient.setManyExpires(listOfExpires);
+
+		try {
+			await this.storageClient.setManyExpires(listOfExpires);
+		} catch (err) {
+			await this.restoreManyExpires(fileRecords);
+
+			throw new InternalServerErrorException(err);
+		}
 
 		return [fileRecords, count];
 	}
@@ -184,11 +216,16 @@ export class FilesStorageUC {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
 		const expiresDate = this.createDateFromOffset(expiresDays);
-		const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
-		fileRecord.setExpires(expiresDate);
+		await this.setExpires(fileRecord, expiresDate);
 
-		await this.fileRecordRepo.save(fileRecord);
-		await this.storageClient.setExpires({ path: pathToFile, date: expiresDate });
+		try {
+			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
+			await this.storageClient.setExpires({ path: pathToFile, date: expiresDate });
+		} catch (err) {
+			await this.restoreExpires(fileRecord);
+
+			throw new InternalServerErrorException(err);
+		}
 
 		return fileRecord;
 	}
