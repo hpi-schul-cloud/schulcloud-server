@@ -190,17 +190,17 @@ export class FilesStorageUC {
 		expiresDays = this.expiresDays
 	): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-		const expiresDate = this.createDateFromOffset(expiresDays);
 
+		const expiresDate = this.createDateFromOffset(expiresDays);
 		await this.setManyExpires(fileRecords, expiresDate);
 
-		const listOfExpires = fileRecords.map((fileRecord) => {
-			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
-
-			return { path: pathToFile, date: expiresDate };
-		});
-
 		try {
+			const listOfExpires = fileRecords.map((fileRecord) => {
+				const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
+
+				return { path: pathToFile, date: expiresDate };
+			});
+
 			await this.storageClient.setManyExpires(listOfExpires);
 		} catch (err) {
 			await this.restoreManyExpires(fileRecords);
@@ -210,7 +210,6 @@ export class FilesStorageUC {
 
 		return [fileRecords, count];
 	}
-	// todo for both: how to handle, throw errors. If rollback needed? (storage is not avaible for example)
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays = this.expiresDays): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
