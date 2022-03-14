@@ -34,11 +34,11 @@ docker run \
 docker run \
   --name keycloak \
   -p 8080:8080 \
-  -p 8443:8443 \
   -v "$PWD/backup/keycloak:/tmp/realms"
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
 ```
+
 ## How to start the application
 
 Beside existing [scripts](/), for the nestJS application the following scripts have been added. Try not changing the scripts as they should match what NestJS defines by default. Execute `npm run ...`
