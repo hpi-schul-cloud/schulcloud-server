@@ -53,12 +53,9 @@ export class KeycloakIdentityManagement implements IIdentityManagement {
 
 		if (id && password) {
 			try {
-				const retId = await this.updateAccountPassword(id.id, password);
-				if (retId === null) {
-					await this.deleteAccountById(id.id);
-					return null;
-				}
+				await this.resetPassword(id.id, password);
 			} catch {
+				await this.deleteAccountById(id.id);
 				return null;
 			}
 		}
@@ -66,6 +63,7 @@ export class KeycloakIdentityManagement implements IIdentityManagement {
 	}
 
 	async updateAccount(accountId: string, account: IAccountUpdate): Promise<string | null> {
+		await this.authorizeAccess();
 		try {
 			await this.kcAdminClient.users.update(
 				{ id: accountId },
@@ -84,14 +82,7 @@ export class KeycloakIdentityManagement implements IIdentityManagement {
 	async updateAccountPassword(accountId: string, password: string): Promise<string | null> {
 		await this.authorizeAccess();
 		try {
-			await this.kcAdminClient.users.resetPassword({
-				id: accountId,
-				credential: {
-					temporary: false,
-					type: 'password',
-					value: password,
-				},
-			});
+			await this.resetPassword(accountId, password);
 			return accountId;
 		} catch {
 			return null;
@@ -148,5 +139,16 @@ export class KeycloakIdentityManagement implements IIdentityManagement {
 			firstName: user.firstName,
 			lastName: user.lastName,
 		};
+	}
+
+	private async resetPassword(accountId: string, password: string) {
+		await this.kcAdminClient.users.resetPassword({
+			id: accountId,
+			credential: {
+				temporary: false,
+				type: 'password',
+				value: password,
+			},
+		});
 	}
 }

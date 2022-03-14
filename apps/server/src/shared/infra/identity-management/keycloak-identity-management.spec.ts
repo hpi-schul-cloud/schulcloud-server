@@ -144,10 +144,23 @@ describe('KeycloakIdentityManagement', () => {
 		);
 	});
 
+	it('should return empty list if loading all accounts failed', async () => {
+		jest.spyOn(kcAdminClient.users, 'find').mockRejectedValue('error');
+
+		const ret = await idm.getAllAccounts();
+
+		expect(ret).not.toBeNull();
+		expect(ret).toHaveLength(0);
+	});
+
 	it('should return null if account does not exist', async () => {
 		jest.spyOn(kcAdminClient.users, 'findOne').mockRejectedValue('error');
-		const ret = await idm.findAccountById('accountId');
-		expect(ret).toBeNull();
+		const ret1 = await idm.findAccountById('accountId');
+		expect(ret1).toBeNull();
+
+		jest.spyOn(kcAdminClient.users, 'findOne').mockResolvedValue(undefined);
+		const ret2 = await idm.findAccountById('accountId');
+		expect(ret2).toBeNull();
 	});
 
 	it('should allow to update an existing account', async () => {
