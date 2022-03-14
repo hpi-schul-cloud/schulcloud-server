@@ -13,6 +13,7 @@ __Bash:__
 docker run \
   --name keycloak \
   -p 8080:8080 \
+  -p 8443:8443 \
   -v "$PWD/backup/keycloak:/tmp/realms" \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
@@ -23,6 +24,7 @@ __PowerShell:__
 docker run `
   --name keycloak `
   -p 8080:8080 `
+  -p 8443:8443 `
   -v "$PWD/backup/keycloak:/tmp/realms" `
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest `
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
@@ -35,13 +37,16 @@ and testing. In the table below you can see the username and password combinatio
 
 | Username | Password | Description |
 | :- | :- | :- |
-| keycloak | keycloak| The overall Keycloak administrator with all permissions. |
-| dBildunscloud | dBildungscloud | The dBildungscloud realm specific administrator. |
+| keycloak | keycloak | The overall Keycloak administrator with all permissions. |
+| dbildunscloud | dbildungscloud | The dBildungscloud realm specific administrator. |
 | demo-lehrer@schul-cloud.org | Schulcloud1! | A demo teacher in the dBildungscloud. |
 | demo-schueler@schul-cloud.org | Schulcloud1! | A demo student in the dBildungscloud. |
 
 The default password for all users in the dBildungscloud realm is `Schulcloud1!`.
 
-## Updating Data
-
-TODO describe the updating process
+## Updating Seed Data
+1. Run Keycloak and make the desired changes
+2. Use `docker container exec -it keyscloak bash` to start a bash in the container
+3. Use the Keycloak-CLI to export all Keycloak data with `/opt/keycloak/bin/kc.sh export --dir /tmp/realms`
+4. Save your changes with a commit
+5. If you start your container with a command from the docker section, your changes will be 

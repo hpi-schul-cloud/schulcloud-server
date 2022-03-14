@@ -18,7 +18,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "admin", "default-roles-master" ],
     "clientRoles" : {
-      "dBildunscloud-realm" : [ "view-clients", "manage-identity-providers", "view-events", "query-clients", "query-groups", "manage-clients", "manage-authorization", "view-identity-providers", "manage-users", "view-users", "create-client", "view-authorization", "manage-realm", "manage-events", "query-users", "view-realm", "query-realms" ]
+      "dBildungscloud-realm" : [ "view-clients", "manage-identity-providers", "view-events", "query-clients", "query-groups", "manage-clients", "manage-authorization", "view-identity-providers", "manage-users", "view-users", "create-client", "view-authorization", "manage-realm", "manage-events", "query-users", "view-realm", "query-realms" ]
     },
     "notBefore" : 0,
     "groups" : [ ]

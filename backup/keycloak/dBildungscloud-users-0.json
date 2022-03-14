@@ -1,5 +1,5 @@
 {
-  "realm" : "dBildunscloud",
+  "realm" : "dBildungscloud",
   "users" : [ {
     "id" : "efd66bb4-b3d7-4b10-be7e-b385b28e56ca",
     "createdTimestamp" : 1647003323122,
@@ -21,7 +21,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "4dc51991-aee7-48a1-ab09-4a6c486bda7f",
     "createdTimestamp" : 1647004627718,
@@ -43,7 +43,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "03735fc0-d01c-40c5-b102-e701d09e2af6",
     "createdTimestamp" : 1647004655067,
@@ -64,6 +64,28 @@
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
+    "notBefore" : 0,
+    "groups" : [ "/schulcloud-server" ]
+  }, {
+    "id" : "42867a5b-7c3b-428e-b00a-cde0ed68ca43",
+    "createdTimestamp" : 1647265372771,
+    "username" : "dbildungscloud",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "credentials" : [ {
+      "id" : "7a5dfc45-7588-4bcc-b876-fc27b04e05b9",
+      "type" : "password",
+      "createdDate" : 1647265397912,
+      "secretData" : "{\"value\":\"xBUgVdY9dbNQXpAhLx4XwCldoj6IHvIq1wjiVOK6oss1muWtMuC/FIWTUZGlImPC4qLrLFLlFC23V5SliDtLrg==\",\"salt\":\"tTvCXSbJj9K/TcQC57coZQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-dbildunscloud" ],
+    "clientRoles" : {
+      "realm-management" : [ "realm-admin" ]
+    },
     "notBefore" : 0,
     "groups" : [ ]
   }, {
@@ -87,7 +109,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "a51a4cc2-378c-4649-8b0f-ca3ab1035ff8",
     "createdTimestamp" : 1647004215486,
@@ -109,7 +131,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "0d1b47eb-926b-4561-a4bc-36ae419a4c65",
     "createdTimestamp" : 1647004595463,
@@ -131,7 +153,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "596a11a6-36c5-4e16-8550-14476c306f1d",
     "createdTimestamp" : 1647003628031,
@@ -153,7 +175,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "9dcf5d43-ae94-4e0a-8161-570621327301",
     "createdTimestamp" : 1647004388941,
@@ -175,7 +197,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "89bbb9e6-f027-42c3-af41-fd6c21394f3d",
     "createdTimestamp" : 1647004427981,
@@ -197,7 +219,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "776312a3-91cb-4053-8d4d-62d76924283d",
     "createdTimestamp" : 1647004316105,
@@ -219,7 +241,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "f9afce31-8c75-45c6-903b-88d1455e188b",
     "createdTimestamp" : 1647004521801,
@@ -241,7 +263,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "8a7e88e0-aa32-4683-aae5-caf1330b7c73",
     "createdTimestamp" : 1647004127742,
@@ -263,7 +285,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "575d28d0-f319-48c6-b4a4-810eeeceffb8",
     "createdTimestamp" : 1647004560408,
@@ -285,7 +307,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "a7dfa0a1-8b2a-43fc-ba80-3f955b08caa7",
     "createdTimestamp" : 1647004351763,
@@ -307,7 +329,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "7068ea85-0494-4905-81ca-ecd2a970c56b",
     "createdTimestamp" : 1647004682423,
@@ -329,7 +351,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "201d4a72-276d-469d-b6c1-ca54c9f2cb69",
     "createdTimestamp" : 1647003670207,
@@ -351,7 +373,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "07f3111a-d972-43f4-ac79-4f3126c0d859",
     "createdTimestamp" : 1647004713864,
@@ -373,7 +395,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "d56d6204-2aef-4317-bea3-5bfbb6a35338",
     "createdTimestamp" : 1647004756756,
@@ -395,7 +417,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   }, {
     "id" : "32c69dd0-3fc2-4f91-9d51-f7bee57225ca",
     "createdTimestamp" : 1647004074437,
@@ -417,7 +439,7 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/superhero-dashboard" ]
   }, {
     "id" : "1f95fa26-6947-4da9-a1ac-f50d191ea8ed",
     "createdTimestamp" : 1647004179053,
@@ -439,6 +461,6 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-dbildunscloud" ],
     "notBefore" : 0,
-    "groups" : [ ]
+    "groups" : [ "/schulcloud-server" ]
   } ]
 }

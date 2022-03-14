@@ -24,7 +24,7 @@
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
 		"URI": "http://localhost:8080/",
-		"TENANT": "dbc",
+		"TENANT": "dBildungscloud",
 		"ADMIN_CLIENTID": "admin-cli",
 		"ADMIN_USER": "admin",
 		"ADMIN_PASSWORD": "admin"
