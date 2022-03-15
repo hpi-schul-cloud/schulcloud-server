@@ -6,7 +6,12 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { Password } from './dto/password.param';
+import { PatchAccountParams } from './dto';
+
+/* interface MyPassword {
+	passwordNew: string;
+	passwordOld: string;
+} */
 
 @ApiTags('Account')
 @Authenticate('jwt')
@@ -27,6 +32,12 @@ export class AccountController {
 		@Body() { password }: Password
 	): Promise<string> {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
+		return 'dummy response';
+	}
+
+	@Patch('mypw')
+	async changeMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchAccountParams): Promise<string> {
+		await this.accountUc.changeMyAccount(currentUser.userId, params.email, params.passwordNew, params.passwordOld);
 		return 'dummy response';
 	}
 }
