@@ -16,6 +16,7 @@ export const systemFactory = BaseFactory.define<System, ISystemProperties>(Syste
 			responseType: 'code',
 			authEndpoint: 'mock_authEndpoint',
 			provider: 'mock_type',
+			logoutEndpoint: 'mock_logoutEndpoint',
 		},
 	};
 });

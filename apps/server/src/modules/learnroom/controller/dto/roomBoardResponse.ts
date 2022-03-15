@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { RoomBoardElementTypes } from '../../types';
 import { BoardTaskStatusResponse } from './roomBoardResponse-taskStatus';
 
 export class BoardTaskResponse {
@@ -45,6 +46,20 @@ export class BoardTaskResponse {
 	status: BoardTaskStatusResponse;
 }
 
+export class BoardLockedTaskResponse {
+	constructor({ id, name }: BoardLockedTaskResponse) {
+		this.id = id;
+		this.name = name;
+	}
+
+	@ApiProperty()
+	id: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	name: string;
+}
+
 export class BoardLessonResponse {
 	constructor({ id, name, hidden, createdAt, updatedAt }: BoardLessonResponse) {
 		this.id = id;
@@ -82,14 +97,15 @@ export class BoardElementResponse {
 	}
 
 	@ApiProperty({
-		description: 'ElementType. Can be any of: "task", "lesson".',
+		description: 'the type of the element in the content. For possible types, please refer to the enum',
+		enum: RoomBoardElementTypes,
 	})
-	type: string;
+	type: RoomBoardElementTypes;
 
 	@ApiProperty({
 		description: 'Content of the Board, either: a task or a lesson specific for the board',
 	})
-	content: BoardTaskResponse | BoardLessonResponse;
+	content: BoardTaskResponse | BoardLockedTaskResponse | BoardLessonResponse;
 }
 
 // TODO: this and DashboardResponse should be combined

@@ -5,7 +5,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ICurrentUser } from '@shared/domain';
 import { RoomsUc } from '../uc/rooms.uc';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
-import { BoardResponse, PatchVisibilityParams } from './dto';
+import { BoardResponse, PatchVisibilityParams, PatchOrderParams } from './dto';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
@@ -31,5 +31,14 @@ export class RoomsController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.roomsUc.updateVisibilityOfBoardElement(roomId, elementId, currentUser.userId, params.visibility);
+	}
+
+	@Patch(':roomid/board/order')
+	async patchOrderingOfElements(
+		@Param('roomid', ParseObjectIdPipe) roomId: string,
+		@Body() params: PatchOrderParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.roomsUc.reorderBoardElements(roomId, currentUser.userId, params.elements);
 	}
 }
