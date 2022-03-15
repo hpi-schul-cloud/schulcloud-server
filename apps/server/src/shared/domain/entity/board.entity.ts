@@ -1,6 +1,9 @@
 import { Entity, Collection, ManyToMany, OneToOne, IdentifiedReference, wrap } from '@mikro-orm/core';
+import { NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { BoardElement, BoardElementType } from './boardelement.entity';
+import { ILearnroomElement } from '../interface';
+import { EntityId } from '../types';
 import type { Task } from './task.entity';
 import type { Lesson } from './lesson.entity';
 import type { Course } from './course.entity';
@@ -23,6 +26,14 @@ export class Board extends BaseEntityWithTimestamps {
 
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<BoardElement>(this);
+
+	getByTargetId(id: EntityId): ILearnroomElement {
+		const element = this.getElements().find((el) => el.target.id === id);
+		if (element) {
+			return element.target;
+		}
+		throw new NotFoundException('board does not contain such element');
+	}
 
 	getElements() {
 		return this.references.getItems();

@@ -7,6 +7,20 @@ describe('Submission entity', () => {
 		await setupEntities();
 	});
 
+	describe('constructor', () => {
+		it('should set student files', () => {
+			const files = fileFactory.buildList(3);
+			const submission = submissionFactory.build({ studentFiles: files });
+			expect(submission.studentFiles).toBeDefined();
+		});
+
+		it('should set grade files', () => {
+			const files = fileFactory.buildList(3);
+			const submission = submissionFactory.build({ gradeFiles: files });
+			expect(submission.gradeFiles).toBeDefined();
+		});
+	});
+
 	describe('isGraded', () => {
 		it('should be graded if grade percentage is set', () => {
 			const student = userFactory.build();

@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
 import { EntityId } from '../types/entity-id';
+import { ILearnroomElement } from '../interface/learnroom';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -44,29 +45,29 @@ export type TaskParentDescriptions = { courseName: string; lessonName: string; c
 
 @Entity({ tableName: 'homeworks' })
 @Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
-export class Task extends BaseEntityWithTimestamps {
+export class Task extends BaseEntityWithTimestamps implements ILearnroomElement {
 	@Property()
 	name: string;
 
 	@Property()
 	description: string;
 
-	@Property()
+	@Property({ nullable: true })
 	availableDate?: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	dueDate?: Date;
 
 	@Property()
 	private = true;
 
-	@ManyToOne('User', { fieldName: 'teacherId' })
+	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
 	creator?: User;
 
-	@ManyToOne('Course', { fieldName: 'courseId' })
+	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
 	course?: Course;
 
-	@ManyToOne('Lesson', { fieldName: 'lessonId' })
+	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')
@@ -232,5 +233,14 @@ export class Task extends BaseEntityWithTimestamps {
 
 	restoreForUser(user: User) {
 		this.finished.remove(user);
+	}
+
+	publish() {
+		this.private = false;
+		this.availableDate = new Date(Date.now());
+	}
+
+	unpublish() {
+		this.private = true;
 	}
 }

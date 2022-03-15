@@ -59,8 +59,10 @@ describe('course repo', () => {
 				'description',
 				'name',
 				'school',
+				'startDate',
 				'substitutionTeachers',
 				'teachers',
+				'untilDate',
 				'updatedAt',
 				'students',
 			].sort();

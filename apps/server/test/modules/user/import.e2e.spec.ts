@@ -31,7 +31,7 @@ import {
 	UserMatchResponse,
 } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
-import { PaginationQuery, SortingQuery } from '@shared/controller';
+import { PaginationQuery } from '@shared/controller';
 import { UserFilterQuery } from '@src/modules/user-import/controller/dto/user-filter.query';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -713,6 +713,7 @@ describe('ImportUser Controller (e2e)', () => {
 						});
 					});
 				});
+
 				describe('[updateFlag]', () => {
 					describe('[PATCH] user/import/:id/flag', () => {
 						it('should add a flag', async () => {
@@ -746,6 +747,26 @@ describe('ImportUser Controller (e2e)', () => {
 							expectAllImportUserResponsePropertiesExist(response, false);
 							expect(response.flagged).toEqual(false);
 						});
+					});
+				});
+			});
+
+			describe('[migrate]', () => {
+				let user: User;
+				let school: School;
+				beforeEach(async () => {
+					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+					currentUser = mapUserToCurrentUser(user);
+				});
+				describe('POST user/import/migrate', () => {
+					it('should migrate', async () => {
+						const importUser = importUserFactory.build({
+							school,
+						});
+						await em.persistAndFlush([importUser]);
+						em.clear();
+
+						await request(app.getHttpServer()).post(`/user/import/migrate`).expect(201);
 					});
 				});
 			});

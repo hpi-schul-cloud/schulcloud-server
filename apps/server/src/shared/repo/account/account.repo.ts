@@ -1,17 +1,19 @@
 import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, System } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { AccountScope } from '@shared/repo/account/account.scope';
 
 // const bcrypt = require('bcryptjs');
 
 @Injectable()
-export class AccountRepo {
-	constructor(private readonly em: EntityManager) {}
-
-	private repo: EntityRepository<Account> = this.em.getRepository(Account);
+export class AccountRepo extends BaseRepo<Account> {
+	private get repo(): EntityRepository<Account> {
+		return this.em.getRepository(Account);
+	}
 
 	async create(account: Account): Promise<Account> {
 		// account.password = await bcrypt.hash(account.password);
@@ -26,11 +28,6 @@ export class AccountRepo {
 
 	async update(account: Account): Promise<Account> {
 		await this.repo.persistAndFlush(account);
-		return account;
-	}
-
-	async findByUserId(userId: EntityId): Promise<Account> {
-		const account = await this.repo.findOneOrFail({ user: userId });
 		return account;
 	}
 
@@ -50,5 +47,14 @@ export class AccountRepo {
 			}
 		);
 		return account;
+	}
+
+	async findByUserId(userId: EntityId): Promise<Account> {
+		const account = await this.repo.findOneOrFail({ user: userId });
+		return account;
+	}
+
+	async findOneByUser(user: User): Promise<Account> {
+		return this.findByUserId(user.id);
 	}
 }

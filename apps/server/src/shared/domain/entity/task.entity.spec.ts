@@ -651,4 +651,28 @@ describe('Task Entity', () => {
 			expect(task.isFinishedForUser(user2)).toBe(false);
 		});
 	});
+
+	describe('publish', () => {
+		it('should become not a draft', () => {
+			const task = taskFactory.draft().build();
+			task.publish();
+			expect(task.isDraft()).toEqual(false);
+		});
+
+		it('should set availableDate', () => {
+			const task = taskFactory.draft().build();
+			const dateBefore = new Date(Date.now());
+			task.publish();
+			expect(task.availableDate).toBeDefined();
+			expect((task.availableDate as Date) >= dateBefore).toEqual(true);
+		});
+	});
+
+	describe('unpublish', () => {
+		it('should become a draft', () => {
+			const task = taskFactory.build();
+			task.unpublish();
+			expect(task.isDraft()).toEqual(true);
+		});
+	});
 });

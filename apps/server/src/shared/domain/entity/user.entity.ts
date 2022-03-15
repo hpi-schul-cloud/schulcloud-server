@@ -32,7 +32,7 @@ export class User extends BaseEntityWithTimestamps {
 
 	@Index({ name: 'searchUserForSchool' })
 	@ManyToOne('School', { fieldName: 'schoolId' })
-	school!: School;
+	school: School;
 
 	@Property({ nullable: true })
 	ldapId?: string;

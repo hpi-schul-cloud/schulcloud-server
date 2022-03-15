@@ -16,7 +16,7 @@ export class FilesRepo extends BaseRepo<BaseFile> {
 		const filesForCleanupQuery = { deletedAt: { $lte: cleanupThreshold } };
 		const files = await this.em.find(BaseFile, filesForCleanupQuery);
 		const regularFiles = files.filter((file) => file instanceof File);
-		await this.em.populate(regularFiles, this.propertiesToPopulate);
+		await this.em.populate(regularFiles, this.propertiesToPopulate as never[]);
 		return files;
 	}
 

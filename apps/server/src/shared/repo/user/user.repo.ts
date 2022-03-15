@@ -2,18 +2,21 @@ import { QueryOrderMap, QueryOrderNumeric, wrap } from '@mikro-orm/core';
 import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { Counted, EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import { BaseRepo } from '@shared/repo/base.repo';
+import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
-export class UserRepo {
-	constructor(private readonly em: EntityManager<MongoDriver>) {}
+export class UserRepo extends BaseRepo<User> {
+	constructor(protected readonly em: EntityManager<MongoDriver>) {
+		super(em);
+	}
 
-	async findById(id: EntityId, populateRoles = false): Promise<User> {
+	async findById(id: EntityId, populate = false): Promise<User> {
 		const user = await this.em.findOneOrFail(User, { id });
 
-		if (populateRoles) {
-			await this.em.populate(user, ['roles']);
+		if (populate) {
+			await this.em.populate(user, ['roles', 'school.systems']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -21,16 +24,13 @@ export class UserRepo {
 	}
 
 	async findByLdapId(ldapId: string, systemId: string): Promise<User> {
-		const users: [User[], number] = await this.em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
-		let resultUser;
-		users[0].forEach((user) => {
+		const [users] = await this.em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
+		const resultUser = users.find((user) => {
 			const { systems } = user.school;
-			if (systems && systems.getItems().find((system) => system.id === systemId)) {
-				resultUser = user;
-			}
+			return systems && systems.getItems().find((system) => system.id === systemId);
 		});
 		if (resultUser) {
-			return resultUser as User;
+			return resultUser;
 		}
 		throw new NotFoundException('No user for this ldapId found');
 	}
@@ -106,7 +106,7 @@ export class UserRepo {
 		const { pagination, order } = options || {};
 
 		if (order) {
-			const orderQuery: QueryOrderMap = {};
+			const orderQuery: QueryOrderMap<ImportUser> = {};
 			if (order.firstName) {
 				switch (order.firstName) {
 					case SortOrder.desc:
@@ -142,7 +142,7 @@ export class UserRepo {
 		const userDocuments = await this.em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
-		await this.em.populate(users, 'roles');
+		await this.em.populate(users, ['roles']);
 		return [users, count];
 	}
 

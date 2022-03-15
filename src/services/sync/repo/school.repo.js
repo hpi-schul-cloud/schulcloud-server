@@ -23,6 +23,14 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 		.lean({ virtuals: true })
 		.exec();
 
+const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) => {
+	if (!officialSchoolNumber) {
+		return;
+	}
+	// eslint-disable-next-line consistent-return
+	return schoolModel.findOne({ officialSchoolNumber }).lean({ virtuals: true }).exec();
+};
+
 const getYears = async () => yearModel.find().lean().exec();
 
 const findFederalState = async (abbreviation) => federalStateModel.findOne({ abbreviation }).lean().exec();
@@ -31,6 +39,7 @@ const SchoolRepo = {
 	createSchool,
 	updateSchoolName,
 	findSchoolByLdapIdAndSystem,
+	findSchoolByOfficialSchoolNumber,
 	getYears,
 	findFederalState,
 };

@@ -24,17 +24,18 @@ export class Account extends BaseEntityWithTimestamps {
 	@OneToOne({ entity: () => User, fieldName: 'userId' })
 	user: User;
 
-	@OneToOne({ entity: () => System, fieldName: 'systemId' })
+	@OneToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
 	system?: System;
 
+
 	@Property({ nullable: true })
-	lasttriedFailedLogin? = new Date(0);
+	lasttriedFailedLogin?: Date;
 
 	@Property({ nullable: true })
 	expiresAt?: Date;
 
 	@Property({ nullable: true })
-	activated? = false;
+	activated?: boolean;
 
 	constructor(props: IAccountProperties) {
 		super();

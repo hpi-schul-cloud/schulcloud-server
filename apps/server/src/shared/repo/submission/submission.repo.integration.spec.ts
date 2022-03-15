@@ -1,10 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { CourseGroup } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { userFactory, courseFactory, taskFactory, submissionFactory, cleanupCollections } from '@shared/testing';
+import {
+	userFactory,
+	courseFactory,
+	taskFactory,
+	submissionFactory,
+	cleanupCollections,
+	courseGroupFactory,
+} from '@shared/testing';
 
 import { SubmissionRepo } from './submission.repo';
 
@@ -88,7 +94,7 @@ describe('submission repo', () => {
 
 			const student1 = userFactory.build();
 			const student2 = userFactory.build();
-			const courseGroup = em.create(CourseGroup, { courseId: course._id, students: [student1, student2] });
+			const courseGroup = courseGroupFactory.build({ course, students: [student1, student2] });
 			const task = taskFactory.build({ course });
 			const submission = submissionFactory.build({ student: student1, task });
 			submission.courseGroup = courseGroup;

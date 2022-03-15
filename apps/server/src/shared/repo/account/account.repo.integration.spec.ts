@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '@shared/domain';
+import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory, accountFactory, systemFactory, cleanupCollections } from '@shared/testing';
+import { userFactory, accountFactory, systemFactory, cleanupCollections, importUserFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -91,6 +91,29 @@ describe('account repo', () => {
 			em.clear();
 			const account = await repo.findByUserId(accountToFind.user.id);
 			expect(account.id).toEqual(accountToFind.id);
+		});
+	});
+	describe('findOneByUser', () => {
+		it('should find by User and return an account', async () => {
+			const user = userFactory.buildWithId();
+			const account = new Account({ username: 'Max Mustermann', user });
+			await repo.create(account);
+
+			const result = await repo.findOneByUser(user);
+			expect(result).toEqual(account);
+		});
+		it('should throw an error', async () => {
+			const user = userFactory.buildWithId();
+			await expect(repo.findOneByUser(user)).rejects.toThrowError();
+		});
+		it('should not respond with an account for wrong id given', async () => {
+			const user = userFactory.build();
+			const account = accountFactory.build();
+			const otherSchoolsImportUser = importUserFactory.build();
+			await em.persistAndFlush([user, account, otherSchoolsImportUser]);
+			await expect(async () => repo.findOneByUser({} as unknown as User)).rejects.toThrowError(
+				'Account not found ({ user: null })'
+			);
 		});
 	});
 });

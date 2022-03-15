@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const { nanoid } = require('nanoid');
 
-const { GeneralError, BadRequest } = require('../../../errors');
+const { GeneralError, BadRequest, Unprocessable } = require('../../../errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
@@ -76,7 +76,7 @@ class CourseCopyService {
 			throw new GeneralError('Can not fetch data to copy this course.', err);
 		});
 
-		await Promise.all(
+		const lessonsResults = await Promise.allSettled(
 			lessons.map((lesson) =>
 				createLesson(this.app, {
 					lessonId: lesson._id,
@@ -85,12 +85,13 @@ class CourseCopyService {
 					shareToken: lesson.shareToken,
 				})
 			)
-		).catch((err) => {
-			logger.warning(err);
-			throw new GeneralError('Can not copy one or many lessons.', err);
-		});
-
-		await Promise.all(
+		);
+		if (lessonsResults.some((r) => r.status === 'rejected')) {
+			const rejected = lessonsResults.filter((result) => result.status === 'rejected').map((result) => result.reason);
+			logger.warning(rejected);
+			throw new Unprocessable('Can not copy one or many lessons.');
+		}
+		const homeworkResults = await Promise.allSettled(
 			homeworks.map((homework) => {
 				// homeworks that are part of a lesson are copied in LessonCopyService
 				if (!homework.lessonId) {
@@ -105,9 +106,12 @@ class CourseCopyService {
 				}
 				return false;
 			})
-		).catch((err) => {
-			throw new GeneralError('Can not copy one or many homeworks.', err);
-		});
+		);
+		if (homeworkResults.some((r) => r.status === 'rejected')) {
+			const rejected = homeworkResults.filter((result) => result.status === 'rejected').map((result) => result.reason);
+			logger.warning(rejected);
+			throw new Unprocessable('Can not copy one or many homeworks.');
+		}
 
 		return res;
 	}
@@ -190,7 +194,9 @@ class CourseShareService {
 					return copyService
 						.create(tempCourse)
 						.then((res) => res)
-						.catch((err) => err);
+						.catch((err) => {
+							throw err;
+						});
 				});
 		});
 	}

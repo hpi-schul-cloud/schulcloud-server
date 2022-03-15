@@ -6,6 +6,7 @@ export interface ISchoolProperties {
 	name: string;
 	systems?: System[];
 }
+
 @Entity({ tableName: 'schools' })
 export class School extends BaseEntity {
 	constructor(props: ISchoolProperties) {
@@ -15,14 +16,14 @@ export class School extends BaseEntity {
 	}
 
 	@Property()
-	name!: string;
+	name: string;
 
-	@Property()
+	@Property({ nullable: true })
 	inUserMigration?: boolean;
 
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
 	systems = new Collection<System>(this);
 
-	/* @Property()
-	systems?: System[]; */
+	@Property({ nullable: true })
+	ldapSchoolIdentifier?: string;
 }

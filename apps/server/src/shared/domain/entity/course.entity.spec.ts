@@ -48,6 +48,24 @@ describe('CourseEntity', () => {
 			expect(result.id).toEqual(course.id);
 		});
 
+		it('should return only emoji if used as first character', () => {
+			const course = courseFactory.build({ name: '😀 History', color: '#445566' });
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('😀 History');
+			expect(result.shortTitle).toEqual('😀');
+		});
+
+		it('should return emoji correctly if used as second character', () => {
+			const course = courseFactory.build({ name: 'A😀 History', color: '#445566' });
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('A😀 History');
+			expect(result.shortTitle).toEqual('A😀');
+		});
+
 		it('should include start and enddate if course has them', () => {
 			const startDate = Date.now() - 200000;
 			const untilDate = Date.now() + 200000;

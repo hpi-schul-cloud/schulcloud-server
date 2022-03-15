@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, taskFactory, userFactory, boardFactory, setupEntities } from '@shared/testing';
 import { Course, EntityId, User, Board } from '@shared/domain';
@@ -6,6 +7,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { RoomBoardDTO } from '../types';
 import { RoomsUc } from './rooms.uc';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
@@ -16,6 +18,7 @@ describe('rooms usecase', () => {
 	let boardRepo: BoardRepo;
 	let orm: MikroORM;
 	let factory: RoomBoardDTOFactory;
+	let authorisation: RoomsAuthorisationService;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -88,6 +91,15 @@ describe('rooms usecase', () => {
 						},
 					},
 				},
+				{
+					provide: RoomsAuthorisationService,
+					useValue: {
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						hasCourseWritePermission(user: User, course: Course): boolean {
+							throw new Error('Please write a mock for RoomsAuthorisationService.hasCourseWritePermission');
+						},
+					},
+				},
 			],
 		}).compile();
 
@@ -98,6 +110,7 @@ describe('rooms usecase', () => {
 		userRepo = module.get(UserRepo);
 		boardRepo = module.get(BoardRepo);
 		factory = module.get(RoomBoardDTOFactory);
+		authorisation = module.get(RoomsAuthorisationService);
 	});
 
 	describe('getBoard', () => {
@@ -204,6 +217,73 @@ describe('rooms usecase', () => {
 			const { room, user, dto } = setup();
 			const result = await uc.getBoard(room.id, user.id);
 			expect(result).toEqual(dto);
+		});
+	});
+
+	describe('updateVisibilityOfBoardElement', () => {
+		const setup = (shouldAuthorize: boolean) => {
+			const user = userFactory.buildWithId();
+			const room = courseFactory.buildWithId({ students: [user] });
+			const hiddenTask = taskFactory.draft().buildWithId({ course: room });
+			const visibleTask = taskFactory.buildWithId({ course: room });
+			const board = boardFactory.buildWithId({ course: room });
+			board.syncTasksFromList([hiddenTask, visibleTask]);
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
+			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
+			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
+			const authorisationSpy = jest
+				.spyOn(authorisation, 'hasCourseWritePermission')
+				.mockImplementation(() => shouldAuthorize);
+			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			return { user, room, hiddenTask, visibleTask, board, userSpy, roomSpy, boardSpy, authorisationSpy, persistSpy };
+		};
+
+		describe('when user does not have write permission on course', () => {
+			it('should throw forbidden', async () => {
+				const { user, room, hiddenTask } = setup(false);
+				const call = () => uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
+				await expect(call).rejects.toThrow(ForbiddenException);
+			});
+		});
+
+		describe('when visibility is true', () => {
+			it('should publish element', async () => {
+				const { user, room, hiddenTask } = setup(true);
+				await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
+				expect(hiddenTask.isDraft()).toEqual(false);
+			});
+		});
+
+		describe('when visibility is false', () => {
+			it('should unpublish element', async () => {
+				const { user, room, visibleTask } = setup(true);
+				await uc.updateVisibilityOfBoardElement(room.id, visibleTask.id, user.id, false);
+				expect(visibleTask.isDraft()).toEqual(true);
+			});
+		});
+
+		it('should fetch user', async () => {
+			const { user, room, hiddenTask, userSpy } = setup(true);
+			await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
+			expect(userSpy).toHaveBeenCalledWith(user.id);
+		});
+
+		it('should fetch course with userid', async () => {
+			const { user, room, hiddenTask, roomSpy } = setup(true);
+			await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
+			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
+		});
+
+		it('should fetch course with userid', async () => {
+			const { user, room, hiddenTask, roomSpy } = setup(true);
+			await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
+			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
+		});
+
+		it('should persist board after changes', async () => {
+			const { user, room, hiddenTask, board, persistSpy } = setup(true);
+			await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
+			expect(persistSpy).toHaveBeenCalledWith(board);
 		});
 	});
 });

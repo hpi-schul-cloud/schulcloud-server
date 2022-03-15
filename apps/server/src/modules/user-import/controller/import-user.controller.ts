@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser, IFindOptions, ImportUser, User } from '@shared/domain';
@@ -84,5 +84,10 @@ export class ImportUserController {
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserMatchListResponse(dtoList, total, skip, limit);
 		return response as unknown as UserMatchListResponse;
+	}
+
+	@Post('migrate')
+	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
 	}
 }
