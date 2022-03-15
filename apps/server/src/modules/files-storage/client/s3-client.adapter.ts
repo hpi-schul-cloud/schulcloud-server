@@ -3,10 +3,7 @@ import {
 	GetObjectCommand,
 	S3Client,
 	ServiceOutputTypes,
-	PutObjectCommand,
-	PutObjectCommandOutput,
 	CopyObjectCommand,
-	CopyObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
@@ -79,7 +76,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async delete(paths: string[], expires: Date): Promise<any[]> {
+	public async delete(paths: string[], expires: Date): Promise<CopyObjectCommand[]> {
 		this.logger.debug({ action: 'set expires', params: { paths, expires, bucket: this.config.bucket } });
 
 		const requests = paths.map((path) => {
@@ -89,8 +86,8 @@ export class S3ClientAdapter implements IStorageClient {
 				Key: path,
 				Expires: expires,
 			});
-
-			//return this.client.send(req);
+			return req;
+			// return this.client.send(req);
 		});
 
 		const result = await Promise.all(requests);
