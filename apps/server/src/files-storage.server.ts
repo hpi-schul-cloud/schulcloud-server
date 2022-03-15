@@ -22,7 +22,7 @@ async function bootstrap() {
 	const nestApp = await NestFactory.create(FilesStorageModule, nestExpressAdapter);
 
 	// customize nest app settings
-	nestApp.enableCors();
+	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();

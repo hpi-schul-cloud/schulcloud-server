@@ -20,6 +20,7 @@ export class OauthConfig {
 		this.responseType = system.oauthConfig.responseType;
 		this.authEndpoint = system.oauthConfig.authEndpoint;
 		this.provider = system.oauthConfig.provider;
+		this.logoutEndpoint = system.oauthConfig.logoutEndpoint;
 	}
 
 	@Property()
@@ -48,6 +49,9 @@ export class OauthConfig {
 
 	@Property()
 	provider: string;
+
+	@Property()
+	logoutEndpoint: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
@@ -62,12 +66,12 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({})
 	type: string; // see legacy enum for valid values
 
-	@Property()
+	@Property({ nullable: true })
 	url?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	alias?: string;
 
 	@Property()
-	oauthConfig!: OauthConfig;
+	oauthConfig: OauthConfig;
 }

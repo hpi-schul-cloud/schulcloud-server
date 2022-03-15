@@ -93,7 +93,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			const expectedOrder = [lessons[1], lessons[2], lessons[0]].map((lesson) => lesson.id);
-			const [results, total] = await repo.findAllByCourseIds([course.id]);
+			const [results] = await repo.findAllByCourseIds([course.id]);
 			expect(results.map((lesson) => lesson.id)).toEqual(expectedOrder);
 		});
 	});

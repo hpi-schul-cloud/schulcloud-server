@@ -1,7 +1,7 @@
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundError } from '@mikro-orm/core';
-import { NewsTargetModel, SortOrder } from '@shared/domain';
+import { News, NewsTargetModel, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanupCollections } from '@shared/testing';
 import { NewsRepo } from './news.repo';
@@ -36,6 +36,52 @@ describe('NewsRepo', () => {
 
 		it('entity manager should be defined', () => {
 			expect(em).toBeDefined();
+		});
+	});
+
+	describe('entity persistence', () => {
+		it('should persist course news', async () => {
+			const news = courseNewsFactory.build();
+
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const result = await em.findOneOrFail(News, {
+				targetModel: NewsTargetModel.Course,
+				target: news.target.id,
+			});
+			expect(result).toBeDefined();
+			expect(result.targetModel).toEqual(news.targetModel);
+			expect(result.target.id).toEqual(news.target.id);
+		});
+
+		it('should persist team news', async () => {
+			const news = teamNewsFactory.build();
+
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const result = await em.findOneOrFail(News, {
+				targetModel: NewsTargetModel.Team,
+				target: news.target.id,
+			});
+			expect(result).toBeDefined();
+			expect(result.targetModel).toEqual(news.targetModel);
+			expect(result.target.id).toEqual(news.target.id);
+		});
+
+		it('should persist school news', async () => {
+			const news = schoolNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const result = await em.findOneOrFail(News, {
+				targetModel: NewsTargetModel.School,
+				target: news.target.id,
+			});
+			expect(result).toBeDefined();
+			expect(result.targetModel).toEqual(news.targetModel);
+			expect(result.target.id).toEqual(news.target.id);
 		});
 	});
 

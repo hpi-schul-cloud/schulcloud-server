@@ -7,6 +7,6 @@ import { ALL_ENTITIES } from '@shared/domain';
  * @returns
  */
 export const setupEntities = async (): Promise<MikroORM> => {
-	const orm = await MikroORM.init({ type: 'mongo', dbName: 'dummy', entities: ALL_ENTITIES });
+	const orm = await MikroORM.init({ type: 'mongo', dbName: 'dummy', entities: ALL_ENTITIES, allowGlobalContext: true });
 	return orm;
 };

@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User, Task } from '@shared/domain';
+import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User } from '@shared/domain';
 
 import { TaskRepo, UserRepo } from '@shared/repo';
 
