@@ -170,16 +170,9 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	async deleteFilesOfParent(
-		userId: EntityId,
-		params: FileRecordParams,
-		expiresDays?: number
-	): Promise<Counted<FileRecord[]>> {
-		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-
+	private async delete(fileRecords: FileRecord[], expiresDays?: number) {
 		const expiresDate = this.createDateFromOffset(expiresDays);
 		await this.setExpires(fileRecords, expiresDate);
-
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
@@ -189,25 +182,21 @@ export class FilesStorageUC {
 
 			throw new InternalServerErrorException(err);
 		}
+	}
 
+	async deleteFilesOfParent(
+		userId: EntityId,
+		params: FileRecordParams,
+		expiresDays?: number
+	): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		await this.delete(fileRecords, expiresDays);
 		return [fileRecords, count];
 	}
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays?: number): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-
-		const expiresDate = this.createDateFromOffset(expiresDays);
-		await this.setExpires([fileRecord], expiresDate);
-
-		try {
-			const pathToFile = this.createPath(fileRecord.schoolId, fileRecord.id);
-			await this.storageClient.delete([pathToFile], expiresDate);
-		} catch (err) {
-			await this.restoreExpires([fileRecord]);
-
-			throw new InternalServerErrorException(err);
-		}
-
+		await this.delete([fileRecord], expiresDays);
 		return fileRecord;
 	}
 }
