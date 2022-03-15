@@ -9,7 +9,7 @@ describe('KeycloakUserDataCheck', () => {
 	it('Accounts exists', () => {
 		kcUsers.users
 			.filter((kcUser) => kcUser.username !== 'dbildungscloud') // excludes the realm admin
-			.forEach((kcUser): void => {
+			.forEach((kcUser) => {
 				const account = accounts.find((currentAccount) => kcUser.email === currentAccount.username);
 				expect(account).toBeDefined();
 			});
@@ -18,7 +18,7 @@ describe('KeycloakUserDataCheck', () => {
 	it('Users exists', () => {
 		kcUsers.users
 			.filter((kcUser) => kcUser.username !== 'dbildungscloud') // excludes the realm admin
-			.forEach((kcUser): void => {
+			.forEach((kcUser) => {
 				const user = users.find((currentUser) => kcUser.email === currentUser.email);
 				expect(user).toBeDefined();
 				expect(user?.firstName).toBe(kcUser.firstName);

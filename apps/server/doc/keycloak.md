@@ -46,7 +46,7 @@ The default password for all users in the dBildungscloud realm is `Schulcloud1!`
 
 ## Updating Seed Data
 1. Run Keycloak and make the desired changes
-2. Use `docker container exec -it keyscloak bash` to start a bash in the container
+2. Use `docker container exec -it keycloak bash` to start a bash in the container
 3. Use the Keycloak-CLI to export all Keycloak data with `/opt/keycloak/bin/kc.sh export --dir /tmp/realms`
 4. Save your changes with a commit
 5. If you start your container with a command from the docker section, your changes will be 
