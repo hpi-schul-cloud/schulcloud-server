@@ -39,10 +39,6 @@ and testing. In the table below you can see the username and password combinatio
 | :- | :- | :- |
 | keycloak | keycloak | The overall Keycloak administrator with all permissions. |
 | dbildunscloud | dbildungscloud | The dBildungscloud realm specific administrator. |
-| demo-lehrer@schul-cloud.org | Schulcloud1! | A demo teacher in the dBildungscloud. |
-| demo-schueler@schul-cloud.org | Schulcloud1! | A demo student in the dBildungscloud. |
-
-The default password for all users in the dBildungscloud realm is `Schulcloud1!`.
 
 ## Updating Seed Data
 1. Run Keycloak and make the desired changes
