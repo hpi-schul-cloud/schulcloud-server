@@ -27,7 +27,7 @@ export class FileRecordScope extends Scope<FileRecord> {
 		return this;
 	}
 
-	byExpires(isExpires = false): FileRecordScope {
+	byExpires(isExpires = true): FileRecordScope {
 		const query = isExpires ? { expires: { $ne: null } } : { expires: null };
 		this.addQuery(query);
 

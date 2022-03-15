@@ -10,7 +10,7 @@ export class FileRecordRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findOneById(id: EntityId): Promise<FileRecord> {
-		const scope = new FileRecordScope().byFileRecordId(id).byExpires();
+		const scope = new FileRecordScope().byFileRecordId(id).byExpires(false);
 		const fileRecord = await this.em.findOneOrFail(FileRecord, scope.query);
 
 		return fileRecord;
@@ -31,7 +31,7 @@ export class FileRecordRepo {
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 
-		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byExpires();
+		const scope = new FileRecordScope().bySchoolId(schoolId).byParentId(parentId).byExpires(false);
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
 		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {
