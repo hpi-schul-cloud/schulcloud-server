@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -106,6 +106,49 @@ describe('submission repo', () => {
 
 			expect(count).toEqual(1);
 			expect(result[0]?.courseGroup?.students[0]?.id).toEqual(student1.id);
+		});
+	});
+
+	describe('findById', () => {
+		it('should find a submission by its id', async () => {
+			const submission = submissionFactory.build({ comment: 'important submission' });
+			await em.persistAndFlush(submission);
+			em.clear();
+
+			const foundSubmission = await repo.findById(submission.id);
+			expect(foundSubmission.comment).toEqual('important submission');
+		});
+
+		it('should throw error if the submission cannot be found by id', async () => {
+			const unknownId = new ObjectId().toHexString();
+			await expect(async () => {
+				await repo.findById(unknownId);
+			}).rejects.toThrow();
+		});
+	});
+
+	describe('save', () => {
+		it('should persist a submission in the database', async () => {
+			const submission = submissionFactory.build({ comment: 'important submission' });
+			await repo.save(submission);
+			em.clear();
+
+			const foundSubmission = await repo.findById(submission.id);
+			expect(foundSubmission.comment).toEqual('important submission');
+		});
+	});
+
+	describe('delete', () => {
+		it('should remove a submission in the database', async () => {
+			const submission = submissionFactory.build();
+			await repo.save(submission);
+			em.clear();
+			const { id } = submission;
+			await repo.delete(submission);
+
+			await expect(async () => {
+				await repo.findById(id);
+			}).rejects.toThrow(`Submission not found ({ id: '${id}' })`);
 		});
 	});
 });
