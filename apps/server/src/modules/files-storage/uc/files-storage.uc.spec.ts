@@ -9,7 +9,7 @@ import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { DownloadFileParams, FileRecordParams } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { IGetFileResponse } from '../interface/storage-client';
 
@@ -37,8 +37,8 @@ describe('FilesStorageUC', () => {
 		fileDownloadParams = { fileRecordId: schoolId, fileName: 'text.txt' };
 		fileUploadParams = {
 			schoolId,
-			parentId: schoolId,
-			parentType: FileRecordParentType.School,
+			parentId: userId,
+			parentType: FileRecordParentType.User,
 		};
 
 		fileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
@@ -71,6 +71,24 @@ describe('FilesStorageUC', () => {
 		service = module.get(FilesStorageUC);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
+		fileRecords = [
+			fileRecordFactory.build({ parentId: userId, schoolId, name: 'text.txt' }),
+			fileRecordFactory.build({ parentId: userId, schoolId, name: 'text-two.txt' }),
+			fileRecordFactory.build({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+		];
+		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
+
+		fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
+			if (Array.isArray(entity)) {
+				entity.map((item) => {
+					item.id = entityId;
+					return item;
+				});
+			} else {
+				entity.id = entityId;
+			}
+			return Promise.resolve();
+		});
 	});
 
 	afterEach(async () => {
@@ -99,28 +117,9 @@ describe('FilesStorageUC', () => {
 					'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20',
 				},
 			});
-			const { parentId } = fileUploadParams;
-			fileRecords = [
-				fileRecordFactory.build({ parentId, schoolId, name: 'text.txt' }),
-				fileRecordFactory.build({ parentId, schoolId, name: 'text-two.txt' }),
-				fileRecordFactory.build({ parentId, schoolId, name: 'text-tree.txt' }),
-			];
-			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
 			request.get.mockReturnValue('1234');
 			request.pipe.mockImplementation(mockBusboyEvent as never);
-
-			fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
-				if (Array.isArray(entity)) {
-					entity.map((item) => {
-						item.id = entityId;
-						return item;
-					});
-				} else {
-					entity.id = entityId;
-				}
-				return Promise.resolve();
-			});
 		});
 
 		it('should call request.get()', async () => {
@@ -200,7 +199,7 @@ describe('FilesStorageUC', () => {
 						id: entityId,
 						name: 'text (1).txt',
 						size: 1234,
-						parentType: FileRecordParentType.School,
+						parentType: FileRecordParentType.User,
 						mimeType: 'text/plain',
 						createdAt: expect.any(Date) as Date,
 						updatedAt: expect.any(Date) as Date,
@@ -297,6 +296,98 @@ describe('FilesStorageUC', () => {
 			it('should throw error if entity not found', async () => {
 				fileRecordRepo.findBySecurityCheckRequestToken.mockRejectedValue(new Error());
 				await expect(service.downloadBySecurityToken(token)).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('deleteFilesOfParent()', () => {
+		let requestParams: FileRecordParams;
+		beforeEach(() => {
+			requestParams = {
+				schoolId,
+				parentId: userId,
+				parentType: FileRecordParentType.User,
+			};
+			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
+			storageClient.delete.mockResolvedValue([]);
+		});
+
+		describe('calls to fileRecordRepo.findBySchoolIdAndParentId()', () => {
+			it('should call once', async () => {
+				await service.deleteFilesOfParent(userId, requestParams);
+				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call with correctly params', async () => {
+				await service.deleteFilesOfParent(userId, requestParams);
+				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenCalledWith(
+					requestParams.schoolId,
+					requestParams.parentId
+				);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValue(new Error());
+				await expect(service.deleteFilesOfParent(userId, requestParams)).rejects.toThrow();
+			});
+		});
+
+		describe('calls to fileRecordRepo.save()', () => {
+			it('should call with correctly params', async () => {
+				await service.deleteFilesOfParent(userId, requestParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.save.mockRejectedValue(new Error());
+				await expect(service.deleteFilesOfParent(userId, requestParams)).rejects.toThrow();
+			});
+
+			it('should call two times if call delete throw an error', async () => {
+				storageClient.delete.mockRejectedValue(new Error());
+				await expect(service.deleteFilesOfParent(userId, requestParams)).rejects.toThrow();
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
+			});
+
+			it('should return file response with expires', async () => {
+				const [fileRecordsRes] = await service.deleteFilesOfParent(userId, requestParams, 7);
+				expect(fileRecordsRes).toEqual(
+					expect.arrayContaining([expect.objectContaining({ expires: expect.any(Date) as Date })])
+				);
+			});
+		});
+	});
+
+	describe('deleteOneFile()', () => {
+		let requestParams: SingleFileParams;
+		beforeEach(() => {
+			requestParams = {
+				fileRecordId: new ObjectId().toHexString(),
+			};
+			fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+			storageClient.delete.mockResolvedValue([]);
+		});
+
+		describe('calls to fileRecordRepo.findOneById()', () => {
+			it('should call once', async () => {
+				await service.deleteOneFile(userId, requestParams);
+				expect(fileRecordRepo.findOneById).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call with correctly params', async () => {
+				await service.deleteOneFile(userId, requestParams);
+				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(requestParams.fileRecordId);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.findOneById.mockRejectedValue(new Error());
+				await expect(service.deleteOneFile(userId, requestParams)).rejects.toThrow();
+			});
+
+			it('should return file response with expires', async () => {
+				const fileRecordRes = await service.deleteOneFile(userId, requestParams, 7);
+				expect(fileRecordRes).toEqual(expect.objectContaining({ expires: expect.any(Date) as Date }));
 			});
 		});
 	});

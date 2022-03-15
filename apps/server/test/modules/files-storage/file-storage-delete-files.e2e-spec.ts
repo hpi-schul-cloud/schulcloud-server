@@ -19,6 +19,8 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { createMock } from '@golevelup/ts-jest';
 
 const baseRouteName = '/file/delete';
 
@@ -71,8 +73,7 @@ describe(`${baseRouteName} (api)`, () => {
 		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
 
 		s3instance = new S3rver({
-			directory: `/tmp/s3rver_test_directory`,
-			resetOnClose: true,
+			directory: `/tmp/s3rver_test_directory${port}`,
 			port,
 		});
 		await s3instance.run();
@@ -86,6 +87,8 @@ describe(`${baseRouteName} (api)`, () => {
 				},
 			],
 		})
+			.overrideProvider(AntivirusService)
+			.useValue(createMock<AntivirusService>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {

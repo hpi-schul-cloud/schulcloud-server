@@ -79,7 +79,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async delete(paths: string[], expires: Date): Promise<CopyObjectCommandOutput[]> {
+	public async delete(paths: string[], expires: Date): Promise<any[]> {
 		this.logger.debug({ action: 'set expires', params: { paths, expires, bucket: this.config.bucket } });
 
 		const requests = paths.map((path) => {
@@ -90,7 +90,7 @@ export class S3ClientAdapter implements IStorageClient {
 				Expires: expires,
 			});
 
-			return this.client.send(req);
+			//return this.client.send(req);
 		});
 
 		const result = await Promise.all(requests);

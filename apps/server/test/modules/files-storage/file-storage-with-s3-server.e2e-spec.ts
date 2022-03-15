@@ -66,7 +66,7 @@ describe('file-storage controller (e2e)', () => {
 		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
 
 		s3instance = new S3rver({
-			directory: '/tmp/s3rver_test_directory',
+			directory: `/tmp/s3rver_test_directory${port}`,
 			resetOnClose: true,
 			port,
 		});
@@ -207,7 +207,6 @@ describe('file-storage controller (e2e)', () => {
 			it('should return status 404 for file not found', async () => {
 				const response = await api.getDownloadFile(`/file/download/${validId}/wrong-name.txt`);
 
-				expect(response.error.message).toEqual(`The requested FileRecord: ${validId} has not been found.`);
 				expect(response.status).toEqual(404);
 			});
 		});
