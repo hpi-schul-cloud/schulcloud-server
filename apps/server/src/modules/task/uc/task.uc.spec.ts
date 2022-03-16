@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { Collection, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { PaginationQuery } from '@shared/controller';
 import { Course, Task, Lesson, User, ITaskStatus } from '@shared/domain';
 
