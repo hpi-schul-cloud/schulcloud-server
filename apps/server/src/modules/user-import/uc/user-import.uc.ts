@@ -31,6 +31,14 @@ export class UserImportUc {
 		private readonly userRepo: UserRepo
 	) {}
 
+	private featureEnabled() {
+		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as string;
+		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
+		if (enabled !== 'true' || !ObjectId.isValid(systemId)) {
+			throw new InternalServerErrorException('User Migration not configured');
+		}
+	}
+
 	/**
 	 * Resolves with current users schools importusers and matched users.
 	 * @param currentUserId
@@ -43,6 +51,7 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW);
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
@@ -56,6 +65,7 @@ export class UserImportUc {
 	 * @returns importuser and matched user
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
@@ -80,6 +90,7 @@ export class UserImportUc {
 	}
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
@@ -94,6 +105,7 @@ export class UserImportUc {
 	}
 
 	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
@@ -122,12 +134,14 @@ export class UserImportUc {
 		query: INameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW);
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
 
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 
@@ -148,6 +162,7 @@ export class UserImportUc {
 	}
 
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 		if (!school.ldapSchoolIdentifier || school.inUserMigration !== true || !school.inMaintenanceSince) {
@@ -158,6 +173,7 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
+		this.featureEnabled();
 		const migrationSystem = await this.getMigrationSystem();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
@@ -176,6 +192,7 @@ export class UserImportUc {
 	}
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
+		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.ldapSchoolIdentifier) {
@@ -210,9 +227,6 @@ export class UserImportUc {
 
 	private async getMigrationSystem(): Promise<System> {
 		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
-		if (!ObjectId.isValid(systemId)) {
-			throw new InternalServerErrorException('Migration not set.');
-		}
 		const system = await this.systemRepo.findById(systemId);
 		return system;
 	}

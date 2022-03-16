@@ -17,6 +17,7 @@ import { accountFactory, importUserFactory, schoolFactory, userFactory } from '@
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
 
@@ -30,6 +31,7 @@ describe('[ImportUserModule]', () => {
 		let systemRepo: DeepMocked<SystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let permissionService: DeepMocked<PermissionService>;
+		let configurationSpy: jest.SpyInstance;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
@@ -85,6 +87,22 @@ describe('[ImportUserModule]', () => {
 			expect(permissionService).toBeDefined();
 		});
 
+		const setConfig = (systemId?: string) => {
+			const mockSystemId = systemId || new ObjectId().toString();
+			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'FEATURE_USER_MIGRATION_SYSTEM_ID') {
+					return mockSystemId;
+				}
+				if (config === 'FEATURE_USER_MIGRATION_ENABLED') {
+					return 'true'; // true
+				}
+				return null;
+			});
+		};
+
+		beforeEach(() => {
+			setConfig();
+		});
 		describe('[findAllImportUsers]', () => {
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
@@ -520,7 +538,6 @@ describe('[ImportUserModule]', () => {
 			let system: System;
 			let school: School;
 			let currentUser: User;
-			let configurationSpy: jest.SpyInstance;
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
 			let schoolRepoPersistSpy: jest.SpyInstance;
@@ -536,7 +553,7 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				schoolRepoPersistSpy = schoolRepo.persistAndFlush.mockReturnValueOnce(Promise.resolve(school));
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
-				configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(system.id);
+				setConfig(system.id);
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
 			});
 			afterEach(() => {

@@ -56,6 +56,11 @@ describe('ImportUser Controller (e2e)', () => {
 		return { user, roles, school, system };
 	};
 
+	const setConfig = () => {
+		Configuration.set('FEATURE_USER_MIGRATION_ENABLED', true);
+		Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', new ObjectId().toString());
+	};
+
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -70,10 +75,9 @@ describe('ImportUser Controller (e2e)', () => {
 			})
 
 			.compile();
-
 		app = moduleFixture.createNestApplication();
-		await app.init();
 
+		await app.init();
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 	});
@@ -81,6 +85,10 @@ describe('ImportUser Controller (e2e)', () => {
 	afterAll(async () => {
 		await orm.close();
 		await app.close();
+	});
+
+	beforeEach(() => {
+		setConfig();
 	});
 
 	describe('[GET] /user/import', () => {
@@ -96,11 +104,54 @@ describe('ImportUser Controller (e2e)', () => {
 		});
 
 		describe('Generic Errors', () => {
-			describe('When authorization is missing', () => {
+			describe('When feature is not enabled', () => {
 				let user: User;
 				beforeEach(async () => {
 					({ user } = await authenticatedUser());
 					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', '');
+				});
+				afterEach(() => {
+					setConfig();
+				});
+				it('GET /user/import is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import').expect(500);
+				});
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(500);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(500);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(500);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(500);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(500);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(500);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(500);
+				});
+			});
+			describe('When authorization is missing', () => {
+				let user: User;
+				let system: System;
+				beforeEach(async () => {
+					({ user, system } = await authenticatedUser());
+					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					await request(app.getHttpServer()).get('/user/import').expect(401);
@@ -121,6 +172,15 @@ describe('ImportUser Controller (e2e)', () => {
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
 				});
 			});
 
@@ -153,6 +213,15 @@ describe('ImportUser Controller (e2e)', () => {
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
 				});
 			});
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
@@ -193,6 +262,53 @@ describe('ImportUser Controller (e2e)', () => {
 					em.clear();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/flag`).send(params).expect(200);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
+				});
+			});
+			describe('When current user has permissions UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE', () => {
+				let user: User;
+				let system: System;
+				beforeEach(async () => {
+					({ user, system } = await authenticatedUser());
+					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
+				});
+				it('GET /user/import is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import').expect(401);
+				});
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(401);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
 				});
 			});
 		});
