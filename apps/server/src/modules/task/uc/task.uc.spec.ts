@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
+import { Collection, MikroORM } from '@mikro-orm/core';
 import { PaginationQuery } from '@shared/controller';
 import { Course, Task, Lesson, User, ITaskStatus } from '@shared/domain';
 
@@ -13,7 +13,7 @@ import {
 	roleFactory,
 	setupEntities,
 } from '@shared/testing';
-import { TaskRepo, UserRepo } from '@shared/repo';
+import { TaskRepo, UserRepo, SubmissionRepo } from '@shared/repo';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TaskUC } from './task.uc';
 import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
@@ -45,6 +45,7 @@ describe('TaskUC', () => {
 	let service: TaskUC;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let userRepo: DeepMocked<UserRepo>;
+	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let authorizationService: DeepMocked<TaskAuthorizationService>;
 	let orm: MikroORM;
 
@@ -72,6 +73,10 @@ describe('TaskUC', () => {
 					provide: TaskAuthorizationService,
 					useValue: createMock<TaskAuthorizationService>(),
 				},
+				{
+					provide: SubmissionRepo,
+					useValue: createMock<SubmissionRepo>(),
+				},
 			],
 		}).compile();
 
@@ -79,6 +84,7 @@ describe('TaskUC', () => {
 		taskRepo = module.get(TaskRepo);
 		userRepo = module.get(UserRepo);
 		authorizationService = module.get(TaskAuthorizationService);
+		submissionRepo = module.get(SubmissionRepo);
 	});
 
 	afterEach(async () => {
@@ -1052,6 +1058,7 @@ describe('TaskUC', () => {
 			userRepo.findById.mockResolvedValue(user);
 			taskRepo.findById.mockResolvedValue(task);
 			taskRepo.delete.mockResolvedValue();
+			submissionRepo.delete.mockResolvedValue();
 		});
 
 		it('should check for permission to delete the task', async () => {
@@ -1069,6 +1076,19 @@ describe('TaskUC', () => {
 		it('should call TaskRepo.delete() with Task', async () => {
 			await service.delete(user.id, task.id);
 			expect(taskRepo.delete).toBeCalledWith(task);
+		});
+
+		it('should not call deleteSubmissions if task has no submissions', async () => {
+			await service.delete(user.id, task.id);
+			expect(submissionRepo.delete).toBeCalledTimes(0);
+		});
+
+		it('should call deleteSubmissions if task has submissions', async () => {
+			const submissions = submissionFactory.buildList(3);
+			const taskWithSubmissions = taskFactory.buildWithId({ submissions });
+			taskRepo.findById.mockResolvedValue(taskWithSubmissions);
+			await service.delete(user.id, taskWithSubmissions.id);
+			expect(submissionRepo.delete).toBeCalledTimes(3);
 		});
 	});
 });

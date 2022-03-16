@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User } from '@shared/domain';
+import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User, Task } from '@shared/domain';
 
-import { TaskRepo, UserRepo } from '@shared/repo';
+import { SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 
 import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
 
@@ -10,7 +10,8 @@ export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: TaskAuthorizationService,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly submissionRepo: SubmissionRepo
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -177,7 +178,17 @@ export class TaskUC {
 			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
 		}
 
+		await this.deleteSubmissions(task);
+
 		await this.taskRepo.delete(task);
 		return true;
+	}
+
+	private async deleteSubmissions(task: Task): Promise<void> {
+		const promises = task.submissions.getItems().map((submission) => {
+			return this.submissionRepo.delete(submission);
+		});
+
+		await Promise.all(promises);
 	}
 }
