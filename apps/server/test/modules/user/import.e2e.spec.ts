@@ -56,9 +56,9 @@ describe('ImportUser Controller (e2e)', () => {
 		return { user, roles, school, system };
 	};
 
-	const setConfig = () => {
+	const setConfig = (systemId?: string) => {
 		Configuration.set('FEATURE_USER_MIGRATION_ENABLED', true);
-		Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', new ObjectId().toString());
+		Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', systemId || new ObjectId().toString());
 	};
 
 	beforeAll(async () => {
@@ -187,9 +187,11 @@ describe('ImportUser Controller (e2e)', () => {
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW', () => {
 				let user: User;
 				let school: School;
+				let system: System;
 				beforeEach(async () => {
-					({ school, user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
+					({ school, system, user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
 					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
 				it('GET /user/import responds with importusers', async () => {
 					const usermatch = userFactory.build({ school });
@@ -227,9 +229,11 @@ describe('ImportUser Controller (e2e)', () => {
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				let user: User;
 				let school: School;
+				let system: System;
 				beforeEach(async () => {
-					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+					({ user, school, system } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
+					setConfig(system._id.toString());
 				});
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					const usermatch = userFactory.build({ school });
@@ -279,7 +283,7 @@ describe('ImportUser Controller (e2e)', () => {
 				beforeEach(async () => {
 					({ user, system } = await authenticatedUser());
 					currentUser = mapUserToCurrentUser(user);
-					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
+					setConfig(system._id.toString());
 				});
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					await request(app.getHttpServer()).get('/user/import').expect(401);
