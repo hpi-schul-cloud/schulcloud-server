@@ -18,8 +18,25 @@
 		"_id": {
 			"$oid": "0000d186816abba584714c92"
 		},
-		"type": "iserv",
+		"alias": "Zentrales IServ",
+		"type": "ldap",
 		"__v": 0,
+		"ldapConfig": {
+			"active": true,
+			"federalState": {
+				"$oid": "0000b186816abba584714c58"
+			},
+			"url": "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+			"rootPath": "dc=de,dc=example,dc=org",
+			"searchUser": "cn=admin,dc=example,dc=org",
+			"searchUserPassword": "U2FsdGVkX19xqHusWE7tJnRotOIykWITaT9kSUwEusM=",
+			"provider": "iserv-idm",
+			"providerOptions": {
+				"userAttributeNameMapping": {},
+				"roleAttributeNameMapping": {},
+				"classAttributeNameMapping": {}
+			}
+		},
 		"oauthConfig": {
 			"clientId": "insert clientId",
 			"clientSecret": "insert clientSecret",
@@ -29,7 +46,9 @@
 			"scope": "openid uuid",
 			"responseType": "code",
 			"codeRedirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
-			"authEndpoint": "http://iserv.n21.dbildungscloud.de/iserv/auth/auth"
+			"authEndpoint": "http://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+			"provider": "iserv",
+			"logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"
 		}
 	}
 ]
