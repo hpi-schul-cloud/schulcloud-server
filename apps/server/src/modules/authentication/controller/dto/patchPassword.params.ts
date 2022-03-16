@@ -2,16 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 /**
- * DTO for patching a new email and password of an user
+ * DTO for patching a new password of an user
  */
 
-export class PatchAccountParams {
+export class PatchPasswordParams {
 	@IsString()
 	@ApiProperty({
-		description: 'Email and Password of the user',
+		description: 'Password of the user',
 	})
-	email!: string;
-
 	passwordNew!: string;
 
 	passwordOld!: string;

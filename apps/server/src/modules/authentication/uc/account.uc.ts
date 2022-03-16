@@ -27,12 +27,7 @@ export class AccountUc {
 	// change own password logic unit test
 	// password strength unit test
 
-	async changeMyAccount(
-		userId: EntityId,
-		email: string,
-		passwordNew: string,
-		passwordOld: string | undefined
-	): Promise<string> {
+	async changeMyPassword(userId: EntityId, passwordNew: string, passwordOld: string): Promise<string> {
 		this.checkPasswordStrength(passwordNew);
 
 		// if I change my password
@@ -147,6 +142,15 @@ export class AccountUc {
 		if (!password || !AccountUc.passwordPattern.test(password)) {
 			throw new ValidationError('Dein Passwort stimmt mit dem Pattern nicht überein.');
 		}
+	}
+
+	async changeMyEmail(userId: EntityId, email: string): Promise<string> {
+		// Check if it is own user
+		const user = await this.userRepo.findById(userId);
+
+		await this.updateEmail(user, email);
+
+		return 'this.userRepo.update(user);';
 	}
 
 	private async updateEmail(user: User, email: string) {

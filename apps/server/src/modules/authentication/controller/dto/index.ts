@@ -1,1 +1,2 @@
-export * from './patchAccount.params';
+export * from './patchPassword.params';
+export * from './patchEmail.params';

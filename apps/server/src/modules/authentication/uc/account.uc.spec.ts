@@ -229,4 +229,28 @@ describe('AccountUc', () => {
 			});
 		});
 	});
+
+	describe('changeMyPassword', () => {
+		it('should throw if account does not exist', async () => {
+			await expect(accountUc.changeMyPassword('user', 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow(
+				EntityNotFoundError
+			);
+		});
+		it('should throw if user does not exist', async () => {
+			await expect(accountUc.changeMyPassword('account', 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow(
+				EntityNotFoundError
+			);
+		});
+		it('should throw if password is weak', async () => {
+			await expect(accountUc.changeMyPassword(mockAccount.user.id, 'weak', 'DummyPasswd!1')).rejects.toThrow();
+		});
+		it('should throw if user has not change password after admin manipulated it', async () => {
+			expect(mockAccount.user.forcePasswordChange).toBeFalsy();
+			await expect(accountUc.changeMyPassword(mockAccount.user.id, 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow();
+		});
+		it('should throw if user has not performed the first login', async () => {
+			expect(mockAccount.user.preferences).toBeFalsy();
+			await expect(accountUc.changeMyPassword(mockAccount.user.id, 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow();
+		});
+	});
 });

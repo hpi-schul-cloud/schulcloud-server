@@ -6,7 +6,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { PatchAccountParams } from './dto';
+import { PatchEmailParams, PatchPasswordParams } from './dto';
 
 /* interface MyPassword {
 	passwordNew: string;
@@ -15,7 +15,7 @@ import { PatchAccountParams } from './dto';
 
 @ApiTags('Account')
 @Authenticate('jwt')
-@Controller('Account')
+@Controller('Accounts')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
@@ -35,9 +35,18 @@ export class AccountController {
 		return 'dummy response';
 	}
 
-	@Patch('mypw')
-	async changeMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchAccountParams): Promise<string> {
-		await this.accountUc.changeMyAccount(currentUser.userId, params.email, params.passwordNew, params.passwordOld);
+	@Patch('me/password')
+	async changeMyPassword(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() params: PatchPasswordParams
+	): Promise<string> {
+		await this.accountUc.changeMyPassword(currentUser.userId, params.passwordNew, params.passwordOld);
+		return 'dummy response';
+	}
+
+	@Patch('me/email')
+	async changeMyEmail(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchEmailParams): Promise<string> {
+		await this.accountUc.changeMyEmail(currentUser.userId, params.email);
 		return 'dummy response';
 	}
 }
