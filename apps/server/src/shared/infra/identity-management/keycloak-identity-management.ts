@@ -37,90 +37,64 @@ export class KeycloakIdentityManagement implements IIdentityManagement {
 		});
 	}
 
-	async createAccount(account: IAccount, password?: string): Promise<string | null> {
+	async createAccount(account: IAccount, password?: string): Promise<string> {
 		await this.authorizeAccess();
-		let id: { id: string };
-		try {
-			id = await this.kcAdminClient.users.create({
-				username: account.userName,
-				email: account.email,
-				firstName: account.firstName,
-				lastName: account.lastName,
-			});
-		} catch {
-			return null;
-		}
 
+		const id = await this.kcAdminClient.users.create({
+			username: account.userName,
+			email: account.email,
+			firstName: account.firstName,
+			lastName: account.lastName,
+		});
 		if (id && password) {
 			try {
 				await this.resetPassword(id.id, password);
-			} catch {
+			} catch (err) {
 				await this.deleteAccountById(id.id);
-				return null;
+				throw err;
 			}
 		}
 		return id.id;
 	}
 
-	async updateAccount(accountId: string, account: IAccountUpdate): Promise<string | null> {
+	async updateAccount(accountId: string, account: IAccountUpdate): Promise<string> {
 		await this.authorizeAccess();
-		try {
-			await this.kcAdminClient.users.update(
-				{ id: accountId },
-				{
-					email: account.email,
-					firstName: account.firstName,
-					lastName: account.lastName,
-				}
-			);
-			return accountId;
-		} catch {
-			return null;
-		}
+		await this.kcAdminClient.users.update(
+			{ id: accountId },
+			{
+				email: account.email,
+				firstName: account.firstName,
+				lastName: account.lastName,
+			}
+		);
+		return accountId;
 	}
 
-	async updateAccountPassword(accountId: string, password: string): Promise<string | null> {
+	async updateAccountPassword(accountId: string, password: string): Promise<string> {
 		await this.authorizeAccess();
-		try {
-			await this.resetPassword(accountId, password);
-			return accountId;
-		} catch {
-			return null;
-		}
+		await this.resetPassword(accountId, password);
+		return accountId;
 	}
 
-	async findAccountById(accountId: string): Promise<IAccount | null> {
+	async findAccountById(accountId: string): Promise<IAccount> {
 		await this.authorizeAccess();
-		try {
-			const keycloakUser = await this.kcAdminClient.users.findOne({
-				id: accountId,
-			});
-			return keycloakUser ? this.extractAccount(keycloakUser) : null;
-		} catch {
-			return null;
+		const keycloakUser = await this.kcAdminClient.users.findOne({ id: accountId });
+		if (!keycloakUser) {
+			throw Error(`Account '${accountId}' not found`);
 		}
+		return this.extractAccount(keycloakUser);
 	}
 
 	async getAllAccounts(): Promise<IAccount[]> {
 		await this.authorizeAccess();
-		try {
-			const keycloakUsers = await this.kcAdminClient.users.find();
-			return keycloakUsers.map((user: UserRepresentation) => this.extractAccount(user));
-		} catch {
-			return [];
-		}
+		const keycloakUsers = await this.kcAdminClient.users.find();
+		return keycloakUsers.map((user: UserRepresentation) => this.extractAccount(user));
 	}
 
-	async deleteAccountById(accountId: string): Promise<string | null> {
+	async deleteAccountById(accountId: string): Promise<string> {
 		await this.authorizeAccess();
-		try {
-			await this.kcAdminClient.users.del({
-				id: accountId,
-			});
-			return accountId;
-		} catch {
-			return null;
-		}
+		await this.kcAdminClient.users.del({ id: accountId });
+		return accountId;
 	}
 
 	private async authorizeAccess() {
