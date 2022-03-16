@@ -1,9 +1,10 @@
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Account, EntityId, PermissionService, User } from '@shared/domain';
+import { Account, EntityId, ICurrentUser, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
+import { PatchAccountParams } from '../controller/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -26,6 +27,14 @@ export class AccountUc {
 	// first login logic unit test
 	// change own password logic unit test
 	// password strength unit test
+
+	async updateMyAccount(user: ICurrentUser, params: PatchAccountParams) {
+		const account = await this.accountRepo.read(user.accountId);
+
+		if (await this.checkPassword(params.passwordOld, account.password ?? '')) {
+			throw new Error();
+		}
+	}
 
 	async changeMyPassword(userId: EntityId, passwordNew: string, passwordOld: string): Promise<string> {
 		this.checkPasswordStrength(passwordNew);

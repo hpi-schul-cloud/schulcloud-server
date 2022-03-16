@@ -35,6 +35,11 @@ export class AccountController {
 		return 'dummy response';
 	}
 
+	@Patch('me')
+	async updateAccountAndUser(@CurrentUser() currentUser: ICurrentUser, params: PatchAccountParams): Promise<unknown> {
+		return Promise.resolve();
+	}
+
 	@Patch('me/password')
 	async changeMyPassword(
 		@CurrentUser() currentUser: ICurrentUser,
