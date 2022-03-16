@@ -1083,7 +1083,7 @@ describe('TaskUC', () => {
 			expect(submissionRepo.delete).toBeCalledTimes(0);
 		});
 
-		it('should call deleteSubmissions if task has submissions', async () => {
+		it('should call submissionRepo.delete for every submission on the task', async () => {
 			const submissions = submissionFactory.buildList(3);
 			const taskWithSubmissions = taskFactory.buildWithId({ submissions });
 			taskRepo.findById.mockResolvedValue(taskWithSubmissions);
