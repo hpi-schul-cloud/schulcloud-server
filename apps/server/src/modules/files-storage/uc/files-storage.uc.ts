@@ -1,10 +1,4 @@
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-	InternalServerErrorException,
-	Inject,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
@@ -28,7 +22,7 @@ export class FilesStorageUC {
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService
 	) {
-		this.logger = new Logger('FileStorage');
+		this.logger = new Logger('FilesStorageUC');
 	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
@@ -90,6 +84,7 @@ export class FilesStorageUC {
 			const folder = [params.schoolId, entity.id].join('/');
 			await this.storageClient.create(folder, fileDescription);
 			await this.antivirusService.send(entity);
+
 			return entity;
 		} catch (error) {
 			await this.fileRecordRepo.delete(entity);
@@ -176,7 +171,7 @@ export class FilesStorageUC {
 	}
 
 	private async delete(fileRecords: FileRecord[]) {
-		this.logger.debug({ action: 'uc: delete', fileRecords });
+		this.logger.debug({ action: 'delete', fileRecords });
 
 		await this.setExpires(fileRecords);
 		try {
@@ -193,12 +188,14 @@ export class FilesStorageUC {
 	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		await this.delete(fileRecords);
+
 		return [fileRecords, count];
 	}
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await this.delete([fileRecord]);
+
 		return fileRecord;
 	}
 }
