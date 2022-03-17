@@ -10,6 +10,9 @@ type UserPreferences = {
 	firstLogin: boolean;
 };
 
+// TODO password helper is used here schulcloud-server\src\services\account\hooks\index.js
+// TODO remove schulcloud-server\test\helper\passwordHelpers.test.js
+// TODO remove schulcloud-server\src\utils\passwordHelpers.js
 @Injectable()
 export class AccountUc {
 	constructor(
@@ -18,17 +21,12 @@ export class AccountUc {
 		private readonly permissionService: PermissionService
 	) {}
 
-	static passwordPattern = new RegExp(
-		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
-	);
-
-	// reset force password change (admin manipulates -> user must change afterwards) unit test
 	// first login logic unit test
 	// change own password logic unit test
 	// password strength unit test
-
-	async changeMyPassword(userId: EntityId, passwordNew: string, passwordOld: string | undefined): Promise<string> {
-		this.checkPasswordStrength(passwordNew);
+	// TODO check for demo users (hook "securePatching")
+	async changeMyPassword(userId: EntityId, passwordNew: string, passwordOld: string | undefined): Promise<void> {
+		// TODO use validator in DTO instead of this.checkPasswordStrength(passwordNew);
 
 		// if I change my password
 		// Check if it is own account
@@ -48,8 +46,6 @@ export class AccountUc {
 		}
 
 		await this.updatePassword(account, passwordNew);
-
-		return 'this.accountRepo.update(account);';
 	}
 
 	private hasRole(user: User, roleName: string) {
@@ -88,10 +84,7 @@ export class AccountUc {
 		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
 	}
 
-	// TODO check for demo users (hook "securePatching")
-	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<string> {
-		this.checkPasswordStrength(passwordNew);
-
+	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<void> {
 		// load user data
 		let targetAccount: Account;
 		let currentUser: User;
@@ -121,8 +114,6 @@ export class AccountUc {
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
-
-		return 'this.accountRepo.update(account);';
 	}
 
 	private async updatePassword(account: Account, password: string) {
@@ -132,15 +123,5 @@ export class AccountUc {
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
-	}
-
-	// TODO password helper is used here schulcloud-server\src\services\account\hooks\index.js
-	// TODO remove schulcloud-server\test\helper\passwordHelpers.test.js
-	// TODO remove schulcloud-server\src\utils\passwordHelpers.js
-	private checkPasswordStrength(password: string) {
-		// only check result if also a password was really given
-		if (!password || !AccountUc.passwordPattern.test(password)) {
-			throw new ValidationError('Dein Passwort stimmt mit dem Pattern nicht überein.');
-		}
 	}
 }

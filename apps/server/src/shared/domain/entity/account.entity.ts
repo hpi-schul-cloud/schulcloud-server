@@ -1,5 +1,4 @@
 import { Entity, Property, OneToOne } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { System } from './system.entity';
 import { User } from './user.entity';
@@ -26,7 +25,6 @@ export class Account extends BaseEntityWithTimestamps {
 
 	@OneToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
 	system?: System;
-
 
 	@Property({ nullable: true })
 	lasttriedFailedLogin?: Date;

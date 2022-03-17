@@ -23,6 +23,7 @@ describe('AccountUc', () => {
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
+	let mockUserWithoutAccount: User;
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
@@ -95,6 +96,9 @@ describe('AccountUc', () => {
 							if (userId === mockDifferentSchoolAdminAccount.user.id) {
 								return Promise.resolve(mockDifferentSchoolAdminAccount.user);
 							}
+							if (userId === mockUserWithoutAccount.id) {
+								return Promise.resolve(mockAdminAccount.user);
+							}
 							if (userId === mockTeacherAccount.user.id) {
 								return Promise.resolve(mockTeacherAccount.user);
 							}
@@ -151,6 +155,10 @@ describe('AccountUc', () => {
 			school: mockotherSchool,
 			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
 		});
+		mockUserWithoutAccount = userFactory.buildWithId({
+			school: mockotherSchool,
+			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+		});
 
 		mockSuperheroAccount = accountFactory.buildWithId({ user: mockSuperheroUser, password: 'hjkl' });
 		mockTeacherAccount = accountFactory.buildWithId({ user: mockTeacherUser, password: 'asdf' });
@@ -166,21 +174,18 @@ describe('AccountUc', () => {
 
 	describe('changePasswordForUser', () => {
 		it('should throw if account does not exist', async () => {
-			await expect(accountUc.changePasswordForUser('currentUser', 'targetUser', 'DummyPasswd!1')).rejects.toThrow(
-				EntityNotFoundError
-			);
+			await expect(
+				accountUc.changePasswordForUser(mockAdminUser.id, mockUserWithoutAccount.id, 'DummyPasswd!1')
+			).rejects.toThrow(EntityNotFoundError);
 		});
 
 		it('should throw if user does not exist', async () => {
-			await expect(accountUc.changePasswordForUser('currentUser', 'targetUser', 'DummyPasswd!1')).rejects.toThrow(
+			await expect(accountUc.changePasswordForUser('currentUser', mockStudentUser.id, 'DummyPasswd!1')).rejects.toThrow(
 				EntityNotFoundError
 			);
-		});
-
-		it('should throw if password is weak', async () => {
-			await expect(
-				accountUc.changePasswordForUser(mockAdminAccount.user.id, mockTeacherAccount.user.id, 'weak')
-			).rejects.toThrow();
+			await expect(accountUc.changePasswordForUser(mockAdminUser.id, 'targetUser', 'DummyPasswd!1')).rejects.toThrow(
+				EntityNotFoundError
+			);
 		});
 
 		it('should accept strong password, update it and force renewal', async () => {
