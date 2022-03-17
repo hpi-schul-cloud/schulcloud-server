@@ -5,12 +5,16 @@ import { UserRepo } from '@shared/repo';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
+import { JwtExtractor } from './jwt-extractor';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(private readonly userRepo: UserRepo, private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
-			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+			jwtFromRequest: ExtractJwt.fromExtractors([
+				ExtractJwt.fromAuthHeaderAsBearerToken(),
+				JwtExtractor.fromCookie('jwt'),
+			]),
 			ignoreExpiration: false,
 			secretOrKey: jwtConstants.secret,
 			...jwtConstants.jwtOptions,

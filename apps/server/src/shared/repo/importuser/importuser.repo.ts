@@ -12,7 +12,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		if (!ObjectId.isValid(id)) throw new Error('invalid id');
 		const importUser = await this.em.findOneOrFail(ImportUser, { id });
 		if (importUser.user != null) {
-			await this.em.populate(importUser.user, 'roles');
+			await this.em.populate(importUser.user, ['roles']);
 		}
 		return importUser;
 	}
@@ -53,12 +53,12 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		const queryOptions = {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
-			orderBy: order as QueryOrderMap,
+			orderBy: order as QueryOrderMap<ImportUser>,
 		};
 		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, queryOptions);
 		const userMatches = importUserEntities.map((importUser) => importUser.user).filter((user) => user != null);
 		// load role names of referenced users
-		await this.em.populate(userMatches, 'roles');
+		await this.em.populate(userMatches as User[], ['roles']);
 		return [importUserEntities, count];
 	}
 

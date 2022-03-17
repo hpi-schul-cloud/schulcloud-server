@@ -30,7 +30,9 @@ export class OauthSSOController {
 			oauthResponse = await this.oauthUc.startOauth(query, systemid);
 			if (oauthResponse.jwt) {
 				res.cookie('jwt', oauthResponse.jwt);
-				return res.redirect(`${HOST}/dashboard`);
+				const idToken = oauthResponse.idToken as string;
+				const logoutEndpoint = oauthResponse.logoutEndpoint as string;
+				return res.redirect(`${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`);
 			}
 		} catch (error) {
 			this.logger.error(error);

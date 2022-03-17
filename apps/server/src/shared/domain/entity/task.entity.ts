@@ -52,22 +52,22 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	@Property()
 	description: string;
 
-	@Property()
+	@Property({ nullable: true })
 	availableDate?: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	dueDate?: Date;
 
 	@Property()
 	private = true;
 
-	@ManyToOne('User', { fieldName: 'teacherId' })
+	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
 	creator?: User;
 
-	@ManyToOne('Course', { fieldName: 'courseId' })
+	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
 	course?: Course;
 
-	@ManyToOne('Lesson', { fieldName: 'lessonId' })
+	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')

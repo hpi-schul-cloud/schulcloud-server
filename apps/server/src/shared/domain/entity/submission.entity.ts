@@ -11,7 +11,7 @@ import type { Task } from './task.entity';
 export interface ISubmissionProperties {
 	task: Task;
 	student: User;
-	courseGroup?: CourseGroup[];
+	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
 	studentFiles?: File[];
@@ -28,25 +28,25 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'studentId' })
 	student: User;
 
-	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId' })
+	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
 	courseGroup?: CourseGroup;
 
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
 	teamMembers = new Collection<User>(this);
 
 	/* ***** student uploads ***** */
-	@Property()
-	comment: string | null;
+	@Property({ nullable: true })
+	comment?: string;
 
 	@ManyToMany('File', undefined, { fieldName: 'fileIds' })
 	studentFiles = new Collection<File>(this);
 
 	/* ***** teacher uploads ***** */
-	@Property()
-	grade: number | null;
+	@Property({ nullable: true })
+	grade?: number;
 
-	@Property()
-	gradeComment: string | null;
+	@Property({ nullable: true })
+	gradeComment?: string;
 
 	@ManyToMany('File', undefined, { fieldName: 'gradeFileIds' })
 	gradeFiles = new Collection<File>(this);
@@ -56,12 +56,19 @@ export class Submission extends BaseEntityWithTimestamps {
 		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
+		this.grade = props.grade;
+		this.gradeComment = props.gradeComment;
+		this.courseGroup = props.courseGroup;
 
-		this.grade = props.grade || null;
-		this.gradeComment = props.gradeComment || null;
-
-		const { courseGroup, teamMembers, studentFiles, gradeFiles } = props;
-		Object.assign(this, { courseGroup, teamMembers, studentFiles, gradeFiles });
+		if (props.teamMembers !== undefined) {
+			this.teamMembers.set(props.teamMembers);
+		}
+		if (props.studentFiles !== undefined) {
+			this.studentFiles.set(props.studentFiles);
+		}
+		if (props.gradeFiles !== undefined) {
+			this.gradeFiles.set(props.gradeFiles);
+		}
 	}
 
 	isGraded(): boolean {

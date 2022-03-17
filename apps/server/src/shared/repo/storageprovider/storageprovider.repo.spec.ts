@@ -47,7 +47,7 @@ describe('StorageProviderRepo', () => {
 		// fetch plain json from db
 		const { id } = storageProvider;
 		const driver = em.getDriver();
-		const result = (await driver.findOne('StorageProvider', { _id: id })) as StorageProvider;
+		const result = (await driver.findOne('StorageProvider', { _id: id })) as unknown as StorageProvider;
 
 		// secretAccessKey should be encrypted in persistence
 		expect(result.secretAccessKey).not.toEqual(secretAccessKey);

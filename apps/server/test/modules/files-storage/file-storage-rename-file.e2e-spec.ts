@@ -6,7 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
+import { FileRecordResponse, RenameFileParams } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecord, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
@@ -19,8 +19,7 @@ import {
 } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
 
-const baseRouteName = '/file-security';
-const scanResult: ScanResultParams = { virus_detected: false };
+const baseRouteName = '/file/rename/';
 
 class API {
 	app: INestApplication;
@@ -29,14 +28,14 @@ class API {
 		this.app = app;
 	}
 
-	async put(requestString: string, body: ScanResultParams) {
+	async patch(requestString: string, body?: RenameFileParams | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}${requestString}`)
+			.patch(`${baseRouteName}${requestString}`)
 			.set('Accept', 'application/json')
-			.send(body);
+			.send(body || {});
 
 		return {
-			result: response.body as FileRecordListResponse,
+			result: response.body as FileRecordResponse,
 			error: response.body as ApiValidationError,
 			status: response.status,
 		};
@@ -49,7 +48,8 @@ describe(`${baseRouteName} (api)`, () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
-	let validId: string;
+	let fileRecord: FileRecord;
+	let fileRecords: FileRecord[];
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -83,44 +83,54 @@ describe(`${baseRouteName} (api)`, () => {
 		const school = schoolFactory.build();
 		const user = userFactory.build({ roles, school });
 
-		await em.persistAndFlush([user]);
-		em.clear();
-
 		currentUser = mapUserToCurrentUser(user);
-		validId = user.school.id;
+		const fileParams = {
+			schoolId: school.id,
+			parentId: school.id,
+			parentType: FileRecordParentType.School,
+		};
+		fileRecords = fileRecordFactory.buildList(3, fileParams);
+		fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt' });
+		fileRecords.push(fileRecord);
+
+		await em.persistAndFlush([user, ...fileRecords]);
+		em.clear();
 	});
 
 	describe('with bad request data', () => {
-		it('should return status 400 for invalid token', async () => {
-			const fileRecord = fileRecordFactory.build({
-				schoolId: validId,
-				parentId: validId,
-				parentType: FileRecordParentType.School,
-			});
-			await em.persistAndFlush(fileRecord);
-			em.clear();
+		it('should return status 400 for invalid fileRecordId', async () => {
+			const response = await api.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+			expect(response.error.validationErrors).toEqual([
+				{
+					errors: ['fileRecordId must be a mongodb id'],
+					field: 'fileRecordId',
+				},
+			]);
+			expect(response.status).toEqual(400);
+		});
 
-			const response = await api.put(`/update-status/wrong-token`, scanResult);
+		it('should return status 400 for empty filename', async () => {
+			const response = await api.patch(`${fileRecord.id}`, { fileName: undefined });
+			expect(response.error.validationErrors).toEqual([
+				{
+					errors: ['fileName must be a string'],
+					field: 'fileName',
+				},
+			]);
+			expect(response.status).toEqual(400);
+		});
 
-			expect(response.status).toEqual(404);
+		it('should return status 409 if filename exists', async () => {
+			const response = await api.patch(`${fileRecord.id}`, { fileName: 'test.txt' });
+			expect(response.error).toEqual({ code: 409, message: 'FILE_NAME_EXISTS', title: 'Conflict', type: 'CONFLICT' });
+			expect(response.status).toEqual(409);
 		});
 	});
 
 	describe(`with valid request data`, () => {
-		it('should return right type of data', async () => {
-			const fileRecord = fileRecordFactory.build({
-				schoolId: validId,
-				parentId: validId,
-				parentType: FileRecordParentType.School,
-			});
-			const token = fileRecord.securityCheck.requestToken || '';
-			await em.persistAndFlush(fileRecord);
-			em.clear();
-
-			const response = await api.put(`/update-status/${token}`, scanResult);
-			const changedFileRecord = await em.findOneOrFail(FileRecord, fileRecord.id);
-
-			expect(changedFileRecord.securityCheck.status).toStrictEqual('verified');
+		it('should return status 200 for successful request', async () => {
+			const response = await api.patch(`${fileRecord.id}`, { fileName: 'test_1.txt' });
+			expect(response.result.name).toEqual('test_1.txt');
 			expect(response.status).toEqual(200);
 		});
 	});

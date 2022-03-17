@@ -45,6 +45,8 @@ export class OauthUc {
 		// send response back
 		const response: OAuthResponse = new OAuthResponse();
 		response.jwt = jwt;
+		response.idToken = queryToken.id_token;
+		response.logoutEndpoint = (await this.systemRepo.findById(systemId)).oauthConfig.logoutEndpoint;
 		return response;
 	}
 

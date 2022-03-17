@@ -10,4 +10,14 @@ export class OAuthResponse {
 	@IsString()
 	@IsNotEmpty()
 	errorcode?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	idToken?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	logoutEndpoint?: string;
 }
