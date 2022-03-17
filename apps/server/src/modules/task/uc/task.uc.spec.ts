@@ -1078,7 +1078,7 @@ describe('TaskUC', () => {
 			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 
-		it('should not call deleteSubmissions if task has no submissions', async () => {
+		it('should not call submissionRepo.delete if task has no submissions', async () => {
 			await service.delete(user.id, task.id);
 			expect(submissionRepo.delete).toBeCalledTimes(0);
 		});
