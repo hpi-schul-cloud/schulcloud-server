@@ -79,7 +79,7 @@ xdescribe('KeycloakIdentityManagement', () => {
 		account2Id = await idm.updateAccount(account2Id!, account2);
 		expect(account2Id).not.toBeNull();
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		foundAccount = await idm.findAccountById(account2Id!);
+		foundAccount = await idm.findAccountById(account2Id);
 		expect(foundAccount).toEqual(expect.objectContaining(account2));
 
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
