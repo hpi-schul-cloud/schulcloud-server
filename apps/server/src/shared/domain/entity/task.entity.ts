@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index, Cascade } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
 import { EntityId } from '../types/entity-id';
 import { ILearnroomElement } from '../interface/learnroom';
 
