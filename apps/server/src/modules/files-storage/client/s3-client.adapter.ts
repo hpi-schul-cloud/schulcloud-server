@@ -4,6 +4,8 @@ import {
 	S3Client,
 	ServiceOutputTypes,
 	CopyObjectCommand,
+	DeleteObjectsCommand,
+	CopyObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
@@ -16,6 +18,8 @@ import { S3Config, IGetFileResponse, IStorageClient, IFile } from '../interface'
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
 	private logger: ILogger;
+
+	private deletedFolderName = 'trash';
 
 	constructor(@Inject('S3_Client') readonly client: S3Client, @Inject('S3_Config') readonly config: S3Config) {
 		this.logger = new Logger('S3Client');
@@ -76,21 +80,32 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async delete(paths: string[], expires: Date): Promise<CopyObjectCommand[]> {
-		this.logger.debug({ action: 'set expires', params: { paths, expires, bucket: this.config.bucket } });
+	public async delete(paths: string[]): Promise<CopyObjectCommandOutput[]> {
+		this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
-		const requests = paths.map((path) => {
+		const copyRequests = paths.map(async (path) => {
 			const req = new CopyObjectCommand({
 				Bucket: this.config.bucket,
-				CopySource: path,
-				Key: path,
-				Expires: expires,
+				CopySource: `${this.config.bucket}/${path}`,
+				Key: `${this.deletedFolderName}/${path}`,
 			});
-			return req;
-			// return this.client.send(req);
+
+			const data = await this.client.send(req);
+
+			return data;
 		});
 
-		const result = await Promise.all(requests);
+		const result = await Promise.all(copyRequests);
+
+		// try catch with rollback is not needed,
+		// because the second copyRequest try override existing files in trash folder
+		const pathObjects = paths.map((p) => ({ Key: p }));
+		const req = new DeleteObjectsCommand({
+			Bucket: this.config.bucket,
+			Delete: { Objects: pathObjects },
+		});
+
+		await this.client.send(req);
 
 		return result;
 	}

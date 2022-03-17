@@ -13,7 +13,6 @@ import {
 	SingleFileParams,
 	RenameFileParams,
 	FileRecordListResponse,
-	ExpiresQuery,
 	FileParams,
 } from './dto';
 
@@ -86,14 +85,9 @@ export class FilesStorageController {
 	@Delete('/delete/:schoolId/:parentType/:parentId')
 	async delete(
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() expiresQuery: ExpiresQuery
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
-		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(
-			currentUser.userId,
-			params,
-			expiresQuery.daysUntilExpiration
-		);
+		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
 
 		const responseFileRecords = fileRecords.map((fileRecord) => {
 			return new FileRecordResponse(fileRecord);
@@ -107,14 +101,9 @@ export class FilesStorageController {
 	@Delete('/delete/:fileRecordId')
 	async deleteFile(
 		@Param() params: SingleFileParams,
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() expiresQuery: ExpiresQuery
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.deleteOneFile(
-			currentUser.userId,
-			params,
-			expiresQuery.daysUntilExpiration
-		);
+		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
 
 		const response = new FileRecordResponse(fileRecord);
 

@@ -351,7 +351,7 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should return file response with expires', async () => {
-				const [fileRecordsRes] = await service.deleteFilesOfParent(userId, requestParams, 7);
+				const [fileRecordsRes] = await service.deleteFilesOfParent(userId, requestParams);
 				expect(fileRecordsRes).toEqual(
 					expect.arrayContaining([expect.objectContaining({ expires: expect.any(Date) as Date })])
 				);
@@ -386,7 +386,7 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should return file response with expires', async () => {
-				const fileRecordRes = await service.deleteOneFile(userId, requestParams, 7);
+				const fileRecordRes = await service.deleteOneFile(userId, requestParams);
 				expect(fileRecordRes).toEqual(expect.objectContaining({ expires: expect.any(Date) as Date }));
 			});
 		});

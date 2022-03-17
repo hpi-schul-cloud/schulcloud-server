@@ -150,8 +150,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.securityCheck.requestToken = undefined;
 	}
 
-	setExpires(date: Date): void {
-		this.expires = date;
+	setExpires(): void {
+		this.expires = new Date();
 	}
 
 	removeExpires(): void {

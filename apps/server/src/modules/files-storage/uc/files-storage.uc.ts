@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+	InternalServerErrorException,
+	Inject,
+} from '@nestjs/common';
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
@@ -7,6 +13,7 @@ import path from 'path';
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, ScanStatus, Counted } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { ILogger, Logger } from '@src/core/logger';
 
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
@@ -14,11 +21,15 @@ import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
+	private logger: ILogger;
+
 	constructor(
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService
-	) {}
+	) {
+		this.logger = new Logger('FileStorage');
+	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
 		// @TODO check permissions of schoolId by user
@@ -148,15 +159,9 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	private createDateFromOffset(expiresDays = 7): Date {
-		const date = new Date(Date.now() + expiresDays * 24 * 60 * 60 * 1000);
-
-		return date;
-	}
-
-	private async setExpires(fileRecords: FileRecord[], expiresDate: Date): Promise<void> {
+	private async setExpires(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
-			fileRecord.setExpires(expiresDate);
+			fileRecord.setExpires();
 		});
 
 		await this.fileRecordRepo.save(fileRecords);
@@ -170,13 +175,14 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	private async delete(fileRecords: FileRecord[], expiresDays?: number) {
-		const expiresDate = this.createDateFromOffset(expiresDays);
-		await this.setExpires(fileRecords, expiresDate);
+	private async delete(fileRecords: FileRecord[]) {
+		this.logger.debug({ action: 'uc: delete', fileRecords });
+
+		await this.setExpires(fileRecords);
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
-			await this.storageClient.delete(paths, expiresDate);
+			await this.storageClient.delete(paths);
 		} catch (err) {
 			await this.restoreExpires(fileRecords);
 
@@ -184,19 +190,15 @@ export class FilesStorageUC {
 		}
 	}
 
-	async deleteFilesOfParent(
-		userId: EntityId,
-		params: FileRecordParams,
-		expiresDays?: number
-	): Promise<Counted<FileRecord[]>> {
+	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-		await this.delete(fileRecords, expiresDays);
+		await this.delete(fileRecords);
 		return [fileRecords, count];
 	}
 
-	async deleteOneFile(userId: EntityId, params: SingleFileParams, expiresDays?: number): Promise<FileRecord> {
+	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		await this.delete([fileRecord], expiresDays);
+		await this.delete([fileRecord]);
 		return fileRecord;
 	}
 }
