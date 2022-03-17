@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index, Cascade } from '@mikro-orm/core';
 import { EntityId } from '../types/entity-id';
 import { ILearnroomElement } from '../interface/learnroom';
 
@@ -70,7 +70,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task')
+	@OneToMany('Submission', 'task', { cascade: [Cascade.REMOVE] })
 	submissions = new Collection<Submission>(this);
 
 	// TODO: rename to finished

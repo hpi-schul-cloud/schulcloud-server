@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Task } from '@shared/domain';
+import { SortOrder, Submission, Task } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -1606,7 +1606,7 @@ describe('TaskRepo', () => {
 	});
 
 	describe('delete', () => {
-		it('should remove a task in the database', async () => {
+		it('should remove a task from the database', async () => {
 			const task = taskFactory.build();
 			await repo.save(task);
 			em.clear();
@@ -1616,6 +1616,17 @@ describe('TaskRepo', () => {
 			await expect(async () => {
 				await repo.findById(id);
 			}).rejects.toThrow(`Task not found ({ id: '${id}' })`);
+		});
+
+		it('should remove related submissions from the database', async () => {
+			const submission = submissionFactory.build();
+			const task = taskFactory.build({ submissions: [submission] });
+			await repo.save(task);
+			em.clear();
+			await repo.delete(task);
+
+			const found = await em.findOne(Submission, { id: submission.id });
+			expect(found).toBe(null);
 		});
 	});
 });
