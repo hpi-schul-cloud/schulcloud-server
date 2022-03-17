@@ -11,6 +11,7 @@ export interface IUserProperties {
 	roles: Role[];
 	ldapId?: string;
 	forcePasswordChange?: boolean;
+	language?: string;
 	preferences?: Record<string, unknown>;
 }
 
@@ -41,6 +42,9 @@ export class User extends BaseEntityWithTimestamps {
 	forcePasswordChange?: boolean;
 
 	@Property({ nullable: true })
+	language?: string;
+
+	@Property({ nullable: true })
 	preferences?: Record<string, unknown>;
 
 	constructor(props: IUserProperties) {
@@ -52,6 +56,7 @@ export class User extends BaseEntityWithTimestamps {
 		this.roles.set(props.roles);
 		this.ldapId = props.ldapId;
 		this.forcePasswordChange = props.forcePasswordChange;
+		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 	}
 }

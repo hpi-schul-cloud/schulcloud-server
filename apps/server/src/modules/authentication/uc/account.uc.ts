@@ -23,7 +23,11 @@ export class AccountUc {
 		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
 	);
 
-	// reset force password change (admin manipulates -> user must change afterwards) unit test
+	static emailPattern = new RegExp(
+		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+	);
+
+	// force password change (admin manipulates -> user must change afterwards) unit test
 	// first login logic unit test
 	// change own password logic unit test
 	// password strength unit test
@@ -36,29 +40,20 @@ export class AccountUc {
 		}
 	}
 
-	async changeMyPassword(userId: EntityId, passwordNew: string, passwordOld: string): Promise<string> {
-		this.checkPasswordStrength(passwordNew);
-
-		// if I change my password
-		// Check if it is own account
-
-		// const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
-
-		// set forcePasswordChange in user
-
-		const targetUser = await this.userRepo.findById(userId);
+	async changeMyTemporaryPassword(userId: EntityId, passwordNew: string): Promise<void> {
+		const user = await this.userRepo.findById(userId);
 		const account = await this.accountRepo.findByUserId(userId);
 
-		const userPreferences = <UserPreferences>targetUser.preferences;
+		const userPreferences = <UserPreferences>user.preferences;
 
-		if (!targetUser.forcePasswordChange || !userPreferences.firstLogin) {
-			if (!passwordOld || !account.password || !(await this.checkPassword(passwordOld, account.password)))
-				throw new ValidationError('Dein Passwort ist nicht korrekt!');
+		if (!user.forcePasswordChange || !userPreferences.firstLogin) {
+			throw new ValidationError('The password in not temporary, hence can not be changed!');
 		}
 
+		this.checkPasswordStrength(passwordNew);
+		const account = await this.accountRepo.findByUserId(userId);
 		await this.updatePassword(account, passwordNew);
-
-		return 'this.accountRepo.update(account);';
+		await this.accountRepo.update(account);
 	}
 
 	private hasRole(user: User, roleName: string) {
@@ -124,6 +119,7 @@ export class AccountUc {
 
 		await this.updatePassword(targetAccount, passwordNew);
 		// set user must change password on next login
+
 		try {
 			targetUser.forcePasswordChange = true;
 			targetUser = await this.userRepo.update(targetUser);
@@ -136,10 +132,9 @@ export class AccountUc {
 
 	private async updatePassword(account: Account, password: string) {
 		account.password = await bcrypt.hash(password, 10);
-		await this.accountRepo.update(account);
 	}
 
-	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
+	private checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
 	}
 
@@ -153,16 +148,28 @@ export class AccountUc {
 		}
 	}
 
-	async changeMyEmail(userId: EntityId, email: string): Promise<string> {
-		// Check if it is own user
-		const user = await this.userRepo.findById(userId);
-
-		await this.updateEmail(user, email);
-
-		return 'this.userRepo.update(user);';
+	// TODO remove in src\utils\constants.js
+	private checkEmail(email: string) {
+		// only check result if also a password was really given
+		if (!email || !AccountUc.emailPattern.test(email)) {
+			throw new ValidationError('The given email is invalid.');
+		}
 	}
 
-	private async updateEmail(user: User, email: string) {
-		await this.userRepo.update(user);
+	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
+		if (!email) {
+			throw new ValidationError('Email is empty or missing.');
+		}
+
+		const foundUsers = await this.userRepo.findByEmail(email.toLowerCase());
+		const foundAccounts = await this.accountRepo.findByEmail(email.toLowerCase());
+
+		if (foundUsers.length > 1 || foundAccounts.length > 1) {
+			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+		} else if (foundUsers.length === 1 || foundAccounts.length === 1) {
+			if (foundUsers[0].id !== user.id || foundAccounts[0].id !== account.id) {
+				throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+			}
+		}
 	}
 }
