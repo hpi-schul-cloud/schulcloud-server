@@ -4,22 +4,65 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: configmap_file_init_db.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+
+  - name: Remove DB Init Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      apiVersion: v1
+      kind: ConfigMap
+      name: api-db-init-file
+    when: not WITH_SCHULCLOUD_INIT
 
   - name: Management Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: management-deployment.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+
+  - name: Remove management Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      apiVersion: apps/v1
+      kind: Deployment
+      name: management-deployment
+    when: not WITH_SCHULCLOUD_INIT
 
   - name: Management Service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: management-svc.yml.j2
+    when: WITH_SCHULCLOUD_INIT
 
+  - name: Remove management Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      apiVersion: v1
+      kind: Service
+      name: mgmt-svc
+    when: not WITH_SCHULCLOUD_INIT
 
   - name: DB Init Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: job_init_db.yml.j2
+    when: WITH_SCHULCLOUD_INIT
+
+  - name: Remove DB Init Job
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      apiVersion: batch/v1
+      kind: Job
+      name: api-db-init-job
+    when: not WITH_SCHULCLOUD_INIT
