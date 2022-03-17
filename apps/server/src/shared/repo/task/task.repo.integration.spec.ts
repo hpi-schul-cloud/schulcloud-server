@@ -1625,8 +1625,9 @@ describe('TaskRepo', () => {
 			em.clear();
 			await repo.delete(task);
 
-			const found = await em.findOne(Submission, { id: submission.id });
-			expect(found).toBe(null);
+			await expect(async () => {
+				await em.findOneOrFail(Submission, { id: submission.id });
+			}).rejects.toThrow(`Submission not found ({ id: '${submission.id}' })`);
 		});
 	});
 });
