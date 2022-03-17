@@ -4,9 +4,10 @@
 > from third party services which can be an active directory or LDAP.
 
 ## Docker
-To run Keycloak locally for development purpose use the following Bash or PowerShell command. If you don't want to block
-your terminal, you can add the `-d` option to start the container in the background. Execute these commands in the
-repository root or the data seeding will fail, and you can not log into Keycloak with any user.
+To run Keycloak locally for development purpose use the following Bash or PowerShell command. You can log into Keycloak 
+here http://localhost:8080. If you don't want to block your terminal, you can add the `-d` option to start the container
+in the background. Execute these commands in the repository root or the data seeding will fail, and you can not log into
+Keycloak with any user.
 
 __Bash:__
 ```bash
@@ -45,4 +46,4 @@ and testing. In the table below you can see the username and password combinatio
 2. Use `docker container exec -it keycloak bash` to start a bash in the container
 3. Use the Keycloak-CLI to export all Keycloak data with `/opt/keycloak/bin/kc.sh export --dir /tmp/realms`
 4. Save your changes with a commit
-5. If you start your container with a command from the docker section, your changes will be 
+5. If you start your container with a command from the docker section, your changes will be directly applied to the starting Keycloak container
