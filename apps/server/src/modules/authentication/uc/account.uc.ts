@@ -27,69 +27,97 @@ export class AccountUc {
 		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 	);
 
-	// force password change (admin manipulates -> user must change afterwards) unit test
-	// first login logic unit test
-	// change own password logic unit test
-	// password strength unit test
+	async updateMyAccount(currentUser: ICurrentUser, params: PatchAccountParams) {
+		let account: Account;
+		try {
+			account = await this.accountRepo.findByUserId(currentUser.userId);
+		} catch (err) {
+			throw new EntityNotFoundError('Account');
+		}
+		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
+			throw new Error('Dein Passwort ist nicht korrekt!');
+		}
 
-	async updateMyAccount(user: ICurrentUser, params: PatchAccountParams) {
-		const account = await this.accountRepo.read(user.accountId);
+		let user: User;
+		try {
+			user = await this.userRepo.findById(currentUser.userId);
+		} catch (err) {
+			throw new EntityNotFoundError('User');
+		}
 
-		if (await this.checkPassword(params.passwordOld, account.password ?? '')) {
-			throw new Error();
+		let updateUser = false;
+		let updateAccount = false;
+		if (params.passwordNew) {
+			this.checkPasswordStrength(params.passwordNew);
+			await this.updatePassword(account, params.passwordNew);
+			updateAccount = true;
+		}
+		if (params.language && user.language !== params.language) {
+			// TODO Check if there is an enum or some other fixed values here?
+			user.language = params.language;
+			updateUser = true;
+		}
+		if (params.email && user.email !== params.email) {
+			this.checkEmail(params.email);
+			await this.checkUniqueEmail(account, user, params.email);
+			user.email = params.email;
+			account.username = params.email;
+			updateUser = true;
+			updateAccount = true;
+		}
+
+		if (params.firstName && user.firstName !== params.firstName) {
+			if (!this.hasPermissionsToChangeOwnName(user)) {
+				throw new ForbiddenException('No permission to change first name');
+			}
+			user.firstName = params.firstName;
+			updateUser = true;
+		}
+		if (params.lastName && user.lastName !== params.lastName) {
+			if (!this.hasPermissionsToChangeOwnName(user)) {
+				throw new ForbiddenException('No permission to change last name');
+			}
+			user.lastName = params.lastName;
+			updateUser = true;
+		}
+
+		if (updateUser) {
+			await this.userRepo.update(user);
+		}
+		if (updateAccount) {
+			await this.accountRepo.update(account);
+		}
+	}
+
+	async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
+		if (currentUserId === targetUserId) {
+			await this.changeMyTemporaryPassword(currentUserId, passwordNew);
+		} else {
+			await this.changePasswordForUser(currentUserId, targetUserId, passwordNew);
 		}
 	}
 
 	async changeMyTemporaryPassword(userId: EntityId, passwordNew: string): Promise<void> {
-		const user = await this.userRepo.findById(userId);
-		const account = await this.accountRepo.findByUserId(userId);
-
+		let user: User;
+		try {
+			user = await this.userRepo.findById(userId);
+		} catch (err) {
+			throw new EntityNotFoundError('User');
+		}
 		const userPreferences = <UserPreferences>user.preferences;
-
-		if (!user.forcePasswordChange || !userPreferences.firstLogin) {
-			throw new ValidationError('The password in not temporary, hence can not be changed!');
+		if (!user.forcePasswordChange && userPreferences.firstLogin) {
+			throw new ForbiddenException('The password in not temporary, hence can not be changed!');
 		}
 
 		this.checkPasswordStrength(passwordNew);
-		const account = await this.accountRepo.findByUserId(userId);
-		await this.updatePassword(account, passwordNew);
-		await this.accountRepo.update(account);
-	}
-
-	private hasRole(user: User, roleName: string) {
-		return user.roles.getItems().some((role) => {
-			return role.name === roleName;
-		});
-	}
-
-	private isDemoUser(currentUser: User) {
-		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
-	}
-
-	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
-		if (this.hasRole(currentUser, 'superhero')) {
-			return true;
+		let targetAccount: Account;
+		try {
+			targetAccount = await this.accountRepo.findByUserId(userId);
+		} catch (err) {
+			throw new EntityNotFoundError('Account');
 		}
-		if (!(currentUser.school.id === targetUser.school.id)) {
-			return false;
-		}
-		if (this.isDemoUser(currentUser)) {
-			return false;
-		}
-
-		const permissionsToCheck: string[] = [];
-		if (this.hasRole(targetUser, 'student')) {
-			permissionsToCheck.push('STUDENT_EDIT');
-		}
-		if (this.hasRole(targetUser, 'teacher')) {
-			permissionsToCheck.push('TEACHER_EDIT');
-		}
-		if (permissionsToCheck.length === 0) {
-			// target user is neither student nor teacher. Undefined what to do
-			return false;
-		}
-
-		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
+		await this.updatePassword(targetAccount, passwordNew);
+		await this.accountRepo.update(targetAccount);
 	}
 
 	// TODO check for demo users (hook "securePatching")
@@ -118,6 +146,7 @@ export class AccountUc {
 		}
 
 		await this.updatePassword(targetAccount, passwordNew);
+		await this.accountRepo.update(targetAccount);
 		// set user must change password on next login
 
 		try {
@@ -128,6 +157,50 @@ export class AccountUc {
 		}
 
 		return 'this.accountRepo.update(account);';
+	}
+
+	private hasRole(user: User, roleName: string) {
+		return user.roles.getItems().some((role) => {
+			return role.name === roleName;
+		});
+	}
+
+	private isDemoUser(currentUser: User) {
+		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
+	}
+
+	private hasPermissionsToChangeOwnName(currentUser: User) {
+		return (
+			this.hasRole(currentUser, 'superhero') ||
+			this.hasRole(currentUser, 'teacher') ||
+			this.hasRole(currentUser, 'administrator')
+		);
+	}
+
+	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
+		if (this.hasRole(currentUser, 'superhero')) {
+			return true;
+		}
+		if (!(currentUser.school.id === targetUser.school.id)) {
+			return false;
+		}
+		if (this.isDemoUser(currentUser)) {
+			return false;
+		}
+
+		const permissionsToCheck: string[] = [];
+		if (this.hasRole(targetUser, 'student')) {
+			permissionsToCheck.push('STUDENT_EDIT');
+		}
+		if (this.hasRole(targetUser, 'teacher')) {
+			permissionsToCheck.push('TEACHER_EDIT');
+		}
+		if (permissionsToCheck.length === 0) {
+			// target user is neither student nor teacher. Undefined what to do
+			return false;
+		}
+
+		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
 	}
 
 	private async updatePassword(account: Account, password: string) {
@@ -160,16 +233,17 @@ export class AccountUc {
 		if (!email) {
 			throw new ValidationError('Email is empty or missing.');
 		}
+		return Promise.resolve();
 
-		const foundUsers = await this.userRepo.findByEmail(email.toLowerCase());
-		const foundAccounts = await this.accountRepo.findByEmail(email.toLowerCase());
+		// const foundUsers = await this.userRepo.findByEmail(email.toLowerCase());
+		// const foundAccounts = await this.accountRepo.findByEmail(email.toLowerCase());
 
-		if (foundUsers.length > 1 || foundAccounts.length > 1) {
-			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-		} else if (foundUsers.length === 1 || foundAccounts.length === 1) {
-			if (foundUsers[0].id !== user.id || foundAccounts[0].id !== account.id) {
-				throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-			}
-		}
+		// if (foundUsers.length > 1 || foundAccounts.length > 1) {
+		// 	throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+		// } else if (foundUsers.length === 1 || foundAccounts.length === 1) {
+		// 	if (foundUsers[0].id !== user.id || foundAccounts[0].id !== account.id) {
+		// 		throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+		// 	}
+		// }
 	}
 }

@@ -5,6 +5,7 @@ import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
 import { PatchAccountParams, PatchEmailParams, PatchPasswordParams } from './dto';
+import { Password } from './dto/password.param';
 
 /* interface MyPassword {
 	passwordNew: string;
@@ -17,42 +18,19 @@ import { PatchAccountParams, PatchEmailParams, PatchPasswordParams } from './dto
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
-	@Get(':id/pw')
-	dummyGet(@Param('id') userId: string) {
-		console.log('GET account request received', userId);
-		return 'dummy response';
-	}
+	//TODO re-factor api/v1/forcePasswordChange endpoint
 
 	@Patch(':id/pw')
 	async changePassword(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) userId: string,
 		@Body() { password }: Password
-	): Promise<string> {
-		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
-		return 'dummy response';
+	): Promise<void> {
+		await this.accountUc.changePassword(currentUser.userId, userId, password);
 	}
 
 	@Patch('me')
-	async updateMyAccount(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: PatchAccountParams
-	): Promise<unknown> {
+	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchAccountParams): Promise<void> {
 		return this.accountUc.updateMyAccount(currentUser, params);
-	}
-
-	@Patch('me/password')
-	async changeMyPassword(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: PatchPasswordParams
-	): Promise<string> {
-		await this.accountUc.changeMyPassword(currentUser.userId, params.passwordNew, params.passwordOld);
-		return 'dummy response';
-	}
-
-	@Patch('me/email')
-	async changeMyEmail(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchEmailParams): Promise<string> {
-		await this.accountUc.changeMyEmail(currentUser.userId, params.email);
-		return 'dummy response';
 	}
 }

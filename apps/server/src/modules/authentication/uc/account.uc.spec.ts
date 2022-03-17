@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, PermissionService, Role, School, User } from '@shared/domain';
+import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
@@ -14,7 +14,7 @@ describe('AccountUc', () => {
 	let orm: MikroORM;
 
 	let mockSchool: School;
-	let mockotherSchool: School;
+	let mockOtherSchool: School;
 
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
@@ -78,6 +78,9 @@ describe('AccountUc', () => {
 							if (userId === mockOtherTeacherAccount.user.id) {
 								return Promise.resolve(mockOtherTeacherAccount);
 							}
+							if (userId === 'accountWithoutUser') {
+								return Promise.resolve(mockStudentAccount);
+							}
 							throw Error();
 						},
 					},
@@ -107,6 +110,9 @@ describe('AccountUc', () => {
 							if (userId === mockOtherTeacherAccount.user.id) {
 								return Promise.resolve(mockOtherTeacherAccount.user);
 							}
+							if (userId === 'userWithoutAccount') {
+								return Promise.resolve(mockStudentAccount.user);
+							}
 							throw Error();
 						},
 						update: (user: User): Promise<User> => {
@@ -120,8 +126,11 @@ describe('AccountUc', () => {
 
 		accountUc = module.get(AccountUc);
 		orm = await setupEntities();
+	});
+
+	beforeEach(() => {
 		mockSchool = schoolFactory.buildWithId();
-		mockotherSchool = schoolFactory.buildWithId();
+		mockOtherSchool = schoolFactory.buildWithId();
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
@@ -148,19 +157,21 @@ describe('AccountUc', () => {
 			roles: [new Role({ name: 'student', permissions: [] })],
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
-			school: mockotherSchool,
+			school: mockOtherSchool,
 			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
 		});
 
-		mockSuperheroAccount = accountFactory.buildWithId({ user: mockSuperheroUser, password: 'hjkl' });
-		mockTeacherAccount = accountFactory.buildWithId({ user: mockTeacherUser, password: 'asdf' });
-		mockDemoTeacherAccount = accountFactory.buildWithId({ user: mockDemoTeacherUser, password: 'vbnm' });
-		mockOtherTeacherAccount = accountFactory.buildWithId({ user: mockOtherTeacherUser, password: 'uiop' });
-		mockAdminAccount = accountFactory.buildWithId({ user: mockAdminUser, password: 'qwer' });
-		mockStudentAccount = accountFactory.buildWithId({ user: mockStudentUser, password: '1234' });
+		// DummyPasswd!1
+		const defaultPassword = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+		mockSuperheroAccount = accountFactory.buildWithId({ user: mockSuperheroUser, password: defaultPassword });
+		mockTeacherAccount = accountFactory.buildWithId({ user: mockTeacherUser, password: defaultPassword });
+		mockDemoTeacherAccount = accountFactory.buildWithId({ user: mockDemoTeacherUser, password: defaultPassword });
+		mockOtherTeacherAccount = accountFactory.buildWithId({ user: mockOtherTeacherUser, password: defaultPassword });
+		mockAdminAccount = accountFactory.buildWithId({ user: mockAdminUser, password: defaultPassword });
+		mockStudentAccount = accountFactory.buildWithId({ user: mockStudentUser, password: defaultPassword });
 		mockDifferentSchoolAdminAccount = accountFactory.buildWithId({
 			user: mockDifferentSchoolAdminUser,
-			password: 'yxcv',
+			password: defaultPassword,
 		});
 	});
 
@@ -230,27 +241,164 @@ describe('AccountUc', () => {
 		});
 	});
 
-	describe('changeMyPassword', () => {
+	describe('updateMyAccount', () => {
+		it('should throw if user does not exist', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: 'userId' } as ICurrentUser, { passwordOld: 'DummyPasswd!1' })
+			).rejects.toThrow(EntityNotFoundError);
+		});
 		it('should throw if account does not exist', async () => {
-			await expect(accountUc.changeMyPassword('user', 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow(
-				EntityNotFoundError
-			);
+			mockStudentAccount.user.forcePasswordChange = true;
+			mockStudentAccount.user.preferences = { firstLogin: true };
+			await expect(
+				accountUc.updateMyAccount({ userId: 'userWithoutAccount' } as ICurrentUser, { passwordOld: 'DummyPasswd!1' })
+			).rejects.toThrow(EntityNotFoundError);
+		});
+		it('should throw if password does not match', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, { passwordOld: 'DoesNotMatch' })
+			).rejects.toThrow();
+		});
+		it('should throw if new password is weak', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					passwordNew: 'weak',
+				})
+			).rejects.toThrow();
+		});
+		it('should throw if new email is invalid', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					email: 'NoValidMail',
+				})
+			).rejects.toThrow();
+		});
+		it('should throw if new email exits', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					email: 'an@existing.mail',
+				})
+			).rejects.toThrow();
+		});
+		it('should throw if changing own name is not allowed', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newFirstName',
+				})
+			).rejects.toThrow(ForbiddenException);
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					lastName: 'newFirstName',
+				})
+			).rejects.toThrow(ForbiddenException);
+		});
+		it('should allow to update email', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					email: 'an@available.mail',
+				})
+			).resolves.not.toThrow();
+		});
+		it('should allow to update with strong password', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					passwordNew: 'DummyPasswd!2',
+				})
+			).resolves.not.toThrow();
+		});
+		it('should allow to update language', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					language: 'newLanguage',
+				})
+			).resolves.not.toThrow();
+		});
+		it('should allow to update first and last name if teacher', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockTeacherUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newFirstName',
+				})
+			).resolves.not.toThrow();
+			await expect(
+				accountUc.updateMyAccount({ userId: mockTeacherUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newLastName',
+				})
+			).resolves.not.toThrow();
+		});
+		it('should allow to update first and last name if admin', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockAdminUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newFirstName',
+				})
+			).resolves.not.toThrow();
+			await expect(
+				accountUc.updateMyAccount({ userId: mockAdminUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newLastName',
+				})
+			).resolves.not.toThrow();
+		});
+		it('should allow to update first and last name if superhero', async () => {
+			await expect(
+				accountUc.updateMyAccount({ userId: mockSuperheroUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newFirstName',
+				})
+			).resolves.not.toThrow();
+			await expect(
+				accountUc.updateMyAccount({ userId: mockSuperheroUser.id } as ICurrentUser, {
+					passwordOld: 'DummyPasswd!1',
+					firstName: 'newLastName',
+				})
+			).resolves.not.toThrow();
+		});
+	});
+
+	describe('changeMyTemporaryPassword', () => {
+		it('should throw if account does not exist', async () => {
+			await expect(accountUc.changeMyTemporaryPassword('NA', 'DummyPasswd!1')).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if user does not exist', async () => {
-			await expect(accountUc.changeMyPassword('account', 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow(
+			await expect(accountUc.changeMyTemporaryPassword('accountWithoutUser', 'DummyPasswd!1')).rejects.toThrow(
 				EntityNotFoundError
 			);
 		});
 		it('should throw if password is weak', async () => {
-			await expect(accountUc.changeMyPassword(mockAccount.user.id, 'weak', 'DummyPasswd!1')).rejects.toThrow();
+			mockStudentAccount.user.forcePasswordChange = true;
+			mockStudentAccount.user.preferences = { firstLogin: true };
+			await expect(accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'weak')).rejects.toThrow();
 		});
-		it('should throw if user has not change password after admin manipulated it', async () => {
-			expect(mockAccount.user.forcePasswordChange).toBeFalsy();
-			await expect(accountUc.changeMyPassword(mockAccount.user.id, 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow();
+		it('should throw if not the users password is temporary', async () => {
+			mockStudentAccount.user.forcePasswordChange = false;
+			mockStudentAccount.user.preferences = { firstLogin: true };
+			await expect(accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')).rejects.toThrow(
+				ForbiddenException
+			);
 		});
-		it('should throw if user has not performed the first login', async () => {
-			expect(mockAccount.user.preferences).toBeFalsy();
-			await expect(accountUc.changeMyPassword(mockAccount.user.id, 'DummyPasswd!1', 'DummyPasswd!2')).rejects.toThrow();
+		it('should allow to set strong password, if the admin manipulated the users password', async () => {
+			mockStudentAccount.user.forcePasswordChange = true;
+			mockStudentAccount.user.preferences = { firstLogin: true };
+			await expect(
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')
+			).resolves.not.toThrow();
+		});
+		it('should allow to set strong password, if this is the users first login', async () => {
+			mockStudentAccount.user.forcePasswordChange = false;
+			mockStudentAccount.user.preferences = { firstLogin: false };
+			await expect(
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')
+			).resolves.not.toThrow();
 		});
 	});
 });
