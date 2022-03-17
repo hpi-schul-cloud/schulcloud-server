@@ -1,12 +1,10 @@
-import { ApiTags } from '@nestjs/swagger';
-
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
-import { ICurrentUser } from '@shared/domain';
-
+import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { PatchEmailParams, PatchPasswordParams } from './dto';
+import { PatchAccountParams, PatchEmailParams, PatchPasswordParams } from './dto';
 
 /* interface MyPassword {
 	passwordNew: string;
@@ -15,7 +13,7 @@ import { PatchEmailParams, PatchPasswordParams } from './dto';
 
 @ApiTags('Account')
 @Authenticate('jwt')
-@Controller('Accounts')
+@Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
@@ -36,8 +34,11 @@ export class AccountController {
 	}
 
 	@Patch('me')
-	async updateAccountAndUser(@CurrentUser() currentUser: ICurrentUser, params: PatchAccountParams): Promise<unknown> {
-		return Promise.resolve();
+	async updateMyAccount(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() params: PatchAccountParams
+	): Promise<unknown> {
+		return this.accountUc.updateMyAccount(currentUser, params);
 	}
 
 	@Patch('me/password')
