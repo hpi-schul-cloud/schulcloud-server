@@ -70,7 +70,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task', { cascade: [Cascade.REMOVE] })
+	@OneToMany('Submission', 'task', { orphanRemoval: true })
 	submissions = new Collection<Submission>(this);
 
 	// TODO: rename to finished
