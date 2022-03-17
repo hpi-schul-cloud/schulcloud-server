@@ -32,9 +32,9 @@ export class UserImportUc {
 	) {}
 
 	private featureEnabled() {
-		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as string;
+		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
-		if (enabled !== 'true' || !ObjectId.isValid(systemId)) {
+		if (!enabled || !ObjectId.isValid(systemId)) {
 			throw new InternalServerErrorException('User Migration not configured');
 		}
 	}

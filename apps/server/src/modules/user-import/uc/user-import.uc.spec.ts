@@ -94,7 +94,7 @@ describe('[ImportUserModule]', () => {
 					return mockSystemId;
 				}
 				if (config === 'FEATURE_USER_MIGRATION_ENABLED') {
-					return 'true'; // true
+					return true;
 				}
 				return null;
 			});

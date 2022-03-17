@@ -743,7 +743,7 @@
 			"description": "Toggle for course sharing feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
-			"type": "string",
+			"type": "boolean",
 			"default": false,
 			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
 		},
