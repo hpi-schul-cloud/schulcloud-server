@@ -215,7 +215,7 @@ describe(`${baseRouteName} (api)`, () => {
 					parentId: expect.any(String) as string,
 					parentType: 'schools',
 					type: 'text/plain',
-					expires: expect.any(String) as string,
+					deletedSince: expect.any(String) as string,
 				});
 			});
 
@@ -302,7 +302,7 @@ describe(`${baseRouteName} (api)`, () => {
 					parentId: expect.any(String) as string,
 					parentType: 'schools',
 					type: 'text/plain',
-					expires: expect.any(String) as string,
+					deletedSince: expect.any(String) as string,
 				});
 			});
 
