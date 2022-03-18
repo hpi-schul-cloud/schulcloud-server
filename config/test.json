@@ -6,12 +6,9 @@
 	"public": "../public/",
 	"services": {
 		"calendar": "https://schul.tech:3000",
-		"content": "https://content.schul-cloud.org",
-		"notification": "https://hpi-schul-cloud.org:3030"
+		"content": "https://content.schul-cloud.org"
 	},
 	"FORCE_SEND_EMAIL": true,
-	"NOTIFICATION_PLATFORM": "testplatform",
-	"NOTIFICATION_URI": "http://localhost:3031",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
 	"AES_KEY": "6543210987654321",
 	"ADMIN_TOGGLE_STUDENT_VISIBILITY": "opt-out",

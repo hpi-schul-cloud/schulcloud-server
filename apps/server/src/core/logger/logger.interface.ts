@@ -1,7 +1,7 @@
 export interface ILogger {
-	log(message: any, context?: string): any;
-	error(message: any, trace?: string, context?: string): any;
-	warn(message: any, context?: string): any;
-	debug(message: any, context?: string): any;
-	verbose?(message: any, context?: string): any;
+	log(message: unknown, context?: string): unknown;
+	error(message: unknown, trace?: string, context?: string): unknown;
+	warn(message: unknown, context?: string): unknown;
+	debug?(message: unknown, context?: string): unknown;
+	verbose?(message: unknown, context?: string): unknown;
 }

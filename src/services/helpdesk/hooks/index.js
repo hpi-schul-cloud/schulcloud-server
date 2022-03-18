@@ -93,7 +93,6 @@ const feedback = () => async (hook) => {
 			},
 			attachments: data.files,
 		});
-		// TODO: NOTIFICATION SERVICE
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
 		const emails = [];
