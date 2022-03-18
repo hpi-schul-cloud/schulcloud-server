@@ -8,12 +8,12 @@ const { Schema } = mongoose;
 const COURSE_FEATURES = {
 	MESSENGER: 'messenger',
 };
-
+// not all pros exist in new entity
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
-		userIds: [{ type: Schema.Types.ObjectId, ref: 'user', index: true }],
+		schoolId: { type: Schema.Types.ObjectId, required: true },
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	};
@@ -64,22 +64,6 @@ const courseSchema = getUserGroupSchema({
 	...externalSourceSchema,
 });
 
-/*
-query list with biggest impact of database load
-
-*/
-// _directly set in getUserGroupSchema_
-// schema.index({ schoolId: 1 });
-// schema.index({ userIds: 1 });
-// _ from externalSourceSchema
-// schema.index({ source: 1 });
-// - - - - - - - - - - - - - - - - -
-courseSchema.index({ userIds: 1 }); // ?
-courseSchema.index({ teacherIds: 1 }); // ?
-courseSchema.index({ substitutionIds: 1 }); // ?
-courseSchema.index({ shareToken: 1 }, { sparse: true, unique: true }); // ?
-courseSchema.index({ untilDate: 1 }); // ?
-
 courseSchema.plugin(mongooseLeanVirtuals);
 
 const getCourseIsArchived = (aCourse) => {
@@ -110,11 +94,7 @@ schulcloud.coursegroups        find         {"$and": [{"courseId": 1}], "courseI
 schulcloud.coursegroups        find         {"userIds": 1} -> 2
 */
 
-// _directly set in getUserGroupSchema_
-// schema.index({ schoolId: 1 });
-// schema.index({ userIds: 1 });
-courseGroupSchema.index({ schoolId: 1, courseId: 1 }); // ok = 1
-
+// Exist not in as entity
 const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },

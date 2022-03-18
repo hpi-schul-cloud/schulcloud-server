@@ -35,14 +35,6 @@ const importUserSchema = new Schema(
 	}
 );
 
-importUserSchema.index({ schoolId: 1, ldapId: 1 }, { unique: true });
-importUserSchema.index({ schoolId: 1, ldapDn: 1 }, { unique: true });
-importUserSchema.index({ schoolId: 1, email: 1 }, { unique: true });
-importUserSchema.index(
-	{ match_userId: 1 },
-	{ unique: true, partialFilterExpression: { match_userId: { $type: 'objectId' } } }
-);
-
 const importUserModel = mongoose.model('importUser', importUserSchema);
 
 module.exports = {

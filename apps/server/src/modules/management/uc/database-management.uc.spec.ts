@@ -285,4 +285,11 @@ describe('DatabaseManagementService', () => {
 			});
 		});
 	});
+	describe('DatabaseManagementService', () => {
+		it('should call syncIndexes()', async () => {
+			dbService.syncIndexes = jest.fn();
+			await uc.syncIndexes();
+			expect(dbService.syncIndexes).toHaveBeenCalled();
+		});
+	});
 });
