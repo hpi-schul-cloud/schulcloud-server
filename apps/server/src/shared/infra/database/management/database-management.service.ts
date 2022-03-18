@@ -18,10 +18,10 @@ export class DatabaseManagementService {
 	}
 
 	async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
-		const collection = this.getDatabaseCollection(collectionName);
 		if (jsonDocuments.length === 0) {
 			return 0;
 		}
+		const collection = this.getDatabaseCollection(collectionName);
 		const { insertedCount } = await collection.insertMany(jsonDocuments as BaseEntity[], {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,

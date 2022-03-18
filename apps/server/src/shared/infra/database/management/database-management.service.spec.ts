@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'mongodb';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MikroORM } from '@mikro-orm/core';
 import { DatabaseManagementService } from './database-management.service';
 
 const randomChars = () => {
@@ -9,6 +10,7 @@ const randomChars = () => {
 describe('DatabaseManagementService', () => {
 	let service: DatabaseManagementService;
 	let module: TestingModule;
+	let omr: MikroORM;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
@@ -16,6 +18,7 @@ describe('DatabaseManagementService', () => {
 		}).compile();
 
 		service = module.get(DatabaseManagementService);
+		omr = module.get(MikroORM);
 	});
 
 	afterAll(async () => {
@@ -69,6 +72,19 @@ describe('DatabaseManagementService', () => {
 			await service.importCollection(random, [sample]);
 			const foundDocuments = await service.findDocumentsOfCollection(random);
 			expect(foundDocuments).toEqual(expect.arrayContaining([sample]));
+		});
+		it('should return "0" if jsonDocuments is empty', async () => {
+			const random = randomChars();
+			const res = await service.importCollection(random, []);
+			expect(res).toEqual(0);
+		});
+	});
+
+	describe('When call syncIndexes()', () => {
+		it('should call getSchemaGenerator().ensureIndexes()', async () => {
+			const spy = jest.spyOn(omr, 'getSchemaGenerator');
+			await service.syncIndexes();
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 });

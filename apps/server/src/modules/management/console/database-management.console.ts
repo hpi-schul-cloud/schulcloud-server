@@ -60,8 +60,10 @@ export class DatabaseManagementConsole {
 		options: [],
 		description: 'sync indexes from nest and mikroorm',
 	})
-	async syncIndexes() {
+	async syncIndexes(): Promise<string> {
 		await this.databaseManagementUc.syncIndexes();
-		return 'sync of indexes is completed';
+		const report = 'sync of indexes is completed';
+		this.consoleWriter.info(report);
+		return report;
 	}
 }
