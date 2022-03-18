@@ -48,8 +48,8 @@ describe('FileRecordRepo', () => {
 			await expect(repo.findOneById(notExistingId)).rejects.toThrowError();
 		});
 
-		it('should ingnore expires', async () => {
-			const fileRecord = fileRecordFactory.build({ expires: new Date() });
+		it('should ingnore deletedSince', async () => {
+			const fileRecord = fileRecordFactory.build({ deletedSince: new Date() });
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -165,7 +165,7 @@ describe('FileRecordRepo', () => {
 			expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
 		});
 
-		it('should ingnore expires', async () => {
+		it('should ingnore deletedSince', async () => {
 			const parentId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
 
@@ -179,7 +179,7 @@ describe('FileRecordRepo', () => {
 				schoolId,
 				parentType: FileRecordParentType.Task,
 				parentId,
-				expires: new Date(),
+				deletedSince: new Date(),
 			});
 
 			await em.persistAndFlush([...fileRecords, ...fileRecordsExpired]);
