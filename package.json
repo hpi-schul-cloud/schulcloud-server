@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.9.0",
+	"version": "27.9.1",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
