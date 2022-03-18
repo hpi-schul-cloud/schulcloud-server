@@ -33,7 +33,6 @@ export class FileSecurityCheck {
 	@Property()
 	reason = 'not yet scanned';
 
-	@Index()
 	@Property()
 	requestToken?: string = uuid();
 
@@ -74,7 +73,9 @@ export interface IFileRecordProperties {
  * and instead just use the plain object ids.
  */
 @Entity({ tableName: 'filerecords' })
-@Index({ properties: ['_schoolId', '_parentId'] })
+@Index({ properties: ['_schoolId', '_parentId'], options: { background: true } })
+// https://github.com/mikro-orm/mikro-orm/issues/1230
+@Index({ options: { 'securityCheck.requestToken': 1 } })
 export class FileRecord extends BaseEntityWithTimestamps {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })

@@ -1,4 +1,4 @@
-import { Entity, Property, Index, ManyToMany, Collection } from '@mikro-orm/core';
+import { Entity, Property, Index, ManyToMany, Collection, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IRoleProperties {
@@ -10,7 +10,7 @@ export interface IRoleProperties {
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ name: 'primaryRoleSearchOperation', options: { unique: true } })
+	@Unique()
 	name: string;
 
 	// @Enum({ items: ['a', 'b', 'c'] }) in array with no permission is valid => validator function

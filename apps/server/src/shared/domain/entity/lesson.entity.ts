@@ -15,10 +15,11 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	@Property()
 	name: string;
 
-	@Index({ name: 'findAllByCourseIds' })
+	@Index()
 	@Property()
 	hidden = false;
 
+	@Index()
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
