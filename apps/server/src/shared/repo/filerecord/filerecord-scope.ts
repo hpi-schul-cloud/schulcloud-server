@@ -10,7 +10,7 @@ export class FileRecordScope extends Scope<FileRecord> {
 	}
 
 	byFileRecordId(fileRecordId: EntityId): FileRecordScope {
-		this.addQuery({ _id: new ObjectId(fileRecordId) });
+		this.addQuery({ id: fileRecordId });
 
 		return this;
 	}
@@ -27,8 +27,8 @@ export class FileRecordScope extends Scope<FileRecord> {
 		return this;
 	}
 
-	byExpires(isExpires = true): FileRecordScope {
-		const query = isExpires ? { expires: { $ne: null } } : { expires: null };
+	byMarkedForDelete(isMarked = true): FileRecordScope {
+		const query = isMarked ? { deletedSince: { $ne: null } } : { deletedSince: null };
 		this.addQuery(query);
 
 		return this;

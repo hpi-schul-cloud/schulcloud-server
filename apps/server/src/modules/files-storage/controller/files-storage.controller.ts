@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
+
 import { PaginationQuery } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { Request } from 'express';
+
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
@@ -72,10 +74,10 @@ export class FilesStorageController {
 	@Patch('/rename/:fileRecordId/')
 	async patchFilename(
 		@Param() params: SingleFileParams,
-		@Body() renameFileDto: RenameFileParams,
+		@Body() renameFileParam: RenameFileParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
-		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileDto);
+		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileParam);
 
 		const response = new FileRecordResponse(res);
 

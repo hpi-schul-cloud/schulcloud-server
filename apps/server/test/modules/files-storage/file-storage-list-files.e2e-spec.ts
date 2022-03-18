@@ -182,8 +182,7 @@ describe(`${baseRouteName} (api)`, () => {
 				name: expect.any(String) as string,
 				parentId: expect.any(String) as string,
 				parentType: 'schools',
-				type: 'application/octet-stream', // fuh why ???
-				expires: null,
+				type: 'application/octet-stream',
 			});
 		});
 

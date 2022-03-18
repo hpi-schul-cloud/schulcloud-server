@@ -156,7 +156,7 @@ export class FilesStorageUC {
 
 	private async setExpires(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
-			fileRecord.setExpires();
+			fileRecord.markForDelete();
 		});
 
 		await this.fileRecordRepo.save(fileRecords);
@@ -164,7 +164,7 @@ export class FilesStorageUC {
 
 	private async restoreExpires(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
-			fileRecord.removeExpires();
+			fileRecord.unmarkForDelete();
 		});
 
 		await this.fileRecordRepo.save(fileRecords);
