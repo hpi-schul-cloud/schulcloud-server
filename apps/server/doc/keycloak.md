@@ -39,7 +39,7 @@ and testing. In the table below you can see the username and password combinatio
 | Username | Password | Description |
 | :- | :- | :- |
 | keycloak | keycloak | The overall Keycloak administrator with all permissions. |
-| dbildunscloud | dbildungscloud | The dBildungscloud realm specific administrator. |
+| dbildungscloud | dbildungscloud | The dBildungscloud realm specific administrator. |
 
 ## Updating Seed Data
 1. Run Keycloak and make the desired changes
