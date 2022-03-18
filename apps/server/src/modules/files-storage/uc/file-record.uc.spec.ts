@@ -4,6 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 
 import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ConflictException } from '@nestjs/common';
 import {
@@ -20,16 +21,17 @@ describe('FileRecordUC', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let orm: MikroORM;
 	let fileParams: FileRecordParams;
-	const userId: EntityId = '620abb23697023333eadea99';
+	const userId: EntityId = new ObjectId().toHexString();
+	const schoolId: EntityId = new ObjectId().toHexString();
 	const scanResult: ScanResultParams = { virus_detected: false };
 	const scanResultWithVirus: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
 
 	beforeAll(async () => {
 		orm = await setupEntities();
 		fileParams = {
-			schoolId: '620abb23697023333eadea00',
-			parentId: '620abb23697023333eadea00',
-			parentType: FileRecordParentType.User,
+			schoolId,
+			parentId: schoolId,
+			parentType: FileRecordParentType.School,
 		};
 	});
 
@@ -62,7 +64,7 @@ describe('FileRecordUC', () => {
 
 	describe('fileRecordsOfParent', () => {
 		it('should call repo method findBySchoolIdAndTargetId with right parameters', async () => {
-			const { schoolId, parentId } = fileParams;
+			const { parentId } = fileParams;
 			const fileRecords = fileRecordFactory.buildList(3, { parentId, schoolId });
 			const spy = fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
