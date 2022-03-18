@@ -116,4 +116,15 @@ describe('account repo', () => {
 			);
 		});
 	});
+
+	describe('findByUsername', () => {
+		it('should usernames, ignore case', async () => {
+			const userA = userFactory.build({ email: 'USER@EXAMPLE.COM' });
+			// const userB = userFactory.build({ email: 'user@example.com' });
+			// const userC = userFactory.build({ email: 'User@Example.Com' });
+			await em.persistAndFlush([userA]);
+			const result = await repo.findByUsername('user@example.com');
+			expect(result).toContain(userA);
+		});
+	});
 });

@@ -233,17 +233,16 @@ export class AccountUc {
 		if (!email) {
 			throw new ValidationError('Email is empty or missing.');
 		}
-		return Promise.resolve();
 
-		// const foundUsers = await this.userRepo.findByEmail(email.toLowerCase());
-		// const foundAccounts = await this.accountRepo.findByEmail(email.toLowerCase());
+		const foundUsers = await this.userRepo.findByEmail(email.toLowerCase());
+		const foundAccounts = await this.accountRepo.findByUsername(email.toLowerCase());
 
-		// if (foundUsers.length > 1 || foundAccounts.length > 1) {
-		// 	throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-		// } else if (foundUsers.length === 1 || foundAccounts.length === 1) {
-		// 	if (foundUsers[0].id !== user.id || foundAccounts[0].id !== account.id) {
-		// 		throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-		// 	}
-		// }
+		if (foundUsers.length > 1 || foundAccounts.length > 1) {
+			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+		} else if (foundUsers.length === 1 || foundAccounts.length === 1) {
+			if (foundUsers[0].id !== user.id || foundAccounts[0].id !== account.id) {
+				throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+			}
+		}
 	}
 }

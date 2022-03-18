@@ -2,10 +2,9 @@ import { EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';
-import { EntityId, System } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 import { User } from '@shared/domain/entity/user.entity';
-import { AccountScope } from '@shared/repo/account/account.scope';
 
 // const bcrypt = require('bcryptjs');
 
@@ -56,5 +55,10 @@ export class AccountRepo extends BaseRepo<Account> {
 
 	async findOneByUser(user: User): Promise<Account> {
 		return this.findByUserId(user.id);
+	}
+
+	async findByUsername(userName: string): Promise<Account[]> {
+		const account = await this.repo.find({ username: userName });
+		return account;
 	}
 }

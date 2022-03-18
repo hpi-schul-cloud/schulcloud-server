@@ -27,7 +27,6 @@ export class Account extends BaseEntityWithTimestamps {
 	@OneToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
 	system?: System;
 
-
 	@Property({ nullable: true })
 	lasttriedFailedLogin?: Date;
 

@@ -18,7 +18,7 @@ import { Password } from './dto/password.param';
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
-	//TODO re-factor api/v1/forcePasswordChange endpoint
+	// TODO re-factor api/v1/forcePasswordChange endpoint
 
 	@Patch(':id/pw')
 	async changePassword(

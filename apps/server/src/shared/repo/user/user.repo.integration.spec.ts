@@ -323,4 +323,19 @@ describe('user repo', () => {
 			expect(updatedUserB.updatedAt.getTime()).toBeGreaterThan(updateTime.getTime());
 		});
 	});
+
+	describe('findByEmail', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+		});
+
+		it('should find emails, ignore case', async () => {
+			const userA = userFactory.build({ email: 'USER@EXAMPLE.COM' });
+			// const userB = userFactory.build({ email: 'user@example.com' });
+			// const userC = userFactory.build({ email: 'User@Example.Com' });
+			await em.persistAndFlush([userA]);
+			const result = await repo.findByEmail('user@example.com');
+			expect(result).toContain(userA);
+		});
+	});
 });
