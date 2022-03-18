@@ -351,10 +351,10 @@ describe('FilesStorageUC', () => {
 				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
 			});
 
-			it('should return file response with expires', async () => {
+			it('should return file response with deletedSince', async () => {
 				const [fileRecordsRes] = await service.deleteFilesOfParent(userId, requestParams);
 				expect(fileRecordsRes).toEqual(
-					expect.arrayContaining([expect.objectContaining({ expires: expect.any(Date) as Date })])
+					expect.arrayContaining([expect.objectContaining({ deletedSince: expect.any(Date) as Date })])
 				);
 			});
 		});
@@ -386,9 +386,9 @@ describe('FilesStorageUC', () => {
 				await expect(service.deleteOneFile(userId, requestParams)).rejects.toThrow();
 			});
 
-			it('should return file response with expires', async () => {
+			it('should return file response with deletedSince', async () => {
 				const fileRecordRes = await service.deleteOneFile(userId, requestParams);
-				expect(fileRecordRes).toEqual(expect.objectContaining({ expires: expect.any(Date) as Date }));
+				expect(fileRecordRes).toEqual(expect.objectContaining({ deletedSince: expect.any(Date) as Date }));
 			});
 		});
 	});
