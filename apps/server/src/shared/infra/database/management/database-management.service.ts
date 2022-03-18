@@ -61,7 +61,6 @@ export class DatabaseManagementService {
 
 	async dropCollection(collectionName: string): Promise<void> {
 		await this.db.dropCollection(collectionName);
-		await this.orm.getSchemaGenerator().createSchema();
 	}
 
 	async syncIndexes(): Promise<void> {

@@ -10,7 +10,7 @@ const randomChars = () => {
 describe('DatabaseManagementService', () => {
 	let service: DatabaseManagementService;
 	let module: TestingModule;
-	let omr: MikroORM;
+	let orm: MikroORM;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
@@ -18,7 +18,7 @@ describe('DatabaseManagementService', () => {
 		}).compile();
 
 		service = module.get(DatabaseManagementService);
-		omr = module.get(MikroORM);
+		orm = module.get(MikroORM);
 	});
 
 	afterAll(async () => {
@@ -82,7 +82,7 @@ describe('DatabaseManagementService', () => {
 
 	describe('When call syncIndexes()', () => {
 		it('should call getSchemaGenerator().ensureIndexes()', async () => {
-			const spy = jest.spyOn(omr, 'getSchemaGenerator');
+			const spy = jest.spyOn(orm, 'getSchemaGenerator');
 			await service.syncIndexes();
 			expect(spy).toHaveBeenCalled();
 		});

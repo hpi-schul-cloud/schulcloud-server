@@ -1,4 +1,4 @@
-import { Entity, Collection, ManyToMany, ManyToOne, Index, t } from '@mikro-orm/core';
+import { Entity, Collection, ManyToMany, ManyToOne, Index } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { User } from './user.entity';
