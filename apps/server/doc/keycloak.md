@@ -47,3 +47,8 @@ and testing. In the table below you can see the username and password combinatio
 3. Use the Keycloak-CLI to export all Keycloak data with `/opt/keycloak/bin/kc.sh export --dir /tmp/realms`
 4. Save your changes with a commit
 5. If you start your container with a command from the docker section, your changes will be directly applied to the starting Keycloak container
+
+> IMPORTANT: During the export process there will be some errors, that's because the export process will be done on the
+> same port as the Keycloak server. This leads to Keycloak failing to start the server in import/export mode. Due to the
+> transition from WildFly to Quarkus as application server there is currently no documentation on this topic, so I have 
+> started a discussion on GitHub [here](https://github.com/keycloak/keycloak/discussions).
