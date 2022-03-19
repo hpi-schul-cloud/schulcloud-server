@@ -29,7 +29,7 @@
 			"url": "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
 			"rootPath": "dc=de,dc=example,dc=org",
 			"searchUser": "cn=admin,dc=example,dc=org",
-			"searchUserPassword": "U2FsdGVkX19xqHusWE7tJnRotOIykWITaT9kSUwEusM=",
+			"searchUserPassword": "sEzguHje23io5kfjg478iUJ1Zo58IEG6JHjheu45z938u4=",
 			"provider": "iserv-idm",
 			"providerOptions": {
 				"userAttributeNameMapping": {},
