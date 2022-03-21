@@ -187,7 +187,9 @@ export class FilesStorageUC {
 
 	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-		await this.delete(fileRecords);
+		if (count > 0) {
+			await this.delete(fileRecords);
+		}
 
 		return [fileRecords, count];
 	}
@@ -204,8 +206,9 @@ export class FilesStorageUC {
 			params.schoolId,
 			params.parentId
 		);
-		await this.restore(fileRecords);
-
+		if (count > 0) {
+			await this.restore(fileRecords);
+		}
 		return [fileRecords, count];
 	}
 
