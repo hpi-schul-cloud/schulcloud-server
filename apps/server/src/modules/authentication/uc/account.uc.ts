@@ -58,7 +58,8 @@ export class AccountUc {
 			updateUser = true;
 		}
 		if (params.email && user.email !== params.email) {
-			this.checkEmail(params.email);
+			this.checkEmailFormat(params.email);
+			await this.checkUniqueEmail(account, user, params.email);
 			user.email = params.email;
 			account.username = params.email;
 			updateUser = true;
@@ -88,6 +89,8 @@ export class AccountUc {
 		}
 	}
 
+	// TODO direct endpoint routing?
+	/// this would not allow an administrator to change its own password without forcing a renewal
 	async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
 		if (currentUserId === targetUserId) {
 			await this.changeMyTemporaryPassword(currentUserId, passwordNew);
@@ -119,7 +122,6 @@ export class AccountUc {
 		await this.accountRepo.update(targetAccount);
 	}
 
-	// TODO check for demo users (hook "securePatching")
 	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<string> {
 		this.checkPasswordStrength(passwordNew);
 
@@ -221,9 +223,23 @@ export class AccountUc {
 	}
 
 	// TODO remove in src\utils\constants.js
-	private checkEmail(email: string) {
+	private checkEmailFormat(email: string) {
 		if (!email || !AccountUc.emailPattern.test(email)) {
 			throw new ValidationError('The given email is invalid.');
+		}
+	}
+
+	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
+		const foundUsers = await this.userRepo.findByEmail(email);
+		const foundAccounts = await this.accountRepo.findByUsername(email);
+
+		if (
+			foundUsers.length > 1 ||
+			foundAccounts.length > 1 ||
+			(foundUsers.length === 1 && foundUsers[0].id !== user.id) ||
+			(foundAccounts.length === 1 && foundAccounts[0].id !== account.id)
+		) {
+			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
 		}
 	}
 }

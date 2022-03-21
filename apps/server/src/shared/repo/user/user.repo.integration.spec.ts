@@ -277,6 +277,35 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('findByEmail', () => {
+		it('should find user by email, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: User[];
+
+			result = await repo.findByEmail('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+
+			result = await repo.findByEmail('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+
+			result = await repo.findByEmail('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+
+			result = await repo.findByEmail('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
+
+			result = await repo.findByEmail('.*');
+			expect(result).toHaveLength(0);
+		});
+	});
+
 	describe('update', () => {
 		it('should fail if user does not exist', async () => {
 			const user = userFactory.build();
