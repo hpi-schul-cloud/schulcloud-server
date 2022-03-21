@@ -111,4 +111,32 @@ export class FilesStorageController {
 
 		return response;
 	}
+
+	@Post('/restore/:schoolId/:parentType/:parentId')
+	async restore(
+		@Param() params: FileRecordParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
+
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return new FileRecordResponse(fileRecord);
+		});
+
+		const response = new FileRecordListResponse(responseFileRecords, total);
+
+		return response;
+	}
+
+	@Post('/restore/:fileRecordId')
+	async restoreFile(
+		@Param() params: SingleFileParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
+
+		const response = new FileRecordResponse(fileRecord);
+
+		return response;
+	}
 }

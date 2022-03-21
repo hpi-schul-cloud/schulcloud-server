@@ -154,7 +154,7 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	private async setExpires(fileRecords: FileRecord[]): Promise<void> {
+	private async markForDelete(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.markForDelete();
 		});
@@ -162,7 +162,7 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	private async restoreExpires(fileRecords: FileRecord[]): Promise<void> {
+	private async unmarkForDelete(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.unmarkForDelete();
 		});
@@ -173,13 +173,13 @@ export class FilesStorageUC {
 	private async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		await this.setExpires(fileRecords);
+		await this.markForDelete(fileRecords);
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
 			await this.storageClient.delete(paths);
 		} catch (err) {
-			await this.restoreExpires(fileRecords);
+			await this.unmarkForDelete(fileRecords);
 
 			throw new InternalServerErrorException(err);
 		}
@@ -187,7 +187,9 @@ export class FilesStorageUC {
 
 	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
-		await this.delete(fileRecords);
+		if (count > 0) {
+			await this.delete(fileRecords);
+		}
 
 		return [fileRecords, count];
 	}
@@ -197,5 +199,37 @@ export class FilesStorageUC {
 		await this.delete([fileRecord]);
 
 		return fileRecord;
+	}
+
+	async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
+			params.schoolId,
+			params.parentId
+		);
+		if (count > 0) {
+			await this.restore(fileRecords);
+		}
+		return [fileRecords, count];
+	}
+
+	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+		await this.restore([fileRecord]);
+
+		return fileRecord;
+	}
+
+	private async restore(fileRecords: FileRecord[]) {
+		this.logger.debug({ action: 'restore', fileRecords });
+
+		await this.unmarkForDelete(fileRecords);
+		try {
+			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
+
+			await this.storageClient.restore(paths);
+		} catch (err) {
+			await this.markForDelete(fileRecords);
+			throw new InternalServerErrorException(err);
+		}
 	}
 }
