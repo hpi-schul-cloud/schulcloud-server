@@ -64,6 +64,7 @@ export interface IFileRecordProperties {
 	creatorId: EntityId | ObjectId;
 	lockedForUserId?: EntityId | ObjectId;
 	schoolId: EntityId | ObjectId;
+	deletedSince?: Date;
 }
 
 /**
@@ -76,6 +77,10 @@ export interface IFileRecordProperties {
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
 export class FileRecord extends BaseEntityWithTimestamps {
+	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
+	@Property({ nullable: true })
+	deletedSince?: Date;
+
 	@Property()
 	size: number;
 
@@ -135,6 +140,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		}
 		this._schoolId = new ObjectId(props.schoolId);
 		this.securityCheck = new FileSecurityCheck({});
+		this.deletedSince = props.deletedSince;
 	}
 
 	updateSecurityCheckStatus(status: ScanStatus, reason = 'Clean'): void {
@@ -142,5 +148,13 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.securityCheck.reason = reason;
 		this.securityCheck.updatedAt = new Date();
 		this.securityCheck.requestToken = undefined;
+	}
+
+	markForDelete(): void {
+		this.deletedSince = new Date();
+	}
+
+	unmarkForDelete(): void {
+		this.deletedSince = undefined;
 	}
 }

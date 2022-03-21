@@ -733,6 +733,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for course sharing feature."
+		},
+		"FEATURE_LESSON_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for lesson sharing feature."
 		}
 	},
 	"required": [
