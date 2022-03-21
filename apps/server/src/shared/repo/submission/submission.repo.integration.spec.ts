@@ -141,14 +141,14 @@ describe('submission repo', () => {
 	describe('delete', () => {
 		it('should remove a submission in the database', async () => {
 			const submission = submissionFactory.build();
-			await repo.save(submission);
+			await em.persistAndFlush(submission);
 			em.clear();
-			const { id } = submission;
+
 			await repo.delete(submission);
 
 			await expect(async () => {
-				await repo.findById(id);
-			}).rejects.toThrow(`Submission not found ({ id: '${id}' })`);
+				await repo.findById(submission.id);
+			}).rejects.toThrow(`Submission not found ({ id: '${submission.id}' })`);
 		});
 	});
 });
