@@ -4,16 +4,16 @@ import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import S3rver from 's3rver';
+import { createMock } from '@golevelup/ts-jest';
 
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecord, ICurrentUser } from '@shared/domain';
 import { userFactory, cleanupCollections, mapUserToCurrentUser } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
-import S3rver from 's3rver';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 class API {
 	app: INestApplication;
@@ -50,6 +50,8 @@ class API {
 	}
 }
 
+const createRndInt = (max) => Math.floor(Math.random() * max);
+
 describe('file-storage controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
@@ -57,17 +59,27 @@ describe('file-storage controller (e2e)', () => {
 	let currentUser: ICurrentUser;
 	let api: API;
 	let s3instance: S3rver;
-	let antivirusService: DeepMocked<AntivirusService>;
 	const validId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
+		const port = 10000 + createRndInt(10000);
+		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
+
 		s3instance = new S3rver({
-			directory: '/tmp/s3rver_test_directory',
+			directory: `/tmp/s3rver_test_directory${port}`,
 			resetOnClose: true,
+			port,
 		});
 		await s3instance.run();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
+			providers: [
+				FilesStorageTestModule,
+				{
+					provide: 'S3_Config',
+					useValue: overridetS3Config,
+				},
+			],
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
@@ -86,7 +98,6 @@ describe('file-storage controller (e2e)', () => {
 		orm = app.get(MikroORM);
 		em = module.get(EntityManager);
 		api = new API(app);
-		antivirusService = app.get(AntivirusService);
 	});
 
 	afterAll(async () => {
@@ -196,7 +207,6 @@ describe('file-storage controller (e2e)', () => {
 			it('should return status 404 for file not found', async () => {
 				const response = await api.getDownloadFile(`/file/download/${validId}/wrong-name.txt`);
 
-				expect(response.error.message).toEqual(`The requested FileRecord: ${validId} has not been found.`);
 				expect(response.status).toEqual(404);
 			});
 		});

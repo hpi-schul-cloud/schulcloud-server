@@ -59,6 +59,7 @@ describe('course repo', () => {
 				'description',
 				'name',
 				'school',
+				'shareToken',
 				'startDate',
 				'substitutionTeachers',
 				'teachers',

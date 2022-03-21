@@ -1,22 +1,29 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { Request } from 'express';
 import busboy from 'busboy';
 import internal from 'stream';
-import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import path from 'path';
+
+import { FileRecordRepo } from '@shared/repo';
+import { EntityId, FileRecord, ScanStatus, Counted } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { ILogger, Logger } from '@src/core/logger';
+
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileRecordParams } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
+	private logger: ILogger;
+
 	constructor(
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService
-	) {}
+	) {
+		this.logger = new Logger('FilesStorageUC');
+	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
 		// @TODO check permissions of schoolId by user
@@ -77,6 +84,7 @@ export class FilesStorageUC {
 			const folder = [params.schoolId, entity.id].join('/');
 			await this.storageClient.create(folder, fileDescription);
 			await this.antivirusService.send(entity);
+
 			return entity;
 		} catch (error) {
 			await this.fileRecordRepo.delete(entity);
@@ -84,8 +92,14 @@ export class FilesStorageUC {
 		}
 	}
 
-	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
+	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 		const pathToFile = [schoolId, fileRecordId].join('/');
+
+		return pathToFile;
+	}
+
+	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
+		const pathToFile = this.createPath(schoolId, fileRecordId);
 		const res = await this.storageClient.get(pathToFile);
 
 		return res;
@@ -138,5 +152,50 @@ export class FilesStorageUC {
 		}
 
 		return newFilename;
+	}
+
+	private async setExpires(fileRecords: FileRecord[]): Promise<void> {
+		fileRecords.forEach((fileRecord) => {
+			fileRecord.markForDelete();
+		});
+
+		await this.fileRecordRepo.save(fileRecords);
+	}
+
+	private async restoreExpires(fileRecords: FileRecord[]): Promise<void> {
+		fileRecords.forEach((fileRecord) => {
+			fileRecord.unmarkForDelete();
+		});
+
+		await this.fileRecordRepo.save(fileRecords);
+	}
+
+	private async delete(fileRecords: FileRecord[]) {
+		this.logger.debug({ action: 'delete', fileRecords });
+
+		await this.setExpires(fileRecords);
+		try {
+			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
+
+			await this.storageClient.delete(paths);
+		} catch (err) {
+			await this.restoreExpires(fileRecords);
+
+			throw new InternalServerErrorException(err);
+		}
+	}
+
+	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		await this.delete(fileRecords);
+
+		return [fileRecords, count];
+	}
+
+	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		await this.delete([fileRecord]);
+
+		return fileRecord;
 	}
 }
