@@ -50,5 +50,4 @@ and testing. In the table below you can see the username and password combinatio
 
 > IMPORTANT: During the export process there will be some errors, that's because the export process will be done on the
 > same port as the Keycloak server. This leads to Keycloak failing to start the server in import/export mode. Due to the
-> transition from WildFly to Quarkus as application server there is currently no documentation on this topic, so I have 
-> started a discussion on GitHub [here](https://github.com/keycloak/keycloak/discussions/10815).
+> transition from WildFly to Quarkus as application server there is currently no documentation on this topic.
