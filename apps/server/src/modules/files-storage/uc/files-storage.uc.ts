@@ -154,7 +154,7 @@ export class FilesStorageUC {
 		return newFilename;
 	}
 
-	private async setExpires(fileRecords: FileRecord[]): Promise<void> {
+	private async markForDelete(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.markForDelete();
 		});
@@ -162,7 +162,7 @@ export class FilesStorageUC {
 		await this.fileRecordRepo.save(fileRecords);
 	}
 
-	private async restoreExpires(fileRecords: FileRecord[]): Promise<void> {
+	private async unmarkForDelete(fileRecords: FileRecord[]): Promise<void> {
 		fileRecords.forEach((fileRecord) => {
 			fileRecord.unmarkForDelete();
 		});
@@ -173,13 +173,13 @@ export class FilesStorageUC {
 	private async delete(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		await this.setExpires(fileRecords);
+		await this.markForDelete(fileRecords);
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
 			await this.storageClient.delete(paths);
 		} catch (err) {
-			await this.restoreExpires(fileRecords);
+			await this.unmarkForDelete(fileRecords);
 
 			throw new InternalServerErrorException(err);
 		}
@@ -222,13 +222,13 @@ export class FilesStorageUC {
 	private async restore(fileRecords: FileRecord[]) {
 		this.logger.debug({ action: 'restore', fileRecords });
 
-		await this.restoreExpires(fileRecords);
+		await this.unmarkForDelete(fileRecords);
 		try {
 			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
 
 			await this.storageClient.restore(paths);
 		} catch (err) {
-			await this.setExpires(fileRecords);
+			await this.markForDelete(fileRecords);
 			throw new InternalServerErrorException(err);
 		}
 	}
