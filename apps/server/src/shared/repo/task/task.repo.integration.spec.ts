@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Task } from '@shared/domain';
+import { SortOrder, Submission, Task } from '@shared/domain';
 import {
 	userFactory,
 	courseFactory,
@@ -1606,16 +1606,29 @@ describe('TaskRepo', () => {
 	});
 
 	describe('delete', () => {
-		it('should remove a task in the database', async () => {
+		it('should remove a task from the database', async () => {
 			const task = taskFactory.build();
-			await repo.save(task);
+			await em.persistAndFlush(task);
 			em.clear();
-			const { id } = task;
+
 			await repo.delete(task);
 
 			await expect(async () => {
-				await repo.findById(id);
-			}).rejects.toThrow(`Task not found ({ id: '${id}' })`);
+				await repo.findById(task.id);
+			}).rejects.toThrow(`Task not found ({ id: '${task.id}' })`);
+		});
+
+		it('should remove related submissions from the database', async () => {
+			const submission = submissionFactory.build();
+			const task = taskFactory.build({ submissions: [submission] });
+			await em.persistAndFlush(task);
+			em.clear();
+
+			await repo.delete(task);
+
+			await expect(async () => {
+				await em.findOneOrFail(Submission, { id: submission.id });
+			}).rejects.toThrow(`Submission not found ({ id: '${submission.id}' })`);
 		});
 	});
 });

@@ -77,7 +77,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task')
+	@OneToMany('Submission', 'task', { orphanRemoval: true })
 	submissions = new Collection<Submission>(this);
 
 	@Index()
