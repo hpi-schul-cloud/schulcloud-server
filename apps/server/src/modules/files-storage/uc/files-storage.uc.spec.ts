@@ -392,4 +392,94 @@ describe('FilesStorageUC', () => {
 			});
 		});
 	});
+
+	describe('restoreFilesOfParent()', () => {
+		let requestParams: FileRecordParams;
+		beforeEach(() => {
+			requestParams = {
+				schoolId,
+				parentId: userId,
+				parentType: FileRecordParentType.User,
+			};
+			fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockResolvedValue([fileRecords, 1]);
+			storageClient.delete.mockResolvedValue([]);
+		});
+
+		describe('calls to fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete()', () => {
+			it('should call once', async () => {
+				await service.restoreFilesOfParent(userId, requestParams);
+				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call with correctly params', async () => {
+				await service.restoreFilesOfParent(userId, requestParams);
+				expect(fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete).toHaveBeenCalledWith(
+					requestParams.schoolId,
+					requestParams.parentId
+				);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete.mockRejectedValue(new Error());
+				await expect(service.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
+			});
+		});
+
+		describe('calls to fileRecordRepo.save()', () => {
+			it('should call with correctly params', async () => {
+				await service.restoreFilesOfParent(userId, requestParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.save.mockRejectedValue(new Error());
+				await expect(service.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
+			});
+
+			it('should call two times if call delete throw an error', async () => {
+				storageClient.restore.mockRejectedValue(new Error());
+				await expect(service.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
+			});
+
+			it('should return file response with deletedSince is undefined', async () => {
+				const [fileRecordsRes] = await service.restoreFilesOfParent(userId, requestParams);
+				expect(fileRecordsRes).toEqual(expect.arrayContaining([expect.objectContaining({ deletedSince: undefined })]));
+			});
+		});
+	});
+
+	describe('restoreOneFile()', () => {
+		let requestParams: SingleFileParams;
+		beforeEach(() => {
+			requestParams = {
+				fileRecordId: new ObjectId().toHexString(),
+			};
+			fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValue(fileRecord);
+			storageClient.restore.mockResolvedValue([]);
+		});
+
+		describe('calls to fileRecordRepo.findOneById()', () => {
+			it('should call once', async () => {
+				await service.restoreOneFile(userId, requestParams);
+				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call with correctly params', async () => {
+				await service.restoreOneFile(userId, requestParams);
+				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(requestParams.fileRecordId);
+			});
+
+			it('should throw error if entity not found', async () => {
+				fileRecordRepo.findOneByIdMarkedForDelete.mockRejectedValue(new Error());
+				await expect(service.restoreOneFile(userId, requestParams)).rejects.toThrow();
+			});
+
+			it('should return file response with deletedSince', async () => {
+				const fileRecordRes = await service.restoreOneFile(userId, requestParams);
+				expect(fileRecordRes).toEqual(expect.objectContaining({ deletedSince: undefined }));
+			});
+		});
+	});
 });

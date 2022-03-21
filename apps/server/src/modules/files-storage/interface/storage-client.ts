@@ -8,10 +8,17 @@ export interface IGetFileResponse {
 	etag: string | undefined;
 }
 
+export interface ICopyFiles {
+	sourcePath: string;
+	targetPaths: string;
+}
+
 export interface IStorageClient {
 	create(path: string, file: IFile): unknown;
 
 	get(path: string): unknown;
 
-	delete(paths: string[], expires: Date): unknown;
+	delete(paths: string[]): unknown;
+
+	restore(paths: string[]): unknown;
 }

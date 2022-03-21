@@ -60,6 +60,37 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
+	describe('findOneByIdMarkedForDelete', () => {
+		it('should find an entity by its id and deletedSince is defined', async () => {
+			const fileRecord = fileRecordFactory.build({ deletedSince: new Date() });
+
+			await em.persistAndFlush(fileRecord);
+			em.clear();
+
+			const result = await repo.findOneByIdMarkedForDelete(fileRecord.id);
+
+			expect(result).toBeDefined();
+			expect(result.id).toEqual(fileRecord.id);
+		});
+
+		it('should find an entity by its id', async () => {
+			const notExistingId = new ObjectId().toHexString();
+
+			await expect(repo.findOneByIdMarkedForDelete(notExistingId)).rejects.toThrowError();
+		});
+
+		it('should ingnore if deletedSince is undefined', async () => {
+			const fileRecord = fileRecordFactory.build();
+
+			await em.persistAndFlush(fileRecord);
+			em.clear();
+
+			const exec = async () => repo.findOneByIdMarkedForDelete(fileRecord.id);
+
+			await expect(exec).rejects.toThrowError();
+		});
+	});
+
 	describe('save', () => {
 		it('should save the passed entity', async () => {
 			const fileRecord = fileRecordFactory.build();
@@ -186,6 +217,91 @@ describe('FileRecordRepo', () => {
 			em.clear();
 
 			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId, parentId);
+
+			expect(count).toEqual(3);
+			expect(results).toHaveLength(3);
+			expect(results.map((o) => o.id).sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
+		});
+	});
+
+	describe('findBySchoolIdAndParentIdAndMarkedForDelete', () => {
+		it('should only find searched parent', async () => {
+			const parentId1 = new ObjectId().toHexString();
+			const parentId2 = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+
+			const fileRecords1 = fileRecordFactory.buildList(3, {
+				schoolId,
+				parentType: FileRecordParentType.Task,
+				parentId: parentId1,
+				deletedSince: new Date(),
+			});
+			const fileRecords2 = fileRecordFactory.buildList(3, {
+				schoolId,
+				parentType: FileRecordParentType.Task,
+				parentId: parentId2,
+				deletedSince: new Date(),
+			});
+
+			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
+			em.clear();
+
+			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId, parentId1);
+
+			expect(count).toEqual(3);
+			expect(results).toHaveLength(3);
+			expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+		});
+
+		it('should only find searched school', async () => {
+			const parentId = new ObjectId().toHexString();
+			const schoolId1 = new ObjectId().toHexString();
+			const schoolId2 = new ObjectId().toHexString();
+
+			const fileRecords1 = fileRecordFactory.buildList(3, {
+				schoolId: schoolId1,
+				parentType: FileRecordParentType.Task,
+				parentId,
+				deletedSince: new Date(),
+			});
+			const fileRecords2 = fileRecordFactory.buildList(3, {
+				schoolId: schoolId2,
+				parentType: FileRecordParentType.Task,
+				parentId,
+				deletedSince: new Date(),
+			});
+
+			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
+			em.clear();
+
+			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId);
+
+			expect(count).toEqual(3);
+			expect(results).toHaveLength(3);
+			expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
+		});
+
+		it('should ingnore if deletedSince is undefined', async () => {
+			const parentId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+
+			const fileRecords = fileRecordFactory.buildList(3, {
+				schoolId,
+				parentType: FileRecordParentType.Task,
+				parentId,
+				deletedSince: new Date(),
+			});
+
+			const fileRecordsExpired = fileRecordFactory.buildList(3, {
+				schoolId,
+				parentType: FileRecordParentType.Task,
+				parentId,
+			});
+
+			await em.persistAndFlush([...fileRecords, ...fileRecordsExpired]);
+			em.clear();
+
+			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId, parentId);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);

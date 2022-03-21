@@ -13,7 +13,7 @@ import { Readable } from 'stream';
 
 import { ILogger, Logger } from '@src/core/logger';
 
-import { S3Config, IGetFileResponse, IStorageClient, IFile } from '../interface';
+import { S3Config, IGetFileResponse, IStorageClient, IFile, ICopyFiles } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -83,11 +83,42 @@ export class S3ClientAdapter implements IStorageClient {
 	public async delete(paths: string[]): Promise<CopyObjectCommandOutput[]> {
 		this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
+		const copyPaths = paths.map((path) => {
+			return { sourcePath: path, targetPaths: `${this.deletedFolderName}/${path}` };
+		});
+
+		const result = await this.copy(copyPaths);
+
+		// try catch with rollback is not needed,
+		// because the second copyRequest try override existing files in trash folder
+		await this.remove(paths);
+
+		return result;
+	}
+
+	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
+		this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+
+		const copyPaths = paths.map((path) => {
+			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPaths: path };
+		});
+
+		const result = await this.copy(copyPaths);
+
+		// try catch with rollback is not needed,
+		// because the second copyRequest try override existing files in trash folder
+		const deleteObjects = copyPaths.map((p) => p.sourcePath);
+		await this.remove(deleteObjects);
+
+		return result;
+	}
+
+	private async copy(paths: ICopyFiles[]) {
 		const copyRequests = paths.map(async (path) => {
 			const req = new CopyObjectCommand({
 				Bucket: this.config.bucket,
-				CopySource: `${this.config.bucket}/${path}`,
-				Key: `${this.deletedFolderName}/${path}`,
+				CopySource: `${this.config.bucket}/${path.sourcePath}`,
+				Key: `${path.targetPaths}`,
 			});
 
 			const data = await this.client.send(req);
@@ -95,18 +126,16 @@ export class S3ClientAdapter implements IStorageClient {
 			return data;
 		});
 
-		const result = await Promise.all(copyRequests);
+		return Promise.all(copyRequests);
+	}
 
-		// try catch with rollback is not needed,
-		// because the second copyRequest try override existing files in trash folder
+	private async remove(paths: string[]) {
 		const pathObjects = paths.map((p) => ({ Key: p }));
 		const req = new DeleteObjectsCommand({
 			Bucket: this.config.bucket,
 			Delete: { Objects: pathObjects },
 		});
 
-		await this.client.send(req);
-
-		return result;
+		return this.client.send(req);
 	}
 }

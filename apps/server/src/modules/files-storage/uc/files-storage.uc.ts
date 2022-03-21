@@ -198,4 +198,35 @@ export class FilesStorageUC {
 
 		return fileRecord;
 	}
+
+	async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
+			params.schoolId,
+			params.parentId
+		);
+		await this.restore(fileRecords);
+
+		return [fileRecords, count];
+	}
+
+	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+		await this.restore([fileRecord]);
+
+		return fileRecord;
+	}
+
+	private async restore(fileRecords: FileRecord[]) {
+		this.logger.debug({ action: 'restore', fileRecords });
+
+		await this.restoreExpires(fileRecords);
+		try {
+			const paths = fileRecords.map((fileRecord) => this.createPath(fileRecord.schoolId, fileRecord.id));
+
+			await this.storageClient.restore(paths);
+		} catch (err) {
+			await this.setExpires(fileRecords);
+			throw new InternalServerErrorException(err);
+		}
+	}
 }
