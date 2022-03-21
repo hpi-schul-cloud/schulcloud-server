@@ -7,7 +7,6 @@
 		"firstName": "Thorsten",
 		"lastName": "Test",
 		"email": "admin@schul-cloud.org",
-		"ldapId": "fc3926d4-956c-4231-a1fb-4acffcf22d89",
 		"updatedAt": {
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
@@ -90,7 +89,7 @@
 			"firstLogin": true
 		},
 		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f7"
+			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"roles": [
 			{
