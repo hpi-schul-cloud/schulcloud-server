@@ -1608,21 +1608,22 @@ describe('TaskRepo', () => {
 	describe('delete', () => {
 		it('should remove a task from the database', async () => {
 			const task = taskFactory.build();
-			await repo.save(task);
+			await em.persistAndFlush(task);
 			em.clear();
-			const { id } = task;
+
 			await repo.delete(task);
 
 			await expect(async () => {
-				await repo.findById(id);
-			}).rejects.toThrow(`Task not found ({ id: '${id}' })`);
+				await repo.findById(task.id);
+			}).rejects.toThrow(`Task not found ({ id: '${task.id}' })`);
 		});
 
 		it('should remove related submissions from the database', async () => {
 			const submission = submissionFactory.build();
 			const task = taskFactory.build({ submissions: [submission] });
-			await repo.save(task);
+			await em.persistAndFlush(task);
 			em.clear();
+
 			await repo.delete(task);
 
 			await expect(async () => {
