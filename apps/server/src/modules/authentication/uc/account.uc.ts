@@ -59,7 +59,6 @@ export class AccountUc {
 		}
 		if (params.email && user.email !== params.email) {
 			this.checkEmail(params.email);
-			await this.checkUniqueEmail(account, user, params.email);
 			user.email = params.email;
 			account.username = params.email;
 			updateUser = true;
@@ -212,7 +211,7 @@ export class AccountUc {
 	}
 
 	// TODO password helper is used here schulcloud-server\src\services\account\hooks\index.js
-	// TODO remove schulcloud-server\test\helper\passwordHelpers.test.js
+	// TODO refactor/remove schulcloud-server\test\helper\passwordHelpers.test.js
 	// TODO remove schulcloud-server\src\utils\passwordHelpers.js
 	private checkPasswordStrength(password: string) {
 		// only check result if also a password was really given
@@ -223,26 +222,8 @@ export class AccountUc {
 
 	// TODO remove in src\utils\constants.js
 	private checkEmail(email: string) {
-		// only check result if also a password was really given
 		if (!email || !AccountUc.emailPattern.test(email)) {
 			throw new ValidationError('The given email is invalid.');
-		}
-	}
-
-	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
-		if (!email) {
-			throw new ValidationError('Email is empty or missing.');
-		}
-
-		const foundUsers = await this.userRepo.findByEmail(email.toLowerCase());
-		const foundAccounts = await this.accountRepo.findByUsername(email.toLowerCase());
-
-		if (foundUsers.length > 1 || foundAccounts.length > 1) {
-			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-		} else if (foundUsers.length === 1 || foundAccounts.length === 1) {
-			if (foundUsers[0].id !== user.id || foundAccounts[0].id !== account.id) {
-				throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-			}
 		}
 	}
 }

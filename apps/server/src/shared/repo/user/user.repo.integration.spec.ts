@@ -15,7 +15,7 @@ describe('user repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ ensureIndexes: true })],
 			providers: [UserRepo],
 		}).compile();
 		repo = module.get(UserRepo);
@@ -26,16 +26,16 @@ describe('user repo', () => {
 		await module.close();
 	});
 
+	afterEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
 	});
 
 	describe('findById', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		it('should return right keys', async () => {
 			const user = userFactory.build();
 
@@ -54,6 +54,7 @@ describe('user repo', () => {
 					'ldapId',
 					'forcePasswordChange',
 					'preferences',
+					'language',
 				].sort()
 			);
 		});
@@ -110,9 +111,7 @@ describe('user repo', () => {
 			userB = userFactory.build({ ldapId: '111' });
 			await em.persistAndFlush([userA, userB]);
 		});
-		afterEach(async () => {
-			await cleanupCollections(em);
-		});
+
 		it('should return right keys', async () => {
 			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
@@ -128,6 +127,7 @@ describe('user repo', () => {
 					'ldapId',
 					'forcePasswordChange',
 					'preferences',
+					'language',
 				].sort()
 			);
 		});
@@ -147,10 +147,6 @@ describe('user repo', () => {
 	});
 
 	describe('findWithoutImportUser', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		const persistUserAndSchool = async () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school });
@@ -282,10 +278,6 @@ describe('user repo', () => {
 	});
 
 	describe('update', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		it('should fail if user does not exist', async () => {
 			const user = userFactory.build();
 			await expect(repo.update(user)).rejects.toThrow(NotFoundError);
@@ -311,10 +303,12 @@ describe('user repo', () => {
 			await em.persistAndFlush([userA, userB]);
 
 			userB.id = userA.id;
+			const updatedMail = 'new@mail.com';
+			userB.email = updatedMail;
 			const updatedUserB = await repo.update(userB);
 
 			expect(userA.createdAt).toBe(updatedUserB.createdAt);
-			expect(userA.email).toBe(updatedUserB.email);
+			expect(updatedMail).toBe(updatedUserB.email);
 			expect(userA.firstName).toBe(updatedUserB.firstName);
 			expect(userA.lastName).toBe(updatedUserB.lastName);
 			expect(userA.school).toBe(updatedUserB.school);
@@ -322,20 +316,16 @@ describe('user repo', () => {
 
 			expect(updatedUserB.updatedAt.getTime()).toBeGreaterThan(updateTime.getTime());
 		});
-	});
 
-	describe('findByEmail', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
+		it('should fail to update to email that already exists', async () => {
+			const userA = userFactory.build();
+			const userB = userFactory.build();
 
-		it('should find emails, ignore case', async () => {
-			const userA = userFactory.build({ email: 'USER@EXAMPLE.COM' });
-			// const userB = userFactory.build({ email: 'user@example.com' });
-			// const userC = userFactory.build({ email: 'User@Example.Com' });
-			await em.persistAndFlush([userA]);
-			const result = await repo.findByEmail('user@example.com');
-			expect(result).toContain(userA);
+			await em.persistAndFlush([userA, userB]);
+			em.clear();
+
+			userA.email = userB.email;
+			await expect(repo.update(userA)).rejects.toThrow();
 		});
 	});
 });

@@ -1,14 +1,15 @@
-import { Entity, Property, OneToOne } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Entity, Property, OneToOne, Unique, Index } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { System } from './system.entity';
 import { User } from './user.entity';
 
 export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
 
+// TODO This is ought to replace feathers account model ('src\services\account\model.js').
 @Entity({ tableName: 'accounts' })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
+	@Unique({ options: { collation: { locale: 'en', strength: 2 } } })
 	username: string;
 
 	@Property({ nullable: true })

@@ -164,9 +164,4 @@ export class UserRepo extends BaseRepo<User> {
 			}
 		}
 	}
-
-	async findByEmail(userEmail: string): Promise<User[]> {
-		const user = await this.em.find(User, { email: { $re: userEmail } });
-		return user;
-	}
 }

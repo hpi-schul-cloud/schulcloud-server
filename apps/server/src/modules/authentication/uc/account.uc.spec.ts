@@ -138,7 +138,7 @@ describe('AccountUc', () => {
 		});
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
 		});
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
@@ -158,7 +158,7 @@ describe('AccountUc', () => {
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
-			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
 		});
 
 		// DummyPasswd!1
@@ -272,14 +272,6 @@ describe('AccountUc', () => {
 				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
 					passwordOld: 'DummyPasswd!1',
 					email: 'NoValidMail',
-				})
-			).rejects.toThrow();
-		});
-		it('should throw if new email exits', async () => {
-			await expect(
-				accountUc.updateMyAccount({ userId: mockStudentUser.id } as ICurrentUser, {
-					passwordOld: 'DummyPasswd!1',
-					email: 'an@existing.mail',
 				})
 			).rejects.toThrow();
 		});
