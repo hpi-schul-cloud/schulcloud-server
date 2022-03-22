@@ -106,12 +106,12 @@ const schoolSchema = new Schema(
 	}
 );
 
+// don't exists in new entity
 schoolSchema.index({ purpose: 1 });
-schoolSchema.index({ ldapSchoolIdentifier: 1, systems: 1 });
 
 if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync
-	schoolSchema.index({ 'sourceOptions.$**': 1 });
+	schoolSchema.index({ 'sourceOptions.$**': 1 }); // need we it??
 }
 
 const schoolGroupSchema = new Schema(

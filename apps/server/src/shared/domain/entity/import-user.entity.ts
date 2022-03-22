@@ -1,4 +1,4 @@
-import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, wrap } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 
@@ -35,6 +35,9 @@ export enum RoleName {
 }
 
 @Entity({ tableName: 'importusers' })
+@Unique({ properties: ['school', 'ldapId'] })
+@Unique({ properties: ['school', 'ldapDn'] })
+@Unique({ properties: ['school', 'email'] })
 export class ImportUser extends BaseEntityWithTimestamps {
 	constructor(props: IImportUserProperties) {
 		super();
@@ -99,7 +102,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	 * @read
 	 */
 	@ManyToOne('User', { fieldName: 'match_userId', eager: true, nullable: true })
-	@Index({ options: { unique: true, partialFilterExpression: { match_userId: { $type: 'objectId' } } } })
+	@Unique({ options: { partialFilterExpression: { match_userId: { $type: 'objectId' } } } })
 	user?: User;
 
 	/**
