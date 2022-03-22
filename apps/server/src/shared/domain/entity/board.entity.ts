@@ -21,7 +21,7 @@ export class Board extends BaseEntityWithTimestamps {
 		this.course = wrap(props.course).toReference();
 	}
 
-	@OneToOne('Course', undefined, { wrappedReference: true, fieldName: 'courseId' })
+	@OneToOne('Course', undefined, { wrappedReference: true, fieldName: 'courseId', unique: false })
 	course: IdentifiedReference<Course>;
 
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
