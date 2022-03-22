@@ -1,4 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
+import { AnyEntity, EntityClass, MikroORM } from '@mikro-orm/core';
 import { ALL_ENTITIES } from '@shared/domain';
 
 /**
@@ -6,7 +6,12 @@ import { ALL_ENTITIES } from '@shared/domain';
  * Teardown: 'await orm.close()' in after-hook!
  * @returns
  */
-export const setupEntities = async (): Promise<MikroORM> => {
-	const orm = await MikroORM.init({ type: 'mongo', dbName: 'dummy', entities: ALL_ENTITIES });
+export const setupEntities = async (entities: EntityClass<AnyEntity>[] = ALL_ENTITIES): Promise<MikroORM> => {
+	const orm = await MikroORM.init({
+		type: 'mongo',
+		dbName: 'dummy',
+		entities,
+		allowGlobalContext: true,
+	});
 	return orm;
 };

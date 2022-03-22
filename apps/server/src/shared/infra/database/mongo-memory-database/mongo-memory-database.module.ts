@@ -21,6 +21,7 @@ const createMikroOrmModule = async (options: MikroOrmModuleAsyncOptions): Promis
 			await mongo.ensureInstance();
 			const clientUrl = mongo.getUri();
 			return {
+				allowGlobalContext: true, // can be overridden by options
 				...options,
 				type: 'mongo',
 				clientUrl,

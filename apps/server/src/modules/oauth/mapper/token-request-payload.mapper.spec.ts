@@ -24,6 +24,7 @@ const defaultOauthConfig: OauthConfig = {
 	responseType: 'code',
 	authEndpoint: 'mock_authEndpoint',
 	provider: 'mock_provider',
+	logoutEndpoint: 'mock_logoutEndpoint',
 };
 const defaultSystem: System = {
 	type: 'iserv',

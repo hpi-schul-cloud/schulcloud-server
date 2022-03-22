@@ -1,5 +1,5 @@
 import internal from 'stream';
-import { IFile } from './file';
+import type { IFile } from './file';
 
 export interface IGetFileResponse {
 	data: internal.Readable;
@@ -8,8 +8,17 @@ export interface IGetFileResponse {
 	etag: string | undefined;
 }
 
-export interface IStorageClient {
-	uploadFile(folder: string, file: IFile): unknown;
+export interface ICopyFiles {
+	sourcePath: string;
+	targetPaths: string;
+}
 
-	getFile(path: string): unknown;
+export interface IStorageClient {
+	create(path: string, file: IFile): unknown;
+
+	get(path: string): unknown;
+
+	delete(paths: string[]): unknown;
+
+	restore(paths: string[]): unknown;
 }

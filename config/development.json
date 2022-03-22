@@ -13,6 +13,7 @@
 	"FEATURE_LERNSTORE_ENABLED": false,
 	"FEATURE_S3_BUCKET_CORS": false,
 	"S3_KEY": "abcdefghijklmnop",
+	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
 	"FILES_STORAGE": {
 		"S3_ENDPOINT": "http://localhost:9000",

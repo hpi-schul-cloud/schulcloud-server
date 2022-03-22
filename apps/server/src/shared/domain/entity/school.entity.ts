@@ -1,4 +1,4 @@
-import { Collection, Entity, Property, ManyToMany } from '@mikro-orm/core';
+import { Collection, Entity, Property, ManyToMany, Index } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { System } from './system.entity';
 
@@ -8,6 +8,7 @@ export interface ISchoolProperties {
 }
 
 @Entity({ tableName: 'schools' })
+@Index({ properties: ['ldapSchoolIdentifier', 'systems'] })
 export class School extends BaseEntity {
 	constructor(props: ISchoolProperties) {
 		super();
@@ -16,17 +17,14 @@ export class School extends BaseEntity {
 	}
 
 	@Property()
-	name!: string;
+	name: string;
 
-	@Property()
+	@Property({ nullable: true })
 	inUserMigration?: boolean;
 
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
 	systems = new Collection<System>(this);
 
-	@Property()
+	@Property({ nullable: true })
 	ldapSchoolIdentifier?: string;
-
-	/* @Property()
-    systems?: System[]; */
 }

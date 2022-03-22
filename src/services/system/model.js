@@ -37,6 +37,7 @@ const systemSchema = new Schema(
 				responseType: { type: String, required: true },
 				scope: { type: String, required: true },
 				provider: { type: String, required: true },
+				logoutEndpoint: { type: String, required: true },
 			},
 			required: false,
 		},

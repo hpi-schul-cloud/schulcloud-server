@@ -1,4 +1,4 @@
-import { Entity, Property, Index, ManyToOne, ManyToMany, Collection } from '@mikro-orm/core';
+import { Entity, Property, Index, ManyToOne, ManyToMany, Collection, Unique } from '@mikro-orm/core';
 
 import { ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
@@ -28,8 +28,6 @@ const DEFAULT = {
 	description: '',
 };
 
-@Index({ name: 'findAllForTeacher', properties: ['substitutionTeachers', 'teachers'] })
-@Index({ name: 'findAllByUserId', properties: ['students', 'substitutionTeachers', 'teachers'] })
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
@@ -38,15 +36,19 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
 	description: string = DEFAULT.description;
 
+	@Index()
 	@ManyToOne('School', { fieldName: 'schoolId' })
-	school!: School;
+	school: School;
 
+	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
+	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
 	teachers = new Collection<User>(this);
 
+	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
@@ -54,12 +56,16 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 	@Property()
 	color: string = DEFAULT.color;
 
-	@Property()
+	@Property({ nullable: true })
 	startDate?: Date;
 
-	@Index({ name: 'activeCourses' })
-	@Property()
+	@Index()
+	@Property({ nullable: true })
 	untilDate?: Date;
+
+	@Property({ nullable: true })
+	@Unique({ options: { sparse: true } })
+	shareToken?: string;
 
 	constructor(props: ICourseProperties) {
 		super();
@@ -92,10 +98,19 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom {
 			id: this.id,
 			type: LearnroomTypes.Course,
 			title: this.name,
-			shortTitle: this.name.substr(0, 2),
+			shortTitle: this.getShortTitle(),
 			displayColor: this.color,
 			untilDate: this.untilDate,
 			startDate: this.startDate,
 		};
+	}
+
+	private getShortTitle(): string {
+		const [firstChar, secondChar] = [...this.name];
+		const pattern = /\p{Emoji}/u;
+		if (pattern.test(firstChar)) {
+			return firstChar;
+		}
+		return firstChar + secondChar;
 	}
 }

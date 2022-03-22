@@ -4,14 +4,16 @@ import request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import S3rver from 's3rver';
+import { createMock } from '@golevelup/ts-jest';
 
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser } from '@shared/domain';
+import { FileRecord, ICurrentUser } from '@shared/domain';
 import { userFactory, cleanupCollections, mapUserToCurrentUser } from '@shared/testing';
 import { ApiValidationError } from '@shared/common';
-import S3rver from 's3rver';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 
 class API {
 	app: INestApplication;
@@ -22,7 +24,7 @@ class API {
 
 	async postUploadFile(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.post(`/file${routeName}`)
+			.post(routeName)
 			.attach('file', Buffer.from('abcd'), 'test.txt')
 			.set('connection', 'keep-alive')
 			.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
@@ -37,7 +39,7 @@ class API {
 
 	async getDownloadFile(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
-			.get(`/file${routeName}`)
+			.get(routeName)
 			.query(query || {});
 
 		return {
@@ -47,6 +49,8 @@ class API {
 		};
 	}
 }
+
+const createRndInt = (max) => Math.floor(Math.random() * max);
 
 describe('file-storage controller (e2e)', () => {
 	let app: INestApplication;
@@ -58,14 +62,27 @@ describe('file-storage controller (e2e)', () => {
 	const validId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
+		const port = 10000 + createRndInt(10000);
+		const overridetS3Config = Object.assign(config, { endpoint: `http://localhost:${port}` });
+
 		s3instance = new S3rver({
-			directory: '/tmp/s3rver_test_directory',
+			directory: `/tmp/s3rver_test_directory${port}`,
 			resetOnClose: true,
+			port,
 		});
 		await s3instance.run();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
+			providers: [
+				FilesStorageTestModule,
+				{
+					provide: 'S3_Config',
+					useValue: overridetS3Config,
+				},
+			],
 		})
+			.overrideProvider(AntivirusService)
+			.useValue(createMock<AntivirusService>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
@@ -102,7 +119,7 @@ describe('file-storage controller (e2e)', () => {
 	describe('upload action', () => {
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid schoolId', async () => {
-				const response = await api.postUploadFile(`/upload/123/users/${validId}`);
+				const response = await api.postUploadFile(`/file/upload/123/users/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['schoolId must be a mongodb id'],
@@ -113,7 +130,7 @@ describe('file-storage controller (e2e)', () => {
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const response = await api.postUploadFile(`/upload/${validId}/users/123`);
+				const response = await api.postUploadFile(`/file/upload/${validId}/users/123`);
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
@@ -124,20 +141,20 @@ describe('file-storage controller (e2e)', () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const response = await api.postUploadFile(`/upload/${validId}/cookies/${validId}`);
+				const response = await api.postUploadFile(`/file/upload/${validId}/cookies/${validId}`);
 				expect(response.status).toEqual(400);
 			});
 		});
 
 		describe(`with valid request data`, () => {
 			it('should return status 201 for successful upload', async () => {
-				const response = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
+				const response = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return the new created file record', async () => {
-				const { result } = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				expect(result).toStrictEqual(
 					expect.objectContaining({
 						id: expect.any(String) as string,
@@ -151,15 +168,16 @@ describe('file-storage controller (e2e)', () => {
 			});
 
 			it('should read file name from upload stream', async () => {
-				const { result } = await api.postUploadFile(`/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
 				expect(result.name).toEqual('test.txt');
 			});
 
-			it.skip('should set iterator number to file name if file already exist', async () => {
-				const { result } = await api.postUploadFile(`/upload/${validId}/school/${validId}`);
+			it('should set iterator number to file name if file already exist', async () => {
+				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
-				expect(result.name).toEqual('test (1)');
+				expect(result.name).toEqual('test (1).txt');
 			});
 		});
 	});
@@ -167,7 +185,7 @@ describe('file-storage controller (e2e)', () => {
 	describe('download action', () => {
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid recordId', async () => {
-				const response = await api.getDownloadFile('/download/123/text.txt');
+				const response = await api.getDownloadFile('/file/download/123/text.txt');
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -179,25 +197,48 @@ describe('file-storage controller (e2e)', () => {
 			});
 
 			it('should return status 404 for wrong filename', async () => {
-				const { result } = await api.postUploadFile(`/upload/${validId}/users/${validId}`);
-				const response = await api.getDownloadFile(`/download/${result.id}/wrong-name.txt`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				const response = await api.getDownloadFile(`/file/download/${result.id}/wrong-name.txt`);
 
 				expect(response.error.message).toEqual('File not found');
 				expect(response.status).toEqual(404);
 			});
 
 			it('should return status 404 for file not found', async () => {
-				const response = await api.getDownloadFile(`/download/${validId}/wrong-name.txt`);
+				const response = await api.getDownloadFile(`/file/download/${validId}/wrong-name.txt`);
 
-				expect(response.error.message).toEqual(`The requested FileRecord: ${validId} has not been found.`);
 				expect(response.status).toEqual(404);
 			});
 		});
 
 		describe(`with valid request data`, () => {
 			it('should return status 200 for successful download', async () => {
-				const { result } = await api.postUploadFile(`/upload/${validId}/users/${validId}`);
-				const response = await api.getDownloadFile(`/download/${result.id}/${result.name}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				const response = await api.getDownloadFile(`/file/download/${result.id}/${result.name}`);
+
+				expect(response.status).toEqual(200);
+			});
+		});
+	});
+
+	describe('file-security.download()', () => {
+		describe('with bad request data', () => {
+			it('should return status 404 for wrong token', async () => {
+				await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				const response = await api.getDownloadFile('/file-security/download/test-token');
+
+				expect(response.status).toEqual(404);
+			});
+		});
+
+		describe(`with valid request data`, () => {
+			it('should return status 200 for successful download', async () => {
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+
+				const newRecord = await em.findOneOrFail(FileRecord, result.id);
+				const response = await api.getDownloadFile(
+					`/file-security/download/${newRecord.securityCheck.requestToken || ''}`
+				);
 
 				expect(response.status).toEqual(200);
 			});

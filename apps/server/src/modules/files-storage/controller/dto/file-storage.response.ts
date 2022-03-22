@@ -1,6 +1,4 @@
-/* istanbul ignore file */
-
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
 import { FileRecord, FileRecordParentType } from '@shared/domain/'; // we do not want entity on this place in future or?
 
@@ -12,6 +10,7 @@ export class FileRecordResponse {
 		this.creatorId = fileRecord.creatorId;
 		this.type = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
+		this.deletedSince = fileRecord.deletedSince;
 	}
 
 	@ApiProperty()
@@ -32,6 +31,9 @@ export class FileRecordResponse {
 
 	@ApiProperty()
 	parentType: FileRecordParentType;
+
+	@ApiPropertyOptional()
+	deletedSince?: Date;
 }
 
 export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {
