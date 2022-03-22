@@ -16,6 +16,8 @@ import {
 	RenameFileParams,
 	FileRecordListResponse,
 	FileParams,
+	CopyFilesOfParentParams,
+	CopyFileParams,
 } from './dto';
 
 @ApiTags('file')
@@ -134,6 +136,40 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
+
+		const response = new FileRecordResponse(fileRecord);
+
+		return response;
+	}
+
+	@Post('/copy/:schoolId/:parentType/:parentId')
+	async copy(
+		@Param() params: FileRecordParams,
+		@Body() copyFilesParam: CopyFilesOfParentParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.copyFilesOfParent(
+			currentUser.userId,
+			params,
+			copyFilesParam
+		);
+
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return new FileRecordResponse(fileRecord);
+		});
+
+		const response = new FileRecordListResponse(responseFileRecords, total);
+
+		return response;
+	}
+
+	@Post('/copy/:fileRecordId')
+	async copyFile(
+		@Param() params: SingleFileParams,
+		@Body() copyFileParam: CopyFileParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 
 		const response = new FileRecordResponse(fileRecord);
 

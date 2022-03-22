@@ -10,7 +10,13 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { ILogger, Logger } from '@src/core/logger';
 
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
+import {
+	CopyFileParams,
+	CopyFilesOfParentParams,
+	DownloadFileParams,
+	FileRecordParams,
+	SingleFileParams,
+} from '../controller/dto/file-storage.params';
 import { IFile } from '../interface/file';
 
 @Injectable()
@@ -215,6 +221,26 @@ export class FilesStorageUC {
 	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 		await this.restore([fileRecord]);
+
+		return fileRecord;
+	}
+
+	async copyFilesOfParent(
+		userId: string,
+		params: FileRecordParams,
+		copyFilesParams: CopyFilesOfParentParams
+	): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+		if (count > 0) {
+			console.log(copyFilesParams);
+		}
+
+		return [fileRecords, count];
+	}
+
+	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
+		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		console.log(copyFileParams);
 
 		return fileRecord;
 	}
