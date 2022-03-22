@@ -46,7 +46,7 @@ describe('AccountUc', () => {
 					provide: AccountRepo,
 					useValue: {
 						create: (): Promise<Account> => {
-							return Promise.resolve(mockAdminAccount);
+							return Promise.resolve(accountFactory.buildWithId());
 						},
 						read: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
@@ -190,7 +190,7 @@ describe('AccountUc', () => {
 
 		it('should accept strong password, update it and force renewal', async () => {
 			const previousPasswordHash = mockTeacherAccount.password;
-			expect(mockTeacherAccount.user.forcePasswordChange).toBeFalsy();
+			expect(mockTeacherAccount.user.forcePasswordChange).toBeUndefined();
 			await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, 'DummyPasswd!1');
 			expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
 			expect(mockTeacherUser.forcePasswordChange).toBe(true);

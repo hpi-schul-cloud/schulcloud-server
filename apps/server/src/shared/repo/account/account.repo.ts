@@ -6,8 +6,6 @@ import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 import { User } from '@shared/domain/entity/user.entity';
 
-// const bcrypt = require('bcryptjs');
-
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
 	private get repo(): EntityRepository<Account> {
@@ -15,7 +13,6 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async create(account: Account): Promise<Account> {
-		// account.password = await bcrypt.hash(account.password);
 		await this.repo.persistAndFlush(account);
 		return account;
 	}

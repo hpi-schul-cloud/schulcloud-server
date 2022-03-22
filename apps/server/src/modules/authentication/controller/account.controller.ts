@@ -8,9 +8,9 @@ import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
 import { ChangePasswordParam } from './dto/change-password.param';
 
-@ApiTags('Account')
+@ApiTags('account')
 @Authenticate('jwt')
-@Controller('Account')
+@Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
