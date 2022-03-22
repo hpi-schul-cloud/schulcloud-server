@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.8.0",
+	"version": "27.9.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -75,6 +75,7 @@
 		"nest:lint": "eslint apps --ignore-path .gitignore",
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
 		"syncIndexes": "node ./scripts/syncIndexes.js",
+		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js"
 	},

@@ -1,4 +1,4 @@
-import { Entity, Property, OneToOne } from '@mikro-orm/core';
+import { Entity, Property, OneToOne, Index } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { System } from './system.entity';
 import { User } from './user.entity';
@@ -6,9 +6,11 @@ import { User } from './user.entity';
 export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'accounts' })
+@Index({ properties: ['user', 'system'] })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
-	username: string;
+	@Index()
+	username!: string;
 
 	@Property({ nullable: true })
 	password?: string;

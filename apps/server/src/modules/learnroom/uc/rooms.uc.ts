@@ -57,4 +57,15 @@ export class RoomsUc {
 		}
 		await this.boardRepo.save(board);
 	}
+
+	async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
+		const user = await this.userRepo.findById(userId);
+		const course = await this.courseRepo.findOne(roomId, userId);
+		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
+			throw new ForbiddenException('you are not allowed to edit this');
+		}
+		const board = await this.boardRepo.findByCourseId(course.id);
+		board.reorderElements(orderedList);
+		await this.boardRepo.save(board);
+	}
 }

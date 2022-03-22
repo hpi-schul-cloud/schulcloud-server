@@ -15,27 +15,27 @@ describe('Mail Service', async () => {
 	});
 
 	describe('valid emails', () => {
-		it('should send an valid text email to the notification service', async () => {
+		it('should send an valid text email to the mail service', async () => {
 			const params = {
 				email: 'test@test.test',
 				subject: 'test',
 				content: { text: 'Testing Purposes' },
 			};
 			await mailService.create(params);
-			// assert that notification service was actually called
+			// assert that mail service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
 			expect(payload.recipients).to.have.members([params.email]);
 			expect(payload.mail.plainTextContent).to.equal(params.content.text);
 		});
-		it('should send an valid html email to the notification service', async () => {
+		it('should send an valid html email to the mail service', async () => {
 			const params = {
 				email: 'test@test.test',
 				subject: 'test',
 				content: { html: '<h1>Testing Purposes</h1>' },
 			};
 			await mailService.create(params);
-			// assert that notification service was actually called
+			// assert that mail service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
 			expect(payload.recipients).to.have.members([params.email]);
@@ -55,7 +55,7 @@ describe('Mail Service', async () => {
 				],
 			};
 			await mailService.create(params);
-			// assert that notification service was actually called
+			// assert that mail service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
 			expect(payload.recipients).to.have.members([params.email]);
@@ -73,7 +73,7 @@ describe('Mail Service', async () => {
 				content: { html: '<h1>Testing Purposes</h1>' },
 			});
 
-			// assert that notification service was actually called
+			// assert that mail service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
 			expect(payload.from).to.equal(SMTP_SENDER);
@@ -90,7 +90,7 @@ describe('Mail Service', async () => {
 			app.services['nest-mail'] = nestMailService;
 		});
 
-		it('should throw if notification server returns error', async () => {
+		it('should throw if mail server returns error', async () => {
 			try {
 				await mailService.create({
 					content: { text: 'Testing Purposes' },
