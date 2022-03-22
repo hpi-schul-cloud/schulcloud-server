@@ -12,7 +12,7 @@ describe('KeycloakIdentityManagement', () => {
 			providers: [
 				{ provide: IdentityManagement, useClass: KeycloakIdentityManagement },
 				{
-					provide: 'KeycloakAdminClient',
+					provide: KeycloakAdminClient,
 					useValue: {
 						auth: jest.fn(),
 						setConfig: jest.fn(),
@@ -33,7 +33,7 @@ describe('KeycloakIdentityManagement', () => {
 			],
 		}).compile();
 		idm = module.get<IdentityManagement>(IdentityManagement);
-		kcAdminClient = module.get<KeycloakAdminClient>('KeycloakAdminClient');
+		kcAdminClient = module.get(KeycloakAdminClient);
 	});
 
 	it('should be defined', () => {
