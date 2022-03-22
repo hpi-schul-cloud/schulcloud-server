@@ -22,7 +22,7 @@ interface KcCredentials {
 }
 
 @Injectable()
-export class KeycloakIdentityManagement implements IIdentityManagement {
+export class KeycloakIdentityManagement extends IIdentityManagement {
 	private lastAuthorizationTime = 0;
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
@@ -31,6 +31,7 @@ export class KeycloakIdentityManagement implements IIdentityManagement {
 		@Inject('KeycloakAdminClient') private readonly kcAdminClient: KcAdminClient,
 		@Inject('KeycloakSettings') private readonly kcSettings: KcSettings
 	) {
+		super();
 		kcAdminClient.setConfig({
 			baseUrl: kcSettings.baseUrl,
 			realmName: kcSettings.realmName,

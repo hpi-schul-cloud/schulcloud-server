@@ -1,6 +1,6 @@
 import { IAccount, IAccountUpdate } from '@shared/domain';
 
-export interface IIdentityManagement {
+export abstract class IIdentityManagement {
 	/**
 	 * Create a new account in the identity management.
 	 *
@@ -8,7 +8,7 @@ export interface IIdentityManagement {
 	 * @param [password] the account's password (optional)
 	 * @returns the account id if created successfully
 	 */
-	createAccount(account: IAccount, password?: string | undefined): Promise<string>;
+	abstract createAccount(account: IAccount, password?: string | undefined): Promise<string>;
 
 	/**
 	 * Update an existing account's details.
@@ -17,7 +17,7 @@ export interface IIdentityManagement {
 	 * @param account the account data to be applied.
 	 * @returns the account id if updated successfully
 	 */
-	updateAccount(accountId: string, account: IAccountUpdate): Promise<string>;
+	abstract updateAccount(accountId: string, account: IAccountUpdate): Promise<string>;
 
 	/**
 	 * Update an existing account's password.
@@ -26,7 +26,7 @@ export interface IIdentityManagement {
 	 * @param password the new password (clear).
 	 * @returns the account id if updated successfully
 	 */
-	updateAccountPassword(accountId: string, password: string): Promise<string>;
+	abstract updateAccountPassword(accountId: string, password: string): Promise<string>;
 
 	/**
 	 * Load a specific account by its id.
@@ -34,19 +34,19 @@ export interface IIdentityManagement {
 	 * @param accountId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	findAccountById(accountId: string): Promise<IAccount>;
+	abstract findAccountById(accountId: string): Promise<IAccount>;
 
 	/**
 	 * Load all accounts.
 	 *
 	 * @returns an array of all accounts (might be empty)
 	 */
-	getAllAccounts(): Promise<IAccount[]>;
+	abstract getAllAccounts(): Promise<IAccount[]>;
 
 	/**
 	 * Deletes an account from the identity management.
 	 * @param accountId the account to be deleted.
 	 * @returns the accounts id if deleted successfully
 	 */
-	deleteAccountById(accountId: string): Promise<string>;
+	abstract deleteAccountById(accountId: string): Promise<string>;
 }

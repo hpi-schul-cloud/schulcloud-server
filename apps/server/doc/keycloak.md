@@ -1,15 +1,18 @@
 # Keycloak
+
 > Keycloak will be the future IAM provider for the dBildungscloud. Keycloak provides OpenID Connect, SAML 2.0 and other
 > identity related functionalities like SSO out of the box. It can also act as identity broker or aggregate identities
 > from third party services which can be an active directory or LDAP.
 
 ## Docker
-To run Keycloak locally for development purpose use the following Bash or PowerShell command. You can log into Keycloak 
+
+To run Keycloak locally for development purpose use the following Bash or PowerShell command. You can log into Keycloak
 here http://localhost:8080. If you don't want to block your terminal, you can add the `-d` option to start the container
 in the background. Execute these commands in the repository root or the data seeding will fail, and you can not log into
 Keycloak with any user.
 
-__Bash:__
+**Bash:**
+
 ```bash
 docker run \
   --name keycloak \
@@ -20,7 +23,8 @@ docker run \
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
 ```
 
-__PowerShell:__
+**PowerShell:**
+
 ```pwsh
 docker run `
   --name keycloak `
@@ -31,17 +35,27 @@ docker run `
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
 ```
 
+## Test local environment
+
+You may test your local setup executing 'keycloak-identity-management.integration.spec.ts':
+
+```pwsh
+npx jest apps/server/src/shared/infra/identity-management/keycloak-identity-management.integration.spec.ts
+```
+
 ## Seeding Data
+
 During container startup Keycloak will always create the Master realm with the admin user. After startup, we use the
 Keycloak-CLI to import the dBildungscloud realm, which contains some seed users, groups and permissions for development
 and testing. In the table below you can see the username and password combinations for the Keycloak login.
 
-| Username | Password | Description |
-| :- | :- | :- |
-| keycloak | keycloak | The overall Keycloak administrator with all permissions. |
-| dbildungscloud | dbildungscloud | The dBildungscloud realm specific administrator. |
+| Username       | Password       | Description                                              |
+| :------------- | :------------- | :------------------------------------------------------- |
+| keycloak       | keycloak       | The overall Keycloak administrator with all permissions. |
+| dbildungscloud | dbildungscloud | The dBildungscloud realm specific administrator.         |
 
 ## Updating Seed Data
+
 1. Run Keycloak and make the desired changes
 2. Use `docker container exec -it keycloak bash` to start a bash in the container
 3. Use the Keycloak-CLI to export all Keycloak data with `/opt/keycloak/bin/kc.sh export --dir /tmp/realms`

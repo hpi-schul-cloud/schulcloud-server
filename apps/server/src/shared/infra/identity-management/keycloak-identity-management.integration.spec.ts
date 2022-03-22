@@ -4,10 +4,20 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { IIdentityManagement } from './identity-management.interface';
 import { KeycloakIdentityManagement } from './keycloak-identity-management';
 
+/**
+ * This test does not run on CI!
+ *
+ * This test can be used to verify that schulcloud-server and Keycloak (ErWIn-IDM)
+ * communication is working OK in the local developers environment.
+ *
+ * Once Keycloak is integrated into the CI setup, this test can be re-factored and enabled.
+ *
+ */
 xdescribe('KeycloakIdentityManagement', () => {
 	let idm: IIdentityManagement;
 
-	// GIVEN
+	// This is the GIVEN data of the integration test.
+	// TODO This MUST to be replaced by a proper data seeding (GitHub Action?) to be running in the CI
 	const account1 = { userName: 'user-1', email: 'test1@test.test' };
 	const account1Password = 'testPasswd1';
 
@@ -39,13 +49,16 @@ xdescribe('KeycloakIdentityManagement', () => {
 		}).compile();
 		idm = module.get<IIdentityManagement>('IdentityManagement');
 
-		// SETUP create accounts
+		// This sets the GIVEN part of the integration test.
+		// TODO To be used in the CI, this MUST to be replaced by a proper data seeding (GitHub Action?)
 		account1Id = await idm.createAccount(account1);
 		expect(account1Id).not.toBeNull();
 		account2Id = await idm.createAccount(account2, account2Password);
 		expect(account2Id).not.toBeNull();
 	});
 
+	// This cleans up the integration test data.
+	// TODO To be used in the CI, this MUST to be handled by the data seeding beforehand (see #beforeAll)
 	afterAll(async () => {
 		// CLEANUP delete accounts
 		let ret: string | null;
@@ -59,6 +72,8 @@ xdescribe('KeycloakIdentityManagement', () => {
 		expect(ret).toEqual(account2Id);
 	});
 
+	// This is a user journey for local testing only
+	// TODO This journey SHOULD be separate into acceptance tests steps, once re-factored to be running in the CI or E2E.
 	it('should allow to find and modify accounts.', async () => {
 		const foundAccounts = await idm.getAllAccounts();
 		expect(foundAccounts).toContainEqual(expect.objectContaining(account1));
