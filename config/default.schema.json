@@ -58,7 +58,7 @@
 				},
 				"AVAILABLE_LANGUAGES": {
 					"type": "string",
-					"default": "de,en,es",
+					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
 			}
@@ -369,12 +369,12 @@
 			"type": "string",
 			"description": "Password for the antivirus service, only used for legacy file implementation"
 		},
-		"ANTIVIRUS_EXCHANGE" : {
+		"ANTIVIRUS_EXCHANGE": {
 			"type": "string",
 			"default": "antivirus",
 			"description": "rabbitmq exchange name for antivirus"
 		},
-		"ANTIVIRUS_ROUTING_KEY" : {
+		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
 			"default": "scan_file",
 			"description": "rabbitmq routing key"
