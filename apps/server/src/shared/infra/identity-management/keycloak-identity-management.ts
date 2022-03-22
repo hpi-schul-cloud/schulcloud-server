@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { GrantTypes } from '@keycloak/keycloak-admin-client/lib/utils/auth';
-import { IIdentityManagement } from './identity-management.interface';
+import { IdentityManagement } from './identity-management';
 
 interface KcSettings {
 	realmName: string;
@@ -22,7 +22,7 @@ interface KcCredentials {
 }
 
 @Injectable()
-export class KeycloakIdentityManagement extends IIdentityManagement {
+export class KeycloakIdentityManagement extends IdentityManagement {
 	private lastAuthorizationTime = 0;
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;

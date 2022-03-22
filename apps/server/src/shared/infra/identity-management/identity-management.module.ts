@@ -2,11 +2,11 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Module } from '@nestjs/common';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { KeycloakIdentityManagement } from './keycloak-identity-management';
-import { IIdentityManagement } from './identity-management.interface';
+import { IdentityManagement } from './identity-management';
 
 @Module({
 	providers: [
-		{ provide: IIdentityManagement, useClass: KeycloakIdentityManagement },
+		{ provide: IdentityManagement, useClass: KeycloakIdentityManagement },
 		{ provide: KeycloakAdminClient, useClass: KeycloakAdminClient },
 		{
 			provide: 'KeycloakSettings',
@@ -22,6 +22,6 @@ import { IIdentityManagement } from './identity-management.interface';
 			},
 		},
 	],
-	exports: [IIdentityManagement],
+	exports: [IdentityManagement],
 })
 export class IdentityManagementModule {}

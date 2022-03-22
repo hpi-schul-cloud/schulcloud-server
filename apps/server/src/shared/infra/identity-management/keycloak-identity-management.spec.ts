@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IIdentityManagement } from './identity-management.interface';
+import { IdentityManagement } from './identity-management';
 import { KeycloakIdentityManagement } from './keycloak-identity-management';
 
 describe('KeycloakIdentityManagement', () => {
-	let idm: IIdentityManagement;
+	let idm: IdentityManagement;
 	let kcAdminClient: KeycloakAdminClient;
 
 	beforeEach(async () => {
@@ -32,7 +32,7 @@ describe('KeycloakIdentityManagement', () => {
 				},
 			],
 		}).compile();
-		idm = module.get<IIdentityManagement>('IdentityManagement');
+		idm = module.get<IdentityManagement>(IdentityManagement);
 		kcAdminClient = module.get<KeycloakAdminClient>('KeycloakAdminClient');
 	});
 
