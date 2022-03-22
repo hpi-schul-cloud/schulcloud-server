@@ -18,7 +18,8 @@
 		"_id": {
 			"$oid": "0000d186816abba584714c92"
 		},
-		"type": "iserv",
+		"alias": "OAuth Zentrales IServ",
+		"type": "oauthIserv",
 		"__v": 0,
 		"oauthConfig": {
 			"clientId": "insert clientId",
@@ -29,7 +30,9 @@
 			"scope": "openid uuid",
 			"responseType": "code",
 			"codeRedirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
-			"authEndpoint": "http://iserv.n21.dbildungscloud.de/iserv/auth/auth"
+			"authEndpoint": "http://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+			"provider": "iserv",
+			"logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"
 		}
 	}
 ]
