@@ -2,9 +2,9 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 
 /* eslint-disable no-nested-ternary */
 import { Inject, Injectable } from '@nestjs/common';
-import KcAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { GrantTypes } from '@keycloak/keycloak-admin-client/lib/utils/auth';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { IdentityManagement } from './identity-management';
 
 interface KcSettings {
@@ -28,7 +28,7 @@ export class KeycloakIdentityManagement extends IdentityManagement {
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
 
 	public constructor(
-		@Inject('KeycloakAdminClient') private readonly kcAdminClient: KcAdminClient,
+		@Inject(KeycloakAdminClient) private readonly kcAdminClient: KeycloakAdminClient,
 		@Inject('KeycloakSettings') private readonly kcSettings: KcSettings
 	) {
 		super();

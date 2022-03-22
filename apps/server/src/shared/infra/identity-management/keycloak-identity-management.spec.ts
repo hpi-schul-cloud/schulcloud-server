@@ -10,7 +10,7 @@ describe('KeycloakIdentityManagement', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				{ provide: 'IdentityManagement', useClass: KeycloakIdentityManagement },
+				{ provide: IdentityManagement, useClass: KeycloakIdentityManagement },
 				{
 					provide: 'KeycloakAdminClient',
 					useValue: {
