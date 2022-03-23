@@ -1,4 +1,4 @@
-import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { School } from './school.entity';
@@ -25,6 +25,9 @@ export interface INewsProperties {
 	discriminatorColumn: 'targetModel',
 	abstract: true,
 })
+@Index({ properties: ['school', 'target'] })
+@Index({ properties: ['school', 'target', 'targetModel'] })
+@Index({ properties: ['target', 'targetModel'] })
 export abstract class News extends BaseEntityWithTimestamps {
 	/** the news title */
 	@Property()
@@ -36,6 +39,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	/** only past news are visible for viewers, when edit permission, news visible in the future might be accessed too  */
 	@Property()
+	@Index()
 	displayAt: Date;
 
 	@Property({ nullable: true })

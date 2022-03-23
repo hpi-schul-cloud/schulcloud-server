@@ -13,7 +13,7 @@ class SchoolsListService {
 		const systemsQuery = {
 			path: 'systems',
 			select:
-				'_id type alias oauthConfig.clientId oauthConfig.authEndpoint oauthConfig.codeRedirectUri oauthConfig.responseType oauthConfig.scope oauthConfig.provider',
+				'_id type alias oauthConfig.clientId oauthConfig.authEndpoint oauthConfig.codeRedirectUri oauthConfig.responseType oauthConfig.scope oauthConfig.provider oauthConfig.logoutEndpoint',
 			match: { $or: [{ type: { $ne: 'ldap' } }, { 'ldapConfig.active': { $eq: true } }] },
 		};
 		const schools = await schoolModel

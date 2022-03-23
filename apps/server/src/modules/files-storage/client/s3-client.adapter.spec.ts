@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from './s3-client.adapter';
@@ -14,12 +14,12 @@ const config = {
 	secretAccessKey: '',
 };
 
-const pathToFile = '/test/text.txt';
+const pathToFile = 'test/text.txt';
 
 describe('S3ClientAdapter', () => {
 	let module: TestingModule;
 	let service: S3ClientAdapter;
-	let client: S3Client;
+	let client: DeepMocked<S3Client>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -155,6 +155,48 @@ describe('S3ClientAdapter', () => {
 			const mock = jest.spyOn(service, 'create');
 			await service.create(path, file);
 			expect(mock).toBeCalledTimes(2);
+		});
+	});
+
+	describe('delete', () => {
+		it('should call send() of client with copy objects', async () => {
+			await service.delete([pathToFile]);
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: 'test-bucket', CopySource: 'test-bucket/test/text.txt', Key: 'trash/test/text.txt' },
+				})
+			);
+		});
+		it('should call send() of client with delete objects', async () => {
+			await service.delete([pathToFile]);
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
+				})
+			);
+		});
+	});
+
+	describe('restore', () => {
+		it('should call send() of client with copy objects', async () => {
+			await service.restore([pathToFile]);
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						CopySource: 'test-bucket/trash/test/text.txt',
+						Key: 'test/text.txt',
+					},
+				})
+			);
+		});
+		it('should call send() of client with delete objects', async () => {
+			await service.restore([pathToFile]);
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'trash/test/text.txt' }] } },
+				})
+			);
 		});
 	});
 });
