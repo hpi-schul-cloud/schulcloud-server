@@ -1,19 +1,24 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser, IFindOptions, ImportUser, User } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ImportUserFilterQuery } from './dto/import-user-filter.query';
-import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
-import { UpdateMatchParams } from './dto/update-match.params';
-import { UserMatchListResponse } from './dto/user-match.response';
 
 import { ImportUserMapper } from '../mapper/import-user.mapper';
-import { UserFilterQuery } from './dto/user-filter.query';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
-import { UpdateFlagParams } from './dto/update-flag.params';
-import { ImportUserSortingQuery } from './dto/import-user-sorting.query';
+
+import {
+	UserFilterQuery,
+	UpdateFlagParams,
+	ImportUserSortingQuery,
+	ImportUserFilterQuery,
+	ImportUserListResponse,
+	ImportUserResponse,
+	UpdateMatchParams,
+	UserMatchListResponse,
+} from './dto';
 
 @ApiTags('UserImport')
 @Authenticate('jwt')
@@ -35,6 +40,7 @@ export class ImportUserController {
 		const { skip, limit } = paginationQuery;
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
 		const response = new ImportUserListResponse(dtoList, count, skip, limit);
+
 		return response;
 	}
 
@@ -46,6 +52,7 @@ export class ImportUserController {
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.setMatch(currentUser.userId, importUserId, params.userId);
 		const response = ImportUserMapper.mapToResponse(result);
+
 		return response;
 	}
 
@@ -56,6 +63,7 @@ export class ImportUserController {
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.removeMatch(currentUser.userId, importUserId);
 		const response = ImportUserMapper.mapToResponse(result);
+
 		return response;
 	}
 
@@ -67,6 +75,7 @@ export class ImportUserController {
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.updateFlag(currentUser.userId, importUserId, params.flagged);
 		const response = ImportUserMapper.mapToResponse(result);
+
 		return response;
 	}
 
@@ -83,6 +92,7 @@ export class ImportUserController {
 		const { skip, limit } = paginationQuery;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserMatchListResponse(dtoList, total, skip, limit);
+
 		return response as unknown as UserMatchListResponse;
 	}
 

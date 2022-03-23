@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+
 import { UserRepo } from '@shared/repo';
 import { EntityId, PermissionService, User } from '@shared/domain';
 
-import { ChangeLanguageParams } from '../controller/dto/user.params';
+import { ChangeLanguageParams } from '../controller/dto';
 
 @Injectable()
 export class UserUC {
@@ -11,6 +12,7 @@ export class UserUC {
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
 		const permissions = this.permissionService.resolvePermissions(user);
+
 		return [user, permissions];
 	}
 
@@ -18,6 +20,7 @@ export class UserUC {
 		const user = await this.userRepo.findById(userId);
 		user.language = params.language;
 		await this.userRepo.persistAndFlush(user);
+
 		return true;
 	}
 }
