@@ -1,9 +1,11 @@
 const assert = require('assert');
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../src/app');
 const { NotAuthenticated, NotFound } = require('../../../src/errors');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
+chai.use(chaiAsPromised);
 const { expect } = chai;
 
 describe('homework service', () => {
@@ -506,6 +508,33 @@ describe('homework service', () => {
 				chai.expect(err.message).to.not.equal('should have failed');
 				chai.expect(err.code).to.equal(403);
 				chai.expect(err.message).to.equal("You don't have permissions!");
+			}
+		});
+	});
+
+	describe('UPDATE', () => {
+		it('is blocked', async () => {
+			const { teacher, course, homework } = await setUpHomework();
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			try {
+				await homeworkService.update(
+					homework._id,
+					{
+						teacherId: teacher._id,
+						name: 'Testaufgabe',
+						description: 'I changed this',
+						availableDate: '2017-09-28T11:47:46.622Z',
+						dueDate: '2030-11-16T12:47:00.000Z',
+						private: true,
+						courseId: course._id,
+						schoolId: course.schoolId,
+					},
+					params
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.className).to.equal('method-not-allowed');
 			}
 		});
 	});

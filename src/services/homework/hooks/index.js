@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 
-const { iff, isProvider } = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { Forbidden, GeneralError, NotFound, NotAuthenticated } = require('../../../errors');
 const logger = require('../../../logger');
 
@@ -344,7 +344,7 @@ exports.before = () => ({
 	],
 	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
 	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
-	update: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_EDIT'))],
+	update: [iff(isProvider('external'), disallow())],
 	patch: [
 		iff(isProvider('external'), [
 			globalHooks.hasPermission('HOMEWORK_EDIT'),
