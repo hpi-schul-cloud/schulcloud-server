@@ -7,7 +7,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ResolvedUserMapper } from '../mapper';
 import { UserUC } from '../uc/user.uc';
 
-import { ResolvedUser, ChangeLanguageParams } from './dto';
+import { ResolvedUser, ChangeLanguageParams, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
 @Authenticate('jwt')
@@ -28,9 +28,11 @@ export class UserController {
 	async changeLanguage(
 		@Param() params: ChangeLanguageParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<boolean> {
+	): Promise<SuccessfulResponse> {
 		const result = await this.userUc.patchLanguage(currentUser.userId, params);
 
-		return result;
+		const successfulResponse = new SuccessfulResponse(result);
+
+		return successfulResponse;
 	}
 }
