@@ -87,11 +87,9 @@ const isCourseHomeworkTeacher = (userId, homework) => {
  * @param {*} homework
  */
 function hasHomeworkPermission(userId, homework) {
-	let hasPermission = isHomeworkOwner(userId, homework) === true;
-	if (!hasPermission && !homework.private) {
-		hasPermission = isCourseHomeworkTeacher(userId, homework) === true;
-	}
-	return hasPermission;
+	const isOwner = isHomeworkOwner(userId, homework);
+	const isCourseTeacher = homework.courseId && isCourseHomeworkTeacher(userId, homework);
+	return isOwner || isCourseTeacher;
 }
 
 const hasViewPermissionBefore = (hook) => {
@@ -114,29 +112,30 @@ const hasViewPermissionAfter = (hook) => {
 	// user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
 	// availableDate < Date.now()
 	function hasPermission(e) {
+		const isOwnerCheck = e.teacherId === (hook.params.account || {}).userId.toString();
 		const isTeacherCheck =
-			e.teacherId === (hook.params.account || {}).userId.toString() ||
-			(!e.private && ((e.courseId || {}).teacherIds || []).includes((hook.params.account || {}).userId.toString())) ||
-			(!e.private &&
-				((e.courseId || {}).substitutionIds || []).includes((hook.params.account || {}).userId.toString()));
+			((e.courseId || {}).teacherIds || []).includes((hook.params.account || {}).userId.toString()) ||
+			((e.courseId || {}).substitutionIds || []).includes((hook.params.account || {}).userId.toString());
 		const isStudent =
 			e.courseId != null &&
 			((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || '').toString());
 		const published = new Date(e.availableDate) < new Date() && !e.private;
-		return isTeacherCheck || (isStudent && published);
+		return isOwnerCheck || isTeacherCheck || (isStudent && published);
 	}
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
 	if (data[0] !== undefined) {
 		data = data.filter(hasPermission);
-	} else {
-		// check if it is a single homework AND user has view permission
-		if (data.schoolId != undefined && !hasPermission(data)) {
-			return Promise.reject(new Forbidden("You don't have permissions!"));
-		}
+	} else if (data.schoolId !== undefined && !hasPermission(data)) {
+		return Promise.reject(new Forbidden("You don't have permissions!"));
 	}
-	hook.result.data ? (hook.result.data = data) : (hook.result = data);
-	hook.result.data ? (hook.result.total = data.length) : (hook.total = data.length);
+	if (hook.result.data) {
+		hook.result.data = data;
+		hook.result.total = data.length;
+	} else {
+		hook.result = data;
+		hook.total = data.length;
+	}
 	return Promise.resolve(hook);
 };
 
