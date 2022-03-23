@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse, DecodeHtmlEntities } from '@shared/controller';
-import { TaskStatusResponse } from './task-status.response';
+import { TaskStatusResponse } from './task-status-response';
 
 /**
  * DTO for returning a task document via api.

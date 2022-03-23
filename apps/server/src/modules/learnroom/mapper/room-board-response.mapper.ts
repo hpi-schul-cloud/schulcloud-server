@@ -6,9 +6,9 @@ import {
 	BoardTaskResponse,
 	BoardLessonResponse,
 	BoardLockedTaskResponse,
-} from '../controller/dto/roomBoardResponse';
+} from '../controller/dto/room-board-response';
 import { RoomBoardDTO, LockedTaskDTO, RoomBoardElementTypes } from '../types';
-import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
+import { BoardTaskStatusMapper } from './room-board-task-status.mapper';
 
 @Injectable()
 export class RoomBoardResponseMapper {

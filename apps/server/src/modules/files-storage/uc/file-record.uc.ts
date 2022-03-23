@@ -6,7 +6,7 @@ import {
 	SingleFileParams,
 	ScanResultParams,
 	RenameFileParams,
-} from '../controller/dto/file-storage.params';
+} from '../controller/dto/file-storage-params';
 
 @Injectable()
 export class FileRecordUC {

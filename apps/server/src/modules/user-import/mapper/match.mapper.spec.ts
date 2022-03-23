@@ -1,26 +1,26 @@
 import { MatchCreator, MatchCreatorScope } from '@shared/domain';
-import { MatchCreatorResponse, MatchFilterQuery } from '../controller/dto';
+import { MatchCreatorResponse, MatchFilterParams } from '../controller/dto';
 import { ImportUserMatchMapper } from './match.mapper';
 
 describe('[ImportUserMatchMapper]', () => {
 	describe('[mapImportUserMatchScopeToDomain] from query', () => {
 		it('should map auto from query to domain', () => {
-			const match = MatchFilterQuery.AUTO;
+			const match = MatchFilterParams.AUTO;
 			const result = ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match);
 			expect(result).toEqual(MatchCreatorScope.AUTO);
 		});
 		it('should map manual/admin from query to domain', () => {
-			const match = MatchFilterQuery.MANUAL;
+			const match = MatchFilterParams.MANUAL;
 			const result = ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match);
 			expect(result).toEqual(MatchCreatorScope.MANUAL);
 		});
 		it('should map no match from query to domain', () => {
-			const match = MatchFilterQuery.NONE;
+			const match = MatchFilterParams.NONE;
 			const result = ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match);
 			expect(result).toEqual(MatchCreatorScope.NONE);
 		});
 		it('should fail for other values', () => {
-			const match = 'foo' as unknown as MatchFilterQuery;
+			const match = 'foo' as unknown as MatchFilterParams;
 			expect(() => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match)).toThrowError(
 				'invalid match from filter query'
 			);

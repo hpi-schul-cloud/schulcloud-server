@@ -1,3 +1,3 @@
-export * from './pagination.query';
-export * from './sorting.query';
-export * from './pagination.response';
+export * from './pagination-params';
+export * from './sorting-params';
+export * from './pagination-response';

@@ -3,7 +3,7 @@ import { EntityId, ICurrentUser } from '@shared/domain';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomsUc } from '../uc/rooms.uc';
 import { RoomBoardDTO } from '../types';
-import { BoardResponse } from './dto/roomBoardResponse';
+import { BoardResponse } from './dto/room-board-response';
 import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {

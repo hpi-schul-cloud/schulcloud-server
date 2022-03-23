@@ -6,7 +6,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { System } from '@shared/domain';
 import { OauthSSOController } from './oauth-sso.controller';
 import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationQuery } from './dto/authorization.query';
+import { AuthorizationParams } from './dto/authorization-params';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 
 describe('OAuthController', () => {
@@ -41,7 +41,7 @@ describe('OAuthController', () => {
 
 	describe('startOauthFlow', () => {
 		const defaultAuthCode = '43534543jnj543342jn2';
-		const query: AuthorizationQuery = { code: defaultAuthCode };
+		const query: AuthorizationParams = { code: defaultAuthCode };
 		const system: System = systemFactory.build();
 		system.id = '4345345';
 		it('should redirect to mock.de', async () => {

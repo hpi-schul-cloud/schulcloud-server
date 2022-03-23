@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { BusinessError } from '@shared/common';
 import { GlobalErrorFilter } from './global-error.filter';
-import { ErrorResponse } from '../dto/error.response';
+import { ErrorResponse } from '../dto/error-response';
 
 describe('GlobalErrorFilter', () => {
 	let errorFilter: GlobalErrorFilter;

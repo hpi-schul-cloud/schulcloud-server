@@ -1,6 +1,6 @@
 import { ApiValidationError } from '@shared/common';
-import { ErrorResponse } from './error.response';
-import { ValidationErrorDetailResponse } from './validation-error-detail.response';
+import { ErrorResponse } from './error-response';
+import { ValidationErrorDetailResponse } from './validation-error-detail-response';
 
 /**
  * HTTP response definition for api validation errors.

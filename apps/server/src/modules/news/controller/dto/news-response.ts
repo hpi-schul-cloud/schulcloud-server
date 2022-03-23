@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { NewsTargetModel } from '@shared/domain';
-import { SchoolInfoResponse } from './school-info.response';
-import { TargetInfoResponse } from './target-info.response';
-import { UserInfoResponse } from './user-info.response';
+import { SchoolInfoResponse } from './school-info-response';
+import { TargetInfoResponse } from './target-info-response';
+import { UserInfoResponse } from './user-info-response';
 
 const NEWS_SOURCES = ['internal', 'rss'] as const;
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);

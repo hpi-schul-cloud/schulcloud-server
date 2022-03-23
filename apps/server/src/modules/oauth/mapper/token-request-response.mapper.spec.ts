@@ -1,9 +1,9 @@
 import { OauthConfig, System } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { TokenRequestParams } from '../controller/dto/token-request-params';
-import { TokenRequestPayload } from '../controller/dto/token-request-payload';
+import { TokenRequestResponse } from '../controller/dto/token-request-response';
 import { TokenRequestParamsMapper } from './token-request-params.mapper';
-import { TokenRequestPayloadMapper } from './token-request-payload.mapper';
+import { TokenRequestResponseMapper } from './token-request-response.mapper';
 
 const defaultdecryptedClientSecret = 'mocksecret';
 const expectedParams: TokenRequestParams = {
@@ -34,35 +34,35 @@ const defaultSystem: System = {
 	createdAt: new Date(),
 	updatedAt: new Date(),
 };
-describe('TokenRequestPayload.Mapper', () => {
-	const expectedPayload: TokenRequestPayload = {
+describe('TokenRequestResponse.Mapper', () => {
+	const expectedResponse: TokenRequestResponse = {
 		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 		tokenRequestParams: expectedParams,
 	};
 
-	describe('token-request-payload', () => {
+	describe('token-request-response', () => {
 		describe('mapToResponse', () => {
-			it('should map the Payload to dto', () => {
-				const result = TokenRequestPayloadMapper.mapToResponse(
+			it('should map the Response to dto', () => {
+				const result = TokenRequestResponseMapper.mapToResponse(
 					defaultSystem,
 					defaultdecryptedClientSecret,
 					defaultAuthCode
 				);
-				expect(result).toStrictEqual(expectedPayload);
+				expect(result).toStrictEqual(expectedResponse);
 			});
-			describe('mapCreateTokenRequestPayload', () => {
-				it('should create the Payload', () => {
-					const result = TokenRequestPayloadMapper.mapCreateTokenRequestPayload(defaultSystem, expectedParams);
-					expect(result).toStrictEqual(expectedPayload);
+			describe('mapCreateTokenRequestResponse', () => {
+				it('should create the Response', () => {
+					const result = TokenRequestResponseMapper.mapCreateTokenRequestResponse(defaultSystem, expectedParams);
+					expect(result).toStrictEqual(expectedResponse);
 				});
 			});
 		});
 	});
 });
 describe('TokenRequestParams.Mapper', () => {
-	describe('token-request-payload', () => {
+	describe('token-request-response', () => {
 		describe('mapToResponse', () => {
-			it('should map the Payload to dto', () => {
+			it('should map the Response to dto', () => {
 				const result = TokenRequestParamsMapper.mapToResponse(
 					defaultSystem,
 					defaultdecryptedClientSecret,
@@ -70,8 +70,8 @@ describe('TokenRequestParams.Mapper', () => {
 				);
 				expect(result).toStrictEqual(expectedParams);
 			});
-			describe('mapCreateTokenRequestPayload', () => {
-				it('should create the Payload', () => {
+			describe('mapCreateTokenRequestResponse', () => {
+				it('should create the Response', () => {
 					const result = TokenRequestParamsMapper.mapCreateTokenRequestParams(
 						defaultSystem,
 						defaultdecryptedClientSecret,

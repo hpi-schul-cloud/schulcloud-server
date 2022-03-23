@@ -179,7 +179,7 @@ Global settings of the core-module ensure **request/response validation** agains
 
 #### File naming
 
-Complex input DTOs are defined like [create-news].param.ts (class-name: CreateNewsParam) or [pagination].query.ts (class-name: PaginationQuery)
+Complex input DTOs are defined like [create-news].param.ts (class-name: CreateNewsParam) or [pagination].query.ts (class-name: PaginationParams)
 
 When DTO's are shared between multiple modules, locate them in the layer-related shared folder.
 

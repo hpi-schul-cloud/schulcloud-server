@@ -5,7 +5,7 @@ import { ICurrentUser, PermissionService } from '@shared/domain';
 
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { UserRepo } from '@shared/repo';
-import { ResolvedUser } from './dto/ResolvedUser.dto';
+import { ResolvedUserResponse } from './dto/resolved-user-response';
 import { ResolvedUserMapper } from '../mapper';
 
 @ApiTags('User')
@@ -15,7 +15,7 @@ export class UserController {
 	constructor(private readonly userRepo: UserRepo, private readonly permissionService: PermissionService) {}
 
 	@Get('me')
-	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
+	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
 		const user = await this.userRepo.findById(currentUser.userId, true);
 		const permissions = this.permissionService.resolvePermissions(user);
 

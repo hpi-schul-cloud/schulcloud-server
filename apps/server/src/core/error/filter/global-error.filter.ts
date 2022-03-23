@@ -3,9 +3,9 @@ import _ from 'lodash';
 import { Response } from 'express';
 import { BusinessError, ApiValidationError } from '@shared/common';
 import { Logger, ILogger } from '@src/core/logger';
-import { ErrorResponse } from '../dto/error.response';
+import { ErrorResponse } from '../dto/error-response';
 import { FeathersError } from '../interface';
-import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
+import { ApiValidationErrorResponse } from '../dto/api-validation-error-response';
 
 const isFeathersError = (error: Error): error is FeathersError => {
 	if (!(error && 'type' in error)) return false;

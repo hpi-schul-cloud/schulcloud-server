@@ -9,11 +9,11 @@ import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.pro
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
 import QueryString from 'qs';
-import { TokenRequestPayload } from '../controller/dto/token-request-payload';
+import { TokenRequestResponse } from '../controller/dto/token-request-response';
 import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
-import { AuthorizationQuery } from '../controller/dto/authorization.query';
+import { AuthorizationParams } from '../controller/dto/authorization-params';
 import { OAuthResponse } from '../controller/dto/oauth-response';
-import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
+import { TokenRequestResponseMapper } from '../mapper/token-request-response.mapper';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class OauthUc {
 	}
 
 	// 0- start Oauth Process
-	async startOauth(query: AuthorizationQuery, systemId: string): Promise<OAuthResponse> {
+	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		// get the authorization code
 		const code: string = this.checkAuthorizationCode(query);
 		// get the Tokens using the authorization code
@@ -54,7 +54,7 @@ export class OauthUc {
 	 * @query query input that has either a code or an error
 	 * @return authorization code or throws an error
 	 */
-	checkAuthorizationCode(query: AuthorizationQuery): string {
+	checkAuthorizationCode(query: AuthorizationParams): string {
 		if (query.code) return query.code;
 		let errorCode = 'sso_auth_code_step';
 		if (query.error) {
@@ -68,15 +68,15 @@ export class OauthUc {
 	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
 		const system: System = await this.systemRepo.findById(systemId);
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
+		const tokenRequestResponse: TokenRequestResponse = TokenRequestResponseMapper.mapToResponse(
 			system,
 			decryptedClientSecret,
 			code
 		);
 
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
-			tokenRequestPayload.tokenEndpoint,
-			QueryString.stringify(tokenRequestPayload.tokenRequestParams),
+			tokenRequestResponse.tokenEndpoint,
+			QueryString.stringify(tokenRequestResponse.tokenRequestParams),
 			{
 				method: 'POST',
 				headers: {

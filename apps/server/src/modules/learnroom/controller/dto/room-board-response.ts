@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { RoomBoardElementTypes } from '../../types';
-import { BoardTaskStatusResponse } from './roomBoardResponse-taskStatus';
+import { BoardTaskStatusResponse } from './room-board-task-status-response';
 
 export class BoardTaskResponse {
 	constructor({ id, name, createdAt, updatedAt, status }: BoardTaskResponse) {

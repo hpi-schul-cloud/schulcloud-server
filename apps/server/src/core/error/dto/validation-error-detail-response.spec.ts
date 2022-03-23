@@ -1,4 +1,4 @@
-import { ValidationErrorDetailResponse } from './validation-error-detail.response';
+import { ValidationErrorDetailResponse } from './validation-error-detail-response';
 
 describe('ValidationErrorDetailResponse', () => {
 	describe('when creating a ValidationErrorDetailResponse instance', () => {

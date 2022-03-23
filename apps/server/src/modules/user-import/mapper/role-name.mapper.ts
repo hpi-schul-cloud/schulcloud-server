@@ -1,5 +1,5 @@
 import { RoleName } from '@shared/domain';
-import { RoleNameFilterQuery, RoleNameResponse } from '../controller/dto';
+import { RoleNameFilterParams, RoleNameResponse } from '../controller/dto';
 
 export class RoleNameMapper {
 	static mapToResponse(roleName: RoleName): RoleNameResponse {
@@ -9,10 +9,10 @@ export class RoleNameMapper {
 		throw Error('invalid role name from domain');
 	}
 
-	static mapToDomain(roleName: RoleNameFilterQuery): RoleName {
-		if (roleName === RoleNameFilterQuery.ADMIN) return RoleName.ADMIN;
-		if (roleName === RoleNameFilterQuery.TEACHER) return RoleName.TEACHER;
-		if (roleName === RoleNameFilterQuery.STUDENT) return RoleName.STUDENT;
+	static mapToDomain(roleName: RoleNameFilterParams): RoleName {
+		if (roleName === RoleNameFilterParams.ADMIN) return RoleName.ADMIN;
+		if (roleName === RoleNameFilterParams.TEACHER) return RoleName.TEACHER;
+		if (roleName === RoleNameFilterParams.STUDENT) return RoleName.STUDENT;
 		throw Error('invalid role name from query');
 	}
 }

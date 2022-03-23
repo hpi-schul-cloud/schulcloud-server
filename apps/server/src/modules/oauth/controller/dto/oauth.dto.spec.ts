@@ -1,6 +1,6 @@
 import { validate } from 'class-validator';
 import { TokenRequestParams } from './token-request-params';
-import { TokenRequestPayload } from './token-request-payload';
+import { TokenRequestResponse } from './token-request-response';
 import { OauthTokenResponse } from './oauth-token-response';
 
 const tokenRequestParam = new TokenRequestParams();
@@ -17,10 +17,10 @@ describe('token-request-params', () => {
 	});
 });
 
-describe('token-request-payload', () => {
-	const tokenRequestPayload = new TokenRequestPayload();
-	tokenRequestPayload.tokenEndpoint = 'asdfgh';
-	tokenRequestPayload.tokenRequestParams = tokenRequestParam;
+describe('token-request-response', () => {
+	const tokenRequestResponse = new TokenRequestResponse();
+	tokenRequestResponse.tokenEndpoint = 'asdfgh';
+	tokenRequestResponse.tokenRequestParams = tokenRequestParam;
 
 	it('should validate', async () => {
 		const validationErrors = await validate(tokenRequestParam);

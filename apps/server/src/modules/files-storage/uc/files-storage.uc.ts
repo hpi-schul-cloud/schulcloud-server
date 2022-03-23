@@ -10,7 +10,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { ILogger, Logger } from '@src/core/logger';
 
 import { S3ClientAdapter } from '../client/s3-client.adapter';
-import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage.params';
+import { DownloadFileParams, FileRecordParams, SingleFileParams } from '../controller/dto/file-storage-params';
 import { IFile } from '../interface/file';
 
 @Injectable()

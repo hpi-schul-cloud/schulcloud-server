@@ -1,1 +1,1 @@
-export * from './ResolvedUser.dto';
+export * from './resolved-user-response';

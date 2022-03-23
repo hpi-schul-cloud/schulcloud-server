@@ -12,7 +12,7 @@ import {
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
-} from '../controller/dto/file-storage.params';
+} from '../controller/dto/file-storage-params';
 import { FileRecordUC } from './file-record.uc';
 
 describe('FileRecordUC', () => {

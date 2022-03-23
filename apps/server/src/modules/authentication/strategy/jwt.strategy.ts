@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
 import { jwtConstants } from '../constants';
-import { JwtPayload } from '../interface/jwt-payload';
+import { JwtResponse } from '../interface/jwt-response';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 import { JwtExtractor } from './jwt-extractor';
 
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	async validate(payload: JwtPayload): Promise<JwtPayload> {
+	async validate(payload: JwtResponse): Promise<JwtResponse> {
 		// check jwt is whitelisted and extend whitelist entry
 		const { accountId, jti, userId } = payload;
 		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);

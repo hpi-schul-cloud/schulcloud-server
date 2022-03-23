@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorResponse } from '@src/core/error/dto/error.response';
+import { ErrorResponse } from '@src/core/error/dto/error-response';
 import { IErrorType } from '@src/core/error/interface';
 
 /**

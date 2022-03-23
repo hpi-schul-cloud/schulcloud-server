@@ -1,19 +1,19 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
+import { PaginationParams, ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser, IFindOptions, ImportUser, User } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ImportUserFilterQuery } from './dto/import-user-filter.query';
-import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
-import { UpdateMatchParams } from './dto/update-match.params';
-import { UserMatchListResponse } from './dto/user-match.response';
+import { ImportUserFilterParams } from './dto/import-user-filter-params';
+import { ImportUserListResponse, ImportUserResponse } from './dto/import-user-response';
+import { UpdateMatchParams } from './dto/update-match-params';
+import { UserMatchListResponse } from './dto/user-match-response';
 
 import { ImportUserMapper } from '../mapper/import-user.mapper';
-import { UserFilterQuery } from './dto/user-filter.query';
+import { UserFilterParams } from './dto/user-filter-params';
 import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
-import { UpdateFlagParams } from './dto/update-flag.params';
-import { ImportUserSortingQuery } from './dto/import-user-sorting.query';
+import { UpdateFlagParams } from './dto/update-flag-params';
+import { ImportUserSortingParams } from './dto/import-user-sorting-params';
 
 @ApiTags('UserImport')
 @Authenticate('jwt')
@@ -24,15 +24,15 @@ export class ImportUserController {
 	@Get()
 	async findAllImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: ImportUserFilterQuery,
-		@Query() sortingQuery: ImportUserSortingQuery,
-		@Query() paginationQuery: PaginationQuery
+		@Query() scope: ImportUserFilterParams,
+		@Query() sortingQuery: ImportUserSortingParams,
+		@Query() paginationParams: PaginationParams
 	): Promise<ImportUserListResponse> {
-		const options: IFindOptions<ImportUser> = { pagination: paginationQuery };
-		options.order = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
-		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
+		const options: IFindOptions<ImportUser> = { pagination: paginationParams };
+		options.order = ImportUserMapper.mapSortingParamsToDomain(sortingQuery);
+		const query = ImportUserMapper.mapImportUserFilterParamsToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = paginationParams;
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
 		const response = new ImportUserListResponse(dtoList, count, skip, limit);
 		return response;
@@ -73,14 +73,14 @@ export class ImportUserController {
 	@Get('unassigned')
 	async findAllUnmatchedUsers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: UserFilterQuery,
-		@Query() paginationQuery: PaginationQuery
+		@Query() scope: UserFilterParams,
+		@Query() paginationParams: PaginationParams
 	): Promise<UserMatchListResponse> {
-		const options: IFindOptions<User> = { pagination: paginationQuery };
+		const options: IFindOptions<User> = { pagination: paginationParams };
 
 		const query = UserMatchMapper.mapToDomain(scope);
 		const [userList, total] = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = paginationParams;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserMatchListResponse(dtoList, total, skip, limit);
 		return response as unknown as UserMatchListResponse;

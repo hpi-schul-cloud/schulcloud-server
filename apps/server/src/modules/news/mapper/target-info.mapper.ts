@@ -1,5 +1,5 @@
 import { NewsTarget } from '@shared/domain';
-import { TargetInfoResponse } from '../controller/dto/target-info.response';
+import { TargetInfoResponse } from '../controller/dto/target-info-response';
 
 export class TargetInfoMapper {
 	static mapToResponse(target: NewsTarget): TargetInfoResponse {

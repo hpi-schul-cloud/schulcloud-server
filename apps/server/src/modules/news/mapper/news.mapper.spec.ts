@@ -18,13 +18,13 @@ import { courseFactory, schoolFactory, userFactory, setupEntities } from '@share
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
-	NewsFilterQuery,
+	NewsFilterParams,
 	NewsResponse,
 	SchoolInfoResponse,
 	UpdateNewsParams,
 	UserInfoResponse,
 } from '../controller/dto';
-import { TargetInfoResponse } from '../controller/dto/target-info.response';
+import { TargetInfoResponse } from '../controller/dto/target-info-response';
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
@@ -156,37 +156,37 @@ describe('NewsMapper', () => {
 	describe('mapNewsScopeToDomain', () => {
 		it('should correctly map news query with target without unpublished to dto', () => {
 			const targetId = new ObjectId().toHexString();
-			const newsFilterQuery = new NewsFilterQuery();
-			Object.assign(newsFilterQuery, {
+			const newsFilterParams = new NewsFilterParams();
+			Object.assign(newsFilterParams, {
 				targetModel: NewsTargetModel.School,
 				targetId,
 			});
-			const result = NewsMapper.mapNewsScopeToDomain(newsFilterQuery);
+			const result = NewsMapper.mapNewsScopeToDomain(newsFilterParams);
 			const expected: INewsScope = {};
 			Object.assign(expected, {
 				target: {
-					targetModel: newsFilterQuery.targetModel,
-					targetId: newsFilterQuery.targetId,
+					targetModel: newsFilterParams.targetModel,
+					targetId: newsFilterParams.targetId,
 				},
 			});
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map news query with unpublished and target to dto', () => {
 			const targetId = new ObjectId().toHexString();
-			const newsFilterQuery = new NewsFilterQuery();
-			Object.assign(newsFilterQuery, {
+			const newsFilterParams = new NewsFilterParams();
+			Object.assign(newsFilterParams, {
 				targetModel: NewsTargetModel.School,
 				targetId,
 				unpublished: true,
 			});
-			const result = NewsMapper.mapNewsScopeToDomain(newsFilterQuery);
+			const result = NewsMapper.mapNewsScopeToDomain(newsFilterParams);
 			const expected: INewsScope = {};
 			Object.assign(expected, {
 				target: {
-					targetModel: newsFilterQuery.targetModel,
-					targetId: newsFilterQuery.targetId,
+					targetModel: newsFilterParams.targetModel,
+					targetId: newsFilterParams.targetId,
 				},
-				unpublished: newsFilterQuery.unpublished,
+				unpublished: newsFilterParams.unpublished,
 			});
 			expect(result).toStrictEqual(expected);
 		});

@@ -9,7 +9,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { jwtConstants } from '../constants';
-import { JwtPayload } from '../interface/jwt-payload';
+import { JwtResponse } from '../interface/jwt-response';
 
 import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
@@ -59,14 +59,14 @@ describe('jwt strategy', () => {
 		it('should check jwt for being whitelisted', async () => {
 			const accountId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			await strategy.validate({ accountId, jti } as JwtPayload);
+			await strategy.validate({ accountId, jti } as JwtResponse);
 			expect(adapter.isWhitelisted).toHaveBeenCalledWith(accountId, jti);
 		});
 		it('should load the defined user', async () => {
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			const payload = { accountId, jti, userId } as JwtPayload;
+			const payload = { accountId, jti, userId } as JwtResponse;
 			repo.findById.mockResolvedValue(userFactory.build());
 			await strategy.validate(payload);
 			expect(repo.findById).toHaveBeenCalledWith(userId);
@@ -77,7 +77,7 @@ describe('jwt strategy', () => {
 			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
 			repo.findById.mockRejectedValue(new NotFoundException());
-			const payload = { accountId, jti, userId } as JwtPayload;
+			const payload = { accountId, jti, userId } as JwtResponse;
 			await expect(() => strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
 		});
 	});

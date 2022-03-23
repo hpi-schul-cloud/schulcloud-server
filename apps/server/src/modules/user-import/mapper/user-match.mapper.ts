@@ -1,11 +1,11 @@
 import { StringValidator } from '@shared/common';
 import { INameMatch, MatchCreator, User } from '@shared/domain';
 import { RoleNameResponse, UserMatchResponse } from '../controller/dto';
-import { UserFilterQuery } from '../controller/dto/user-filter.query';
+import { UserFilterParams } from '../controller/dto/user-filter-params';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {
-	static mapToDomain(query: UserFilterQuery): INameMatch {
+	static mapToDomain(query: UserFilterParams): INameMatch {
 		const scope: INameMatch = {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ErrorResponse } from './error.response';
+import { ErrorResponse } from './error-response';
 
 describe('ErrorResponse', () => {
 	describe('when creating a error response', () => {

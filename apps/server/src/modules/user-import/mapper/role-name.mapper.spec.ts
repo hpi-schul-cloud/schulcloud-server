@@ -1,5 +1,5 @@
 import { RoleName } from '@shared/domain';
-import { RoleNameFilterQuery, RoleNameResponse } from '../controller/dto';
+import { RoleNameFilterParams, RoleNameResponse } from '../controller/dto';
 import { RoleNameMapper } from './role-name.mapper';
 
 describe('[RoleNameMapper]', () => {
@@ -26,22 +26,22 @@ describe('[RoleNameMapper]', () => {
 	});
 	describe('mapToDomain (from query)', () => {
 		it('should map admin role to domain', () => {
-			const roleName = RoleNameFilterQuery.ADMIN;
+			const roleName = RoleNameFilterParams.ADMIN;
 			const result = RoleNameMapper.mapToDomain(roleName);
 			expect(result).toEqual(RoleName.ADMIN);
 		});
 		it('should map teacher role to domain', () => {
-			const roleName = RoleNameFilterQuery.TEACHER;
+			const roleName = RoleNameFilterParams.TEACHER;
 			const result = RoleNameMapper.mapToDomain(roleName);
 			expect(result).toEqual(RoleName.TEACHER);
 		});
 		it('should map student role to domain', () => {
-			const roleName = RoleNameFilterQuery.STUDENT;
+			const roleName = RoleNameFilterParams.STUDENT;
 			const result = RoleNameMapper.mapToDomain(roleName);
 			expect(result).toEqual(RoleName.STUDENT);
 		});
 		it('should fail for invalid input', () => {
-			const roleName = 'foo' as unknown as RoleNameFilterQuery;
+			const roleName = 'foo' as unknown as RoleNameFilterParams;
 			expect(() => RoleNameMapper.mapToDomain(roleName)).toThrowError('invalid role name from query');
 		});
 	});

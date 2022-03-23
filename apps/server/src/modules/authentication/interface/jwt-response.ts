@@ -1,7 +1,7 @@
 // TODO: should not get from this place over path
 import { ICurrentUser } from '@shared/domain';
 
-export interface JwtPayload extends ICurrentUser {
+export interface JwtResponse extends ICurrentUser {
 	/** audience */
 	aud: string;
 	/** expiration in // TODO

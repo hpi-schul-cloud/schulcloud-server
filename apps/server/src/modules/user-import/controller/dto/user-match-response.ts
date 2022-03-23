@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId } from 'class-validator';
-import { MatchCreatorResponse } from './match-creator.response';
-import { RoleNameResponse } from './role-name.response';
+import { MatchCreatorResponse } from './match-creator-response';
+import { RoleNameResponse } from './role-name-response';
 
 export class UserMatchResponse {
 	constructor(props: UserMatchResponse) {

@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { MatchCreator } from '@shared/domain';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchCreatorResponse, RoleNameResponse } from '../controller/dto';
-import { UserFilterQuery } from '../controller/dto/user-filter.query';
+import { UserFilterParams } from '../controller/dto/user-filter-params';
 import { ImportUserMatchMapper } from './match.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
@@ -19,17 +19,17 @@ describe('[UserMatchMapper]', () => {
 
 	describe('[mapToDomain] from query', () => {
 		it('should map name to fullname if trimmed string not empty ', () => {
-			const query: UserFilterQuery = { name: ' Nala ' };
+			const query: UserFilterParams = { name: ' Nala ' };
 			const result = UserMatchMapper.mapToDomain(query);
 			expect(result.name).toEqual(query.name);
 		});
 		it('should fail for whitespace name string', () => {
-			const query: UserFilterQuery = { name: ' ' };
+			const query: UserFilterParams = { name: ' ' };
 			const result = () => UserMatchMapper.mapToDomain(query);
 			expect(result).toThrowError('invalid name from query');
 		});
 		it('should skip name mapper if no name is provided without failing', () => {
-			const query: UserFilterQuery = {};
+			const query: UserFilterParams = {};
 			const result = UserMatchMapper.mapToDomain(query);
 			expect(result.name).toEqual(undefined);
 		});

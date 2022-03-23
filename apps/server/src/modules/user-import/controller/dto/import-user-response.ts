@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';
 import type { UserMatchResponse } from '.';
-import { RoleNameResponse } from './role-name.response';
+import { RoleNameResponse } from './role-name-response';
 
 export class ImportUserResponse {
 	constructor(props: ImportUserResponse) {
