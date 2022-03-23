@@ -2,18 +2,18 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SingleValueToArrayTransformer } from '@shared/controller';
 import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export enum MatchFilterQuery {
+export enum FilterMatchType {
 	AUTO = 'auto',
 	MANUAL = 'admin',
 	NONE = 'none',
 }
-export enum RoleNameFilterQuery {
+export enum FilterRoleType {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
 	ADMIN = 'admin',
 }
 
-export class ImportUserFilterQuery {
+export class FilterImportUserParams {
 	@ApiPropertyOptional()
 	@IsOptional()
 	@IsString()
@@ -32,12 +32,12 @@ export class ImportUserFilterQuery {
 	@IsNotEmpty()
 	loginName?: string;
 
-	@ApiPropertyOptional({ enum: MatchFilterQuery, isArray: true })
+	@ApiPropertyOptional({ enum: FilterMatchType, isArray: true })
 	@IsOptional()
-	@IsEnum(MatchFilterQuery, { each: true })
+	@IsEnum(FilterMatchType, { each: true })
 	@SingleValueToArrayTransformer()
 	@IsArray()
-	match?: MatchFilterQuery[];
+	match?: FilterMatchType[];
 
 	@ApiPropertyOptional()
 	@IsOptional()
@@ -54,7 +54,7 @@ export class ImportUserFilterQuery {
 	classes?: string;
 
 	@IsOptional()
-	@IsEnum(RoleNameFilterQuery)
-	@ApiPropertyOptional({ enum: RoleNameFilterQuery })
-	role?: RoleNameFilterQuery;
+	@IsEnum(FilterRoleType)
+	@ApiPropertyOptional({ enum: FilterRoleType })
+	role?: FilterRoleType;
 }
