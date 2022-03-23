@@ -21,7 +21,6 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	credentialHash?: string;
 
-	// TODO set index to true after we removed the account model from feathers
 	@OneToOne({ entity: () => User, fieldName: 'userId' })
 	user: User;
 

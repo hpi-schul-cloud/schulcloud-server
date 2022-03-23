@@ -10,7 +10,6 @@ type UserPreferences = {
 	firstLogin: boolean;
 };
 
-// TODO password helper is used here schulcloud-server\src\services\account\hooks\index.js
 // TODO remove schulcloud-server\test\helper\passwordHelpers.test.js
 // TODO remove schulcloud-server\src\utils\passwordHelpers.js
 @Injectable()
