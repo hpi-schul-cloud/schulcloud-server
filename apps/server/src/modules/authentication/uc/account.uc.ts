@@ -93,13 +93,17 @@ export class AccountUc {
 	/// this would not allow an administrator to change its own password without forcing a renewal
 	async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
 		if (currentUserId === targetUserId) {
-			await this.changeMyTemporaryPassword(currentUserId, passwordNew);
+			await this.changeMyTemporaryPassword(currentUserId, passwordNew, passwordNew);
 		} else {
 			await this.changePasswordForUser(currentUserId, targetUserId, passwordNew);
 		}
 	}
 
-	async changeMyTemporaryPassword(userId: EntityId, passwordNew: string): Promise<void> {
+	async changeMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
+		if (password !== confirmPassword) {
+			throw new InvalidOperationError('Password and confirm password do not match.');
+		}
+
 		let user: User;
 		try {
 			user = await this.userRepo.findById(userId);
@@ -112,7 +116,7 @@ export class AccountUc {
 			throw new InvalidOperationError('The password is not temporary, hence can not be changed!');
 		} // Password change was forces or this is a first logon for the user
 
-		this.checkPasswordStrength(passwordNew);
+		this.checkPasswordStrength(password);
 		let targetAccount: Account;
 		try {
 			targetAccount = await this.accountRepo.findByUserId(userId);
@@ -120,11 +124,11 @@ export class AccountUc {
 			throw new EntityNotFoundError(Account.name);
 		}
 
-		if (targetAccount.password === undefined || (await this.checkPassword(passwordNew, targetAccount.password))) {
+		if (targetAccount.password === undefined || (await this.checkPassword(password, targetAccount.password))) {
 			throw new InvalidOperationError('New password can not be same as old password.');
 		}
 
-		await this.updatePassword(targetAccount, passwordNew);
+		await this.updatePassword(targetAccount, password);
 		await this.accountRepo.update(targetAccount);
 		user.forcePasswordChange = false;
 		await this.userRepo.update(user);

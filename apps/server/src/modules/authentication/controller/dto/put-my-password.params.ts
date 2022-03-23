@@ -8,7 +8,7 @@ export class PutMyPasswordParams {
 		required: true,
 		nullable: false,
 	})
-	password1!: string;
+	password!: string;
 
 	@IsString()
 	@ApiProperty({
@@ -16,5 +16,5 @@ export class PutMyPasswordParams {
 		required: true,
 		nullable: false,
 	})
-	password2!: string;
+	confirmPassword!: string;
 }

@@ -70,14 +70,14 @@ describe('account repo', () => {
 		});
 	});
 
-	describe('read', () => {
+	describe('findById', () => {
 		it('should return an account', async () => {
-			const account = await repo.read(mockAccounts[0].id);
+			const account = await repo.findById(mockAccounts[0].id);
 			expect(account).toEqual<Account>(mockAccounts[0]);
 		});
 
 		it('should throw entity not found error', async () => {
-			await expect(repo.read('')).rejects.toThrowError('Account entity not found.');
+			await expect(repo.findById('')).rejects.toThrowError('Account entity not found.');
 		});
 	});
 
@@ -86,7 +86,7 @@ describe('account repo', () => {
 			const account1 = mockAccounts[0];
 			account1.activated = true;
 			await repo.update(account1);
-			const account2 = await repo.read(mockAccounts[0].id);
+			const account2 = await repo.findById(mockAccounts[0].id);
 			expect(account1).toEqual(account2);
 		});
 

@@ -438,40 +438,53 @@ describe('AccountUc', () => {
 	});
 
 	describe('changeMyTemporaryPassword', () => {
+		it('should throw if passwords do not match', async () => {
+			await expect(
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1', 'FooPasswd!1')
+			).rejects.toThrow(InvalidOperationError);
+		});
+
 		it('should throw if account does not exist', async () => {
-			await expect(accountUc.changeMyTemporaryPassword('userWithoutAccount', 'DummyPasswd!1')).rejects.toThrow(
-				EntityNotFoundError
-			);
+			await expect(
+				accountUc.changeMyTemporaryPassword('userWithoutAccount', 'DummyPasswd!1', 'DummyPasswd!1')
+			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if user does not exist', async () => {
-			await expect(accountUc.changeMyTemporaryPassword('accountWithoutUser', 'DummyPasswd!1')).rejects.toThrow(
-				EntityNotFoundError
-			);
+			await expect(
+				accountUc.changeMyTemporaryPassword('accountWithoutUser', 'DummyPasswd!1', 'DummyPasswd!1')
+			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if password is weak', async () => {
 			mockStudentAccount.user.forcePasswordChange = true;
 			mockStudentAccount.user.preferences = { firstLogin: true };
-			await expect(accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'weak')).rejects.toThrow();
+			await expect(accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'weak', 'weak')).rejects.toThrow();
 		});
 		it('should throw if not the users password is temporary', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
 			mockStudentAccount.user.preferences = { firstLogin: true };
-			await expect(accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')).rejects.toThrow(
-				InvalidOperationError
-			);
+			await expect(
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1', 'DummyPasswd!1')
+			).rejects.toThrow(InvalidOperationError);
+		});
+		it('should throw, if old password is the same as new password', async () => {
+			mockStudentAccount.user.forcePasswordChange = false;
+			mockStudentAccount.user.preferences = { firstLogin: false };
+			await expect(
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1', 'DummyPasswd!1')
+			).rejects.toThrow(InvalidOperationError);
 		});
 		it('should allow to set strong password, if the admin manipulated the users password', async () => {
 			mockStudentAccount.user.forcePasswordChange = true;
 			mockStudentAccount.user.preferences = { firstLogin: true };
 			await expect(
-				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
 		});
 		it('should allow to set strong password, if this is the users first login', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
 			mockStudentAccount.user.preferences = { firstLogin: false };
 			await expect(
-				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')
+				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
 		});
 	});

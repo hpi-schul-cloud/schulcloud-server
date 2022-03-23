@@ -18,8 +18,6 @@ import { Password } from './dto/password.param';
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
-	// TODO re-factor api/v1/forcePasswordChange endpoint
-
 	@Patch(':id/pw')
 	async changePassword(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -36,6 +34,6 @@ export class AccountController {
 
 	@Put('me/password')
 	async updateMyPassword(@CurrentUser() currentUser: ICurrentUser, @Body() params: PutMyPasswordParams): Promise<void> {
-		return this.accountUc.changeMyTemporaryPassword(currentUser.userId, params.password1);
+		return this.accountUc.changeMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);
 	}
 }
