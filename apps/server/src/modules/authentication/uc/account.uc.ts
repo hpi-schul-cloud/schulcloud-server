@@ -1,10 +1,10 @@
-import { EntityNotFoundError, ValidationError } from '@shared/common/error';
+import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Account, EntityId, ICurrentUser, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
-import { PatchAccountParams } from '../controller/dto';
+import { PatchMyAccountParams } from '../controller/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -27,7 +27,7 @@ export class AccountUc {
 		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 	);
 
-	async updateMyAccount(currentUser: ICurrentUser, params: PatchAccountParams) {
+	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
 			account = await this.accountRepo.findByUserId(currentUser.userId);
@@ -104,22 +104,30 @@ export class AccountUc {
 		try {
 			user = await this.userRepo.findById(userId);
 		} catch (err) {
-			throw new EntityNotFoundError('User');
+			throw new EntityNotFoundError(User.name);
 		}
 		const userPreferences = <UserPreferences>user.preferences;
+
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
-			throw new ForbiddenException('The password in not temporary, hence can not be changed!');
-		}
+			throw new InvalidOperationError('The password is not temporary, hence can not be changed!');
+		} // Password change was forces or this is a first logon for the user
 
 		this.checkPasswordStrength(passwordNew);
 		let targetAccount: Account;
 		try {
 			targetAccount = await this.accountRepo.findByUserId(userId);
 		} catch (err) {
-			throw new EntityNotFoundError('Account');
+			throw new EntityNotFoundError(Account.name);
 		}
+
+		if (targetAccount.password === undefined || (await this.checkPassword(passwordNew, targetAccount.password))) {
+			throw new InvalidOperationError('New password can not be same as old password.');
+		}
+
 		await this.updatePassword(targetAccount, passwordNew);
 		await this.accountRepo.update(targetAccount);
+		user.forcePasswordChange = false;
+		await this.userRepo.update(user);
 	}
 
 	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<string> {
@@ -204,11 +212,11 @@ export class AccountUc {
 		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
 	}
 
-	private async updatePassword(account: Account, password: string) {
+	private async updatePassword(account: Account, password: string): Promise<void> {
 		account.password = await bcrypt.hash(password, 10);
 	}
 
-	private checkPassword(enteredPassword: string, hashedAccountPassword: string) {
+	private async checkPassword(enteredPassword: string, hashedAccountPassword: string): Promise<boolean> {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
 	}
 

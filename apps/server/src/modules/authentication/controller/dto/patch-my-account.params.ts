@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 
-export class PatchAccountParams {
+export class PatchMyAccountParams {
 	@IsString()
 	@ApiProperty({
 		description: 'The current user password to authorize the update action.',

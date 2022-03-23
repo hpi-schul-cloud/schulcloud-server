@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError, ValidationError } from '@shared/common';
+import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
@@ -457,7 +457,7 @@ describe('AccountUc', () => {
 			mockStudentAccount.user.forcePasswordChange = false;
 			mockStudentAccount.user.preferences = { firstLogin: true };
 			await expect(accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!1')).rejects.toThrow(
-				ForbiddenException
+				InvalidOperationError
 			);
 		});
 		it('should allow to set strong password, if the admin manipulated the users password', async () => {

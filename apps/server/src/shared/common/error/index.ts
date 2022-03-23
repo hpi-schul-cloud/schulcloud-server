@@ -1,6 +1,7 @@
 export * from './api-validation.error';
 export * from './business.error';
 export * from './entity-not-found.error';
+export * from './invalid-operation.error';
 export * from './validation.error';
 
 // business errors
