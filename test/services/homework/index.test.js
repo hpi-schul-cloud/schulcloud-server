@@ -8,7 +8,7 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('homework service', () => {
+describe('homework service', () => {
 	let app;
 	let homeworkService;
 	let homeworkCopyService;
