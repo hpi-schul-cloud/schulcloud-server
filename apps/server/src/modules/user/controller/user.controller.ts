@@ -1,27 +1,36 @@
 import { ApiTags } from '@nestjs/swagger';
 
-import { Controller, Get } from '@nestjs/common';
-import { ICurrentUser, PermissionService } from '@shared/domain';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { ICurrentUser } from '@shared/domain';
 
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { UserRepo } from '@shared/repo';
 import { ResolvedUser } from './dto/ResolvedUser.dto';
 import { ResolvedUserMapper } from '../mapper';
+import { ChangeLanguageParams } from './dto/user.params';
+import { UserUC } from '../uc/user.uc';
 
 @ApiTags('User')
 @Authenticate('jwt')
 @Controller('user')
 export class UserController {
-	constructor(private readonly userRepo: UserRepo, private readonly permissionService: PermissionService) {}
+	constructor(private readonly userUc: UserUC) {}
 
 	@Get('me')
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
-		const user = await this.userRepo.findById(currentUser.userId, true);
-		const permissions = this.permissionService.resolvePermissions(user);
-
+		const [user, permissions] = await this.userUc.me(currentUser.userId);
 		// only the root roles of the user get published
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
 
 		return resolvedUser;
+	}
+
+	@Patch('/language/:language/')
+	async changeLanguage(
+		@Param() params: ChangeLanguageParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
+		const result = await this.userUc.patchLanguage(currentUser.userId, params);
+
+		return result;
 	}
 }

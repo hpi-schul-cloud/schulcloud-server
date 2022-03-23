@@ -3,10 +3,10 @@ import { PermissionService } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory, mapUserToCurrentUser } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
-import { UserController } from '.';
+import { UserUC } from './user.uc';
 
-describe('UserController', () => {
-	let controller: UserController;
+describe('UserUc', () => {
+	let service: UserUC;
 	let userRepo: UserRepo;
 	let permissionService: PermissionService;
 	let orm: MikroORM;
@@ -22,6 +22,7 @@ describe('UserController', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
+				UserUC,
 				{
 					provide: UserRepo,
 					useValue: {
@@ -39,16 +40,15 @@ describe('UserController', () => {
 					},
 				},
 			],
-			controllers: [UserController],
 		}).compile();
 
-		controller = module.get(UserController);
+		service = module.get(UserUC);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
 	});
 
 	it('should be defined', () => {
-		expect(controller).toBeDefined();
+		expect(service).toBeDefined();
 	});
 
 	it('should provide information about the user', async () => {
@@ -58,7 +58,7 @@ describe('UserController', () => {
 		const spyFindUser = jest.spyOn(userRepo, 'findById').mockImplementation(async () => Promise.resolve(user));
 		const spyResolve = jest.spyOn(permissionService, 'resolvePermissions').mockImplementation(() => []);
 
-		await controller.me(currentUser);
+		await service.me(currentUser.userId);
 
 		expect(spyFindUser).toHaveBeenCalled();
 		expect(spyResolve).toHaveBeenCalled();
