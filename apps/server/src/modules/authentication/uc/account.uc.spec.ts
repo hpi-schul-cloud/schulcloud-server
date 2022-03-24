@@ -11,6 +11,8 @@ import { AccountUc } from './account.uc';
 describe('AccountUc', () => {
 	let module: TestingModule;
 	let accountUc: AccountUc;
+	let accountRepo: AccountRepo;
+	let userRepo: UserRepo;
 	let orm: MikroORM;
 
 	let mockSchool: School;
@@ -24,6 +26,7 @@ describe('AccountUc', () => {
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
 	let mockUserWithoutAccount: User;
+	let mockUserWithoutRole: User;
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
@@ -32,6 +35,7 @@ describe('AccountUc', () => {
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
 	let mockDifferentSchoolAdminAccount: Account;
+	let mockAccountWithoutRole: Account;
 
 	afterAll(async () => {
 		await module.close();
@@ -51,9 +55,12 @@ describe('AccountUc', () => {
 						read: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
 						},
-						update: (account: Account): Promise<Account> => {
+						// update: (account: Account): Promise<Account> => {
+						// 	return Promise.resolve(account);
+						// },
+						update: jest.fn().mockImplementation((account: Account): Promise<Account> => {
 							return Promise.resolve(account);
-						},
+						}),
 						delete: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
 						},
@@ -78,6 +85,9 @@ describe('AccountUc', () => {
 							}
 							if (userId === mockOtherTeacherAccount.user.id) {
 								return Promise.resolve(mockOtherTeacherAccount);
+							}
+							if (userId === mockAccountWithoutRole.user.id) {
+								return Promise.resolve(mockAccountWithoutRole);
 							}
 							throw Error();
 						},
@@ -111,11 +121,17 @@ describe('AccountUc', () => {
 							if (userId === mockOtherTeacherAccount.user.id) {
 								return Promise.resolve(mockOtherTeacherAccount.user);
 							}
+							if (userId === mockAccountWithoutRole.user.id) {
+								return Promise.resolve(mockAccountWithoutRole.user);
+							}
 							throw Error();
 						},
-						update: (user: User): Promise<User> => {
+						update: jest.fn().mockImplementation((user: User): Promise<User> => {
 							return Promise.resolve(user);
-						},
+						}),
+						// update: jest.fn().mockImplementation((user: User): Promise<User> => {
+						// 	return Promise.resolve(user);
+						// }),
 					},
 				},
 				PermissionService,
@@ -123,6 +139,8 @@ describe('AccountUc', () => {
 		}).compile();
 
 		accountUc = module.get(AccountUc);
+		accountRepo = module.get(AccountRepo);
+		userRepo = module.get(UserRepo);
 		orm = await setupEntities();
 		mockSchool = schoolFactory.buildWithId();
 		mockotherSchool = schoolFactory.buildWithId();
@@ -156,8 +174,12 @@ describe('AccountUc', () => {
 			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
-			school: mockotherSchool,
+			school: mockSchool,
 			roles: [new Role({ name: 'admin', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+		});
+		mockUserWithoutRole = userFactory.buildWithId({
+			school: mockSchool,
+			roles: [],
 		});
 
 		mockSuperheroAccount = accountFactory.buildWithId({ user: mockSuperheroUser, password: 'hjkl' });
@@ -166,6 +188,7 @@ describe('AccountUc', () => {
 		mockOtherTeacherAccount = accountFactory.buildWithId({ user: mockOtherTeacherUser, password: 'uiop' });
 		mockAdminAccount = accountFactory.buildWithId({ user: mockAdminUser, password: 'qwer' });
 		mockStudentAccount = accountFactory.buildWithId({ user: mockStudentUser, password: '1234' });
+		mockAccountWithoutRole = accountFactory.buildWithId({ user: mockUserWithoutRole, password: 'fghj' });
 		mockDifferentSchoolAdminAccount = accountFactory.buildWithId({
 			user: mockDifferentSchoolAdminUser,
 			password: 'yxcv',
@@ -194,6 +217,18 @@ describe('AccountUc', () => {
 			await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, 'DummyPasswd!1');
 			expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
 			expect(mockTeacherUser.forcePasswordChange).toBe(true);
+		});
+		it('should reject if update in user repo fails', async () => {
+			(accountRepo.update as jest.Mock).mockRejectedValueOnce(new Error('account not found'));
+			await expect(
+				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
+			).rejects.toThrow(EntityNotFoundError);
+		});
+		it('should reject if update in account repo fails', async () => {
+			(userRepo.update as jest.Mock).mockRejectedValueOnce(new Error('user not found'));
+			await expect(
+				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
+			).rejects.toThrow(EntityNotFoundError);
 		});
 
 		describe('hasPermissionsToChangePassword', () => {
@@ -231,6 +266,11 @@ describe('AccountUc', () => {
 				const previousPasswordHash = mockAdminAccount.password;
 				await accountUc.changePasswordForUser(mockSuperheroUser.id, mockAdminUser.id, 'DummyPasswd!1');
 				expect(mockAdminAccount.password).not.toBe(previousPasswordHash);
+			});
+			it('user without role cannot be edited', async () => {
+				await expect(
+					accountUc.changePasswordForUser(mockAdminUser.id, mockUserWithoutRole.id, 'DummyPasswd!1')
+				).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});
