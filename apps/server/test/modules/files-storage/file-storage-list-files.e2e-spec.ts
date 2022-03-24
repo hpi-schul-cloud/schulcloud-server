@@ -76,20 +76,20 @@ describe(`${baseRouteName} (api)`, () => {
 		await app.close();
 	});
 
-	beforeEach(async () => {
-		await cleanupCollections(em);
-		const roles = roleFactory.buildList(1, { permissions: [] });
-		const school = schoolFactory.build();
-		const user = userFactory.build({ roles, school });
-
-		await em.persistAndFlush([user]);
-		em.clear();
-
-		currentUser = mapUserToCurrentUser(user);
-		validId = user.school.id;
-	});
-
 	describe('with bad request data', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const school = schoolFactory.build();
+			const user = userFactory.build({ roles, school });
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			validId = user.school.id;
+		});
+
 		it('should return status 400 for invalid schoolId', async () => {
 			const response = await api.get(`/123/users/${validId}`);
 			expect(response.error.validationErrors).toEqual([
@@ -125,6 +125,19 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe(`with valid request data`, () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const roles = roleFactory.buildList(1, { permissions: [] });
+			const school = schoolFactory.build();
+			const user = userFactory.build({ roles, school });
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+			validId = user.school.id;
+		});
+
 		it('should return status 200 for successful request', async () => {
 			const response = await api.get(`/${validId}/schools/${validId}`);
 
@@ -142,8 +155,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 		});
 
-		// query params do not work why?
-		it.skip('should pass the pagination qurey params', async () => {
+		it('should pass the pagination qurey params', async () => {
 			const { result } = await api.get(`/${validId}/schools/${validId}`, { limit: 100, skip: 100 });
 
 			expect(result.limit).toEqual(100);
@@ -170,7 +182,7 @@ describe(`${baseRouteName} (api)`, () => {
 				name: expect.any(String) as string,
 				parentId: expect.any(String) as string,
 				parentType: 'schools',
-				type: 'application/octet-stream', // fuh why ???
+				type: 'application/octet-stream',
 			});
 		});
 

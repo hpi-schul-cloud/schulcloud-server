@@ -22,7 +22,7 @@ import { FileSecurityController } from './controller/file-security.controller';
 // The configurations lookup
 // config/development.json for development
 // config/test.json for tests
-const config = {
+export const config: S3Config = {
 	endpoint: Configuration.get('FILES_STORAGE__S3_ENDPOINT') as string,
 	region: Configuration.get('FILES_STORAGE__S3_REGION') as string,
 	bucket: Configuration.get('FILES_STORAGE__S3_BUCKET') as string,
