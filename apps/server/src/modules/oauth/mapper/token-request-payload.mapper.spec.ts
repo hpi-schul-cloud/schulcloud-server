@@ -1,7 +1,7 @@
 import { OauthConfig, System } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { TokenRequestParams } from '../controller/dto/token-request-params';
-import { TokenRequestPayload } from '../controller/dto/token-request-payload';
+import { TokenRequestParams } from '../controller/dto/token-request.params';
+import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { TokenRequestParamsMapper } from './token-request-params.mapper';
 import { TokenRequestPayloadMapper } from './token-request-payload.mapper';
 

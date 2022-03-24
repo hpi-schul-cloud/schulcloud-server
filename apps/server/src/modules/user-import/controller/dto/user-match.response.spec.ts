@@ -1,4 +1,4 @@
-import { MatchCreatorResponse, RoleNameResponse, UserMatchListResponse, UserMatchResponse } from '.';
+import { MatchType, UserRole, UserMatchListResponse, UserMatchResponse } from '.';
 
 describe('[UserMatchReponse]', () => {
 	const constructorProps: UserMatchResponse = {
@@ -6,15 +6,15 @@ describe('[UserMatchReponse]', () => {
 		loginName: 'login_name',
 		firstName: 'first_name',
 		lastName: 'last_name',
-		roleNames: [RoleNameResponse.ADMIN],
+		roleNames: [UserRole.ADMIN],
 	};
 	it('should initialize with required properties', () => {
 		const result = new UserMatchResponse(constructorProps);
 		expect(result).toEqual(constructorProps);
 	});
 	it('should init with required and optional properties', () => {
-		const result = new UserMatchResponse({ ...constructorProps, matchedBy: MatchCreatorResponse.AUTO });
-		expect(result).toEqual({ ...constructorProps, matchedBy: MatchCreatorResponse.AUTO });
+		const result = new UserMatchResponse({ ...constructorProps, matchedBy: MatchType.AUTO });
+		expect(result).toEqual({ ...constructorProps, matchedBy: MatchType.AUTO });
 	});
 	describe('[UserMatchListResponse]', () => {
 		it('should initialize list response', () => {

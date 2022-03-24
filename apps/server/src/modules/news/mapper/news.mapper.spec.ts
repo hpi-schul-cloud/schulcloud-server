@@ -18,7 +18,7 @@ import { courseFactory, schoolFactory, userFactory, setupEntities } from '@share
 import { NewsMapper } from './news.mapper';
 import {
 	CreateNewsParams,
-	NewsFilterQuery,
+	FilterNewsParams,
 	NewsResponse,
 	SchoolInfoResponse,
 	UpdateNewsParams,
@@ -156,37 +156,37 @@ describe('NewsMapper', () => {
 	describe('mapNewsScopeToDomain', () => {
 		it('should correctly map news query with target without unpublished to dto', () => {
 			const targetId = new ObjectId().toHexString();
-			const newsFilterQuery = new NewsFilterQuery();
-			Object.assign(newsFilterQuery, {
+			const filterNewsParams = new FilterNewsParams();
+			Object.assign(filterNewsParams, {
 				targetModel: NewsTargetModel.School,
 				targetId,
 			});
-			const result = NewsMapper.mapNewsScopeToDomain(newsFilterQuery);
+			const result = NewsMapper.mapNewsScopeToDomain(filterNewsParams);
 			const expected: INewsScope = {};
 			Object.assign(expected, {
 				target: {
-					targetModel: newsFilterQuery.targetModel,
-					targetId: newsFilterQuery.targetId,
+					targetModel: filterNewsParams.targetModel,
+					targetId: filterNewsParams.targetId,
 				},
 			});
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map news query with unpublished and target to dto', () => {
 			const targetId = new ObjectId().toHexString();
-			const newsFilterQuery = new NewsFilterQuery();
-			Object.assign(newsFilterQuery, {
+			const filterNewsParams = new FilterNewsParams();
+			Object.assign(filterNewsParams, {
 				targetModel: NewsTargetModel.School,
 				targetId,
 				unpublished: true,
 			});
-			const result = NewsMapper.mapNewsScopeToDomain(newsFilterQuery);
+			const result = NewsMapper.mapNewsScopeToDomain(filterNewsParams);
 			const expected: INewsScope = {};
 			Object.assign(expected, {
 				target: {
-					targetModel: newsFilterQuery.targetModel,
-					targetId: newsFilterQuery.targetId,
+					targetModel: filterNewsParams.targetModel,
+					targetId: filterNewsParams.targetId,
 				},
-				unpublished: newsFilterQuery.unpublished,
+				unpublished: filterNewsParams.unpublished,
 			});
 			expect(result).toStrictEqual(expected);
 		});

@@ -1,4 +1,4 @@
-export enum RoleNameResponse {
+export enum UserRole {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
 	ADMIN = 'admin',
