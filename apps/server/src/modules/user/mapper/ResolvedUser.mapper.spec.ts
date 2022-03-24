@@ -1,6 +1,6 @@
 import { userFactory, roleFactory, setupEntities } from '@shared/testing';
 import { ResolvedUserMapper } from './ResolvedUser.mapper';
-import { ResolvedUser } from '../controller/dto';
+import { ResolvedUserResponse } from '../controller/dto';
 
 describe('ResolvedUserMapper', () => {
 	beforeAll(async () => {
@@ -15,13 +15,13 @@ describe('ResolvedUserMapper', () => {
 		const roles = roleFactory.buildList(1);
 		const user = userFactory.build({ roles });
 		const result = ResolvedUserMapper.mapToResponse(user, ['A'], roles);
-		expect(result instanceof ResolvedUser).toBe(true);
+		expect(result instanceof ResolvedUserResponse).toBe(true);
 	});
 
 	it('should work work without second and third parameter and set default values ', () => {
 		const roles = roleFactory.buildList(1);
 		const user = userFactory.build({ roles });
 		const result = ResolvedUserMapper.mapToResponse(user);
-		expect(result instanceof ResolvedUser).toBe(true);
+		expect(result instanceof ResolvedUserResponse).toBe(true);
 	});
 });

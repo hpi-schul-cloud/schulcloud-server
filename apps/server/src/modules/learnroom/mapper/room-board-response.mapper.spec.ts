@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, taskFactory, setupEntities } from '@shared/testing';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
-import { BoardResponse, BoardElementResponse } from '../controller/dto/roomBoardResponse';
+import { BoardResponse, BoardElementResponse } from '../controller/dto/board-task.response';
 import { RoomBoardElementTypes } from '../types';
 
 describe('room board response mapper', () => {
