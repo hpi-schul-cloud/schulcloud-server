@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class PutMyPasswordParams {
 	@IsString()
 	@ApiProperty({
-		description: 'Updates the user password.',
+		description: 'The new user password.',
 		required: true,
 		nullable: false,
 	})
@@ -12,7 +12,7 @@ export class PutMyPasswordParams {
 
 	@IsString()
 	@ApiProperty({
-		description: 'Updates the user password.',
+		description: 'The confirmed new user password. Must match the password field.',
 		required: true,
 		nullable: false,
 	})

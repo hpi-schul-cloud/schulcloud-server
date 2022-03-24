@@ -4,8 +4,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { PatchMyAccountParams, PutMyPasswordParams } from './dto';
-import { Password } from './dto/password.param';
+import { Password, PatchMyAccountParams, PutMyPasswordParams } from './dto';
 
 /* interface MyPassword {
 	passwordNew: string;
