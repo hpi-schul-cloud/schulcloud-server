@@ -25,6 +25,11 @@ export class AccountUc {
 		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
 	}
 
+	private async updatePassword(account: Account, password: string) {
+		account.password = await bcrypt.hash(password, 10);
+		await this.accountRepo.update(account);
+	}
+
 	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
 		if (this.hasRole(currentUser, 'superhero')) {
 			return true;
@@ -85,15 +90,5 @@ export class AccountUc {
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}
-	}
-
-	private async updatePassword(account: Account, password: string) {
-		account.password = await bcrypt.hash(password, 10);
-		await this.accountRepo.update(account);
-	}
-
-	// this method is not called, but if I remove it, tests break (at least on my machine). I don't know why
-	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
-		return bcrypt.compare(enteredPassword, hashedAccountPassword);
 	}
 }
