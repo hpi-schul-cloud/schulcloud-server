@@ -6,11 +6,6 @@ import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
 import { Password, PatchMyAccountParams, PutMyPasswordParams } from './dto';
 
-/* interface MyPassword {
-	passwordNew: string;
-	passwordOld: string;
-} */
-
 @ApiTags('Account')
 @Authenticate('jwt')
 @Controller('account')
@@ -23,7 +18,7 @@ export class AccountController {
 		@Param('id', ParseObjectIdPipe) userId: string,
 		@Body() { password }: Password
 	): Promise<void> {
-		await this.accountUc.changePassword(currentUser.userId, userId, password);
+		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}
 
 	@Patch('me')
