@@ -1,4 +1,4 @@
-import { Entity, Property, OneToOne, Unique, Index } from '@mikro-orm/core';
+import { Entity, Property, OneToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { System } from './system.entity';
 import { User } from './user.entity';
