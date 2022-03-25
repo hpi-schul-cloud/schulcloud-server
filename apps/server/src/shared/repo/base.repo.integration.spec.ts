@@ -49,6 +49,36 @@ describe('BaseRepo', () => {
 		});
 	});
 
+	describe('save', () => {
+		it('should persist and flush entities', async () => {
+			const testEntity1 = new TestEntity();
+			const testEntity2 = new TestEntity();
+
+			await repo.save([testEntity1, testEntity2]);
+
+			const result = await em.find(TestEntity, {});
+			expect(result).toHaveLength(2);
+			expect(result).toStrictEqual([testEntity1, testEntity2]);
+		});
+	});
+
+	describe('delete', () => {
+		it('should remove and flush entities', async () => {
+			const testEntity1 = new TestEntity();
+			const testEntity2 = new TestEntity();
+			await em.persistAndFlush([testEntity1, testEntity2]);
+
+			await repo.delete([testEntity1, testEntity2]);
+
+			await expect(async () => {
+				await em.findOneOrFail(TestEntity, testEntity1.id);
+			}).rejects.toThrow(`TestEntity not found ('${testEntity1.id}')`);
+			await expect(async () => {
+				await em.findOneOrFail(TestEntity, testEntity2.id);
+			}).rejects.toThrow(`TestEntity not found ('${testEntity2.id}')`);
+		});
+	});
+
 	describe('persist', () => {
 		it('should persist an entity', () => {
 			const testEntity = new TestEntity();

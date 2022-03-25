@@ -1,6 +1,6 @@
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 
 /**
@@ -9,6 +9,14 @@ import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 @Injectable()
 export class BaseRepo<T extends BaseEntity> {
 	constructor(protected readonly em: EntityManager) {}
+
+	async save(entities: T[]): Promise<void> {
+		await this.em.persistAndFlush(entities);
+	}
+
+	async delete(entities: T[]): Promise<void> {
+		await this.em.removeAndFlush(entities);
+	}
 
 	persist(entity: T): T {
 		this.em.persist(entity);
