@@ -91,4 +91,8 @@ export class AccountUc {
 			throw new EntityNotFoundError('Account');
 		}
 	}
+
+	remove(accountId: EntityId): Promise<Account> {
+		return this.accountRepo.deleteOneById(accountId);
+	}
 }

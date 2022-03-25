@@ -75,12 +75,12 @@ describe('account repo', () => {
 
 	describe('delete', () => {
 		it('should delete and return an account', async () => {
-			const account = await repo.delete(mockAccounts[0].id);
+			const account = await repo.deleteOneById(mockAccounts[0].id);
 			await expect(em.find(Account, { id: account.id })).resolves.toEqual([]);
 		});
 
 		it('should throw entity not found error', async () => {
-			await expect(repo.delete('')).rejects.toThrowError('Account entity not found.');
+			await expect(repo.deleteOneById('')).rejects.toThrowError('Account entity not found.');
 		});
 	});
 
