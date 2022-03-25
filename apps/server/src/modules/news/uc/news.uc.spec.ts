@@ -61,7 +61,7 @@ describe('NewsUc', () => {
 							}
 							throw new NotFoundException();
 						},
-						removeAndFlush() {},
+						delete() {},
 					},
 				},
 				{

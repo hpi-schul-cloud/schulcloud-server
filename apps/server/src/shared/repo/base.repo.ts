@@ -28,10 +28,6 @@ export class BaseRepo<T extends BaseEntity> {
 		return entity;
 	}
 
-	async removeAndFlush(entity: T): Promise<void> {
-		await this.em.removeAndFlush(entity);
-	}
-
 	async flush(): Promise<void> {
 		await this.em.flush();
 	}

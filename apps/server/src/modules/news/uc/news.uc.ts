@@ -146,7 +146,7 @@ export class NewsUc {
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
 
-		await this.newsRepo.removeAndFlush(news);
+		await this.newsRepo.delete([news]);
 
 		return id;
 	}

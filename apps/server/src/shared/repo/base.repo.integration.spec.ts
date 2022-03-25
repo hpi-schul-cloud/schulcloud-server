@@ -100,17 +100,6 @@ describe('BaseRepo', () => {
 		});
 	});
 
-	describe('removeAndFlush', () => {
-		it('should remove and flush entity', async () => {
-			const testEntity = new TestEntity();
-			const persisted = await repo.persistAndFlush(testEntity);
-
-			await repo.removeAndFlush(persisted);
-
-			expect(await em.findOne(TestEntity, persisted.id)).toBeNull();
-		});
-	});
-
 	describe('flush', () => {
 		it('should flush after save', async () => {
 			const testEntity = new TestEntity();
