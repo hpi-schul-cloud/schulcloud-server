@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Req, Streamab
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { PaginationQuery } from '@shared/controller';
+import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
@@ -56,7 +56,7 @@ export class FilesStorageController {
 	async list(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() paginationQuery: PaginationQuery
+		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent(currentUser.userId, params);
 
@@ -64,7 +64,7 @@ export class FilesStorageController {
 			return new FileRecordResponse(fileRecord);
 		});
 
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = pagination;
 
 		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
 

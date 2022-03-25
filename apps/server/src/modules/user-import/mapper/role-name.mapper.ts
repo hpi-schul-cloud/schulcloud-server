@@ -1,18 +1,18 @@
 import { RoleName } from '@shared/domain';
-import { RoleNameFilterQuery, RoleNameResponse } from '../controller/dto';
+import { FilterRoleType, UserRole } from '../controller/dto';
 
 export class RoleNameMapper {
-	static mapToResponse(roleName: RoleName): RoleNameResponse {
-		if (roleName === RoleName.ADMIN) return RoleNameResponse.ADMIN;
-		if (roleName === RoleName.TEACHER) return RoleNameResponse.TEACHER;
-		if (roleName === RoleName.STUDENT) return RoleNameResponse.STUDENT;
+	static mapToResponse(roleName: RoleName): UserRole {
+		if (roleName === RoleName.ADMIN) return UserRole.ADMIN;
+		if (roleName === RoleName.TEACHER) return UserRole.TEACHER;
+		if (roleName === RoleName.STUDENT) return UserRole.STUDENT;
 		throw Error('invalid role name from domain');
 	}
 
-	static mapToDomain(roleName: RoleNameFilterQuery): RoleName {
-		if (roleName === RoleNameFilterQuery.ADMIN) return RoleName.ADMIN;
-		if (roleName === RoleNameFilterQuery.TEACHER) return RoleName.TEACHER;
-		if (roleName === RoleNameFilterQuery.STUDENT) return RoleName.STUDENT;
+	static mapToDomain(roleName: FilterRoleType): RoleName {
+		if (roleName === FilterRoleType.ADMIN) return RoleName.ADMIN;
+		if (roleName === FilterRoleType.TEACHER) return RoleName.TEACHER;
+		if (roleName === FilterRoleType.STUDENT) return RoleName.STUDENT;
 		throw Error('invalid role name from query');
 	}
 }
