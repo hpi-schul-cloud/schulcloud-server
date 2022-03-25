@@ -34,6 +34,11 @@ export class AccountUc {
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}
+
+		if (account.system) {
+			throw new InvalidOperationError('External account details can not be changed.');
+		}
+
 		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
 			throw new Error('Dein Passwort ist nicht korrekt!');
 		}
@@ -49,55 +54,65 @@ export class AccountUc {
 		let updateAccount = false;
 		if (params.passwordNew) {
 			this.checkPasswordStrength(params.passwordNew);
-			await this.updatePassword(account, params.passwordNew);
+			account.password = await this.calcPasswordHash(params.passwordNew);
 			updateAccount = true;
 		}
+		// TODO Check with BC-1471 - This might be removed from the account page
 		if (params.language && user.language !== params.language) {
 			// TODO Check if there is an enum or some other fixed values here?
 			user.language = params.language;
 			updateUser = true;
 		}
 		if (params.email && user.email !== params.email) {
-			this.checkEmailFormat(params.email);
-			await this.checkUniqueEmail(account, user, params.email);
-			user.email = params.email;
-			account.username = params.email;
+			const newMail = params.email.toLowerCase();
+			this.checkEmailFormat(newMail);
+			await this.checkUniqueEmail(account, user, newMail);
+			user.email = newMail;
+			account.username = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
 
 		if (params.firstName && user.firstName !== params.firstName) {
 			if (!this.hasPermissionsToChangeOwnName(user)) {
-				throw new ForbiddenException('No permission to change first name');
+				throw new InvalidOperationError('No permission to change first name');
 			}
 			user.firstName = params.firstName;
 			updateUser = true;
 		}
 		if (params.lastName && user.lastName !== params.lastName) {
 			if (!this.hasPermissionsToChangeOwnName(user)) {
-				throw new ForbiddenException('No permission to change last name');
+				throw new InvalidOperationError('No permission to change last name');
 			}
 			user.lastName = params.lastName;
 			updateUser = true;
 		}
 
 		if (updateUser) {
-			await this.userRepo.update(user);
+			try {
+				await this.userRepo.update(user);
+			} catch (err) {
+				throw new EntityNotFoundError(User.name);
+			}
 		}
 		if (updateAccount) {
-			await this.accountRepo.update(account);
+			try {
+				await this.accountRepo.update(account);
+			} catch (err) {
+				throw new EntityNotFoundError(Account.name);
+			}
 		}
 	}
 
 	// TODO direct endpoint routing?
 	/// this would not allow an administrator to change its own password without forcing a renewal
-	async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
-		if (currentUserId === targetUserId) {
-			await this.changeMyTemporaryPassword(currentUserId, passwordNew, passwordNew);
-		} else {
-			await this.changePasswordForUser(currentUserId, targetUserId, passwordNew);
-		}
-	}
+	// async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
+	// 	if (currentUserId === targetUserId) {
+	// 		await this.changeMyTemporaryPassword(currentUserId, passwordNew, passwordNew);
+	// 	} else {
+	// 		await this.changePasswordForUser(currentUserId, targetUserId, passwordNew);
+	// 	}
+	// }
 
 	async changeMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
@@ -113,10 +128,11 @@ export class AccountUc {
 		const userPreferences = <UserPreferences>user.preferences;
 
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
-			throw new InvalidOperationError('The password is not temporary, hence can not be changed!');
+			throw new InvalidOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
 		this.checkPasswordStrength(password);
+
 		let targetAccount: Account;
 		try {
 			targetAccount = await this.accountRepo.findByUserId(userId);
@@ -124,17 +140,29 @@ export class AccountUc {
 			throw new EntityNotFoundError(Account.name);
 		}
 
+		if (targetAccount.system) {
+			throw new InvalidOperationError('External account details can not be changed.');
+		}
+
 		if (targetAccount.password === undefined || (await this.checkPassword(password, targetAccount.password))) {
 			throw new InvalidOperationError('New password can not be same as old password.');
 		}
 
-		await this.updatePassword(targetAccount, password);
-		await this.accountRepo.update(targetAccount);
-		user.forcePasswordChange = false;
-		await this.userRepo.update(user);
+		try {
+			targetAccount.password = await this.calcPasswordHash(password);
+			await this.accountRepo.update(targetAccount);
+		} catch (err) {
+			throw new EntityNotFoundError(Account.name);
+		}
+		try {
+			user.forcePasswordChange = false;
+			await this.userRepo.update(user);
+		} catch (err) {
+			throw new EntityNotFoundError(User.name);
+		}
 	}
 
-	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<string> {
+	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<void> {
 		this.checkPasswordStrength(passwordNew);
 
 		// load user data
@@ -158,7 +186,7 @@ export class AccountUc {
 			throw new ForbiddenException("No permission to change this user's password");
 		}
 
-		await this.updatePassword(targetAccount, passwordNew);
+		targetAccount.password = await this.calcPasswordHash(passwordNew);
 		await this.accountRepo.update(targetAccount);
 		// set user must change password on next login
 
@@ -169,7 +197,7 @@ export class AccountUc {
 			throw new EntityNotFoundError('User');
 		}
 
-		return 'this.accountRepo.update(account);';
+		// return 'this.accountRepo.update(account);';
 	}
 
 	private hasRole(user: User, roleName: string) {
@@ -216,11 +244,11 @@ export class AccountUc {
 		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
 	}
 
-	private async updatePassword(account: Account, password: string): Promise<void> {
-		account.password = await bcrypt.hash(password, 10);
+	private calcPasswordHash(password: string): Promise<string> {
+		return bcrypt.hash(password, 10);
 	}
 
-	private async checkPassword(enteredPassword: string, hashedAccountPassword: string): Promise<boolean> {
+	private checkPassword(enteredPassword: string, hashedAccountPassword: string): Promise<boolean> {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
 	}
 
