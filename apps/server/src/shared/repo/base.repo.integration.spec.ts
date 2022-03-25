@@ -70,39 +70,6 @@ describe('BaseRepo', () => {
 		});
 	});
 
-	describe('persistAll', () => {
-		it('should persist multiple entities', () => {
-			const testEntities = Array.from(Array(5)).map(() => new TestEntity());
-			repo.persistAll(testEntities);
-			expect(em.getUnitOfWork().getPersistStack().size).toBe(testEntities.length);
-		});
-	});
-
-	describe('persistAllAndFlush', () => {
-		it('should persist and flush multiple entities', async () => {
-			const testEntities = Array.from(Array(5)).map(() => new TestEntity());
-			await repo.persistAllAndFlush(testEntities);
-
-			const testEntityIds = testEntities.map((n) => n.id);
-
-			const found = await Promise.all(testEntityIds.map(async (id) => em.findOne(TestEntity, id)));
-			expect(found.length).toBe(testEntities.length);
-
-			const expectedIds = found.map((n) => n && n.id).sort();
-			expect(expectedIds).toStrictEqual(testEntityIds);
-		});
-	});
-
-	describe('remove', () => {
-		it('should remove entity', async () => {
-			const testEntity = new TestEntity();
-			const persisted = await repo.persistAndFlush(testEntity);
-
-			repo.remove(persisted);
-			expect(em.getUnitOfWork().getRemoveStack().size).toBe(1);
-		});
-	});
-
 	describe('removeAndFlush', () => {
 		it('should remove and flush entity', async () => {
 			const testEntity = new TestEntity();
@@ -111,39 +78,6 @@ describe('BaseRepo', () => {
 			await repo.removeAndFlush(persisted);
 
 			expect(await em.findOne(TestEntity, persisted.id)).toBeNull();
-		});
-	});
-
-	describe('removeAll', () => {
-		it('should remove multiple entities', async () => {
-			const testEntities = Array.from(Array(5)).map(() => {
-				const testEntity = new TestEntity();
-				em.persist(testEntity);
-				return testEntity;
-			});
-			await em.flush();
-
-			repo.removeAll(testEntities);
-			expect(em.getUnitOfWork().getRemoveStack().size).toBe(testEntities.length);
-		});
-	});
-
-	describe('removeAllAndFlush', () => {
-		it('should remove and flush multiple entities', async () => {
-			const testEntities = Array.from(Array(5)).map(() => {
-				const testEntity = new TestEntity();
-				em.persist(testEntity);
-				return testEntity;
-			});
-			await em.flush();
-
-			await repo.removeAllAndFlush(testEntities);
-
-			await Promise.all(
-				testEntities.map(async (testEntity) => {
-					expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
-				})
-			);
 		});
 	});
 
