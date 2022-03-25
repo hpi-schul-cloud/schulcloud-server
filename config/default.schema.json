@@ -363,7 +363,7 @@
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
 		"S3_KEY": {
@@ -405,12 +405,12 @@
 			"type": "string",
 			"description": "Password for the antivirus service, only used for legacy file implementation"
 		},
-		"ANTIVIRUS_EXCHANGE" : {
+		"ANTIVIRUS_EXCHANGE": {
 			"type": "string",
 			"default": "antivirus",
 			"description": "rabbitmq exchange name for antivirus"
 		},
-		"ANTIVIRUS_ROUTING_KEY" : {
+		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
 			"default": "scan_file",
 			"description": "rabbitmq routing key"
