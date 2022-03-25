@@ -18,7 +18,6 @@ export interface IUserProperties {
 @Entity({ tableName: 'users' })
 export class User extends BaseEntityWithTimestamps {
 	@Property()
-	@Unique({ options: { collation: { locale: 'en', strength: 2 } } })
 	@Index({ name: 'externalUserIdentifier', options: { unique: true } })
 	email: string;
 

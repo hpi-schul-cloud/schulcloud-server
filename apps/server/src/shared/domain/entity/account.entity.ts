@@ -9,7 +9,6 @@ export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTime
 @Entity({ tableName: 'accounts' })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
-	@Unique({ options: { collation: { locale: 'en', strength: 2 } } })
 	username: string;
 
 	@Property({ nullable: true })

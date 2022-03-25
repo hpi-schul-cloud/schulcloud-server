@@ -13,7 +13,7 @@ describe('account repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ ensureIndexes: true })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
 			providers: [AccountRepo],
 		}).compile();
 		repo = module.get(AccountRepo);
