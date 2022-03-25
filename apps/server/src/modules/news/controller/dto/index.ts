@@ -1,4 +1,4 @@
-export * from './news-filter.query';
+export * from './filter-news.params';
 export * from './create-news.params';
 export * from './update-news.params';
 export * from './news.response';
