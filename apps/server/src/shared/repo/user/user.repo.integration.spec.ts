@@ -288,15 +288,14 @@ describe('user repo', () => {
 
 			result = await repo.findByEmail('USER@EXAMPLE.COM');
 			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-			expect(result[0]).toBeDefined();
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 			result = await repo.findByEmail('USER@example.COM');
 			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 
 			result = await repo.findByEmail('user@example.com');
 			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 
 			result = await repo.findByEmail('USER@EXAMPLECCOM');
 			expect(result).toHaveLength(0);
