@@ -50,24 +50,6 @@ describe('account repo', () => {
 			expect(account.id).not.toBeNull();
 			expect(account.id).toBeDefined();
 		});
-
-		it('should fail to create duplicate account, i.e. username already taken ', async () => {
-			const account1 = new Account({
-				username: 'Max Mustermann',
-				user: userFactory.build(),
-				system: systemFactory.build(),
-			});
-			const account2 = new Account({
-				username: 'max mustermann',
-				user: userFactory.build(),
-				system: systemFactory.build(),
-			});
-			expect(account1.id).toBeNull();
-			const account = await repo.create(account1);
-			expect(account.id).not.toBeNull();
-
-			await expect(repo.create(account2)).rejects.toThrowError();
-		});
 	});
 
 	describe('findById', () => {
@@ -92,13 +74,6 @@ describe('account repo', () => {
 
 		it('should throw entity not found error', async () => {
 			await expect(repo.update({ id: '' } as Account)).rejects.toThrowError();
-		});
-
-		it('should fail to update to username that already exists.', async () => {
-			const account1 = mockAccounts[0];
-			const account2 = mockAccounts[1];
-			account1.username = account2.username;
-			await expect(repo.update(account1)).rejects.toThrow();
 		});
 	});
 
