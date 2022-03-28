@@ -238,7 +238,7 @@ export class FilesStorageUC {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count === 0) {
-			throw new NotFoundException();
+			return [fileRecords, count];
 		}
 
 		const newRecords = await this.copy(userId, fileRecords, copyFilesParams.target);

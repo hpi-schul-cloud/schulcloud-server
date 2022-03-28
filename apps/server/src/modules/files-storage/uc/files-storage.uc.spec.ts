@@ -530,11 +530,11 @@ describe('FilesStorageUC', () => {
 				);
 			});
 
-			it('should throw error if entity not found', async () => {
+			it('should return empty response if entities not found', async () => {
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([[], 0]);
-				await expect(service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams)).rejects.toThrow(
-					new NotFoundException()
-				);
+
+				const res = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+				expect(res).toEqual([[], 0]);
 			});
 		});
 
@@ -615,6 +615,33 @@ describe('FilesStorageUC', () => {
 				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
 
 				expect(fileRecordRepo.delete).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('calls to fileRecordRepo.save()', () => {
+			it('should call with correctly params', async () => {
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({ parentType: FileRecordParentType.Task })
+				);
+			});
+
+			it('should throw error if entity not saved', async () => {
+				fileRecordRepo.save.mockRejectedValue(new Error());
+				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
+			});
+
+			it('should call fileRecordRepo.delete if call storageClient.copy throw an error', async () => {
+				storageClient.copy.mockRejectedValue(new Error());
+				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
+				expect(fileRecordRepo.delete).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return file response with parentType equal task', async () => {
+				const fileRecordsRes = await service.copyOneFile(userId, requestParams, copyFileParams);
+				expect(fileRecordsRes).toEqual(expect.objectContaining({ parentType: FileRecordParentType.Task }));
 			});
 		});
 	});
