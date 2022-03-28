@@ -6,7 +6,7 @@ import {
 	BoardTaskResponse,
 	BoardLessonResponse,
 	BoardLockedTaskResponse,
-} from '../controller/dto/roomBoardResponse';
+} from '../controller/dto/board-task.response';
 import { RoomBoardDTO, LockedTaskDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 

@@ -3,9 +3,9 @@ import { StringValidator } from '@shared/common';
 import { ImportUser, IImportUserScope, SortOrderMap } from '@shared/domain';
 import {
 	ImportUserResponse,
-	ImportUserFilterQuery,
-	ImportUserSortByQuery,
-	ImportUserSortingQuery,
+	FilterImportUserParams,
+	ImportUserSortOrder,
+	SortImportUserParams,
 } from '../controller/dto';
 
 import { ImportUserMatchMapper } from './match.mapper';
@@ -14,13 +14,13 @@ import { RoleNameMapper } from './role-name.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
 export class ImportUserMapper {
-	static mapSortingQueryToDomain(sortingQuery: ImportUserSortingQuery): SortOrderMap<ImportUser> | undefined {
+	static mapSortingQueryToDomain(sortingQuery: SortImportUserParams): SortOrderMap<ImportUser> | undefined {
 		const { sortBy } = sortingQuery;
 		if (sortBy == null) return undefined;
 		const result: SortOrderMap<ImportUser> = {};
 		switch (sortBy) {
-			case ImportUserSortByQuery.FIRSTNAME:
-			case ImportUserSortByQuery.LASTNAME:
+			case ImportUserSortOrder.FIRSTNAME:
+			case ImportUserSortOrder.LASTNAME:
 				result[sortBy] = sortingQuery.sortOrder;
 				break;
 			default:
@@ -46,7 +46,7 @@ export class ImportUserMapper {
 		return dto;
 	}
 
-	static mapImportUserFilterQueryToDomain(query: ImportUserFilterQuery): IImportUserScope {
+	static mapImportUserFilterQueryToDomain(query: FilterImportUserParams): IImportUserScope {
 		const dto: IImportUserScope = {};
 		if (StringValidator.isNotEmptyString(query.firstName)) dto.firstName = query.firstName;
 		if (StringValidator.isNotEmptyString(query.lastName)) dto.lastName = query.lastName;

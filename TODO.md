@@ -87,5 +87,5 @@
 - vscode/lauch files: we put only default files into the repo
 - naming of dtos and dto-files: api vs domain, we leave out "dto" suffix for simplicity (we know that they are dtos) and instead append a specific suffix:
   e.g.
-  api: <PaginationQuery, pagination.query.ts>, <CreatNewsParams, create-news.params.ts>, <NewsResponse, news.response.ts>
+  api: <PaginationParams, pagination.params.ts>, <CreatNewsParams, create-news.params.ts>, <NewsResponse, news.response.ts>
   domain: <ICreateNews, create-news.interface.ts>, <News, news.entity.ts>
