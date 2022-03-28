@@ -84,7 +84,7 @@ export class S3ClientAdapter implements IStorageClient {
 		this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
 		const copyPaths = paths.map((path) => {
-			return { sourcePath: path, targetPaths: `${this.deletedFolderName}/${path}` };
+			return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
 		});
 
 		const result = await this.copy(copyPaths);
@@ -100,7 +100,7 @@ export class S3ClientAdapter implements IStorageClient {
 		this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
 
 		const copyPaths = paths.map((path) => {
-			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPaths: path };
+			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
 		});
 
 		const result = await this.copy(copyPaths);
@@ -113,12 +113,12 @@ export class S3ClientAdapter implements IStorageClient {
 		return result;
 	}
 
-	private async copy(paths: ICopyFiles[]) {
+	async copy(paths: ICopyFiles[]) {
 		const copyRequests = paths.map(async (path) => {
 			const req = new CopyObjectCommand({
 				Bucket: this.config.bucket,
 				CopySource: `${this.config.bucket}/${path.sourcePath}`,
-				Key: `${path.targetPaths}`,
+				Key: `${path.targetPath}`,
 			});
 
 			const data = await this.client.send(req);
