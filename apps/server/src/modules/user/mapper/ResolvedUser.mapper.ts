@@ -1,9 +1,9 @@
 import { User, Role } from '@shared/domain';
-import { ResolvedUser } from '../controller/dto';
+import { ResolvedUserResponse } from '../controller/dto';
 
 export class ResolvedUserMapper {
-	static mapToResponse(user: User, permissions: string[] = [], roles: Role[] = []): ResolvedUser {
-		const dto = new ResolvedUser();
+	static mapToResponse(user: User, permissions: string[] = [], roles: Role[] = []): ResolvedUserResponse {
+		const dto = new ResolvedUserResponse();
 		dto.id = user.id;
 		dto.firstName = user.firstName || '';
 		dto.lastName = user.lastName || '';

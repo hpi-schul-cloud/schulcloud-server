@@ -60,7 +60,7 @@ describe('course group repo', () => {
 			const [result] = await repo.findByCourseIds([courseGroup.course.id]);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
-			const expectedResult = ['_id', 'course', 'updatedAt', 'createdAt', 'students'].sort();
+			const expectedResult = ['_id', 'course', 'updatedAt', 'createdAt', 'school', 'students'].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
 

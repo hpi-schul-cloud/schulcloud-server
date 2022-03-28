@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
+import { Entity, ManyToOne, Collection, Property, ManyToMany, Index } from '@mikro-orm/core';
 
 import { EntityId } from '../types';
 
@@ -21,8 +21,10 @@ export interface ISubmissionProperties {
 }
 
 @Entity({ tableName: 'submissions' })
+@Index({ properties: ['student', 'teamMembers'] })
 export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne('Task', { fieldName: 'homeworkId' })
+	@Index()
 	task: Task;
 
 	@ManyToOne('User', { fieldName: 'studentId' })
@@ -39,6 +41,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	comment?: string;
 
 	@ManyToMany('File', undefined, { fieldName: 'fileIds' })
+	@Index()
 	studentFiles = new Collection<File>(this);
 
 	/* ***** teacher uploads ***** */
@@ -49,6 +52,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	gradeComment?: string;
 
 	@ManyToMany('File', undefined, { fieldName: 'gradeFileIds' })
+	@Index()
 	gradeFiles = new Collection<File>(this);
 
 	constructor(props: ISubmissionProperties) {
