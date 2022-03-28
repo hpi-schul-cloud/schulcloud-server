@@ -45,7 +45,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser.userId);
+			user = await this.userRepo.findById(currentUser.userId, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
