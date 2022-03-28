@@ -7,7 +7,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ResolvedUserMapper } from '../mapper';
 import { UserUC } from '../uc/user.uc';
 
-import { ResolvedUser, ChangeLanguageParams, SuccessfulResponse } from './dto';
+import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
 @Authenticate('jwt')
@@ -16,8 +16,9 @@ export class UserController {
 	constructor(private readonly userUc: UserUC) {}
 
 	@Get('me')
-	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
+	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
 		const [user, permissions] = await this.userUc.me(currentUser.userId);
+
 		// only the root roles of the user get published
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
 

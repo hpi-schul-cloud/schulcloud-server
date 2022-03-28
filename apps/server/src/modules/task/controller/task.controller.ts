@@ -2,7 +2,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 
 import { ICurrentUser } from '@shared/domain';
-import { PaginationQuery } from '@shared/controller/';
+import { PaginationParams } from '@shared/controller/';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { TaskUC } from '../uc/task.uc';
@@ -18,13 +18,13 @@ export class TaskController {
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() paginationQuery: PaginationQuery
+		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser.userId, paginationQuery);
+		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser.userId, pagination);
 		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
 			return TaskMapper.mapToResponse(taskWithStatus);
 		});
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = pagination;
 		const result = new TaskListResponse(taskresponses, total, skip, limit);
 		return result;
 	}
@@ -32,15 +32,15 @@ export class TaskController {
 	@Get('finished')
 	async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() paginationQuery: PaginationQuery
+		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, paginationQuery);
+		const [tasksWithStatus, total] = await this.taskUc.findAllFinished(currentUser.userId, pagination);
 
 		const taskresponses = tasksWithStatus.map((task) => {
 			return TaskMapper.mapToResponse(task);
 		});
 
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = pagination;
 		const result = new TaskListResponse(taskresponses, total, skip, limit);
 		return result;
 	}
