@@ -1,4 +1,4 @@
-export enum MatchCreatorResponse {
+export enum MatchType {
 	AUTO = 'auto',
 	MANUAL = 'admin',
 }

@@ -3,11 +3,11 @@ import { BadRequestException } from '@nestjs/common';
 import { MatchCreator, MatchCreatorScope, RoleName, SortOrder } from '@shared/domain';
 import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import {
-	ImportUserFilterQuery,
-	ImportUserSortByQuery,
-	ImportUserSortingQuery,
-	MatchFilterQuery,
-	RoleNameFilterQuery,
+	FilterImportUserParams,
+	ImportUserSortOrder,
+	SortImportUserParams,
+	FilterMatchType,
+	FilterRoleType,
 	UserMatchResponse,
 } from '../controller/dto';
 import { ImportUserMapper } from './import-user.mapper';
@@ -28,39 +28,39 @@ describe('[ImportUserMapper]', () => {
 
 	describe('[mapSortingQueryToDomain] from query to domain', () => {
 		it('should accept firstName', () => {
-			const sortingQuery: ImportUserSortingQuery = {
-				sortBy: ImportUserSortByQuery.FIRSTNAME,
+			const sortingQuery: SortImportUserParams = {
+				sortBy: ImportUserSortOrder.FIRSTNAME,
 				sortOrder: SortOrder.desc,
 			};
 			const result = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
 			expect(result).toEqual({ firstName: 'desc' });
 		});
 		it('should accept lastName', () => {
-			const sortingQuery: ImportUserSortingQuery = {
-				sortBy: ImportUserSortByQuery.LASTNAME,
+			const sortingQuery: SortImportUserParams = {
+				sortBy: ImportUserSortOrder.LASTNAME,
 				sortOrder: SortOrder.desc,
 			};
 			const result = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
 			expect(result).toEqual({ lastName: 'desc' });
 		});
 		it('should accept asc order', () => {
-			const sortingQuery: ImportUserSortingQuery = {
-				sortBy: ImportUserSortByQuery.FIRSTNAME,
+			const sortingQuery: SortImportUserParams = {
+				sortBy: ImportUserSortOrder.FIRSTNAME,
 				sortOrder: SortOrder.asc,
 			};
 			const result = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
 			expect(result).toEqual({ firstName: 'asc' });
 		});
 		it('should not accept loginName or others', () => {
-			const sortingQuery: ImportUserSortingQuery = {
-				sortBy: 'loginName' as ImportUserSortByQuery,
+			const sortingQuery: SortImportUserParams = {
+				sortBy: 'loginName' as ImportUserSortOrder,
 				sortOrder: SortOrder.desc,
 			};
 			expect(() => ImportUserMapper.mapSortingQueryToDomain(sortingQuery)).toThrowError(BadRequestException);
 		});
 		describe('when sortBy is not given', () => {
 			it('should return undefined', () => {
-				const sortingQuery: ImportUserSortingQuery = { sortOrder: SortOrder.desc };
+				const sortingQuery: SortImportUserParams = { sortOrder: SortOrder.desc };
 				expect(ImportUserMapper.mapSortingQueryToDomain(sortingQuery)).toBeUndefined();
 			});
 		});
@@ -114,55 +114,55 @@ describe('[ImportUserMapper]', () => {
 	});
 	describe('[mapImportUserFilterQueryToDomain]', () => {
 		it('should skip all params for empty query to scope', () => {
-			const query: ImportUserFilterQuery = {};
+			const query: FilterImportUserParams = {};
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result).toEqual({});
 		});
 		it('should map first name from query to scope', () => {
-			const query: ImportUserFilterQuery = { firstName: 'Cinderella' };
+			const query: FilterImportUserParams = { firstName: 'Cinderella' };
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.firstName).toEqual(query.firstName);
 		});
 		it('should map last name from query to scope', () => {
-			const query: ImportUserFilterQuery = { lastName: 'Mr. Bond' };
+			const query: FilterImportUserParams = { lastName: 'Mr. Bond' };
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.lastName).toEqual(query.lastName);
 		});
 		it('should map login name from query to scope', () => {
-			const query: ImportUserFilterQuery = { loginName: 'first_last_name_123' };
+			const query: FilterImportUserParams = { loginName: 'first_last_name_123' };
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.loginName).toEqual(query.loginName);
 		});
 		it('should map role names from query to scope', () => {
-			const query: ImportUserFilterQuery = { role: RoleNameFilterQuery.STUDENT };
+			const query: FilterImportUserParams = { role: FilterRoleType.STUDENT };
 			const roleNameMapperSpy = jest.spyOn(RoleNameMapper, 'mapToDomain').mockReturnValueOnce(RoleName.STUDENT);
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.role).toEqual(RoleName.STUDENT);
-			expect(roleNameMapperSpy).toBeCalledWith(RoleNameFilterQuery.STUDENT);
+			expect(roleNameMapperSpy).toBeCalledWith(FilterRoleType.STUDENT);
 			roleNameMapperSpy.mockRestore();
 		});
 		it('should map classes from query to scope', () => {
-			const query: ImportUserFilterQuery = { classes: 'second class' };
+			const query: FilterImportUserParams = { classes: 'second class' };
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.classes).toEqual(query.classes);
 		});
 		it('should map match types from query to scope', () => {
-			const query: ImportUserFilterQuery = { match: [MatchFilterQuery.MANUAL] };
+			const query: FilterImportUserParams = { match: [FilterMatchType.MANUAL] };
 			const importUserMatchMapperSpy = jest
 				.spyOn(ImportUserMatchMapper, 'mapImportUserMatchScopeToDomain')
 				.mockReturnValueOnce(MatchCreatorScope.MANUAL);
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.matches).toEqual([MatchCreatorScope.MANUAL]);
-			expect(importUserMatchMapperSpy).toBeCalledWith(MatchFilterQuery.MANUAL);
+			expect(importUserMatchMapperSpy).toBeCalledWith(FilterMatchType.MANUAL);
 			importUserMatchMapperSpy.mockRestore();
 		});
 		it('should map flagged true from query to scope', () => {
-			const query: ImportUserFilterQuery = { flagged: true };
+			const query: FilterImportUserParams = { flagged: true };
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.flagged).toEqual(true);
 		});
 		it('should skip flagged false from query to scope', () => {
-			const query: ImportUserFilterQuery = { flagged: false };
+			const query: FilterImportUserParams = { flagged: false };
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.flagged).toBeUndefined();
 		});
