@@ -31,7 +31,7 @@ export class NewsRepo extends BaseRepo<News> {
 	/** resolves a news document with some elements (school, target, and updator/creator) populated already */
 	async findOneById(id: EntityId): Promise<News> {
 		const newsEntity = await this.em.findOneOrFail(News, id);
-		await this.em.populate(newsEntity, this.propertiesToPopulate);
+		await this.em.populate(newsEntity, this.propertiesToPopulate as never[]);
 		return newsEntity;
 	}
 
@@ -40,17 +40,17 @@ export class NewsRepo extends BaseRepo<News> {
 		const { pagination, order } = options || {};
 		const [newsEntities, count] = await this.em.findAndCount(News, query, {
 			...pagination,
-			orderBy: order as QueryOrderMap,
+			orderBy: order as QueryOrderMap<News>,
 		});
-		await this.em.populate(newsEntities, this.propertiesToPopulate);
+		await this.em.populate(newsEntities, this.propertiesToPopulate as never[]);
 		// populate target for all inheritances of news which not works when the list contains different types
 		const discriminatorColumn = 'target';
 		const schoolNews = newsEntities.filter((news) => news instanceof SchoolNews);
-		await this.em.populate(schoolNews, discriminatorColumn);
+		await this.em.populate(schoolNews, [discriminatorColumn]);
 		const teamNews = newsEntities.filter((news) => news instanceof TeamNews);
-		await this.em.populate(teamNews, discriminatorColumn);
+		await this.em.populate(teamNews, [discriminatorColumn]);
 		const courseNews = newsEntities.filter((news) => news instanceof CourseNews);
-		await this.em.populate(courseNews, discriminatorColumn);
+		await this.em.populate(courseNews, [discriminatorColumn]);
 		return [newsEntities, count];
 	}
 }

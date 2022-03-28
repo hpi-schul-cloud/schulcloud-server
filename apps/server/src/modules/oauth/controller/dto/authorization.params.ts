@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class AuthorizationQuery {
+export class AuthorizationParams {
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()

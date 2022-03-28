@@ -1,4 +1,4 @@
-import { Entity, Property, OneToOne } from '@mikro-orm/core';
+import { Entity, Property, OneToOne, Index } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { System } from './system.entity';
@@ -7,8 +7,10 @@ import { User } from './user.entity';
 export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'accounts' })
+@Index({ properties: ['userId', 'systemId'] })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
+	@Index()
 	username!: string;
 
 	@Property({ nullable: true })
@@ -20,21 +22,20 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	credentialHash?: string;
 
-	// TODO set index to true after we removed the account model from feathers
-	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true, mapToPk: true })
-	userId!: ObjectId;
+	@OneToOne({ entity: () => User, owner: true, orphanRemoval: true, unique: false })
+	userId: ObjectId;
 
-	@OneToOne({ entity: () => System, owner: true, orphanRemoval: true, mapToPk: true, nullable: true })
+	@OneToOne({ entity: () => System, owner: true, orphanRemoval: true, nullable: true, unique: false })
 	systemId?: ObjectId;
 
 	@Property({ nullable: true })
-	lasttriedFailedLogin? = new Date(0);
+	lasttriedFailedLogin?: Date;
 
 	@Property({ nullable: true })
 	expiresAt?: Date;
 
 	@Property({ nullable: true })
-	activated? = false;
+	activated?: boolean;
 
 	constructor(props: IAccountProperties) {
 		super();

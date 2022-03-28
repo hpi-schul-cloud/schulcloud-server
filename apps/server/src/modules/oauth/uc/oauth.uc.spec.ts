@@ -12,8 +12,10 @@ import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
+import { NotFoundException } from '@nestjs/common';
 import { OauthUc } from '.';
-import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
+import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
@@ -95,7 +97,8 @@ describe('OAuthUc', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findByLdapId() {
+						findByLdapId(userId, systemId) {
+							if (userId === '') throw new NotFoundException();
 							return defaultUser;
 						},
 					},
@@ -129,7 +132,7 @@ describe('OAuthUc', () => {
 	describe('startOauth', () => {
 		it('should extract query to code as string', async () => {
 			const response = await service.startOauth(defaultQuery, '1234');
-			expect(response).toEqual({ jwt: defaultJWT });
+			expect(response).toEqual({ jwt: defaultJWT, idToken: defaultJWT, logoutEndpoint: 'mock_logoutEndpoint' });
 		});
 	});
 
@@ -141,12 +144,17 @@ describe('OAuthUc', () => {
 		it('should throw an error from a query that contains an error', () => {
 			expect(() => {
 				return service.checkAuthorizationCode(defaultErrorQuery);
-			}).toThrow(defaultErrorQuery.error);
+			}).toThrow('Authorization Query Object has no authorization code or error');
+		});
+		it('should throw an error from a query with error', () => {
+			expect(() => {
+				return service.checkAuthorizationCode({ error: 'default_error' });
+			}).toThrow(OAuthSSOError);
 		});
 		it('should throw an error from a falsy query', () => {
 			expect(() => {
 				return service.checkAuthorizationCode({});
-			}).toThrow(Error);
+			}).toThrow(OAuthSSOError);
 		});
 	});
 	describe('requestToken', () => {
@@ -168,7 +176,7 @@ describe('OAuthUc', () => {
 			expect(() => {
 				const uuid: string = service.decodeToken(wrongJWT);
 				return uuid;
-			}).toThrow(Error);
+			}).toThrow(OAuthSSOError);
 		});
 	});
 
@@ -178,6 +186,11 @@ describe('OAuthUc', () => {
 			const user: User = await service.findUserById(defaultUserId, defaultSystemId);
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
+		});
+		it('should return an error', async () => {
+			await expect(service.findUserById('', '')).rejects.toEqual(
+				new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound')
+			);
 		});
 	});
 

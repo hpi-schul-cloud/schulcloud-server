@@ -6,7 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 
 import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordListResponse, ScanResultDto } from '@src/modules/files-storage/controller/dto';
+import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecord, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
@@ -20,7 +20,7 @@ import {
 import { ApiValidationError } from '@shared/common';
 
 const baseRouteName = '/file-security';
-const scanResult: ScanResultDto = { virus_detected: false };
+const scanResult: ScanResultParams = { virus_detected: false };
 
 class API {
 	app: INestApplication;
@@ -29,7 +29,7 @@ class API {
 		this.app = app;
 	}
 
-	async put(requestString: string, body: ScanResultDto) {
+	async put(requestString: string, body: ScanResultParams) {
 		const response = await request(this.app.getHttpServer())
 			.put(`${baseRouteName}${requestString}`)
 			.set('Accept', 'application/json')

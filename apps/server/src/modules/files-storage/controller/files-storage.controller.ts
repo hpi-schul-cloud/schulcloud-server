@@ -1,12 +1,22 @@
-import { Body, Controller, Get, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Req, StreamableFile } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { PaginationQuery } from '@shared/controller';
-import { FileRecord, ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
+
+import { PaginationParams } from '@shared/controller';
+import { ICurrentUser } from '@shared/domain';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
-import { FileRecordResponse, DownloadFileParams, FileDto, FileParams, FileRecordListResponse } from './dto';
+import {
+	FileRecordResponse,
+	DownloadFileParams,
+	FileRecordParams,
+	SingleFileParams,
+	RenameFileParams,
+	FileRecordListResponse,
+	FileParams,
+} from './dto';
 
 @ApiTags('file')
 @Authenticate('jwt')
@@ -17,8 +27,8 @@ export class FilesStorageController {
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
 	async upload(
-		@Body() _: FileDto,
-		@Param() params: FileParams,
+		@Body() _: FileParams,
+		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	): Promise<FileRecordResponse> {
@@ -35,18 +45,18 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<StreamableFile> {
 		const res = await this.filesStorageUC.download(currentUser.userId, params);
-		// @TODO set headers ?
+		// TODO set headers ?
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `attachment; filename="${params.fileName}"`,
+			disposition: `inline; filename="${params.fileName}"`,
 		});
 	}
 
 	@Get('/list/:schoolId/:parentType/:parentId')
 	async list(
-		@Param() params: FileParams,
+		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() paginationQuery: PaginationQuery
+		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.fileRecordUC.fileRecordsOfParent(currentUser.userId, params);
 
@@ -54,9 +64,78 @@ export class FilesStorageController {
 			return new FileRecordResponse(fileRecord);
 		});
 
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = pagination;
 
 		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
+
+		return response;
+	}
+
+	@Patch('/rename/:fileRecordId/')
+	async patchFilename(
+		@Param() params: SingleFileParams,
+		@Body() renameFileParam: RenameFileParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordResponse> {
+		const res = await this.fileRecordUC.patchFilename(currentUser.userId, params, renameFileParam);
+
+		const response = new FileRecordResponse(res);
+
+		return response;
+	}
+
+	@Delete('/delete/:schoolId/:parentType/:parentId')
+	async delete(
+		@Param() params: FileRecordParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(currentUser.userId, params);
+
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return new FileRecordResponse(fileRecord);
+		});
+
+		const response = new FileRecordListResponse(responseFileRecords, total);
+
+		return response;
+	}
+
+	@Delete('/delete/:fileRecordId')
+	async deleteFile(
+		@Param() params: SingleFileParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.deleteOneFile(currentUser.userId, params);
+
+		const response = new FileRecordResponse(fileRecord);
+
+		return response;
+	}
+
+	@Post('/restore/:schoolId/:parentType/:parentId')
+	async restore(
+		@Param() params: FileRecordParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordListResponse> {
+		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(currentUser.userId, params);
+
+		const responseFileRecords = fileRecords.map((fileRecord) => {
+			return new FileRecordResponse(fileRecord);
+		});
+
+		const response = new FileRecordListResponse(responseFileRecords, total);
+
+		return response;
+	}
+
+	@Post('/restore/:fileRecordId')
+	async restoreFile(
+		@Param() params: SingleFileParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<FileRecordResponse> {
+		const fileRecord = await this.filesStorageUC.restoreOneFile(currentUser.userId, params);
+
+		const response = new FileRecordResponse(fileRecord);
 
 		return response;
 	}

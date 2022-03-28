@@ -1,10 +1,12 @@
+import { BaseEntity } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Collection, Db } from 'mongodb';
+import { MikroORM } from '@mikro-orm/core';
 
 @Injectable()
 export class DatabaseManagementService {
-	constructor(private em: EntityManager) {}
+	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
 
 	private get db(): Db {
 		return this.em.getConnection('write').getDb();
@@ -16,11 +18,11 @@ export class DatabaseManagementService {
 	}
 
 	async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
-		const collection = this.getDatabaseCollection(collectionName);
 		if (jsonDocuments.length === 0) {
 			return 0;
 		}
-		const { insertedCount } = await collection.insertMany(jsonDocuments, {
+		const collection = this.getDatabaseCollection(collectionName);
+		const { insertedCount } = await collection.insertMany(jsonDocuments as BaseEntity[], {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
 		});
@@ -59,5 +61,9 @@ export class DatabaseManagementService {
 
 	async dropCollection(collectionName: string): Promise<void> {
 		await this.db.dropCollection(collectionName);
+	}
+
+	async syncIndexes(): Promise<void> {
+		return this.orm.getSchemaGenerator().ensureIndexes();
 	}
 }

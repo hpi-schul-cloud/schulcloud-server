@@ -34,7 +34,7 @@
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
 			"default": false,
-			"description": "Send mails to notification service, also if not in production mode"
+			"description": "Send mails to mail service, also if not in production mode"
 		},
 		"I18N": {
 			"type": "object",
@@ -261,6 +261,42 @@
 				}
 			}
 		},
+		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) feature."
+		},
+		"IDENTITY_MANAGEMENT": {
+			"type": "object",
+			"description": "Identity management server properties.",
+			"properties": {
+				"URI": {
+					"type": "string",
+					"default" : null,
+					"description": "The ErWIn IDM base URI."
+				},
+				"TENANT": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM tenant."
+				},
+				"ADMIN_CLIENTID": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin client."
+				},
+				"ADMIN_USER": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin user."
+				},
+				"ADMIN_PASSWORD": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin password."
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -325,17 +361,9 @@
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
 		},
-		"NOTIFICATION_PLATFORM": {
-			"type": "string",
-			"description": "Set the platform to use in notification service"
-		},
-		"NOTIFICATION_URI": {
-			"type": "string",
-			"description": "Url to the notificaiton service"
-		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
 		"S3_KEY": {
@@ -377,12 +405,12 @@
 			"type": "string",
 			"description": "Password for the antivirus service, only used for legacy file implementation"
 		},
-		"ANTIVIRUS_EXCHANGE" : {
+		"ANTIVIRUS_EXCHANGE": {
 			"type": "string",
 			"default": "antivirus",
 			"description": "rabbitmq exchange name for antivirus"
 		},
-		"ANTIVIRUS_ROUTING_KEY" : {
+		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
 			"default": "scan_file",
 			"description": "rabbitmq routing key"
@@ -741,6 +769,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for course sharing feature."
+		},
+		"FEATURE_LESSON_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for lesson sharing feature."
 		}
 	},
 	"required": [

@@ -3,7 +3,7 @@ import { IResolvedUser, IRole } from '@shared/domain';
 
 export type Role = IRole;
 
-export class ResolvedUser implements IResolvedUser {
+export class ResolvedUserResponse implements IResolvedUser {
 	@ApiProperty()
 	firstName!: string;
 
