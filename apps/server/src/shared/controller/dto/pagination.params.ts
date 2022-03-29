@@ -1,7 +1,7 @@
 import { IsInt, Max, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class PaginationQuery {
+export class PaginationParams {
 	@IsInt()
 	@Min(0)
 	@ApiPropertyOptional({ description: 'Number of elements (not pages) to be skipped' })

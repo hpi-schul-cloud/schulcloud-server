@@ -14,7 +14,7 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
 import { NotFoundException } from '@nestjs/common';
 import { OauthUc } from '.';
-import { OauthTokenResponse } from '../controller/dto/oauth-token-response';
+import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 
 describe('OAuthUc', () => {

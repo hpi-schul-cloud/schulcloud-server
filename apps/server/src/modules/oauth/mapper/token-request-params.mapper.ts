@@ -1,5 +1,5 @@
 import { System } from '@shared/domain';
-import { TokenRequestParams } from '../controller/dto/token-request-params';
+import { TokenRequestParams } from '../controller/dto/token-request.params';
 
 export class TokenRequestParamsMapper {
 	static mapToResponse(system: System, decryptedClientSecret: string, code: string): TokenRequestParams {

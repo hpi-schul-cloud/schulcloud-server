@@ -6,7 +6,7 @@ enum SortOrder {
 	desc = 'desc',
 }
 
-export abstract class SortingQuery<T> {
+export abstract class SortingParams<T> {
 	/**
 	 * Set type and Decorators in extending classes
 	 */
