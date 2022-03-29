@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const logger = require('../../../logger');
 
 const { NotImplemented } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
@@ -25,7 +24,6 @@ const deleteFile = (file, payload, account, app) => {
  * adoption: the lockId was checked in a hook before
  */
 const lock = (file) => {
-	logger.debug(`[WOPI] lock action`, file);
 	file.lockId = mongoose.Types.ObjectId();
 	return FileModel.update({ _id: file._id }, file)
 		.exec()
@@ -34,7 +32,6 @@ const lock = (file) => {
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
 const getLock = (file) => {
-	logger.debug(`[WOPI] getLock action`, file);
 	FileModel.findOne({ _id: file._id })
 		.exec()
 		.then(() => Promise.resolve({ lockId: file.lockId }));
