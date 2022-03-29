@@ -5,6 +5,7 @@ import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';
+import { ICopyFiles } from '../interface';
 
 const config = {
 	endpoint: '',
@@ -195,6 +196,30 @@ describe('S3ClientAdapter', () => {
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'trash/test/text.txt' }] } },
+				})
+			);
+		});
+	});
+
+	describe('copy', () => {
+		let pathsToCopy: ICopyFiles[];
+		beforeEach(() => {
+			pathsToCopy = [
+				{
+					sourcePath: 'trash/test/text.txt',
+					targetPath: 'test/text.txt',
+				},
+			];
+		});
+		it('should call send() of client with copy objects', async () => {
+			await service.copy(pathsToCopy);
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						CopySource: 'test-bucket/trash/test/text.txt',
+						Key: 'test/text.txt',
+					},
 				})
 			);
 		});
