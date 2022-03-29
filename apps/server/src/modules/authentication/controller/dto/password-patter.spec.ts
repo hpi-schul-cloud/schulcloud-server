@@ -4,6 +4,10 @@ describe('password patter', () => {
 	it('should accept a valid password', () => {
 		expect(passwordPattern.test('Asdf 1ds df!')).toBe(true);
 	});
+	it('should accept a valid password (test proper escpaing)', () => {
+		expect(passwordPattern.test('Asdf 1ds \\df')).toBe(true);
+		expect(passwordPattern.test('Asdf 1ds /df')).toBe(true);
+	});
 	it('should not accept a password with less than 8 characters', () => {
 		expect(passwordPattern.test('A1!asdf')).toBe(false);
 	});
