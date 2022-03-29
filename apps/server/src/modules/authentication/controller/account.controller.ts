@@ -25,7 +25,7 @@ export class AccountController {
 
 	@Patch('me')
 	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
-		return this.accountUc.updateMyAccount(currentUser, params);
+		return this.accountUc.updateMyAccount(currentUser.userId, params);
 	}
 
 	@Put('me/password')

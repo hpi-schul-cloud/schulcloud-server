@@ -1,6 +1,6 @@
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Account, EntityId, ICurrentUser, PermissionService, User } from '@shared/domain';
+import { Account, EntityId, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
@@ -20,14 +20,10 @@ export class AccountUc {
 		private readonly permissionService: PermissionService
 	) {}
 
-	static emailPattern = new RegExp(
-		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-	);
-
-	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
+	async updateMyAccount(currentUser: EntityId, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
-			account = await this.accountRepo.findByUserId(currentUser.userId);
+			account = await this.accountRepo.findByUserId(currentUser);
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}
@@ -42,7 +38,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser.userId, true);
+			user = await this.userRepo.findById(currentUser, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
@@ -61,7 +57,6 @@ export class AccountUc {
 		}
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
-			this.checkEmailFormat(newMail);
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
 			account.username = newMail;
@@ -233,13 +228,6 @@ export class AccountUc {
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
-	}
-
-	// TODO remove in src\utils\constants.js
-	private checkEmailFormat(email: string) {
-		if (!email || !AccountUc.emailPattern.test(email)) {
-			throw new ValidationError('The given email is invalid.');
-		}
 	}
 
 	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
