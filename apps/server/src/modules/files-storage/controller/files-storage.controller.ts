@@ -16,7 +16,6 @@ import {
 	RenameFileParams,
 	FileRecordListResponse,
 	FileParams,
-	CopyFilesOfParentParams,
 	CopyFileParams,
 } from './dto';
 
@@ -145,7 +144,7 @@ export class FilesStorageController {
 	@Post('/copy/:schoolId/:parentType/:parentId')
 	async copy(
 		@Param() params: FileRecordParams,
-		@Body() copyFilesParam: CopyFilesOfParentParams,
+		@Body() copyFilesParam: CopyFileParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.copyFilesOfParent(

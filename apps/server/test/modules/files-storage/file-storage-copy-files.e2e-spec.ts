@@ -7,12 +7,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import S3rver from 's3rver';
 
 import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
-import {
-	CopyFileParams,
-	CopyFilesOfParentParams,
-	FileRecordListResponse,
-	FileRecordResponse,
-} from '@src/modules/files-storage/controller/dto';
+import { CopyFileParams, FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
@@ -62,7 +57,7 @@ class API {
 		};
 	}
 
-	async copy(requestString: string, body: CopyFilesOfParentParams) {
+	async copy(requestString: string, body: CopyFileParams) {
 		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}${requestString}`)
 			.set('Accept', 'application/json')
@@ -134,7 +129,7 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('copy files of parent', () => {
 		let validId: string;
 		const targetParentId: EntityId = new ObjectId().toHexString();
-		let copyFilesParams: CopyFilesOfParentParams;
+		let copyFilesParams: CopyFileParams;
 
 		describe('with bad request data', () => {
 			beforeEach(async () => {
@@ -155,6 +150,7 @@ describe(`${baseRouteName} (api)`, () => {
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Task,
 					},
+					fileNamePrefix: 'copy from',
 				};
 			});
 
@@ -198,6 +194,7 @@ describe(`${baseRouteName} (api)`, () => {
 						parentId: 'invalidObjectId',
 						parentType: FileRecordParentType.Task,
 					},
+					fileNamePrefix: 'copy from',
 				};
 				const response = await api.copy(`/${validId}/users/${validId}`, copyFilesParams);
 				expect(response.status).toEqual(400);
@@ -222,6 +219,7 @@ describe(`${baseRouteName} (api)`, () => {
 						parentId: targetParentId,
 						parentType: FileRecordParentType.Task,
 					},
+					fileNamePrefix: 'copy from',
 				};
 			});
 

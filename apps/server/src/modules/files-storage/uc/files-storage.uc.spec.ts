@@ -9,13 +9,10 @@ import { FileRecordRepo } from '@shared/repo';
 import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-
-import { NotFoundException } from '@nestjs/common';
 import {
 	DownloadFileParams,
 	FileRecordParams,
 	SingleFileParams,
-	CopyFilesOfParentParams,
 	CopyFileParams,
 } from '../controller/dto/file-storage.params';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -492,7 +489,7 @@ describe('FilesStorageUC', () => {
 
 	describe('copyFilesOfParent()', () => {
 		let sourceParentParams: FileRecordParams;
-		let copyFilesParams: CopyFilesOfParentParams;
+		let copyFilesParams: CopyFileParams;
 		const targetParentId: EntityId = new ObjectId().toHexString();
 
 		beforeEach(() => {
@@ -507,6 +504,7 @@ describe('FilesStorageUC', () => {
 					parentId: targetParentId,
 					parentType: FileRecordParentType.Task,
 				},
+				fileNamePrefix: 'copy from',
 			};
 			fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
 			storageClient.copy.mockResolvedValue([]);
@@ -563,6 +561,21 @@ describe('FilesStorageUC', () => {
 				const [fileRecordsRes] = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
 				expect(fileRecordsRes).toEqual(
 					expect.arrayContaining([expect.objectContaining({ parentType: FileRecordParentType.Task })])
+				);
+			});
+
+			it('should return files response with same parentId and filename prefix', async () => {
+				copyFilesParams = {
+					target: {
+						schoolId,
+						parentId: userId,
+						parentType: FileRecordParentType.User,
+					},
+					fileNamePrefix: 'copy from',
+				};
+				const [fileRecordsRes] = await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+				expect(fileRecordsRes).toEqual(
+					expect.arrayContaining([expect.objectContaining({ name: 'copy from text.txt' })])
 				);
 			});
 		});
@@ -642,6 +655,20 @@ describe('FilesStorageUC', () => {
 			it('should return file response with parentType equal task', async () => {
 				const fileRecordsRes = await service.copyOneFile(userId, requestParams, copyFileParams);
 				expect(fileRecordsRes).toEqual(expect.objectContaining({ parentType: FileRecordParentType.Task }));
+			});
+
+			it('should return file response with same parentId and filename prefix', async () => {
+				copyFileParams = {
+					target: {
+						schoolId,
+						parentId: fileRecord.parentId,
+						parentType: fileRecord.parentType,
+					},
+					fileNamePrefix: 'copy from',
+				};
+
+				const fileRecordsRes = await service.copyOneFile(userId, requestParams, copyFileParams);
+				expect(fileRecordsRes).toEqual(expect.objectContaining({ name: 'copy from text.txt' }));
 			});
 		});
 	});

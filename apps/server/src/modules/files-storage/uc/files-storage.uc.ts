@@ -12,7 +12,6 @@ import { ILogger, Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileParams,
-	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
 	SingleFileParams,
@@ -233,7 +232,7 @@ export class FilesStorageUC {
 	async copyFilesOfParent(
 		userId: string,
 		params: FileRecordParams,
-		copyFilesParams: CopyFilesOfParentParams
+		copyFilesParams: CopyFileParams
 	): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
@@ -241,14 +240,14 @@ export class FilesStorageUC {
 			return [fileRecords, count];
 		}
 
-		const newRecords = await this.copy(userId, fileRecords, copyFilesParams.target);
+		const newRecords = await this.copy(userId, fileRecords, copyFilesParams);
 
 		return newRecords;
 	}
 
 	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
+		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams);
 
 		return newRecord[0];
 	}
@@ -256,15 +255,18 @@ export class FilesStorageUC {
 	private async copy(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
-		targetParams: FileRecordParams
+		copyFileParams: CopyFileParams
 	): Promise<Counted<FileRecord[]>> {
-		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
+		const { target, fileNamePrefix } = copyFileParams;
+
+		this.logger.debug({ action: 'copy', sourceFileRecords, target });
 		let newRecords: FileRecord[] = [];
 		const paths: Array<ICopyFiles> = [];
 
 		newRecords = await Promise.all(
 			sourceFileRecords.map(async (item) => {
-				const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+				const filename = item.parentId === target.parentId ? `${fileNamePrefix} ${item.name}` : item.name;
+				const entity = this.getNewFileRecord(filename, item.size, item.mimeType, target, userId);
 				entity.securityCheck = item.securityCheck;
 				await this.fileRecordRepo.save(entity);
 
