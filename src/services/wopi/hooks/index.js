@@ -3,7 +3,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { NotFound, BadRequest, Conflict } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
-const logger = require('../../../logger');
 const { mapPayload } = require('../../../hooks');
 
 /**
@@ -21,7 +20,6 @@ const { mapPayload } = require('../../../hooks');
 
 const wopiAuthentication = (hook) => {
 	hook.params.headers = hook.params.headers || {};
-	logger.debug(`[WOPI] wopiAuthentication params`, hook.params);
 	let jwt = (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
 	if (!jwt) {
 		throw new Error('access_token is missing!');
@@ -62,7 +60,6 @@ const retrieveWopiOverrideHeader = (hook) => {
  * INFORMATION: sometimes wopi-clients not implemented locks! Therefore this hook has to be disabled.
  */
 const checkLockHeader = (hook) => {
-	logger.debug(`[WOPI] checkLockHeader params`, hook.params);
 	if (!(hook.params.route || {}).fileId) {
 		throw new BadRequest('No fileId exist.');
 	}
@@ -75,7 +72,6 @@ const checkLockHeader = (hook) => {
 
 	const lockId = hook.params.headers['x-wopi-lock'];
 	const { fileId } = hook.params.route;
-	logger.debug(`[WOPI] checkLockHeader wopiAction "${wopiAction}" lockId "${lockId}" fileId "${fileId}"`);
 	// check if lockId is correct for the given file
 	return FileModel.findOne({ _id: fileId }).then((file) => {
 		if (!file) {
@@ -92,7 +88,6 @@ const checkLockHeader = (hook) => {
 };
 
 const setLockResponseHeader = (hook) => {
-	logger.debug(`[WOPI] setLockResponseHeader params`, hook.params);
 	hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
 	return hook;
 };
