@@ -103,7 +103,6 @@ module.exports = {
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
 				'@typescript-eslint/unbound-method': 'error',
-				'@typescript-eslint/no-non-null-assertion': 'warn',
 			},
 			overrides: [
 				{

@@ -286,4 +286,101 @@ describe('rooms usecase', () => {
 			expect(persistSpy).toHaveBeenCalledWith(board);
 		});
 	});
+
+	describe('reorderBoardElements', () => {
+		const setup = (shouldAuthorize: boolean) => {
+			const user = userFactory.buildWithId();
+			const room = courseFactory.buildWithId({ teachers: [user] });
+			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
+			const board = boardFactory.buildWithId({ course: room });
+			board.syncTasksFromList(tasks);
+			const reorderSpy = jest.spyOn(board, 'reorderElements');
+			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
+			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
+			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
+			const authorisationSpy = jest
+				.spyOn(authorisation, 'hasCourseWritePermission')
+				.mockImplementation(() => shouldAuthorize);
+			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			return { user, room, tasks, board, reorderSpy, userSpy, roomSpy, boardSpy, authorisationSpy, persistSpy };
+		};
+
+		it('should fetch the user', async () => {
+			const { user, room, tasks, userSpy } = setup(true);
+
+			await uc.reorderBoardElements(
+				room.id,
+				user.id,
+				tasks.map((task) => task.id)
+			);
+			expect(userSpy).toHaveBeenCalledWith(user.id);
+		});
+
+		it('should fetch the room', async () => {
+			const { user, room, tasks, roomSpy } = setup(true);
+
+			await uc.reorderBoardElements(
+				room.id,
+				user.id,
+				tasks.map((task) => task.id)
+			);
+			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
+		});
+
+		it('should fetch the board', async () => {
+			const { user, room, tasks, boardSpy } = setup(true);
+
+			await uc.reorderBoardElements(
+				room.id,
+				user.id,
+				tasks.map((task) => task.id)
+			);
+			expect(boardSpy).toHaveBeenCalledWith(room.id);
+		});
+
+		it('should reorder the board based on the passed list', async () => {
+			const { user, room, tasks, reorderSpy } = setup(true);
+
+			await uc.reorderBoardElements(
+				room.id,
+				user.id,
+				tasks.map((task) => task.id)
+			);
+			expect(reorderSpy).toHaveBeenCalledWith(tasks.map((task) => task.id));
+		});
+
+		it('should persist', async () => {
+			const { user, room, tasks, persistSpy, board } = setup(true);
+
+			await uc.reorderBoardElements(
+				room.id,
+				user.id,
+				tasks.map((task) => task.id)
+			);
+			expect(persistSpy).toHaveBeenCalledWith(board);
+		});
+
+		it('should have called authorisation service', async () => {
+			const { user, room, tasks, authorisationSpy } = setup(true);
+
+			await uc.reorderBoardElements(
+				room.id,
+				user.id,
+				tasks.map((task) => task.id)
+			);
+			expect(authorisationSpy).toHaveBeenCalledWith(user, room);
+		});
+
+		it('should throw when user is not authorized', async () => {
+			const { user, room, tasks } = setup(false);
+
+			const call = () =>
+				uc.reorderBoardElements(
+					room.id,
+					user.id,
+					tasks.map((task) => task.id)
+				);
+			await expect(call).rejects.toThrow(ForbiddenException);
+		});
+	});
 });

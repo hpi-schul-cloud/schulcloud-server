@@ -16,6 +16,7 @@ describe('Database Management Controller (e2e)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		orm = module.get(MikroORM);
+		await orm.getSchemaGenerator().clearDatabase();
 	});
 
 	afterAll(async () => {
@@ -26,6 +27,9 @@ describe('Database Management Controller (e2e)', () => {
 	describe('When post to database management route', () => {
 		it('should seed all collections', async () => {
 			await request(app.getHttpServer()).post(`/management/database/seed`).expect(200);
+		});
+		it('should seed all collections with sync indexes', async () => {
+			await request(app.getHttpServer()).get(`/management/database/seed?with-indexes=true`).expect(200);
 		});
 		it('should seed a collection', async () => {
 			await request(app.getHttpServer()).post(`/management/database/seed/${sampleCollectionName}`).expect(201);
@@ -38,6 +42,9 @@ describe('Database Management Controller (e2e)', () => {
 		});
 		it('should export a collection to filesystem', async () => {
 			await request(app.getHttpServer()).post(`/management/database/export/${sampleCollectionName}`).expect(201);
+		});
+		it('should export a collection to filesystem', async () => {
+			await request(app.getHttpServer()).post(`/management/database/sync-indexes`).expect(201);
 		});
 	});
 });

@@ -91,6 +91,159 @@ describe('rooms authorisation service', () => {
 		});
 	});
 
+	describe('hasTaskListPermission', () => {
+		describe('when task has no course', () => {
+			it('should be true for creator', () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user, course: undefined });
+
+				const result = service.hasTaskListPermission(user, task);
+				expect(result).toEqual(true);
+			});
+
+			it('should be false for other users', () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ course: undefined });
+
+				const result = service.hasTaskListPermission(user, task);
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when task belongs to course', () => {
+			it('should be false for user not in course', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const task = taskFactory.buildWithId({ course });
+
+				const result = service.hasTaskListPermission(user, task);
+				expect(result).toEqual(false);
+			});
+
+			describe('when task is private', () => {
+				it('should be true for creator', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ teachers: [user] });
+					const task = taskFactory.draft().buildWithId({ creator: user, course });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other teacher', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ teachers: [user] });
+					const task = taskFactory.draft().buildWithId({ course });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other substitutionTeacher', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+					const task = taskFactory.draft().buildWithId({ course });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be false for other student', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ students: [user] });
+					const task = taskFactory.draft().buildWithId({ course });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(false);
+				});
+			});
+
+			describe('when task is unpublished', () => {
+				it('should be true for creator', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ teachers: [user] });
+					const futureDate = Date.now() + 10000;
+					const task = taskFactory.buildWithId({ creator: user, course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other teacher', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ teachers: [user] });
+					const futureDate = Date.now() + 10000;
+					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other substitutionTeacher', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+					const futureDate = Date.now() + 10000;
+					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be false for other student', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ students: [user] });
+					const futureDate = Date.now() + 10000;
+					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(false);
+				});
+			});
+
+			describe('when task is published', () => {
+				it('should be true for creator', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ teachers: [user] });
+					const futureDate = Date.now() - 10000;
+					const task = taskFactory.buildWithId({ creator: user, course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other teacher', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ teachers: [user] });
+					const futureDate = Date.now() - 10000;
+					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other substitutionTeacher', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+					const futureDate = Date.now() - 10000;
+					const task = taskFactory.buildWithId({ course, availableDate: futureDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+
+				it('should be true for other student', () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId({ students: [user] });
+					const pastDate = Date.now() - 10000;
+					const task = taskFactory.buildWithId({ course, availableDate: pastDate });
+
+					const result = service.hasTaskListPermission(user, task);
+					expect(result).toEqual(true);
+				});
+			});
+		});
+	});
+
 	describe('hasTaskReadPermission', () => {
 		describe('when task has no course', () => {
 			it('should be true for creator', () => {
@@ -294,14 +447,14 @@ describe('rooms authorisation service', () => {
 		});
 	});
 
-	describe('hasLessonReadPermission', () => {
+	describe('hasLessonListPermission', () => {
 		describe('when lesson is hidden', () => {
 			it('should be true for teacher of course', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId({ teachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(true);
 			});
 
@@ -310,7 +463,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(true);
 			});
 
@@ -319,7 +472,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId({ students: [user] });
 				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(false);
 			});
 
@@ -328,7 +481,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: true });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(false);
 			});
 		});
@@ -339,7 +492,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId({ teachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(true);
 			});
 
@@ -348,7 +501,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(true);
 			});
 
@@ -357,7 +510,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId({ students: [user] });
 				const lesson = lessonFactory.buildWithId({ course });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(true);
 			});
 
@@ -366,7 +519,7 @@ describe('rooms authorisation service', () => {
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 
-				const result = service.hasLessonReadPermission(user, lesson);
+				const result = service.hasLessonListPermission(user, lesson);
 				expect(result).toEqual(false);
 			});
 		});

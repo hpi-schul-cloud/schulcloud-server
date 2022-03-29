@@ -1,9 +1,10 @@
-import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common/error';
+import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Account, EntityId, ICurrentUser, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
+import { InvalidOperationError } from '@shared/common/error/invalid-operation.error';
 import { PatchMyAccountParams } from '../controller/dto';
 
 type UserPreferences = {
@@ -18,10 +19,6 @@ export class AccountUc {
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService
 	) {}
-
-	static passwordPattern = new RegExp(
-		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
-	);
 
 	static emailPattern = new RegExp(
 		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
@@ -53,7 +50,6 @@ export class AccountUc {
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
-			this.checkPasswordStrength(params.passwordNew);
 			account.password = await this.calcPasswordHash(params.passwordNew);
 			updateAccount = true;
 		}
@@ -104,16 +100,6 @@ export class AccountUc {
 		}
 	}
 
-	// TODO direct endpoint routing?
-	/// this would not allow an administrator to change its own password without forcing a renewal
-	// async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
-	// 	if (currentUserId === targetUserId) {
-	// 		await this.changeMyTemporaryPassword(currentUserId, passwordNew, passwordNew);
-	// 	} else {
-	// 		await this.changePasswordForUser(currentUserId, targetUserId, passwordNew);
-	// 	}
-	// }
-
 	async changeMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
 			throw new InvalidOperationError('Password and confirm password do not match.');
@@ -130,8 +116,6 @@ export class AccountUc {
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
 			throw new InvalidOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
-
-		this.checkPasswordStrength(password);
 
 		let targetAccount: Account;
 		try {
@@ -163,8 +147,6 @@ export class AccountUc {
 	}
 
 	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<void> {
-		this.checkPasswordStrength(passwordNew);
-
 		// load user data
 		let targetAccount: Account;
 		let currentUser: User;
@@ -186,18 +168,19 @@ export class AccountUc {
 			throw new ForbiddenException("No permission to change this user's password");
 		}
 
-		targetAccount.password = await this.calcPasswordHash(passwordNew);
-		await this.accountRepo.update(targetAccount);
 		// set user must change password on next login
-
 		try {
 			targetUser.forcePasswordChange = true;
 			targetUser = await this.userRepo.update(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
-
-		// return 'this.accountRepo.update(account);';
+		try {
+			targetAccount.password = await this.calcPasswordHash(passwordNew);
+			await this.accountRepo.update(targetAccount);
+		} catch (err) {
+			throw new EntityNotFoundError('Account');
+		}
 	}
 
 	private hasRole(user: User, roleName: string) {
@@ -248,18 +231,8 @@ export class AccountUc {
 		return bcrypt.hash(password, 10);
 	}
 
-	private checkPassword(enteredPassword: string, hashedAccountPassword: string): Promise<boolean> {
+	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
-	}
-
-	// TODO password helper is used here schulcloud-server\src\services\account\hooks\index.js
-	// TODO refactor/remove schulcloud-server\test\helper\passwordHelpers.test.js
-	// TODO remove schulcloud-server\src\utils\passwordHelpers.js
-	private checkPasswordStrength(password: string) {
-		// only check result if also a password was really given
-		if (!password || !AccountUc.passwordPattern.test(password)) {
-			throw new ValidationError('Dein Passwort stimmt mit dem Pattern nicht überein.');
-		}
 	}
 
 	// TODO remove in src\utils\constants.js

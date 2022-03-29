@@ -1,15 +1,25 @@
-import { CreateBucketCommand, GetObjectCommand, S3Client, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import {
+	CreateBucketCommand,
+	GetObjectCommand,
+	S3Client,
+	ServiceOutputTypes,
+	CopyObjectCommand,
+	DeleteObjectsCommand,
+	CopyObjectCommandOutput,
+} from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
-import { ILogger, Logger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { S3Config } from '../interface/config';
-import { IFile } from '../interface/file';
-import { IGetFileResponse, IStorageClient } from '../interface/storage-client';
+
+import { ILogger, Logger } from '@src/core/logger';
+
+import { S3Config, IGetFileResponse, IStorageClient, IFile, ICopyFiles } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
 	private logger: ILogger;
+
+	private deletedFolderName = 'trash';
 
 	constructor(@Inject('S3_Client') readonly client: S3Client, @Inject('S3_Config') readonly config: S3Config) {
 		this.logger = new Logger('S3Client');
@@ -32,7 +42,9 @@ export class S3ClientAdapter implements IStorageClient {
 			Bucket: this.config.bucket,
 			Key: path,
 		});
+
 		const data = await this.client.send(req);
+
 		return {
 			data: data.Body as Readable,
 			contentType: data.ContentType,
@@ -61,9 +73,69 @@ export class S3ClientAdapter implements IStorageClient {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (error.Code && error.Code === 'NoSuchBucket') {
 				await this.createBucket();
+
 				return this.create(path, file);
 			}
 			throw error;
 		}
+	}
+
+	public async delete(paths: string[]): Promise<CopyObjectCommandOutput[]> {
+		this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+
+		const copyPaths = paths.map((path) => {
+			return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
+		});
+
+		const result = await this.copy(copyPaths);
+
+		// try catch with rollback is not needed,
+		// because the second copyRequest try override existing files in trash folder
+		await this.remove(paths);
+
+		return result;
+	}
+
+	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
+		this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+
+		const copyPaths = paths.map((path) => {
+			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
+		});
+
+		const result = await this.copy(copyPaths);
+
+		// try catch with rollback is not needed,
+		// because the second copyRequest try override existing files in trash folder
+		const deleteObjects = copyPaths.map((p) => p.sourcePath);
+		await this.remove(deleteObjects);
+
+		return result;
+	}
+
+	async copy(paths: ICopyFiles[]) {
+		const copyRequests = paths.map(async (path) => {
+			const req = new CopyObjectCommand({
+				Bucket: this.config.bucket,
+				CopySource: `${this.config.bucket}/${path.sourcePath}`,
+				Key: `${path.targetPath}`,
+			});
+
+			const data = await this.client.send(req);
+
+			return data;
+		});
+
+		return Promise.all(copyRequests);
+	}
+
+	private async remove(paths: string[]) {
+		const pathObjects = paths.map((p) => ({ Key: p }));
+		const req = new DeleteObjectsCommand({
+			Bucket: this.config.bucket,
+			Delete: { Objects: pathObjects },
+		});
+
+		return this.client.send(req);
 	}
 }

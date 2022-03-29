@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
+import { passwordPattern } from './password-pattern';
 
 export class PatchMyAccountParams {
 	@IsString()
@@ -12,6 +13,7 @@ export class PatchMyAccountParams {
 
 	@IsString()
 	@IsOptional()
+	@Matches(passwordPattern)
 	@ApiProperty({
 		description: 'The new password for the current user.',
 		required: false,

@@ -1,12 +1,14 @@
-import { Body, Controller, Param, Patch, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+
+import { Body, Controller, Param, Patch, Put } from '@nestjs/common';
 import { ICurrentUser } from '@shared/domain';
+
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { Password, PatchMyAccountParams, PutMyPasswordParams } from './dto';
+import { ChangePasswordParam, PatchMyAccountParams, PutMyPasswordParams } from './dto';
 
-@ApiTags('Account')
+@ApiTags('account')
 @Authenticate('jwt')
 @Controller('account')
 export class AccountController {
@@ -16,7 +18,7 @@ export class AccountController {
 	async changePassword(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) userId: string,
-		@Body() { password }: Password
+		@Body() { password }: ChangePasswordParam
 	): Promise<void> {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}

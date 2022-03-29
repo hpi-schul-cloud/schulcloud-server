@@ -9,14 +9,13 @@ const accountSchema = new Schema(
 			type: String,
 			required: true,
 			lowercase: true,
-			index: true,
 		},
 		password: { type: String },
 
 		token: { type: String },
 		credentialHash: { type: String },
 
-		userId: { type: Schema.Types.ObjectId, ref: 'user', index: true },
+		userId: { type: Schema.Types.ObjectId, ref: 'user' },
 		systemId: { type: Schema.Types.ObjectId, ref: 'system' }, // if systemId => SSO
 
 		lasttriedFailedLogin: { type: Date, default: 0 },
@@ -27,8 +26,6 @@ const accountSchema = new Schema(
 		timestamps: true,
 	}
 );
-
-accountSchema.index({ userId: 1, systemId: 1 }); // for LDAP sync
 
 enableAuditLog(accountSchema);
 
