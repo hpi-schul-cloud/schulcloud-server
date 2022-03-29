@@ -10,7 +10,7 @@ export interface IGetFileResponse {
 
 export interface ICopyFiles {
 	sourcePath: string;
-	targetPaths: string;
+	targetPath: string;
 }
 
 export interface IStorageClient {
