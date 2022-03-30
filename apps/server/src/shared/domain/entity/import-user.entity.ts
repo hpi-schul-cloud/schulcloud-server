@@ -32,6 +32,7 @@ export enum RoleName {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
 	ADMIN = 'administrator',
+	SUPERHERO = 'superhero',
 }
 
 @Entity({ tableName: 'importusers' })

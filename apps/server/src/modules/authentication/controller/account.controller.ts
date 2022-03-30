@@ -1,16 +1,30 @@
-import { Body, Controller, Param, Patch, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Put, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { Password, PatchMyAccountParams, PutMyPasswordParams } from './dto';
+import {
+	AccountsByUsernameListResponse,
+	AccountsByUsernameQuery,
+	Password,
+	PatchMyAccountParams,
+	PutMyPasswordParams,
+} from './dto';
 
 @ApiTags('Account')
 @Authenticate('jwt')
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
+
+	@Get('search')
+	async findAccountsByUsername(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() query: AccountsByUsernameQuery
+	): Promise<AccountsByUsernameListResponse> {
+		return this.accountUc.searchAccountsByUsername(currentUser, query.username, query.skip, query.limit);
+	}
 
 	@Patch(':id/pw')
 	async changePassword(

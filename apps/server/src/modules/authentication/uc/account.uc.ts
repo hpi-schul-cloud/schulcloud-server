@@ -1,10 +1,11 @@
 import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Account, EntityId, ICurrentUser, PermissionService, User } from '@shared/domain';
+import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
-import { PatchMyAccountParams } from '../controller/dto';
+import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
+import { AccountsByUsernameListResponse, AccountsByUsernameResponse, PatchMyAccountParams } from '../controller/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -27,6 +28,32 @@ export class AccountUc {
 		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 	);
 
+	async searchAccountsByUsername(
+		currentUser: ICurrentUser,
+		searchTerm: string,
+		skip = 0,
+		limit = 10
+	): Promise<AccountsByUsernameListResponse> {
+		if (searchTerm === '') {
+			throw new InvalidArgumentError('Search term should not be empty');
+		}
+		if (skip < 0) {
+			throw new InvalidArgumentError('Skip is less than 0.');
+		}
+		if (limit < 1) {
+			throw new InvalidArgumentError('Limit is less than 0.');
+		}
+		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+			throw new InvalidOperationError('Current user has no rights to search for accounts.');
+		}
+
+		const accounts = await this.accountRepo.findByUsername(searchTerm);
+		// Todo sort by username ascending
+		const accountList = accounts.map((account) => new AccountsByUsernameResponse(account));
+
+		throw new Error();
+	}
+
 	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
@@ -45,7 +72,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser.userId);
+			user = await this.userRepo.findById(currentUser.userId, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}

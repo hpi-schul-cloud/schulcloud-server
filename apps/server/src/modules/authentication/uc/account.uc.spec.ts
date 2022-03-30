@@ -6,6 +6,7 @@ import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User 
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
@@ -584,6 +585,35 @@ describe('AccountUc', () => {
 			await expect(
 				accountUc.changeMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
 			).rejects.toThrow(EntityNotFoundError);
+		});
+	});
+
+	describe('searchAccountsByUsername', () => {
+		it('should return an empty list, if no username matches the search term', async () => {
+			const accounts = await accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld');
+			expect(accounts.data).toBe([]);
+		});
+		it('should return one or more accounts, if on or more usernames match the search term', async () => {
+			const accounts = await accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld');
+			expect(accounts.data).toBe([]);
+		});
+		it('should throw, if search term is empty', async () => {
+			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, '')).rejects.toThrow(InvalidArgumentError);
+		});
+		it('should throw, if skip is smaller than 0', async () => {
+			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld', -1)).rejects.toThrow(
+				InvalidArgumentError
+			);
+		});
+		it('should throw, if limit is smaller than 1', async () => {
+			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld', 0, 0)).rejects.toThrow(
+				InvalidArgumentError
+			);
+		});
+		it('should throw, if offset is to big', async () => {
+			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld', 1000)).rejects.toThrow(
+				InvalidArgumentError
+			);
 		});
 	});
 });
