@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Put, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
 import {
+	AccountByIdBody,
+	AccountByIdParams,
+	AccountByIdResponse,
 	AccountsByUsernameListResponse,
 	AccountsByUsernameQuery,
 	Password,
@@ -24,6 +27,28 @@ export class AccountController {
 		@Query() query: AccountsByUsernameQuery
 	): Promise<AccountsByUsernameListResponse> {
 		return this.accountUc.searchAccountsByUsername(currentUser, query.username, query.skip, query.limit);
+	}
+
+	@Get(':id')
+	async findAccountById(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: AccountByIdParams
+	): Promise<AccountByIdResponse> {
+		return this.accountUc.findAccountById(currentUser, params);
+	}
+
+	@Patch(':id')
+	async updateAccountById(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: AccountByIdParams,
+		@Body() body: AccountByIdBody
+	): Promise<void> {
+		await this.accountUc.updateAccountById(currentUser, params, body);
+	}
+
+	@Delete(':id')
+	async deleteAccountById(@CurrentUser() currentUser: ICurrentUser, @Param() params: AccountByIdParams): Promise<void> {
+		await this.accountUc.deleteAccountById(currentUser, params);
 	}
 
 	@Patch(':id/pw')

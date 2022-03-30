@@ -5,7 +5,16 @@ import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
 import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
-import { AccountsByUsernameListResponse, AccountsByUsernameResponse, PatchMyAccountParams } from '../controller/dto';
+import { wrap } from '@mikro-orm/core';
+import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
+import {
+	AccountByIdBody,
+	AccountByIdParams,
+	AccountByIdResponse,
+	AccountsByUsernameListResponse,
+	AccountsByUsernameResponse,
+	PatchMyAccountParams,
+} from '../controller/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -44,7 +53,7 @@ export class AccountUc {
 			throw new InvalidArgumentError('Limit is less than 0.');
 		}
 		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
-			throw new InvalidOperationError('Current user has no rights to search for accounts.');
+			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
 		}
 
 		const accounts = await this.accountRepo.findByUsername(searchTerm);
@@ -52,6 +61,35 @@ export class AccountUc {
 		const accountList = accounts.map((account) => new AccountsByUsernameResponse(account));
 
 		throw new Error();
+	}
+
+	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
+		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
+		}
+		const account = await this.accountRepo.findById(params.id);
+		return new AccountByIdResponse(account);
+	}
+
+	async updateAccountById(currentUser: ICurrentUser, params: AccountByIdParams, body: AccountByIdBody): Promise<void> {
+		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+			throw new UnauthorizedError('Current user is not authorized to update an account.');
+		}
+		const account = await this.accountRepo.findById(params.id);
+		wrap(account).assign(body);
+		await this.accountRepo.update(account);
+	}
+
+	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<void> {
+		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+			throw new UnauthorizedError('Current user is not authorized to delete an account.');
+		}
+		await this.accountRepo.delete(params.id);
+	}
+
+	private async hasRoles(currentUser: ICurrentUser, ...roleNames: RoleName[]): Promise<boolean> {
+		const user = await this.userRepo.findById(currentUser.userId, true);
+		const userRoleNames = user.roles.map((role) => role.name);
 	}
 
 	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
