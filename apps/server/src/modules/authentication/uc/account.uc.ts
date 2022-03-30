@@ -64,7 +64,7 @@ export class AccountUc {
 	}
 
 	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
-		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
 		}
 		const account = await this.accountRepo.findById(params.id);
@@ -72,7 +72,7 @@ export class AccountUc {
 	}
 
 	async updateAccountById(currentUser: ICurrentUser, params: AccountByIdParams, body: AccountByIdBody): Promise<void> {
-		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to update an account.');
 		}
 		const account = await this.accountRepo.findById(params.id);
@@ -81,15 +81,10 @@ export class AccountUc {
 	}
 
 	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<void> {
-		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to delete an account.');
 		}
 		await this.accountRepo.delete(params.id);
-	}
-
-	private async hasRoles(currentUser: ICurrentUser, ...roleNames: RoleName[]): Promise<boolean> {
-		const user = await this.userRepo.findById(currentUser.userId, true);
-		const userRoleNames = user.roles.map((role) => role.name);
 	}
 
 	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
@@ -269,6 +264,11 @@ export class AccountUc {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;
 		});
+	}
+
+	private async isSuperhero(currentUser: ICurrentUser): Promise<boolean> {
+		const user = await this.userRepo.findById(currentUser.userId, true);
+		return user.roles.getItems().some((role) => role.name === RoleName.SUPERHERO);
 	}
 
 	private isDemoUser(currentUser: User) {
