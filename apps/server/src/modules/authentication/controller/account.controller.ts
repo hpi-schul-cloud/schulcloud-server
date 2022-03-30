@@ -42,13 +42,16 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBody
-	): Promise<void> {
-		await this.accountUc.updateAccountById(currentUser, params, body);
+	): Promise<AccountByIdResponse> {
+		return this.accountUc.updateAccountById(currentUser, params, body);
 	}
 
 	@Delete(':id')
-	async deleteAccountById(@CurrentUser() currentUser: ICurrentUser, @Param() params: AccountByIdParams): Promise<void> {
-		await this.accountUc.deleteAccountById(currentUser, params);
+	async deleteAccountById(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: AccountByIdParams
+	): Promise<AccountByIdResponse> {
+		return this.accountUc.deleteAccountById(currentUser, params);
 	}
 
 	@Patch(':id/pw')

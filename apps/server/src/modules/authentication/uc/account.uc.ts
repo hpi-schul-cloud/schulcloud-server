@@ -52,15 +52,19 @@ export class AccountUc {
 		if (limit < 1) {
 			throw new InvalidArgumentError('Limit is less than 0.');
 		}
-		if (!currentUser.roles.includes(RoleName.SUPERHERO)) {
+		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
 		}
 
 		const accounts = await this.accountRepo.findByUsername(searchTerm);
-		// Todo sort by username ascending
-		const accountList = accounts.map((account) => new AccountsByUsernameResponse(account));
+		// Todo slice allows nearly all values for start and end.
+		// How do we want to design our api?
+		const accountList = accounts
+			.map((account) => new AccountsByUsernameResponse(account))
+			.sort((a, b) => (a.username > b.username ? 1 : -1))
+			.slice(skip, skip + limit);
 
-		throw new Error();
+		return new AccountsByUsernameListResponse(accountList, accountList.length, skip, limit);
 	}
 
 	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
@@ -71,20 +75,27 @@ export class AccountUc {
 		return new AccountByIdResponse(account);
 	}
 
-	async updateAccountById(currentUser: ICurrentUser, params: AccountByIdParams, body: AccountByIdBody): Promise<void> {
+	async updateAccountById(
+		currentUser: ICurrentUser,
+		params: AccountByIdParams,
+		body: AccountByIdBody
+	): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to update an account.');
 		}
 		const account = await this.accountRepo.findById(params.id);
+		// Todo super hero dashboard can change the password
 		wrap(account).assign(body);
 		await this.accountRepo.update(account);
+		return new AccountByIdResponse(account);
 	}
 
-	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<void> {
+	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to delete an account.');
 		}
-		await this.accountRepo.delete(params.id);
+		const account = await this.accountRepo.delete(params.id);
+		return new AccountByIdResponse(account);
 	}
 
 	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
