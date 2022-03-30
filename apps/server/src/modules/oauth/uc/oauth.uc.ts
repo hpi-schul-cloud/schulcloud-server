@@ -9,6 +9,9 @@ import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.pro
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
 import QueryString from 'qs';
+import { readFileSync } from 'fs';
+import * as jwtValidationService from 'jsonwebtoken';
+import { join } from 'path';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -36,6 +39,8 @@ export class OauthUc {
 		const code: string = this.checkAuthorizationCode(query);
 		// get the Tokens using the authorization code
 		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
+		// validate id_token
+		const uuidTest = this.validateToken(queryToken.id_token);
 		// extract the uuid from the token
 		const uuid = this.decodeToken(queryToken.id_token);
 		// get the user using the uuid
@@ -87,6 +92,35 @@ export class OauthUc {
 
 		const responseToken = await lastValueFrom(responseTokenObservable);
 		return responseToken.data;
+	}
+
+	validateToken(token: string) {
+		const publicKey = readFileSync(join('keys', '.public.key.pem'));
+		const verifiedJwt = jwtValidationService.verify(token, publicKey, {
+			issuer: 'https://iserv.n21.dbildungscloud.de',
+			algorithms: ['RS256'],
+			audience: 'nutzeEnv',
+		});
+
+		console.log(verifiedJwt);
+		// const client = jwksClient({ jwksUri: 'https://iserv.n21.dbildungscloud.de/iserv/auth/public/jwk' });
+
+		// function getKey(header, callback) {
+		// 	client.getSigningKey(header.kid, function (err, key) {
+		// 		const signingKey = key.publicKey || key.rsaPublicKey;
+
+		// 		callback(null, signingKey);
+		// 	});
+		// }
+
+		// // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		// const verifiedJwt = jwt.verify(token, getKey, function (err, decoded) {
+		// 	console.log(decoded);
+		// });
+
+		// if (!verifiedJwt) throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
+		// const { uuidTest } = verifiedJwt;
+		// return uuidTest;
 	}
 
 	// 2- decode the Token to extract the UUID
