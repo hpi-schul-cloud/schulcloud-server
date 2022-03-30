@@ -93,7 +93,12 @@ describe('AccountUc', () => {
 							if (account) {
 								return Promise.resolve([account]);
 							}
-
+							if (username === 'not@available.username') {
+								return Promise.resolve([mockExternalUserAccount]);
+							}
+							if (username === 'multiple@account.username') {
+								return Promise.resolve(Array.from(mockAccountUsernameMap.values()));
+							}
 							return Promise.resolve([]);
 						},
 					},
@@ -113,6 +118,12 @@ describe('AccountUc', () => {
 
 							if (user) {
 								return Promise.resolve([user]);
+							}
+							if (email === 'not@available.email') {
+								return Promise.resolve([mockExternalUser]);
+							}
+							if (email === 'multiple@user.email') {
+								return Promise.resolve(Array.from(mockUserMailMap.values()));
 							}
 							return Promise.resolve([]);
 						},
@@ -443,6 +454,31 @@ describe('AccountUc', () => {
 				accountUc.updateMyAccount(mockStudentUser.id, {
 					passwordOld: defaultPassword,
 					email: mockAdminUser.email,
+				})
+			).rejects.toThrow(ValidationError);
+			// other criteria branching
+			await expect(
+				accountUc.updateMyAccount(mockStudentUser.id, {
+					passwordOld: defaultPassword,
+					email: 'multiple@user.email',
+				})
+			).rejects.toThrow(ValidationError);
+			await expect(
+				accountUc.updateMyAccount(mockStudentUser.id, {
+					passwordOld: defaultPassword,
+					email: 'multiple@account.username',
+				})
+			).rejects.toThrow(ValidationError);
+			await expect(
+				accountUc.updateMyAccount(mockStudentUser.id, {
+					passwordOld: defaultPassword,
+					email: 'not@available.email',
+				})
+			).rejects.toThrow(ValidationError);
+			await expect(
+				accountUc.updateMyAccount(mockStudentUser.id, {
+					passwordOld: defaultPassword,
+					email: 'not@available.username',
 				})
 			).rejects.toThrow(ValidationError);
 		});
