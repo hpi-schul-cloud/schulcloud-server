@@ -33,26 +33,14 @@ export class OauthUc {
 
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		const code: string = this.checkAuthorizationCode(query);
-		this.logger.log('Authorization step done.');
 
 		const system: System = await this.systemRepo.findById(systemId);
-		const keys = Object.keys(system.oauthConfig);
-		for (let i = 0; i < keys.length; i += 1) {
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			this.logger.log(`${keys[i]}: ${system.oauthConfig[keys[i]]}`);
-		}
-		this.logger.log('System step done.');
 
-		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
-		this.logger.log('request token step done.');
+		const queryToken: OauthTokenResponse = await this.requestToken(code, system);
 
 		const decodedToken: IJWT = await this.validateToken(queryToken.id_token, system);
-		this.logger.log(decodedToken);
-		this.logger.log('validate token step done.');
 
 		const uuid: string = this.extractUUID(decodedToken);
-		this.logger.log(uuid);
-		this.logger.log('extract uuid step done.');
 
 		const user: User = await this.findUserById(uuid, systemId);
 
@@ -80,22 +68,13 @@ export class OauthUc {
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
-	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
-		const system: System = await this.systemRepo.findById(systemId);
-		this.logger.log('inside the requestToken method:');
+	async requestToken(code: string, system: System): Promise<OauthTokenResponse> {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
-		this.logger.log(`decrypted client secret: ${decryptedClientSecret}`);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			system,
 			decryptedClientSecret,
 			code
 		);
-		const keys = Object.keys(tokenRequestPayload.tokenRequestParams);
-		for (let i = 0; i < keys.length; i += 1) {
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			this.logger.log(`${keys[i]}: ${tokenRequestPayload.tokenRequestParams[keys[i]]}`);
-		}
-		this.logger.log('mapping succesful');
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
 			tokenRequestPayload.tokenEndpoint,
 			QueryString.stringify(tokenRequestPayload.tokenRequestParams),
@@ -107,9 +86,6 @@ export class OauthUc {
 			}
 		);
 		const responseToken = await lastValueFrom(responseTokenObservable);
-		this.logger.log('post successful');
-		this.logger.log('responseToken.data');
-		this.logger.log(responseToken.data);
 		return responseToken.data;
 	}
 
