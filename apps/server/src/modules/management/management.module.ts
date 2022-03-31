@@ -1,17 +1,12 @@
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 
 import { ALL_ENTITIES } from '@shared/domain';
 import { FileSystemModule } from '@shared/infra/file-system';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
-import {
-	MongoMemoryDatabaseModule,
-	DatabaseManagementService,
-	DatabaseManagementModule,
-	defaultMikroOrmOptions,
-} from '@shared/infra/database';
+import { MongoMemoryDatabaseModule, DatabaseManagementService, DatabaseManagementModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 
 import { DatabaseManagementController } from './controller/database-management.controller';
@@ -33,10 +28,18 @@ const providers = [
 
 const controllers = [DatabaseManagementController];
 
+export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
+	},
+};
+
 @Module({
 	imports: [
 		...imports,
 		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
 			// TODO repeats server module definitions
 			type: 'mongo',
 			clientUrl: DB_URL,

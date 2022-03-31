@@ -1,18 +1,17 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
-
 import { FileRecordRepo } from '@shared/repo';
 import { AuthModule } from '@src/modules/authentication/auth.module';
-import { MongoMemoryDatabaseModule, defaultMikroOrmOptions } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { CoreModule } from '@src/core';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { ALL_ENTITIES } from '@shared/domain';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
-
 import { FilesStorageController } from './controller/files-storage.controller';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { S3Config } from './interface/config';
@@ -69,6 +68,13 @@ const providers = [
 ];
 
 const controllers = [FilesStorageController, FileSecurityController];
+
+export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
+	},
+};
 
 @Module({
 	imports: [

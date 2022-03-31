@@ -1,7 +1,5 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-
 import { MailModule } from '@shared/infra/mail';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { LearnroomModule } from '@src/modules/learnroom';
@@ -11,10 +9,12 @@ import { UserModule } from '@src/modules/user';
 import { NewsModule } from '@src/modules/news';
 import { FilesModule } from '@src/modules/files';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule, defaultMikroOrmOptions } from '@shared/infra/database';
-import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { ALL_ENTITIES } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { ImportUserModule } from './modules/user-import/user-import.module';
@@ -43,6 +43,13 @@ const serverModules = [
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
 ];
+
+export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
+	},
+};
 
 /**
  * Server Module used for production
