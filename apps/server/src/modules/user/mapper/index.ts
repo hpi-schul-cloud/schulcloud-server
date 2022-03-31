@@ -1,1 +1,1 @@
-export * from './ResolvedUser.mapper';
+export * from './resolved-user.mapper';
