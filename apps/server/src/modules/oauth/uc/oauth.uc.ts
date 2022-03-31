@@ -101,6 +101,14 @@ export class OauthUc {
 			}
 		);
 		this.logger.log('post successful');
+		try {
+			const responseToken = await lastValueFrom(responseTokenObservable);
+		} catch (error) {
+			this.logger.error(error);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			this.logger.error(error.message);
+		}
+		this.logger.log('Try Catch finished');
 		const responseToken = await lastValueFrom(responseTokenObservable);
 		this.logger.log('responseToken.data');
 		this.logger.log(responseToken.data);
