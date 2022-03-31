@@ -6,7 +6,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { AccountUc } from '../uc/account.uc';
-import { ChangePasswordParam, PatchMyAccountParams, PutMyPasswordParams } from './dto';
+import { ChangePasswordParams, PatchMyAccountParams, PutMyPasswordParams } from './dto';
 
 @ApiTags('account')
 @Authenticate('jwt')
@@ -18,7 +18,7 @@ export class AccountController {
 	async changePassword(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) userId: string,
-		@Body() { password }: ChangePasswordParam
+		@Body() { password }: ChangePasswordParams
 	): Promise<void> {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}

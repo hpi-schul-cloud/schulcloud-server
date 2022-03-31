@@ -7,7 +7,7 @@ import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { roleFactory, schoolFactory, userFactory, mapUserToCurrentUser, accountFactory } from '@shared/testing';
 import {
-	ChangePasswordParam,
+	ChangePasswordParams,
 	PatchMyAccountParams,
 	PutMyPasswordParams,
 } from '@src/modules/authentication/controller/dto';
@@ -89,7 +89,7 @@ describe('Account Controller (e2e)', () => {
 	describe('[PATCH] :id/pw', () => {
 		it(`should update a user's password as administrator`, async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const params: ChangePasswordParam = { password: 'Valid12$' };
+			const params: ChangePasswordParams = { password: 'Valid12$' };
 			await request(app.getHttpServer()) //
 				.patch(`${basePath}/${teacherAccount.user.id}/pw`)
 				.send(params)
@@ -99,7 +99,7 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject if password is weak', async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const params: ChangePasswordParam = { password: 'weak' };
+			const params: ChangePasswordParams = { password: 'weak' };
 			await request(app.getHttpServer()) //
 				.patch(`${basePath}/${teacherAccount.user.id}/pw`)
 				.send(params)
