@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { MikroORM } from '@mikro-orm/core';
-import { ManagementTestModule } from '../../../src/modules/management/management.module';
+import { ManagementTestModule } from '@src/modules/management/management.module';
 
 describe('Database Management Controller (e2e)', () => {
 	let app: INestApplication;
