@@ -159,4 +159,17 @@ describe('BaseRepo', () => {
 			expect(testEntity.id).not.toBeNull();
 		});
 	});
+
+	describe('getObjectReference', () => {
+		it('should return a valid reference', async () => {
+			const testEntity = new TestEntity();
+			repo.persist(testEntity);
+
+			await repo.flush();
+
+			const reference = repo.getObjectReference(TestEntity, testEntity.id);
+
+			expect(reference).toBeDefined();
+		});
+	});
 });
