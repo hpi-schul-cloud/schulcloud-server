@@ -43,7 +43,7 @@ export class OauthUc {
 		}
 		this.logger.log('System step done.');
 
-		const queryToken: OauthTokenResponse = await this.requestToken(code, system);
+		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
 		this.logger.log('request token step done.');
 
 		const decodedToken: IJWT = await this.validateToken(queryToken.id_token, system);
@@ -80,7 +80,8 @@ export class OauthUc {
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
-	async requestToken(code: string, system: System): Promise<OauthTokenResponse> {
+	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
+		const system: System = await this.systemRepo.findById(systemId);
 		this.logger.log('inside the requestToken method:');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
 		this.logger.log(`decrypted client secret: ${decryptedClientSecret}`);
@@ -89,6 +90,11 @@ export class OauthUc {
 			decryptedClientSecret,
 			code
 		);
+		const keys = Object.keys(tokenRequestPayload.tokenRequestParams);
+		for (let i = 0; i < keys.length; i += 1) {
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			this.logger.log(`${keys[i]}: ${tokenRequestPayload.tokenRequestParams[keys[i]]}`);
+		}
 		this.logger.log('mapping succesful');
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
 			tokenRequestPayload.tokenEndpoint,
@@ -100,16 +106,8 @@ export class OauthUc {
 				},
 			}
 		);
-		this.logger.log('post successful');
-		try {
-			const responseToken = await lastValueFrom(responseTokenObservable);
-		} catch (error) {
-			this.logger.error(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			this.logger.error(error.message);
-		}
-		this.logger.log('Try Catch finished');
 		const responseToken = await lastValueFrom(responseTokenObservable);
+		this.logger.log('post successful');
 		this.logger.log('responseToken.data');
 		this.logger.log(responseToken.data);
 		return responseToken.data;
