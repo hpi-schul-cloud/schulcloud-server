@@ -33,14 +33,22 @@ export class OauthUc {
 
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		const code: string = this.checkAuthorizationCode(query);
+		console.log('Authorization step done.');
 
 		const system: System = await this.systemRepo.findById(systemId);
+		console.log(system);
+		console.log('System step done.');
 
 		const queryToken: OauthTokenResponse = await this.requestToken(code, system);
+		console.log('request token step done.');
 
 		const decodedToken: IJWT = await this.validateToken(queryToken.id_token, system);
+		console.log(decodedToken);
+		console.log('validate token step done.');
 
 		const uuid: string = this.extractUUID(decodedToken);
+		console.log(uuid);
+		console.log('extract uuid step done.');
 
 		const user: User = await this.findUserById(uuid, systemId);
 
@@ -93,6 +101,7 @@ export class OauthUc {
 
 	async _getPublicKey(system: System): Promise<string> {
 		const client: JwksClient = jwksClient({
+			cache: true,
 			jwksUri: system.oauthConfig.jwksEndpoint,
 		});
 		const key: SigningKey = await client.getSigningKey();
