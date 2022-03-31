@@ -81,13 +81,15 @@ export class OauthUc {
 	}
 
 	async requestToken(code: string, system: System): Promise<OauthTokenResponse> {
+		this.logger.log('inside the requestToken method:');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
+		this.logger.log(`decrypted client secret: ${decryptedClientSecret}`);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			system,
 			decryptedClientSecret,
 			code
 		);
-
+		this.logger.log('mapping succesful');
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
 			tokenRequestPayload.tokenEndpoint,
 			QueryString.stringify(tokenRequestPayload.tokenRequestParams),
@@ -98,8 +100,10 @@ export class OauthUc {
 				},
 			}
 		);
-
+		this.logger.log('post successful');
 		const responseToken = await lastValueFrom(responseTokenObservable);
+		this.logger.log('responseToken.data');
+		this.logger.log(responseToken.data);
 		return responseToken.data;
 	}
 
