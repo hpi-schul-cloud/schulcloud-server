@@ -10,6 +10,11 @@ import { Counted, EntityId, CourseGroup, Submission } from '@shared/domain';
 export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	async findById(id: EntityId): Promise<Submission> {
+		const submission = await this.em.findOneOrFail(Submission, { id });
+		return submission;
+	}
+
 	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this.em.findAndCount(Submission, {
 			task: { $in: taskIds },
@@ -27,5 +32,13 @@ export class SubmissionRepo {
 		const courseGroupsOfUser = await this.em.find(CourseGroup, { students: userId });
 		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
 		return query;
+	}
+
+	async save(submission: Submission): Promise<void> {
+		await this.em.persistAndFlush(submission);
+	}
+
+	async delete(submission: Submission): Promise<void> {
+		await this.em.removeAndFlush(submission);
 	}
 }

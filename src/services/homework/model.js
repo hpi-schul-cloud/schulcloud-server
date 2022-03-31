@@ -41,15 +41,10 @@ schulcloud.homeworks           find         {"lessonId": 1} -> 4
 schulcloud.homeworks           find         {"$or": [{"dueDate": 1}, {"dueDate": 1}], "archived": {"$ne": 1}, "schoolId": 1} -> 5
 schulcloud.homeworks           find         {"$or": [{"teacherId": 1}, {"courseId": 1}]} -> 6
 */
-homeworkSchema.index({ dueDate: 1 }); // ok or = 5
-homeworkSchema.index({ courseId: 1 }); // ok or = 6
+
+// school exist not in Task entity
 homeworkSchema.index({ fileIds: 1 }); // ?
-homeworkSchema.index({ _id: 1, private: 1 }); // ok = 2
-homeworkSchema.index({ schoolId: 1 }); // ok or = 5
-homeworkSchema.index({ archived: 1 }); // ok or = 5
-homeworkSchema.index({ archived: 1, courseId: 1 }); // ok = 1
-homeworkSchema.index({ teacherId: 1 }); // ok or = 6
-homeworkSchema.index({ lessonId: 1 }); // ok = 4
+// homeworkSchema.index({ schoolId: 1 }); // ok or = 5
 homeworkSchema.index({ archived: 1, schoolId: 1 }); // ok = 3
 
 const submissionSchema = new Schema({
@@ -75,11 +70,7 @@ const submissionSchema = new Schema({
 query list with bigges impact of database load
 schulcloud.submissions         find         {"$and": [{"teamMembers": 1}, {"studentId": {"$ne": 1}}] -> 1
 */
-submissionSchema.index({ schoolId: 1 }); // ?
-submissionSchema.index({ homeworkId: 1 }); // ?
-submissionSchema.index({ fileIds: 1 }); // ?
-submissionSchema.index({ gradeFileIds: 1 }); // ?
-submissionSchema.index({ studentId: 1, teamMembers: 1 }); // ok = 1
+submissionSchema.index({ schoolId: 1 }); // ? school exist not in submission entity
 
 enableAuditLog(homeworkSchema);
 enableAuditLog(submissionSchema);

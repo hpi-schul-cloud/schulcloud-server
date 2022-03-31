@@ -116,7 +116,6 @@ class SupportJWTService {
 		return hooks;
 	}
 
-	// todo later add notification for user
 	executeInfo(currentUserId, userId) {
 		const minutes = this.expiredOffset / (60 * 1000);
 		// eslint-disable-next-line max-len

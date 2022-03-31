@@ -31,14 +31,6 @@ export class AccountUc {
 		private readonly permissionService: PermissionService
 	) {}
 
-	static passwordPattern = new RegExp(
-		"^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~']).{8,255}$"
-	);
-
-	static emailPattern = new RegExp(
-		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-	);
-
 	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQuery): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
@@ -85,7 +77,6 @@ export class AccountUc {
 		params: AccountByIdParams,
 		body: AccountByIdBody
 	): Promise<AccountByIdResponse> {
-		this.checkPasswordStrength(body.password);
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to update an account.');
 		}
@@ -105,10 +96,10 @@ export class AccountUc {
 		return new AccountByIdResponse(account);
 	}
 
-	async updateMyAccount(currentUser: ICurrentUser, params: PatchMyAccountParams) {
+	async updateMyAccount(currentUser: EntityId, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
-			account = await this.accountRepo.findByUserId(currentUser.userId);
+			account = await this.accountRepo.findByUserId(currentUser);
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}
@@ -123,7 +114,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser.userId, true);
+			user = await this.userRepo.findById(currentUser, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
@@ -131,7 +122,6 @@ export class AccountUc {
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
-			this.checkPasswordStrength(params.passwordNew);
 			account.password = await this.calcPasswordHash(params.passwordNew);
 			updateAccount = true;
 		}
@@ -143,7 +133,6 @@ export class AccountUc {
 		}
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
-			this.checkEmailFormat(newMail);
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
 			account.username = newMail;
@@ -182,16 +171,6 @@ export class AccountUc {
 		}
 	}
 
-	// TODO direct endpoint routing?
-	/// this would not allow an administrator to change its own password without forcing a renewal
-	// async changePassword(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string) {
-	// 	if (currentUserId === targetUserId) {
-	// 		await this.changeMyTemporaryPassword(currentUserId, passwordNew, passwordNew);
-	// 	} else {
-	// 		await this.changePasswordForUser(currentUserId, targetUserId, passwordNew);
-	// 	}
-	// }
-
 	async changeMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
 			throw new InvalidOperationError('Password and confirm password do not match.');
@@ -208,8 +187,6 @@ export class AccountUc {
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
 			throw new InvalidOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
-
-		this.checkPasswordStrength(password);
 
 		let targetAccount: Account;
 		try {
@@ -241,8 +218,6 @@ export class AccountUc {
 	}
 
 	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<void> {
-		this.checkPasswordStrength(passwordNew);
-
 		// load user data
 		let targetAccount: Account;
 		let currentUser: User;
@@ -264,18 +239,19 @@ export class AccountUc {
 			throw new ForbiddenException("No permission to change this user's password");
 		}
 
-		targetAccount.password = await this.calcPasswordHash(passwordNew);
-		await this.accountRepo.update(targetAccount);
 		// set user must change password on next login
-
 		try {
 			targetUser.forcePasswordChange = true;
 			targetUser = await this.userRepo.update(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
-
-		// return 'this.accountRepo.update(account);';
+		try {
+			targetAccount.password = await this.calcPasswordHash(passwordNew);
+			await this.accountRepo.update(targetAccount);
+		} catch (err) {
+			throw new EntityNotFoundError('Account');
+		}
 	}
 
 	private hasRole(user: User, roleName: string) {
@@ -331,25 +307,8 @@ export class AccountUc {
 		return bcrypt.hash(password, 10);
 	}
 
-	private checkPassword(enteredPassword: string, hashedAccountPassword: string): Promise<boolean> {
+	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
-	}
-
-	// TODO password helper is used here schulcloud-server\src\services\account\hooks\index.js
-	// TODO refactor/remove schulcloud-server\test\helper\passwordHelpers.test.js
-	// TODO remove schulcloud-server\src\utils\passwordHelpers.js
-	private checkPasswordStrength(password: string) {
-		// only check result if also a password was really given
-		if (!password || !AccountUc.passwordPattern.test(password)) {
-			throw new ValidationError('Dein Passwort stimmt mit dem Pattern nicht überein.');
-		}
-	}
-
-	// TODO remove in src\utils\constants.js
-	private checkEmailFormat(email: string) {
-		if (!email || !AccountUc.emailPattern.test(email)) {
-			throw new ValidationError('The given email is invalid.');
-		}
 	}
 
 	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {

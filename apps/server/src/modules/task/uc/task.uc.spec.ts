@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
-import { PaginationQuery } from '@shared/controller';
+import { PaginationParams } from '@shared/controller';
 import { Course, Task, Lesson, User, ITaskStatus } from '@shared/domain';
 
 import {
@@ -419,8 +419,8 @@ describe('TaskUC', () => {
 			user = setupUser(permissions);
 			const mockRestore = findAllMock();
 
-			const paginationQuery = new PaginationQuery();
-			const action = async () => service.findAll(user.id, paginationQuery);
+			const paginationParams = new PaginationParams();
+			const action = async () => service.findAll(user.id, paginationParams);
 			await expect(action()).rejects.toThrow();
 
 			mockRestore();
@@ -429,8 +429,8 @@ describe('TaskUC', () => {
 		it(`should pass if user has ${TaskDashBoardPermission.studentDashboard} permission`, async () => {
 			const mockRestore = findAllMock({});
 
-			const paginationQuery = new PaginationQuery();
-			const result = await service.findAll(user.id, paginationQuery);
+			const paginationParams = new PaginationParams();
+			const result = await service.findAll(user.id, paginationParams);
 
 			expect(result).toEqual([[], 0]);
 
@@ -440,8 +440,8 @@ describe('TaskUC', () => {
 		it(`should pass if user has ${TaskDashBoardPermission.teacherDashboard} permission`, async () => {
 			const mockRestore = findAllMock({});
 
-			const paginationQuery = new PaginationQuery();
-			const result = await service.findAll(user.id, paginationQuery);
+			const paginationParams = new PaginationParams();
+			const result = await service.findAll(user.id, paginationParams);
 
 			expect(result).toEqual([[], 0]);
 
@@ -458,8 +458,8 @@ describe('TaskUC', () => {
 				const mockRestore = findAllMock({});
 				const spy = setAuthorizationServiceMock.getPermittedCourses();
 
-				const paginationQuery = new PaginationQuery();
-				await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				await service.findAll(user.id, paginationParams);
 
 				const expectedParams = [user, TaskParentPermission.read];
 				expect(spy).toHaveBeenCalledWith(...expectedParams);
@@ -470,8 +470,8 @@ describe('TaskUC', () => {
 			it('should return a counted result', async () => {
 				const mockRestore = findAllMock({});
 
-				const paginationQuery = new PaginationQuery();
-				const [result, count] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result, count] = await service.findAll(user.id, paginationParams);
 				expect(Array.isArray(result)).toBeTruthy();
 				expect(count).toEqual(0);
 
@@ -490,8 +490,8 @@ describe('TaskUC', () => {
 				const spyGetPermittedLessons = setAuthorizationServiceMock.getPermittedLessons([lesson]);
 				const spyGetPermittedCourses = setAuthorizationServiceMock.getPermittedCourses([course]);
 
-				const paginationQuery = new PaginationQuery();
-				await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				await service.findAll(user.id, paginationParams);
 
 				expect(spy).toHaveBeenCalledTimes(1);
 				expect(spy.mock.calls[0][0]).toEqual({
@@ -503,7 +503,7 @@ describe('TaskUC', () => {
 				expect(spy.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
 				expect(spy.mock.calls[0][2]).toEqual({
 					order: { dueDate: 'asc' },
-					pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit },
+					pagination: { skip: paginationParams.skip, limit: paginationParams.limit },
 				});
 
 				expect(spyGetPermittedLessons).toHaveBeenCalledWith(user, [course]);
@@ -522,8 +522,8 @@ describe('TaskUC', () => {
 					tasks: [task],
 				});
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 				expect(result[0]).toEqual({
 					task,
 					status: {
@@ -550,8 +550,8 @@ describe('TaskUC', () => {
 					tasks: [task1, task2, task3],
 				});
 
-				const paginationQuery = new PaginationQuery();
-				const [result, count] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result, count] = await service.findAll(user.id, paginationParams);
 				expect(count).toEqual(3);
 				expect(result.length).toEqual(3);
 
@@ -566,8 +566,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -592,8 +592,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -618,8 +618,8 @@ describe('TaskUC', () => {
 				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(spyGraded).toBeCalled();
 				expect(result.length).toEqual(1);
@@ -649,8 +649,8 @@ describe('TaskUC', () => {
 				jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -676,8 +676,8 @@ describe('TaskUC', () => {
 				const mockRestore = findAllMock({});
 				const spy = setAuthorizationServiceMock.getPermittedCourses([]);
 
-				const paginationQuery = new PaginationQuery();
-				await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				await service.findAll(user.id, paginationParams);
 
 				const expectedParams = [user, TaskParentPermission.write];
 				expect(spy).toHaveBeenCalledWith(...expectedParams);
@@ -689,8 +689,8 @@ describe('TaskUC', () => {
 			it('should return a counted result', async () => {
 				const mockRestore = findAllMock({});
 
-				const paginationQuery = new PaginationQuery();
-				const [result, count] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result, count] = await service.findAll(user.id, paginationParams);
 				expect(Array.isArray(result)).toBeTruthy();
 				expect(count).toEqual(0);
 
@@ -708,14 +708,14 @@ describe('TaskUC', () => {
 				});
 				const spy = setTaskRepoMock.findAllByParentIds(tasks);
 
-				const paginationQuery = new PaginationQuery();
-				await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				await service.findAll(user.id, paginationParams);
 
 				const notFinished = { userId: user.id, value: false };
 				const expectedParams = [
 					{ creatorId: user.id, courseIds: [course.id], lessonIds: [lesson.id] },
 					{ finished: notFinished, availableOn: expect.any(Date) as Date },
-					{ order: { dueDate: 'desc' }, pagination: { skip: paginationQuery.skip, limit: paginationQuery.limit } },
+					{ order: { dueDate: 'desc' }, pagination: { skip: paginationParams.skip, limit: paginationParams.limit } },
 				];
 
 				expect(spy).toHaveBeenCalledWith(...expectedParams);
@@ -729,8 +729,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 				expect(result[0]).toEqual({
 					task,
 					status: {
@@ -754,8 +754,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(userData.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(userData.id, paginationParams);
 				expect(result[0].status.isSubstitutionTeacher).toBe(true);
 
 				mockRestore();
@@ -771,8 +771,8 @@ describe('TaskUC', () => {
 					tasks: [task1, task2, task3],
 				});
 
-				const paginationQuery = new PaginationQuery();
-				const [result, count] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result, count] = await service.findAll(user.id, paginationParams);
 				expect(count).toEqual(3);
 				expect(result.length).toEqual(3);
 
@@ -787,8 +787,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -814,8 +814,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -840,8 +840,8 @@ describe('TaskUC', () => {
 				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(spyGraded).toBeCalled();
 				expect(result.length).toEqual(1);
@@ -871,8 +871,8 @@ describe('TaskUC', () => {
 				jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result] = await service.findAll(user.id, paginationParams);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -903,8 +903,8 @@ describe('TaskUC', () => {
 				jest.spyOn(submission3, 'isGraded').mockImplementation(() => true);
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result, total] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result, total] = await service.findAll(user.id, paginationParams);
 
 				expect(total).toEqual(1);
 				expect(result[0].status).toEqual({
@@ -932,8 +932,8 @@ describe('TaskUC', () => {
 
 				const mockRestore = findAllMock({ tasks: [task] });
 
-				const paginationQuery = new PaginationQuery();
-				const [result, total] = await service.findAll(user.id, paginationQuery);
+				const paginationParams = new PaginationParams();
+				const [result, total] = await service.findAll(user.id, paginationParams);
 
 				expect(total).toEqual(1);
 				expect(result[0].status).toEqual({

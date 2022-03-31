@@ -10,12 +10,12 @@ import {
 	AccountByIdResponse,
 	AccountSearchListResponse,
 	AccountSearchQuery,
-	Password,
+	ChangePasswordParams,
 	PatchMyAccountParams,
 	PutMyPasswordParams,
 } from './dto';
 
-@ApiTags('Account')
+@ApiTags('account')
 @Authenticate('jwt')
 @Controller('account')
 export class AccountController {
@@ -58,14 +58,14 @@ export class AccountController {
 	async changePassword(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) userId: string,
-		@Body() { password }: Password
+		@Body() { password }: ChangePasswordParams
 	): Promise<void> {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}
 
 	@Patch('me')
 	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
-		return this.accountUc.updateMyAccount(currentUser, params);
+		return this.accountUc.updateMyAccount(currentUser.userId, params);
 	}
 
 	@Put('me/password')

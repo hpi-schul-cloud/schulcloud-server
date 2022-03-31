@@ -1,4 +1,4 @@
-import { QueryOrderMap, QueryOrderNumeric, wrap } from '@mikro-orm/core';
+import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
@@ -153,10 +153,8 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async update(user: User): Promise<User> {
-		const entity = await this.em.findOneOrFail(User, { id: user.id });
-		wrap(entity).assign(user);
-		await this.em.flush();
-		return entity;
+		await this.em.persistAndFlush(user);
+		return user;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

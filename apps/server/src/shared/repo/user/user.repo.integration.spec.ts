@@ -111,7 +111,6 @@ describe('user repo', () => {
 			userB = userFactory.build({ ldapId: '111' });
 			await em.persistAndFlush([userA, userB]);
 		});
-
 		it('should return right keys', async () => {
 			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
@@ -278,6 +277,17 @@ describe('user repo', () => {
 	});
 
 	describe('findByEmail', () => {
+		it('should find user by email', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findByEmail('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
 		it('should find user by email, ignoring case', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
@@ -286,9 +296,6 @@ describe('user repo', () => {
 
 			let result: User[];
 
-			result = await repo.findByEmail('USER@EXAMPLE.COM');
-			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 			result = await repo.findByEmail('USER@example.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
@@ -296,6 +303,15 @@ describe('user repo', () => {
 			result = await repo.findByEmail('user@example.com');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: User[];
 
 			result = await repo.findByEmail('USER@EXAMPLECCOM');
 			expect(result).toHaveLength(0);
@@ -306,11 +322,6 @@ describe('user repo', () => {
 	});
 
 	describe('update', () => {
-		it('should fail if user does not exist', async () => {
-			const user = userFactory.build();
-			await expect(repo.update(user)).rejects.toThrow(NotFoundError);
-		});
-
 		it('should update all fields', async () => {
 			const userA = userFactory.withRole('Role-1').build();
 			const userB = userFactory.withRole('Role-2').build();
@@ -321,22 +332,23 @@ describe('user repo', () => {
 			userB.firstName = 'Bob';
 
 			const updateTime = userA.updatedAt;
-			expect(userA.createdAt).not.toBe(userB.createdAt);
-			expect(userA.email).not.toBe(userB.email);
-			expect(userA.firstName).not.toBe(userB.firstName);
-			expect(userA.lastName).not.toBe(userB.lastName);
-			expect(userA.school).not.toBe(userB.school);
+			expect(userA.email).not.toStrictEqual(userB.email);
+			expect(userA.firstName).not.toStrictEqual(userB.firstName);
+			expect(userA.lastName).not.toStrictEqual(userB.lastName);
+			expect(userA.school).not.toStrictEqual(userB.school);
 			expect(userA.roles).not.toContain(userB.roles);
 
 			await em.persistAndFlush([userA, userB]);
 
-			userB.id = userA.id;
-			const updatedMail = 'new@mail.com';
-			userB.email = updatedMail;
+			userB.email = userA.email;
+			userB.firstName = userA.firstName;
+			userB.lastName = userA.lastName;
+			userB.forcePasswordChange = userA.forcePasswordChange;
+			userB.school = userA.school;
+			userB.roles = userA.roles;
 			const updatedUserB = await repo.update(userB);
 
-			expect(userA.createdAt).toBe(updatedUserB.createdAt);
-			expect(updatedMail).toBe(updatedUserB.email);
+			expect(userA.email).toBe(updatedUserB.email);
 			expect(userA.firstName).toBe(updatedUserB.firstName);
 			expect(userA.lastName).toBe(updatedUserB.lastName);
 			expect(userA.school).toBe(updatedUserB.school);

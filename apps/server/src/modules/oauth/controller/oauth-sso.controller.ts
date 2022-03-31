@@ -6,8 +6,8 @@ import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationQuery } from './dto/authorization.query';
-import { OAuthResponse } from './dto/oauth-response';
+import { AuthorizationParams } from './dto/authorization.params';
+import { OAuthResponse } from './dto/oauth.response';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -20,7 +20,7 @@ export class OauthSSOController {
 
 	@Get('oauth/:systemid')
 	async startOauthAuthorizationCodeFlow(
-		@Query() query: AuthorizationQuery,
+		@Query() query: AuthorizationParams,
 		@Res() res: Response,
 		@Param('systemid', ParseObjectIdPipe) systemid: string
 	): Promise<unknown> {

@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.8.0",
+	"version": "27.11.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -75,6 +75,7 @@
 		"nest:lint": "eslint apps --ignore-path .gitignore",
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
 		"syncIndexes": "node ./scripts/syncIndexes.js",
+		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js"
 	},
@@ -89,6 +90,7 @@
 		"@feathersjs/socketio": "^4.5.11",
 		"@golevelup/nestjs-rabbitmq": "^1.22.0",
 		"@hpi-schul-cloud/commons": "^1.3.4",
+		"@keycloak/keycloak-admin-client": "^17.0.0",
 		"@mikro-orm/core": "^5.0.5",
 		"@mikro-orm/mongodb": "^5.0.5",
 		"@mikro-orm/nestjs": "^5.0.0",

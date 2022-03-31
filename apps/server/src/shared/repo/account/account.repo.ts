@@ -1,4 +1,4 @@
-import { wrap } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';
@@ -15,16 +15,14 @@ export class AccountRepo extends BaseRepo<Account> {
 		return account;
 	}
 
-	async findById(accountId: EntityId): Promise<Account> {
+	async read(accountId: EntityId): Promise<Account> {
 		const account = await this.findOneById(accountId);
 		return account;
 	}
 
 	async update(account: Account): Promise<Account> {
-		const entity = await this.repo.findOneOrFail({ id: account.id });
-		wrap(entity).assign(account);
-		await this.em.flush();
-		return entity;
+		await this.repo.persistAndFlush(account);
+		return account;
 	}
 
 	async delete(accountId: EntityId): Promise<Account> {
