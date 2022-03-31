@@ -10,7 +10,6 @@ import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 
-import { NotFoundException } from '@nestjs/common';
 import {
 	DownloadFileParams,
 	FileRecordParams,
