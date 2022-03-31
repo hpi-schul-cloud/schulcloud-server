@@ -36,7 +36,11 @@ export class OauthUc {
 		this.logger.log('Authorization step done.');
 
 		const system: System = await this.systemRepo.findById(systemId);
-		this.logger.log(system);
+		const keys = Object.keys(system);
+		for (let i = 0; i < keys.length; i += 1) {
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			this.logger.log(`${keys[i]}: ${system[keys[i]]}`);
+		}
 		this.logger.log('System step done.');
 
 		const queryToken: OauthTokenResponse = await this.requestToken(code, system);
