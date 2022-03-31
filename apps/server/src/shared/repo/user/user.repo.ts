@@ -1,4 +1,4 @@
-import { QueryOrderMap, QueryOrderNumeric, wrap } from '@mikro-orm/core';
+import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';

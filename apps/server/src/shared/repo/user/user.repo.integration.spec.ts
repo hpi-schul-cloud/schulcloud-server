@@ -111,7 +111,6 @@ describe('user repo', () => {
 			userB = userFactory.build({ ldapId: '111' });
 			await em.persistAndFlush([userA, userB]);
 		});
-
 		it('should return right keys', async () => {
 			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
