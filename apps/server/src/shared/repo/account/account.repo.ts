@@ -15,7 +15,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		return account;
 	}
 
-	async read(accountId: EntityId): Promise<Account> {
+	async findById(accountId: EntityId): Promise<Account> {
 		const account = await this.findOneById(accountId);
 		return account;
 	}
