@@ -166,7 +166,7 @@ export class UserImportUc {
 		await this.schoolRepo.persistAndFlush(school);
 	}
 
-	private async updateUserAndAccount(importUser: ImportUser, school: School) {
+	private async updateUserAndAccount(importUser: ImportUser, school: School): Promise<void> {
 		if (!importUser.user || !importUser.loginName || !school.ldapSchoolIdentifier) {
 			return;
 		}
