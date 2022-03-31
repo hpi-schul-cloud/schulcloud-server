@@ -21,6 +21,8 @@ export class OauthConfig {
 		this.authEndpoint = system.oauthConfig.authEndpoint;
 		this.provider = system.oauthConfig.provider;
 		this.logoutEndpoint = system.oauthConfig.logoutEndpoint;
+		this.issuer = system.oauthConfig.issuer;
+		this.jwksEndpoint = system.oauthConfig.jwksEndpoint;
 	}
 
 	@Property()
@@ -52,6 +54,12 @@ export class OauthConfig {
 
 	@Property()
 	logoutEndpoint: string;
+
+	@Property()
+	issuer: string;
+
+	@Property()
+	jwksEndpoint: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
