@@ -10,6 +10,8 @@ export interface IUserProperties {
 	school: School;
 	roles: Role[];
 	ldapId?: string;
+	forcePasswordChange?: boolean;
+	preferences?: Record<string, unknown>;
 }
 
 @Entity({ tableName: 'users' })
@@ -41,6 +43,12 @@ export class User extends BaseEntityWithTimestamps {
 	@Index()
 	ldapId?: string;
 
+	@Property({ nullable: true })
+	forcePasswordChange?: boolean;
+
+	@Property({ nullable: true })
+	preferences?: Record<string, unknown>;
+
 	constructor(props: IUserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -49,5 +57,7 @@ export class User extends BaseEntityWithTimestamps {
 		this.school = props.school;
 		this.roles.set(props.roles);
 		this.ldapId = props.ldapId;
+		this.forcePasswordChange = props.forcePasswordChange;
+		this.preferences = props.preferences ?? {};
 	}
 }
