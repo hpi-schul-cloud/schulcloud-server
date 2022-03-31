@@ -1,5 +1,5 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -25,9 +25,9 @@ export class UserController {
 		return resolvedUser;
 	}
 
-	@Patch('/language/:language/')
+	@Patch('/language')
 	async changeLanguage(
-		@Param() params: ChangeLanguageParams,
+		@Body() params: ChangeLanguageParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SuccessfulResponse> {
 		const result = await this.userUc.patchLanguage(currentUser.userId, params);

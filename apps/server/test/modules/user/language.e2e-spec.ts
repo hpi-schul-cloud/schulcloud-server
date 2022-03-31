@@ -23,10 +23,11 @@ class API {
 		this.routeName = routeName;
 	}
 
-	async patch(requestString: string) {
+	async patch(language: string) {
 		const response = await request(this.app.getHttpServer())
-			.patch(`${this.routeName}/${requestString}`)
-			.set('Accept', 'application/json');
+			.patch(`${this.routeName}`)
+			.set('Accept', 'application/json')
+			.send({ language });
 
 		return {
 			result: response.body as boolean,
