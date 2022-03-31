@@ -11,8 +11,10 @@ import {
 	AccountByIdBody,
 	AccountByIdParams,
 	AccountByIdResponse,
-	AccountsByUsernameListResponse,
-	AccountsByUsernameResponse,
+	AccountSearchListResponse,
+	AccountSearchType,
+	AccountSearchQuery,
+	AccountSearchResponse,
 	PatchMyAccountParams,
 } from '../controller/dto';
 
@@ -37,34 +39,37 @@ export class AccountUc {
 		"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 	);
 
-	async searchAccountsByUsername(
-		currentUser: ICurrentUser,
-		searchTerm: string,
-		skip = 0,
-		limit = 10
-	): Promise<AccountsByUsernameListResponse> {
-		if (searchTerm === '') {
-			throw new InvalidArgumentError('Search term should not be empty');
-		}
+	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQuery): Promise<AccountSearchListResponse> {
+		const skip = query.skip ?? 0;
+		const limit = query.limit ?? 10;
+
 		if (skip < 0) {
 			throw new InvalidArgumentError('Skip is less than 0.');
 		}
 		if (limit < 1) {
-			throw new InvalidArgumentError('Limit is less than 0.');
+			throw new InvalidArgumentError('Limit is less than 1.');
 		}
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
 		}
 
-		const accounts = await this.accountRepo.findByUsername(searchTerm);
-		// Todo slice allows nearly all values for start and end.
-		// How do we want to design our api?
-		const accountList = accounts
-			.map((account) => new AccountsByUsernameResponse(account))
-			.sort((a, b) => (a.username > b.username ? 1 : -1))
-			.slice(skip, skip + limit);
-
-		return new AccountsByUsernameListResponse(accountList, accountList.length, skip, limit);
+		switch (query.type) {
+			case AccountSearchType.USER_ID:
+				// eslint-disable-next-line no-case-declarations
+				const account = await this.accountRepo.findByUserId(query.value);
+				return new AccountSearchListResponse([new AccountSearchResponse(account)], 1, 0, 1);
+			case AccountSearchType.USERNAME:
+				// eslint-disable-next-line no-case-declarations
+				const accounts = await this.accountRepo.searchByUsername(query.value);
+				// eslint-disable-next-line no-case-declarations
+				const accountList = accounts
+					.map((tempAccount) => new AccountSearchResponse(tempAccount))
+					.sort((a, b) => (a.username > b.username ? 1 : -1))
+					.slice(skip, skip + limit);
+				return new AccountSearchListResponse(accountList, accounts.length, skip, limit);
+			default:
+				throw new InvalidArgumentError('Invalid search type.');
+		}
 	}
 
 	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
@@ -80,9 +85,11 @@ export class AccountUc {
 		params: AccountByIdParams,
 		body: AccountByIdBody
 	): Promise<AccountByIdResponse> {
+		this.checkPasswordStrength(body.password);
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to update an account.');
 		}
+
 		const account = await this.accountRepo.findById(params.id);
 		// Todo super hero dashboard can change the password
 		wrap(account).assign(body);

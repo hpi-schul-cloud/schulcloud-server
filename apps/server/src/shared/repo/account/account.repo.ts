@@ -54,11 +54,28 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this.findByUserId(user.id);
 	}
 
+	/**
+	 * Finds the users with the exact usernames.
+	 * Return an empty list, if no account with given username was found.
+	 * @param userName The exact username.
+	 */
 	async findByUsername(userName: string): Promise<Account[]> {
 		const account = await this.repo.find({
 			// find mail case-insensitive by regex
 			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
 		});
 		return account;
+	}
+
+	/**
+	 * Searches through all accounts and will return all accounts
+	 * with a partial or full match. The search is case-insensitive.
+	 * @param username The regular expression.
+	 */
+	async searchByUsername(username: string): Promise<Account[]> {
+		const accounts = await this.repo.find({
+			username: new RegExp(username, 'i'),
+		});
+		return accounts;
 	}
 }

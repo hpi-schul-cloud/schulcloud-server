@@ -1,14 +1,28 @@
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
-export class AccountsByUsernameQuery {
-	@IsString()
+export enum AccountSearchType {
+	USER_ID = 'userId',
+	USERNAME = 'username',
+}
+
+export class AccountSearchQuery {
+	@IsEnum(AccountSearchType)
 	@ApiProperty({
-		description: 'The search pattern for the user names.',
+		description: 'The search criteria.',
+		enum: AccountSearchType,
 		required: true,
 		nullable: false,
 	})
-	username!: string;
+	type!: AccountSearchType;
+
+	@IsString()
+	@ApiProperty({
+		description: 'The search value.',
+		required: true,
+		nullable: false,
+	})
+	value!: string;
 
 	@IsOptional()
 	@IsInt()
@@ -20,7 +34,7 @@ export class AccountsByUsernameQuery {
 		default: 0,
 		minimum: 0,
 	})
-	skip?: number = 0;
+	skip?: number;
 
 	@IsOptional()
 	@IsInt()
@@ -34,14 +48,5 @@ export class AccountsByUsernameQuery {
 		minimum: 1,
 		maximum: 100,
 	})
-	limit?: number = 10;
-
-	// Todo what does sort do???
-	@IsOptional()
-	@ApiProperty({
-		description: 'Determines how to sort the results.',
-		required: false,
-		nullable: true,
-	})
-	sort?: unknown;
+	limit?: number;
 }

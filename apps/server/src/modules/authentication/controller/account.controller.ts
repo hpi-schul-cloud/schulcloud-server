@@ -8,8 +8,8 @@ import {
 	AccountByIdBody,
 	AccountByIdParams,
 	AccountByIdResponse,
-	AccountsByUsernameListResponse,
-	AccountsByUsernameQuery,
+	AccountSearchListResponse,
+	AccountSearchQuery,
 	Password,
 	PatchMyAccountParams,
 	PutMyPasswordParams,
@@ -22,11 +22,11 @@ export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
 	@Get('search')
-	async findAccountsByUsername(
+	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: AccountsByUsernameQuery
-	): Promise<AccountsByUsernameListResponse> {
-		return this.accountUc.searchAccountsByUsername(currentUser, query.username, query.skip, query.limit);
+		@Query() query: AccountSearchQuery
+	): Promise<AccountSearchListResponse> {
+		return this.accountUc.searchAccounts(currentUser, query);
 	}
 
 	@Get(':id')
