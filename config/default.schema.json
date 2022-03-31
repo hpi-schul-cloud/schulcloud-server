@@ -774,6 +774,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
+		},
+		"FEATURE_COURSE_COPY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
 		}
 	},
 	"required": [
