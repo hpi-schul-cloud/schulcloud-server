@@ -7,7 +7,8 @@ import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
-import { AccountSearchQuery } from '@src/modules/authentication/controller/dto';
+import { AccountSearchQuery, AccountByIdParams } from '@src/modules/authentication/controller/dto';
+import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
@@ -44,6 +45,7 @@ describe('AccountUc', () => {
 	let mockAccountWithoutRole: Account;
 
 	const mockUserIdMap = new Map<string, User>();
+	const mockAccountIdMap = new Map<string, Account>();
 	const mockAccountUserIdMap = new Map<string, Account>();
 	const mockAccountUsernameMap = new Map<string, Account>();
 	const mockUserMailMap = new Map<string, User>();
@@ -102,6 +104,14 @@ describe('AccountUc', () => {
 								return Promise.resolve(Array.from(mockAccountUsernameMap.values()));
 							}
 							return Promise.resolve([]);
+						},
+						findById: (accountId: EntityId): Promise<Account> => {
+							const account = mockAccountIdMap.get(accountId);
+
+							if (account) {
+								return Promise.resolve(account);
+							}
+							throw Error();
 						},
 					},
 				},
@@ -277,6 +287,7 @@ describe('AccountUc', () => {
 		for (let i = 0; i < mockAccounts.length; i += 1) {
 			mockAccountUserIdMap.set(mockAccounts[i].user.id, mockAccounts[i]);
 			mockAccountUsernameMap.set(mockAccounts[i].username, mockAccounts[i]);
+			mockAccountIdMap.set(mockAccounts[i].id, mockAccounts[i]);
 		}
 	});
 
@@ -664,6 +675,63 @@ describe('AccountUc', () => {
 			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
 				InvalidArgumentError
 			);
+		});
+	});
+
+	describe('findAccountById', () => {
+		it('should return an account, if the current user is a super hero', async () => {
+			const account = await accountUc.findAccountById(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ id: mockStudentAccount.id } as AccountByIdParams
+			);
+			expect(account).toStrictEqual(
+				expect.objectContaining({
+					id: mockStudentAccount.id,
+					username: mockStudentAccount.username,
+					userId: mockStudentUser.id,
+					activated: mockStudentAccount.activated ?? false,
+				})
+			);
+		});
+		it('should throw, if the current user is no super hero', async () => {
+			await expect(
+				accountUc.findAccountById(
+					{ userId: mockTeacherUser.id } as ICurrentUser,
+					{ id: mockStudentAccount.id } as AccountByIdParams
+				)
+			).rejects.toThrow(UnauthorizedError);
+		});
+		it('should throw, if no account matches the search term', async () => {
+			await expect(
+				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
+			).rejects.toThrow();
+		});
+	});
+
+	describe('deleteAccountById', () => {
+		it('should delete an account, if the current user is a super hero', async () => {
+			await expect(
+				accountUc.deleteAccountById(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ id: mockStudentAccount.id } as AccountByIdParams
+				)
+			).resolves.not.toThrow();
+		});
+		it('should throw, if the current user is no super hero', async () => {
+			await expect(
+				accountUc.deleteAccountById(
+					{ userId: mockAdminUser.id } as ICurrentUser,
+					{ id: mockStudentAccount.id } as AccountByIdParams
+				)
+			).rejects.toThrow(UnauthorizedError);
+		});
+		it('should throw, if no account matches the search term', async () => {
+			await expect(
+				accountUc.deleteAccountById(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ id: 'xxx' } as AccountByIdParams
+				)
+			).rejects.toThrow();
 		});
 	});
 });
