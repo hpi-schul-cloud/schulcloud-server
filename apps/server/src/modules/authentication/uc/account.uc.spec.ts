@@ -124,7 +124,7 @@ describe('AccountUc', () => {
 							if (account) {
 								return Promise.resolve(account);
 							}
-							throw Error();
+							throw new EntityNotFoundError(Account.name);
 						},
 						searchByUsername: (): Promise<Account[]> => {
 							const accounts = mockAccountIdMap.values();
@@ -738,12 +738,25 @@ describe('AccountUc', () => {
 		it('should throw, if no account matches the search term', async () => {
 			await expect(
 				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
-			).rejects.toThrow();
+			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
 
 	describe('updateAccountById', () => {
 		// Todo tests for updateAccountById
+		it('should update, if the current user is a super hero', async () => {
+			await expect(
+				accountUc.updateAccountById(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ id: mockStudentAccount.id } as AccountByIdParams,
+					{
+						username: mockStudentAccount.username,
+						password: mockStudentAccount.password,
+						activated: mockStudentAccount.activated,
+					} as AccountByIdBody
+				)
+			).resolves.not.toThrow();
+		});
 		it('should throw, if the current user is no super hero', async () => {
 			await expect(
 				accountUc.updateAccountById(
@@ -752,6 +765,15 @@ describe('AccountUc', () => {
 					{} as AccountByIdBody
 				)
 			).rejects.toThrow(UnauthorizedError);
+		});
+		it('should throw, if no account matches the search term', async () => {
+			await expect(
+				accountUc.updateAccountById(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ id: 'xxx' } as AccountByIdParams,
+					{ username: '', password: '', activated: false } as AccountByIdBody
+				)
+			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
 
