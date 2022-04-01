@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString } from 'class-validator';
+import { IsBoolean, IsString, Matches } from 'class-validator';
+import { passwordPattern } from './password-pattern';
 
 export class AccountByIdBody {
 	@IsString()
@@ -11,6 +12,7 @@ export class AccountByIdBody {
 	username!: string;
 
 	@IsString()
+	@Matches(passwordPattern)
 	@ApiProperty({
 		description: 'The new password for the user.',
 		required: true,

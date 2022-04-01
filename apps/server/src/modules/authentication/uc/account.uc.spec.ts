@@ -2,11 +2,12 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, PermissionService, Role, School, User } from '@shared/domain';
+import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
+import { AccountSearchQuery } from '@src/modules/authentication/controller/dto';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
@@ -635,30 +636,32 @@ describe('AccountUc', () => {
 		});
 	});
 
-	describe('searchAccountsByUsername', () => {
+	describe('searchAccounts', () => {
 		it('should return an empty list, if no username matches the search term', async () => {
-			const accounts = await accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld');
+			const accounts = await accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery);
 			expect(accounts.data).toBe([]);
 		});
 		it('should return one or more accounts, if on or more usernames match the search term', async () => {
-			const accounts = await accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld');
+			const accounts = await accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery);
 			expect(accounts.data).toBe([]);
 		});
 		it('should throw, if search term is empty', async () => {
-			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, '')).rejects.toThrow(InvalidArgumentError);
+			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
+				InvalidArgumentError
+			);
 		});
 		it('should throw, if skip is smaller than 0', async () => {
-			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld', -1)).rejects.toThrow(
+			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
 				InvalidArgumentError
 			);
 		});
 		it('should throw, if limit is smaller than 1', async () => {
-			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld', 0, 0)).rejects.toThrow(
+			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
 				InvalidArgumentError
 			);
 		});
 		it('should throw, if offset is to big', async () => {
-			await expect(accountUc.searchAccountsByUsername({} as ICurrentUser, 'demo@example.tld', 1000)).rejects.toThrow(
+			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
 				InvalidArgumentError
 			);
 		});
