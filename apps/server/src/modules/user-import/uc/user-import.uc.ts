@@ -214,10 +214,10 @@ export class UserImportUc {
 			return;
 		}
 		const { user } = importUser;
-    user.ldapId = importUser.ldapId;
+		user.ldapId = importUser.ldapId;
 
 		const account = await this.accountRepo.findOneByUser(user);
-    account.system = this.accountRepo.getObjectReference(System, importUser.system.id);
+		account.system = this.accountRepo.getObjectReference(System, importUser.system.id);
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 
