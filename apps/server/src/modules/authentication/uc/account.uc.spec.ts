@@ -77,8 +77,15 @@ describe('AccountUc', () => {
 							}
 							return Promise.resolve(account);
 						}),
-						delete: (): Promise<Account> => {
-							return Promise.resolve(mockAdminAccount);
+						delete: (accountId: EntityId): Promise<Account> => {
+							switch (accountId) {
+								case mockAdminAccount.id:
+									return Promise.resolve(mockAdminAccount);
+								case mockStudentAccount.id:
+									return Promise.resolve(mockStudentAccount);
+								default:
+									throw new EntityNotFoundError(Account.name);
+							}
 						},
 						findByUserId: (userId: EntityId): Promise<Account> => {
 							const account = mockAccountUserIdMap.get(userId);
@@ -731,7 +738,7 @@ describe('AccountUc', () => {
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ id: 'xxx' } as AccountByIdParams
 				)
-			).rejects.toThrow();
+			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
 });
