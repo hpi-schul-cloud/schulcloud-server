@@ -1,4 +1,4 @@
-import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
+import { QueryOrderMap, QueryOrderNumeric, wrap } from '@mikro-orm/core';
 import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
@@ -133,10 +133,10 @@ export class UserRepo extends BaseRepo<User> {
 		}
 
 		if (pagination?.skip) {
-			pipeline.push({ $skip: pagination?.skip });
+			pipeline.push({ $skip: pagination.skip });
 		}
 		if (pagination?.limit) {
-			pipeline.push({ $limit: pagination?.limit });
+			pipeline.push({ $limit: pagination.limit });
 		}
 
 		const userDocuments = await this.em.aggregate(User, pipeline);
@@ -144,6 +144,11 @@ export class UserRepo extends BaseRepo<User> {
 		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
 		await this.em.populate(users, ['roles']);
 		return [users, count];
+	}
+
+	async update(user: User): Promise<User> {
+		await this.em.persistAndFlush(user);
+		return user;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

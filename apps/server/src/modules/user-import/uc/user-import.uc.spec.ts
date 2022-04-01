@@ -435,7 +435,7 @@ describe('[ImportUserModule]', () => {
 				school.officialSchoolNumber = 'foo';
 
 				currentUser = userFactory.buildWithId({ school });
-				account = accountFactory.buildWithId({ userId: currentUser._id });
+				account = accountFactory.buildWithId({ user: currentUser });
 
 				userMatch1 = userFactory.buildWithId({ school });
 				userMatch2 = userFactory.buildWithId({ school });

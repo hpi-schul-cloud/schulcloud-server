@@ -5,7 +5,6 @@ import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 import { User } from '@shared/domain/entity/user.entity';
-import { AccountScope } from '@shared/repo/account/account.scope';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
@@ -46,10 +45,12 @@ export class AccountRepo extends BaseRepo<Account> {
 		return account;
 	}
 
-	async findOneByUser(user: User): Promise<Account> {
-		const scope = new AccountScope();
-		scope.byUser(user);
-		const account = await this.repo.findOneOrFail(scope.query);
+	async findByUserId(userId: EntityId): Promise<Account> {
+		const account = await this.repo.findOneOrFail({ user: userId });
 		return account;
+	}
+
+	async findOneByUser(user: User): Promise<Account> {
+		return this.findByUserId(user.id);
 	}
 }

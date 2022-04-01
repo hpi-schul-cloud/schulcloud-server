@@ -58,7 +58,7 @@
 				},
 				"AVAILABLE_LANGUAGES": {
 					"type": "string",
-					"default": "de,en,es",
+					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
 			}
@@ -784,6 +784,10 @@
 			"type": "string",
 			"default": "",
 			"description": "SystemId for migration of users from system"
+		"FEATURE_COURSE_COPY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
 		}
 	},
 	"required": [
