@@ -11,6 +11,7 @@ import {
 	MatchCreatorScope,
 	PermissionService,
 	School,
+	System,
 	User,
 } from '@shared/domain';
 
@@ -166,7 +167,7 @@ export class UserImportUc {
 		await this.schoolRepo.persistAndFlush(school);
 	}
 
-	private async updateUserAndAccount(importUser: ImportUser, school: School) {
+	private async updateUserAndAccount(importUser: ImportUser, school: School): Promise<void> {
 		if (!importUser.user || !importUser.loginName || !school.ldapSchoolIdentifier) {
 			return;
 		}
@@ -174,7 +175,8 @@ export class UserImportUc {
 		this.userRepo.persist(importUser.user);
 
 		const account = await this.accountRepo.findOneByUser(importUser.user);
-		account.systemId = importUser.system._id;
+
+		account.system = this.accountRepo.getObjectReference(System, importUser.system.id);
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 		this.accountRepo.persist(account);

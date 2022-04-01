@@ -237,6 +237,16 @@ After all tests are executed close the app and orm to release the resources by c
 
 > When Jest reports open handles that not have been closed, ensure all Promises are awaited and all application parts started are correctly closed.
 
+#### Entity Factories
+
+To fill the in-memory-db we use factories. They are located in `\apps\server\src\shared\testing\factory`. If you create a new one, please add it to the index.ts in that folder.
+
+#### Accessing the in-memory-db
+
+While debugging the tests, the URL to the in-memory-db can be found in the `EntityManager` instance of your repo in `em.config.options.clientUrl`.
+
+Copy paste this URL to your DB Tool e.g. MongoDB Compass. You will find a database called 'test' with the data you created for your test.
+
 ### Mapping Tests
 
 Mapping tests are Unit Tests which verify the correct mapping between entities and Dto objects.
