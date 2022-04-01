@@ -6,8 +6,12 @@ import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User 
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
-import { AccountSearchQuery, AccountByIdParams } from '@src/modules/authentication/controller/dto';
+import {
+	AccountByIdParams,
+	AccountSearchListResponse,
+	AccountSearchQuery, AccountSearchResponse,
+	AccountSearchType
+} from '@src/modules/authentication/controller/dto';
 import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
 import { AccountUc } from './account.uc';
 
@@ -655,9 +659,13 @@ describe('AccountUc', () => {
 	});
 
 	describe('searchAccounts', () => {
-		it('should return an empty list, if no username matches the search term', async () => {
-			const accounts = await accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery);
-			expect(accounts.data).toBe([]);
+		it('should return one account, if search type is userId', async () => {
+			const accounts = await accountUc.searchAccounts(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ type: AccountSearchType.USER_ID, value: mockStudentAccount.id } as AccountSearchQuery
+			);
+			const result = new AccountSearchListResponse([new AccountSearchResponse(mockStudentAccount)], 1, 0, 10);
+			expect(accounts.data).toStrictEqual<AccountSearchListResponse>(result);
 		});
 		it('should return one or more accounts, if on or more usernames match the search term', async () => {
 			const accounts = await accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery);
