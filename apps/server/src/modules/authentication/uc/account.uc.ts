@@ -55,12 +55,6 @@ export class AccountUc {
 			account.password = await this.calcPasswordHash(params.passwordNew);
 			updateAccount = true;
 		}
-		// TODO Check with BC-1471 - This might be removed from the account page
-		if (params.language && user.language !== params.language) {
-			// TODO Check if there is an enum or some other fixed values here?
-			user.language = params.language;
-			updateUser = true;
-		}
 		if (params.email && user.email !== params.email) {
 			const newMail = params.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);

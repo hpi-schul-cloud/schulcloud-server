@@ -23,18 +23,11 @@ class CourseFactory extends BaseFactory<Course, ICourseProperties> {
 	}
 }
 
-export const courseFactory = CourseFactory.define(Course, ({ sequence, params }) => {
-	let school: School;
-	if (params?.school) {
-		school = params.school as School;
-	} else {
-		school = schoolFactory.build();
-	}
-
+export const courseFactory = CourseFactory.define(Course, ({ sequence }) => {
 	return {
 		name: `course #${sequence}`,
 		description: `course #${sequence} description`,
 		color: '#FFFFFF',
-		school,
+		school: schoolFactory.build(),
 	};
 });

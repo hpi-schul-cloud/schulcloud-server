@@ -511,14 +511,6 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 		});
-		it('should allow to update language', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					language: 'newLanguage',
-				})
-			).resolves.not.toThrow();
-		});
 		it('should allow to update first and last name if teacher', async () => {
 			await expect(
 				accountUc.updateMyAccount(mockTeacherUser.id, {

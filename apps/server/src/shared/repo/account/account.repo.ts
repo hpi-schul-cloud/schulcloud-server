@@ -1,4 +1,3 @@
-import { EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';

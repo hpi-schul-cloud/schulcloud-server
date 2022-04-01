@@ -1,7 +1,14 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property, Index, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Index } from '@mikro-orm/core';
 import type { Role } from './role.entity';
 import type { School } from './school.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
+
+export enum LanguageType {
+	DE = 'de',
+	EN = 'en',
+	ES = 'es',
+	UA = 'ua',
+}
 
 export interface IUserProperties {
 	email: string;
@@ -10,8 +17,8 @@ export interface IUserProperties {
 	school: School;
 	roles: Role[];
 	ldapId?: string;
+	language?: LanguageType;
 	forcePasswordChange?: boolean;
-	language?: string;
 	preferences?: Record<string, unknown>;
 }
 
@@ -45,10 +52,10 @@ export class User extends BaseEntityWithTimestamps {
 	ldapId?: string;
 
 	@Property({ nullable: true })
-	forcePasswordChange?: boolean;
+	language?: LanguageType;
 
 	@Property({ nullable: true })
-	language?: string;
+	forcePasswordChange?: boolean;
 
 	@Property({ nullable: true })
 	preferences?: Record<string, unknown>;

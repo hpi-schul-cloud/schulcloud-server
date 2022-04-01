@@ -1,5 +1,5 @@
 import { userFactory, roleFactory, setupEntities } from '@shared/testing';
-import { ResolvedUserMapper } from './ResolvedUser.mapper';
+import { ResolvedUserMapper } from './resolved-user.mapper';
 import { ResolvedUserResponse } from '../controller/dto';
 
 describe('ResolvedUserMapper', () => {

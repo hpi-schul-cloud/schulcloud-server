@@ -17,7 +17,7 @@ describe('account.controller', () => {
 					useValue: {
 						changePasswordForUser: jest.fn(),
 						updateMyAccount: jest.fn(),
-						changeMyTemporaryPassword: jest.fn(),
+						replaceMyTemporaryPassword: jest.fn(),
 					},
 				},
 			],
@@ -39,7 +39,6 @@ describe('account.controller', () => {
 		const patchMyAccountParams: PatchMyAccountParams = {
 			passwordOld: 'passwordOld',
 			email: 'email',
-			language: 'language',
 			firstName: 'firstName',
 			lastName: 'lastName',
 			passwordNew: 'passwordNew',
