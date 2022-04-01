@@ -8,15 +8,15 @@ import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
 export class UserRepo extends BaseRepo<User> {
-	constructor(protected readonly em: EntityManager<MongoDriver>) {
-		super(em);
+	protected get entityName() {
+		return User;
 	}
 
 	async findById(id: EntityId, populate = false): Promise<User> {
-		const user = await this.em.findOneOrFail(User, { id });
+		const user = await this._em.findOneOrFail(User, { id });
 
 		if (populate) {
-			await this.em.populate(user, ['roles', 'school.systems']);
+			await this._em.populate(user, ['roles', 'school.systems']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -24,7 +24,7 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async findByLdapId(ldapId: string, systemId: string): Promise<User> {
-		const [users] = await this.em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
+		const [users] = await this._em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
 			const { systems } = user.school;
 			return systems && systems.getItems().find((system) => system.id === systemId);
@@ -101,7 +101,7 @@ export class UserRepo extends BaseRepo<User> {
 
 		const countPipeline = [...pipeline];
 		countPipeline.push({ $group: { _id: null, count: { $sum: 1 } } });
-		const total = (await this.em.aggregate(User, countPipeline)) as { count: number }[];
+		const total = (await this._em.aggregate(User, countPipeline)) as { count: number }[];
 		const count = total.length > 0 ? total[0].count : 0;
 		const { pagination, order } = options || {};
 
@@ -139,15 +139,15 @@ export class UserRepo extends BaseRepo<User> {
 			pipeline.push({ $limit: pagination.limit });
 		}
 
-		const userDocuments = await this.em.aggregate(User, pipeline);
+		const userDocuments = await this._em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
-		await this.em.populate(users, ['roles']);
+		const users = userDocuments.map((userDocument) => this._em.map(User, userDocument));
+		await this._em.populate(users, ['roles']);
 		return [users, count];
 	}
 
 	async update(user: User): Promise<User> {
-		await this.em.persistAndFlush(user);
+		await this._em.persistAndFlush(user);
 		return user;
 	}
 
@@ -156,7 +156,7 @@ export class UserRepo extends BaseRepo<User> {
 			const role = roles[i];
 			if (!role.roles.isInitialized(true)) {
 				// eslint-disable-next-line no-await-in-loop
-				await this.em.populate(role, ['roles']);
+				await this._em.populate(role, ['roles']);
 				// eslint-disable-next-line no-await-in-loop
 				await this.populateRoles(role.roles.getItems());
 			}
