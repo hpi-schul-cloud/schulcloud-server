@@ -1,6 +1,6 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Entity } from '@mikro-orm/core';
+import { Entity, EntityName } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
@@ -8,10 +8,16 @@ import { BaseRepo } from './base.repo';
 
 describe('BaseRepo', () => {
 	@Entity()
-	class TestEntity extends BaseEntity {}
+	class TestEntity extends BaseEntity {
+		name = 'test';
+	}
 
 	@Injectable()
-	class TestRepo extends BaseRepo<TestEntity> {}
+	class TestRepo extends BaseRepo<TestEntity> {
+		protected get entityName(): EntityName<TestEntity> {
+			return TestEntity;
+		}
+	}
 
 	let repo: TestRepo;
 	let em: EntityManager;
@@ -76,6 +82,54 @@ describe('BaseRepo', () => {
 			await expect(async () => {
 				await em.findOneOrFail(TestEntity, testEntity2.id);
 			}).rejects.toThrow(`TestEntity not found ('${testEntity2.id}')`);
+		});
+	});
+
+	describe('findOneById', () => {
+		it('should find entity', async () => {
+			const testEntity1 = new TestEntity();
+			const testEntity2 = new TestEntity();
+			await em.persistAndFlush([testEntity1, testEntity2]);
+
+			const result = await repo.findOneById(testEntity1.id);
+
+			expect(result).toEqual(testEntity1);
+		});
+
+		it('should throw if entity not found', async () => {
+			const testEntity1 = new TestEntity();
+			const testEntity2 = new TestEntity();
+			await em.persistAndFlush([testEntity1, testEntity2]);
+
+			const unknownId = new ObjectId().toHexString();
+
+			await expect(async () => {
+				await repo.findOneById(unknownId);
+			}).rejects.toThrow(`TestEntity not found ('${unknownId}')`);
+		});
+	});
+
+	describe('findOne', () => {
+		it('should find entity', async () => {
+			const testEntity1 = new TestEntity();
+			const testEntity2 = new TestEntity();
+			await em.persistAndFlush([testEntity1, testEntity2]);
+
+			const result = await repo.findOne(testEntity1.id);
+
+			expect(result).toEqual(testEntity1);
+		});
+
+		it('should throw if entity not found', async () => {
+			const testEntity1 = new TestEntity();
+			const testEntity2 = new TestEntity();
+			await em.persistAndFlush([testEntity1, testEntity2]);
+
+			const unknownValue = 'otherName';
+
+			await expect(async () => {
+				await repo.findOne({ name: unknownValue });
+			}).rejects.toThrow(`TestEntity not found ({ name: '${unknownValue}' })`);
 		});
 	});
 
