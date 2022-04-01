@@ -1,19 +1,20 @@
-import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
-import { AccountRepo } from '@shared/repo/account';
-import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import {MikroORM} from '@mikro-orm/core';
+import {ForbiddenException} from '@nestjs/common';
+import {Test, TestingModule} from '@nestjs/testing';
+import {EntityNotFoundError, InvalidOperationError, ValidationError} from '@shared/common';
+import {Account, EntityId, ICurrentUser, PermissionService, Role, School, User} from '@shared/domain';
+import {UserRepo} from '@shared/repo';
+import {AccountRepo} from '@shared/repo/account';
+import {accountFactory, schoolFactory, setupEntities, userFactory} from '@shared/testing';
 import {
 	AccountByIdParams,
 	AccountSearchListResponse,
-	AccountSearchQuery, AccountSearchResponse,
+	AccountSearchQuery,
+	AccountSearchResponse,
 	AccountSearchType
 } from '@src/modules/authentication/controller/dto';
-import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
-import { AccountUc } from './account.uc';
+import {UnauthorizedError} from '@shared/common/error/unauthorized.error';
+import {AccountUc} from './account.uc';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -124,6 +125,10 @@ describe('AccountUc', () => {
 							}
 							throw Error();
 						},
+						searchByUsername: (): Promise<Account[]> => {
+							const accounts = mockAccountIdMap.values();
+							return Promise.resolve(Array.from(accounts));
+						}
 					},
 				},
 				{
@@ -662,19 +667,27 @@ describe('AccountUc', () => {
 		it('should return one account, if search type is userId', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
-				{ type: AccountSearchType.USER_ID, value: mockStudentAccount.id } as AccountSearchQuery
+				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQuery
 			);
-			const result = new AccountSearchListResponse([new AccountSearchResponse(mockStudentAccount)], 1, 0, 10);
-			expect(accounts.data).toStrictEqual<AccountSearchListResponse>(result);
+			const expected = new AccountSearchListResponse([new AccountSearchResponse(mockStudentAccount)], 1, 0, 1);
+			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 		});
-		it('should return one or more accounts, if on or more usernames match the search term', async () => {
-			const accounts = await accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery);
-			expect(accounts.data).toBe([]);
+		it('should return one or more accounts, if search type is username', async () => {
+			const accounts = await accountUc.searchAccounts(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchQuery
+			);
+			expect(accounts.skip).toEqual(0);
+			expect(accounts.limit).toEqual(10);
+			expect(accounts.total).toBeGreaterThan(1);
+			expect(accounts.data.length).toBeGreaterThan(1);
 		});
 		it('should return an empty list, if skip is to large', async () => {
-			await expect(
-				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, {} as AccountSearchQuery)
-			).resolves.toBe([]);
+			const accounts = await accountUc.searchAccounts(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQuery
+			);
+			expect(accounts.data).toStrictEqual([]);
 		});
 		it('should throw, if skip is smaller than 0', async () => {
 			await expect(
@@ -727,6 +740,10 @@ describe('AccountUc', () => {
 			).rejects.toThrow();
 		});
 	});
+
+	describe('updateAccountById', () => {
+		// Todo tests for updateAccountById
+	})
 
 	describe('deleteAccountById', () => {
 		it('should delete an account, if the current user is a super hero', async () => {
