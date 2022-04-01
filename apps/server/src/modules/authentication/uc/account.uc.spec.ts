@@ -663,25 +663,30 @@ describe('AccountUc', () => {
 			const accounts = await accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery);
 			expect(accounts.data).toBe([]);
 		});
-		it('should throw, if search term is empty', async () => {
-			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
-				InvalidArgumentError
-			);
+		it('should return an empty list, if skip is to large', async () => {
+			await expect(
+				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, {} as AccountSearchQuery)
+			).resolves.toBe([]);
 		});
 		it('should throw, if skip is smaller than 0', async () => {
-			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
-				InvalidArgumentError
-			);
+			await expect(
+				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, { skip: -1 } as AccountSearchQuery)
+			).rejects.toThrow('Skip is less than 0.');
 		});
 		it('should throw, if limit is smaller than 1', async () => {
-			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
-				InvalidArgumentError
-			);
+			await expect(
+				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, { limit: 0 } as AccountSearchQuery)
+			).rejects.toThrow('Limit is less than 1.');
 		});
-		it('should throw, if offset is to big', async () => {
-			await expect(accountUc.searchAccounts({} as ICurrentUser, {} as AccountSearchQuery)).rejects.toThrow(
-				InvalidArgumentError
-			);
+		it('should throw, if limit is greater than 100', async () => {
+			await expect(
+				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, { limit: 101 } as AccountSearchQuery)
+			).rejects.toThrow('Limit is greater than 100.');
+		});
+		it('should throw, if user has not the right permissions', async () => {
+			await expect(
+				accountUc.searchAccounts({ userId: mockTeacherUser.id } as ICurrentUser, {} as AccountSearchQuery)
+			).rejects.toThrow(UnauthorizedError);
 		});
 	});
 

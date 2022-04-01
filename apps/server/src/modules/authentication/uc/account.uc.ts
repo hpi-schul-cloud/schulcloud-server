@@ -41,6 +41,9 @@ export class AccountUc {
 		if (limit < 1) {
 			throw new InvalidArgumentError('Limit is less than 1.');
 		}
+		if (limit > 100) {
+			throw new InvalidArgumentError('Limit is greater than 100.');
+		}
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
 		}
