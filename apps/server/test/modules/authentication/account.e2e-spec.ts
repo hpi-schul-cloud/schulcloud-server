@@ -9,7 +9,7 @@ import { roleFactory, schoolFactory, userFactory, mapUserToCurrentUser, accountF
 import {
 	ChangePasswordParams,
 	PatchMyAccountParams,
-	PutMyPasswordParams,
+	PatchMyPasswordParams,
 } from '@src/modules/authentication/controller/dto';
 import { User, ICurrentUser, Account } from '@shared/domain';
 
@@ -107,15 +107,15 @@ describe('Account Controller (e2e)', () => {
 		});
 	});
 
-	describe('[PUT] me/password', () => {
+	describe('[PATCH] me/password', () => {
 		it(`should update the current user's (temporary) password`, async () => {
 			currentUser = mapUserToCurrentUser(studentAccount.user);
-			const params: PutMyPasswordParams = {
+			const params: PatchMyPasswordParams = {
 				password: 'Valid12$',
 				confirmPassword: 'Valid12$',
 			};
 			await request(app.getHttpServer()) //
-				.put(`${basePath}/me/password`)
+				.patch(`${basePath}/me/password`)
 				.send(params)
 				.expect(200);
 
@@ -124,12 +124,12 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject if new password is weak', async () => {
 			currentUser = mapUserToCurrentUser(studentAccount.user);
-			const params: PutMyPasswordParams = {
+			const params: PatchMyPasswordParams = {
 				password: 'weak',
 				confirmPassword: 'weak',
 			};
 			await request(app.getHttpServer()) //
-				.put(`${basePath}/me/password`)
+				.patch(`${basePath}/me/password`)
 				.send(params)
 				.expect(400);
 		});

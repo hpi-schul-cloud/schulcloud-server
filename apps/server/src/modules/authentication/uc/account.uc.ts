@@ -20,6 +20,12 @@ export class AccountUc {
 		private readonly permissionService: PermissionService
 	) {}
 
+	/**
+	 * This method allows to update my (currentUser) account details.
+	 *
+	 * @param currentUser the current user
+	 * @param params account details
+	 */
 	async updateMyAccount(currentUser: EntityId, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
@@ -95,7 +101,15 @@ export class AccountUc {
 		}
 	}
 
-	async changeMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
+	/**
+	 * This method is used to replace my (currentUser) temporary password.
+	 * Callable when the current user's password was force set or this is the first login.
+	 *
+	 * @param userId the current user
+	 * @param password the new password
+	 * @param confirmPassword the new password (has to match password)
+	 */
+	async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
 			throw new InvalidOperationError('Password and confirm password do not match.');
 		}
@@ -106,30 +120,37 @@ export class AccountUc {
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
 		}
+
+		if (this.isDemoUser(user)) {
+			throw new InvalidOperationError('Demo users can not change .');
+		}
+
 		const userPreferences = <UserPreferences>user.preferences;
 
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
 			throw new InvalidOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
-		let targetAccount: Account;
+		let account: Account;
 		try {
-			targetAccount = await this.accountRepo.findByUserId(userId);
+			account = await this.accountRepo.findByUserId(userId);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
 		}
 
-		if (targetAccount.system) {
+		if (account.system) {
 			throw new InvalidOperationError('External account details can not be changed.');
 		}
 
-		if (targetAccount.password === undefined || (await this.checkPassword(password, targetAccount.password))) {
+		if (!account.password) {
+			throw new Error('The account does not have a password to compare against.');
+		} else if (await this.checkPassword(password, account.password)) {
 			throw new InvalidOperationError('New password can not be same as old password.');
 		}
 
 		try {
-			targetAccount.password = await this.calcPasswordHash(password);
-			await this.accountRepo.update(targetAccount);
+			account.password = await this.calcPasswordHash(password);
+			await this.accountRepo.update(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
 		}
@@ -141,6 +162,13 @@ export class AccountUc {
 		}
 	}
 
+	/**
+	 * This method is used to administratively change a user's password.
+	 *
+	 * @param currentUserId the current user
+	 * @param targetUserId  the target user, whose password is changed
+	 * @param passwordNew the target user's new password
+	 */
 	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<void> {
 		// load user data
 		let targetAccount: Account;
@@ -231,8 +259,10 @@ export class AccountUc {
 	}
 
 	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
-		const foundUsers = await this.userRepo.findByEmail(email);
-		const foundAccounts = await this.accountRepo.findByUsername(email);
+		const [foundUsers, foundAccounts] = await Promise.all([
+			this.userRepo.findByEmail(email),
+			this.accountRepo.findByUsername(email),
+		]);
 
 		if (
 			foundUsers.length > 1 ||

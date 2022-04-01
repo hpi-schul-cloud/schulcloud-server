@@ -2,7 +2,7 @@ import { IsString, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { passwordPattern } from './password-pattern';
 
-export class PutMyPasswordParams {
+export class PatchMyPasswordParams {
 	@IsString()
 	@Matches(passwordPattern)
 	@ApiProperty({

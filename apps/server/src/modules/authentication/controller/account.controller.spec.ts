@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
 import { AccountUc } from '../uc/account.uc';
 import { AccountController } from './account.controller';
-import { PatchMyAccountParams, PutMyPasswordParams } from './dto';
+import { PatchMyAccountParams, PatchMyPasswordParams } from './dto';
 
 describe('account.controller', () => {
 	let module: TestingModule;
@@ -48,17 +48,17 @@ describe('account.controller', () => {
 		expect(accountUc.updateMyAccount).toBeCalledWith(currentUser.userId, patchMyAccountParams);
 	});
 
-	it('should call update my password use case', async () => {
+	it('should call replace my temporary password use case', async () => {
 		const currentUser = { userId: 'userId' } as ICurrentUser;
-		const putMyPasswordParams: PutMyPasswordParams = {
+		const patchMyPasswordParams: PatchMyPasswordParams = {
 			password: 'password1',
 			confirmPassword: 'password2',
 		};
-		await accountController.updateMyPassword(currentUser, putMyPasswordParams);
-		expect(accountUc.changeMyTemporaryPassword).toBeCalledWith(
+		await accountController.replaceMyPassword(currentUser, patchMyPasswordParams);
+		expect(accountUc.replaceMyTemporaryPassword).toBeCalledWith(
 			currentUser.userId,
-			putMyPasswordParams.password,
-			putMyPasswordParams.confirmPassword
+			patchMyPasswordParams.password,
+			patchMyPasswordParams.confirmPassword
 		);
 	});
 });
