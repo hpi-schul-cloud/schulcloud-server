@@ -1,4 +1,4 @@
-import { EntityNotFoundError, ValidationError } from '@shared/common/error';
+import { AuthorizationError, EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Account, EntityId, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
@@ -39,7 +39,7 @@ export class AccountUc {
 		}
 
 		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
-			throw new Error('Dein Passwort ist nicht korrekt!');
+			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
 
 		let user: User;

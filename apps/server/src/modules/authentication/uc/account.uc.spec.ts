@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
+import { AuthorizationError, EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, PermissionService, Role, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
@@ -403,7 +403,11 @@ describe('AccountUc', () => {
 			).rejects.toThrow(InvalidOperationError);
 		});
 		it('should throw if password does not match', async () => {
-			await expect(accountUc.updateMyAccount(mockStudentUser.id, { passwordOld: 'DoesNotMatch' })).rejects.toThrow();
+			await expect(
+				accountUc.updateMyAccount(mockStudentUser.id, {
+					passwordOld: 'DoesNotMatch',
+				})
+			).rejects.toThrow(AuthorizationError);
 		});
 		it('should throw if changing own name is not allowed', async () => {
 			await expect(
