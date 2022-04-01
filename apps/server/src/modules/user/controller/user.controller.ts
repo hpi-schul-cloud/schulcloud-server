@@ -1,27 +1,39 @@
 import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 
-import { Controller, Get } from '@nestjs/common';
-import { ICurrentUser, PermissionService } from '@shared/domain';
-
+import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { UserRepo } from '@shared/repo';
-import { ResolvedUser } from './dto/ResolvedUser.dto';
+
 import { ResolvedUserMapper } from '../mapper';
+import { UserUC } from '../uc/user.uc';
+
+import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
 @Authenticate('jwt')
 @Controller('user')
 export class UserController {
-	constructor(private readonly userRepo: UserRepo, private readonly permissionService: PermissionService) {}
+	constructor(private readonly userUc: UserUC) {}
 
 	@Get('me')
-	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
-		const user = await this.userRepo.findById(currentUser.userId, true);
-		const permissions = this.permissionService.resolvePermissions(user);
+	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
+		const [user, permissions] = await this.userUc.me(currentUser.userId);
 
 		// only the root roles of the user get published
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
 
 		return resolvedUser;
+	}
+
+	@Patch('/language')
+	async changeLanguage(
+		@Body() params: ChangeLanguageParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<SuccessfulResponse> {
+		const result = await this.userUc.patchLanguage(currentUser.userId, params);
+
+		const successfulResponse = new SuccessfulResponse(result);
+
+		return successfulResponse;
 	}
 }

@@ -5,7 +5,7 @@ import { NewsTargetModel } from '@shared/domain';
 
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
-export class NewsFilterQuery {
+export class FilterNewsParams {
 	@IsOptional()
 	@IsString()
 	@IsIn(TARGET_MODEL_VALUES)

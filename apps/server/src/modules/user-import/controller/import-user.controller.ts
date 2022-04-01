@@ -1,19 +1,24 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationQuery, ParseObjectIdPipe } from '@shared/controller';
+
+import { PaginationParams, ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser, IFindOptions, ImportUser, User } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ImportUserFilterQuery } from './dto/import-user-filter.query';
-import { ImportUserListResponse, ImportUserResponse } from './dto/import-user.response';
-import { UpdateMatchParams } from './dto/update-match.params';
-import { UserMatchListResponse } from './dto/user-match.response';
 
-import { ImportUserMapper } from '../mapper/import-user.mapper';
-import { UserFilterQuery } from './dto/user-filter.query';
-import { UserMatchMapper } from '../mapper/user-match.mapper';
 import { UserImportUc } from '../uc/user-import.uc';
-import { UpdateFlagParams } from './dto/update-flag.params';
-import { ImportUserSortingQuery } from './dto/import-user-sorting.query';
+import { ImportUserMapper } from '../mapper/import-user.mapper';
+import { UserMatchMapper } from '../mapper/user-match.mapper';
+
+import {
+	FilterImportUserParams,
+	ImportUserListResponse,
+	ImportUserResponse,
+	UpdateMatchParams,
+	UserMatchListResponse,
+	FilterUserParams,
+	UpdateFlagParams,
+	SortImportUserParams,
+} from './dto';
 
 @ApiTags('UserImport')
 @Authenticate('jwt')
@@ -24,17 +29,18 @@ export class ImportUserController {
 	@Get()
 	async findAllImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: ImportUserFilterQuery,
-		@Query() sortingQuery: ImportUserSortingQuery,
-		@Query() paginationQuery: PaginationQuery
+		@Query() scope: FilterImportUserParams,
+		@Query() sortingQuery: SortImportUserParams,
+		@Query() pagination: PaginationParams
 	): Promise<ImportUserListResponse> {
-		const options: IFindOptions<ImportUser> = { pagination: paginationQuery };
+		const options: IFindOptions<ImportUser> = { pagination };
 		options.order = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
 		const query = ImportUserMapper.mapImportUserFilterQueryToDomain(scope);
 		const [importUserList, count] = await this.userImportUc.findAllImportUsers(currentUser.userId, query, options);
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = pagination;
 		const dtoList = importUserList.map((importUser) => ImportUserMapper.mapToResponse(importUser));
 		const response = new ImportUserListResponse(dtoList, count, skip, limit);
+
 		return response;
 	}
 
@@ -46,6 +52,7 @@ export class ImportUserController {
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.setMatch(currentUser.userId, importUserId, params.userId);
 		const response = ImportUserMapper.mapToResponse(result);
+
 		return response;
 	}
 
@@ -56,6 +63,7 @@ export class ImportUserController {
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.removeMatch(currentUser.userId, importUserId);
 		const response = ImportUserMapper.mapToResponse(result);
+
 		return response;
 	}
 
@@ -67,22 +75,24 @@ export class ImportUserController {
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.updateFlag(currentUser.userId, importUserId, params.flagged);
 		const response = ImportUserMapper.mapToResponse(result);
+
 		return response;
 	}
 
 	@Get('unassigned')
 	async findAllUnmatchedUsers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: UserFilterQuery,
-		@Query() paginationQuery: PaginationQuery
+		@Query() scope: FilterUserParams,
+		@Query() pagination: PaginationParams
 	): Promise<UserMatchListResponse> {
-		const options: IFindOptions<User> = { pagination: paginationQuery };
+		const options: IFindOptions<User> = { pagination };
 
 		const query = UserMatchMapper.mapToDomain(scope);
 		const [userList, total] = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
-		const { skip, limit } = paginationQuery;
+		const { skip, limit } = pagination;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserMatchListResponse(dtoList, total, skip, limit);
+
 		return response as unknown as UserMatchListResponse;
 	}
 

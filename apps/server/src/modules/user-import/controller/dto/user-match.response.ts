@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId } from 'class-validator';
-import { MatchCreatorResponse } from './match-creator.response';
-import { RoleNameResponse } from './role-name.response';
+import { MatchType } from './match-type';
+import { UserRole } from './user-role';
 
 export class UserMatchResponse {
 	constructor(props: UserMatchResponse) {
@@ -29,15 +29,15 @@ export class UserMatchResponse {
 
 	@ApiProperty({
 		description: 'list of user roles from external system: student, teacher, admin',
-		enum: RoleNameResponse,
+		enum: UserRole,
 	})
-	roleNames: RoleNameResponse[];
+	roleNames: UserRole[];
 
 	@ApiPropertyOptional({
 		description: 'match type: admin (manual) or auto (set, when names match exactly for a single user',
-		enum: MatchCreatorResponse,
+		enum: MatchType,
 	})
-	matchedBy?: MatchCreatorResponse;
+	matchedBy?: MatchType;
 }
 
 export class UserMatchListResponse extends PaginationResponse<UserMatchResponse[]> {
