@@ -1,20 +1,21 @@
-import {MikroORM} from '@mikro-orm/core';
-import {ForbiddenException} from '@nestjs/common';
-import {Test, TestingModule} from '@nestjs/testing';
-import {EntityNotFoundError, InvalidOperationError, ValidationError} from '@shared/common';
-import {Account, EntityId, ICurrentUser, PermissionService, Role, School, User} from '@shared/domain';
-import {UserRepo} from '@shared/repo';
-import {AccountRepo} from '@shared/repo/account';
-import {accountFactory, schoolFactory, setupEntities, userFactory} from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
+import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
+import { UserRepo } from '@shared/repo';
+import { AccountRepo } from '@shared/repo/account';
+import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import {
+	AccountByIdBody,
 	AccountByIdParams,
 	AccountSearchListResponse,
 	AccountSearchQuery,
 	AccountSearchResponse,
-	AccountSearchType
+	AccountSearchType,
 } from '@src/modules/authentication/controller/dto';
-import {UnauthorizedError} from '@shared/common/error/unauthorized.error';
-import {AccountUc} from './account.uc';
+import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
+import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -128,7 +129,7 @@ describe('AccountUc', () => {
 						searchByUsername: (): Promise<Account[]> => {
 							const accounts = mockAccountIdMap.values();
 							return Promise.resolve(Array.from(accounts));
-						}
+						},
 					},
 				},
 				{
@@ -743,7 +744,16 @@ describe('AccountUc', () => {
 
 	describe('updateAccountById', () => {
 		// Todo tests for updateAccountById
-	})
+		it('should throw, if the current user is no super hero', async () => {
+			await expect(
+				accountUc.updateAccountById(
+					{ userId: mockAdminUser.id } as ICurrentUser,
+					{ id: mockStudentAccount.id } as AccountByIdParams,
+					{} as AccountByIdBody
+				)
+			).rejects.toThrow(UnauthorizedError);
+		});
+	});
 
 	describe('deleteAccountById', () => {
 		it('should delete an account, if the current user is a super hero', async () => {

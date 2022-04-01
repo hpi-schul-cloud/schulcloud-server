@@ -85,9 +85,12 @@ export class AccountUc {
 		}
 
 		const account = await this.accountRepo.findById(params.id);
-		// Todo super hero dashboard can change the password
+		const user = await this.userRepo.findById(account.user.id);
+		body.password = await this.calcPasswordHash(body.password);
+		user.forcePasswordChange = true;
 		wrap(account).assign(body);
 		await this.accountRepo.update(account);
+		await this.userRepo.update(user);
 		return new AccountByIdResponse(account);
 	}
 
