@@ -38,52 +38,6 @@ describe('account repo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('create', () => {
-		it('should create and return an account', async () => {
-			let account = new Account({
-				username: 'Max Mustermann',
-				user: userFactory.build(),
-				system: systemFactory.build(),
-			});
-			expect(account.id).toBeNull();
-			account = await repo.create(account);
-			expect(account.id).not.toBeNull();
-			expect(account.id).toBeDefined();
-		});
-	});
-
-	describe('read', () => {
-		it('should return an account', async () => {
-			const account = await repo.read(mockAccounts[0].id);
-			expect(account).toEqual<Account>(mockAccounts[0]);
-		});
-
-		it('should throw entity not found error', async () => {
-			await expect(repo.read('')).rejects.toThrowError('Account entity not found.');
-		});
-	});
-
-	describe('update', () => {
-		it('should update and return an account', async () => {
-			const account1 = mockAccounts[0];
-			account1.activated = true;
-			await repo.update(account1);
-			const account2 = await repo.read(mockAccounts[0].id);
-			expect(account1).toEqual(account2);
-		});
-	});
-
-	describe('delete', () => {
-		it('should delete and return an account', async () => {
-			const account = await repo.deleteOneById(mockAccounts[0].id);
-			await expect(em.find(Account, { id: account.id })).resolves.toEqual([]);
-		});
-
-		it('should throw entity not found error', async () => {
-			await expect(repo.deleteOneById('')).rejects.toThrowError('Account entity not found.');
-		});
-	});
-
 	describe('findByUserId', () => {
 		it('should findByUserId', async () => {
 			const accountToFind = accountFactory.build();
@@ -97,7 +51,7 @@ describe('account repo', () => {
 		it('should find by User and return an account', async () => {
 			const user = userFactory.buildWithId();
 			const account = new Account({ username: 'Max Mustermann', user });
-			await repo.create(account);
+			await repo.save([account]);
 
 			const result = await repo.findOneByUser(user);
 			expect(result).toEqual(account);

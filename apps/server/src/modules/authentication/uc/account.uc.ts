@@ -27,7 +27,7 @@ export class AccountUc {
 
 	private async updatePassword(account: Account, password: string) {
 		account.password = await bcrypt.hash(password, 10);
-		await this.accountRepo.update(account);
+		await this.accountRepo.save([account]);
 	}
 
 	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
@@ -92,7 +92,9 @@ export class AccountUc {
 		}
 	}
 
-	remove(accountId: EntityId): Promise<Account> {
-		return this.accountRepo.deleteOneById(accountId);
+	async remove(accountId: EntityId): Promise<Account> {
+		const entity = await this.accountRepo.findOneById(accountId);
+		await this.accountRepo.delete([entity]);
+		return entity;
 	}
 }

@@ -52,13 +52,13 @@ describe('AccountUc', () => {
 						create: (): Promise<Account> => {
 							return Promise.resolve(accountFactory.buildWithId());
 						},
-						read: (): Promise<Account> => {
+						findOneById: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
 						},
 						// update: (account: Account): Promise<Account> => {
 						// 	return Promise.resolve(account);
 						// },
-						update: jest.fn().mockImplementation((account: Account): Promise<Account> => {
+						save: jest.fn().mockImplementation((account: Account): Promise<Account> => {
 							return Promise.resolve(account);
 						}),
 						delete: (): Promise<Account> => {
@@ -219,7 +219,7 @@ describe('AccountUc', () => {
 			expect(mockTeacherUser.forcePasswordChange).toBe(true);
 		});
 		it('should reject if update in user repo fails', async () => {
-			(accountRepo.update as jest.Mock).mockRejectedValueOnce(new Error('account not found'));
+			(accountRepo.save as jest.Mock).mockRejectedValueOnce(new Error('account not found'));
 			await expect(
 				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
 			).rejects.toThrow(EntityNotFoundError);
@@ -272,6 +272,25 @@ describe('AccountUc', () => {
 					accountUc.changePasswordForUser(mockAdminUser.id, mockUserWithoutRole.id, 'DummyPasswd!1')
 				).rejects.toThrow(ForbiddenException);
 			});
+		});
+	});
+
+	describe('remove', () => {
+		it('should call Account.findOneById with id', async () => {
+			const spy = jest.spyOn(accountRepo, 'findOneById');
+			await accountUc.remove(mockAdminUser.id);
+			expect(spy).toBeCalledWith(mockAdminUser.id);
+		});
+
+		it('should call Account.delete with mockAdminAccount', async () => {
+			const spy = jest.spyOn(accountRepo, 'delete');
+			await accountUc.remove(mockAdminAccount.id);
+			expect(spy).toBeCalledWith([mockAdminAccount]);
+		});
+
+		it('should return mockAdminAccount', async () => {
+			const result = await accountUc.remove(mockAdminAccount.id);
+			expect(result).toBe(mockAdminAccount);
 		});
 	});
 });
