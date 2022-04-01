@@ -1,7 +1,14 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property, Index, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Index } from '@mikro-orm/core';
 import type { Role } from './role.entity';
 import type { School } from './school.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
+
+export enum LanguageType {
+	DE = 'de',
+	EN = 'en',
+	ES = 'es',
+	UA = 'ua',
+}
 
 export interface IUserProperties {
 	email: string;
@@ -10,6 +17,9 @@ export interface IUserProperties {
 	school: School;
 	roles: Role[];
 	ldapId?: string;
+	language?: LanguageType;
+	forcePasswordChange?: boolean;
+	preferences?: Record<string, unknown>;
 }
 
 @Entity({ tableName: 'users' })
@@ -41,6 +51,15 @@ export class User extends BaseEntityWithTimestamps {
 	@Index()
 	ldapId?: string;
 
+	@Property({ nullable: true })
+	language?: LanguageType;
+
+	@Property({ nullable: true })
+	forcePasswordChange?: boolean;
+
+	@Property({ nullable: true })
+	preferences?: Record<string, unknown>;
+
 	constructor(props: IUserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -49,5 +68,7 @@ export class User extends BaseEntityWithTimestamps {
 		this.school = props.school;
 		this.roles.set(props.roles);
 		this.ldapId = props.ldapId;
+		this.forcePasswordChange = props.forcePasswordChange;
+		this.preferences = props.preferences ?? {};
 	}
 }

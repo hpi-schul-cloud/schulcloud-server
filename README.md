@@ -1,4 +1,4 @@
-# HPI Schul-Cloud Server
+# Schul-Cloud Server
 
 Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 Master: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)

@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
 import { IsMongoId, IsString } from 'class-validator';
 import type { UserMatchResponse } from '.';
-import { RoleNameResponse } from './role-name.response';
+import { UserRole } from './user-role';
 
 export class ImportUserResponse {
 	constructor(props: ImportUserResponse) {
@@ -44,9 +44,9 @@ export class ImportUserResponse {
 
 	@ApiProperty({
 		description: 'list of user roles from external system: student, teacher, admin',
-		enum: RoleNameResponse,
+		enum: UserRole,
 	})
-	roleNames: RoleNameResponse[];
+	roleNames: UserRole[];
 
 	@ApiProperty({ description: 'names of classes the user attends from external system' })
 	classNames: string[];

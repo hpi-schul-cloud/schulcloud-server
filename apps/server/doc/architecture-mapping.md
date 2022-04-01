@@ -17,8 +17,8 @@ src/ // sourcecode & unit tests
                 - index.ts // exports all entities
             - controller/ // where controllers define the api
                 - dto/ // dto's define api in/out types as a class with annotations
-                    - <action->[param|query].ts // (like create-user-param.ts or pagination.query)
-                    - <data->[response].ts // (like create-user-response.ts)
+                    - <action->[params].ts // (like create-user.params.ts)
+                    - <data->[response].ts // (like create-user.response.ts)
                     - index.ts // exports all dto's
                 - <module>.controller.ts // defines rest api, references main service file
                 - <other>.controller.ts // think about a new module when require multiple controllers :)
@@ -179,7 +179,7 @@ Global settings of the core-module ensure **request/response validation** agains
 
 #### File naming
 
-Complex input DTOs are defined like [create-news].param.ts (class-name: CreateNewsParam) or [pagination].query.ts (class-name: PaginationQuery)
+Complex input DTOs are defined like [create-news].params.ts (class-name: CreateNewsParams).
 
 When DTO's are shared between multiple modules, locate them in the layer-related shared folder.
 

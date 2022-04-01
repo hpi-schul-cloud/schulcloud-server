@@ -58,7 +58,7 @@
 				},
 				"AVAILABLE_LANGUAGES": {
 					"type": "string",
-					"default": "de,en,es",
+					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
 			}
@@ -261,6 +261,42 @@
 				}
 			}
 		},
+		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) feature."
+		},
+		"IDENTITY_MANAGEMENT": {
+			"type": "object",
+			"description": "Identity management server properties.",
+			"properties": {
+				"URI": {
+					"type": "string",
+					"default" : null,
+					"description": "The ErWIn IDM base URI."
+				},
+				"TENANT": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM tenant."
+				},
+				"ADMIN_CLIENTID": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin client."
+				},
+				"ADMIN_USER": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin user."
+				},
+				"ADMIN_PASSWORD": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin password."
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -327,7 +363,7 @@
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
 		"S3_KEY": {
@@ -369,12 +405,12 @@
 			"type": "string",
 			"description": "Password for the antivirus service, only used for legacy file implementation"
 		},
-		"ANTIVIRUS_EXCHANGE" : {
+		"ANTIVIRUS_EXCHANGE": {
 			"type": "string",
 			"default": "antivirus",
 			"description": "rabbitmq exchange name for antivirus"
 		},
-		"ANTIVIRUS_ROUTING_KEY" : {
+		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
 			"default": "scan_file",
 			"description": "rabbitmq routing key"
@@ -733,6 +769,26 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for course sharing feature."
+		},
+		"FEATURE_LESSON_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for lesson sharing feature."
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
+		},
+		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
+			"type": "string",
+			"default": "",
+			"description": "SystemId for migration of users from system"
+		},
+		"FEATURE_COURSE_COPY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
 		}
 	},
 	"required": [
@@ -760,7 +816,23 @@
 				}
 			},
 			"then": {
-				"required": ["PROMETHEUS"]
+				"required": [
+					"PROMETHEUS"
+				]
+			}
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_USER_MIGRATION_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"FEATURE_USER_MIGRATION_SYSTEM_ID"
+				]
 			}
 		},
 		"ANTIVIRUS": {

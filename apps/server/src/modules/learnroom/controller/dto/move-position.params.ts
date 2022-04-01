@@ -5,7 +5,7 @@ import { ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
  * DTO for Updating the position of a Dashboard Element.
  */
 
-export class MoveElementPosition {
+export class MoveElementPositionParams {
 	@IsNumber()
 	@Min(0)
 	@ApiProperty()
@@ -26,9 +26,9 @@ export class MoveElementPosition {
 export class MoveElementParams {
 	@ValidateNested()
 	@ApiProperty()
-	from!: MoveElementPosition;
+	from!: MoveElementPositionParams;
 
 	@ValidateNested()
 	@ApiProperty()
-	to!: MoveElementPosition;
+	to!: MoveElementPositionParams;
 }

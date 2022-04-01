@@ -89,7 +89,7 @@
 			"firstLogin": true
 		},
 		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f7"
+			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"roles": [
 			{
