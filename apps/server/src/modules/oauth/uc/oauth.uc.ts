@@ -9,7 +9,8 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryptio
 import { lastValueFrom } from 'rxjs';
 import QueryString from 'qs';
 import jwt from 'jsonwebtoken';
-import jwksClient, { JwksClient, SigningKey } from 'jwks-rsa';
+// import jwksClient, { JwksClient, SigningKey } from 'jwks-rsa';
+import JwksRsa from 'jwks-rsa';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -90,11 +91,11 @@ export class OauthUc {
 	}
 
 	async _getPublicKey(system: System): Promise<string> {
-		const client: JwksClient = jwksClient({
+		const client: JwksRsa.JwksClient = JwksRsa({
 			cache: true,
 			jwksUri: system.oauthConfig.jwksEndpoint,
 		});
-		const key: SigningKey = await client.getSigningKey();
+		const key: JwksRsa.SigningKey = await client.getSigningKey();
 		return key.getPublicKey();
 	}
 

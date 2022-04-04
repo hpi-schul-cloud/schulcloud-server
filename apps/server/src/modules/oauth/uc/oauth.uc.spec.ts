@@ -13,11 +13,23 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
 import { NotFoundException } from '@nestjs/common';
-import jwksClient from 'jwks-rsa';
 import jwt from 'jsonwebtoken';
 import { OauthUc } from '.';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+
+jest.mock('jwks-rsa', () => {
+	return () => ({
+		getKeys: jest.fn(),
+		getSigningKey: jest.fn().mockResolvedValue({
+			kid: 'kid',
+			alg: 'alg',
+			getPublicKey: jest.fn().mockReturnValue('publicKey'),
+			rsaPublicKey: 'publicKey',
+		}),
+		getSigningKeys: jest.fn(),
+	});
+});
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
@@ -133,7 +145,7 @@ describe('OAuthUc', () => {
 
 	describe('startOauth', () => {
 		it('should extract query to code as string', async () => {
-			// jest.spyOn(OauthUc, 'validateToken').mockResolvedValue({ uuid: '123' });
+			jest.spyOn(service, 'validateToken').mockResolvedValue({ uuid: '123' });
 			const response = await service.startOauth(defaultQuery, defaultSystemId);
 			expect(response).toEqual({ jwt: defaultJWT, idToken: defaultJWT, logoutEndpoint: 'mock_logoutEndpoint' });
 		});
@@ -171,19 +183,6 @@ describe('OAuthUc', () => {
 
 	describe('_getPublicKey', () => {
 		it('should get public key from the external server', async () => {
-			jest.spyOn(jwksClient, 'JwksClient').mockImplementation(() => {
-				return {
-					getKeys: jest.fn(),
-					getSigningKey: jest.fn().mockResolvedValue({
-						kid: 'kid',
-						alg: 'alg',
-						getPublicKey: jest.fn().mockReturnValue('publicKey'),
-						rsaPublicKey: 'publicKey',
-					}),
-					getSigningKeys: jest.fn(),
-					test: 'testValue',
-				};
-			});
 			const defaultSystem = systemFactory.build();
 			const publicKey = await service._getPublicKey(defaultSystem);
 			expect(publicKey).toStrictEqual('publicKey');
@@ -193,12 +192,12 @@ describe('OAuthUc', () => {
 	describe('validateToken', () => {
 		it('should validate id_token and return it decoded', async () => {
 			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
-				return { uuid: '123' };
+				return { uuid: '123456' };
 			});
 			const defaultSystem = systemFactory.build();
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
 			const decodedJwt = await service.validateToken(defaultJWT, defaultSystem);
-			expect(decodedJwt.uuid).toStrictEqual('123');
+			expect(decodedJwt.uuid).toStrictEqual('123456');
 		});
 		it('should throw an error', async () => {
 			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
