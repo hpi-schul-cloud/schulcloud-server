@@ -9,7 +9,6 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryptio
 import { lastValueFrom } from 'rxjs';
 import QueryString from 'qs';
 import jwt from 'jsonwebtoken';
-// import jwksClient, { JwksClient, SigningKey } from 'jwks-rsa';
 import JwksRsa from 'jwks-rsa';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
