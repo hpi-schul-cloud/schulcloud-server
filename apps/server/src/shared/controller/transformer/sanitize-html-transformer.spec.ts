@@ -21,16 +21,16 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing everything but inline tags', () => {
-		it('should remove all html', () => {
+	describe('when sanitizing inline formatting', () => {
+		it('should remove all html but inline tags', () => {
 			const plainString = { excerpt: '<h1><b>html text</b></h1>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.excerpt).toEqual('<b>html text</b>');
 		});
 	});
 
-	describe('when sanitizing everything but richtext tags', () => {
-		it('should remove all html', () => {
+	describe('when sanitizing richtext formatting', () => {
+		it('should remove all html but richtext tags', () => {
 			const plainString = { content: '<h1><b>html text</b></h1><script>alert("foobar");</script><style></style>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.content).toEqual('<h1><b>html text</b></h1>');
