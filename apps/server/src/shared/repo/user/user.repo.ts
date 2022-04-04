@@ -1,4 +1,4 @@
-import { QueryOrderMap, QueryOrderNumeric, wrap } from '@mikro-orm/core';
+import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
@@ -144,6 +144,12 @@ export class UserRepo extends BaseRepo<User> {
 		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
 		await this.em.populate(users, ['roles']);
 		return [users, count];
+	}
+
+	async findByEmail(email: string): Promise<User[]> {
+		// find mail case-insensitive by regex
+		const user = await this.em.find(User, { email: new RegExp(`^${email.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i') });
+		return user;
 	}
 
 	async update(user: User): Promise<User> {
