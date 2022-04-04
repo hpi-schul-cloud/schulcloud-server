@@ -18,6 +18,7 @@ module.exports = async (context) => {
 				'currentYear',
 				'inMaintenanceSince',
 				'inMaintenance',
+				'inUserMigration',
 				'enableStudentTeamCreation',
 				'language',
 				'timezone',
