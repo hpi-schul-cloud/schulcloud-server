@@ -58,7 +58,7 @@
 				},
 				"AVAILABLE_LANGUAGES": {
 					"type": "string",
-					"default": "de,en,es",
+					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
 			}
@@ -774,6 +774,21 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
+		},
+		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
+			"type": "string",
+			"default": "",
+			"description": "SystemId for migration of users from system"
+		},
+		"FEATURE_COURSE_COPY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
 		}
 	},
 	"required": [
@@ -801,7 +816,23 @@
 				}
 			},
 			"then": {
-				"required": ["PROMETHEUS"]
+				"required": [
+					"PROMETHEUS"
+				]
+			}
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_USER_MIGRATION_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"FEATURE_USER_MIGRATION_SYSTEM_ID"
+				]
 			}
 		},
 		"ANTIVIRUS": {

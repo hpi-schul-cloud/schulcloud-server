@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionService } from '@shared/domain';
-import { AccountRepo, ImportUserRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { UserImportUc } from '../uc/user-import.uc';
 import { ImportUserController } from './import-user.controller';
 
@@ -25,6 +25,10 @@ describe('ImportUserController', () => {
 				},
 				{
 					provide: SchoolRepo,
+					useValue: {},
+				},
+				{
+					provide: SystemRepo,
 					useValue: {},
 				},
 				{
