@@ -4,7 +4,7 @@ import { Account, EntityId, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
-import { InvalidOperationError } from '@shared/common/error/invalid-operation.error';
+import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
 import { PatchMyAccountParams } from '../controller/dto';
 
 type UserPreferences = {
@@ -35,7 +35,7 @@ export class AccountUc {
 		}
 
 		if (account.system) {
-			throw new InvalidOperationError('External account details can not be changed.');
+			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
 		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
@@ -47,6 +47,10 @@ export class AccountUc {
 			user = await this.userRepo.findById(currentUser, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
+		}
+
+		if (this.isDemoUser(user)) {
+			throw new ForbiddenOperationError('Demo users can not change their account details.');
 		}
 
 		let updateUser = false;
@@ -66,14 +70,14 @@ export class AccountUc {
 
 		if (params.firstName && user.firstName !== params.firstName) {
 			if (!this.hasPermissionsToChangeOwnName(user)) {
-				throw new InvalidOperationError('No permission to change first name');
+				throw new ForbiddenOperationError('No permission to change first name');
 			}
 			user.firstName = params.firstName;
 			updateUser = true;
 		}
 		if (params.lastName && user.lastName !== params.lastName) {
 			if (!this.hasPermissionsToChangeOwnName(user)) {
-				throw new InvalidOperationError('No permission to change last name');
+				throw new ForbiddenOperationError('No permission to change last name');
 			}
 			user.lastName = params.lastName;
 			updateUser = true;
@@ -105,7 +109,7 @@ export class AccountUc {
 	 */
 	async replaceMyTemporaryPassword(userId: EntityId, password: string, confirmPassword: string): Promise<void> {
 		if (password !== confirmPassword) {
-			throw new InvalidOperationError('Password and confirm password do not match.');
+			throw new ForbiddenOperationError('Password and confirm password do not match.');
 		}
 
 		let user: User;
@@ -116,13 +120,13 @@ export class AccountUc {
 		}
 
 		if (this.isDemoUser(user)) {
-			throw new InvalidOperationError('Demo users can not change .');
+			throw new ForbiddenOperationError('Demo users can not change their password.');
 		}
 
 		const userPreferences = <UserPreferences>user.preferences;
 
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
-			throw new InvalidOperationError('The password is not temporary, hence can not be changed.');
+			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
 		let account: Account;
@@ -133,13 +137,13 @@ export class AccountUc {
 		}
 
 		if (account.system) {
-			throw new InvalidOperationError('External account details can not be changed.');
+			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
 		if (!account.password) {
 			throw new Error('The account does not have a password to compare against.');
 		} else if (await this.checkPassword(password, account.password)) {
-			throw new InvalidOperationError('New password can not be same as old password.');
+			throw new ForbiddenOperationError('New password can not be same as old password.');
 		}
 
 		try {

@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationError, EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
+import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, PermissionService, Role, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
@@ -42,11 +42,8 @@ describe('AccountUc', () => {
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
-
-	const mockUserIdMap = new Map<string, User>();
-	const mockAccountUserIdMap = new Map<string, Account>();
-	const mockAccountUsernameMap = new Map<string, Account>();
-	const mockUserMailMap = new Map<string, User>();
+	let mockUsers: User[];
+	let mockAccounts: Account[];
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -79,7 +76,7 @@ describe('AccountUc', () => {
 							return Promise.resolve(mockAdminAccount);
 						},
 						findByUserId: (userId: EntityId): Promise<Account> => {
-							const account = mockAccountUserIdMap.get(userId);
+							const account = mockAccounts.find((mockAccount) => mockAccount.user.id === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -90,7 +87,7 @@ describe('AccountUc', () => {
 							throw Error();
 						},
 						findByUsername: (username: string): Promise<Account[]> => {
-							const account = mockAccountUsernameMap.get(username);
+							const account = mockAccounts.find((mockAccount) => mockAccount.username === username);
 
 							if (account) {
 								return Promise.resolve([account]);
@@ -99,7 +96,7 @@ describe('AccountUc', () => {
 								return Promise.resolve([mockExternalUserAccount]);
 							}
 							if (username === 'multiple@account.username') {
-								return Promise.resolve(Array.from(mockAccountUsernameMap.values()));
+								return Promise.resolve(mockAccounts);
 							}
 							return Promise.resolve([]);
 						},
@@ -109,14 +106,14 @@ describe('AccountUc', () => {
 					provide: UserRepo,
 					useValue: {
 						findById: (userId: EntityId): Promise<User> => {
-							const user = mockUserIdMap.get(userId);
+							const user = mockUsers.find((mockUser) => mockUser.id === userId);
 							if (user) {
 								return Promise.resolve(user);
 							}
 							throw Error();
 						},
 						findByEmail: (email: string): Promise<User[]> => {
-							const user = mockUserMailMap.get(email);
+							const user = mockUsers.find((mockUser) => mockUser.email === email);
 
 							if (user) {
 								return Promise.resolve([user]);
@@ -125,7 +122,7 @@ describe('AccountUc', () => {
 								return Promise.resolve([mockExternalUser]);
 							}
 							if (email === 'multiple@user.email') {
-								return Promise.resolve(Array.from(mockUserMailMap.values()));
+								return Promise.resolve(mockUsers);
 							}
 							return Promise.resolve([]);
 						},
@@ -252,7 +249,7 @@ describe('AccountUc', () => {
 		});
 		mockExternalUserAccount = accountFactory.buildWithId({ user: mockExternalUser, password: defaultPasswordHash });
 
-		const mockUsers: User[] = [
+		mockUsers = [
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
@@ -267,7 +264,7 @@ describe('AccountUc', () => {
 			mockUserWithoutAccount,
 		];
 
-		const mockAccounts: Account[] = [
+		mockAccounts = [
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
@@ -280,24 +277,15 @@ describe('AccountUc', () => {
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
 		];
-
-		for (let i = 0; i < mockUsers.length; i += 1) {
-			mockUserIdMap.set(mockUsers[i].id, mockUsers[i]);
-			mockUserMailMap.set(mockUsers[i].email, mockUsers[i]);
-		}
-		for (let i = 0; i < mockAccounts.length; i += 1) {
-			mockAccountUserIdMap.set(mockAccounts[i].user.id, mockAccounts[i]);
-			mockAccountUsernameMap.set(mockAccounts[i].username, mockAccounts[i]);
-		}
 	});
 
 	describe('changePasswordForUser', () => {
-		it(`should throw if target user's account does not exist`, async () => {
+		it("should throw if target user's account does not exist", async () => {
 			await expect(
 				accountUc.changePasswordForUser(mockAdminUser.id, mockUserWithoutAccount.id, 'DummyPasswd!2')
 			).rejects.toThrow(EntityNotFoundError);
 		});
-		it(`should throw if target users does not exist`, async () => {
+		it('should throw if target users does not exist', async () => {
 			await expect(
 				accountUc.changePasswordForUser(mockAdminUser.id, 'accountWithoutUser', defaultPassword)
 			).rejects.toThrow(EntityNotFoundError);
@@ -307,7 +295,7 @@ describe('AccountUc', () => {
 				EntityNotFoundError
 			);
 		});
-		it('should allow an admin to update a user`s password', async () => {
+		it("should allow an admin to update a user's password", async () => {
 			const previousPasswordHash = mockTeacherAccount.password;
 			expect(mockTeacherAccount.user.forcePasswordChange).toBeUndefined();
 			await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, defaultPassword);
@@ -400,7 +388,7 @@ describe('AccountUc', () => {
 				accountUc.updateMyAccount(mockExternalUserAccount.user.id, {
 					passwordOld: defaultPassword,
 				})
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if password does not match', async () => {
 			await expect(
@@ -415,13 +403,13 @@ describe('AccountUc', () => {
 					passwordOld: defaultPassword,
 					firstName: 'newFirstName',
 				})
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
 					passwordOld: defaultPassword,
 					lastName: 'newLastName',
 				})
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should allow to update email', async () => {
 			await expect(
@@ -557,6 +545,22 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 		});
+		it('should throw if user is a demo student', async () => {
+			await expect(
+				accountUc.updateMyAccount(mockDemoStudentAccount.user.id, {
+					passwordOld: defaultPassword,
+					passwordNew: 'DummyPasswd!2',
+				})
+			).rejects.toThrow(ForbiddenOperationError);
+		});
+		it('should throw if user is a demo teacher', async () => {
+			await expect(
+				accountUc.updateMyAccount(mockDemoTeacherAccount.user.id, {
+					passwordOld: defaultPassword,
+					passwordNew: 'DummyPasswd!2',
+				})
+			).rejects.toThrow(ForbiddenOperationError);
+		});
 		it('should throw if user can not be updated', async () => {
 			await expect(
 				accountUc.updateMyAccount(mockTeacherUser.id, {
@@ -579,7 +583,7 @@ describe('AccountUc', () => {
 		it('should throw if passwords do not match', async () => {
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, 'FooPasswd!1')
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 
 		it('should throw if account does not exist', async () => {
@@ -595,21 +599,21 @@ describe('AccountUc', () => {
 		it('should throw if account is external', async () => {
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockExternalUserAccount.user.id, defaultPassword, defaultPassword)
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if not the users password is temporary', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
 			mockStudentAccount.user.preferences = { firstLogin: true };
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, defaultPassword)
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if old password is the same as new password', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
 			mockStudentAccount.user.preferences = { firstLogin: false };
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, defaultPassword)
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if old password is undefined', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
@@ -638,14 +642,14 @@ describe('AccountUc', () => {
 			mockDemoStudentAccount.user.preferences = { firstLogin: false };
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockDemoStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if user is a demo teacher', async () => {
 			mockDemoTeacherAccount.user.forcePasswordChange = false;
 			mockDemoTeacherAccount.user.preferences = { firstLogin: false };
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockDemoTeacherAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(InvalidOperationError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if user can not be updated', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;

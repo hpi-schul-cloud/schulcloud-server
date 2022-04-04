@@ -1,13 +1,13 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from './business.error';
 
-export class InvalidOperationError extends BusinessError {
+export class ForbiddenOperationError extends BusinessError {
 	constructor(message?: string, details?: Record<string, unknown>) {
 		super(
 			{
-				type: 'INVALID_OPERATION',
-				title: 'Invalid Operation Error',
-				defaultMessage: message ?? 'An invalid operation error occurred.',
+				type: 'FORBIDDEN_OPERATION',
+				title: 'Forbidden Operation Error',
+				defaultMessage: message ?? 'A forbidden operation error occurred.',
 			},
 			HttpStatus.FORBIDDEN,
 			details
