@@ -743,7 +743,6 @@ describe('AccountUc', () => {
 	});
 
 	describe('updateAccountById', () => {
-		// Todo tests for updateAccountById
 		it('should update, if the current user is a super hero', async () => {
 			await expect(
 				accountUc.updateAccountById(
@@ -756,6 +755,21 @@ describe('AccountUc', () => {
 					} as AccountByIdBody
 				)
 			).resolves.not.toThrow();
+		});
+		it('should set user.forcePasswordChange to true', async () => {
+			expect(mockStudentUser.forcePasswordChange).toBeFalsy();
+			await expect(
+				accountUc.updateAccountById(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ id: mockStudentAccount.id } as AccountByIdParams,
+					{
+						username: mockStudentAccount.username,
+						password: mockStudentAccount.password,
+						activated: mockStudentAccount.activated,
+					} as AccountByIdBody
+				)
+			).resolves.not.toThrow();
+			expect(mockStudentUser.forcePasswordChange).toBe(true);
 		});
 		it('should throw, if the current user is no super hero', async () => {
 			await expect(
