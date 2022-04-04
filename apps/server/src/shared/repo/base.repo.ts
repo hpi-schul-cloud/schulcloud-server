@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { AnyEntity, EntityName, Primary, FilterQuery } from '@mikro-orm/core';
+import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { BaseEntity, EntityId } from '@shared/domain';
 
 /**
@@ -32,24 +32,7 @@ export abstract class BaseRepo<T extends BaseEntity> {
 		return entity;
 	}
 
-	persist(entity: T): T {
-		this._em.persist(entity);
-		return entity;
-	}
-
-	async persistAndFlush(entity: T): Promise<T> {
-		await this._em.persistAndFlush(entity);
-		return entity;
-	}
-
-	async flush(): Promise<void> {
-		await this._em.flush();
-	}
-
-	getObjectReference<Entity extends AnyEntity<Entity>>(
-		entityName: EntityName<Entity>,
-		id: Primary<Entity> | Primary<Entity>[]
-	): Entity {
-		return this._em.getReference(entityName, id);
+	async populate(entities: T[], keys: string[]) {
+		await this._em.populate(entities, keys as never[]);
 	}
 }
