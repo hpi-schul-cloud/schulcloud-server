@@ -37,6 +37,15 @@ export class AccountController {
 		return this.accountUc.findAccountById(currentUser, params);
 	}
 
+	// IMPORTANT!!!
+	// updateMyAccount has to occur before updateAccountById, because Nest.js
+	// will always use the first path match and me will be treated as a path parameter
+	// (some e2e tests might fail, if the method order is changed)
+	@Patch('me')
+	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
+		return this.accountUc.updateMyAccount(currentUser.userId, params);
+	}
+
 	@Patch(':id')
 	async updateAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -61,11 +70,6 @@ export class AccountController {
 		@Body() { password }: ChangePasswordParams
 	): Promise<void> {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
-	}
-
-	@Patch('me')
-	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
-		return this.accountUc.updateMyAccount(currentUser.userId, params);
 	}
 
 	@Put('me/password')
