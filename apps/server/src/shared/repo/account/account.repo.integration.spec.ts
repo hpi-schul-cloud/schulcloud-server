@@ -71,6 +71,10 @@ describe('account repo', () => {
 			const account2 = await repo.read(mockAccounts[0].id);
 			expect(account1).toEqual(account2);
 		});
+
+		it('should throw entity not found error', async () => {
+			await expect(repo.update({ id: '' } as Account)).rejects.toThrowError();
+		});
 	});
 
 	describe('delete', () => {
@@ -114,6 +118,48 @@ describe('account repo', () => {
 			await expect(async () => repo.findOneByUser({} as unknown as User)).rejects.toThrowError(
 				'Account not found ({ user: null })'
 			);
+		});
+	});
+	describe('findByUsername', () => {
+		it('should find account by user name', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const account = accountFactory.build({ username: originalUsername });
+			await em.persistAndFlush([account]);
+			em.clear();
+
+			const result = await repo.findByUsername('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+		});
+		it('should find account by user name, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const account = accountFactory.build({ username: originalUsername });
+			await em.persistAndFlush([account]);
+			em.clear();
+
+			let result: Account[];
+
+			result = await repo.findByUsername('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+
+			result = await repo.findByUsername('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+		});
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const account = accountFactory.build({ username: originalUsername });
+			await em.persistAndFlush([account]);
+			em.clear();
+
+			let result: Account[];
+
+			result = await repo.findByUsername('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
+
+			result = await repo.findByUsername('.*');
+			expect(result).toHaveLength(0);
 		});
 	});
 });

@@ -1,4 +1,3 @@
-import { EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';
@@ -8,9 +7,7 @@ import { User } from '@shared/domain/entity/user.entity';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
-	private get repo(): EntityRepository<Account> {
-		return this.em.getRepository(Account);
-	}
+	repo = this.em.getRepository(Account);
 
 	async create(account: Account): Promise<Account> {
 		await this.repo.persistAndFlush(account);
@@ -52,5 +49,13 @@ export class AccountRepo extends BaseRepo<Account> {
 
 	async findOneByUser(user: User): Promise<Account> {
 		return this.findByUserId(user.id);
+	}
+
+	async findByUsername(userName: string): Promise<Account[]> {
+		const account = await this.repo.find({
+			// find mail case-insensitive by regex
+			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
+		});
+		return account;
 	}
 }
