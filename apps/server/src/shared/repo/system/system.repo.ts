@@ -1,11 +1,9 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { System } from '@shared/domain';
 
 @Injectable()
-export class SystemRepo {
-	constructor(private readonly em: EntityManager) {}
-
+export class SystemRepo extends BaseRepo<System> {
 	async findById(id: string): Promise<System> {
 		const system = await this.em.findOneOrFail(System, { id });
 		return system;
