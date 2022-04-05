@@ -69,6 +69,7 @@ export class User extends BaseEntityWithTimestamps {
 		this.roles.set(props.roles);
 		this.ldapId = props.ldapId;
 		this.forcePasswordChange = props.forcePasswordChange;
+		this.language = props.language;
 		this.preferences = props.preferences ?? {};
 	}
 }
