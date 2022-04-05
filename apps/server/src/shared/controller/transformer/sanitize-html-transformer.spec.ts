@@ -31,7 +31,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 
 	describe('when sanitizing richtext formatting', () => {
 		it('should remove all html but richtext tags', () => {
-			const plainString = { content: '<h1><b>html text</b></h1><script>alert("foobar");</script><style></style>' };
+			const plainString = { content: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.content).toEqual('<h1><b>html text</b></h1>');
 		});
