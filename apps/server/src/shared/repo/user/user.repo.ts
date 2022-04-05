@@ -1,9 +1,9 @@
-import { QueryOrderMap, QueryOrderNumeric, wrap } from '@mikro-orm/core';
-import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
+import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { BaseRepo } from '@shared/repo/base.repo';
 import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
@@ -163,11 +163,11 @@ export class UserRepo extends BaseRepo<User> {
 		}
 	}
 
-	persist(user: User) {
+	saveWithoutFlush(user: User): void {
 		this._em.persist(user);
 	}
 
-	async flush() {
+	async flush(): Promise<void> {
 		await this._em.flush();
 	}
 }

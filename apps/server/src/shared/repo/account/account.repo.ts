@@ -27,11 +27,11 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this._em.getReference(entityName, id);
 	}
 
-	persist(account: Account) {
+	saveWithoutFlush(account: Account): void {
 		this._em.persist(account);
 	}
 
-	async flush() {
+	async flush(): Promise<void> {
 		await this._em.flush();
 	}
 }

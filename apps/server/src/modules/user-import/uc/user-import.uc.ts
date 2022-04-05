@@ -222,8 +222,8 @@ export class UserImportUc {
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 
-		this.userRepo.persist(user);
-		this.accountRepo.persist(account);
+		this.userRepo.saveWithoutFlush(user);
+		this.accountRepo.saveWithoutFlush(account);
 	}
 
 	private async getMigrationSystem(): Promise<System> {
