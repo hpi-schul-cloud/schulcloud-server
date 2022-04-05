@@ -710,6 +710,14 @@ describe('AccountUc', () => {
 				accountUc.searchAccounts({ userId: mockTeacherUser.id } as ICurrentUser, {} as AccountSearchQuery)
 			).rejects.toThrow(UnauthorizedError);
 		});
+		it('should throw, if search type is unknown', async () => {
+			await expect(
+				accountUc.searchAccounts(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ type: '' as AccountSearchType } as AccountSearchQuery
+				)
+			).rejects.toThrow('Invalid search type.');
+		});
 	});
 
 	describe('findAccountById', () => {
