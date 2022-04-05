@@ -1,6 +1,6 @@
+import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityName, FilterQuery, FindOptions } from '@mikro-orm/core';
 import { BaseEntity, EntityId } from '@shared/domain';
 
 /**

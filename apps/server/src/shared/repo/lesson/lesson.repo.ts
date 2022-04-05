@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
-
-import { EntityId, Lesson, Counted, SortOrder } from '@shared/domain';
-
-import { LessonScope } from './lesson-scope';
+import { Counted, EntityId, Lesson, SortOrder } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
+import { LessonScope } from './lesson-scope';
 
 @Injectable()
 export class LessonRepo extends BaseRepo<Lesson> {

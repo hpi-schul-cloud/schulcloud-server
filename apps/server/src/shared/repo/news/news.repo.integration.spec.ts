@@ -39,6 +39,7 @@ describe('NewsRepo', () => {
 		});
 	});
 
+	// TODO: Die folgenden Tests testen keine Repo-Methoden, sondern nur den EntityManager. Können die entfernt werden?
 	describe('entity persistence', () => {
 		it('should persist course news', async () => {
 			const news = courseNewsFactory.build();
