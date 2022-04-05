@@ -13,7 +13,7 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async findById(id: EntityId, populate = false): Promise<User> {
-		const user = await this._em.findOneOrFail(User, { id });
+		const user = await super.findById(id);
 
 		if (populate) {
 			await this._em.populate(user, ['roles', 'school.systems']);
@@ -161,5 +161,13 @@ export class UserRepo extends BaseRepo<User> {
 				await this.populateRoles(role.roles.getItems());
 			}
 		}
+	}
+
+	persist(user: User) {
+		this._em.persist(user);
+	}
+
+	async flush() {
+		await this._em.flush();
 	}
 }

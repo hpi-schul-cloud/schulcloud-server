@@ -49,7 +49,7 @@ describe('NewsUc', () => {
 				{
 					provide: NewsRepo,
 					useValue: {
-						persistAndFlush() {
+						save() {
 							return {};
 						},
 						findAll() {
@@ -150,7 +150,7 @@ describe('NewsUc', () => {
 	});
 	describe('create', () => {
 		it('should assign all required properties to news object', async () => {
-			const createSpy = jest.spyOn(repo, 'persistAndFlush');
+			const createSpy = jest.spyOn(repo, 'save');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -160,13 +160,13 @@ describe('NewsUc', () => {
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
 			const newsProps = createSpy.mock.calls[0][0];
-			expect(newsProps.school.id === schoolId);
-			expect(newsProps.creator.id === userId);
+			expect(newsProps[0].school.id === schoolId);
+			expect(newsProps[0].creator.id === userId);
 		});
 
 		it('should assign target to news object', async () => {
 			const courseId = new ObjectId().toString();
-			const createSpy = jest.spyOn(repo, 'persistAndFlush');
+			const createSpy = jest.spyOn(repo, 'save');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -176,10 +176,10 @@ describe('NewsUc', () => {
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
 			const newsProps = createSpy.mock.calls[0][0];
-			expect(newsProps.school.id === schoolId);
-			expect(newsProps.creator.id === userId);
-			expect(newsProps.targetModel === 'courses');
-			expect(newsProps.target.id === courseId);
+			expect(newsProps[0].school.id === schoolId);
+			expect(newsProps[0].creator.id === userId);
+			expect(newsProps[0].targetModel === 'courses');
+			expect(newsProps[0].target.id === courseId);
 		});
 
 		// TODO test authorization

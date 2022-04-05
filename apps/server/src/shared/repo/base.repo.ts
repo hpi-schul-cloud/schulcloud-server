@@ -20,31 +20,9 @@ export abstract class BaseRepo<T extends BaseEntity> {
 		await this._em.removeAndFlush(entities);
 	}
 
-	async findOneById(id: EntityId): Promise<T> {
+	async findById(id: EntityId): Promise<T> {
 		const entity = await this._em.findOneOrFail(this.entityName, id as FilterQuery<T>);
 
 		return entity;
-	}
-
-	async findOne(query: FilterQuery<T>): Promise<T | null> {
-		const entity = await this._em.findOne(this.entityName, query);
-
-		return entity;
-	}
-
-	async findOneOrFail(query: FilterQuery<T>): Promise<T> {
-		const entity = await this._em.findOneOrFail(this.entityName, query);
-
-		return entity;
-	}
-
-	async findAndCount(query: FilterQuery<T>, options?: FindOptions<T>): Promise<[T[], number]> {
-		const [entities, count] = await this._em.findAndCount(this.entityName, query, options);
-
-		return [entities, count];
-	}
-
-	async populate(entities: T[], keys: string[]) {
-		await this._em.populate(entities, keys as never[]);
 	}
 }

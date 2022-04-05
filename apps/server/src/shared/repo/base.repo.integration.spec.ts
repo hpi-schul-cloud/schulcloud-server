@@ -85,13 +85,13 @@ describe('BaseRepo', () => {
 		});
 	});
 
-	describe('findOneById', () => {
+	describe('findById', () => {
 		it('should find entity', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
 			await em.persistAndFlush([testEntity1, testEntity2]);
 
-			const result = await repo.findOneById(testEntity1.id);
+			const result = await repo.findById(testEntity1.id);
 
 			expect(result).toEqual(testEntity1);
 		});
@@ -104,79 +104,8 @@ describe('BaseRepo', () => {
 			const unknownId = new ObjectId().toHexString();
 
 			await expect(async () => {
-				await repo.findOneById(unknownId);
+				await repo.findById(unknownId);
 			}).rejects.toThrow(`TestEntity not found ('${unknownId}')`);
-		});
-	});
-
-	describe('findOne', () => {
-		it('should find entity', async () => {
-			const testEntity1 = new TestEntity();
-			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
-
-			const result = await repo.findOne(testEntity1.id);
-
-			expect(result).toEqual(testEntity1);
-		});
-
-		it('should throw if entity not found', async () => {
-			const testEntity1 = new TestEntity();
-			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
-
-			const unknownValue = 'otherName';
-
-			await expect(async () => {
-				await repo.findOne({ name: unknownValue });
-			}).rejects.toThrow(`TestEntity not found ({ name: '${unknownValue}' })`);
-		});
-	});
-
-	describe('persist', () => {
-		it('should persist an entity', () => {
-			const testEntity = new TestEntity();
-
-			repo.persist(testEntity);
-			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
-		});
-	});
-
-	describe('persistAndFlush', () => {
-		it('should persist and flush an entity', async () => {
-			const testEntity = new TestEntity();
-
-			repo.persist(testEntity);
-			expect(testEntity.id).toBeNull();
-			await repo.flush();
-			const expectedResult = await em.findOne(TestEntity, testEntity.id);
-			expect(testEntity).toStrictEqual(expectedResult);
-		});
-	});
-
-	describe('flush', () => {
-		it('should flush after save', async () => {
-			const testEntity = new TestEntity();
-			repo.persist(testEntity);
-
-			expect(testEntity.id).toBeNull();
-
-			await repo.flush();
-
-			expect(testEntity.id).not.toBeNull();
-		});
-	});
-
-	describe('getObjectReference', () => {
-		it('should return a valid reference', async () => {
-			const testEntity = new TestEntity();
-			repo.persist(testEntity);
-
-			await repo.flush();
-
-			const reference = repo.getObjectReference(TestEntity, testEntity.id);
-
-			expect(reference).toBeDefined();
 		});
 	});
 });

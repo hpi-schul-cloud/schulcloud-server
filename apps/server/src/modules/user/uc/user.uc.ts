@@ -19,7 +19,7 @@ export class UserUC {
 	async patchLanguage(userId: EntityId, params: ChangeLanguageParams): Promise<boolean> {
 		const user = await this.userRepo.findById(userId);
 		user.language = params.language;
-		await this.userRepo.persistAndFlush(user);
+		await this.userRepo.save([user]);
 
 		return true;
 	}

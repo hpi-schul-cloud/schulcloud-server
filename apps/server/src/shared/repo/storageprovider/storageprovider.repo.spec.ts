@@ -42,7 +42,7 @@ describe('StorageProviderRepo', () => {
 		const encryptedStringType = new EncryptedStringType();
 
 		const storageProvider = storageProviderFactory.build({ secretAccessKey });
-		await repo.persistAndFlush(storageProvider);
+		await repo.save([storageProvider]);
 
 		// fetch plain json from db
 		const { id } = storageProvider;
@@ -60,7 +60,7 @@ describe('StorageProviderRepo', () => {
 		em.clear();
 
 		// load via repo should decrypt the type transparently
-		const storageProviderFromPersistence = await repo.findOneById(id);
+		const storageProviderFromPersistence = await repo.findById(id);
 		expect(storageProviderFromPersistence.secretAccessKey).toEqual(secretAccessKey);
 	});
 });

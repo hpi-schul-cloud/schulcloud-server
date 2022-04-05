@@ -93,7 +93,7 @@ export class AccountUc {
 	}
 
 	async remove(accountId: EntityId): Promise<Account> {
-		const entity = await this.accountRepo.findOneById(accountId);
+		const entity = await this.accountRepo.findById(accountId);
 		await this.accountRepo.delete([entity]);
 		return entity;
 	}

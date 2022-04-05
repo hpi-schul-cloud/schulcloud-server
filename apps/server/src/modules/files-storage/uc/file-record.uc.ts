@@ -19,7 +19,7 @@ export class FileRecordUC {
 			throw new ConflictException('FILE_NAME_EXISTS');
 		} else {
 			entity.name = data.fileName;
-			await this.fileRecordRepo.save(entity);
+			await this.fileRecordRepo.save([entity]);
 		}
 		return entity;
 	}
@@ -35,6 +35,6 @@ export class FileRecordUC {
 		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
 		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
 
-		await this.fileRecordRepo.save(entity);
+		await this.fileRecordRepo.save([entity]);
 	}
 }

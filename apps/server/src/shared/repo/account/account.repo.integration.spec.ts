@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory, accountFactory, systemFactory, cleanupCollections, importUserFactory } from '@shared/testing';
+import { userFactory, accountFactory, cleanupCollections, importUserFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -68,6 +68,18 @@ describe('account repo', () => {
 			await expect(async () => repo.findOneByUser({} as unknown as User)).rejects.toThrowError(
 				'Account not found ({ user: null })'
 			);
+		});
+	});
+
+	describe('getObjectReference', () => {
+		it('should return a valid reference', async () => {
+			const user = userFactory.build();
+			const account = accountFactory.build({ user });
+			await em.persistAndFlush([user, account]);
+
+			const reference = repo.getObjectReference(User, account.user.id);
+
+			expect(reference).toBe(user);
 		});
 	});
 });

@@ -156,9 +156,7 @@ describe('[ImportUserModule]', () => {
 						.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 						.mockReturnValue();
 					const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
-					const importUserPersistAndFlushSpy = jest
-						.spyOn(importUserRepo, 'persistAndFlush')
-						.mockResolvedValueOnce(importUser);
+					const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 					await expect(async () => uc.setMatch(user.id, importUser.id, user.id)).rejects.toThrowError(
 						ForbiddenException
@@ -188,9 +186,7 @@ describe('[ImportUserModule]', () => {
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserRepoHasMatchdSpy = jest.spyOn(importUserRepo, 'hasMatch').mockResolvedValueOnce(null);
 
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						expect(importUser.user).toBeUndefined();
 						expect(importUser.matchedBy).toBeUndefined();
@@ -233,9 +229,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(importUserRepo, 'hasMatch')
 							.mockResolvedValueOnce(otherImportUser);
 
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						expect(importUser.user).toBeUndefined();
 						expect(importUser.matchedBy).toBeUndefined();
@@ -273,9 +267,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						await expect(async () => uc.updateFlag(user.id, importUser.id, true)).rejects.toThrowError(
 							ForbiddenException
@@ -297,9 +289,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						const result = await uc.updateFlag(user.id, importUser.id, true);
 
@@ -322,9 +312,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						const result = await uc.updateFlag(user.id, importUser.id, false);
 
@@ -354,9 +342,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						expect(importUser.user).toBeDefined();
 						expect(importUser.matchedBy).toBeDefined();
@@ -386,9 +372,7 @@ describe('[ImportUserModule]', () => {
 							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
 							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
-						const importUserPersistAndFlushSpy = jest
-							.spyOn(importUserRepo, 'persistAndFlush')
-							.mockResolvedValueOnce(importUser);
+						const importUserPersistAndFlushSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce(importUser);
 
 						expect(importUser.user).toBeDefined();
 						expect(importUser.matchedBy).toBeDefined();
@@ -462,7 +446,7 @@ describe('[ImportUserModule]', () => {
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
 				accountRepoFindByUserIdSpy = accountRepo.findOneByUser.mockResolvedValue(account);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
-				schoolRepoPersistSpy = schoolRepo.persistAndFlush.mockReturnValueOnce(
+				schoolRepoPersistSpy = schoolRepo.save.mockReturnValueOnce(
 					Promise.resolve({ ...school, inUserMigration: false })
 				);
 			});
@@ -551,7 +535,7 @@ describe('[ImportUserModule]', () => {
 				currentUser = userFactory.buildWithId({ school });
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
-				schoolRepoPersistSpy = schoolRepo.persistAndFlush.mockReturnValueOnce(Promise.resolve(school));
+				schoolRepoPersistSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve(school));
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
 				setConfig(system.id);
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
@@ -611,7 +595,7 @@ describe('[ImportUserModule]', () => {
 
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
-				schoolRepoPersistSpy = schoolRepo.persistAndFlush.mockReturnValue(Promise.resolve(school));
+				schoolRepoPersistSpy = schoolRepo.save.mockReturnValue(Promise.resolve(school));
 			});
 			afterEach(() => {
 				userRepoByIdSpy.mockRestore();

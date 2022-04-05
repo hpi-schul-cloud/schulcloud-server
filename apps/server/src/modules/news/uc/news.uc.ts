@@ -47,7 +47,7 @@ export class NewsUc {
 			creator: userId,
 			target: targetId,
 		});
-		await this.newsRepo.persistAndFlush(news);
+		await this.newsRepo.save([news]);
 
 		this.logger.log(`news ${news.id} created by user ${userId}`);
 
@@ -129,7 +129,7 @@ export class NewsUc {
 			}
 		}
 
-		await this.newsRepo.persistAndFlush(news);
+		await this.newsRepo.save([news]);
 
 		return news;
 	}
