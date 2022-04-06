@@ -91,7 +91,7 @@ export class TaskUC {
 		} else {
 			task.restoreForUser(user);
 		}
-		await this.taskRepo.save(task);
+		await this.taskRepo.save([task]);
 
 		// add status
 		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
@@ -177,7 +177,7 @@ export class TaskUC {
 			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
 		}
 
-		await this.taskRepo.delete(task);
+		await this.taskRepo.delete([task]);
 		return true;
 	}
 }

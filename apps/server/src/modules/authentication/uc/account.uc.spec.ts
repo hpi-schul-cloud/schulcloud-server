@@ -52,7 +52,7 @@ describe('AccountUc', () => {
 						create: (): Promise<Account> => {
 							return Promise.resolve(accountFactory.buildWithId());
 						},
-						findOneById: (): Promise<Account> => {
+						findById: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
 						},
 						// update: (account: Account): Promise<Account> => {
@@ -276,8 +276,8 @@ describe('AccountUc', () => {
 	});
 
 	describe('remove', () => {
-		it('should call Account.findOneById with id', async () => {
-			const spy = jest.spyOn(accountRepo, 'findOneById');
+		it('should call Account.findById with id', async () => {
+			const spy = jest.spyOn(accountRepo, 'findById');
 			await accountUc.remove(mockAdminUser.id);
 			expect(spy).toBeCalledWith(mockAdminUser.id);
 		});
