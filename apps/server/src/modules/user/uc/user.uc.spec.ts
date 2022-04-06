@@ -6,7 +6,7 @@ import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 
-import { UserConfig } from '../user.module';
+import { UserConfig } from '../user.config';
 import { UserUC } from './user.uc';
 
 describe('UserUc', () => {
@@ -37,7 +37,7 @@ describe('UserUc', () => {
 					useValue: createMock<PermissionService>(),
 				},
 				{
-					provide: 'User_Config',
+					provide: UserConfig,
 					useValue: createMock<UserConfig>(),
 				},
 			],
@@ -46,7 +46,7 @@ describe('UserUc', () => {
 		service = module.get(UserUC);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
-		config = module.get('User_Config');
+		config = module.get(UserConfig);
 	});
 
 	it('should be defined', () => {

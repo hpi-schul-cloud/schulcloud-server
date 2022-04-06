@@ -1,17 +1,17 @@
-import { Injectable, BadRequestException, Inject } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { UserRepo } from '@shared/repo';
 import { EntityId, PermissionService, User, LanguageType } from '@shared/domain';
 
 import { ChangeLanguageParams } from '../controller/dto';
-import { IUserConfig } from '../interfaces';
+import { UserConfig } from '../user.config';
 
 @Injectable()
 export class UserUC {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
-		@Inject('User_Config') private readonly userConfig: IUserConfig
+		private readonly userConfig: UserConfig
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
