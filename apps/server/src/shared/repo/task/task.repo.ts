@@ -6,12 +6,12 @@ import { TaskScope } from './task-scope';
 
 @Injectable()
 export class TaskRepo extends BaseRepo<Task> {
-	protected get entityName() {
+	get entityName() {
 		return Task;
 	}
 
 	async findById(id: EntityId): Promise<Task> {
-		const task = await this._em.findOneOrFail(Task, { id });
+		const task = await super.findById(id);
 		await this._em.populate(task, ['course', 'lesson', 'submissions']);
 		return task;
 	}

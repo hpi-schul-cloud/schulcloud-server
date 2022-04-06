@@ -10,7 +10,7 @@ export class FilesRepo extends BaseRepo<BaseFile> {
 		super(_em);
 	}
 
-	protected get entityName() {
+	get entityName() {
 		return BaseFile;
 	}
 

@@ -35,6 +35,10 @@ describe('StorageProviderRepo', () => {
 		it('entity manager should be defined', () => {
 			expect(em).toBeDefined();
 		});
+
+		it('repo should implement entityName getter', () => {
+			expect(repo.entityName).toBe(StorageProvider);
+		});
 	});
 
 	it('should encrypt property secretAccessKey in persistence', async () => {

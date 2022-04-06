@@ -7,7 +7,7 @@ import { BaseRepo } from '../base.repo';
 
 @Injectable()
 export class FileRecordRepo extends BaseRepo<FileRecord> {
-	protected get entityName() {
+	get entityName() {
 		return FileRecord;
 	}
 

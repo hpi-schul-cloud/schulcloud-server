@@ -8,7 +8,7 @@ import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
 export class UserRepo extends BaseRepo<User> {
-	protected get entityName() {
+	get entityName() {
 		return User;
 	}
 

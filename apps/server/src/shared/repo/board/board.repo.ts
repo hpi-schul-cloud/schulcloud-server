@@ -4,7 +4,7 @@ import { BaseRepo } from '../base.repo';
 
 @Injectable()
 export class BoardRepo extends BaseRepo<Board> {
-	protected get entityName() {
+	get entityName() {
 		return Board;
 	}
 

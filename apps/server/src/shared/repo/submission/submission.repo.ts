@@ -7,12 +7,12 @@ import { BaseRepo } from '../base.repo';
 
 @Injectable()
 export class SubmissionRepo extends BaseRepo<Submission> {
-	protected get entityName() {
+	get entityName() {
 		return Submission;
 	}
 
 	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
-		const [submissions, count] = await this._em.findAndCount(Submission, {
+		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
 
@@ -20,7 +20,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 	}
 
 	async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
-		const result = await this._em.findAndCount(Submission, await this.byUserIdQuery(userId));
+		const result = await this._em.findAndCount(this.entityName, await this.byUserIdQuery(userId));
 		return result;
 	}
 

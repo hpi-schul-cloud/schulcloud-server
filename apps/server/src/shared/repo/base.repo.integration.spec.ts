@@ -15,7 +15,7 @@ describe('BaseRepo', () => {
 
 	@Injectable()
 	class TestRepo extends BaseRepo<TestEntity> {
-		protected get entityName(): EntityName<TestEntity> {
+		get entityName(): EntityName<TestEntity> {
 			return TestEntity;
 		}
 	}
@@ -54,6 +54,10 @@ describe('BaseRepo', () => {
 
 		it('entity manager should be defined', () => {
 			expect(em).toBeDefined();
+		});
+
+		it('repo should implement entityName getter', () => {
+			expect(repo.entityName).toBe(TestEntity);
 		});
 	});
 

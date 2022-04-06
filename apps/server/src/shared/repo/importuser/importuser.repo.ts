@@ -8,7 +8,7 @@ import { ImportUserScope } from './importuser.scope';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
-	protected get entityName() {
+	get entityName() {
 		return ImportUser;
 	}
 

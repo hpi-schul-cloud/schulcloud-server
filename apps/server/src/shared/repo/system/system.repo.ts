@@ -4,7 +4,7 @@ import { System } from '@shared/domain';
 
 @Injectable()
 export class SystemRepo extends BaseRepo<System> {
-	protected get entityName() {
+	get entityName() {
 		return System;
 	}
 }
