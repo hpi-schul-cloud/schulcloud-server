@@ -100,4 +100,14 @@ export class ImportUserController {
 	async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
 	}
+
+	@Post('startUserMigration')
+	async startSchoolInUserMigration(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.startSchoolInUserMigration(currentUser.userId);
+	}
+
+	@Post('startSync')
+	async endSchoolInMaintenance(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
+	}
 }
