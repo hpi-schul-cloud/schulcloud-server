@@ -82,4 +82,26 @@ describe('account repo', () => {
 			expect(reference).toBe(user);
 		});
 	});
+
+	describe('saveWithoutFlush', () => {
+		it('should add an account to the persist stack', () => {
+			const account = accountFactory.build();
+
+			repo.saveWithoutFlush(account);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+		});
+	});
+
+	describe('flush', () => {
+		it('should flush after save', async () => {
+			const account = accountFactory.build();
+			em.persist(account);
+
+			expect(account.id).toBeNull();
+
+			await repo.flush();
+
+			expect(account.id).not.toBeNull();
+		});
+	});
 });

@@ -327,4 +327,26 @@ describe('user repo', () => {
 			expect(updatedUserB.updatedAt.getTime()).toBeGreaterThan(updateTime.getTime());
 		});
 	});
+
+	describe('saveWithoutFlush', () => {
+		it('should add a user to the persist stack', () => {
+			const user = userFactory.build();
+
+			repo.saveWithoutFlush(user);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+		});
+	});
+
+	describe('flush', () => {
+		it('should flush after save', async () => {
+			const user = userFactory.build();
+			em.persist(user);
+
+			expect(user.id).toBeNull();
+
+			await repo.flush();
+
+			expect(user.id).not.toBeNull();
+		});
+	});
 });
