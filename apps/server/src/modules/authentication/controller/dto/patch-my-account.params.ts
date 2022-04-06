@@ -47,13 +47,4 @@ export class PatchMyAccountParams {
 		nullable: true,
 	})
 	lastName?: string;
-
-	@IsString()
-	@IsOptional()
-	@ApiProperty({
-		description: 'The new preferred language for the current user.',
-		required: false,
-		nullable: true,
-	})
-	language?: string;
 }

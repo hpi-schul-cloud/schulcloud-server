@@ -114,15 +114,15 @@ describe('Account Controller (e2e)', () => {
 		});
 	});
 
-	describe('[PUT] me/password', () => {
+	describe('[PATCH] me/password', () => {
 		it(`should update the current user's (temporary) password`, async () => {
 			currentUser = mapUserToCurrentUser(studentAccount.user);
-			const params: PutMyPasswordParams = {
+			const params: PatchMyPasswordParams = {
 				password: 'Valid12$',
 				confirmPassword: 'Valid12$',
 			};
 			await request(app.getHttpServer()) //
-				.put(`${basePath}/me/password`)
+				.patch(`${basePath}/me/password`)
 				.send(params)
 				.expect(200);
 
@@ -131,12 +131,12 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject if new password is weak', async () => {
 			currentUser = mapUserToCurrentUser(studentAccount.user);
-			const params: PutMyPasswordParams = {
+			const params: PatchMyPasswordParams = {
 				password: 'weak',
 				confirmPassword: 'weak',
 			};
 			await request(app.getHttpServer()) //
-				.put(`${basePath}/me/password`)
+				.patch(`${basePath}/me/password`)
 				.send(params)
 				.expect(400);
 		});
@@ -157,6 +157,7 @@ describe('Account Controller (e2e)', () => {
 			const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
 			expect(updatedAccount.username).toEqual(newEmailValue);
 		});
+
 		it('should reject if new email is not valid', async () => {
 			currentUser = mapUserToCurrentUser(studentAccount.user);
 			const params: PatchMyAccountParams = {

@@ -133,10 +133,10 @@ export class UserRepo extends BaseRepo<User> {
 		}
 
 		if (pagination?.skip) {
-			pipeline.push({ $skip: pagination?.skip });
+			pipeline.push({ $skip: pagination.skip });
 		}
 		if (pagination?.limit) {
-			pipeline.push({ $limit: pagination?.limit });
+			pipeline.push({ $limit: pagination.limit });
 		}
 
 		const userDocuments = await this.em.aggregate(User, pipeline);

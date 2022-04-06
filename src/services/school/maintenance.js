@@ -31,7 +31,7 @@ class SchoolMaintenanceService {
 	 * @memberof SchoolMaintenanceService
 	 */
 	getStatus(school) {
-		return {
+		const maintenanceStatus = {
 			currentYear: school.currentYear,
 			nextYear: this.determineNextYear(school),
 			schoolUsesLdap: schoolUsesLdap(school),
@@ -40,6 +40,12 @@ class SchoolMaintenanceService {
 				startDate: school.inMaintenanceSince,
 			},
 		};
+		if (school.inUserMigration) {
+			maintenanceStatus.schoolUsesLdap = false;
+			maintenanceStatus.maintenance.active = false;
+			maintenanceStatus.maintenance.startDate = undefined;
+		}
+		return maintenanceStatus;
 	}
 
 	/**

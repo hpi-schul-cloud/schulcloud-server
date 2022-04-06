@@ -274,6 +274,12 @@ describe('user repo', () => {
 			expect(result.length).toEqual(1);
 			expect(count).toEqual(2);
 		});
+
+		it('should throw an error by passing invalid schoolId', async () => {
+			const school = schoolFactory.build();
+			// id do not exist
+			await expect(repo.findWithoutImportUser(school)).rejects.toThrowError();
+		});
 	});
 
 	describe('findByEmail', () => {

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
@@ -72,8 +72,11 @@ export class AccountController {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}
 
-	@Put('me/password')
-	async updateMyPassword(@CurrentUser() currentUser: ICurrentUser, @Body() params: PutMyPasswordParams): Promise<void> {
-		return this.accountUc.changeMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);
+	@Patch('me/password')
+	async replaceMyPassword(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() params: PatchMyPasswordParams
+	): Promise<void> {
+		return this.accountUc.replaceMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);
 	}
 }
