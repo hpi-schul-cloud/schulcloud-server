@@ -4,9 +4,8 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { importUserFactory, schoolFactory, userFactory, roleFactory, cleanupCollections } from '@shared/testing';
+import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { reject } from 'lodash';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {

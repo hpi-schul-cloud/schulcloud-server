@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Entity, EntityName } from '@mikro-orm/core';
+import { Entity, EntityName, Property } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
@@ -9,6 +9,7 @@ import { BaseRepo } from './base.repo';
 describe('BaseRepo', () => {
 	@Entity()
 	class TestEntity extends BaseEntity {
+		@Property()
 		name = 'test';
 	}
 
@@ -39,6 +40,7 @@ describe('BaseRepo', () => {
 
 	beforeEach(async () => {
 		await em.nativeDelete(TestEntity, {});
+		em.clear();
 	});
 
 	afterAll(async () => {
@@ -61,6 +63,7 @@ describe('BaseRepo', () => {
 			const testEntity2 = new TestEntity();
 
 			await repo.save([testEntity1, testEntity2]);
+			em.clear();
 
 			const result = await em.find(TestEntity, {});
 			expect(result).toHaveLength(2);
@@ -73,8 +76,10 @@ describe('BaseRepo', () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
 			await em.persistAndFlush([testEntity1, testEntity2]);
+			em.clear();
 
 			await repo.delete([testEntity1, testEntity2]);
+			em.clear();
 
 			await expect(async () => {
 				await em.findOneOrFail(TestEntity, testEntity1.id);
@@ -90,6 +95,7 @@ describe('BaseRepo', () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
 			await em.persistAndFlush([testEntity1, testEntity2]);
+			em.clear();
 
 			const result = await repo.findById(testEntity1.id);
 
@@ -100,6 +106,7 @@ describe('BaseRepo', () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
 			await em.persistAndFlush([testEntity1, testEntity2]);
+			em.clear();
 
 			const unknownId = new ObjectId().toHexString();
 
