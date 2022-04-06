@@ -12,8 +12,8 @@ const COURSE_FEATURES = {
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
-		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user', index: true }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	};
