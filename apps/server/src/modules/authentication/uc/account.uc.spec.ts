@@ -3,20 +3,8 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, PermissionService, Role, School, User } from '@shared/domain';
-import { EntityNotFoundError, InvalidOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
-import { AccountRepo } from '@shared/repo/account';
+import { AccountRepo, UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import {
-	AccountByIdBody,
-	AccountByIdParams,
-	AccountSearchListResponse,
-	AccountSearchQuery,
-	AccountSearchResponse,
-	AccountSearchType,
-} from '@src/modules/authentication/controller/dto';
-import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
@@ -53,8 +41,6 @@ describe('AccountUc', () => {
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
-	let mockUsers: User[];
-	let mockAccounts: Account[];
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -64,9 +50,6 @@ describe('AccountUc', () => {
 	const mockAccountUserIdMap = new Map<string, Account>();
 	const mockAccountUsernameMap = new Map<string, Account>();
 	const mockUserMailMap = new Map<string, User>();
-
-	const defaultPassword = 'DummyPasswd!1';
-	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	afterAll(async () => {
 		await module.close();
@@ -103,7 +86,7 @@ describe('AccountUc', () => {
 							}
 						},
 						findByUserId: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((mockAccount) => mockAccount.user.id === userId);
+							const account = mockAccountUserIdMap.get(userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -288,7 +271,7 @@ describe('AccountUc', () => {
 		});
 		mockExternalUserAccount = accountFactory.buildWithId({ user: mockExternalUser, password: defaultPasswordHash });
 
-		mockUsers = [
+		const mockUsers = [
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
@@ -303,7 +286,7 @@ describe('AccountUc', () => {
 			mockUserWithoutAccount,
 		];
 
-		mockAccounts = [
+		const mockAccounts = [
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
@@ -316,6 +299,16 @@ describe('AccountUc', () => {
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
 		];
+
+		for (let i = 0; i < mockUsers.length; i += 1) {
+			mockUserIdMap.set(mockUsers[i].id, mockUsers[i]);
+			mockUserMailMap.set(mockUsers[i].email, mockUsers[i]);
+		}
+		for (let i = 0; i < mockAccounts.length; i += 1) {
+			mockAccountUserIdMap.set(mockAccounts[i].user.id, mockAccounts[i]);
+			mockAccountUsernameMap.set(mockAccounts[i].username, mockAccounts[i]);
+			mockAccountIdMap.set(mockAccounts[i].id, mockAccounts[i]);
+		}
 	});
 
 	describe('changePasswordForUser', () => {

@@ -12,7 +12,7 @@ import {
 	AccountSearchQuery,
 	ChangePasswordParams,
 	PatchMyAccountParams,
-	PutMyPasswordParams,
+	PatchMyPasswordParams,
 } from './dto';
 
 @ApiTags('account')

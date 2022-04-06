@@ -12,7 +12,7 @@ import {
 	AccountSearchType,
 	ChangePasswordParams,
 	PatchMyAccountParams,
-	PutMyPasswordParams,
+	PatchMyPasswordParams,
 } from '@src/modules/authentication/controller/dto';
 import { Account, ICurrentUser, RoleName, User } from '@shared/domain';
 

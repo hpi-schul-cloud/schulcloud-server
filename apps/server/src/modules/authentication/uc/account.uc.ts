@@ -1,14 +1,16 @@
-import { AuthorizationError, EntityNotFoundError, ValidationError } from '@shared/common/error';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Account, EntityId, PermissionService, User } from '@shared/domain';
-import { UserRepo } from '@shared/repo';
-import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
-import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
-import { PatchMyAccountParams } from '../controller/dto';
-import { InvalidArgumentError } from '@shared/common/error/invalid-argument.error';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { wrap } from '@mikro-orm/core';
-import { UnauthorizedError } from '@shared/common/error/unauthorized.error';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	InvalidArgumentError,
+	UnauthorizedError,
+	ValidationError,
+} from '@shared/common/error';
+import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
+import { AccountRepo, UserRepo } from '@shared/repo';
 import {
 	AccountByIdBody,
 	AccountByIdParams,
@@ -241,39 +243,6 @@ export class AccountUc {
 			await this.userRepo.update(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
-		}
-	}
-
-	private isDemoUser(currentUser: User) {
-		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
-	}
-
-	private async updatePassword(account: Account, password: string) {
-		account.password = await bcrypt.hash(password, 10);
-		await this.accountRepo.update(account);
-	}
-
-	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
-		if (this.hasRole(currentUser, 'superhero')) {
-			return true;
-		}
-		if (!(currentUser.school.id === targetUser.school.id)) {
-			return false;
-		}
-		if (this.isDemoUser(currentUser)) {
-			return false;
-		}
-
-		const permissionsToCheck: string[] = [];
-		if (this.hasRole(targetUser, 'student')) {
-			permissionsToCheck.push('STUDENT_EDIT');
-		}
-		if (this.hasRole(targetUser, 'teacher')) {
-			permissionsToCheck.push('TEACHER_EDIT');
-		}
-		if (permissionsToCheck.length === 0) {
-			// target user is neither student nor teacher. Undefined what to do
-			return false;
 		}
 	}
 

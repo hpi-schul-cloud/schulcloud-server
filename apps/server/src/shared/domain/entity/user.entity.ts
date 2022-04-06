@@ -19,7 +19,6 @@ export interface IUserProperties {
 	ldapId?: string;
 	language?: LanguageType;
 	forcePasswordChange?: boolean;
-	language?: string;
 	preferences?: Record<string, unknown>;
 }
 
@@ -57,9 +56,6 @@ export class User extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
-
-	@Property({ nullable: true })
-	language?: string;
 
 	@Property({ nullable: true })
 	preferences?: Record<string, unknown>;
