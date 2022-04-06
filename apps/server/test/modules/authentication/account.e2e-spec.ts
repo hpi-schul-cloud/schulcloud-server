@@ -171,6 +171,65 @@ describe('Account Controller (e2e)', () => {
 		});
 	});
 
+	describe('[GET]', () => {
+		it('should search for user id', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const query: AccountSearchQuery = {
+				type: AccountSearchType.USER_ID,
+				value: studentAccount.user.id,
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
+		});
+		it('should search for user name', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const query: AccountSearchQuery = {
+				type: AccountSearchType.USERNAME,
+				value: '',
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
+		});
+		it('should reject if type is unknown', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const query: AccountSearchQuery = {
+				type: '' as AccountSearchType,
+				value: '',
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(400);
+		});
+		it('should reject if user is not a superhero', async () => {
+			currentUser = mapUserToCurrentUser(adminAccount.user);
+			const query: AccountSearchQuery = {
+				type: AccountSearchType.USERNAME,
+				value: '',
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(401);
+		});
+	});
+
 	describe('[GET] :id', () => {
 		it('should return account for account id', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
@@ -196,65 +255,6 @@ describe('Account Controller (e2e)', () => {
 			await request(app.getHttpServer()) //
 				.get(`${basePath}/000000000000000000000000`)
 				.expect(404);
-		});
-	});
-
-	describe('[GET] search', () => {
-		it('should search for user id', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const query: AccountSearchQuery = {
-				type: AccountSearchType.USER_ID,
-				value: studentAccount.user.id,
-				skip: 5,
-				limit: 5,
-			};
-			await request(app.getHttpServer()) //
-				.get(`${basePath}/search`)
-				.query(query)
-				.send()
-				.expect(200);
-		});
-		it('should search for user name', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const query: AccountSearchQuery = {
-				type: AccountSearchType.USERNAME,
-				value: '',
-				skip: 5,
-				limit: 5,
-			};
-			await request(app.getHttpServer()) //
-				.get(`${basePath}/search`)
-				.query(query)
-				.send()
-				.expect(200);
-		});
-		it('should reject if type is unknown', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const query: AccountSearchQuery = {
-				type: '' as AccountSearchType,
-				value: '',
-				skip: 5,
-				limit: 5,
-			};
-			await request(app.getHttpServer()) //
-				.get(`${basePath}/search`)
-				.query(query)
-				.send()
-				.expect(400);
-		});
-		it('should reject if user is not a superhero', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const query: AccountSearchQuery = {
-				type: AccountSearchType.USERNAME,
-				value: '',
-				skip: 5,
-				limit: 5,
-			};
-			await request(app.getHttpServer()) //
-				.get(`${basePath}/search`)
-				.query(query)
-				.send()
-				.expect(401);
 		});
 	});
 

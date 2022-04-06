@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { ParseObjectIdPipe } from '@shared/controller';
@@ -21,7 +21,7 @@ import {
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
-	@Get('search')
+	@Get()
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQuery
@@ -47,6 +47,10 @@ export class AccountController {
 	}
 
 	@Patch(':id')
+	@ApiOperation({
+		summary: 'All operations related to a user account.',
+		description: 'Updates the user account. Only permitted for superheros.',
+	})
 	async updateAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams,
