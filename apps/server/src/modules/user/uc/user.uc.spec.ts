@@ -6,6 +6,7 @@ import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 
+import { UserConfig } from '../user.module';
 import { UserUC } from './user.uc';
 
 describe('UserUc', () => {
@@ -13,6 +14,7 @@ describe('UserUc', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let orm: MikroORM;
+	let config: DeepMocked<UserConfig>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -34,12 +36,17 @@ describe('UserUc', () => {
 					provide: PermissionService,
 					useValue: createMock<PermissionService>(),
 				},
+				{
+					provide: 'User_Config',
+					useValue: createMock<UserConfig>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(UserUC);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
+		config = module.get('User_Config');
 	});
 
 	it('should be defined', () => {
@@ -74,6 +81,8 @@ describe('UserUc', () => {
 			user = userFactory.buildWithId({ roles: [] });
 			userRepo.findById.mockResolvedValue(user);
 			userRepo.persistAndFlush.mockResolvedValue(user);
+
+			config.getAviableLanguages.mockReturnValue(['de']);
 		});
 
 		afterEach(() => {
@@ -86,6 +95,10 @@ describe('UserUc', () => {
 
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
 			expect(userRepo.persistAndFlush).toHaveBeenCalledWith(user);
+		});
+
+		it('should throw an error if language is not activated', async () => {
+			await expect(service.patchLanguage(user.id, { language: LanguageType.EN })).rejects.toThrowError();
 		});
 	});
 });
