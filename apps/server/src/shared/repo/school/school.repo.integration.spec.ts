@@ -19,7 +19,7 @@ describe('school repo', () => {
 		await module.close();
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(School);
 	});
 });

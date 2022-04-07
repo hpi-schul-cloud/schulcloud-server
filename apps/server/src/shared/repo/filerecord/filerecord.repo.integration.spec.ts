@@ -29,7 +29,7 @@ describe('FileRecordRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(FileRecord);
 	});
 

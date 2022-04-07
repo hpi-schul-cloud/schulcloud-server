@@ -41,7 +41,7 @@ describe('course repo', () => {
 		expect(typeof repo.findAllByUserId).toEqual('function');
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(Course);
 	});
 

@@ -39,7 +39,7 @@ describe('TaskRepo', () => {
 		await em.nativeDelete(Task, {});
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(Task);
 	});
 

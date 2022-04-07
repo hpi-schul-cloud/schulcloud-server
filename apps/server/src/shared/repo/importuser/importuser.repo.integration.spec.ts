@@ -47,7 +47,7 @@ describe('ImportUserRepo', () => {
 			expect(em).toBeDefined();
 		});
 
-		it('repo should implement entityName getter', () => {
+		it('should implement entityName getter', () => {
 			expect(repo.entityName).toBe(ImportUser);
 		});
 	});

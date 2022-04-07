@@ -31,7 +31,7 @@ describe('user repo', () => {
 		expect(typeof repo.findById).toEqual('function');
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(User);
 	});
 

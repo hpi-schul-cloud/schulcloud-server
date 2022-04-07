@@ -36,7 +36,7 @@ describe('BoardRepo', () => {
 		await em.nativeDelete(Board, {});
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(Board);
 	});
 

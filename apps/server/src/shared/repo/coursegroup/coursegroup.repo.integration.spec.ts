@@ -39,7 +39,7 @@ describe('course group repo', () => {
 		expect(typeof repo.findByCourseIds).toEqual('function');
 	});
 
-	it('repo should implement entityName getter', () => {
+	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(CourseGroup);
 	});
 
