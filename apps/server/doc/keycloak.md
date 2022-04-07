@@ -7,7 +7,7 @@
 ## Docker
 
 To run Keycloak locally for development purpose use the following Bash or PowerShell command. You can log into Keycloak
-here http://localhost:8080. If you don't want to block your terminal, you can add the `-d` option to start the container
+here <http://localhost:8080>. If you don't want to block your terminal, you can add the `-d` option to start the container
 in the background. Execute these commands in the repository root or the data seeding will fail, and you can not log into
 Keycloak with any user.
 
@@ -52,7 +52,7 @@ and testing. In the table below you can see the username and password combinatio
 | Username       | Password       | Description                                              |
 | :------------- | :------------- | :------------------------------------------------------- |
 | keycloak       | keycloak       | The overall Keycloak administrator with all permissions. |
-| dbildungscloud | dbildungscloud | The dBildungscloud realm specific administrator.         |
+| dbildungscloud | dBildungscloud | The dBildungscloud realm specific administrator.         |
 
 ## Updating Seed Data
 
@@ -65,3 +65,8 @@ and testing. In the table below you can see the username and password combinatio
 > IMPORTANT: During the export process there will be some errors, that's because the export process will be done on the
 > same port as the Keycloak server. This leads to Keycloak failing to start the server in import/export mode. Due to the
 > transition from WildFly to Quarkus as application server there is currently no documentation on this topic.
+
+In order to re-apply the seeding data for a running keycloak container, you may run following commands (to be executed in the repository root):
+
+1. `docker cp ./backup/keycloak keycloak:/tmp/realms`
+2. `docker exec keycloak /opt/keycloak/bin/kc.sh import --dir /tmp/realms`
