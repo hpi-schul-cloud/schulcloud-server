@@ -38,6 +38,10 @@ describe('account repo', () => {
 		await cleanupCollections(em);
 	});
 
+	it('repo should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Account);
+	});
+
 	describe('findByUserId', () => {
 		it('should findByUserId', async () => {
 			const accountToFind = accountFactory.build();

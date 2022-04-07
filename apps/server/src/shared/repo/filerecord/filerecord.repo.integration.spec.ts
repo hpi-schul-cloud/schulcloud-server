@@ -29,6 +29,10 @@ describe('FileRecordRepo', () => {
 		await cleanupCollections(em);
 	});
 
+	it('repo should implement entityName getter', () => {
+		expect(repo.entityName).toBe(FileRecord);
+	});
+
 	describe('findOneByIdMarkedForDelete', () => {
 		it('should find an entity by its id and deletedSince is defined', async () => {
 			const fileRecord = fileRecordFactory.build({ deletedSince: new Date() });

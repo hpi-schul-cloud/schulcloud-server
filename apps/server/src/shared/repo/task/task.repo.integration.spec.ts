@@ -39,6 +39,10 @@ describe('TaskRepo', () => {
 		await em.nativeDelete(Task, {});
 	});
 
+	it('repo should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Task);
+	});
+
 	describe('findAllByParentIds', () => {
 		describe('find by creator', () => {
 			it('should find tasks by creatorId', async () => {

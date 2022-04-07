@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Submission } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
@@ -31,6 +32,10 @@ describe('submission repo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	it('repo should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Submission);
 	});
 
 	describe('findAllByTasks', () => {

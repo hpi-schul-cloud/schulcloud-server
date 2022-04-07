@@ -7,7 +7,7 @@ import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
-	protected get entityName() {
+	get entityName() {
 		return Account;
 	}
 

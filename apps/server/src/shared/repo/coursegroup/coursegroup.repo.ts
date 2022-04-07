@@ -5,7 +5,7 @@ import { BaseRepo } from '../base.repo';
 
 @Injectable()
 export class CourseGroupRepo extends BaseRepo<CourseGroup> {
-	protected get entityName() {
+	get entityName() {
 		return CourseGroup;
 	}
 

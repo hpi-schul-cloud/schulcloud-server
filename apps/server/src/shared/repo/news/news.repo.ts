@@ -10,7 +10,7 @@ import { NewsTargetFilter } from './news-target-filter';
 export class NewsRepo extends BaseRepo<News> {
 	propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
 
-	protected get entityName() {
+	get entityName() {
 		return News;
 	}
 

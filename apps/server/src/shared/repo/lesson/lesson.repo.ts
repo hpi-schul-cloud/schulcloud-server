@@ -5,7 +5,7 @@ import { LessonScope } from './lesson-scope';
 
 @Injectable()
 export class LessonRepo extends BaseRepo<Lesson> {
-	protected get entityName() {
+	get entityName() {
 		return Lesson;
 	}
 

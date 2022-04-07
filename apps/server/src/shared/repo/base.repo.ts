@@ -10,7 +10,7 @@ import { BaseEntity, EntityId } from '@shared/domain';
 export abstract class BaseRepo<T extends BaseEntity> {
 	constructor(protected readonly _em: EntityManager) {}
 
-	protected abstract get entityName(): EntityName<T>;
+	abstract get entityName(): EntityName<T>;
 
 	async save(entities: T[]): Promise<void> {
 		await this._em.persistAndFlush(entities);

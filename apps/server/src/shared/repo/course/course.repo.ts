@@ -47,7 +47,7 @@ class CourseScope extends Scope<Course> {
 
 @Injectable()
 export class CourseRepo extends BaseRepo<Course> {
-	protected get entityName() {
+	get entityName() {
 		return Course;
 	}
 

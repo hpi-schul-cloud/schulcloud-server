@@ -1,10 +1,11 @@
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Role } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
 export class RoleRepo extends BaseRepo<Role> {
-	protected get entityName() {
+	get entityName() {
 		return Role;
 	}
 
