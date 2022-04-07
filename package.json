@@ -1,16 +1,17 @@
 {
 	"name": "schulcloud-server",
-	"description": "hpi schulcloud server",
-	"version": "26.11.0",
-	"homepage": "https://hpi-schul-cloud.de/",
+	"description": "dBildungscloud server",
+	"version": "27.11.3",
+	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
-		"feathers"
+		"feathers",
+		"nestjs"
 	],
 	"license": "AGPL-3.0",
 	"repository": {},
 	"author": {
-		"name": "HPI Schul-Cloud Team"
+		"name": "dBildungscloud Team"
 	},
 	"contributors": [],
 	"bugs": {},
