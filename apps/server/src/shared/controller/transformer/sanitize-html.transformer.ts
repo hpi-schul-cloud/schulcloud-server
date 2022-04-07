@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common';
 import { Transform, TransformFnParams } from 'class-transformer';
 import sanitize from 'sanitize-html';
 
@@ -44,12 +45,16 @@ const getSanitizeHtmlOptions = (options?: SanitizeDecoratorOptions): sanitize.IO
  */
 export function SanitizeHtml(options?: SanitizeDecoratorOptions): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		const str = params.obj[params.key] as string;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const value = params.obj[params.key];
 
-		const sanitizeHtmlOptions = getSanitizeHtmlOptions(options);
-		const sanitized = sanitize(str, sanitizeHtmlOptions);
+		if (typeof value === 'string') {
+			const sanitizeHtmlOptions = getSanitizeHtmlOptions(options);
+			const sanitized = sanitize(value, sanitizeHtmlOptions);
 
-		return sanitized;
+			return sanitized;
+		}
+
+		throw new NotImplementedException('can only sanitize strings');
 	});
 }

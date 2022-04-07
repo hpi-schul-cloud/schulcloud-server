@@ -1,3 +1,4 @@
+import { NotImplementedException } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { SanitizeHtml } from './sanitize-html.transformer';
 
@@ -40,5 +41,9 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 	it('should allow optional properties', () => {
 		const instance = plainToClass(WithHtmlDto, { title: 'title', content: 'content' });
 		expect(instance.excerpt).toBe(undefined);
+	});
+
+	it('should throw when the property is not a string', () => {
+		expect(() => plainToClass(WithHtmlDto, { title: 42 })).toThrow(NotImplementedException);
 	});
 });
