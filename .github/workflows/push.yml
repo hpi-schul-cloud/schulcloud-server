@@ -70,7 +70,6 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       DEV_VAULT: ${{ secrets.DEV_VAULT }}
       DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
-      ETHERPAD_API_KEY: ${{ secrets.ETHERPAD_API_KEY }}
       TOKEN_INVENTORY: ${{ secrets.TOKEN_INVENTORY }}
   
   deploy-successful:

@@ -146,6 +146,17 @@ export class UserRepo extends BaseRepo<User> {
 		return [users, count];
 	}
 
+	async findByEmail(email: string): Promise<User[]> {
+		// find mail case-insensitive by regex
+		const user = await this.em.find(User, { email: new RegExp(`^${email.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i') });
+		return user;
+	}
+
+	async update(user: User): Promise<User> {
+		await this.em.persistAndFlush(user);
+		return user;
+	}
+
 	private async populateRoles(roles: Role[]): Promise<void> {
 		for (let i = 0; i < roles.length; i += 1) {
 			const role = roles[i];
