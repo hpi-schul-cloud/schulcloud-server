@@ -249,8 +249,7 @@ export class AccountUc {
 	}
 
 	private calcPasswordHash(password: string): Promise<string> {
-		const hash = bcrypt.hash(password, 10);
-		return hash;
+		return bcrypt.hash(password, 10);
 	}
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
