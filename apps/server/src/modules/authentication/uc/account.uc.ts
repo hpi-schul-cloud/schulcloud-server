@@ -23,13 +23,13 @@ export class AccountUc {
 	/**
 	 * This method allows to update my (currentUser) account details.
 	 *
-	 * @param currentUser the current user
+	 * @param currentUserId the current user
 	 * @param params account details
 	 */
-	async updateMyAccount(currentUser: EntityId, params: PatchMyAccountParams) {
+	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
-			account = await this.accountRepo.findByUserId(currentUser);
+			account = await this.accountRepo.findByUserId(currentUserId);
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}
@@ -44,7 +44,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser, true);
+			user = await this.userRepo.findById(currentUserId, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
