@@ -1,20 +1,21 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { NewsTargetModel } from '@shared/domain';
-
-const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
+import { SanitizeHtml } from '@shared/controller';
 
 /**
  * DTO for creating a news document.
  */
 export class CreateNewsParams {
 	@IsString()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'Title of the News entity',
 	})
 	title!: string;
 
 	@IsString()
+	@SanitizeHtml({ keep: 'richtext' })
 	@ApiProperty({
 		description: 'Content of the News entity',
 	})
@@ -28,15 +29,14 @@ export class CreateNewsParams {
 	})
 	displayAt?: Date;
 
-	@IsString()
+	@IsEnum(NewsTargetModel)
 	@ApiProperty({
-		enum: TARGET_MODEL_VALUES,
-		enumName: 'NewsTargetModel',
+		enum: NewsTargetModel,
 		description: 'Target model to which the News entity is related',
 	})
 	targetModel!: string;
 
-	@IsString()
+	@IsMongoId()
 	@ApiProperty({
 		pattern: '[a-f0-9]{24}',
 		description: 'Specific target id to which the News entity is related',

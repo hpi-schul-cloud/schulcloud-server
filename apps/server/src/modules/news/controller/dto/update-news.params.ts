@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 
 /**
@@ -8,6 +9,7 @@ import { IsDate, IsOptional, IsString } from 'class-validator';
 export class UpdateNewsParams {
 	@IsOptional()
 	@IsString()
+	@SanitizeHtml()
 	@ApiPropertyOptional({
 		description: 'Title of the News entity',
 	})
@@ -15,6 +17,7 @@ export class UpdateNewsParams {
 
 	@IsOptional()
 	@IsString()
+	@SanitizeHtml({ keep: 'richtext' })
 	@ApiPropertyOptional({
 		description: 'Content of the News entity',
 	})
