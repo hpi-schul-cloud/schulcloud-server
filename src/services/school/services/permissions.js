@@ -25,9 +25,9 @@ class HandlePermissions {
 
 	async find(params) {
 		const school = await getSchool(this.app, params.account.schoolId);
-		const schoolPermision = ((school.permissions || [])[this.role] || [])[this.permission];
+		const schoolPermission = ((school.permissions || [])[this.role] || [])[this.permission];
 		let isEnabled = false;
-		if (schoolPermision === undefined) {
+		if (schoolPermission === undefined) {
 			const role = await this.app.service('roles').find({
 				query: {
 					name: this.role,
@@ -35,7 +35,7 @@ class HandlePermissions {
 			});
 			isEnabled = role.data[0].permissions.includes(this.permission);
 		} else {
-			isEnabled = schoolPermision;
+			isEnabled = schoolPermission;
 		}
 		return { isEnabled };
 	}
