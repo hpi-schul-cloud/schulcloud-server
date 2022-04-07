@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Query} from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
@@ -8,7 +8,7 @@ import {
 	EntityNotFoundError,
 	ForbiddenOperationError,
 	UnauthorizedError,
-	ValidationError
+	ValidationError,
 } from '@shared/common';
 import { AccountUc } from '../uc/account.uc';
 import {
