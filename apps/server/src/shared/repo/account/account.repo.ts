@@ -34,4 +34,12 @@ export class AccountRepo extends BaseRepo<Account> {
 	async flush(): Promise<void> {
 		await this._em.flush();
 	}
+
+	async findByUsername(userName: string): Promise<Account[]> {
+		const account = await this._em.find(this.entityName, {
+			// find mail case-insensitive by regex
+			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
+		});
+		return account;
+	}
 }

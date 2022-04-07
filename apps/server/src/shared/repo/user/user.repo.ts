@@ -146,8 +146,9 @@ export class UserRepo extends BaseRepo<User> {
 		return [users, count];
 	}
 
-	async update(user: User): Promise<User> {
-		await this._em.persistAndFlush(user);
+	async findByEmail(email: string): Promise<User[]> {
+		// find mail case-insensitive by regex
+		const user = await this._em.find(User, { email: new RegExp(`^${email.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i') });
 		return user;
 	}
 

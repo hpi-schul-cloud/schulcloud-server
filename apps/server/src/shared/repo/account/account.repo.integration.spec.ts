@@ -51,6 +51,7 @@ describe('account repo', () => {
 			expect(account.id).toEqual(accountToFind.id);
 		});
 	});
+
 	describe('findOneByUser', () => {
 		it('should find by User and return an account', async () => {
 			const user = userFactory.buildWithId();
@@ -106,6 +107,49 @@ describe('account repo', () => {
 			await repo.flush();
 
 			expect(account.id).not.toBeNull();
+		});
+	});
+
+	describe('findByUsername', () => {
+		it('should find account by user name', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const account = accountFactory.build({ username: originalUsername });
+			await em.persistAndFlush([account]);
+			em.clear();
+
+			const result = await repo.findByUsername('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+		});
+		it('should find account by user name, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const account = accountFactory.build({ username: originalUsername });
+			await em.persistAndFlush([account]);
+			em.clear();
+
+			let result: Account[];
+
+			result = await repo.findByUsername('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+
+			result = await repo.findByUsername('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+		});
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const account = accountFactory.build({ username: originalUsername });
+			await em.persistAndFlush([account]);
+			em.clear();
+
+			let result: Account[];
+
+			result = await repo.findByUsername('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
+
+			result = await repo.findByUsername('.*');
+			expect(result).toHaveLength(0);
 		});
 	});
 });

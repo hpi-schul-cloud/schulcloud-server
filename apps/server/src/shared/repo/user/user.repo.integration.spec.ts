@@ -26,6 +26,10 @@ describe('user repo', () => {
 		await module.close();
 	});
 
+	afterEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
@@ -36,10 +40,6 @@ describe('user repo', () => {
 	});
 
 	describe('findById', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		it('should return right keys', async () => {
 			const user = userFactory.build();
 
@@ -58,6 +58,7 @@ describe('user repo', () => {
 					'ldapId',
 					'forcePasswordChange',
 					'preferences',
+					'language',
 				].sort()
 			);
 		});
@@ -114,9 +115,6 @@ describe('user repo', () => {
 			userB = userFactory.build({ ldapId: '111' });
 			await em.persistAndFlush([userA, userB]);
 		});
-		afterEach(async () => {
-			await cleanupCollections(em);
-		});
 		it('should return right keys', async () => {
 			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
@@ -132,6 +130,7 @@ describe('user repo', () => {
 					'ldapId',
 					'forcePasswordChange',
 					'preferences',
+					'language',
 				].sort()
 			);
 		});
@@ -151,10 +150,6 @@ describe('user repo', () => {
 	});
 
 	describe('findWithoutImportUser', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		const persistUserAndSchool = async () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school });
@@ -291,44 +286,48 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('update', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
+	describe('findByEmail', () => {
+		it('should find user by email', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findByEmail('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 		});
 
-		it('should update all fields', async () => {
-			const userA = userFactory.withRole('Role-1').build();
-			const userB = userFactory.withRole('Role-2').build();
+		it('should find user by email, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
 
-			userA.forcePasswordChange = true;
-			userB.forcePasswordChange = false;
+			let result: User[];
 
-			userB.firstName = 'Bob';
+			result = await repo.findByEmail('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 
-			const updateTime = userA.updatedAt;
-			expect(userA.email).not.toStrictEqual(userB.email);
-			expect(userA.firstName).not.toStrictEqual(userB.firstName);
-			expect(userA.lastName).not.toStrictEqual(userB.lastName);
-			expect(userA.school).not.toStrictEqual(userB.school);
-			expect(userA.roles).not.toContain(userB.roles);
+			result = await repo.findByEmail('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
 
-			await em.persistAndFlush([userA, userB]);
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
 
-			userB.email = userA.email;
-			userB.firstName = userA.firstName;
-			userB.lastName = userA.lastName;
-			userB.forcePasswordChange = userA.forcePasswordChange;
-			userB.school = userA.school;
-			userB.roles = userA.roles;
-			const updatedUserB = await repo.update(userB);
+			let result: User[];
 
-			expect(userA.email).toBe(updatedUserB.email);
-			expect(userA.firstName).toBe(updatedUserB.firstName);
-			expect(userA.lastName).toBe(updatedUserB.lastName);
-			expect(userA.school).toBe(updatedUserB.school);
-			expect(userA.roles).toEqual(updatedUserB.roles);
+			result = await repo.findByEmail('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
 
-			expect(updatedUserB.updatedAt.getTime()).toBeGreaterThan(updateTime.getTime());
+			result = await repo.findByEmail('.*');
+			expect(result).toHaveLength(0);
 		});
 	});
 
