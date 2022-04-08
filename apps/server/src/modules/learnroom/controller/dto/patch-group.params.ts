@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller';
 import { IsString } from 'class-validator';
 
 /**
@@ -6,6 +7,7 @@ import { IsString } from 'class-validator';
  */
 export class PatchGroupParams {
 	@IsString()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'Title of the Group grid element',
 	})
