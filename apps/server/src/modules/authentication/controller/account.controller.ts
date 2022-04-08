@@ -16,7 +16,6 @@ import {
 	AccountByIdParams,
 	AccountByIdResponse,
 	AccountSearchListResponse,
-	AccountResponse,
 	AccountSearchQuery,
 	ChangePasswordParams,
 	PatchMyAccountParams,
@@ -30,10 +29,12 @@ export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
 
 	@Get()
-	@ApiOperation({ summary: 'Returns all accounts which satisfies the given criteria. Superhero role is REQUIRED.' })
+	@ApiOperation({
+		summary: 'Returns all accounts which satisfies the given criteria. Superhero/administrator role is REQUIRED.',
+	})
 	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 401, type: UnauthorizedError, description: 'No JWT or not a superhero.' })
+	@ApiResponse({ status: 401, type: UnauthorizedError, description: 'No JWT or not a superhero/administrator.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'User id not found.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -123,13 +124,5 @@ export class AccountController {
 		@Body() params: PatchMyPasswordParams
 	): Promise<void> {
 		return this.accountUc.replaceMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);
-	}
-
-	@ApiOperation({ description: 'Finds accounts, currently only by UserId' })
-	@Get()
-	async findAccount(@Query('userId') userId: string): Promise<AccountResponse> {
-		const accountEntity = await this.accountUc.findByUserId(userId);
-		const response = new AccountResponse(accountEntity.id);
-		return response;
 	}
 }

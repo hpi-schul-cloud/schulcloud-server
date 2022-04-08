@@ -57,7 +57,7 @@ export class AccountUc {
 		if (limit > 100) {
 			throw new InvalidArgumentError('Limit is greater than 100.');
 		}
-		if (!(await this.isSuperhero(currentUser))) {
+		if (!((await this.isSuperhero(currentUser)) || (await this.isAdmin(currentUser)))) {
 			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
 		}
 
@@ -337,6 +337,11 @@ export class AccountUc {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;
 		});
+	}
+
+	private async isAdmin(currentUser: ICurrentUser): Promise<boolean> {
+		const user = await this.userRepo.findById(currentUser.userId, true);
+		return user.roles.getItems().some((role) => role.name === RoleName.ADMIN);
 	}
 
 	private async isSuperhero(currentUser: ICurrentUser): Promise<boolean> {
