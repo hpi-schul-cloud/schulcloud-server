@@ -1,17 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsIn, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { NewsTargetModel } from '@shared/domain';
-
-const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
 export class FilterNewsParams {
 	@IsOptional()
 	@IsString()
-	@IsIn(TARGET_MODEL_VALUES)
+	@IsEnum(NewsTargetModel)
 	@ApiPropertyOptional({
-		enum: TARGET_MODEL_VALUES,
-		enumName: 'NewsTargetModel',
+		enum: NewsTargetModel,
 		description: 'Target model to which the news are related',
 	})
 	targetModel?: string;
