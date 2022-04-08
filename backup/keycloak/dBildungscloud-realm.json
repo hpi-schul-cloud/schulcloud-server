@@ -1,5 +1,5 @@
 {
-  "id" : "dBildunscloud",
+  "id" : "dBildungscloud",
   "realm" : "dBildungscloud",
   "notBefore" : 0,
   "defaultSignatureAlgorithm" : "RS256",
@@ -50,11 +50,11 @@
       "description" : "${role_uma_authorization}",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "dBildunscloud",
+      "containerId" : "dBildungscloud",
       "attributes" : { }
     }, {
       "id" : "1a4f9536-2180-41b1-9815-08d01d456270",
-      "name" : "default-roles-dbildunscloud",
+      "name" : "default-roles-dbildungscloud",
       "description" : "${role_default-roles}",
       "composite" : true,
       "composites" : {
@@ -64,7 +64,7 @@
         }
       },
       "clientRole" : false,
-      "containerId" : "dBildunscloud",
+      "containerId" : "dBildungscloud",
       "attributes" : { }
     }, {
       "id" : "2093bbce-2c25-4c20-bdca-f35d7682cb5b",
@@ -72,7 +72,7 @@
       "description" : "${role_offline-access}",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "dBildunscloud",
+      "containerId" : "dBildungscloud",
       "attributes" : { }
     } ],
     "client" : {
@@ -344,11 +344,11 @@
   } ],
   "defaultRole" : {
     "id" : "1a4f9536-2180-41b1-9815-08d01d456270",
-    "name" : "default-roles-dbildunscloud",
+    "name" : "default-roles-dbildungscloud",
     "description" : "${role_default-roles}",
     "composite" : true,
     "clientRole" : false,
-    "containerId" : "dBildunscloud"
+    "containerId" : "dBildungscloud"
   },
   "requiredCredentials" : [ "password" ],
   "otpPolicyType" : "totp",
@@ -421,12 +421,12 @@
     "clientId" : "account-console",
     "name" : "${client_account-console}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/dBildunscloud/account/",
+    "baseUrl" : "/realms/dBildungscloud/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/dBildunscloud/account/*" ],
+    "redirectUris" : [ "/realms/dBildungscloud/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
