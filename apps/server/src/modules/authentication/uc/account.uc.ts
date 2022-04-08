@@ -324,6 +324,15 @@ export class AccountUc {
 		}
 	}
 
+	async findByUserId(userId: string) {
+		try {
+			const account = await this.accountRepo.findByUserId(userId);
+			return account;
+		} catch (err) {
+			throw new EntityNotFoundError('Account');
+		}
+	}
+
 	private hasRole(user: User, roleName: string) {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;

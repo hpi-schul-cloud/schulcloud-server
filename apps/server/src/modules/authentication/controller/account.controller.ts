@@ -16,6 +16,7 @@ import {
 	AccountByIdParams,
 	AccountByIdResponse,
 	AccountSearchListResponse,
+	AccountResponse,
 	AccountSearchQuery,
 	ChangePasswordParams,
 	PatchMyAccountParams,
@@ -122,5 +123,13 @@ export class AccountController {
 		@Body() params: PatchMyPasswordParams
 	): Promise<void> {
 		return this.accountUc.replaceMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);
+	}
+
+	@ApiOperation({ description: 'Finds accounts, currently only by UserId' })
+	@Get()
+	async findAccount(@Query('userId') userId: string): Promise<AccountResponse> {
+		const accountEntity = await this.accountUc.findByUserId(userId);
+		const response = new AccountResponse(accountEntity.id);
+		return response;
 	}
 }
