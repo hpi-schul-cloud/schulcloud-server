@@ -22,7 +22,7 @@ export class UserUC {
 	}
 
 	private checkAvaibleLanguages(settedLanguage: LanguageType): void | Error {
-		if (!this.userConfig.getAviableLanguages().includes(settedLanguage)) {
+		if (!this.userConfig.getAvailableLanguages().includes(settedLanguage)) {
 			throw new BadRequestException('Language is not activated.');
 		}
 	}

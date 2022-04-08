@@ -81,7 +81,7 @@ describe('UserUc', () => {
 			user = userFactory.buildWithId({ roles: [] });
 			userRepo.findById.mockResolvedValue(user);
 			userRepo.save.mockResolvedValue();
-			config.getAviableLanguages.mockReturnValue(['de']);
+			config.getAvailableLanguages.mockReturnValue(['de']);
 		});
 
 		afterEach(() => {

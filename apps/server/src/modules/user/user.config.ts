@@ -9,7 +9,7 @@ export class UserConfig {
 		this.avaibleLanguage = Configuration.get('I18N__AVAILABLE_LANGUAGES') as string;
 	}
 
-	getAviableLanguages(): string[] {
+	getAvailableLanguages(): string[] {
 		const languages = this.avaibleLanguage.split(',');
 
 		return languages;
