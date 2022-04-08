@@ -11,28 +11,30 @@ import {
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolFactory,
+	systemFactory,
 	userFactory,
 } from '@shared/testing';
 import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser, MatchCreator, RoleName, School, SortOrder, User } from '@shared/domain';
+import { ICurrentUser, ImportUser, MatchCreator, RoleName, School, System, SortOrder, User } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import {
-	ImportUserFilterQuery,
+	FilterImportUserParams,
 	ImportUserListResponse,
 	ImportUserResponse,
-	ImportUserSortByQuery,
-	ImportUserSortingQuery,
-	MatchCreatorResponse,
-	MatchFilterQuery,
-	RoleNameFilterQuery,
-	RoleNameResponse,
+	ImportUserSortOrder,
+	SortImportUserParams,
+	MatchType,
+	FilterMatchType,
+	FilterRoleType,
+	UserRole,
 	UpdateMatchParams,
 	UserMatchListResponse,
 	UserMatchResponse,
 } from '@src/modules/user-import/controller/dto';
 import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
-import { PaginationQuery } from '@shared/controller';
-import { UserFilterQuery } from '@src/modules/user-import/controller/dto/user-filter.query';
+import { PaginationParams } from '@shared/controller';
+import { FilterUserParams } from '@src/modules/user-import/controller/dto/filter-user.params';
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 describe('ImportUser Controller (e2e)', () => {
 	let app: INestApplication;
@@ -41,16 +43,22 @@ describe('ImportUser Controller (e2e)', () => {
 	let currentUser: ICurrentUser;
 
 	const authenticatedUser = async (permissions: UserImportPermissions[] = []) => {
-		const school = schoolFactory.build();
+		const system = systemFactory.buildWithId(); // TODO no id?
+		const school = schoolFactory.build({ officialSchoolNumber: 'foo' });
 		const roles = [roleFactory.build({ name: 'administrator', permissions })];
-		await em.persistAndFlush([school, ...roles]);
+		await em.persistAndFlush([school, system, ...roles]);
 		const user = userFactory.build({
 			school,
 			roles,
 		});
 		await em.persistAndFlush([user]);
 		em.clear();
-		return { user, roles, school };
+		return { user, roles, school, system };
+	};
+
+	const setConfig = (systemId?: string) => {
+		Configuration.set('FEATURE_USER_MIGRATION_ENABLED', true);
+		Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', systemId || new ObjectId().toString());
 	};
 
 	beforeAll(async () => {
@@ -80,6 +88,10 @@ describe('ImportUser Controller (e2e)', () => {
 		await app.close();
 	});
 
+	beforeEach(() => {
+		setConfig();
+	});
+
 	describe('[GET] /user/import', () => {
 		let importusers: ImportUser[];
 		beforeAll(async () => {
@@ -93,11 +105,54 @@ describe('ImportUser Controller (e2e)', () => {
 		});
 
 		describe('Generic Errors', () => {
-			describe('When authorization is missing', () => {
+			describe('When feature is not enabled', () => {
 				let user: User;
 				beforeEach(async () => {
 					({ user } = await authenticatedUser());
 					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', '');
+				});
+				afterEach(() => {
+					setConfig();
+				});
+				it('GET /user/import is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import').expect(500);
+				});
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(500);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(500);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(500);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(500);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(500);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(500);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(500);
+				});
+			});
+			describe('When authorization is missing', () => {
+				let user: User;
+				let system: System;
+				beforeEach(async () => {
+					({ user, system } = await authenticatedUser());
+					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					await request(app.getHttpServer()).get('/user/import').expect(401);
@@ -119,14 +174,25 @@ describe('ImportUser Controller (e2e)', () => {
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
 				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
+				});
 			});
 
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW', () => {
 				let user: User;
 				let school: School;
+				let system: System;
 				beforeEach(async () => {
-					({ school, user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
+					({ school, system, user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
 					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
 				it('GET /user/import responds with importusers', async () => {
 					const usermatch = userFactory.build({ school });
@@ -151,13 +217,24 @@ describe('ImportUser Controller (e2e)', () => {
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
 				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
+				});
 			});
 			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				let user: User;
 				let school: School;
+				let system: System;
 				beforeEach(async () => {
-					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+					({ user, school, system } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
+					setConfig(system._id.toString());
 				});
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					const usermatch = userFactory.build({ school });
@@ -190,6 +267,53 @@ describe('ImportUser Controller (e2e)', () => {
 					em.clear();
 					const params: UpdateFlagParams = { flagged: true };
 					await request(app.getHttpServer()).patch(`/user/import/${importUser.id}/flag`).send(params).expect(200);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
+				});
+			});
+			describe('When current user has permissions UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE', () => {
+				let user: User;
+				let system: System;
+				beforeEach(async () => {
+					({ user, system } = await authenticatedUser());
+					currentUser = mapUserToCurrentUser(user);
+					setConfig(system._id.toString());
+				});
+				it('GET /user/import is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import').expect(401);
+				});
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).get('/user/import/unassigned').expect(401);
+				});
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/match`).send(params).expect(401);
+				});
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					await request(app.getHttpServer()).delete(`/user/import/${id}/match`).send().expect(401);
+				});
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+					const id = new ObjectId().toString();
+					const params: UpdateFlagParams = { flagged: true };
+					await request(app.getHttpServer()).patch(`/user/import/${id}/flag`).send(params).expect(401);
+				});
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/migrate`).send().expect(401);
+				});
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startSync`).send().expect(401);
+				});
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
 				});
 			});
 		});
@@ -343,7 +467,7 @@ describe('ImportUser Controller (e2e)', () => {
 							it('should skip users', async () => {
 								const unassignedUsers = userFactory.buildList(10, { school });
 								await em.persistAndFlush(unassignedUsers);
-								const query: PaginationQuery = { skip: 3 };
+								const query: PaginationParams = { skip: 3 };
 								const response = await request(app.getHttpServer())
 									.get('/user/import/unassigned')
 									.query(query)
@@ -355,7 +479,7 @@ describe('ImportUser Controller (e2e)', () => {
 							it('should limit users', async () => {
 								const unassignedUsers = userFactory.buildList(10, { school });
 								await em.persistAndFlush(unassignedUsers);
-								const query: PaginationQuery = { limit: 3 };
+								const query: PaginationParams = { limit: 3 };
 								const response = await request(app.getHttpServer())
 									.get('/user/import/unassigned')
 									.query(query)
@@ -372,7 +496,7 @@ describe('ImportUser Controller (e2e)', () => {
 								const searchUser = userFactory.build({ school, firstName: 'Peter' });
 								users.push(searchUser);
 								await em.persistAndFlush(users);
-								const query: UserFilterQuery = { name: 'ETE' };
+								const query: FilterUserParams = { name: 'ETE' };
 								const response = await request(app.getHttpServer())
 									.get('/user/import/unassigned')
 									.query(query)
@@ -386,7 +510,7 @@ describe('ImportUser Controller (e2e)', () => {
 								const searchUser = userFactory.build({ school, firstName: 'Peter', lastName: 'fox' });
 								users.push(searchUser);
 								await em.persistAndFlush(users);
-								const query: UserFilterQuery = { name: 'X' };
+								const query: FilterUserParams = { name: 'X' };
 								const response = await request(app.getHttpServer())
 									.get('/user/import/unassigned')
 									.query(query)
@@ -434,8 +558,8 @@ describe('ImportUser Controller (e2e)', () => {
 							currentSchoolsImportUsers[7].firstName = 'Zoe';
 							await em.persistAndFlush(currentSchoolsImportUsers);
 							em.clear();
-							const query: ImportUserSortingQuery = {
-								sortBy: ImportUserSortByQuery.FIRSTNAME,
+							const query: SortImportUserParams = {
+								sortBy: ImportUserSortOrder.FIRSTNAME,
 								sortOrder: SortOrder.asc,
 							};
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
@@ -452,8 +576,8 @@ describe('ImportUser Controller (e2e)', () => {
 							currentSchoolsImportUsers[7].firstName = 'Zoe';
 							await em.persistAndFlush(currentSchoolsImportUsers);
 							em.clear();
-							const query: ImportUserSortingQuery = {
-								sortBy: ImportUserSortByQuery.FIRSTNAME,
+							const query: SortImportUserParams = {
+								sortBy: ImportUserSortOrder.FIRSTNAME,
 								sortOrder: SortOrder.desc,
 							};
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
@@ -470,8 +594,8 @@ describe('ImportUser Controller (e2e)', () => {
 							currentSchoolsImportUsers[7].lastName = 'Müller';
 							await em.persistAndFlush(currentSchoolsImportUsers);
 							em.clear();
-							const query: ImportUserSortingQuery = {
-								sortBy: ImportUserSortByQuery.LASTNAME,
+							const query: SortImportUserParams = {
+								sortBy: ImportUserSortOrder.LASTNAME,
 								sortOrder: SortOrder.asc,
 							};
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
@@ -488,8 +612,8 @@ describe('ImportUser Controller (e2e)', () => {
 							currentSchoolsImportUsers[7].lastName = 'Müller';
 							await em.persistAndFlush(currentSchoolsImportUsers);
 							em.clear();
-							const query: ImportUserSortingQuery = {
-								sortBy: ImportUserSortByQuery.LASTNAME,
+							const query: SortImportUserParams = {
+								sortBy: ImportUserSortOrder.LASTNAME,
 								sortOrder: SortOrder.desc,
 							};
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
@@ -503,7 +627,7 @@ describe('ImportUser Controller (e2e)', () => {
 						it('should skip importusers', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							await em.persistAndFlush(importUsers);
-							const query: PaginationQuery = { skip: 3 };
+							const query: PaginationParams = { skip: 3 };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.total).toBeGreaterThanOrEqual(10);
@@ -512,7 +636,7 @@ describe('ImportUser Controller (e2e)', () => {
 						it('should limit importusers', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							await em.persistAndFlush(importUsers);
-							const query: PaginationQuery = { limit: 3 };
+							const query: PaginationParams = { limit: 3 };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.total).toBeGreaterThanOrEqual(10);
@@ -525,7 +649,7 @@ describe('ImportUser Controller (e2e)', () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].firstName = 'Klaus-Peter';
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { firstName: 's-p' };
+							const query: FilterImportUserParams = { firstName: 's-p' };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.length).toEqual(1);
@@ -535,7 +659,7 @@ describe('ImportUser Controller (e2e)', () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].lastName = 'Weimann';
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { lastName: 'Mann' };
+							const query: FilterImportUserParams = { lastName: 'Mann' };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.length).toEqual(1);
@@ -545,7 +669,7 @@ describe('ImportUser Controller (e2e)', () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].ldapDn = 'uid=EinarWeimann12,...';
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { loginName: 'Mann1' };
+							const query: FilterImportUserParams = { loginName: 'Mann1' };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.length).toEqual(1);
@@ -555,17 +679,17 @@ describe('ImportUser Controller (e2e)', () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].roleNames = [RoleName.TEACHER];
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { role: RoleNameFilterQuery.TEACHER };
+							const query: FilterImportUserParams = { role: FilterRoleType.TEACHER };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.length).toEqual(1);
-							expect(result.data[0].roleNames).toContain(RoleNameResponse.TEACHER);
+							expect(result.data[0].roleNames).toContain(UserRole.TEACHER);
 						});
 						it('should filter by class', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].classNames = ['class1', 'second'];
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { classes: 'ss1' };
+							const query: FilterImportUserParams = { classes: 'ss1' };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.length).toEqual(1);
@@ -575,33 +699,33 @@ describe('ImportUser Controller (e2e)', () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.NONE] };
+							const query: FilterImportUserParams = { match: [FilterMatchType.NONE] };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
-							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.AUTO)).toEqual(true);
-							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.MANUAL)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.AUTO)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.MANUAL)).toEqual(true);
 							expect(result.data.length).toBeGreaterThanOrEqual(9);
 						});
 						it('should filter by match type admin (manual)', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.MANUAL] };
+							const query: FilterImportUserParams = { match: [FilterMatchType.MANUAL] };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
-							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.MANUAL)).toEqual(true);
-							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.MANUAL)).toEqual(false);
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchType.MANUAL)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.MANUAL)).toEqual(false);
 							expect(result.data.length).toEqual(1);
 						});
 						it('should filter by match type auto', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.AUTO] };
+							const query: FilterImportUserParams = { match: [FilterMatchType.AUTO] };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
-							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.AUTO)).toEqual(true);
-							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchCreatorResponse.AUTO)).toEqual(false);
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchType.AUTO)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.AUTO)).toEqual(false);
 							expect(result.data.length).toEqual(1);
 						});
 						it('should filter by multiple match types', async () => {
@@ -609,18 +733,18 @@ describe('ImportUser Controller (e2e)', () => {
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
 							importUsers[1].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { match: [MatchFilterQuery.AUTO, MatchFilterQuery.MANUAL] };
+							const query: FilterImportUserParams = { match: [FilterMatchType.AUTO, FilterMatchType.MANUAL] };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
-							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.MANUAL)).toEqual(true);
-							expect(result.data.some((iu) => iu.match?.matchedBy === MatchCreatorResponse.AUTO)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchType.MANUAL)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy === MatchType.AUTO)).toEqual(true);
 							expect(result.data.length).toEqual(2);
 						});
 						it('should filter by flag enabled', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							importUsers[0].flagged = true;
 							await em.persistAndFlush(importUsers);
-							const query: ImportUserFilterQuery = { flagged: true };
+							const query: FilterImportUserParams = { flagged: true };
 							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.some((iu) => iu.flagged === false)).toEqual(false);
@@ -656,7 +780,7 @@ describe('ImportUser Controller (e2e)', () => {
 								.expect(200);
 							const importUserResponse = result.body as ImportUserResponse;
 							expectAllImportUserResponsePropertiesExist(importUserResponse, true);
-							expect(importUserResponse.match?.matchedBy).toEqual(MatchCreatorResponse.MANUAL);
+							expect(importUserResponse.match?.matchedBy).toEqual(MatchType.MANUAL);
 							expect(importUserResponse.match?.userId).toEqual(userToBeMatched.id);
 						});
 						it('should update an existing auto match to manual', async () => {
@@ -678,7 +802,7 @@ describe('ImportUser Controller (e2e)', () => {
 								.expect(200);
 							const elem = result.body as ImportUserResponse;
 							expectAllImportUserResponsePropertiesExist(elem, true);
-							expect(elem.match?.matchedBy).toEqual(MatchCreatorResponse.MANUAL);
+							expect(elem.match?.matchedBy).toEqual(MatchType.MANUAL);
 							expect(elem.match?.userId).toEqual(manualUserMatch.id);
 						});
 					});
@@ -756,10 +880,16 @@ describe('ImportUser Controller (e2e)', () => {
 				let school: School;
 				beforeEach(async () => {
 					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+					school.officialSchoolNumber = 'foo';
+					school.inMaintenanceSince = new Date();
+					school.ldapSchoolIdentifier = 'foo';
+					school.inUserMigration = true;
 					currentUser = mapUserToCurrentUser(user);
 				});
 				describe('POST user/import/migrate', () => {
 					it('should migrate', async () => {
+						school.officialSchoolNumber = 'foo';
+
 						const importUser = importUserFactory.build({
 							school,
 						});
@@ -767,6 +897,49 @@ describe('ImportUser Controller (e2e)', () => {
 						em.clear();
 
 						await request(app.getHttpServer()).post(`/user/import/migrate`).expect(201);
+					});
+				});
+			});
+
+			describe('[startUserMigration]', () => {
+				let user: User;
+				let system: System;
+				describe('POST user/import/startUserMigration', () => {
+					it('should set in user migration mode', async () => {
+						({ user, system } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+						currentUser = mapUserToCurrentUser(user);
+						Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
+
+						await request(app.getHttpServer()).post(`/user/import/startUserMigration`).expect(201);
+					});
+				});
+			});
+
+			describe('[endSchoolMaintenance]', () => {
+				describe('POST user/import/startSync', () => {
+					it('should remove inMaintenanceSince from school', async () => {
+						const school = schoolFactory.buildWithId({
+							ldapSchoolIdentifier: 'foo',
+							inMaintenanceSince: new Date(),
+							inUserMigration: false,
+						});
+						const roles = [
+							roleFactory.build({
+								name: 'administrator',
+								permissions: [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE],
+							}),
+						];
+						await em.persistAndFlush([school, ...roles]);
+						const user = userFactory.build({
+							school,
+							roles,
+						});
+						await em.persistAndFlush([user]);
+						em.clear();
+
+						currentUser = mapUserToCurrentUser(user);
+
+						await request(app.getHttpServer()).post(`/user/import/startSync`).expect(201);
 					});
 				});
 			});
