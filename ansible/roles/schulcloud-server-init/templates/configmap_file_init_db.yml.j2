@@ -23,7 +23,7 @@ data:
     else
         echo "gg, hacky mongo replicaset"
     fi
-    curl --retry 5000 --retry-connrefused --retry-delay 10 'http://mgmt-svc:3333/api/management/database/seed'
+    curl --retry 5000 --retry-connrefused --retry-delay 10 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
