@@ -312,7 +312,6 @@ export class AccountUc {
 		// set user must change password on next login
 		try {
 			targetUser.forcePasswordChange = true;
-			targetUser = await this.userRepo.update(targetUser);
 			await this.userRepo.update(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
