@@ -666,7 +666,19 @@
 			"type": "integer",
 			"minimum": 0,
 			"default": 8000,
-			"description": "Default timeout for external requests in milliseconds."
+			"description": "Timeout for outgoing requests from server to external systems in milliseconds."
+		},
+		"INCOMING_REQUEST_TIMEOUT_API": {
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Timeout for incoming requests to the API in milliseconds."
+		},
+		"INCOMING_REQUEST_TIMEOUT_FILES_STORAGE": {
+			"type": "integer",
+			"minimum": 0,
+			"default": 600000,
+			"description": "Timeout for incoming requests to the File-Storage in milliseconds."
 		},
 		"FEATURE_SYNCER_CONSUMER_ENABLE": {
 			"type": "boolean",
