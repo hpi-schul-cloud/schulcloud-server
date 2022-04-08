@@ -35,6 +35,15 @@ export class AccountUc {
 		private readonly permissionService: PermissionService
 	) {}
 
+	/**
+	 * This method processes the request on the GET account search endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param query the request query
+	 * @throws {InvalidArgumentError}
+	 * @throws {UnauthorizedError}
+	 * @throws {EntityNotFoundError}
+	 */
 	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQuery): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
@@ -71,6 +80,14 @@ export class AccountUc {
 		}
 	}
 
+	/**
+	 * This method processes the request on the GET account with id endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param params the request parameters
+	 * @throws {UnauthorizedError}
+	 * @throws {EntityNotFoundError}
+	 */
 	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
@@ -79,6 +96,15 @@ export class AccountUc {
 		return new AccountByIdResponse(account);
 	}
 
+	/**
+	 * This method processes the request on the PATCH account with id endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param params the request parameters
+	 * @param body the request body
+	 * @throws {UnauthorizedError}
+	 * @throws {EntityNotFoundError}
+	 */
 	async updateAccountById(
 		currentUser: ICurrentUser,
 		params: AccountByIdParams,
@@ -98,6 +124,14 @@ export class AccountUc {
 		return new AccountByIdResponse(account);
 	}
 
+	/**
+	 * This method processes the request on the DELETE account with id endpoint from the account controller.
+	 *
+	 * @param currentUser the request user
+	 * @param params the request parameters
+	 * @throws {UnauthorizedError}
+	 * @throws {EntityNotFoundError}
+	 */
 	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new UnauthorizedError('Current user is not authorized to delete an account.');
@@ -279,6 +313,7 @@ export class AccountUc {
 		try {
 			targetUser.forcePasswordChange = true;
 			targetUser = await this.userRepo.update(targetUser);
+			await this.userRepo.update(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
