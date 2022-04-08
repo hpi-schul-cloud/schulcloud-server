@@ -2,4 +2,4 @@ import config = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = config;
 
-export const REQUEST_TIMEOUT = Configuration.get('REQUEST_TIMEOUT') as number;
+export const INCOMING_REQUEST_TIMEOUT_API = Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number;
