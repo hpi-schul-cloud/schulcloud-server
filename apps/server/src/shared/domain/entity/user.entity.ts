@@ -3,6 +3,13 @@ import type { Role } from './role.entity';
 import type { School } from './school.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 
+export enum LanguageType {
+	DE = 'de',
+	EN = 'en',
+	ES = 'es',
+	UA = 'ua',
+}
+
 export interface IUserProperties {
 	email: string;
 	firstName: string;
@@ -10,12 +17,20 @@ export interface IUserProperties {
 	school: School;
 	roles: Role[];
 	ldapId?: string;
+	language?: LanguageType;
+	forcePasswordChange?: boolean;
+	preferences?: Record<string, unknown>;
 }
 
 @Entity({ tableName: 'users' })
+@Index({ properties: ['id', 'email'] })
+@Index({ properties: ['firstName', 'lastName'] })
+@Index({ properties: ['ldapId', 'school'] })
+@Index({ properties: ['school', 'roles'] })
 export class User extends BaseEntityWithTimestamps {
 	@Property()
-	@Index({ name: 'externalUserIdentifier', options: { unique: true } })
+	@Index()
+	// @Unique()
 	email: string;
 
 	@Property()
@@ -24,16 +39,26 @@ export class User extends BaseEntityWithTimestamps {
 	@Property()
 	lastName: string;
 
-	@Index({ name: 'roleIdBasedSearches' })
+	@Index()
 	@ManyToMany('Role', undefined, { fieldName: 'roles' })
 	roles = new Collection<Role>(this);
 
-	@Index({ name: 'searchUserForSchool' })
+	@Index()
 	@ManyToOne('School', { fieldName: 'schoolId' })
 	school: School;
 
 	@Property({ nullable: true })
+	@Index()
 	ldapId?: string;
+
+	@Property({ nullable: true })
+	language?: LanguageType;
+
+	@Property({ nullable: true })
+	forcePasswordChange?: boolean;
+
+	@Property({ nullable: true })
+	preferences?: Record<string, unknown>;
 
 	constructor(props: IUserProperties) {
 		super();
@@ -43,5 +68,8 @@ export class User extends BaseEntityWithTimestamps {
 		this.school = props.school;
 		this.roles.set(props.roles);
 		this.ldapId = props.ldapId;
+		this.forcePasswordChange = props.forcePasswordChange;
+		this.language = props.language;
+		this.preferences = props.preferences ?? {};
 	}
 }

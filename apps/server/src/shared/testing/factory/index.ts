@@ -11,6 +11,7 @@ export * from './role.factory';
 export * from './school.factory';
 export * from './storageprovider.factory';
 export * from './submission.factory';
+export * from './system.factory';
 export * from './task.factory';
 export * from './user.factory';
 export * from './import-user.factory';
