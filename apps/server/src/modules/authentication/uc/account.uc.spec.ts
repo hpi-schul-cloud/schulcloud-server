@@ -110,6 +110,17 @@ describe('AccountUc', () => {
 							}
 							throw Error();
 						},
+						tryFindByUserId: (userId: EntityId): Promise<Account | undefined> => {
+							const account = mockAccountUserIdMap.get(userId);
+
+							if (account) {
+								return Promise.resolve(account);
+							}
+							if (userId === 'accountWithoutUser') {
+								return Promise.resolve(mockStudentAccount);
+							}
+							return Promise.resolve(undefined);
+						},
 						findByUsername: (username: string): Promise<Account[]> => {
 							const account = mockAccountUsernameMap.get(username);
 
