@@ -214,8 +214,8 @@ describe('Account Controller (e2e)', () => {
 				.send()
 				.expect(400);
 		});
-		it('should reject if user is not a superhero', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
+		it('should reject if user is not a superhero or admin', async () => {
+			currentUser = mapUserToCurrentUser(teacherAccount.user);
 			const query: AccountSearchQuery = {
 				type: AccountSearchType.USERNAME,
 				value: '',
