@@ -4,9 +4,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
 import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthUc } from '../uc/oauth.uc';
-import { AuthorizationQuery } from './dto/authorization.query';
-import { OAuthResponse } from './dto/oauth-response';
+import { AuthorizationParams } from './dto/authorization.params';
+import { OAuthResponse } from './dto/oauth.response';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -19,7 +20,7 @@ export class OauthSSOController {
 
 	@Get('oauth/:systemid')
 	async startOauthAuthorizationCodeFlow(
-		@Query() query: AuthorizationQuery,
+		@Query() query: AuthorizationParams,
 		@Res() res: Response,
 		@Param('systemid', ParseObjectIdPipe) systemid: string
 	): Promise<unknown> {
@@ -29,12 +30,15 @@ export class OauthSSOController {
 			oauthResponse = await this.oauthUc.startOauth(query, systemid);
 			if (oauthResponse.jwt) {
 				res.cookie('jwt', oauthResponse.jwt);
-				return res.redirect(`${HOST}/dashboard`);
+				const idToken = oauthResponse.idToken as string;
+				const logoutEndpoint = oauthResponse.logoutEndpoint as string;
+				return res.redirect(`${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`);
 			}
 		} catch (error) {
-			this.logger.log(error);
+			this.logger.error(error);
 			oauthResponse = new OAuthResponse();
-			oauthResponse.errorcode = 'OauthLoginFailed';
+			if (error instanceof OAuthSSOError) oauthResponse.errorcode = error.errorcode;
+			else oauthResponse.errorcode = 'oauth_login_failed';
 		}
 		return res.redirect(`${HOST}/login?error=${oauthResponse.errorcode as string}`);
 	}

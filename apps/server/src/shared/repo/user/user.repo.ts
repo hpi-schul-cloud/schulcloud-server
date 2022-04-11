@@ -3,7 +3,7 @@ import { EntityManager, MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { Counted, EntityId, IFindOptions, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
@@ -24,16 +24,13 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async findByLdapId(ldapId: string, systemId: string): Promise<User> {
-		const users: [User[], number] = await this.em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
-		let resultUser;
-		users[0].forEach((user) => {
+		const [users] = await this.em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
+		const resultUser = users.find((user) => {
 			const { systems } = user.school;
-			if (systems && systems.getItems().find((system) => system.id === systemId)) {
-				resultUser = user;
-			}
+			return systems && systems.getItems().find((system) => system.id === systemId);
 		});
 		if (resultUser) {
-			return resultUser as User;
+			return resultUser;
 		}
 		throw new NotFoundException('No user for this ldapId found');
 	}
@@ -109,7 +106,7 @@ export class UserRepo extends BaseRepo<User> {
 		const { pagination, order } = options || {};
 
 		if (order) {
-			const orderQuery: QueryOrderMap = {};
+			const orderQuery: QueryOrderMap<ImportUser> = {};
 			if (order.firstName) {
 				switch (order.firstName) {
 					case SortOrder.desc:
@@ -136,17 +133,28 @@ export class UserRepo extends BaseRepo<User> {
 		}
 
 		if (pagination?.skip) {
-			pipeline.push({ $skip: pagination?.skip });
+			pipeline.push({ $skip: pagination.skip });
 		}
 		if (pagination?.limit) {
-			pipeline.push({ $limit: pagination?.limit });
+			pipeline.push({ $limit: pagination.limit });
 		}
 
 		const userDocuments = await this.em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const users = userDocuments.map((userDocument) => this.em.map(User, userDocument));
-		await this.em.populate(users, 'roles');
+		await this.em.populate(users, ['roles']);
 		return [users, count];
+	}
+
+	async findByEmail(email: string): Promise<User[]> {
+		// find mail case-insensitive by regex
+		const user = await this.em.find(User, { email: new RegExp(`^${email.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i') });
+		return user;
+	}
+
+	async update(user: User): Promise<User> {
+		await this.em.persistAndFlush(user);
+		return user;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

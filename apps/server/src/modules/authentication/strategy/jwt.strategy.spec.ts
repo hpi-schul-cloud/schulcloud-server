@@ -7,6 +7,7 @@ import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 
@@ -14,13 +15,13 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 describe('jwt strategy', () => {
-	let adapter: JwtValidationAdapter;
+	let adapter: DeepMocked<JwtValidationAdapter>;
 	let strategy: JwtStrategy;
-	let repo: UserRepo;
+	let repo: DeepMocked<UserRepo>;
 	let module: TestingModule;
 	let orm: MikroORM;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		orm = await setupEntities();
 
 		module = await Test.createTestingModule({
@@ -29,19 +30,11 @@ describe('jwt strategy', () => {
 				JwtStrategy,
 				{
 					provide: JwtValidationAdapter,
-					useValue: {
-						isWhitelisted() {
-							return Promise.resolve();
-						},
-					},
+					useValue: createMock<JwtValidationAdapter>(),
 				},
 				{
 					provide: UserRepo,
-					useValue: {
-						findById() {
-							return userFactory.build();
-						},
-					},
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
@@ -66,28 +59,26 @@ describe('jwt strategy', () => {
 		it('should check jwt for being whitelisted', async () => {
 			const accountId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			const isWhitelistedSpy = jest.spyOn(adapter, 'isWhitelisted');
 			await strategy.validate({ accountId, jti } as JwtPayload);
-			expect(isWhitelistedSpy).toHaveBeenCalledWith(accountId, jti);
+			expect(adapter.isWhitelisted).toHaveBeenCalledWith(accountId, jti);
 		});
 		it('should load the defined user', async () => {
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			const resolveUserSpy = jest.spyOn(repo, 'findById');
 			const payload = { accountId, jti, userId } as JwtPayload;
+			repo.findById.mockResolvedValue(userFactory.build());
 			await strategy.validate(payload);
-			expect(resolveUserSpy).toHaveBeenCalledWith(userId);
+			expect(repo.findById).toHaveBeenCalledWith(userId);
 		});
 
 		it('should throw an UnauthorizedException when the user is not found', async () => {
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			const resolveUserSpy = jest.spyOn(repo, 'findById').mockRejectedValue(new NotFoundException());
+			repo.findById.mockRejectedValue(new NotFoundException());
 			const payload = { accountId, jti, userId } as JwtPayload;
 			await expect(() => strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
-			resolveUserSpy.mockRestore();
 		});
 	});
 });

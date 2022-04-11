@@ -7,7 +7,7 @@ export interface ITeamProperties {
 @Entity({ tableName: 'teams' })
 export class Team extends BaseEntity {
 	@Property()
-	name!: string;
+	name: string;
 
 	constructor(props: ITeamProperties) {
 		super();

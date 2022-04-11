@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { roleFactory } from '@shared/testing';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -32,17 +33,17 @@ describe('role repo', () => {
 	describe('entity', () => {
 		it.skip('should fail for double creating a unique role name.', async () => {
 			const nameA = `a${Date.now()}`;
-			const roleA1 = em.create(Role, { name: nameA });
+			const roleA1 = roleFactory.build({ name: nameA });
 			await em.persistAndFlush([roleA1]);
-			const roleA2 = em.create(Role, { name: nameA });
+			const roleA2 = roleFactory.build({ name: nameA });
 
 			await expect(em.persistAndFlush([roleA2])).rejects.toThrow(ValidationError);
 		});
 
 		it.skip('should fail for double creating a unique role name in same step', async () => {
 			const nameA = `a${Date.now()}`;
-			const roleA1 = em.create(Role, { name: nameA });
-			const roleA2 = em.create(Role, { name: nameA });
+			const roleA1 = roleFactory.build({ name: nameA });
+			const roleA2 = roleFactory.build({ name: nameA });
 
 			await expect(em.persistAndFlush([roleA1, roleA2])).rejects.toThrow(ValidationError);
 		});
@@ -57,7 +58,7 @@ describe('role repo', () => {
 
 		it('should return right keys', async () => {
 			const nameA = `a${Date.now()}`;
-			const roleA = em.create(Role, { name: nameA });
+			const roleA = roleFactory.build({ name: nameA });
 
 			await em.persistAndFlush([roleA]);
 			const result = await repo.findByName(nameA);
@@ -69,8 +70,8 @@ describe('role repo', () => {
 		it('should return one role that matched by name', async () => {
 			const nameA = `a${Date.now()}`;
 			const nameB = `b${Date.now()}`;
-			const roleA = em.create(Role, { name: nameA });
-			const roleB = em.create(Role, { name: nameB });
+			const roleA = roleFactory.build({ name: nameA });
+			const roleB = roleFactory.build({ name: nameB });
 
 			await em.persistAndFlush([roleA, roleB]);
 			const result = await repo.findByName(nameA);
@@ -90,31 +91,27 @@ describe('role repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const idA = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
+			const roleA = roleFactory.build();
 
 			await em.persistAndFlush([roleA]);
-			const result = await repo.findById(idA);
+			const result = await repo.findById(roleA.id);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
 			);
 		});
 
 		it('should return one role that matched by id', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-			const roleB = em.create(Role, { id: idB });
+			const roleA = roleFactory.build();
+			const roleB = roleFactory.build();
 
 			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.findById(idA);
+			const result = await repo.findById(roleA.id);
 			expect(result).toEqual(roleA);
 		});
 
 		it('should throw an error if roles by id doesnt exist', async () => {
-			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
+			const roleA = roleFactory.build();
 
 			await em.persistAndFlush([roleA]);
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);

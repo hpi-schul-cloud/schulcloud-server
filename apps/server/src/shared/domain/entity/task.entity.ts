@@ -44,7 +44,10 @@ export class TaskWithStatusVo {
 export type TaskParentDescriptions = { courseName: string; lessonName: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
-@Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
+@Index({ properties: ['private', 'dueDate', 'finished'] })
+@Index({ properties: ['id', 'private'] })
+@Index({ properties: ['finished', 'course'] })
+@Index({ properties: ['finished', 'course'] })
 export class Task extends BaseEntityWithTimestamps implements ILearnroomElement {
 	@Property()
 	name: string;
@@ -52,29 +55,32 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	@Property()
 	description: string;
 
-	@Property()
+	@Property({ nullable: true })
 	availableDate?: Date;
 
-	@Property()
+	@Property({ nullable: true })
+	@Index()
 	dueDate?: Date;
 
 	@Property()
 	private = true;
 
-	@ManyToOne('User', { fieldName: 'teacherId' })
+	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
+	@Index()
 	creator?: User;
 
-	@ManyToOne('Course', { fieldName: 'courseId' })
+	@Index()
+	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
 	course?: Course;
 
-	@ManyToOne('Lesson', { fieldName: 'lessonId' })
+	@Index()
+	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task')
+	@OneToMany('Submission', 'task', { orphanRemoval: true })
 	submissions = new Collection<Submission>(this);
 
-	// TODO: rename to finished
-	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
+	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 

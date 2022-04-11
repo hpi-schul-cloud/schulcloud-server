@@ -23,7 +23,6 @@ const teams = require('./teams');
 const teamEvents = require('./teams/events');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
-const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
@@ -83,7 +82,6 @@ module.exports = function initializeServices() {
 	app.configure(homework);
 	app.configure(federalState);
 	app.configure(passwordRecovery);
-	app.configure(notification);
 	app.configure(releases);
 	app.configure(helpdesk);
 	app.configure(statistic);

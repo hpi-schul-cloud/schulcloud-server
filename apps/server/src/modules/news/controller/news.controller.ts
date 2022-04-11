@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
-import { ParseObjectIdPipe, PaginationQuery } from '@shared/controller';
+import { ParseObjectIdPipe, PaginationParams } from '@shared/controller';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { NewsUc } from '../uc/news.uc';
 
-import { CreateNewsParams, NewsFilterQuery, NewsListResponse, NewsResponse, UpdateNewsParams } from './dto';
+import { CreateNewsParams, FilterNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from './dto';
 import { NewsMapper } from '../mapper/news.mapper';
 
 @ApiTags('News')
@@ -34,8 +34,8 @@ export class NewsController {
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: NewsFilterQuery,
-		@Query() pagination: PaginationQuery
+		@Query() scope: FilterNewsParams,
+		@Query() pagination: PaginationParams
 	): Promise<NewsListResponse> {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,

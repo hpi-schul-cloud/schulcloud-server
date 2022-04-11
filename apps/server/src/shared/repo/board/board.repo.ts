@@ -39,9 +39,9 @@ export class BoardRepo {
 		const elements = board.references.getItems();
 		const discriminatorColumn = 'target';
 		const taskElements = elements.filter((el) => el instanceof TaskBoardElement);
-		await this.em.populate(taskElements, discriminatorColumn);
+		await this.em.populate(taskElements, [discriminatorColumn]);
 		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
-		await this.em.populate(lessonElements, discriminatorColumn);
+		await this.em.populate(lessonElements, [discriminatorColumn]);
 		return board;
 	}
 

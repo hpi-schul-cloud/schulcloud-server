@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { MatchCreator } from '@shared/domain';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { MatchCreatorResponse, RoleNameResponse } from '../controller/dto';
-import { UserFilterQuery } from '../controller/dto/user-filter.query';
+import { MatchType, UserRole } from '../controller/dto';
+import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserMatchMapper } from './match.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
@@ -19,17 +19,17 @@ describe('[UserMatchMapper]', () => {
 
 	describe('[mapToDomain] from query', () => {
 		it('should map name to fullname if trimmed string not empty ', () => {
-			const query: UserFilterQuery = { name: ' Nala ' };
+			const query: FilterUserParams = { name: ' Nala ' };
 			const result = UserMatchMapper.mapToDomain(query);
 			expect(result.name).toEqual(query.name);
 		});
 		it('should fail for whitespace name string', () => {
-			const query: UserFilterQuery = { name: ' ' };
+			const query: FilterUserParams = { name: ' ' };
 			const result = () => UserMatchMapper.mapToDomain(query);
 			expect(result).toThrowError('invalid name from query');
 		});
 		it('should skip name mapper if no name is provided without failing', () => {
-			const query: UserFilterQuery = {};
+			const query: FilterUserParams = {};
 			const result = UserMatchMapper.mapToDomain(query);
 			expect(result.name).toEqual(undefined);
 		});
@@ -39,17 +39,17 @@ describe('[UserMatchMapper]', () => {
 			it('should map role name student', () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'student' })] });
 				const result = UserMatchMapper.mapToResponse(user);
-				expect(result.roleNames).toContainEqual(RoleNameResponse.STUDENT);
+				expect(result.roleNames).toContainEqual(UserRole.STUDENT);
 			});
 			it('should map role name admin', () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'administrator' })] });
 				const result = UserMatchMapper.mapToResponse(user);
-				expect(result.roleNames).toContainEqual(RoleNameResponse.ADMIN);
+				expect(result.roleNames).toContainEqual(UserRole.ADMIN);
 			});
 			it('should map role name teacher', () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'teacher' })] });
 				const result = UserMatchMapper.mapToResponse(user);
-				expect(result.roleNames).toContainEqual(RoleNameResponse.TEACHER);
+				expect(result.roleNames).toContainEqual(UserRole.TEACHER);
 			});
 			it('should not map other role names like superhero', () => {
 				const user = userFactory.build({ roles: [roleFactory.build({ name: 'superhero' })] });
@@ -67,7 +67,7 @@ describe('[UserMatchMapper]', () => {
 				const user = userFactory.build();
 				const ImportUserMatchMapperSpy = jest
 					.spyOn(ImportUserMatchMapper, 'mapMatchCreatorToResponse')
-					.mockReturnValue('MAPPED_MATCH_VALUE' as MatchCreatorResponse);
+					.mockReturnValue('MAPPED_MATCH_VALUE' as MatchType);
 				const result = UserMatchMapper.mapToResponse(user, MatchCreator.AUTO);
 				expect(result.matchedBy).toEqual('MAPPED_MATCH_VALUE');
 				expect(ImportUserMatchMapperSpy).toBeCalledTimes(1);

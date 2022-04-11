@@ -6,12 +6,9 @@
 	"public": "../public/",
 	"services": {
 		"calendar": "https://schul.tech:3000",
-		"content": "https://content.schul-cloud.org",
-		"notification": "https://hpi-schul-cloud.org:3030"
+		"content": "https://content.schul-cloud.org"
 	},
 	"FORCE_SEND_EMAIL": true,
-	"NOTIFICATION_PLATFORM": "testplatform",
-	"NOTIFICATION_URI": "http://localhost:3031",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
 	"AES_KEY": "6543210987654321",
 	"ADMIN_TOGGLE_STUDENT_VISIBILITY": "opt-out",
@@ -35,5 +32,13 @@
 		"S3_SECRET_ACCESS_KEY": "S3RVER",
 		"S3_BUCKET": "schulcloud",
 		"S3_REGION": "eu-central-1"
+	},
+	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
+	"IDENTITY_MANAGEMENT": {
+		"URI": "http://localhost:8080/",
+		"TENANT": "dBildungscloud",
+		"ADMIN_CLIENTID": "admin-cli",
+		"ADMIN_USER": "dbildungscloud",
+		"ADMIN_PASSWORD": "dbildungscloud"
 	}
 }

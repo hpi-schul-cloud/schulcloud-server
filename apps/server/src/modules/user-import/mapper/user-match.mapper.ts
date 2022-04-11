@@ -1,11 +1,11 @@
 import { StringValidator } from '@shared/common';
 import { INameMatch, MatchCreator, User } from '@shared/domain';
-import { RoleNameResponse, UserMatchResponse } from '../controller/dto';
-import { UserFilterQuery } from '../controller/dto/user-filter.query';
+import { UserRole, UserMatchResponse } from '../controller/dto';
+import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {
-	static mapToDomain(query: UserFilterQuery): INameMatch {
+	static mapToDomain(query: FilterUserParams): INameMatch {
 		const scope: INameMatch = {};
 		if (query.name) {
 			if (StringValidator.isNotEmptyString(query.name, true)) {
@@ -20,20 +20,20 @@ export class UserMatchMapper {
 	static mapToResponse(user: User, matchCreator?: MatchCreator): UserMatchResponse {
 		const domainRoles = user.roles.getItems(true);
 		const domainRoleNames = domainRoles.map((role) => role.name);
-		const roleNames: RoleNameResponse[] = domainRoleNames
+		const roleNames: UserRole[] = domainRoleNames
 			.map((roleName) => {
 				switch (roleName) {
 					case 'teacher':
-						return RoleNameResponse.TEACHER;
+						return UserRole.TEACHER;
 					case 'administrator':
-						return RoleNameResponse.ADMIN;
+						return UserRole.ADMIN;
 					case 'student':
-						return RoleNameResponse.STUDENT;
+						return UserRole.STUDENT;
 					default:
 						return null;
 				}
 			})
-			.filter((roleName) => roleName != null) as RoleNameResponse[];
+			.filter((roleName) => roleName != null) as UserRole[];
 		const dto = new UserMatchResponse({
 			userId: user.id,
 			firstName: user.firstName,
