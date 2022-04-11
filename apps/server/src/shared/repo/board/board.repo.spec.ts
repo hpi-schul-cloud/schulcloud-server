@@ -36,6 +36,10 @@ describe('BoardRepo', () => {
 		await em.nativeDelete(Board, {});
 	});
 
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Board);
+	});
+
 	describe('findByCourseId', () => {
 		it('should return existing board', async () => {
 			const course = courseFactory.build();

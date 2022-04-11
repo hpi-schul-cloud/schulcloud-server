@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityId, SortOrder } from '@shared/domain';
+import { Course, EntityId, SortOrder } from '@shared/domain';
 import { userFactory, courseFactory, cleanupCollections } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
@@ -39,6 +39,10 @@ describe('course repo', () => {
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findAllByUserId).toEqual('function');
+	});
+
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Course);
 	});
 
 	describe('findAllByUserId', () => {

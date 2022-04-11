@@ -56,6 +56,10 @@ describe('FilesRepo', () => {
 		it('entity manager should be defined', () => {
 			expect(em).toBeDefined();
 		});
+
+		it('should implement entityName getter', () => {
+			expect(repo.entityName).toBe(BaseFile);
+		});
 	});
 
 	describe('findAllFilesForCleanup', () => {

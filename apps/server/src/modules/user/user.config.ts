@@ -3,14 +3,14 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 
 @Injectable()
 export class UserConfig {
-	avaibleLanguage: string;
+	availableLanguages: string;
 
 	constructor() {
-		this.avaibleLanguage = Configuration.get('I18N__AVAILABLE_LANGUAGES') as string;
+		this.availableLanguages = Configuration.get('I18N__AVAILABLE_LANGUAGES') as string;
 	}
 
-	getAviableLanguages(): string[] {
-		const languages = this.avaibleLanguage.split(',');
+	getAvailableLanguages(): string[] {
+		const languages = this.availableLanguages.split(',');
 
 		return languages;
 	}

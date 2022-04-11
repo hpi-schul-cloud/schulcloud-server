@@ -60,17 +60,14 @@ describe('AccountUc', () => {
 				{
 					provide: AccountRepo,
 					useValue: {
-						create: (): Promise<Account> => {
-							return Promise.resolve(accountFactory.buildWithId());
-						},
-						read: (): Promise<Account> => {
+						findById: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
 						},
-						update: jest.fn().mockImplementation((account: Account): Promise<Account> => {
+						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
-							return Promise.resolve(account);
+							return Promise.resolve();
 						}),
 						delete: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
@@ -126,11 +123,11 @@ describe('AccountUc', () => {
 							}
 							return Promise.resolve([]);
 						},
-						update: jest.fn().mockImplementation((user: User): Promise<User> => {
+						save: jest.fn().mockImplementation((user: User): Promise<void> => {
 							if (user.firstName === 'failToUpdate') {
 								return Promise.reject();
 							}
-							return Promise.resolve(user);
+							return Promise.resolve();
 						}),
 					},
 				},
@@ -307,13 +304,13 @@ describe('AccountUc', () => {
 			expect(mockTeacherUser.forcePasswordChange).toBe(true);
 		});
 		it('should reject if update in user repo fails', async () => {
-			(accountRepo.update as jest.Mock).mockRejectedValueOnce(new Error('account not found'));
+			(accountRepo.save as jest.Mock).mockRejectedValueOnce(new Error('account not found'));
 			await expect(
 				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
 			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should reject if update in account repo fails', async () => {
-			(userRepo.update as jest.Mock).mockRejectedValueOnce(new Error('user not found'));
+			(userRepo.save as jest.Mock).mockRejectedValueOnce(new Error('user not found'));
 			await expect(
 				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
 			).rejects.toThrow(EntityNotFoundError);
@@ -420,7 +417,7 @@ describe('AccountUc', () => {
 			).resolves.not.toThrow();
 		});
 		it('should use email as account user name in lower case', async () => {
-			const accountRepoSpy = jest.spyOn(accountRepo, 'update');
+			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
 			const testMail = 'AN@AVAILABLE.MAIL';
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
@@ -428,10 +425,10 @@ describe('AccountUc', () => {
 					email: testMail,
 				})
 			).resolves.not.toThrow();
-			expect(accountRepoSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+			expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 		});
 		it('should use email as user email in lower case', async () => {
-			const userUpdateSpy = jest.spyOn(userRepo, 'update');
+			const userUpdateSpy = jest.spyOn(userRepo, 'save');
 			const testMail = 'AN@AVAILABLE.MAIL';
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
@@ -442,8 +439,8 @@ describe('AccountUc', () => {
 			expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 		});
 		it('should always update account user name AND user email together.', async () => {
-			const accountUpdateSpy = jest.spyOn(accountRepo, 'update');
-			const userUpdateSpy = jest.spyOn(userRepo, 'update');
+			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
+			const userUpdateSpy = jest.spyOn(userRepo, 'save');
 			const testMail = 'an@available.mail';
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
@@ -452,7 +449,7 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 			expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
-			expect(accountUpdateSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+			expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 		});
 		it('should throw if new email already in use', async () => {
 			await expect(
