@@ -6,7 +6,7 @@ metadata:
     app: api-tsp-sync-cronjob
   name: api-tsp-sync-base-cronjob
 spec:
-  schedule: "9 3 * * *"
+  schedule: "{{ SERVER_TSP_SYNC_BASE_CRONJOB|default("9 3 * * *", true) }}"
   jobTemplate:
     spec:
       template:
@@ -17,9 +17,9 @@ spec:
           containers:
           - name: api-tsp-sync-base-cronjob
             image: curlimages/curl:7.71.1
-            command:
-            - curl
-            - -H
-            - 'X-API-Key: {{ SYNC_API_KEY }}'
-            - http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-base
+            envFrom:
+            - secretRef:
+                name: api-secret
+            command: ['/bin/sh','-c']
+            args: ['curl -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-base"']
           restartPolicy: OnFailure

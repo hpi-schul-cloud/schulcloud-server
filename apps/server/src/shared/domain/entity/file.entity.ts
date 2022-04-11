@@ -1,7 +1,7 @@
 import { Entity, Property, ManyToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { StorageProvider } from './storageprovider.entity';
-import type { User } from './user.entity';
+import { StorageProvider } from './storageprovider.entity';
+import { User } from './user.entity';
 
 export interface IFileProperties {
 	deletedAt?: Date;
@@ -13,13 +13,13 @@ export interface IFileProperties {
 
 @Entity({ collection: 'files', discriminatorColumn: 'isDirectory', abstract: true })
 export abstract class BaseFile extends BaseEntityWithTimestamps {
-	@Property()
+	@Property({ nullable: true })
 	deletedAt?: Date;
 
 	@Property()
 	isDirectory!: boolean;
 
-	@Property()
+	@ManyToOne('User', { nullable: true })
 	creator?: User;
 }
 

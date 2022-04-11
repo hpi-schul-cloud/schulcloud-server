@@ -1,4 +1,3 @@
-const Sentry = require('@sentry/node');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
@@ -170,11 +169,10 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
-// important that it is not sent to sentry, or added it to logs
+// important that it is not added it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);
-		// originalUrl is used by sentry
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
@@ -268,7 +266,6 @@ const addTraceId = (error, req, res, next) => {
 const errorHandler = (app) => {
 	app.use(addTraceId);
 	app.use(filterSecrets);
-	app.use(Sentry.Handlers.errorHandler());
 	app.use(convertExternalLibraryErrors);
 	app.use(formatAndLogErrors);
 	app.use(getErrorResponse);

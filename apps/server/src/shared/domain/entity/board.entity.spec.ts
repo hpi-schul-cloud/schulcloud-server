@@ -6,6 +6,7 @@ import {
 	lessonFactory,
 	setupEntities,
 } from '@shared/testing';
+import { BadRequestException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
 
 describe('Board Entity', () => {
@@ -17,6 +18,72 @@ describe('Board Entity', () => {
 
 	afterAll(async () => {
 		await orm.close();
+	});
+
+	describe('getByTargetId', () => {
+		it('should return target', () => {
+			const task = taskFactory.buildWithId();
+			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
+			const board = boardFactory.buildWithId({ references: [taskElement] });
+
+			const result = board.getByTargetId(task.id);
+			expect(result).toEqual(task);
+		});
+
+		it('should throw when target doesnt exist', () => {
+			const board = boardFactory.buildWithId({ references: [] });
+
+			const call = () => board.getByTargetId('this-does-not-exist');
+			expect(call).toThrow();
+		});
+	});
+
+	describe('reorderElements', () => {
+		it('it should reorder exisiting elements', () => {
+			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
+			const board = boardFactory.buildWithId({});
+			board.syncTasksFromList(tasks);
+			const newOrder = [tasks[1], tasks[0], tasks[2]].map((el) => el.id);
+
+			board.reorderElements(newOrder);
+
+			const resultOrder = board.getElements().map((el) => el.target.id);
+			expect(resultOrder).toEqual(newOrder);
+		});
+
+		it('should throw when element is missing in new order', () => {
+			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
+			const board = boardFactory.buildWithId({});
+			board.syncTasksFromList(tasks);
+			const newOrder = [tasks[1], tasks[0]].map((el) => el.id);
+
+			const call = () => board.reorderElements(newOrder);
+
+			expect(call).toThrow(BadRequestException);
+		});
+
+		it('should throw when additional element in new order', () => {
+			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
+			const additional = taskFactory.buildWithId();
+			const board = boardFactory.buildWithId({});
+			board.syncTasksFromList(tasks);
+			const newOrder = [tasks[1], tasks[0], additional].map((el) => el.id);
+
+			const call = () => board.reorderElements(newOrder);
+
+			expect(call).toThrow(BadRequestException);
+		});
+
+		it('should throw when element is passed twice', () => {
+			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
+			const board = boardFactory.buildWithId({});
+			board.syncTasksFromList(tasks);
+			const newOrder = [tasks[1], tasks[0], tasks[2], tasks[1]].map((el) => el.id);
+
+			const call = () => board.reorderElements(newOrder);
+
+			expect(call).toThrow(BadRequestException);
+		});
 	});
 
 	describe('syncTasksFromList', () => {

@@ -34,7 +34,7 @@
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
 			"default": false,
-			"description": "Send mails to notification service, also if not in production mode"
+			"description": "Send mails to mail service, also if not in production mode"
 		},
 		"I18N": {
 			"type": "object",
@@ -58,7 +58,7 @@
 				},
 				"AVAILABLE_LANGUAGES": {
 					"type": "string",
-					"default": "de,en,es",
+					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
 			}
@@ -226,6 +226,77 @@
 				}
 			}
 		},
+		"FILES_STORAGE": {
+			"type": "object",
+			"description": "Files storage server properties, required always to be defined",
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
+			"properties": {
+				"SERVICE_BASE_URL": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4444",
+					"description": "The URI of the file service"
+				},
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_REGION": {
+					"type": "string",
+					"default": "eu-central-1",
+					"description": "Region name of bucket"
+				},
+				"S3_BUCKET": {
+					"type": "string",
+					"description": "Bucket name"
+				},
+				"S3_ACCESS_KEY_ID": {
+					"type": "string",
+					"description": "Access Key to S3"
+				},
+				"S3_SECRET_ACCESS_KEY": {
+					"type": "string",
+					"description": "Secret key to S3"
+				}
+			}
+		},
+		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) feature."
+		},
+		"IDENTITY_MANAGEMENT": {
+			"type": "object",
+			"description": "Identity management server properties.",
+			"properties": {
+				"URI": {
+					"type": "string",
+					"default" : null,
+					"description": "The ErWIn IDM base URI."
+				},
+				"TENANT": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM tenant."
+				},
+				"ADMIN_CLIENTID": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin client."
+				},
+				"ADMIN_USER": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin user."
+				},
+				"ADMIN_PASSWORD": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin password."
+				}
+			}
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -290,17 +361,9 @@
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
 		},
-		"NOTIFICATION_PLATFORM": {
-			"type": "string",
-			"description": "Set the platform to use in notification service"
-		},
-		"NOTIFICATION_URI": {
-			"type": "string",
-			"description": "Url to the notificaiton service"
-		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
 		"S3_KEY": {
@@ -330,17 +393,27 @@
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
-			"description": "Antivirus file endpoint",
+			"description": "Antivirus file endpoint, only used for legacy file implementation",
 			"format": "uri",
 			"pattern": ".*(?<!/)$"
 		},
 		"FILE_SECURITY_SERVICE_USERNAME": {
 			"type": "string",
-			"description": "Username for the antivirus service"
+			"description": "Username for the antivirus service, only used for legacy file implementation"
 		},
 		"FILE_SECURITY_SERVICE_PASSWORD": {
 			"type": "string",
-			"description": "Password for the antivirus service"
+			"description": "Password for the antivirus service, only used for legacy file implementation"
+		},
+		"ANTIVIRUS_EXCHANGE": {
+			"type": "string",
+			"default": "antivirus",
+			"description": "rabbitmq exchange name for antivirus"
+		},
+		"ANTIVIRUS_ROUTING_KEY": {
+			"type": "string",
+			"default": "scan_file",
+			"description": "rabbitmq routing key"
 		},
 		"DOCUMENT_BASE_DIR": {
 			"type": "string",
@@ -396,7 +469,7 @@
 		},
 		"ROCKET_CHAT_URI": {
 			"type": "string",
-			"default" : null,
+			"default": null,
 			"description": "rocketchat base uri"
 		},
 		"ROCKET_CHAT_ADMIN_ID": {
@@ -424,17 +497,10 @@
 			"description": "Synchronous encryption key used to secure search user passwords",
 			"pattern": ".{16}.*"
 		},
-		"SENTRY_DSN": {
+		"AES_KEY": {
 			"type": "string",
-			"format": "uri",
-			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
-		},
-		"SENTRY_SAMPLE_RATE": {
-			"type": "number",
-			"default": 1.0,
-			"minimum": 0.0,
-			"maximum": 1.0,
-			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
+			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
+			"pattern": ".{16}.*"
 		},
 		"ETHERPAD_API_KEY": {
 			"type": "string",
@@ -703,6 +769,26 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for course sharing feature."
+		},
+		"FEATURE_LESSON_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for lesson sharing feature."
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
+		},
+		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
+			"type": "string",
+			"default": "",
+			"description": "SystemId for migration of users from system"
+		},
+		"FEATURE_COURSE_COPY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
 		}
 	},
 	"required": [
@@ -711,7 +797,7 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LDAP_PASSWORD_ENCRYPTION_KEY"
+		"AES_KEY"
 	],
 	"allOf": [
 		{
@@ -730,7 +816,23 @@
 				}
 			},
 			"then": {
-				"required": ["PROMETHEUS"]
+				"required": [
+					"PROMETHEUS"
+				]
+			}
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_USER_MIGRATION_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"FEATURE_USER_MIGRATION_SYSTEM_ID"
+				]
 			}
 		},
 		"ANTIVIRUS": {

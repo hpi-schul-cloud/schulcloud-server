@@ -16,6 +16,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		return Promise.resolve([
 			{
 				displayName: this.config.providerOptions.schoolName,
+				officialSchoolNumber: '',
 				ldapOu: this.config.rootPath,
 			},
 		]);

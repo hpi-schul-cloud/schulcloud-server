@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { QueryOrderMap } from '@mikro-orm/core';
+import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 
 import { EntityId, Course, Counted, IFindOptions } from '@shared/domain';
 import { Scope } from '../scope';
@@ -31,7 +31,7 @@ class CourseScope extends Scope<Course> {
 
 	forActiveCourses(): CourseScope {
 		const now = new Date();
-		const noUntilDate = { untilDate: { $exists: false } };
+		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<Course>;
 		const untilDateInFuture = { untilDate: { $gte: now } };
 
 		this.addQuery({ $or: [noUntilDate, untilDateInFuture] });
@@ -65,7 +65,7 @@ export class CourseRepo {
 		const queryOptions = {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
-			orderBy: order as QueryOrderMap,
+			orderBy: order as QueryOrderMap<Course>,
 		};
 
 		const [courses, count] = await this.em.findAndCount(Course, scope.query, queryOptions);

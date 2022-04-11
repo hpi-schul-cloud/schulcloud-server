@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import BSON from 'bson';
+import { EJSON } from 'bson';
 
 @Injectable()
 export class BsonConverter {
@@ -9,7 +9,7 @@ export class BsonConverter {
 	 * @returns mongo-bson/ejson objects
 	 */
 	serialize(documents: unknown[]): unknown[] {
-		const bsonDocuments = BSON.EJSON.serialize(documents) as unknown[];
+		const bsonDocuments = EJSON.serialize(documents) as unknown[];
 		return bsonDocuments;
 	}
 
@@ -19,7 +19,7 @@ export class BsonConverter {
 	 * @returns mongo-json documents
 	 */
 	deserialize(bsonDocuments: unknown[]): unknown[] {
-		const jsonDocuments = BSON.EJSON.deserialize(bsonDocuments) as unknown[];
+		const jsonDocuments = EJSON.deserialize(bsonDocuments) as unknown[];
 		return jsonDocuments;
 	}
 }

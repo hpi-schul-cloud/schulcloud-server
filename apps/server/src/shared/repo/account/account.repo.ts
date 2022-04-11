@@ -1,17 +1,13 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
+import { User } from '@shared/domain/entity/user.entity';
 
 @Injectable()
-export class AccountRepo {
-	constructor(private readonly em: EntityManager) {}
-
-	private get repo(): EntityRepository<Account> {
-		return this.em.getRepository(Account);
-	}
+export class AccountRepo extends BaseRepo<Account> {
+	repo = this.em.getRepository(Account);
 
 	async create(account: Account): Promise<Account> {
 		await this.repo.persistAndFlush(account);
@@ -43,6 +39,23 @@ export class AccountRepo {
 				},
 			}
 		);
+		return account;
+	}
+
+	async findByUserId(userId: EntityId): Promise<Account> {
+		const account = await this.repo.findOneOrFail({ user: userId });
+		return account;
+	}
+
+	async findOneByUser(user: User): Promise<Account> {
+		return this.findByUserId(user.id);
+	}
+
+	async findByUsername(userName: string): Promise<Account[]> {
+		const account = await this.repo.find({
+			// find mail case-insensitive by regex
+			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
+		});
 		return account;
 	}
 }

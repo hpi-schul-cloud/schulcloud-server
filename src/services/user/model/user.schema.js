@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const mongooseHistory = require('mongoose-history');
+// const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
 const { splitForSearchIndexes } = require('../../../utils/search');
@@ -115,17 +115,8 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 */
 
 userSchema.index({ importHash: 1 }); // ok = 1
-userSchema.index({ email: 1 }); // ok = 2
-userSchema.index({ _id: 1, email: 1 }); // ok = 2
-userSchema.index({ firstName: 1, lastName: 1 }); // ok = 5
-
 userSchema.index({ ldapDn: 1 }); // ?
-userSchema.index({ ldapId: 1 }); // ?
-userSchema.index({ ldapId: 1, schoolId: 1 }); // LDAP
 userSchema.index({ schoolId: 1, ldapDn: 1 }); // LDAP
-userSchema.index({ schoolId: 1 }); // ?
-
-userSchema.index({ schoolId: 1, roles: -1 }); // ?
 userSchema.index(
 	{
 		firstName: 'text',
@@ -190,7 +181,7 @@ userSchema.methods.getPermissions = function getPermissions() {
 };
 
 enableAuditLog(userSchema);
-userSchema.plugin(mongooseHistory);
+// userSchema.plugin(mongooseHistory);
 
 module.exports = {
 	USER_FEATURES,

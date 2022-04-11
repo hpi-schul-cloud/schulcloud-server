@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
 import { EntityId } from '../types/entity-id';
+import { ILearnroomElement } from '../interface/learnroom';
 
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -43,37 +44,43 @@ export class TaskWithStatusVo {
 export type TaskParentDescriptions = { courseName: string; lessonName: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
-@Index({ name: 'findAllByParentIds_findAllForStudent', properties: ['private', 'dueDate', 'finished'] })
-export class Task extends BaseEntityWithTimestamps {
+@Index({ properties: ['private', 'dueDate', 'finished'] })
+@Index({ properties: ['id', 'private'] })
+@Index({ properties: ['finished', 'course'] })
+@Index({ properties: ['finished', 'course'] })
+export class Task extends BaseEntityWithTimestamps implements ILearnroomElement {
 	@Property()
 	name: string;
 
 	@Property()
 	description: string;
 
-	@Property()
+	@Property({ nullable: true })
 	availableDate?: Date;
 
-	@Property()
+	@Property({ nullable: true })
+	@Index()
 	dueDate?: Date;
 
 	@Property()
 	private = true;
 
-	@ManyToOne('User', { fieldName: 'teacherId' })
+	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
+	@Index()
 	creator?: User;
 
-	@ManyToOne('Course', { fieldName: 'courseId' })
+	@Index()
+	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
 	course?: Course;
 
-	@ManyToOne('Lesson', { fieldName: 'lessonId' })
+	@Index()
+	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
 	lesson?: Lesson; // In database exist also null, but it can not set.
 
-	@OneToMany('Submission', 'task')
+	@OneToMany('Submission', 'task', { orphanRemoval: true })
 	submissions = new Collection<Submission>(this);
 
-	// TODO: rename to finished
-	@Index({ name: 'findAllByParentIds_findAllForTeacher' })
+	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
@@ -232,5 +239,14 @@ export class Task extends BaseEntityWithTimestamps {
 
 	restoreForUser(user: User) {
 		this.finished.remove(user);
+	}
+
+	publish() {
+		this.private = false;
+		this.availableDate = new Date(Date.now());
+	}
+
+	unpublish() {
+		this.private = true;
 	}
 }

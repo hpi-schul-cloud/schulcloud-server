@@ -3,7 +3,7 @@ import { EntityId, ICurrentUser } from '@shared/domain';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomsUc } from '../uc/rooms.uc';
 import { RoomBoardDTO } from '../types';
-import { BoardResponse } from './dto/roomBoardResponse';
+import { BoardResponse } from './dto/board-task.response';
 import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {
@@ -22,6 +22,18 @@ describe('rooms controller', () => {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
 						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 							throw new Error('please write mock for RoomsUc.getBoard');
+						},
+						updateVisibilityOfBoardElement(
+							roomId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
+							elementId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
+							userId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
+							visibility: boolean // eslint-disable-line @typescript-eslint/no-unused-vars
+						): Promise<void> {
+							throw new Error('please write mock for RoomsUc.updateVisibilityOfBoardElement');
+						},
+						// eslint-disable-next-line @typescript-eslint/no-unused-vars
+						reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
+							throw new Error('please write mock for RoomsUc.reorderBoardElements');
 						},
 					},
 				},
@@ -81,6 +93,28 @@ describe('rooms controller', () => {
 
 				expect(result).toEqual(mapperResult);
 			});
+		});
+	});
+
+	describe('patchVisibility', () => {
+		it('should call uc', async () => {
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => {
+				return Promise.resolve();
+			});
+			await controller.patchElementVisibility('roomid', 'elementId', { visibility: true }, currentUser);
+			expect(ucSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('patchOrder', () => {
+		it('should call uc', async () => {
+			const currentUser = { userId: 'userId' } as ICurrentUser;
+			const ucSpy = jest.spyOn(uc, 'reorderBoardElements').mockImplementation(() => {
+				return Promise.resolve();
+			});
+			await controller.patchOrderingOfElements('roomid', { elements: ['id', 'id', 'id'] }, currentUser);
+			expect(ucSpy).toHaveBeenCalledWith('roomid', 'userId', ['id', 'id', 'id']);
 		});
 	});
 });

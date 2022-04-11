@@ -46,7 +46,7 @@ schulcloud.lessons             find         {"courseId": 1}
 schulcloud.lessons             find         {"courseGroupId": 1}
 schulcloud.lessons             count        {"courseId": 1}        
 */
-lessonSchema.index({ courseId: 1 });
+// the ref don't exists in entity
 lessonSchema.index({ courseGroupId: 1 });
 
 enableAuditLog(lessonSchema);

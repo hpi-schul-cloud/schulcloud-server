@@ -210,4 +210,11 @@ export class DatabaseManagementUc {
 		);
 		return exportedCollections;
 	}
+
+	/**
+	 * Updates the indexes in the database based on definitions in entities
+	 */
+	async syncIndexes(): Promise<void> {
+		return this.databaseManagementService.syncIndexes();
+	}
 }

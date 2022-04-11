@@ -1,7 +1,7 @@
 // jest.config.ts
 import type { Config } from '@jest/types';
 
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
+const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('./tsconfig.json');
 
 // Sync object
@@ -23,7 +23,7 @@ const config: Config.InitialOptions = {
 			branches: 80,
 			functions: 80,
 			lines: 80,
-			statements: -10,
+			statements: -8,
 		},
 		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
 	},

@@ -123,7 +123,7 @@ export class GridElement implements IGridElement {
 			return metadata;
 		}
 		const groupData = this.references.map((reference) => reference.getMetadata());
-		const checkShortTitle = this.title ? this.title.substr(0, 2) : '';
+		const checkShortTitle = this.title ? this.title.substring(0, 2) : '';
 		const groupMetadata = {
 			groupId: this.getId(),
 			title: this.title,

@@ -3,14 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MatchCreator, MatchCreatorScope, RoleName, School } from '@shared/domain';
-import { NotFoundError } from '@mikro-orm/core';
+import { MatchCreator, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
 	let module: TestingModule;
 	let repo: ImportUserRepo;
 	let em: EntityManager;
+	let orm: MikroORM;
 
 	const persistedReferences = async () => {
 		const school = schoolFactory.build();
@@ -21,11 +22,12 @@ describe('ImportUserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [ImportUserRepo],
 		}).compile();
 		repo = module.get(ImportUserRepo);
 		em = module.get(EntityManager);
+		orm = module.get(MikroORM);
 	});
 
 	afterAll(async () => {
@@ -85,6 +87,12 @@ describe('ImportUserRepo', () => {
 			await em.persistAndFlush([importUser]);
 			const result = await repo.hasMatch(user);
 			expect(result).toBeNull();
+		});
+		it('should throw error for wrong id given', async () => {
+			await persistedReferences();
+			const importUser = importUserFactory.build();
+			await em.persistAndFlush([importUser]);
+			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrowError('invalid user match id');
 		});
 	});
 
@@ -734,7 +742,7 @@ describe('ImportUserRepo', () => {
 				}
 				await em.persistAndFlush(importUsers);
 				em.clear();
-				const [reloadedImportUsers, count] = await repo.findImportUsers(school);
+				const [reloadedImportUsers] = await repo.findImportUsers(school);
 				const result = reloadedImportUsers.map(async (importuser) => {
 					expect(importuser.user).toBeDefined();
 					expect(importuser.matchedBy).toBeDefined();
@@ -744,7 +752,7 @@ describe('ImportUserRepo', () => {
 				await Promise.all(result);
 			});
 			it('[UNIQUE] should prohibit same match of one user ', async () => {
-				await em.getDriver().ensureIndexes();
+				await orm.getSchemaGenerator().ensureIndexes();
 				const school = schoolFactory.build();
 				await em.persistAndFlush(school);
 				const user = userFactory.build({ school });
