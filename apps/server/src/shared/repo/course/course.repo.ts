@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 
 import { EntityId, Course, Counted, IFindOptions } from '@shared/domain';
 import { Scope } from '../scope';
+import { BaseRepo } from '../base.repo';
 
 class CourseScope extends Scope<Course> {
 	forAllGroupTypes(userId: EntityId): CourseScope {
@@ -46,8 +46,10 @@ class CourseScope extends Scope<Course> {
 }
 
 @Injectable()
-export class CourseRepo {
-	constructor(private readonly em: EntityManager) {}
+export class CourseRepo extends BaseRepo<Course> {
+	get entityName() {
+		return Course;
+	}
 
 	async findAllByUserId(
 		userId: EntityId,
@@ -68,7 +70,7 @@ export class CourseRepo {
 			orderBy: order as QueryOrderMap<Course>,
 		};
 
-		const [courses, count] = await this.em.findAndCount(Course, scope.query, queryOptions);
+		const [courses, count] = await this._em.findAndCount(Course, scope.query, queryOptions);
 
 		return [courses, count];
 	}
@@ -78,7 +80,7 @@ export class CourseRepo {
 		const scope = new CourseScope();
 		scope.forTeacher(userId);
 
-		const [courses, count] = await this.em.findAndCount(Course, scope.query);
+		const [courses, count] = await this._em.findAndCount(Course, scope.query);
 
 		return [courses, count];
 	}
@@ -88,7 +90,7 @@ export class CourseRepo {
 		scope.forCourseId(courseId);
 		if (userId) scope.forAllGroupTypes(userId);
 
-		const course = await this.em.findOneOrFail(Course, scope.query);
+		const course = await this._em.findOneOrFail(Course, scope.query);
 
 		return course;
 	}
