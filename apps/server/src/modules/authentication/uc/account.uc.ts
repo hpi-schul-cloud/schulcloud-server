@@ -64,8 +64,10 @@ export class AccountUc {
 		switch (query.type) {
 			case AccountSearchType.USER_ID:
 				// eslint-disable-next-line no-case-declarations
-				const account = await this.accountRepo.findByUserId(query.value);
-				return new AccountSearchListResponse([new AccountSearchResponse(account)], 1, 0, 1);
+				const account = await this.accountRepo.tryFindByUserId(query.value);
+				return account === undefined
+					? new AccountSearchListResponse([], 0, 0, 0)
+					: new AccountSearchListResponse([new AccountSearchResponse(account)], 1, 0, 1);
 			case AccountSearchType.USERNAME:
 				// eslint-disable-next-line no-case-declarations
 				const accounts = await this.accountRepo.searchByUsername(query.value);

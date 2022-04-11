@@ -42,8 +42,18 @@ export class AccountRepo extends BaseRepo<Account> {
 		return account;
 	}
 
+	/**
+	 * Finds an account by user id.
+	 * @param userId the user id
+	 * @throws {EntityNotFoundError}
+	 */
 	async findByUserId(userId: EntityId): Promise<Account> {
 		const account = await this.repo.findOneOrFail({ user: userId });
+		return account;
+	}
+
+	async tryFindByUserId(userId: EntityId): Promise<Account | undefined> {
+		const account = (await this.repo.findOne({ user: userId })) ?? undefined;
 		return account;
 	}
 
