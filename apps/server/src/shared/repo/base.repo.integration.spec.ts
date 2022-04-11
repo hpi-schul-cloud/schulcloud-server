@@ -62,7 +62,18 @@ describe('BaseRepo', () => {
 	});
 
 	describe('save', () => {
-		it('should persist and flush entities', async () => {
+		it('should persist and flush a single entity', async () => {
+			const testEntity = new TestEntity();
+
+			await repo.save(testEntity);
+			em.clear();
+
+			const result = await em.find(TestEntity, {});
+			expect(result).toHaveLength(1);
+			expect(result).toStrictEqual([testEntity]);
+		});
+
+		it('should persist and flush an entity array', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
 
@@ -76,7 +87,18 @@ describe('BaseRepo', () => {
 	});
 
 	describe('delete', () => {
-		it('should remove and flush entities', async () => {
+		it('should remove and flush a single entity', async () => {
+			const testEntity = new TestEntity();
+			await em.persistAndFlush(testEntity);
+			em.clear();
+
+			await repo.delete(testEntity);
+			em.clear();
+
+			expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
+		});
+
+		it('should remove and flush an array of entities', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
 			await em.persistAndFlush([testEntity1, testEntity2]);
@@ -85,12 +107,8 @@ describe('BaseRepo', () => {
 			await repo.delete([testEntity1, testEntity2]);
 			em.clear();
 
-			await expect(async () => {
-				await em.findOneOrFail(TestEntity, testEntity1.id);
-			}).rejects.toThrow(`TestEntity not found ('${testEntity1.id}')`);
-			await expect(async () => {
-				await em.findOneOrFail(TestEntity, testEntity2.id);
-			}).rejects.toThrow(`TestEntity not found ('${testEntity2.id}')`);
+			expect(await em.findOne(TestEntity, testEntity1.id)).toBeNull();
+			expect(await em.findOne(TestEntity, testEntity2.id)).toBeNull();
 		});
 	});
 

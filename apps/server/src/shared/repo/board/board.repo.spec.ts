@@ -72,7 +72,7 @@ describe('BoardRepo', () => {
 		const taskElement = taskBoardElementFactory.build();
 		const lessonElement = lessonBoardElementFactory.build();
 		const board = boardFactory.build({ references: [taskElement, lessonElement] });
-		await repo.save([board]);
+		await repo.save(board);
 
 		em.clear();
 
@@ -96,7 +96,7 @@ describe('BoardRepo', () => {
 		const taskElement = taskBoardElementFactory.build();
 		const lessonElement = lessonBoardElementFactory.build();
 		const board = boardFactory.build({ references: [taskElement, lessonElement] });
-		await repo.save([board]);
+		await repo.save(board);
 
 		em.clear();
 
@@ -107,7 +107,7 @@ describe('BoardRepo', () => {
 	it('should populate lesson in element', async () => {
 		const lessonElement = lessonBoardElementFactory.build();
 		const board = boardFactory.build({ references: [lessonElement] });
-		await repo.save([board]);
+		await repo.save(board);
 
 		em.clear();
 
@@ -119,7 +119,7 @@ describe('BoardRepo', () => {
 	it('should populate task in element', async () => {
 		const taskElement = taskBoardElementFactory.build();
 		const board = boardFactory.build({ references: [taskElement] });
-		await repo.save([board]);
+		await repo.save(board);
 
 		em.clear();
 

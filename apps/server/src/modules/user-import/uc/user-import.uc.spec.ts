@@ -568,7 +568,7 @@ describe('[ImportUserModule]', () => {
 				schoolParams.ldapSchoolIdentifier = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
 				schoolParams.systems.add(system);
-				expect(schoolRepoSaveSpy).toHaveBeenCalledWith([schoolParams]);
+				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});
 			it('should throw if system id from configuration is wrong format', async () => {
 				configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue('foo');
@@ -611,7 +611,7 @@ describe('[ImportUserModule]', () => {
 			it('should remove inMaitenanceSince for school', async () => {
 				await uc.endSchoolInMaintenance(currentUser.id);
 				const school2 = { ...school, inMaintenanceSince: undefined };
-				expect(schoolRepoSaveSpy).toHaveBeenCalledWith([school2]);
+				expect(schoolRepoSaveSpy).toHaveBeenCalledWith(school2);
 			});
 			it('should throw if school is missing ldapSchoolIdenfitier', async () => {
 				school.ldapSchoolIdentifier = undefined;

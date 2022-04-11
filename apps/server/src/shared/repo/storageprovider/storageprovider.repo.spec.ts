@@ -46,7 +46,7 @@ describe('StorageProviderRepo', () => {
 		const encryptedStringType = new EncryptedStringType();
 
 		const storageProvider = storageProviderFactory.build({ secretAccessKey });
-		await repo.save([storageProvider]);
+		await repo.save(storageProvider);
 
 		// fetch plain json from db
 		const { id } = storageProvider;

@@ -86,14 +86,7 @@ describe('FilesStorageUC', () => {
 		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
 		fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
-			if (Array.isArray(entity)) {
-				entity.map((item) => {
-					item.id = entityId;
-					return item;
-				});
-			} else {
-				entity.id = entityId;
-			}
+			(entity as FileRecord).id = entityId;
 			return Promise.resolve();
 		});
 	});
@@ -201,7 +194,7 @@ describe('FilesStorageUC', () => {
 			it('should call fileRecordRepo.removeAndFlush', async () => {
 				await expect(service.upload(userId, fileUploadParams, request)).rejects.toThrow();
 
-				expect(fileRecordRepo.delete).toBeCalledWith([
+				expect(fileRecordRepo.delete).toBeCalledWith(
 					expect.objectContaining({
 						id: entityId,
 						name: 'text (1).txt',
@@ -210,8 +203,8 @@ describe('FilesStorageUC', () => {
 						mimeType: 'text/plain',
 						createdAt: expect.any(Date) as Date,
 						updatedAt: expect.any(Date) as Date,
-					}),
-				]);
+					})
+				);
 			});
 		});
 	});
@@ -540,9 +533,9 @@ describe('FilesStorageUC', () => {
 		describe('calls to fileRecordRepo.save()', () => {
 			it('should call with correctly params', async () => {
 				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledWith([
-					expect.objectContaining({ parentType: FileRecordParentType.Task }),
-				]);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({ parentType: FileRecordParentType.Task })
+				);
 			});
 
 			it('should throw error if entity not saved', async () => {
@@ -620,9 +613,9 @@ describe('FilesStorageUC', () => {
 		describe('calls to fileRecordRepo.save()', () => {
 			it('should call with correctly params', async () => {
 				await service.copyOneFile(userId, requestParams, copyFileParams);
-				expect(fileRecordRepo.save).toHaveBeenCalledWith([
-					expect.objectContaining({ parentType: FileRecordParentType.Task }),
-				]);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({ parentType: FileRecordParentType.Task })
+				);
 			});
 
 			it('should throw error if entity not saved', async () => {

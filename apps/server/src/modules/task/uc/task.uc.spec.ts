@@ -987,7 +987,7 @@ describe('TaskUC', () => {
 
 		it('should save the task', async () => {
 			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(taskRepo.save).toBeCalledWith([task]);
+			expect(taskRepo.save).toBeCalledWith(task);
 		});
 
 		it('should return the task and its status', async () => {
@@ -1068,7 +1068,7 @@ describe('TaskUC', () => {
 
 		it('should call TaskRepo.delete() with Task', async () => {
 			await service.delete(user.id, task.id);
-			expect(taskRepo.delete).toBeCalledWith([task]);
+			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 	});
 });

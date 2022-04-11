@@ -12,11 +12,11 @@ export abstract class BaseRepo<T extends BaseEntity> {
 
 	abstract get entityName(): EntityName<T>;
 
-	async save(entities: T[]): Promise<void> {
+	async save(entities: T | T[]): Promise<void> {
 		await this._em.persistAndFlush(entities);
 	}
 
-	async delete(entities: T[]): Promise<void> {
+	async delete(entities: T | T[]): Promise<void> {
 		await this._em.removeAndFlush(entities);
 	}
 

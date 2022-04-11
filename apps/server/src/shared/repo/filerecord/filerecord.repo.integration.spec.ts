@@ -73,7 +73,7 @@ describe('FileRecordRepo', () => {
 			await new Promise((resolve) => setTimeout(resolve, 20));
 			fileRecord.name = `updated-${fileRecord.name}`;
 
-			await repo.save([fileRecord]);
+			await repo.save(fileRecord);
 			// load also from DB and test if value is set
 
 			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());

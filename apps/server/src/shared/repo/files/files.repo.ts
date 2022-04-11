@@ -26,6 +26,6 @@ export class FilesRepo extends BaseRepo<BaseFile> {
 
 	async deleteFile(file: BaseFile): Promise<void> {
 		if (file instanceof File) await this.fileStorageAdapter.deleteFile(file);
-		await this.delete([file]);
+		await this.delete(file);
 	}
 }

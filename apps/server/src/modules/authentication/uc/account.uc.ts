@@ -85,14 +85,14 @@ export class AccountUc {
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save([user]);
+				await this.userRepo.save(user);
 			} catch (err) {
 				throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
 			try {
-				await this.accountRepo.save([account]);
+				await this.accountRepo.save(account);
 			} catch (err) {
 				throw new EntityNotFoundError(Account.name);
 			}
@@ -148,13 +148,13 @@ export class AccountUc {
 
 		try {
 			account.password = await this.calcPasswordHash(password);
-			await this.accountRepo.save([account]);
+			await this.accountRepo.save(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
 		}
 		try {
 			user.forcePasswordChange = false;
-			await this.userRepo.save([user]);
+			await this.userRepo.save(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
 		}
@@ -192,13 +192,13 @@ export class AccountUc {
 		// set user must change password on next login
 		try {
 			targetUser.forcePasswordChange = true;
-			await this.userRepo.save([targetUser]);
+			await this.userRepo.save(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
 		try {
 			targetAccount.password = await this.calcPasswordHash(passwordNew);
-			await this.accountRepo.save([targetAccount]);
+			await this.accountRepo.save(targetAccount);
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}

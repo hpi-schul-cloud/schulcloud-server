@@ -31,7 +31,7 @@ export class UserUC {
 		this.checkAvaibleLanguages(params.language);
 		const user = await this.userRepo.findById(userId);
 		user.language = params.language;
-		await this.userRepo.save([user]);
+		await this.userRepo.save(user);
 
 		return true;
 	}

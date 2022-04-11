@@ -63,8 +63,8 @@ describe('AccountUc', () => {
 						findById: (): Promise<Account> => {
 							return Promise.resolve(mockAdminAccount);
 						},
-						save: jest.fn().mockImplementation((accounts: Account[]): Promise<void> => {
-							if (accounts[0].username === 'fail@to.update') {
+						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
+							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
 							return Promise.resolve();
@@ -123,8 +123,8 @@ describe('AccountUc', () => {
 							}
 							return Promise.resolve([]);
 						},
-						save: jest.fn().mockImplementation((users: User[]): Promise<void> => {
-							if (users[0].firstName === 'failToUpdate') {
+						save: jest.fn().mockImplementation((user: User): Promise<void> => {
+							if (user.firstName === 'failToUpdate') {
 								return Promise.reject();
 							}
 							return Promise.resolve();
@@ -425,9 +425,7 @@ describe('AccountUc', () => {
 					email: testMail,
 				})
 			).resolves.not.toThrow();
-			expect(accountSaveSpy).toBeCalledWith(
-				expect.arrayContaining([expect.objectContaining({ username: testMail.toLowerCase() })])
-			);
+			expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 		});
 		it('should use email as user email in lower case', async () => {
 			const userUpdateSpy = jest.spyOn(userRepo, 'save');
@@ -438,9 +436,7 @@ describe('AccountUc', () => {
 					email: testMail,
 				})
 			).resolves.not.toThrow();
-			expect(userUpdateSpy).toBeCalledWith(
-				expect.arrayContaining([expect.objectContaining({ email: testMail.toLowerCase() })])
-			);
+			expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 		});
 		it('should always update account user name AND user email together.', async () => {
 			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
@@ -452,12 +448,8 @@ describe('AccountUc', () => {
 					email: testMail,
 				})
 			).resolves.not.toThrow();
-			expect(userUpdateSpy).toBeCalledWith(
-				expect.arrayContaining([expect.objectContaining({ email: testMail.toLowerCase() })])
-			);
-			expect(accountSaveSpy).toBeCalledWith(
-				expect.arrayContaining([expect.objectContaining({ username: testMail.toLowerCase() })])
-			);
+			expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+			expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 		});
 		it('should throw if new email already in use', async () => {
 			await expect(

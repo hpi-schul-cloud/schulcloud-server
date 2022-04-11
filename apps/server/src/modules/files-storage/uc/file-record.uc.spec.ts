@@ -116,7 +116,7 @@ describe('FileRecordUC', () => {
 
 			await service.updateSecurityStatus(token, scanResult);
 
-			expect(spy).toHaveBeenCalledWith([fileRecord]);
+			expect(spy).toHaveBeenCalledWith(fileRecord);
 		});
 	});
 

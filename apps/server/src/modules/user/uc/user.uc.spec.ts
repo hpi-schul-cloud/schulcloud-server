@@ -93,7 +93,7 @@ describe('UserUc', () => {
 			await service.patchLanguage(user.id, { language: LanguageType.DE });
 
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
-			expect(userRepo.save).toHaveBeenCalledWith([user]);
+			expect(userRepo.save).toHaveBeenCalledWith(user);
 		});
 
 		it('should throw an error if language is not activated', async () => {

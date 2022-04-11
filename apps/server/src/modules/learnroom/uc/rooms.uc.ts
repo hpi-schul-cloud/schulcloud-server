@@ -33,7 +33,7 @@ export class RoomsUc {
 		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId);
 		board.syncLessonsFromList(courseLessons);
 		board.syncTasksFromList(courseTasks);
-		await this.boardRepo.save([board]);
+		await this.boardRepo.save(board);
 		return board;
 	}
 
@@ -55,7 +55,7 @@ export class RoomsUc {
 		} else {
 			element.unpublish();
 		}
-		await this.boardRepo.save([board]);
+		await this.boardRepo.save(board);
 	}
 
 	async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
@@ -66,6 +66,6 @@ export class RoomsUc {
 		}
 		const board = await this.boardRepo.findByCourseId(course.id);
 		board.reorderElements(orderedList);
-		await this.boardRepo.save([board]);
+		await this.boardRepo.save(board);
 	}
 }

@@ -204,7 +204,7 @@ describe('rooms usecase', () => {
 		it('should persist board', async () => {
 			const { room, user, saveSpy, board } = setup();
 			await uc.getBoard(room.id, user.id);
-			expect(saveSpy).toHaveBeenCalledWith([board]);
+			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 
 		it('should call to construct result dto from room, board, and user', async () => {
@@ -283,7 +283,7 @@ describe('rooms usecase', () => {
 		it('should persist board after changes', async () => {
 			const { user, room, hiddenTask, board, saveSpy } = setup(true);
 			await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
-			expect(saveSpy).toHaveBeenCalledWith([board]);
+			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 	});
 
@@ -357,7 +357,7 @@ describe('rooms usecase', () => {
 				user.id,
 				tasks.map((task) => task.id)
 			);
-			expect(saveSpy).toHaveBeenCalledWith([board]);
+			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 
 		it('should have called authorisation service', async () => {

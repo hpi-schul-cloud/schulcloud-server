@@ -56,7 +56,7 @@ describe('account repo', () => {
 		it('should find by User and return an account', async () => {
 			const user = userFactory.buildWithId();
 			const account = new Account({ username: 'Max Mustermann', user });
-			await repo.save([account]);
+			await repo.save(account);
 
 			const result = await repo.findOneByUser(user);
 			expect(result).toEqual(account);

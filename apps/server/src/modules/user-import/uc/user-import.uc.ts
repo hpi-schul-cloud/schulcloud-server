@@ -85,7 +85,7 @@ export class UserImportUc {
 		if (hasMatch !== null) throw new UserAlreadyAssignedToImportUserError();
 
 		importUser.setMatch(userMatch, MatchCreator.MANUAL);
-		await this.importUserRepo.save([importUser]);
+		await this.importUserRepo.save(importUser);
 
 		return importUser;
 	}
@@ -100,7 +100,7 @@ export class UserImportUc {
 		}
 
 		importUser.revokeMatch();
-		await this.importUserRepo.save([importUser]);
+		await this.importUserRepo.save(importUser);
 
 		return importUser;
 	}
@@ -116,7 +116,7 @@ export class UserImportUc {
 		}
 
 		importUser.flagged = flagged === true;
-		await this.importUserRepo.save([importUser]);
+		await this.importUserRepo.save(importUser);
 
 		return importUser;
 	}
@@ -170,7 +170,7 @@ export class UserImportUc {
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
-		await this.schoolRepo.save([school]);
+		await this.schoolRepo.save(school);
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
@@ -189,7 +189,7 @@ export class UserImportUc {
 			school.systems.add(migrationSystem);
 		}
 
-		await this.schoolRepo.save([school]);
+		await this.schoolRepo.save(school);
 	}
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
@@ -200,7 +200,7 @@ export class UserImportUc {
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
-		await this.schoolRepo.save([school]);
+		await this.schoolRepo.save(school);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {

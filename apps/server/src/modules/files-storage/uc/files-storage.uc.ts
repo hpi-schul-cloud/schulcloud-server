@@ -78,14 +78,14 @@ export class FilesStorageUC {
 		const fileName = this.checkFilenameExists(fileDescription.name, fileRecords);
 		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 		try {
-			await this.fileRecordRepo.save([entity]);
+			await this.fileRecordRepo.save(entity);
 			const folder = [params.schoolId, entity.id].join('/');
 			await this.storageClient.create(folder, fileDescription);
 			await this.antivirusService.send(entity);
 
 			return entity;
 		} catch (error) {
-			await this.fileRecordRepo.delete([entity]);
+			await this.fileRecordRepo.delete(entity);
 			throw error;
 		}
 	}
@@ -266,7 +266,7 @@ export class FilesStorageUC {
 			sourceFileRecords.map(async (item) => {
 				const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
 				entity.securityCheck = item.securityCheck;
-				await this.fileRecordRepo.save([entity]);
+				await this.fileRecordRepo.save(entity);
 
 				paths.push({
 					sourcePath: [item.schoolId, item.id].join('/'),
