@@ -49,15 +49,11 @@ describe('AccountUc', () => {
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
+	let mockAccounts: Account[];
+	let mockUsers: User[];
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
-
-	const mockUserIdMap = new Map<string, User>();
-	const mockAccountIdMap = new Map<string, Account>();
-	const mockAccountUserIdMap = new Map<string, Account>();
-	const mockAccountUsernameMap = new Map<string, Account>();
-	const mockUserMailMap = new Map<string, User>();
 
 	afterAll(async () => {
 		await module.close();
@@ -71,9 +67,6 @@ describe('AccountUc', () => {
 				{
 					provide: AccountRepo,
 					useValue: {
-						findById: (): Promise<Account> => {
-							return Promise.resolve(mockAdminAccount);
-						},
 						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
@@ -81,17 +74,16 @@ describe('AccountUc', () => {
 							return Promise.resolve();
 						}),
 						delete: (accountId: EntityId): Promise<Account> => {
-							switch (accountId) {
-								case mockAdminAccount.id:
-									return Promise.resolve(mockAdminAccount);
-								case mockStudentAccount.id:
-									return Promise.resolve(mockStudentAccount);
-								default:
-									throw new EntityNotFoundError(Account.name);
+							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
+
+							if (account) {
+								return Promise.resolve(account);
 							}
+
+							throw new EntityNotFoundError(Account.name);
 						},
 						findByUserId: (userId: EntityId): Promise<Account> => {
-							const account = mockAccountUserIdMap.get(userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -102,7 +94,7 @@ describe('AccountUc', () => {
 							throw Error();
 						},
 						findByUsername: (username: string): Promise<Account[]> => {
-							const account = mockAccountUsernameMap.get(username);
+							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
 								return Promise.resolve([account]);
@@ -111,12 +103,12 @@ describe('AccountUc', () => {
 								return Promise.resolve([mockExternalUserAccount]);
 							}
 							if (username === 'multiple@account.username') {
-								return Promise.resolve(Array.from(mockAccountUsernameMap.values()));
+								return Promise.resolve(mockAccounts);
 							}
 							return Promise.resolve([]);
 						},
 						findById: (accountId: EntityId): Promise<Account> => {
-							const account = mockAccountIdMap.get(accountId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -124,8 +116,7 @@ describe('AccountUc', () => {
 							throw new EntityNotFoundError(Account.name);
 						},
 						searchByUsername: (): Promise<Account[]> => {
-							const accounts = mockAccountIdMap.values();
-							return Promise.resolve(Array.from(accounts));
+							return Promise.resolve(mockAccounts);
 						},
 					},
 				},
@@ -133,14 +124,14 @@ describe('AccountUc', () => {
 					provide: UserRepo,
 					useValue: {
 						findById: (userId: EntityId): Promise<User> => {
-							const user = mockUserIdMap.get(userId);
+							const user = mockUsers.find((tempUser) => tempUser.id === userId);
 							if (user) {
 								return Promise.resolve(user);
 							}
 							throw Error();
 						},
 						findByEmail: (email: string): Promise<User[]> => {
-							const user = mockUserMailMap.get(email);
+							const user = mockUsers.find((tempUser) => tempUser.email === email);
 
 							if (user) {
 								return Promise.resolve([user]);
@@ -149,7 +140,7 @@ describe('AccountUc', () => {
 								return Promise.resolve([mockExternalUser]);
 							}
 							if (email === 'multiple@user.email') {
-								return Promise.resolve(Array.from(mockUserMailMap.values()));
+								return Promise.resolve(mockUsers);
 							}
 							return Promise.resolve([]);
 						},
@@ -276,7 +267,7 @@ describe('AccountUc', () => {
 		});
 		mockExternalUserAccount = accountFactory.buildWithId({ user: mockExternalUser, password: defaultPasswordHash });
 
-		const mockUsers = [
+		mockUsers = [
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
@@ -291,7 +282,7 @@ describe('AccountUc', () => {
 			mockUserWithoutAccount,
 		];
 
-		const mockAccounts = [
+		mockAccounts = [
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
@@ -304,16 +295,6 @@ describe('AccountUc', () => {
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
 		];
-
-		for (let i = 0; i < mockUsers.length; i += 1) {
-			mockUserIdMap.set(mockUsers[i].id, mockUsers[i]);
-			mockUserMailMap.set(mockUsers[i].email, mockUsers[i]);
-		}
-		for (let i = 0; i < mockAccounts.length; i += 1) {
-			mockAccountUserIdMap.set(mockAccounts[i].user.id, mockAccounts[i]);
-			mockAccountUsernameMap.set(mockAccounts[i].username, mockAccounts[i]);
-			mockAccountIdMap.set(mockAccounts[i].id, mockAccounts[i]);
-		}
 	});
 
 	describe('changePasswordForUser', () => {
