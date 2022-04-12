@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { ConfigService } from '@nestjs/config';
 
@@ -13,28 +13,34 @@ describe('TimeoutInterceptor', () => {
 	describe('when integrate TimeoutInterceptor', () => {
 		let app: INestApplication;
 
-		it(`should throw if timeout is arrived`, async () => {
-			const configService = new ConfigService<IInterceptorConfig>({ INCOMING_REQUEST_TIMEOUT: 1 });
-			const interceptor = new TimeoutInterceptor(configService);
+		beforeEach(async () => {});
 
-			app = (await createTestModule(interceptor)).createNestApplication();
-			await app.init();
-
-			await request(app.getHttpServer()).get('/').expect(HttpStatus.REQUEST_TIMEOUT);
-
+		afterEach(async () => {
 			await app.close();
 		});
 
-		it('should pass if no timeout is arrived`', async () => {
-			const configService = new ConfigService<IInterceptorConfig>({ INCOMING_REQUEST_TIMEOUT: 30000 });
+		it('should respond with error code if request runs into timeout', async () => {
+			const configService = new ConfigService<IInterceptorConfig, true>({ INCOMING_REQUEST_TIMEOUT: 1 });
 			const interceptor = new TimeoutInterceptor(configService);
 
 			app = (await createTestModule(interceptor)).createNestApplication();
 			await app.init();
 
-			await request(app.getHttpServer()).get('/').expect(200).expect('Schulcloud Server API');
+			const response = await request(app.getHttpServer()).get('/');
 
-			await app.close();
+			expect(response.status).toEqual(408);
+		});
+
+		it('should pass if request does not run into timeout', async () => {
+			const configService = new ConfigService<IInterceptorConfig, true>({ INCOMING_REQUEST_TIMEOUT: 30000 });
+			const interceptor = new TimeoutInterceptor(configService);
+
+			app = (await createTestModule(interceptor)).createNestApplication();
+			await app.init();
+
+			const response = await request(app.getHttpServer()).get('/');
+
+			expect(response).toEqual(200);
 		});
 	});
 });
