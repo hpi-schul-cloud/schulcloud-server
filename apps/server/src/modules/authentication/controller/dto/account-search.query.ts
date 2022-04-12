@@ -1,12 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
+import { PaginationParams } from '@shared/controller';
+import { AccountSearchType } from './account-search.type';
 
-export enum AccountSearchType {
-	USER_ID = 'userId',
-	USERNAME = 'username',
-}
-
-export class AccountSearchQuery {
+export class AccountSearchQuery extends PaginationParams {
 	@IsEnum(AccountSearchType)
 	@ApiProperty({
 		description: 'The search criteria.',
@@ -23,30 +20,4 @@ export class AccountSearchQuery {
 		nullable: false,
 	})
 	value!: string;
-
-	@IsOptional()
-	@IsInt()
-	@Min(0)
-	@ApiProperty({
-		description: 'Determines how many items should be skipped.',
-		required: false,
-		nullable: true,
-		default: 0,
-		minimum: 0,
-	})
-	skip?: number;
-
-	@IsOptional()
-	@IsInt()
-	@Min(1)
-	@Max(100)
-	@ApiProperty({
-		description: 'Determines the page size.',
-		required: false,
-		nullable: true,
-		default: 10,
-		minimum: 1,
-		maximum: 100,
-	})
-	limit?: number;
 }
