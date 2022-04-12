@@ -40,7 +40,7 @@ describe('TimeoutInterceptor', () => {
 
 			const response = await request(app.getHttpServer()).get('/');
 
-			expect(response).toEqual(200);
+			expect(response.status).toEqual(200);
 		});
 	});
 });
