@@ -7,8 +7,8 @@ import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
-	AccountByIdBody,
-	AccountSearchQuery,
+	AccountByIdBodyParams,
+	AccountSearchQueryParams,
 	AccountSearchType,
 	ChangePasswordParams,
 	PatchMyAccountParams,
@@ -174,7 +174,7 @@ describe('Account Controller (e2e)', () => {
 	describe('[GET]', () => {
 		it('should search for user id', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const query: AccountSearchQuery = {
+			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USER_ID,
 				value: studentAccount.user.id,
 				skip: 5,
@@ -188,7 +188,7 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should search for user name', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const query: AccountSearchQuery = {
+			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USERNAME,
 				value: '',
 				skip: 5,
@@ -202,7 +202,7 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject if type is unknown', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const query: AccountSearchQuery = {
+			const query: AccountSearchQueryParams = {
 				type: '' as AccountSearchType,
 				value: '',
 				skip: 5,
@@ -216,7 +216,7 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject if user is not a superhero', async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const query: AccountSearchQuery = {
+			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USERNAME,
 				value: '',
 				skip: 5,
@@ -261,7 +261,7 @@ describe('Account Controller (e2e)', () => {
 	describe('[PATCH] :id', () => {
 		it('should update account', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const body: AccountByIdBody = {
+			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
 				activated: true,
@@ -280,7 +280,7 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject if user is not a superhero', async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const body: AccountByIdBody = {
+			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
 				activated: true,
@@ -292,7 +292,7 @@ describe('Account Controller (e2e)', () => {
 		});
 		it('should reject not existing account id', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
-			const body: AccountByIdBody = {
+			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
 				activated: true,

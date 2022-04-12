@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsString, Matches } from 'class-validator';
 import { passwordPattern } from './password-pattern';
 
-export class AccountByIdBody {
+export class AccountByIdBodyParams {
 	@IsString()
 	@ApiProperty({
 		description: 'The new user name for the user.',

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
 import { PaginationParams } from '@shared/controller';
-import { AccountSearchType } from './account-search.type';
+import { AccountSearchType } from './account-search-type';
 
-export class AccountSearchQuery extends PaginationParams {
+export class AccountSearchQueryParams extends PaginationParams {
 	@IsEnum(AccountSearchType)
 	@ApiProperty({
 		description: 'The search criteria.',

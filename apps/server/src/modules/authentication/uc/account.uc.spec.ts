@@ -1,21 +1,15 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	AuthorizationError,
-	EntityNotFoundError,
-	ForbiddenOperationError,
-	UnauthorizedError,
-	ValidationError,
-} from '@shared/common';
+import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
 import { AccountRepo, UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import {
-	AccountByIdBody,
+	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountSearchListResponse,
-	AccountSearchQuery,
+	AccountSearchQueryParams,
 	AccountSearchResponse,
 	AccountSearchType,
 } from '../controller/dto';
@@ -716,7 +710,7 @@ describe('AccountUc', () => {
 		it('should return one account, if search type is userId', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
-				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQuery
+				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 			);
 			const expected = new AccountSearchListResponse([new AccountSearchResponse(mockStudentAccount)], 1, 0, 1);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
@@ -724,7 +718,7 @@ describe('AccountUc', () => {
 		it('should return one or more accounts, if search type is username', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
-				{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchQuery
+				{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchQueryParams
 			);
 			expect(accounts.skip).toEqual(0);
 			expect(accounts.limit).toEqual(10);
@@ -734,35 +728,44 @@ describe('AccountUc', () => {
 		it('should return an empty list, if skip is to large', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
-				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQuery
+				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQueryParams
 			);
 			expect(accounts.data).toStrictEqual([]);
 		});
 		it('should throw, if skip is smaller than 0', async () => {
 			await expect(
-				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, { skip: -1 } as AccountSearchQuery)
+				accountUc.searchAccounts(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ skip: -1 } as AccountSearchQueryParams
+				)
 			).rejects.toThrow('Skip is less than 0.');
 		});
 		it('should throw, if limit is smaller than 1', async () => {
 			await expect(
-				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, { limit: 0 } as AccountSearchQuery)
+				accountUc.searchAccounts(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ limit: 0 } as AccountSearchQueryParams
+				)
 			).rejects.toThrow('Limit is less than 1.');
 		});
 		it('should throw, if limit is greater than 100', async () => {
 			await expect(
-				accountUc.searchAccounts({ userId: mockSuperheroUser.id } as ICurrentUser, { limit: 101 } as AccountSearchQuery)
+				accountUc.searchAccounts(
+					{ userId: mockSuperheroUser.id } as ICurrentUser,
+					{ limit: 101 } as AccountSearchQueryParams
+				)
 			).rejects.toThrow('Limit is greater than 100.');
 		});
 		it('should throw, if user has not the right permissions', async () => {
 			await expect(
-				accountUc.searchAccounts({ userId: mockTeacherUser.id } as ICurrentUser, {} as AccountSearchQuery)
-			).rejects.toThrow(UnauthorizedError);
+				accountUc.searchAccounts({ userId: mockTeacherUser.id } as ICurrentUser, {} as AccountSearchQueryParams)
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if search type is unknown', async () => {
 			await expect(
 				accountUc.searchAccounts(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: '' as AccountSearchType } as AccountSearchQuery
+					{ type: '' as AccountSearchType } as AccountSearchQueryParams
 				)
 			).rejects.toThrow('Invalid search type.');
 		});
@@ -783,13 +786,13 @@ describe('AccountUc', () => {
 				})
 			);
 		});
-		it('should throw, if the current user is no super hero', async () => {
+		it('should throw, if the current user is no superhero', async () => {
 			await expect(
 				accountUc.findAccountById(
 					{ userId: mockTeacherUser.id } as ICurrentUser,
 					{ id: mockStudentAccount.id } as AccountByIdParams
 				)
-			).rejects.toThrow(UnauthorizedError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if no account matches the search term', async () => {
 			await expect(
@@ -808,7 +811,7 @@ describe('AccountUc', () => {
 						username: mockStudentAccount.username,
 						password: mockStudentAccount.password,
 						activated: mockStudentAccount.activated,
-					} as AccountByIdBody
+					} as AccountByIdBodyParams
 				)
 			).resolves.not.toThrow();
 		});
@@ -822,7 +825,7 @@ describe('AccountUc', () => {
 						username: mockStudentAccount.username,
 						password: mockStudentAccount.password,
 						activated: mockStudentAccount.activated,
-					} as AccountByIdBody
+					} as AccountByIdBodyParams
 				)
 			).resolves.not.toThrow();
 			expect(mockStudentUser.forcePasswordChange).toBe(true);
@@ -832,16 +835,16 @@ describe('AccountUc', () => {
 				accountUc.updateAccountById(
 					{ userId: mockAdminUser.id } as ICurrentUser,
 					{ id: mockStudentAccount.id } as AccountByIdParams,
-					{} as AccountByIdBody
+					{} as AccountByIdBodyParams
 				)
-			).rejects.toThrow(UnauthorizedError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if no account matches the search term', async () => {
 			await expect(
 				accountUc.updateAccountById(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ id: 'xxx' } as AccountByIdParams,
-					{ username: '', password: '', activated: false } as AccountByIdBody
+					{ username: '', password: '', activated: false } as AccountByIdBodyParams
 				)
 			).rejects.toThrow(EntityNotFoundError);
 		});
@@ -862,7 +865,7 @@ describe('AccountUc', () => {
 					{ userId: mockAdminUser.id } as ICurrentUser,
 					{ id: mockStudentAccount.id } as AccountByIdParams
 				)
-			).rejects.toThrow(UnauthorizedError);
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if no account matches the search term', async () => {
 			await expect(

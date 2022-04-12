@@ -6,11 +6,11 @@ import { ParseObjectIdPipe } from '@shared/controller';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AccountUc } from '../uc/account.uc';
 import {
-	AccountByIdBody,
+	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountByIdResponse,
 	AccountSearchListResponse,
-	AccountSearchQuery,
+	AccountSearchQueryParams,
 	ChangePasswordParams,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
@@ -30,7 +30,7 @@ export class AccountController {
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'User id not found.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: AccountSearchQuery
+		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
 		return this.accountUc.searchAccounts(currentUser, query);
 	}
@@ -71,7 +71,7 @@ export class AccountController {
 	async updateAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams,
-		@Body() body: AccountByIdBody
+		@Body() body: AccountByIdBodyParams
 	): Promise<AccountByIdResponse> {
 		return this.accountUc.updateAccountById(currentUser, params, body);
 	}

@@ -10,12 +10,12 @@ import {
 import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
 import { AccountRepo, UserRepo } from '@shared/repo';
 import {
-	AccountByIdBody,
+	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountByIdResponse,
 	AccountSearchListResponse,
 	AccountSearchType,
-	AccountSearchQuery,
+	AccountSearchQueryParams,
 	AccountSearchResponse,
 	PatchMyAccountParams,
 } from '../controller/dto';
@@ -42,7 +42,7 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQuery): Promise<AccountSearchListResponse> {
+	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
 
@@ -106,7 +106,7 @@ export class AccountUc {
 	async updateAccountById(
 		currentUser: ICurrentUser,
 		params: AccountByIdParams,
-		body: AccountByIdBody
+		body: AccountByIdBodyParams
 	): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to update an account.');
@@ -117,8 +117,8 @@ export class AccountUc {
 		body.password = await this.calcPasswordHash(body.password);
 		user.forcePasswordChange = true;
 		wrap(account).assign(body);
-		await this.accountRepo.update(account);
-		await this.userRepo.update(user);
+		await this.accountRepo.save(account);
+		await this.userRepo.save(user);
 		return new AccountByIdResponse(account);
 	}
 
@@ -134,7 +134,8 @@ export class AccountUc {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
-		const account = await this.accountRepo.delete(params.id);
+		const account = await this.accountRepo.findById(params.id);
+		await this.accountRepo.delete(account);
 		return new AccountByIdResponse(account);
 	}
 
@@ -346,13 +347,13 @@ export class AccountUc {
 	}
 
 	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
+		if (this.isDemoUser(currentUser)) {
+			return false;
+		}
 		if (this.hasRole(currentUser, 'superhero')) {
 			return true;
 		}
 		if (!(currentUser.school.id === targetUser.school.id)) {
-			return false;
-		}
-		if (this.isDemoUser(currentUser)) {
 			return false;
 		}
 
