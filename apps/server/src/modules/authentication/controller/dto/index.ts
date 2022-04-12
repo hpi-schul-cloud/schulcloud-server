@@ -1,4 +1,3 @@
-export * from './account.response';
 export * from './account-by-id.body';
 export * from './account-by-id.params';
 export * from './account-by-id.response';
