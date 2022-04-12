@@ -39,6 +39,10 @@ describe('course group repo', () => {
 		expect(typeof repo.findByCourseIds).toEqual('function');
 	});
 
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(CourseGroup);
+	});
+
 	describe('findByCourses', () => {
 		it('should return the right types', async () => {
 			const courseGroup = courseGroupFactory.build();

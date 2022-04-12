@@ -37,8 +37,13 @@ describe('NewsRepo', () => {
 		it('entity manager should be defined', () => {
 			expect(em).toBeDefined();
 		});
+
+		it('should implement entityName getter', () => {
+			expect(repo.entityName).toBe(News);
+		});
 	});
 
+	// TODO: Die folgenden Tests testen keine Repo-Methoden, sondern nur den EntityManager. Können die entfernt werden?
 	describe('entity persistence', () => {
 		it('should persist course news', async () => {
 			const news = courseNewsFactory.build();

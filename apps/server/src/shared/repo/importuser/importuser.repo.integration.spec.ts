@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MatchCreator, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
+import { ImportUser, MatchCreator, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { ImportUserRepo } from '.';
 
@@ -45,6 +45,10 @@ describe('ImportUserRepo', () => {
 
 		it('entity manager should be defined', () => {
 			expect(em).toBeDefined();
+		});
+
+		it('should implement entityName getter', () => {
+			expect(repo.entityName).toBe(ImportUser);
 		});
 	});
 

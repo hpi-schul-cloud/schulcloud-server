@@ -22,7 +22,7 @@ export class UserUC {
 	}
 
 	private checkAvaibleLanguages(settedLanguage: LanguageType): void | Error {
-		if (!this.userConfig.getAviableLanguages().includes(settedLanguage)) {
+		if (!this.userConfig.getAvailableLanguages().includes(settedLanguage)) {
 			throw new BadRequestException('Language is not activated.');
 		}
 	}
@@ -31,7 +31,7 @@ export class UserUC {
 		this.checkAvaibleLanguages(params.language);
 		const user = await this.userRepo.findById(userId);
 		user.language = params.language;
-		await this.userRepo.persistAndFlush(user);
+		await this.userRepo.save(user);
 
 		return true;
 	}

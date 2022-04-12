@@ -141,13 +141,13 @@ export class AccountUc {
 	/**
 	 * This method allows to update my (currentUser) account details.
 	 *
-	 * @param currentUser the current user
+	 * @param currentUserId the current user
 	 * @param params account details
 	 */
-	async updateMyAccount(currentUser: EntityId, params: PatchMyAccountParams) {
+	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
 		let account: Account;
 		try {
-			account = await this.accountRepo.findByUserId(currentUser);
+			account = await this.accountRepo.findByUserId(currentUserId);
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}
@@ -162,7 +162,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser, true);
+			user = await this.userRepo.findById(currentUserId, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
@@ -203,14 +203,14 @@ export class AccountUc {
 
 		if (updateUser) {
 			try {
-				await this.userRepo.update(user);
+				await this.userRepo.save(user);
 			} catch (err) {
 				throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
 			try {
-				await this.accountRepo.update(account);
+				await this.accountRepo.save(account);
 			} catch (err) {
 				throw new EntityNotFoundError(Account.name);
 			}
@@ -266,13 +266,13 @@ export class AccountUc {
 
 		try {
 			account.password = await this.calcPasswordHash(password);
-			await this.accountRepo.update(account);
+			await this.accountRepo.save(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
 		}
 		try {
 			user.forcePasswordChange = false;
-			await this.userRepo.update(user);
+			await this.userRepo.save(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
 		}
@@ -310,13 +310,13 @@ export class AccountUc {
 		// set user must change password on next login
 		try {
 			targetUser.forcePasswordChange = true;
-			await this.userRepo.update(targetUser);
+			await this.userRepo.save(targetUser);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
 		try {
 			targetAccount.password = await this.calcPasswordHash(passwordNew);
-			await this.accountRepo.update(targetAccount);
+			await this.accountRepo.save(targetAccount);
 		} catch (err) {
 			throw new EntityNotFoundError('Account');
 		}

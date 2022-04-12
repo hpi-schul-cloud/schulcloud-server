@@ -30,6 +30,10 @@ describe('LessonRepo', () => {
 		await em.nativeDelete(Lesson, {});
 	});
 
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Lesson);
+	});
+
 	describe('findAllByCourseIds', () => {
 		it('should find lessons by course ids', async () => {
 			const course1 = courseFactory.build();
