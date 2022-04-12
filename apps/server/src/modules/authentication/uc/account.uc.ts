@@ -5,8 +5,6 @@ import {
 	AuthorizationError,
 	EntityNotFoundError,
 	ForbiddenOperationError,
-	InvalidArgumentError,
-	UnauthorizedError,
 	ValidationError,
 } from '@shared/common/error';
 import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
@@ -40,8 +38,8 @@ export class AccountUc {
 	 *
 	 * @param currentUser the request user
 	 * @param query the request query
-	 * @throws {InvalidArgumentError}
-	 * @throws {UnauthorizedError}
+	 * @throws {ValidationError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
 	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQuery): Promise<AccountSearchListResponse> {
@@ -49,16 +47,16 @@ export class AccountUc {
 		const limit = query.limit ?? 10;
 
 		if (skip < 0) {
-			throw new InvalidArgumentError('Skip is less than 0.');
+			throw new ValidationError('Skip is less than 0.');
 		}
 		if (limit < 1) {
-			throw new InvalidArgumentError('Limit is less than 1.');
+			throw new ValidationError('Limit is less than 1.');
 		}
 		if (limit > 100) {
-			throw new InvalidArgumentError('Limit is greater than 100.');
+			throw new ValidationError('Limit is greater than 100.');
 		}
 		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
+			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 
 		switch (query.type) {
@@ -76,7 +74,7 @@ export class AccountUc {
 					.slice(skip, skip + limit);
 				return new AccountSearchListResponse(accountList, accounts.length, skip, limit);
 			default:
-				throw new InvalidArgumentError('Invalid search type.');
+				throw new ValidationError('Invalid search type.');
 		}
 	}
 
@@ -85,12 +83,12 @@ export class AccountUc {
 	 *
 	 * @param currentUser the request user
 	 * @param params the request parameters
-	 * @throws {UnauthorizedError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
 	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
+			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 		const account = await this.accountRepo.findById(params.id);
 		return new AccountByIdResponse(account);
@@ -102,7 +100,7 @@ export class AccountUc {
 	 * @param currentUser the request user
 	 * @param params the request parameters
 	 * @param body the request body
-	 * @throws {UnauthorizedError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
 	async updateAccountById(
@@ -111,7 +109,7 @@ export class AccountUc {
 		body: AccountByIdBody
 	): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to update an account.');
+			throw new ForbiddenOperationError('Current user is not authorized to update an account.');
 		}
 
 		const account = await this.accountRepo.findById(params.id);
@@ -129,12 +127,12 @@ export class AccountUc {
 	 *
 	 * @param currentUser the request user
 	 * @param params the request parameters
-	 * @throws {UnauthorizedError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
 	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to delete an account.');
+			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
 		const account = await this.accountRepo.delete(params.id);
 		return new AccountByIdResponse(account);
