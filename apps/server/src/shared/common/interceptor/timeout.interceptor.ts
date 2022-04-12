@@ -10,10 +10,10 @@ import { IInterceptorConfig } from './interfaces';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	constructor(private readonly configService: ConfigService<IInterceptorConfig>) {}
+	constructor(private readonly configService: ConfigService<IInterceptorConfig, true>) {}
 
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-		const requestTimeout = this.configService.get('INCOMING_REQUEST_TIMEOUT', { infer: true }) as number;
+		const requestTimeout = this.configService.get('INCOMING_REQUEST_TIMEOUT', { infer: true });
 		return next.handle().pipe(
 			timeout(requestTimeout),
 			catchError((err: Error) => {
