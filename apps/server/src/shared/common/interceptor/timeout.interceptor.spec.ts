@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, HttpStatus } from '@nestjs/common';
 import request from 'supertest';
 import { ConfigService } from '@nestjs/config';
 
@@ -28,7 +28,7 @@ describe('TimeoutInterceptor', () => {
 
 			const response = await request(app.getHttpServer()).get('/');
 
-			expect(response.status).toEqual(408);
+			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
 		});
 
 		it('should pass if request does not run into timeout', async () => {
@@ -40,7 +40,7 @@ describe('TimeoutInterceptor', () => {
 
 			const response = await request(app.getHttpServer()).get('/');
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(HttpStatus.OK);
 		});
 	});
 });
