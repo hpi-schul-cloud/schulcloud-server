@@ -1,24 +1,36 @@
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, taskFactory, setupEntities } from '@shared/testing';
-import { RoomBoardResponseMapper } from './room-board-response.mapper';
-import { BoardResponse, BoardElementResponse } from '../controller/dto/board-task.response';
+import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { BoardElementResponse, BoardResponse } from '../controller/dto/board-task.response';
 import { RoomBoardElementTypes } from '../types';
+import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
 describe('room board response mapper', () => {
 	let mapper: RoomBoardResponseMapper;
+	let module: TestingModule;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterEach(async () => {
+		await module.close();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			imports: [],
 			providers: [RoomBoardResponseMapper],
 		}).compile();
 
 		mapper = module.get(RoomBoardResponseMapper);
 	});
+
 	describe('mapToResponse', () => {
 		it('should map plain board into response', () => {
 			const course = courseFactory.buildWithId();
