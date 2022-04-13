@@ -1,17 +1,18 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EntityId, LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { EntityId, PermissionService, User, LanguageType } from '@shared/domain';
-
 import { ChangeLanguageParams } from '../controller/dto';
-import { UserConfig } from '../user.config';
+import { IUserConfig } from '../interfaces';
+
+
 
 @Injectable()
 export class UserUC {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
-		private readonly userConfig: UserConfig
+		private readonly configService: ConfigService<IUserConfig, true>
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -22,7 +23,7 @@ export class UserUC {
 	}
 
 	private checkAvaibleLanguages(settedLanguage: LanguageType): void | Error {
-		if (!this.userConfig.getAvailableLanguages().includes(settedLanguage)) {
+		if (!this.configService.get('AVAILABLE_LANGUAGES', { infer: true }).includes(settedLanguage)) {
 			throw new BadRequestException('Language is not activated.');
 		}
 	}
