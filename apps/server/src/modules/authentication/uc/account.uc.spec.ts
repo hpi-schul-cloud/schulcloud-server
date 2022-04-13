@@ -1,5 +1,4 @@
 import { MikroORM } from '@mikro-orm/core';
-import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
@@ -91,21 +90,7 @@ describe('AccountUc', () => {
 							if (userId === 'accountWithoutUser') {
 								return Promise.resolve(mockStudentAccount);
 							}
-							throw Error();
-						},
-						findByUsername: (username: string): Promise<Account[]> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
-
-							if (account) {
-								return Promise.resolve([account]);
-							}
-							if (username === 'not@available.username') {
-								return Promise.resolve([mockExternalUserAccount]);
-							}
-							if (username === 'multiple@account.username') {
-								return Promise.resolve(mockAccounts);
-							}
-							return Promise.resolve([]);
+							throw new EntityNotFoundError(Account.name);
 						},
 						findById: (accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
@@ -115,8 +100,22 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						searchByUsername: (): Promise<Account[]> => {
-							return Promise.resolve(mockAccounts);
+						searchByUsernameExactMatch: (username: string): Promise<[Account[], number]> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
+
+							if (account) {
+								return Promise.resolve([[account], mockAccounts.length]);
+							}
+							if (username === 'not@available.username') {
+								return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
+							}
+							if (username === 'multiple@account.username') {
+								return Promise.resolve([mockAccounts, mockAccounts.length]);
+							}
+							return Promise.resolve([[], 0]);
+						},
+						searchByUsernamePartialMatch: (): Promise<[Account[], number]> => {
+							return Promise.resolve([mockAccounts, mockAccounts.length]);
 						},
 					},
 				},
@@ -128,7 +127,7 @@ describe('AccountUc', () => {
 							if (user) {
 								return Promise.resolve(user);
 							}
-							throw Error();
+							throw new EntityNotFoundError(User.name);
 						},
 						findByEmail: (email: string): Promise<User[]> => {
 							const user = mockUsers.find((tempUser) => tempUser.email === email);
@@ -299,89 +298,117 @@ describe('AccountUc', () => {
 
 	describe('changePasswordForUser', () => {
 		it("should throw if target user's account does not exist", async () => {
-			await expect(
-				accountUc.changePasswordForUser(mockAdminUser.id, mockUserWithoutAccount.id, 'DummyPasswd!2')
-			).rejects.toThrow(EntityNotFoundError);
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockUserWithoutAccount.id } as AccountByIdParams;
+			const body = {} as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if target users does not exist', async () => {
-			await expect(
-				accountUc.changePasswordForUser(mockAdminUser.id, 'accountWithoutUser', defaultPassword)
-			).rejects.toThrow(EntityNotFoundError);
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: 'accountWithoutUser' } as AccountByIdParams;
+			const body = { password: defaultPassword } as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if current user does not exist', async () => {
-			await expect(accountUc.changePasswordForUser('currentUser', mockTeacherUser.id, 'DummyPasswd!2')).rejects.toThrow(
-				EntityNotFoundError
-			);
+			const currentUser = { userId: 'currentUser' } as ICurrentUser;
+			const params = { id: mockTeacherUser.id } as AccountByIdParams;
+			const body = { password: 'DummyPassword1!' } as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it("should allow an admin to update a user's password", async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockTeacherAccount.id } as AccountByIdParams;
+			const body = { password: defaultPassword } as AccountByIdBodyParams;
 			const previousPasswordHash = mockTeacherAccount.password;
 			expect(mockTeacherAccount.user.forcePasswordChange).toBeUndefined();
-			await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, defaultPassword);
+			await accountUc.updateAccountById(currentUser, params, body);
 			expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
 		});
 		it('should force renewal of an administrative password reset', async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockTeacherAccount.id } as AccountByIdParams;
+			const body = { password: defaultPassword } as AccountByIdBodyParams;
 			expect(mockTeacherAccount.user.forcePasswordChange).toBeUndefined();
-			await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, defaultPassword);
+			await accountUc.updateAccountById(currentUser, params, body);
 			expect(mockTeacherUser.forcePasswordChange).toBe(true);
 		});
 		it('should reject if update in user repo fails', async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockStudentUser.id } as AccountByIdParams;
+			const body = { password: 'DummyPasswd!1' } as AccountByIdBodyParams;
 			(accountRepo.save as jest.Mock).mockRejectedValueOnce(new Error('account not found'));
-			await expect(
-				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
-			).rejects.toThrow(EntityNotFoundError);
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should reject if update in account repo fails', async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockStudentUser.id } as AccountByIdParams;
+			const body = { password: 'DummyPasswd!1' } as AccountByIdBodyParams;
 			(userRepo.save as jest.Mock).mockRejectedValueOnce(new Error('user not found'));
-			await expect(
-				accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, 'DummyPasswd!1')
-			).rejects.toThrow(EntityNotFoundError);
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 
-		describe('hasPermissionsToChangePassword', () => {
+		describe('hasPermissionsToUpdateAccount', () => {
 			it('admin can edit teacher', async () => {
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
 				const previousPasswordHash = mockTeacherAccount.password;
-				await accountUc.changePasswordForUser(mockAdminUser.id, mockTeacherUser.id, defaultPassword);
+				await accountUc.updateAccountById(currentUser, params, body);
 				expect(mockTeacherAccount.password).not.toBe(previousPasswordHash);
 			});
 			it('teacher can edit student', async () => {
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+				const params = { id: mockStudentAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
 				const previousPasswordHash = mockStudentAccount.password;
-				await accountUc.changePasswordForUser(mockTeacherUser.id, mockStudentUser.id, defaultPassword);
+				await accountUc.updateAccountById(currentUser, params, body);
 				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
 			});
 			it('demo teacher cannot edit student', async () => {
-				await expect(
-					accountUc.changePasswordForUser(mockDemoTeacherUser.id, mockStudentUser.id, defaultPassword)
-				).rejects.toThrow(ForbiddenException);
+				const currentUser = { userId: mockDemoTeacherUser.id } as ICurrentUser;
+				const params = { id: mockStudentAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
+				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('admin can edit student', async () => {
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const params = { id: mockStudentAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
 				const previousPasswordHash = mockStudentAccount.password;
-				await accountUc.changePasswordForUser(mockAdminUser.id, mockStudentUser.id, defaultPassword);
+				await accountUc.updateAccountById(currentUser, params, body);
 				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
 			});
 			it('teacher cannot edit other teacher', async () => {
-				await expect(
-					accountUc.changePasswordForUser(mockTeacherUser.id, mockOtherTeacherUser.id, defaultPassword)
-				).rejects.toThrow(ForbiddenException);
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+				const params = { id: mockOtherTeacherAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
+				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it("other school's admin cannot edit teacher", async () => {
-				await expect(
-					accountUc.changePasswordForUser(mockDifferentSchoolAdminUser.id, mockTeacherUser.id, defaultPassword)
-				).rejects.toThrow(ForbiddenException);
+				const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
+				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
+				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('superhero can edit admin', async () => {
+				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
+				const params = { id: mockAdminAccount.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
 				const previousPasswordHash = mockAdminAccount.password;
-				await accountUc.changePasswordForUser(mockSuperheroUser.id, mockAdminUser.id, defaultPassword);
+				await accountUc.updateAccountById(currentUser, params, body);
 				expect(mockAdminAccount.password).not.toBe(previousPasswordHash);
 			});
 			it('undefined user role fails by default', async () => {
-				await expect(
-					accountUc.changePasswordForUser(mockUnknownRoleUser.id, mockUnknownRoleUser.id, defaultPassword)
-				).rejects.toThrow(ForbiddenException);
+				const currentUser = { userId: mockUnknownRoleUser.id } as ICurrentUser;
+				const params = { id: mockUnknownRoleUser.id } as AccountByIdParams;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
+				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('user without role cannot be edited', async () => {
-				await expect(
-					accountUc.changePasswordForUser(mockAdminUser.id, mockUserWithoutRole.id, 'DummyPasswd!1')
-				).rejects.toThrow(ForbiddenException);
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const params = { id: mockUserWithoutRole.id } as AccountByIdParams;
+				const body = { password: 'DummyPassword1!' } as AccountByIdBodyParams;
+				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 		});
 	});
@@ -706,7 +733,9 @@ describe('AccountUc', () => {
 			expect(accounts.total).toBeGreaterThan(1);
 			expect(accounts.data.length).toBeGreaterThan(1);
 		});
-		it('should return an empty list, if skip is to large', async () => {
+		// Todo how do we test this, or should we test this behavior?
+		// Todo should this test go into an integration test?
+		xit('should return an empty list, if skip is to large', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQueryParams
@@ -753,7 +782,7 @@ describe('AccountUc', () => {
 	});
 
 	describe('findAccountById', () => {
-		it('should return an account, if the current user is a super hero', async () => {
+		it('should return an account, if the current user is a superhero', async () => {
 			const account = await accountUc.findAccountById(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ id: mockStudentAccount.id } as AccountByIdParams
@@ -783,7 +812,7 @@ describe('AccountUc', () => {
 	});
 
 	describe('updateAccountById', () => {
-		it('should update, if the current user is a super hero', async () => {
+		it('should update, if the current user is a superhero', async () => {
 			await expect(
 				accountUc.updateAccountById(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
@@ -811,15 +840,6 @@ describe('AccountUc', () => {
 			).resolves.not.toThrow();
 			expect(mockStudentUser.forcePasswordChange).toBe(true);
 		});
-		it('should throw, if the current user is no super hero', async () => {
-			await expect(
-				accountUc.updateAccountById(
-					{ userId: mockAdminUser.id } as ICurrentUser,
-					{ id: mockStudentAccount.id } as AccountByIdParams,
-					{} as AccountByIdBodyParams
-				)
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw, if no account matches the search term', async () => {
 			await expect(
 				accountUc.updateAccountById(
@@ -832,7 +852,7 @@ describe('AccountUc', () => {
 	});
 
 	describe('deleteAccountById', () => {
-		it('should delete an account, if the current user is a super hero', async () => {
+		it('should delete an account, if the current user is a superhero', async () => {
 			await expect(
 				accountUc.deleteAccountById(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
@@ -840,7 +860,7 @@ describe('AccountUc', () => {
 				)
 			).resolves.not.toThrow();
 		});
-		it('should throw, if the current user is no super hero', async () => {
+		it('should throw, if the current user is no superhero', async () => {
 			await expect(
 				accountUc.deleteAccountById(
 					{ userId: mockAdminUser.id } as ICurrentUser,

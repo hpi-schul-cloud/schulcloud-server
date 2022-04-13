@@ -10,7 +10,6 @@ import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
 	AccountSearchType,
-	ChangePasswordParams,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/authentication/controller/dto';
@@ -91,27 +90,6 @@ describe('Account Controller (e2e)', () => {
 		// await cleanupCollections(em);
 		await app.close();
 		await orm.close();
-	});
-
-	describe('[PATCH] :id/pw', () => {
-		it(`should update a user's password as administrator`, async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const params: ChangePasswordParams = { password: 'Valid12$' };
-			await request(app.getHttpServer()) //
-				.patch(`${basePath}/${teacherAccount.user.id}/pw`)
-				.send(params)
-				.expect(200);
-			const updatedAccount = await em.findOneOrFail(Account, teacherAccount.id);
-			expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
-		});
-		it('should reject if password is weak', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const params: ChangePasswordParams = { password: 'weak' };
-			await request(app.getHttpServer()) //
-				.patch(`${basePath}/${teacherAccount.user.id}/pw`)
-				.send(params)
-				.expect(400);
-		});
 	});
 
 	describe('[PATCH] me/password', () => {
@@ -214,7 +192,7 @@ describe('Account Controller (e2e)', () => {
 				.send()
 				.expect(400);
 		});
-		it('should reject if user is not a superhero', async () => {
+		it('should reject if user is not authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
 			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USERNAME,
@@ -226,7 +204,7 @@ describe('Account Controller (e2e)', () => {
 				.get(`${basePath}`)
 				.query(query)
 				.send()
-				.expect(401);
+				.expect(403);
 		});
 	});
 
@@ -244,11 +222,11 @@ describe('Account Controller (e2e)', () => {
 				.send()
 				.expect(400);
 		});
-		it('should reject if user is not a superhero', async () => {
+		it('should reject if user is not a authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
 			await request(app.getHttpServer()) //
 				.get(`${basePath}/${studentAccount.id}`)
-				.expect(401);
+				.expect(403);
 		});
 		it('should reject not existing account id', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
@@ -271,15 +249,8 @@ describe('Account Controller (e2e)', () => {
 				.send(body)
 				.expect(200);
 		});
-		it('should reject if body has invalid format', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
-			await request(app.getHttpServer()) //
-				.patch(`${basePath}/${studentAccount.id}`)
-				.send({})
-				.expect(400);
-		});
-		it('should reject if user is not a superhero', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
+		it('should reject if user is not authorized', async () => {
+			currentUser = mapUserToCurrentUser(studentAccount.user);
 			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
@@ -288,7 +259,7 @@ describe('Account Controller (e2e)', () => {
 			await request(app.getHttpServer()) //
 				.patch(`${basePath}/${studentAccount.id}`)
 				.send(body)
-				.expect(401);
+				.expect(403);
 		});
 		it('should reject not existing account id', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
@@ -317,11 +288,11 @@ describe('Account Controller (e2e)', () => {
 				.delete(`${basePath}/qwerty`)
 				.expect(400);
 		});
-		it('should reject if user is not a superhero', async () => {
+		it('should reject if user is not a authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminAccount.user);
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/${studentAccount.id}`)
-				.expect(401);
+				.expect(403);
 		});
 		it('should reject not existing account id', async () => {
 			currentUser = mapUserToCurrentUser(superheroAccount.user);
