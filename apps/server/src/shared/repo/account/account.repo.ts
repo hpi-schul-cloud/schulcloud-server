@@ -38,12 +38,12 @@ export class AccountRepo extends BaseRepo<Account> {
 	/**
 	 * Finds the users with the exact usernames.
 	 * Return an empty list, if no account with given username was found.
-	 * @param userName The exact username.
+	 * @param username The exact username.
 	 */
-	async findByUsername(userName: string): Promise<Account[]> {
+	async findByUsername(username: string): Promise<Account[]> {
 		const account = await this._em.find(this.entityName, {
 			// find mail case-insensitive by regex
-			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
+			username: new RegExp(`^${username.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
 		});
 		return account;
 	}
@@ -52,11 +52,18 @@ export class AccountRepo extends BaseRepo<Account> {
 	 * Searches through all accounts and will return all accounts
 	 * with a partial or full match. The search is case-insensitive.
 	 * @param username The regular expression.
+	 * @param exactMatch Determines if a regular expression has to exactly match or only partially. Default is false.
 	 */
-	async searchByUsername(username: string): Promise<Account[]> {
-		const accounts = await this._em.find(this.entityName, {
+	async searchByUsername(username: string, exactMatch = false): Promise<Account[]> {
+		if (exactMatch) {
+			return this._em.find(this.entityName, {
+				// find mail case-insensitive by regex
+				username: new RegExp(`^${username.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
+			});
+		}
+
+		return this._em.find(this.entityName, {
 			username: new RegExp(username, 'i'),
 		});
-		return accounts;
 	}
 }

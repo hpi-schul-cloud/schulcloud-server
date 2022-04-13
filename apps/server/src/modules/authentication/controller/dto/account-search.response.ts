@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Account } from '@shared/domain';
 
 export class AccountSearchResponse {
-	constructor(account: Account) {
+	constructor(account: Readonly<AccountSearchResponse>) {
 		this.id = account.id;
 		this.username = account.username;
-		this.userId = account.user.id;
-		this.activated = account.activated ?? false;
+		this.userId = account.userId;
+		this.activated = account.activated;
 	}
 
 	@ApiProperty()

@@ -63,13 +63,33 @@ export class AccountUc {
 			case AccountSearchType.USER_ID:
 				// eslint-disable-next-line no-case-declarations
 				const account = await this.accountRepo.findByUserId(query.value);
-				return new AccountSearchListResponse([new AccountSearchResponse(account)], 1, 0, 1);
+				return new AccountSearchListResponse(
+					[
+						new AccountSearchResponse({
+							id: account.id,
+							username: account.username,
+							userId: account.user.id,
+							activated: account.activated ?? false,
+						}),
+					],
+					1,
+					0,
+					1
+				);
 			case AccountSearchType.USERNAME:
 				// eslint-disable-next-line no-case-declarations
 				const accounts = await this.accountRepo.searchByUsername(query.value);
 				// eslint-disable-next-line no-case-declarations
 				const accountList = accounts
-					.map((tempAccount) => new AccountSearchResponse(tempAccount))
+					.map(
+						(tempAccount) =>
+							new AccountSearchResponse({
+								id: tempAccount.id,
+								username: tempAccount.username,
+								userId: tempAccount.user.id,
+								activated: tempAccount.activated ?? false,
+							})
+					)
 					.sort((a, b) => (a.username > b.username ? 1 : -1))
 					.slice(skip, skip + limit);
 				return new AccountSearchListResponse(accountList, accounts.length, skip, limit);
