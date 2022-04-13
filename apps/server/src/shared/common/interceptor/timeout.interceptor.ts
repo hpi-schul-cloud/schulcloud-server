@@ -1,7 +1,8 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler, RequestTimeoutException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
-import { REQUEST_TIMEOUT } from './constants';
+import { IInterceptorConfig } from './interfaces';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -9,28 +10,18 @@ import { REQUEST_TIMEOUT } from './constants';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	protected static defaultTimeout = REQUEST_TIMEOUT;
+	constructor(private readonly configService: ConfigService<IInterceptorConfig, true>) {}
 
-	private _timeout?: number;
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+		const requestTimeout = this.configService.get('INCOMING_REQUEST_TIMEOUT', { infer: true });
 		return next.handle().pipe(
-			timeout(this.timeout),
-			catchError((err) => {
+			timeout(requestTimeout),
+			catchError((err: Error) => {
 				if (err instanceof TimeoutError) {
-					return throwError(new RequestTimeoutException());
+					return throwError(() => new RequestTimeoutException());
 				}
-				return throwError(err);
+				return throwError(() => err);
 			})
 		);
-	}
-
-	get timeout(): number {
-		return this._timeout || TimeoutInterceptor.defaultTimeout;
-	}
-
-	set timeout(milliseconds: number) {
-		this._timeout = milliseconds;
 	}
 }

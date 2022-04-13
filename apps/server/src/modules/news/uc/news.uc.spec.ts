@@ -7,6 +7,7 @@ import { NewsTargetModel, ICreateNews } from '@shared/domain';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { NewsRepo } from '@shared/repo';
+import { courseNewsFactory } from '@shared/testing';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -49,7 +50,7 @@ describe('NewsUc', () => {
 				{
 					provide: NewsRepo,
 					useValue: {
-						persistAndFlush() {
+						save() {
 							return {};
 						},
 						findAll() {
@@ -61,7 +62,7 @@ describe('NewsUc', () => {
 							}
 							throw new NotFoundException();
 						},
-						removeAndFlush() {},
+						delete() {},
 					},
 				},
 				{
@@ -149,8 +150,22 @@ describe('NewsUc', () => {
 		});
 	});
 	describe('create', () => {
-		it('should assign all required properties to news object', async () => {
-			const createSpy = jest.spyOn(repo, 'persistAndFlush');
+		it('should assign all properties to news object', async () => {
+			const params = {
+				title: 'title',
+				content: 'content',
+				displayAt: new Date(),
+				target: { targetModel: NewsTargetModel.School, targetId: schoolId },
+			} as ICreateNews;
+			const createdNews = await service.create(userId, schoolId, params);
+			expect(createdNews.school).toEqual(schoolId);
+			expect(createdNews.creator).toEqual(userId);
+			expect(createdNews.targetModel === NewsTargetModel.Course);
+			expect(createdNews.target.id === schoolId);
+		});
+
+		it('should save the news', async () => {
+			const createSpy = jest.spyOn(repo, 'save');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -159,27 +174,6 @@ describe('NewsUc', () => {
 			} as ICreateNews;
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
-			const newsProps = createSpy.mock.calls[0][0];
-			expect(newsProps.school.id === schoolId);
-			expect(newsProps.creator.id === userId);
-		});
-
-		it('should assign target to news object', async () => {
-			const courseId = new ObjectId().toString();
-			const createSpy = jest.spyOn(repo, 'persistAndFlush');
-			const params = {
-				title: 'title',
-				content: 'content',
-				displayAt: new Date(),
-				target: { targetModel: 'courses', targetId: courseId },
-			} as ICreateNews;
-			await service.create(userId, schoolId, params);
-			expect(createSpy).toHaveBeenCalled();
-			const newsProps = createSpy.mock.calls[0][0];
-			expect(newsProps.school.id === schoolId);
-			expect(newsProps.creator.id === userId);
-			expect(newsProps.targetModel === 'courses');
-			expect(newsProps.target.id === courseId);
 		});
 
 		// TODO test authorization
