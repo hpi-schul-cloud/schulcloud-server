@@ -35,28 +35,33 @@ export class AccountRepo extends BaseRepo<Account> {
 		await this._em.flush();
 	}
 
-	/**
-	 * Finds the users with the exact usernames.
-	 * Return an empty list, if no account with given username was found.
-	 * @param userName The exact username.
-	 */
-	async findByUsername(userName: string): Promise<Account[]> {
-		const account = await this._em.find(this.entityName, {
-			// find mail case-insensitive by regex
-			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
-		});
-		return account;
+	async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<[Account[], number]> {
+		return this.searchByUsername(username, skip, limit, true);
 	}
 
-	/**
-	 * Searches through all accounts and will return all accounts
-	 * with a partial or full match. The search is case-insensitive.
-	 * @param username The regular expression.
-	 */
-	async searchByUsername(username: string): Promise<Account[]> {
-		const accounts = await this._em.find(this.entityName, {
-			username: new RegExp(username, 'i'),
-		});
-		return accounts;
+	async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<[Account[], number]> {
+		return this.searchByUsername(username, skip, limit, false);
+	}
+
+	private async searchByUsername(
+		username: string,
+		offset: number,
+		limit: number,
+		exactMatch: boolean
+	): Promise<[Account[], number]> {
+		// escapes every character, that's not a unicode letter or number
+		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
+		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
+		return this._em.findAndCount(
+			this.entityName,
+			{
+				username: new RegExp(searchUsername, 'i'),
+			},
+			{
+				offset,
+				limit,
+				orderBy: { username: 1 },
+			}
+		);
 	}
 }

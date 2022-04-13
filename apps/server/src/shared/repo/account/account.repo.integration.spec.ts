@@ -117,7 +117,7 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			const result = await repo.findByUsername('USER@EXAMPLE.COM');
+			const result = await repo.searchByUsernameExactMatch('USER@EXAMPLE.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
@@ -129,11 +129,11 @@ describe('account repo', () => {
 
 			let result: Account[];
 
-			result = await repo.findByUsername('USER@example.COM');
+			result = await repo.searchByUsernameExactMatch('USER@example.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 
-			result = await repo.findByUsername('user@example.com');
+			result = await repo.searchByUsernameExactMatch('user@example.com');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
@@ -145,10 +145,10 @@ describe('account repo', () => {
 
 			let result: Account[];
 
-			result = await repo.findByUsername('USER@EXAMPLECCOM');
+			result = await repo.searchByUsernameExactMatch('USER@EXAMPLECCOM');
 			expect(result).toHaveLength(0);
 
-			result = await repo.findByUsername('.*');
+			result = await repo.searchByUsernameExactMatch('.*');
 			expect(result).toHaveLength(0);
 		});
 	});

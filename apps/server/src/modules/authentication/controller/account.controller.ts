@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/comm
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
-import { ParseObjectIdPipe } from '@shared/controller';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AccountUc } from '../uc/account.uc';
 import {
@@ -11,7 +10,6 @@ import {
 	AccountByIdResponse,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
-	ChangePasswordParams,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from './dto';
@@ -87,24 +85,6 @@ export class AccountController {
 		@Param() params: AccountByIdParams
 	): Promise<AccountByIdResponse> {
 		return this.accountUc.deleteAccountById(currentUser, params);
-	}
-
-	@Patch(':id/pw')
-	@ApiOperation({ summary: 'Updates the password of an account with given id.' })
-	@ApiResponse({ status: 200, description: 'Updated password successfully.' })
-	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({
-		status: 403,
-		type: ForbiddenOperationError,
-		description: 'No permission to change the user password.',
-	})
-	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account or user not found.' })
-	async changePassword(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id', ParseObjectIdPipe) userId: string,
-		@Body() { password }: ChangePasswordParams
-	): Promise<void> {
-		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}
 
 	@Patch('me/password')
