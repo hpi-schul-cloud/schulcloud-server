@@ -5,8 +5,6 @@ import { UserRepo } from '@shared/repo';
 import { ChangeLanguageParams } from '../controller/dto';
 import { IUserConfig } from '../interfaces';
 
-
-
 @Injectable()
 export class UserUC {
 	constructor(
