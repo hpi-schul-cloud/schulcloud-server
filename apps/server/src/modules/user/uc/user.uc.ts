@@ -21,7 +21,7 @@ export class UserUC {
 	}
 
 	private checkAvaibleLanguages(settedLanguage: LanguageType): void | Error {
-		if (!this.configService.get('AVAILABLE_LANGUAGES', { infer: true }).includes(settedLanguage)) {
+		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(settedLanguage)) {
 			throw new BadRequestException('Language is not activated.');
 		}
 	}
