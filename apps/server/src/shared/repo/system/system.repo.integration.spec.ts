@@ -29,6 +29,10 @@ describe('system repo', () => {
 		expect(typeof repo.findById).toEqual('function');
 	});
 
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(System);
+	});
+
 	describe('findById', () => {
 		afterEach(async () => {
 			await em.nativeDelete(System, {});

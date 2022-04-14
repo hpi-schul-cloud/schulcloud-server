@@ -138,7 +138,7 @@ describe('rooms usecase', () => {
 			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
 			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
 			const mapperSpy = jest.spyOn(factory, 'createDTO').mockImplementation(() => dto);
-			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
 
 			return {
 				user,
@@ -155,7 +155,7 @@ describe('rooms usecase', () => {
 				syncLessonsSpy,
 				syncTasksSpy,
 				mapperSpy,
-				persistSpy,
+				saveSpy,
 			};
 		};
 
@@ -202,9 +202,9 @@ describe('rooms usecase', () => {
 		});
 
 		it('should persist board', async () => {
-			const { room, user, persistSpy, board } = setup();
+			const { room, user, saveSpy, board } = setup();
 			await uc.getBoard(room.id, user.id);
-			expect(persistSpy).toHaveBeenCalledWith(board);
+			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 
 		it('should call to construct result dto from room, board, and user', async () => {
@@ -234,8 +234,8 @@ describe('rooms usecase', () => {
 			const authorisationSpy = jest
 				.spyOn(authorisation, 'hasCourseWritePermission')
 				.mockImplementation(() => shouldAuthorize);
-			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
-			return { user, room, hiddenTask, visibleTask, board, userSpy, roomSpy, boardSpy, authorisationSpy, persistSpy };
+			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			return { user, room, hiddenTask, visibleTask, board, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
 		};
 
 		describe('when user does not have write permission on course', () => {
@@ -281,9 +281,9 @@ describe('rooms usecase', () => {
 		});
 
 		it('should persist board after changes', async () => {
-			const { user, room, hiddenTask, board, persistSpy } = setup(true);
+			const { user, room, hiddenTask, board, saveSpy } = setup(true);
 			await uc.updateVisibilityOfBoardElement(room.id, hiddenTask.id, user.id, true);
-			expect(persistSpy).toHaveBeenCalledWith(board);
+			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 	});
 
@@ -301,8 +301,8 @@ describe('rooms usecase', () => {
 			const authorisationSpy = jest
 				.spyOn(authorisation, 'hasCourseWritePermission')
 				.mockImplementation(() => shouldAuthorize);
-			const persistSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
-			return { user, room, tasks, board, reorderSpy, userSpy, roomSpy, boardSpy, authorisationSpy, persistSpy };
+			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			return { user, room, tasks, board, reorderSpy, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
 		};
 
 		it('should fetch the user', async () => {
@@ -350,14 +350,14 @@ describe('rooms usecase', () => {
 		});
 
 		it('should persist', async () => {
-			const { user, room, tasks, persistSpy, board } = setup(true);
+			const { user, room, tasks, saveSpy, board } = setup(true);
 
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
 				tasks.map((task) => task.id)
 			);
-			expect(persistSpy).toHaveBeenCalledWith(board);
+			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 
 		it('should have called authorisation service', async () => {

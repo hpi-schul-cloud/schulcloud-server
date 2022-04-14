@@ -30,6 +30,10 @@ describe('role repo', () => {
 		expect(typeof repo.findByName).toEqual('function');
 	});
 
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Role);
+	});
+
 	describe('entity', () => {
 		it.skip('should fail for double creating a unique role name.', async () => {
 			const nameA = `a${Date.now()}`;

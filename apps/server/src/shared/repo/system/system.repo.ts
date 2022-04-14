@@ -4,8 +4,7 @@ import { System } from '@shared/domain';
 
 @Injectable()
 export class SystemRepo extends BaseRepo<System> {
-	async findById(id: string): Promise<System> {
-		const system = await this.em.findOneOrFail(System, { id });
-		return system;
+	get entityName() {
+		return System;
 	}
 }

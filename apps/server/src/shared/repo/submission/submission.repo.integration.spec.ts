@@ -1,17 +1,15 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-
+import { Submission } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
 import {
-	userFactory,
-	courseFactory,
-	taskFactory,
-	submissionFactory,
 	cleanupCollections,
+	courseFactory,
 	courseGroupFactory,
+	submissionFactory,
+	taskFactory,
+	userFactory,
 } from '@shared/testing';
-
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
@@ -34,6 +32,10 @@ describe('submission repo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Submission);
 	});
 
 	describe('findAllByTasks', () => {
@@ -106,49 +108,6 @@ describe('submission repo', () => {
 
 			expect(count).toEqual(1);
 			expect(result[0]?.courseGroup?.students[0]?.id).toEqual(student1.id);
-		});
-	});
-
-	describe('findById', () => {
-		it('should find a submission by its id', async () => {
-			const submission = submissionFactory.build({ comment: 'important submission' });
-			await em.persistAndFlush(submission);
-			em.clear();
-
-			const foundSubmission = await repo.findById(submission.id);
-			expect(foundSubmission.comment).toEqual('important submission');
-		});
-
-		it('should throw error if the submission cannot be found by id', async () => {
-			const unknownId = new ObjectId().toHexString();
-			await expect(async () => {
-				await repo.findById(unknownId);
-			}).rejects.toThrow();
-		});
-	});
-
-	describe('save', () => {
-		it('should persist a submission in the database', async () => {
-			const submission = submissionFactory.build({ comment: 'important submission' });
-			await repo.save(submission);
-			em.clear();
-
-			const foundSubmission = await repo.findById(submission.id);
-			expect(foundSubmission.comment).toEqual('important submission');
-		});
-	});
-
-	describe('delete', () => {
-		it('should remove a submission in the database', async () => {
-			const submission = submissionFactory.build();
-			await em.persistAndFlush(submission);
-			em.clear();
-
-			await repo.delete(submission);
-
-			await expect(async () => {
-				await repo.findById(submission.id);
-			}).rejects.toThrow(`Submission not found ({ id: '${submission.id}' })`);
 		});
 	});
 });
