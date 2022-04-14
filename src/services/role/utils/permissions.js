@@ -23,7 +23,7 @@ const ROLES = {
  * @param  {...String} permissions
  */
 const definePermissions = (env, role, ...permissions) => {
-	if (['opt-out', 'enabled'].includes(Configuration.get(env))) {
+	if (Configuration.get(env)) {
 		// set defaul permission
 		Role.update(
 			{
@@ -38,7 +38,7 @@ const definePermissions = (env, role, ...permissions) => {
 			},
 			{ multi: true }
 		).exec();
-	} else if (['opt-in', 'disabled', undefined].includes(Configuration.get(env))) {
+	} else {
 		// remove defaul permission
 		Role.update(
 			{
