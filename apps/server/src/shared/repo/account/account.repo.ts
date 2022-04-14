@@ -12,8 +12,7 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async findByUserId(userId: EntityId): Promise<Account> {
-		const account = await this._em.findOneOrFail(Account, { user: userId });
-		return account;
+		return this._em.findOneOrFail(Account, { user: userId });
 	}
 
 	async findOneByUser(user: User): Promise<Account> {
@@ -55,6 +54,10 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this._em.findAndCount(
 			this.entityName,
 			{
+				// NOTE: The default behavior of the MongoDB driver allows
+				// to pass regular expressions directly into the where clause
+				// without the need of using the $re operator, this will NOT
+				// work with SQL drivers
 				username: new RegExp(searchUsername, 'i'),
 			},
 			{

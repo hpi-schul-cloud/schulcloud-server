@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { wrap } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -309,7 +308,7 @@ export class AccountUc {
 	}
 
 	private hasPermissionsToUpdateAccount(currentUser: User, targetUser: User) {
-		if (this.isDemoUser(currentUser)) {
+		if (this.isDemoUser(currentUser) || this.isDemoUser(targetUser)) {
 			return false;
 		}
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
