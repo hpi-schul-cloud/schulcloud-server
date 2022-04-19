@@ -24,13 +24,13 @@
 		"oauthConfig": {
 			"clientId": "insert clientId",
 			"clientSecret": "insert clientSecret",
-			"tokenEndpoint": "http://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
+			"tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
 			"grantType": "authorization_code",
 			"tokenRedirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92/token",
 			"scope": "openid uuid",
 			"responseType": "code",
 			"codeRedirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
-			"authEndpoint": "http://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+			"authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
 			"provider": "iserv",
 			"logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"
 		}

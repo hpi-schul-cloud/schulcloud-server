@@ -1,6 +1,6 @@
 const exampleResponse = {
 	links: {
-		self: 'https://schul-cloud.org:3000/events',
+		self: 'https://dbildungscloud.de:3000/events',
 	},
 	data: [
 		{
