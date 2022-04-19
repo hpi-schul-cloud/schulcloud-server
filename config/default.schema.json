@@ -435,7 +435,12 @@
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
-			"description": "The used theming."
+			"description": "Oauth Login Endpoints Enabled."
+		},
+		"FEATURE_LOGIN_LINK_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Login via Link generation (to the right form)."
 		},
 		"SC_TITLE": {
 			"type": "string",
