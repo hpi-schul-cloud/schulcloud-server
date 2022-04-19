@@ -80,21 +80,20 @@ describe('UserUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId({ roles: [] });
 			userRepo.findById.mockResolvedValue(user);
-			userRepo.persistAndFlush.mockResolvedValue(user);
-
-			config.getAviableLanguages.mockReturnValue(['de']);
+			userRepo.save.mockResolvedValue();
+			config.getAvailableLanguages.mockReturnValue(['de']);
 		});
 
 		afterEach(() => {
 			userRepo.findById.mockRestore();
-			userRepo.persistAndFlush.mockRestore();
+			userRepo.save.mockRestore();
 		});
 
 		it('should patch language auf passed userId', async () => {
 			await service.patchLanguage(user.id, { language: LanguageType.DE });
 
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
-			expect(userRepo.persistAndFlush).toHaveBeenCalledWith(user);
+			expect(userRepo.save).toHaveBeenCalledWith(user);
 		});
 
 		it('should throw an error if language is not activated', async () => {

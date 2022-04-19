@@ -8,11 +8,15 @@ import { ImportUserScope } from './importuser.scope';
 
 @Injectable()
 export class ImportUserRepo extends BaseRepo<ImportUser> {
+	get entityName() {
+		return ImportUser;
+	}
+
 	async findById(id: EntityId): Promise<ImportUser> {
 		if (!ObjectId.isValid(id)) throw new Error('invalid id');
-		const importUser = await this.em.findOneOrFail(ImportUser, { id });
+		const importUser = await this._em.findOneOrFail(ImportUser, { id });
 		if (importUser.user != null) {
-			await this.em.populate(importUser.user, ['roles']);
+			await this._em.populate(importUser.user, ['roles']);
 		}
 		return importUser;
 	}
@@ -23,7 +27,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	async hasMatch(user: User): Promise<ImportUser | null> {
 		const scope = new ImportUserScope();
 		scope.byUserMatch(user);
-		const importUser = await this.em.findOne(ImportUser, scope.query);
+		const importUser = await this._em.findOne(ImportUser, scope.query);
 		return importUser;
 	}
 
@@ -55,14 +59,14 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap<ImportUser>,
 		};
-		const [importUserEntities, count] = await this.em.findAndCount(ImportUser, query, queryOptions);
+		const [importUserEntities, count] = await this._em.findAndCount(ImportUser, query, queryOptions);
 		const userMatches = importUserEntities.map((importUser) => importUser.user).filter((user) => user != null);
 		// load role names of referenced users
-		await this.em.populate(userMatches as User[], ['roles']);
+		await this._em.populate(userMatches as User[], ['roles']);
 		return [importUserEntities, count];
 	}
 
 	async deleteImportUsersBySchool(school: School): Promise<void> {
-		await this.em.nativeDelete(ImportUser, { school });
+		await this._em.nativeDelete(ImportUser, { school });
 	}
 }

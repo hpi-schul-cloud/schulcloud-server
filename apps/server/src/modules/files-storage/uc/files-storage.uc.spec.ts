@@ -86,14 +86,7 @@ describe('FilesStorageUC', () => {
 		fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, fileRecords.length]);
 
 		fileRecordRepo.save.mockImplementation((entity: FileRecord | FileRecord[]) => {
-			if (Array.isArray(entity)) {
-				entity.map((item) => {
-					item.id = entityId;
-					return item;
-				});
-			} else {
-				entity.id = entityId;
-			}
+			(entity as FileRecord).id = entityId;
 			return Promise.resolve();
 		});
 	});

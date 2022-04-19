@@ -1,17 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Submission, Task } from '@shared/domain';
+import { SortOrder, Task } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
-	userFactory,
+	cleanupCollections,
 	courseFactory,
 	lessonFactory,
-	taskFactory,
 	submissionFactory,
-	cleanupCollections,
+	taskFactory,
+	userFactory,
 } from '@shared/testing';
-
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
 import { TaskRepo } from './task.repo';
 
 const yesterday = new Date(Date.now() - 86400000);
@@ -39,6 +37,10 @@ describe('TaskRepo', () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 		await em.nativeDelete(Task, {});
+	});
+
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Task);
 	});
 
 	describe('findAllByParentIds', () => {
@@ -1591,44 +1593,6 @@ describe('TaskRepo', () => {
 			await expect(async () => {
 				await repo.findById(unknownId);
 			}).rejects.toThrow();
-		});
-	});
-
-	describe('save', () => {
-		it('should persist a task in the database', async () => {
-			const task = taskFactory.build({ name: 'important task' });
-			await repo.save(task);
-			em.clear();
-
-			const foundTask = await repo.findById(task.id);
-			expect(foundTask.name).toEqual('important task');
-		});
-	});
-
-	describe('delete', () => {
-		it('should remove a task from the database', async () => {
-			const task = taskFactory.build();
-			await em.persistAndFlush(task);
-			em.clear();
-
-			await repo.delete(task);
-
-			await expect(async () => {
-				await repo.findById(task.id);
-			}).rejects.toThrow(`Task not found ({ id: '${task.id}' })`);
-		});
-
-		it('should remove related submissions from the database', async () => {
-			const submission = submissionFactory.build();
-			const task = taskFactory.build({ submissions: [submission] });
-			await em.persistAndFlush(task);
-			em.clear();
-
-			await repo.delete(task);
-
-			await expect(async () => {
-				await em.findOneOrFail(Submission, { id: submission.id });
-			}).rejects.toThrow(`Submission not found ({ id: '${submission.id}' })`);
 		});
 	});
 });
