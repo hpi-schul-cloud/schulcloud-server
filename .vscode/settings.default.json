@@ -16,5 +16,8 @@
 	"javascript.preferences.importModuleSpecifier": "relative",
 	"jest.autoRun": { "watch": false, "onSave": "test-file" },
 	"coverage-gutters.showLineCoverage": true,
-	"coverage-gutters.coverageReportFileName": "coverage/index.html"
+	"coverage-gutters.coverageReportFileName": "coverage/index.html",
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	}
 }

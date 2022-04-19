@@ -58,7 +58,7 @@ describe('[utils] incomingMessageToJson', () => {
 		input.body = { data: true };
 		input.statusCode = 403;
 		input.statusMessage = 'Test Message';
-		input.url = 'https://hpi-schul-cloud.de';
+		input.url = 'https://dbildungscloud.de';
 
 		const result = incomingMessageToJson(input);
 
@@ -68,7 +68,7 @@ describe('[utils] incomingMessageToJson', () => {
 			method: 'POST',
 			httpVersion: null,
 			headers: {},
-			url: 'https://hpi-schul-cloud.de',
+			url: 'https://dbildungscloud.de',
 			body: { data: true },
 		});
 	});
