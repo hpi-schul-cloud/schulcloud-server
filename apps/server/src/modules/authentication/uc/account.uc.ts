@@ -121,8 +121,6 @@ export class AccountUc {
 			updateAccount = true;
 		}
 		if (body.username !== undefined) {
-			targetAccount.username = body.username;
-
 			const newMail = body.username.toLowerCase();
 			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
 			targetUser.email = newMail;
