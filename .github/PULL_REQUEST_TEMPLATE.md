@@ -16,7 +16,7 @@
 <!--
 Base links to copy
 - https://github.com/hpi-schul-cloud/schulcloud-client/pull/????
-- https://ticketsystem.hpi-schul-cloud.org/browse/SC-????
+- https://ticketsystem.dbildungscloud.de/browse/SC-????
 -->
 
 ## Changes
@@ -26,7 +26,7 @@ Base links to copy
   Short notice if a ticket exists, more detailed if not
 -->
 
-## Datasecurity <sub><sup>details [on Confluence](https://docs.hpi-schul-cloud.org/x/2S3GBg)</sup></sub>
+## Datasecurity <sub><sup>details [on Confluence](https://docs.dbildungscloud.de/x/2S3GBg)</sup></sub>
 <!--
   Notice about:
   - model changes
@@ -62,4 +62,4 @@ Base links to copy
 > Notice: Please remove the WIP label if the PR is ready to review, otherwise nobody will review it.
 
 ### Link to Definition of Done
-More and detailed information on the *definition of done* can be found [on Confluence](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762)
+More and detailed information on the *definition of done* can be found [on Confluence](https://docs.dbildungscloud.de/pages/viewpage.action?pageId=92831762)

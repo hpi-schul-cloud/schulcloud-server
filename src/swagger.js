@@ -19,7 +19,7 @@ module.exports = function swaggerSetup(app) {
 					termsOfServiceUrl: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE',
 					contact: {
 						name: 'support',
-						email: 'info@hpi-schul-cloud.de',
+						email: 'info@dbildungscloud.de',
 					},
 					license: {
 						name: 'GPL-3.0',

@@ -130,7 +130,7 @@ describe('user service', () => {
 			}
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5074
+		// https://ticketsystem.dbildungscloud.de/browse/SC-5074
 		xit('student can not read unknown student', async () => {
 			await testObjects.createTestRole({
 				name: 'studentList',
@@ -179,7 +179,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				// https://ticketsystem.schul-cloud.org/browse/SC-5076
+				// https://ticketsystem.dbildungscloud.de/browse/SC-5076
 				// expect(err.message).to.equal(testGenericErrorMessage);
 				expect(err.code).to.equal(403);
 			}
@@ -198,7 +198,7 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5163
+		// https://ticketsystem.dbildungscloud.de/browse/SC-5163
 		// See linked implementation issue if needed!
 		xit('teacher can not read other teacher', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -215,7 +215,7 @@ describe('user service', () => {
 			}
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5163
+		// https://ticketsystem.dbildungscloud.de/browse/SC-5163
 		// See linked implementation issue if needed!
 		xit('teacher can not read admin', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -231,7 +231,7 @@ describe('user service', () => {
 			}
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5163
+		// https://ticketsystem.dbildungscloud.de/browse/SC-5163
 		// See linked implementation issue if needed!
 		xit('teacher can not read superhero', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -309,7 +309,7 @@ describe('user service', () => {
 	});
 
 	describe('FIND', () => {
-		// https://ticketsystem.schul-cloud.org/browse/SC-3929
+		// https://ticketsystem.dbildungscloud.de/browse/SC-3929
 		it('does not allow population', async () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
