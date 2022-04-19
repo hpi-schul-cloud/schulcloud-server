@@ -28,7 +28,7 @@ describe('addMaterial Service', () => {
 			{
 				title: 'testTitle',
 				client: 'someclient',
-				url: 'hpi.schul-cloud.org',
+				url: 'dbildungscloud.de',
 			},
 			params
 		);
@@ -51,7 +51,7 @@ describe('addMaterial Service', () => {
 			{
 				title: 'testTitle',
 				client: 'someclient',
-				url: 'hpi.schul-cloud.org',
+				url: 'dbildungscloud.de',
 			},
 			params
 		);
@@ -75,12 +75,12 @@ describe('addMaterial Service', () => {
 				{
 					title: 'testTitle1',
 					client: 'someclient',
-					url: 'hpi.schul-cloud.org',
+					url: 'dbildungscloud.de',
 				},
 				{
 					title: 'testTitle2',
 					client: 'someclient',
-					url: 'hpi.schul-cloud.org',
+					url: 'dbildungscloud.de',
 				},
 			],
 			params
@@ -107,7 +107,7 @@ describe('addMaterial Service', () => {
 			{
 				title: 'testTitle',
 				client: 'someclient',
-				url: 'hpi.schul-cloud.org',
+				url: 'dbildungscloud.de',
 			},
 			params
 		);
@@ -132,7 +132,7 @@ describe('addMaterial Service', () => {
 				{
 					title: 'testTitle',
 					client: 'someclient',
-					url: 'hpi.schul-cloud.org',
+					url: 'dbildungscloud.de',
 				},
 				params
 			);

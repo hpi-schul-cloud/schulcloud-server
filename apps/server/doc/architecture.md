@@ -38,7 +38,7 @@ The following figure shows the general architecture approach for the HPI-Schul-C
 
 The *business architecture* divides the application into *business components*. A **business component has a well-defined responsibility that it encapsulates**. All aspects related to that responsibility have to be implemented within that business component. Further the business architecture defines the dependencies between the business components. These dependencies need to be free of cycles. A business component exports his functionality via well-defined interfaces as a self-contained API. A business component may use another business component via its API and compliant with the dependencies defined by the business architecture.
 
-The business components in the architecture should be the output of the [business architecture](https://docs.hpi-schul-cloud.org/display/PROD/Facharchitektur) created and managed by the product owner and it must stay aligned with the implementation to provide actual value. If their components are hard to implement (e.g. because technically, there is a very high cohesion between two components), the business component model should be changed. The business architecture has a very high impact on the solution and should therefore (especially in a agile environment) be the result of a mix team (business and development).
+The business components in the architecture should be the output of the [business architecture](https://docs.dbildungscloud.de/display/PROD/Facharchitektur) created and managed by the product owner and it must stay aligned with the implementation to provide actual value. If their components are hard to implement (e.g. because technically, there is a very high cohesion between two components), the business component model should be changed. The business architecture has a very high impact on the solution and should therefore (especially in a agile environment) be the result of a mix team (business and development).
 
 The application might contain components, which are not part of the business architecture, but have a technical background (e.g. a complex adapter component used to connect to an external system).
 
@@ -48,7 +48,7 @@ The *technical architecture* **divides the application into technical \*\*\**
 
 ## Components
 
-Following **separation-of-concerns** we divide an application into components using our folder-conventions and the architecture-mapping (see [Architecture Mapping to Code](https://docs.hpi-schul-cloud.org/display/TSC/Software+Architecture#SoftwareArchitecture-architecturemapping)). Components must use the UseCase-Facade of other components to communicate with them. Never access any other code from a different component directly.
+Following **separation-of-concerns** we divide an application into components using our folder-conventions and the architecture-mapping (see [Architecture Mapping to Code](https://docs.dbildungscloud.de/display/TSC/Software+Architecture#SoftwareArchitecture-architecturemapping)). Components must use the UseCase-Facade of other components to communicate with them. Never access any other code from a different component directly.
 
 For the HPI Schul-Cloud, we have two major types of components
 
@@ -225,7 +225,7 @@ An important part of the layered architecture is the handling of errors. In our 
 - Bubble up un-catched to the generic error handler in the cross cutting concerns layer (which , which knows how to map this error to an external error and return it to the caller.
   - In case of batch jobs, the batch layer catches the error and knows how to handle it (e.g. restart a job, skip a part of the job, stop the job completely etc).
 
-Please check the [error handling guidelines](https://docs.hpi-schul-cloud.org/display/TSC/Error+Handling+Guildelines) for details.
+Please check the [error handling guidelines](https://docs.dbildungscloud.de/display/TSC/Error+Handling+Guildelines) for details.
 
 ### Transaction Handling
 
@@ -274,4 +274,4 @@ That way, we can use the same logic for all invocations and the source of an inv
 
 ### Logging and Tracing
 
-For details see the corresponding [logging and tracing guidelines](https://docs.hpi-schul-cloud.org/display/TSC/Logging+and+Tracing+Guidelines).
+For details see the corresponding [logging and tracing guidelines](https://docs.dbildungscloud.de/display/TSC/Logging+and+Tracing+Guidelines).
