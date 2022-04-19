@@ -519,7 +519,7 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "http://dbildungscloud.de/etherpad/api/1",
+			"default": "https://dbildungscloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
@@ -529,7 +529,7 @@
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "http://dbildungscloud.de/etherpad/p",
+			"default": "https://dbildungscloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
