@@ -92,7 +92,7 @@ describe('AdminUsersService', () => {
 		expect(result.total).to.equal(3);
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-5076
+	// https://ticketsystem.dbildungscloud.de/browse/SC-5076
 	it('student can not administrate students', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
@@ -1312,7 +1312,7 @@ describe('AdminTeachersService', () => {
 		expect(adminTeachersService).to.not.equal(undefined);
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-5076
+	// https://ticketsystem.dbildungscloud.de/browse/SC-5076
 	xit('student can not administrate teachers', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
@@ -1327,7 +1327,7 @@ describe('AdminTeachersService', () => {
 		}
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-5061
+	// https://ticketsystem.dbildungscloud.de/browse/SC-5061
 	it('teacher can not find teachers from other schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',

@@ -141,7 +141,7 @@ userSchema.index(
 	}
 ); // ?
 // maybe the schoolId index is enough ?
-// https://ticketsystem.schul-cloud.org/browse/SC-3724
+// https://ticketsystem.dbildungscloud.de/browse/SC-3724
 
 if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync
