@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
-import { AccountSearchResponse } from './account-search.response';
+import { AccountResponse } from './account.response';
 
-export class AccountSearchListResponse extends PaginationResponse<AccountSearchResponse[]> {
-	constructor(data: AccountSearchResponse[], total: number, skip?: number, limit?: number) {
+export class AccountSearchListResponse extends PaginationResponse<AccountResponse[]> {
+	constructor(data: AccountResponse[], total: number, skip?: number, limit?: number) {
 		super(total, skip, limit);
 		this.data = data;
 	}
 
-	@ApiProperty({ type: [AccountSearchResponse] })
-	data: AccountSearchResponse[];
+	@ApiProperty({ type: [AccountResponse] })
+	data: AccountResponse[];
 }

@@ -7,7 +7,7 @@ import { AccountUc } from '../uc/account.uc';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
-	AccountByIdResponse,
+	AccountResponse,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	PatchMyAccountParams,
@@ -35,14 +35,14 @@ export class AccountController {
 
 	@Get(':id')
 	@ApiOperation({ summary: 'Returns an account with given id. Superhero role is REQUIRED.' })
-	@ApiResponse({ status: 200, type: AccountByIdResponse, description: 'Returns the account.' })
+	@ApiResponse({ status: 200, type: AccountResponse, description: 'Returns the account.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async findAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
-	): Promise<AccountByIdResponse> {
+	): Promise<AccountResponse> {
 		return this.accountUc.findAccountById(currentUser, params);
 	}
 
@@ -62,7 +62,7 @@ export class AccountController {
 
 	@Patch(':id')
 	@ApiOperation({ summary: 'Updates an account with given id. Superhero role is REQUIRED.' })
-	@ApiResponse({ status: 200, type: AccountByIdResponse, description: 'Returns updated account.' })
+	@ApiResponse({ status: 200, type: AccountResponse, description: 'Returns updated account.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
@@ -70,20 +70,20 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
-	): Promise<AccountByIdResponse> {
+	): Promise<AccountResponse> {
 		return this.accountUc.updateAccountById(currentUser, params, body);
 	}
 
 	@Delete(':id')
 	@ApiOperation({ summary: 'Deletes an account with given id. Superhero role is REQUIRED.' })
-	@ApiResponse({ status: 200, type: AccountByIdResponse, description: 'Returns deleted account.' })
+	@ApiResponse({ status: 200, type: AccountResponse, description: 'Returns deleted account.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async deleteAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
-	): Promise<AccountByIdResponse> {
+	): Promise<AccountResponse> {
 		return this.accountUc.deleteAccountById(currentUser, params);
 	}
 

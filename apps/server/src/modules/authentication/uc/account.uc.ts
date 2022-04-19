@@ -11,13 +11,13 @@ import { AccountRepo, UserRepo } from '@shared/repo';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
-	AccountByIdResponse,
+	AccountResponse,
 	AccountSearchListResponse,
 	AccountSearchType,
 	AccountSearchQueryParams,
-	AccountSearchResponse,
 	PatchMyAccountParams,
 } from '../controller/dto';
+import { AccountResponseMapper } from '../mapper/account-response.mapper';
 
 type UserPreferences = {
 	// first login completed
@@ -62,12 +62,12 @@ export class AccountUc {
 			case AccountSearchType.USER_ID:
 				// eslint-disable-next-line no-case-declarations
 				const account = await this.accountRepo.findByUserId(query.value);
-				return new AccountSearchListResponse([new AccountSearchResponse(account)], 1, 0, 1);
+				return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
 			case AccountSearchType.USERNAME:
 				// eslint-disable-next-line no-case-declarations
 				const [accounts, total] = await this.accountRepo.searchByUsernamePartialMatch(query.value, skip, limit);
 				// eslint-disable-next-line no-case-declarations
-				const accountList = accounts.map((tempAccount) => new AccountSearchResponse(tempAccount));
+				const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
 				return new AccountSearchListResponse(accountList, total, skip, limit);
 			default:
 				throw new ValidationError('Invalid search type.');
@@ -82,12 +82,12 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
+	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 		const account = await this.accountRepo.findById(params.id);
-		return new AccountByIdResponse(account);
+		return AccountResponseMapper.mapToResponse(account);
 	}
 
 	/**
@@ -103,10 +103,13 @@ export class AccountUc {
 		currentUser: ICurrentUser,
 		params: AccountByIdParams,
 		body: AccountByIdBodyParams
-	): Promise<AccountByIdResponse> {
+	): Promise<AccountResponse> {
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
 		const targetAccount = await this.accountRepo.findById(params.id);
 		const targetUser = await this.userRepo.findById(targetAccount.user.id, true);
+
+		let updateUser = false;
+		let updateAccount = false;
 
 		if (!this.hasPermissionsToUpdateAccount(executingUser, targetUser)) {
 			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
@@ -114,17 +117,39 @@ export class AccountUc {
 		if (body.password !== undefined) {
 			targetAccount.password = await this.calcPasswordHash(body.password);
 			targetUser.forcePasswordChange = true;
+			updateUser = true;
+			updateAccount = true;
 		}
 		if (body.username !== undefined) {
 			targetAccount.username = body.username;
+
+			const newMail = body.username.toLowerCase();
+			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			targetUser.email = newMail;
+			targetAccount.username = newMail;
+			updateUser = true;
+			updateAccount = true;
 		}
 		if (body.activated !== undefined) {
 			targetAccount.activated = body.activated;
+			updateAccount = true;
 		}
 
-		await this.accountRepo.save(targetAccount);
-		await this.userRepo.save(targetUser);
-		return new AccountByIdResponse(targetAccount);
+		if (updateUser) {
+			try {
+				await this.userRepo.save(targetUser);
+			} catch (err) {
+				throw new EntityNotFoundError(User.name);
+			}
+		}
+		if (updateAccount) {
+			try {
+				await this.accountRepo.save(targetAccount);
+			} catch (err) {
+				throw new EntityNotFoundError(Account.name);
+			}
+		}
+		return AccountResponseMapper.mapToResponse(targetAccount);
 	}
 
 	/**
@@ -135,13 +160,13 @@ export class AccountUc {
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
+	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
 		const account = await this.accountRepo.findById(params.id);
 		await this.accountRepo.delete(account);
-		return new AccountByIdResponse(account);
+		return AccountResponseMapper.mapToResponse(account);
 	}
 
 	/**

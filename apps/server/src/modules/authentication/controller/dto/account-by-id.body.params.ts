@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString, IsOptional, Matches } from 'class-validator';
+import { IsBoolean, IsString, IsOptional, Matches, IsEmail } from 'class-validator';
 import { passwordPattern } from './password-pattern';
 
 export class AccountByIdBodyParams {
 	@IsOptional()
 	@IsString()
+	@IsEmail()
 	@ApiProperty({
 		description: 'The new user name for the user.',
 		required: false,

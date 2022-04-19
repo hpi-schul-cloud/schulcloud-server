@@ -9,9 +9,9 @@ import {
 	AccountByIdParams,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
-	AccountSearchResponse,
 	AccountSearchType,
 } from '../controller/dto';
+import { AccountResponseMapper } from '../mapper/account-response.mapper';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
@@ -138,7 +138,7 @@ describe('AccountUc', () => {
 							return Promise.resolve([]);
 						},
 						save: jest.fn().mockImplementation((user: User): Promise<void> => {
-							if (user.firstName === 'failToUpdate') {
+							if (user.firstName === 'failToUpdate' || user.email === 'user-fail@to.update') {
 								return Promise.reject();
 							}
 							return Promise.resolve();
@@ -597,7 +597,12 @@ describe('AccountUc', () => {
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
 				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 			);
-			const expected = new AccountSearchListResponse([new AccountSearchResponse(mockStudentAccount)], 1, 0, 1);
+			const expected = new AccountSearchListResponse(
+				[AccountResponseMapper.mapToResponse(mockStudentAccount)],
+				1,
+				0,
+				1
+			);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 		});
 		it('should return one or more accounts, if search type is username', async () => {
@@ -718,7 +723,7 @@ describe('AccountUc', () => {
 			const body = { username: newUsername } as AccountByIdBodyParams;
 			expect(mockStudentAccount.username).not.toBe(newUsername);
 			await accountUc.updateAccountById(currentUser, params, body);
-			expect(mockStudentAccount.username).toBe(newUsername);
+			expect(mockStudentAccount.username).toBe(newUsername.toLowerCase());
 		});
 		it('should update target account activation state', async () => {
 			const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
@@ -726,6 +731,19 @@ describe('AccountUc', () => {
 			const body = { activated: false } as AccountByIdBodyParams;
 			await accountUc.updateAccountById(currentUser, params, body);
 			expect(mockStudentAccount.activated).toBeFalsy();
+		});
+
+		it('should throw if account can not be updated', async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockStudentAccount.id } as AccountByIdParams;
+			const body = { username: 'fail@to.update' } as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
+		});
+		it('should throw if user can not be updated', async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockStudentAccount.id } as AccountByIdParams;
+			const body = { username: 'user-fail@to.update' } as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {
