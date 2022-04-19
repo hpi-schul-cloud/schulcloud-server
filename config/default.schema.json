@@ -519,22 +519,22 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de/etherpad/api/1",
+			"default": "http://dbildungscloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default": "https://etherpad.hpi-schul-cloud.de/p",
+			"default": "https://etherpad.dbildungscloud.de/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de/etherpad/p",
+			"default": "http://dbildungscloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",
-			"default": "etherpad.hpi-schul-cloud.de",
+			"default": "etherpad.dbildungscloud.de",
 			"description": "The old etherpad domain."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
