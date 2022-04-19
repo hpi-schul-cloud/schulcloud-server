@@ -1,27 +1,32 @@
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MailModule } from '@shared/infra/mail';
-import { RocketChatModule } from '@src/modules/rocketchat';
-import { LearnroomModule } from '@src/modules/learnroom';
-import { CoreModule } from '@src/core';
-import { TaskModule } from '@src/modules/task';
-import { UserModule } from '@src/modules/user';
-import { NewsModule } from '@src/modules/news';
-import { FilesModule } from '@src/modules/files';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { MailModule } from '@shared/infra/mail';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+import { CoreModule } from '@src/core';
+import { FilesModule } from '@src/modules/files';
+import { LearnroomModule } from '@src/modules/learnroom';
+import { NewsModule } from '@src/modules/news';
+import { RocketChatModule } from '@src/modules/rocketchat';
+import { TaskModule } from '@src/modules/task';
+import { UserModule } from '@src/modules/user';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
-import { ServerController } from './server.controller';
-import { ImportUserModule } from './modules/user-import/user-import.module';
 import { OauthModule } from './modules/oauth';
-import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
+import { ImportUserModule } from './modules/user-import/user-import.module';
+import serverConfig from './server.config';
+import { ServerController } from './server.controller';
 
 const serverModules = [
+	ConfigModule.forRoot({
+		isGlobal: true,
+		load: [serverConfig],
+	}),
 	CoreModule,
 	AuthModule,
 	OauthModule,

@@ -31,7 +31,7 @@
 					"$oid": "59c39e88d69d413e2ff0bcce"
 				},
 				"content": {
-					"text": "<p><img alt=\"\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/auge.png\"></p>\r\n\r\n<p>(Quelle:&#xA0;https://de.serlo.org/biologie/biologie-menschen/sinne-menschen/bau-funktion-auges)</p>\r\n\r\n<p><a href=\"http://de.wikipedia.org/wiki/Reduziertes_Auge\">Wikipedia</a>: Das&#xA0;<strong>Reduzierte Auge</strong>, auch&#xA0;<em>Normalauge</em>&#xA0;genannt, ist ein schematisch vereinfachtes Modell des durchschnittlichen menschlichen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Wirbeltierauge\" title=\"Wirbeltierauge\">Auges</a>&#xA0;in der physiologischen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Optik\" title=\"Optik\">Optik</a>&#xA0;(engl.&#xA0;<em>reduced schematic eye</em>&#xA0;oder auch&#xA0;<em>collapsed dioptric system of the eye</em>). Es wurde von dem schwedischen Mediziner&#xA0;<a href=\"https://de.wikipedia.org/wiki/Allvar_Gullstrand\" title=\"Allvar Gullstrand\">Allvar Gullstrand</a>&#xA0;entwickelt.</p>\r\n"
+					"text": "<p><img alt=\"\" src=\"https://dbildungscloud.de/files/file?file=courses/59a3c948a2049554a93fec5f/auge.png\"></p>\r\n\r\n<p>(Quelle:&#xA0;https://de.serlo.org/biologie/biologie-menschen/sinne-menschen/bau-funktion-auges)</p>\r\n\r\n<p><a href=\"http://de.wikipedia.org/wiki/Reduziertes_Auge\">Wikipedia</a>: Das&#xA0;<strong>Reduzierte Auge</strong>, auch&#xA0;<em>Normalauge</em>&#xA0;genannt, ist ein schematisch vereinfachtes Modell des durchschnittlichen menschlichen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Wirbeltierauge\" title=\"Wirbeltierauge\">Auges</a>&#xA0;in der physiologischen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Optik\" title=\"Optik\">Optik</a>&#xA0;(engl.&#xA0;<em>reduced schematic eye</em>&#xA0;oder auch&#xA0;<em>collapsed dioptric system of the eye</em>). Es wurde von dem schwedischen Mediziner&#xA0;<a href=\"https://de.wikipedia.org/wiki/Allvar_Gullstrand\" title=\"Allvar Gullstrand\">Allvar Gullstrand</a>&#xA0;entwickelt.</p>\r\n"
 				},
 				"component": "text",
 				"hidden": false,
@@ -529,7 +529,7 @@
 					"$oid": "59afdcb71f513506904e1d32"
 				},
 				"content": {
-					"text": "<p>Immer wenn man sich &#xFC;ber den Aufbau und die generelle Funktion des menschlichen Auges austauschen m&#xF6;chte, ist es &#xFC;blich, ein vereinfachtes, schematisches Modell des Auges zu verwenden.&#xA0;<a href=\"http://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">F&#xFC;r Eure Klasse findet Ihr das hier im Biologiekurs</a>.</p>\r\n"
+					"text": "<p>Immer wenn man sich &#xFC;ber den Aufbau und die generelle Funktion des menschlichen Auges austauschen m&#xF6;chte, ist es &#xFC;blich, ein vereinfachtes, schematisches Modell des Auges zu verwenden.&#xA0;<a href=\"http://dbildungscloud.de/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">F&#xFC;r Eure Klasse findet Ihr das hier im Biologiekurs</a>.</p>\r\n"
 				},
 				"component": "text",
 				"hidden": false,
@@ -551,7 +551,7 @@
 					"$oid": "59afdcb71f513506904e1d30"
 				},
 				"content": {
-					"text": "<p>Der Einfallswinkel der geometrischen Lichtstrahlen eines Objekts im Blickfeld kann durch Positionswechsel, Kopf- oder Augenbewegungen vorgenommen werden.&#xA0;<a href=\"http://schul-cloud.org/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">Diese sind sehr sch&#xF6;n in unserem Biologiekurs f&#xFC;r Euch dargestellt.</a>&#xA0;</p>\r\n"
+					"text": "<p>Der Einfallswinkel der geometrischen Lichtstrahlen eines Objekts im Blickfeld kann durch Positionswechsel, Kopf- oder Augenbewegungen vorgenommen werden.&#xA0;<a href=\"http://dbildungscloud.de/courses/59a3c657a2049554a93fec3a/topics/59a3c755a2049554a93fec52/\">Diese sind sehr sch&#xF6;n in unserem Biologiekurs f&#xFC;r Euch dargestellt.</a>&#xA0;</p>\r\n"
 				},
 				"component": "text",
 				"hidden": false,
@@ -759,7 +759,7 @@
 				"content": {
 					"title": "3ed874daa424a938da325d30",
 					"description": "Etherpad description",
-					"url": "https://schul-cloud.org/etherpad/pbc4du"
+					"url": "https://dbildungscloud.de/etherpad/pbc4du"
 				}
 			}
 		],

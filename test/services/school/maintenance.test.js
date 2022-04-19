@@ -67,7 +67,7 @@ describe('schoolUsesLdap', () => {
 			}),
 			createSystem({
 				type: 'moodle',
-				url: 'https://schul-cloud.org/moodle',
+				url: 'https://dbildungscloud.de/moodle',
 			}),
 		]);
 		expect(() => schoolUsesLdap(school)).not.to.throw();
@@ -86,7 +86,7 @@ describe('schoolUsesLdap', () => {
 			}),
 			createSystem({
 				type: 'moodle',
-				url: 'https://schul-cloud.org/moodle',
+				url: 'https://dbildungscloud.de/moodle',
 			}),
 		]);
 		expect(() => schoolUsesLdap(school2)).not.to.throw();
