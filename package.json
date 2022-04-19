@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.11.0",
+	"version": "27.12.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -96,6 +96,7 @@
 		"@mikro-orm/nestjs": "^5.0.0",
 		"@nestjs/axios": "^0.0.5",
 		"@nestjs/common": "^8.2.6",
+		"@nestjs/config": "^2.0.0",
 		"@nestjs/core": "^8.2.6",
 		"@nestjs/jwt": "^8.0.0",
 		"@nestjs/microservices": "^8.2.6",
@@ -205,6 +206,7 @@
 		"@types/passport-local": "^1.0.33",
 		"@types/rimraf": "^3.0.2",
 		"@types/s3rver": "^3.7.0",
+		"@types/sanitize-html": "^2.6.2",
 		"@types/source-map-support": "^0.5.3",
 		"@types/supertest": "^2.0.10",
 		"@types/uuid": "^8.3.4",

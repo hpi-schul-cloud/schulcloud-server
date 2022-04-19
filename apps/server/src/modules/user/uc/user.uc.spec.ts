@@ -6,6 +6,7 @@ import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 
+import { UserConfig } from '../user.config';
 import { UserUC } from './user.uc';
 
 describe('UserUc', () => {
@@ -13,6 +14,7 @@ describe('UserUc', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let orm: MikroORM;
+	let config: DeepMocked<UserConfig>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -34,12 +36,17 @@ describe('UserUc', () => {
 					provide: PermissionService,
 					useValue: createMock<PermissionService>(),
 				},
+				{
+					provide: UserConfig,
+					useValue: createMock<UserConfig>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(UserUC);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
+		config = module.get(UserConfig);
 	});
 
 	it('should be defined', () => {
@@ -73,19 +80,24 @@ describe('UserUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId({ roles: [] });
 			userRepo.findById.mockResolvedValue(user);
-			userRepo.persistAndFlush.mockResolvedValue(user);
+			userRepo.save.mockResolvedValue();
+			config.getAvailableLanguages.mockReturnValue(['de']);
 		});
 
 		afterEach(() => {
 			userRepo.findById.mockRestore();
-			userRepo.persistAndFlush.mockRestore();
+			userRepo.save.mockRestore();
 		});
 
 		it('should patch language auf passed userId', async () => {
 			await service.patchLanguage(user.id, { language: LanguageType.DE });
 
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
-			expect(userRepo.persistAndFlush).toHaveBeenCalledWith(user);
+			expect(userRepo.save).toHaveBeenCalledWith(user);
+		});
+
+		it('should throw an error if language is not activated', async () => {
+			await expect(service.patchLanguage(user.id, { language: LanguageType.EN })).rejects.toThrowError();
 		});
 	});
 });

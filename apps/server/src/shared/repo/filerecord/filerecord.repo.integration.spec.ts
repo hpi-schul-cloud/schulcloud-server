@@ -29,35 +29,8 @@ describe('FileRecordRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findOneById', () => {
-		it('should find an entity by its id', async () => {
-			const fileRecord = fileRecordFactory.build();
-
-			await em.persistAndFlush(fileRecord);
-			em.clear();
-
-			const result = await repo.findOneById(fileRecord.id);
-
-			expect(result).toBeDefined();
-			expect(result.id).toEqual(fileRecord.id);
-		});
-
-		it('should find an entity by its id', async () => {
-			const notExistingId = new ObjectId().toHexString();
-
-			await expect(repo.findOneById(notExistingId)).rejects.toThrowError();
-		});
-
-		it('should ingnore deletedSince', async () => {
-			const fileRecord = fileRecordFactory.build({ deletedSince: new Date() });
-
-			await em.persistAndFlush(fileRecord);
-			em.clear();
-
-			const exec = async () => repo.findOneById(fileRecord.id);
-
-			await expect(exec).rejects.toThrowError();
-		});
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(FileRecord);
 	});
 
 	describe('findOneByIdMarkedForDelete', () => {
@@ -92,17 +65,6 @@ describe('FileRecordRepo', () => {
 	});
 
 	describe('save', () => {
-		it('should save the passed entity', async () => {
-			const fileRecord = fileRecordFactory.build();
-
-			await repo.save(fileRecord);
-			em.clear();
-
-			const result = await repo.findOneById(fileRecord.id);
-
-			expect(result).toBeInstanceOf(FileRecord);
-		});
-
 		it('should update the updatedAt property', async () => {
 			const fileRecord = fileRecordFactory.build();
 			await em.persistAndFlush(fileRecord);
@@ -115,31 +77,6 @@ describe('FileRecordRepo', () => {
 			// load also from DB and test if value is set
 
 			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
-		});
-	});
-
-	describe('delete', () => {
-		it('should delete single existing entity', async () => {
-			const fileRecord = fileRecordFactory.build();
-			await em.persistAndFlush(fileRecord);
-
-			const exist = await repo.findOneById(fileRecord.id);
-			expect(exist).toBeInstanceOf(FileRecord);
-
-			await repo.delete(fileRecord);
-			const notExistAnymore = await em.findOne(FileRecord, fileRecord.id);
-
-			expect(notExistAnymore).not.toBeInstanceOf(FileRecord);
-		});
-
-		it('should delete many existing entity', async () => {
-			const fileRecords = fileRecordFactory.buildList(3);
-			await em.persistAndFlush(fileRecords);
-
-			await repo.delete(fileRecords);
-			const notExistAnymore = await em.findOne(FileRecord, fileRecords[1].id);
-
-			expect(notExistAnymore).not.toBeInstanceOf(FileRecord);
 		});
 	});
 

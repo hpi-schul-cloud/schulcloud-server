@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
-
-import { EntityId, Lesson, Counted, SortOrder } from '@shared/domain';
-
+import { Counted, EntityId, Lesson, SortOrder } from '@shared/domain';
+import { BaseRepo } from '../base.repo';
 import { LessonScope } from './lesson-scope';
 
 @Injectable()
-export class LessonRepo {
-	constructor(private readonly em: EntityManager) {}
+export class LessonRepo extends BaseRepo<Lesson> {
+	get entityName() {
+		return Lesson;
+	}
 
 	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<Lesson[]>> {
 		const scope = new LessonScope();
@@ -20,9 +20,9 @@ export class LessonRepo {
 
 		const order = { position: SortOrder.asc };
 
-		const [lessons, count] = await this.em.findAndCount(Lesson, scope.query, { orderBy: order });
+		const [lessons, count] = await this._em.findAndCount(Lesson, scope.query, { orderBy: order });
 
-		await this.em.populate(lessons, ['course']);
+		await this._em.populate(lessons, ['course']);
 
 		return [lessons, count];
 	}

@@ -4,9 +4,8 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { importUserFactory, schoolFactory, userFactory, roleFactory, cleanupCollections } from '@shared/testing';
+import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { reject } from 'lodash';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -34,6 +33,10 @@ describe('user repo', () => {
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
+	});
+
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(User);
 	});
 
 	describe('findById', () => {
@@ -328,40 +331,25 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('update', () => {
-		it('should update all fields', async () => {
-			const userA = userFactory.withRole('Role-1').build();
-			const userB = userFactory.withRole('Role-2').build();
+	describe('saveWithoutFlush', () => {
+		it('should add a user to the persist stack', () => {
+			const user = userFactory.build();
 
-			userA.forcePasswordChange = true;
-			userB.forcePasswordChange = false;
+			repo.saveWithoutFlush(user);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+		});
+	});
 
-			userB.firstName = 'Bob';
+	describe('flush', () => {
+		it('should flush after save', async () => {
+			const user = userFactory.build();
+			em.persist(user);
 
-			const updateTime = userA.updatedAt;
-			expect(userA.email).not.toStrictEqual(userB.email);
-			expect(userA.firstName).not.toStrictEqual(userB.firstName);
-			expect(userA.lastName).not.toStrictEqual(userB.lastName);
-			expect(userA.school).not.toStrictEqual(userB.school);
-			expect(userA.roles).not.toContain(userB.roles);
+			expect(user.id).toBeNull();
 
-			await em.persistAndFlush([userA, userB]);
+			await repo.flush();
 
-			userB.email = userA.email;
-			userB.firstName = userA.firstName;
-			userB.lastName = userA.lastName;
-			userB.forcePasswordChange = userA.forcePasswordChange;
-			userB.school = userA.school;
-			userB.roles = userA.roles;
-			const updatedUserB = await repo.update(userB);
-
-			expect(userA.email).toBe(updatedUserB.email);
-			expect(userA.firstName).toBe(updatedUserB.firstName);
-			expect(userA.lastName).toBe(updatedUserB.lastName);
-			expect(userA.school).toBe(updatedUserB.school);
-			expect(userA.roles).toEqual(updatedUserB.roles);
-
-			expect(updatedUserB.updatedAt.getTime()).toBeGreaterThan(updateTime.getTime());
+			expect(user.id).not.toBeNull();
 		});
 	});
 });

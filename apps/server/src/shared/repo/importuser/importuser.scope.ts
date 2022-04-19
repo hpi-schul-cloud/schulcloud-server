@@ -102,7 +102,7 @@ export class ImportUserScope extends Scope<ImportUser> {
 			.map((match) => {
 				if (match === MatchCreatorScope.MANUAL) return { matchedBy: 'admin' };
 				if (match === MatchCreatorScope.AUTO) return { matchedBy: 'auto' };
-				if (match === MatchCreatorScope.NONE) return { matchedBy: { $exists: false } };
+				if (match === MatchCreatorScope.NONE) return { matchedBy: null };
 				return null;
 			})
 			.filter((match) => match != null);

@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
+	Account,
 	Counted,
 	EntityId,
 	IFindOptions,
@@ -84,7 +85,7 @@ export class UserImportUc {
 		if (hasMatch !== null) throw new UserAlreadyAssignedToImportUserError();
 
 		importUser.setMatch(userMatch, MatchCreator.MANUAL);
-		await this.importUserRepo.persistAndFlush(importUser);
+		await this.importUserRepo.save(importUser);
 
 		return importUser;
 	}
@@ -99,7 +100,7 @@ export class UserImportUc {
 		}
 
 		importUser.revokeMatch();
-		await this.importUserRepo.persistAndFlush(importUser);
+		await this.importUserRepo.save(importUser);
 
 		return importUser;
 	}
@@ -115,7 +116,7 @@ export class UserImportUc {
 		}
 
 		importUser.flagged = flagged === true;
-		await this.importUserRepo.persistAndFlush(importUser);
+		await this.importUserRepo.save(importUser);
 
 		return importUser;
 	}
@@ -169,7 +170,7 @@ export class UserImportUc {
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
-		await this.schoolRepo.persistAndFlush(school);
+		await this.schoolRepo.save(school);
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
@@ -188,7 +189,7 @@ export class UserImportUc {
 			school.systems.add(migrationSystem);
 		}
 
-		await this.schoolRepo.persistAndFlush(school);
+		await this.schoolRepo.save(school);
 	}
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
@@ -199,7 +200,7 @@ export class UserImportUc {
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
-		await this.schoolRepo.persistAndFlush(school);
+		await this.schoolRepo.save(school);
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
@@ -209,7 +210,7 @@ export class UserImportUc {
 		return currentUser;
 	}
 
-	private async updateUserAndAccount(importUser: ImportUser, school: School): Promise<void> {
+	private async updateUserAndAccount(importUser: ImportUser, school: School): Promise<[User, Account] | undefined> {
 		if (!importUser.user || !importUser.loginName || !school.ldapSchoolIdentifier) {
 			return;
 		}
@@ -221,8 +222,8 @@ export class UserImportUc {
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 
-		this.userRepo.persist(user);
-		this.accountRepo.persist(account);
+		this.userRepo.saveWithoutFlush(user);
+		this.accountRepo.saveWithoutFlush(account);
 	}
 
 	private async getMigrationSystem(): Promise<System> {
