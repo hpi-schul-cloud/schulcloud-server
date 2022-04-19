@@ -118,7 +118,7 @@ describe('helpdesk service', function test() {
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
-		expect(mailService.create.firstArg.email).to.equal('ticketsystem@schul-cloud.org');
+		expect(mailService.create.firstArg.email).to.equal('ticketsystem@dbildungscloud.de');
 	});
 
 	it('POST /helpdesk to schoolcloud with problem should be send to specified in configuration email address if supportType is specified', async () => {
@@ -150,7 +150,7 @@ describe('helpdesk service', function test() {
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.args.length).to.equal(1);
-		expect(mailService.create.args[0][0].email).to.equal('ticketsystem@schul-cloud.org');
+		expect(mailService.create.args[0][0].email).to.equal('ticketsystem@dbildungscloud.de');
 	});
 
 	it('POST /helpdesk to schoolcloud with wish should be send to all mentioned emails if supportType is specified', async () => {
@@ -164,11 +164,11 @@ describe('helpdesk service', function test() {
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
-		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de,ticketsystem@schul-cloud.org');
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de,ticketsystem@dbildungscloud.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.args.length).to.equal(2);
 		expect(mailService.create.args[0][0].email).to.equal('nbc-wunsch@netz-21.de');
-		expect(mailService.create.args[1][0].email).to.equal('ticketsystem@schul-cloud.org');
+		expect(mailService.create.args[1][0].email).to.equal('ticketsystem@dbildungscloud.de');
 		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);
 	});
 

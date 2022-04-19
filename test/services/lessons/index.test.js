@@ -405,7 +405,7 @@ describe('lessons service', () => {
 				{
 					title: 'testTitle',
 					client: 'someclient',
-					url: 'hpi.schul-cloud.org',
+					url: 'dbildungscloud.de',
 				},
 				{ route: { lessonId: lesson._id } }
 			);

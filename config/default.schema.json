@@ -519,22 +519,22 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de/etherpad/api/1",
+			"default": "https://dbildungscloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default": "https://etherpad.hpi-schul-cloud.de/p",
+			"default": "https://etherpad.dbildungscloud.de/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de/etherpad/p",
+			"default": "https://dbildungscloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",
-			"default": "etherpad.hpi-schul-cloud.de",
+			"default": "etherpad.dbildungscloud.de",
 			"description": "The old etherpad domain."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
@@ -729,7 +729,7 @@
 		},
 		"JWT_AUD": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de",
+			"default": "https://dbildungscloud.de",
 			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
 		},
 		"KEEP_ALIVE": {
@@ -739,12 +739,12 @@
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
-			"default": "ticketsystem@schul-cloud.org",
+			"default": "ticketsystem@dbildungscloud.de",
 			"description": "Email address used for reporting a problem"
 		},
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
 			"type": "string",
-			"default": "ticketsystem@schul-cloud.org",
+			"default": "ticketsystem@dbildungscloud.de",
 			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
