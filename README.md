@@ -54,11 +54,11 @@ When these paths are accessed an error with context `[DEPRECATED-PATH]` is logge
 ## Setup
 
 For more detailed setup instructions, take a look at [setup](https://docs.dbildungscloud.de/display/SCDOK/Setup).
-The whole application setup with all dependencies can be found in [System Architecture](https://docs.dbildungscloud.de/display/TSC/System+Architecture). It contains information about how different application components are connected to each other.
+The whole application setup with all dependencies can be found in [System Architecture](https://docs.dbildungscloud.de/display/DBH/System+Architecture). It contains information about how different application components are connected to each other.
 
 ## Debugger Configuration in Visual Studio Code
 
-For more details how to set up Visual Studio Code, read [this document](https://docs.dbildungscloud.de/display/SCDOK/Visual+Studio+Code).
+For more details how to set up Visual Studio Code, read [this document](https://docs.dbildungscloud.de/display/DBH/Visual+Studio+Code+-+Beginners+Guide).
 
 ## How to name your branch and create a pull request (PR)
 
