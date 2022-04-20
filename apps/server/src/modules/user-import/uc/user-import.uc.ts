@@ -204,7 +204,7 @@ export class UserImportUc {
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
-		this.permissionService.checkUserHasAllPermissions(currentUser, [permission]);
+		this.permissionService.checkAllPermissions(currentUser, [permission]);
 
 		return currentUser;
 	}

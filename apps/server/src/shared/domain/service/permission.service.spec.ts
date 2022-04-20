@@ -101,118 +101,118 @@ describe('permissions.service', () => {
 		});
 	});
 	describe('Authorization', () => {
-		describe('[hasUserAllPermissions]', () => {
+		describe('[hasAllPermissions]', () => {
 			it('should fail, when no permissions are given to be checked', () => {
 				const user = userFactory.build();
-				const result = service.hasUserAllPermissions(user, []);
+				const result = service.hasAllPermissions(user, []);
 				expect(result).toEqual(false);
 			});
 			it('should fail, when no permissions (array) is given to be checked', () => {
 				const user = userFactory.build();
-				const result = service.hasUserAllPermissions(user, 'foo' as unknown as []);
+				const result = service.hasAllPermissions(user, 'foo' as unknown as []);
 				expect(result).toEqual(false);
 			});
 			it('should succeed when user has all given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasAllPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(true);
 			});
 			it('should fail when user has some given permissions only', () => {
 				const role = roleFactory.build({ permissions: ['permission1'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasAllPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has none given permissions', () => {
 				const role = roleFactory.build({ permissions: [] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasAllPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has only different than the given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission3'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllPermissions(user, ['permission1']);
+				const result = service.hasAllPermissions(user, ['permission1']);
 				expect(result).toEqual(false);
 			});
 		});
 
-		describe('[checkUserHasAllPermissions]', () => {
-			it('should throw when hasUserAllPermissions is false', () => {
+		describe('[checkAllPermissions]', () => {
+			it('should throw when hasAllPermissions is false', () => {
 				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserAllPermissions').mockReturnValue(false);
-				expect(() => service.checkUserHasAllPermissions(user, ['permission1'])).toThrowError(UnauthorizedException);
+				const spy = jest.spyOn(service, 'hasAllPermissions').mockReturnValue(false);
+				expect(() => service.checkAllPermissions(user, ['permission1'])).toThrowError(UnauthorizedException);
 				spy.mockRestore();
 			});
-			it('should not throw when hasUserAllPermissions is true', () => {
+			it('should not throw when hasAllPermissions is true', () => {
 				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserAllPermissions').mockReturnValue(true);
-				service.checkUserHasAllPermissions(user, ['permission1']);
+				const spy = jest.spyOn(service, 'hasAllPermissions').mockReturnValue(true);
+				service.checkAllPermissions(user, ['permission1']);
 				spy.mockRestore();
 			});
 		});
 
-		describe('[hasUserOneOfPermissions]', () => {
+		describe('[hasOneOfPermissions]', () => {
 			it('should fail, when no permissions are given to be checked', () => {
 				const user = userFactory.build();
-				const result = service.hasUserOneOfPermissions(user, []);
+				const result = service.hasOneOfPermissions(user, []);
 				expect(result).toEqual(false);
 			});
 			it('should fail, when no permissions (array) is given to be checked', () => {
 				const user = userFactory.build();
-				const result = service.hasUserOneOfPermissions(user, 'foo' as unknown as []);
+				const result = service.hasOneOfPermissions(user, 'foo' as unknown as []);
 				expect(result).toEqual(false);
 			});
 			it('should succeed when user has all given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserOneOfPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasOneOfPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(true);
 			});
 			it('should success when user has some given permissions only', () => {
 				const role = roleFactory.build({ permissions: ['permission1'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserOneOfPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasOneOfPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(true);
 			});
 			it('should fail when user has none given permissions', () => {
 				const role = roleFactory.build({ permissions: [] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserOneOfPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasOneOfPermissions(user, ['permission1', 'permission2']);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has only different than the given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission3'] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserOneOfPermissions(user, ['permission1']);
+				const result = service.hasOneOfPermissions(user, ['permission1']);
 				expect(result).toEqual(false);
 			});
 		});
 
-		describe('[checkUserHasOneOfPermissions]', () => {
-			it('should throw when hasUserOneOfPermissions is false', () => {
+		describe('[checkOneOfPermissions]', () => {
+			it('should throw when hasOneOfPermissions is false', () => {
 				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserOneOfPermissions').mockReturnValue(false);
-				expect(() => service.checkUserHasOneOfPermissions(user, ['permission1'])).toThrowError(UnauthorizedException);
+				const spy = jest.spyOn(service, 'hasOneOfPermissions').mockReturnValue(false);
+				expect(() => service.checkOneOfPermissions(user, ['permission1'])).toThrowError(UnauthorizedException);
 				spy.mockRestore();
 			});
-			it('should not throw when hasUserOneOfPermissions is true', () => {
+			it('should not throw when hasOneOfPermissions is true', () => {
 				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserOneOfPermissions').mockReturnValue(true);
-				service.checkUserHasOneOfPermissions(user, ['permission1']);
+				const spy = jest.spyOn(service, 'hasOneOfPermissions').mockReturnValue(true);
+				service.checkOneOfPermissions(user, ['permission1']);
 				spy.mockRestore();
 			});
 		});
 	});
 
-	describe('[hasUserAccessToEntity]', () => {
+	describe('[hasAccessToEntity]', () => {
 		describe('if entity prop is instance of Collection', () => {
 			it('should return true if user is contained in prop', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user] });
 
-				const permissions = service.hasUserAccessToEntity(user, course, ['students']);
+				const permissions = service.hasAccessToEntity(user, course, ['students']);
 
 				expect(permissions).toEqual(true);
 			});
@@ -220,14 +220,14 @@ describe('permissions.service', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], teachers: [user] });
 
-				const permissions = service.hasUserAccessToEntity(user, course, ['students', 'teachers']);
+				const permissions = service.hasAccessToEntity(user, course, ['students', 'teachers']);
 				expect(permissions).toEqual(true);
 			});
 			it('should return false if user is not contained in prop', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], teachers: [user] });
 
-				const permissions = service.hasUserAccessToEntity(user, course, ['substitutionTeachers']);
+				const permissions = service.hasAccessToEntity(user, course, ['substitutionTeachers']);
 				expect(permissions).toEqual(false);
 			});
 		});
@@ -237,7 +237,7 @@ describe('permissions.service', () => {
 				const user = userFactory.build();
 				const task = taskFactory.build({ creator: user });
 
-				const permissions = service.hasUserAccessToEntity(user, task, ['creator']);
+				const permissions = service.hasAccessToEntity(user, task, ['creator']);
 
 				expect(permissions).toEqual(true);
 			});
@@ -247,7 +247,7 @@ describe('permissions.service', () => {
 				const user2 = userFactory.build();
 				const task = taskFactory.build({ creator: user2 });
 
-				const permissions = service.hasUserAccessToEntity(user, task, ['creator']);
+				const permissions = service.hasAccessToEntity(user, task, ['creator']);
 
 				expect(permissions).toEqual(false);
 			});
@@ -257,27 +257,27 @@ describe('permissions.service', () => {
 			it('should return true if user is equal user in prop', () => {
 				const user = userFactory.build();
 
-				const permissions = service.hasUserAccessToEntity(user, user, ['id']);
+				const permissions = service.hasAccessToEntity(user, user, ['id']);
 				expect(permissions).toEqual(true);
 			});
 
 			it('should return false if user is not equal user in prop', () => {
 				const user = userFactory.buildWithId();
 				const user2 = userFactory.buildWithId();
-				const permissions = service.hasUserAccessToEntity(user, user2, ['id']);
+				const permissions = service.hasAccessToEntity(user, user2, ['id']);
 
 				expect(permissions).toEqual(false);
 			});
 		});
 	});
 
-	describe('[isOnSameSchool]', () => {
+	describe('[isSameSchool]', () => {
 		it('should return true if user is on same school', () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school });
 			const course = courseFactory.build({ students: [user], school });
 
-			const permissions = service.isOnSameSchool(user, course);
+			const permissions = service.isSameSchool(user, course);
 
 			expect(permissions).toEqual(true);
 		});
@@ -287,9 +287,29 @@ describe('permissions.service', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], school });
 
-			const permissions = service.isOnSameSchool(user, course);
+			const permissions = service.isSameSchool(user, course);
 
 			expect(permissions).toEqual(false);
+		});
+	});
+
+	describe('[checkSameSchool]', () => {
+		it('should return true if user is on same school', () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build({ school });
+			const course = courseFactory.build({ students: [user], school });
+
+			const permissions = service.checkSameSchool(user, course);
+
+			expect(permissions).toEqual(undefined);
+		});
+
+		it('should throw a error if user is not on same school', () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], school });
+
+			expect(() => service.checkSameSchool(user, course)).toThrowError();
 		});
 	});
 

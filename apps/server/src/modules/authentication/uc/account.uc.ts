@@ -1,6 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { AuthorizationError, EntityNotFoundError, ValidationError } from '@shared/common/error';
-import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	ValidationError,
+} from '@shared/common/error';
 import { Account, EntityId, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
@@ -245,7 +249,7 @@ export class AccountUc {
 			return false;
 		}
 
-		return this.permissionService.hasUserAllPermissions(currentUser, permissionsToCheck);
+		return this.permissionService.hasAllPermissions(currentUser, permissionsToCheck);
 	}
 
 	private calcPasswordHash(password: string): Promise<string> {

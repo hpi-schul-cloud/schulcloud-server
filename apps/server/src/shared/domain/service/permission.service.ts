@@ -52,7 +52,7 @@ export class PermissionService {
 	 * @param requiredPermissions
 	 * @returns boolean
 	 */
-	hasUserAllPermissions(user: User, requiredPermissions: string[]): boolean {
+	hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
@@ -67,8 +67,8 @@ export class PermissionService {
 	 * @param requiredPermissions
 	 * @throws UnauthorizedException
 	 */
-	checkUserHasAllPermissions(user: User, requiredPermissions: string[]): void {
-		const hasPermission = this.hasUserAllPermissions(user, requiredPermissions);
+	checkAllPermissions(user: User, requiredPermissions: string[]): void {
+		const hasPermission = this.hasAllPermissions(user, requiredPermissions);
 		if (hasPermission !== true) {
 			throw new UnauthorizedException();
 		}
@@ -80,7 +80,7 @@ export class PermissionService {
 	 * @param requiredPermissions
 	 * @returns boolean
 	 */
-	hasUserOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+	hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
@@ -95,34 +95,35 @@ export class PermissionService {
 	 * @param requiredPermissions
 	 * @throws UnauthorizedException
 	 */
-	checkUserHasOneOfPermissions(user: User, requiredPermissions: string[]): void {
-		const hasPermission = this.hasUserOneOfPermissions(user, requiredPermissions);
+	checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
+		const hasPermission = this.hasOneOfPermissions(user, requiredPermissions);
 		if (hasPermission !== true) {
 			throw new UnauthorizedException();
 		}
 	}
 
 	/**
-	 * Determines whether a user has access to the specified entity.
+	 * Determines whether a user has access to the specified entity by reference props.
 	 * @example ```
 	 * const user = new User({id: 1})
-	 * const entity = new Course({id:2, creator: user})
-	 * const props = ['creator']
+	 * const entity = new News({id:2, creator: user})
+	 * const userRefProps = ['creator']
 	 * ```
 	 * @param user a user
 	 * @param entity An entity to access
-	 * @param props Array of properties in the entity the user is associated with
+	 * @param userRefProps Array of properties in the entity the user is associated with
 	 * @returns
 	 */
-	hasUserAccessToEntity(user: User, entity: IEntity, props: string[]) {
-		const res = props.some((prop) => {
-			if (entity[prop] instanceof Collection) {
-				return (entity[prop] as Collection<IEntity, unknown>).contains(user);
+	hasAccessToEntity<T extends IEntity, K extends keyof T>(user: User, entity: T, userRefProps: K[]) {
+		const res = userRefProps.some((prop) => {
+			const reference = entity[prop];
+			if (reference instanceof Collection) {
+				return reference.contains(user);
 			}
-			if (entity[prop] instanceof User) {
-				return entity[prop] === user;
+			if (reference instanceof User) {
+				return reference === user;
 			}
-			return entity[prop] === user.id;
+			return (reference as unknown as string) === user.id;
 		});
 
 		return res;
@@ -134,12 +135,28 @@ export class PermissionService {
 	 * @param entity
 	 * @returns boolean
 	 */
-	isOnSameSchool(user: User, entity: IEntityWithSchool) {
+	isSameSchool(user: User, entity: IEntityWithSchool) {
 		return user.school === entity.school;
 	}
 
 	/**
+	 * Determines whether a user has access to the specified entity with same scope.
+	 * @param user
+	 * @param entity
+	 * @throws UnauthorizedException
+	 */
+	checkSameSchool(user: User, entity: IEntityWithSchool) {
+		const isSameSchool = this.isSameSchool(user, entity);
+		if (isSameSchool !== true) {
+			throw new UnauthorizedException();
+		}
+	}
+
+	/**
 	 * Determines whether a user has a role
+	 *
+	 * Please not use role instead of permission. It is only for do something for target if it has the role xy.
+	 * For each other operations please define, use the string based permissions inside the roles.
 	 * @param user
 	 * @param roleName
 	 * @returns
