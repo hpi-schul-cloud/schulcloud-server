@@ -1,10 +1,10 @@
-import { AuthorizationError, EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { AuthorizationError, EntityNotFoundError, ValidationError } from '@shared/common/error';
+import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
 import { Account, EntityId, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '@shared/repo/account';
 import bcrypt from 'bcryptjs';
-import { ForbiddenOperationError } from '@shared/common/error/forbidden-operation.error';
 import { PatchMyAccountParams } from '../controller/dto';
 
 type UserPreferences = {
@@ -245,7 +245,7 @@ export class AccountUc {
 			return false;
 		}
 
-		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
+		return this.permissionService.hasUserAllPermissions(currentUser, permissionsToCheck);
 	}
 
 	private calcPasswordHash(password: string): Promise<string> {

@@ -1,3 +1,6 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
@@ -15,9 +18,6 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { accountFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
 
@@ -442,7 +442,7 @@ describe('[ImportUserModule]', () => {
 				});
 				userRepoByIdSpy = userRepo.findById.mockResolvedValue(currentUser);
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
-				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
+				permissionServiceSpy = permissionService.checkUserHasAllPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
 				accountRepoFindByUserIdSpy = accountRepo.findOneByUser.mockResolvedValue(account);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
@@ -532,7 +532,7 @@ describe('[ImportUserModule]', () => {
 				school.officialSchoolNumber = 'foo';
 				currentUser = userFactory.buildWithId({ school });
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
-				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
+				permissionServiceSpy = permissionService.checkUserHasAllPermissions.mockReturnValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
 				setConfig(system.id);
@@ -592,7 +592,7 @@ describe('[ImportUserModule]', () => {
 				currentUser = userFactory.buildWithId({ school });
 
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
-				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
+				permissionServiceSpy = permissionService.checkUserHasAllPermissions.mockReturnValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValue(Promise.resolve());
 			});
 			afterEach(() => {

@@ -46,7 +46,7 @@ export class PermissionService {
 		return permissions;
 	}
 
-	hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
+	hasUserAllPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
@@ -55,8 +55,8 @@ export class PermissionService {
 		return hasPermissions;
 	}
 
-	checkUserHasAllSchoolPermissions(user: User, requiredPermissions: string[]): void {
-		const hasPermission = this.hasUserAllSchoolPermissions(user, requiredPermissions);
+	checkUserHasAllPermissions(user: User, requiredPermissions: string[]): void {
+		const hasPermission = this.hasUserAllPermissions(user, requiredPermissions);
 		if (hasPermission !== true) {
 			throw new UnauthorizedException();
 		}
