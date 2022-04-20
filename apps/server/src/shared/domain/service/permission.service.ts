@@ -46,6 +46,12 @@ export class PermissionService {
 		return permissions;
 	}
 
+	/**
+	 * Determines whether a user has all the rights specified in requiredPermissions
+	 * @param user
+	 * @param requiredPermissions
+	 * @returns boolean
+	 */
 	hasUserAllPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
@@ -55,6 +61,12 @@ export class PermissionService {
 		return hasPermissions;
 	}
 
+	/**
+	 * Determines whether a user has all the rights specified in requiredPermissions
+	 * @param user
+	 * @param requiredPermissions
+	 * @throws UnauthorizedException
+	 */
 	checkUserHasAllPermissions(user: User, requiredPermissions: string[]): void {
 		const hasPermission = this.hasUserAllPermissions(user, requiredPermissions);
 		if (hasPermission !== true) {
@@ -62,6 +74,12 @@ export class PermissionService {
 		}
 	}
 
+	/**
+	 * Determines whether a user has at least one of the rights specified in requiredPermissions
+	 * @param user
+	 * @param requiredPermissions
+	 * @returns boolean
+	 */
 	hasUserOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
@@ -71,6 +89,12 @@ export class PermissionService {
 		return hasPermission;
 	}
 
+	/**
+	 * Determines whether a user has at least one of the rights specified in requiredPermissions
+	 * @param user
+	 * @param requiredPermissions
+	 * @throws UnauthorizedException
+	 */
 	checkUserHasOneOfPermissions(user: User, requiredPermissions: string[]): void {
 		const hasPermission = this.hasUserOneOfPermissions(user, requiredPermissions);
 		if (hasPermission !== true) {
@@ -78,6 +102,18 @@ export class PermissionService {
 		}
 	}
 
+	/**
+	 * Determines whether a user has access to the specified entity.
+	 * @example ```
+	 * const user = new User({id: 1})
+	 * const entity = new Course({id:2, creator: user})
+	 * const props = ['creator']
+	 * ```
+	 * @param user a user
+	 * @param entity An entity to access
+	 * @param props Array of properties in the entity the user is associated with
+	 * @returns
+	 */
 	hasUserAccessToEntity(user: User, entity: IEntity, props: string[]) {
 		const res = props.some((prop) => {
 			if (entity[prop] instanceof Collection) {
@@ -92,10 +128,22 @@ export class PermissionService {
 		return res;
 	}
 
+	/**
+	 * Determines whether a user has access to the specified entity with same scope.
+	 * @param user
+	 * @param entity
+	 * @returns boolean
+	 */
 	isOnSameSchool(user: User, entity: IEntityWithSchool) {
 		return user.school === entity.school;
 	}
 
+	/**
+	 * Determines whether a user has a role
+	 * @param user
+	 * @param roleName
+	 * @returns
+	 */
 	hasRole(user: User, roleName: string) {
 		if (!user.roles.isInitialized(true)) {
 			throw new Error('Roles items are not loaded.');
