@@ -2,8 +2,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
-import { AccountRepo, UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { UserRepo } from '@shared/repo';
+import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -11,14 +11,17 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
+import { AccountService } from '../services/account.service';
+import { AccountDto } from '../services/dto/account.dto';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
 	let accountUc: AccountUc;
 	let userRepo: UserRepo;
-	let accountRepo: AccountRepo;
+	let accountService: AccountService;
 	let orm: MikroORM;
 
 	let mockSchool: School;
@@ -64,52 +67,68 @@ describe('AccountUc', () => {
 			providers: [
 				AccountUc,
 				{
-					provide: AccountRepo,
+					provide: AccountService,
 					useValue: {
-						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
+						save: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
+							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.user.id === account.userId);
+							Object.assign(accountEntity, account);
+
 							return Promise.resolve();
 						}),
-						delete: (account: Account): Promise<Account> => {
+						delete: (account: AccountDto): Promise<AccountDto> => {
 							return Promise.resolve(account);
 						},
-						findByUserId: (userId: EntityId): Promise<Account> => {
+						findByUserId: (userId: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
 
 							if (account) {
-								return Promise.resolve(account);
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
 							if (userId === 'accountWithoutUser') {
-								return Promise.resolve(mockStudentAccount);
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						findById: (accountId: EntityId): Promise<Account> => {
+						findById: (accountId: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
-								return Promise.resolve(account);
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						searchByUsernameExactMatch: (username: string): Promise<[Account[], number]> => {
+						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountDto[]; total: number }> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
-								return Promise.resolve([[account], mockAccounts.length]);
+								return Promise.resolve({ accounts: [AccountEntityToDtoMapper.mapToDto(account)], total: 1 });
 							}
 							if (username === 'not@available.username') {
-								return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
+								return Promise.resolve({
+									accounts: [AccountEntityToDtoMapper.mapToDto(mockExternalUserAccount)],
+									total: 1,
+								});
+								// return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
 							}
 							if (username === 'multiple@account.username') {
-								return Promise.resolve([mockAccounts, mockAccounts.length]);
+								return Promise.resolve({
+									accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
+									total: mockAccounts.length,
+								});
 							}
-							return Promise.resolve([[], 0]);
+							return Promise.resolve({
+								accounts: [],
+								total: 0,
+							});
 						},
-						searchByUsernamePartialMatch: (): Promise<[Account[], number]> => {
-							return Promise.resolve([mockAccounts, mockAccounts.length]);
+						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountDto[]; total: number }> => {
+							return Promise.resolve({
+								accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
+								total: mockAccounts.length,
+							});
 						},
 					},
 				},
@@ -151,7 +170,7 @@ describe('AccountUc', () => {
 
 		accountUc = module.get(AccountUc);
 		userRepo = module.get(UserRepo);
-		accountRepo = module.get(AccountRepo);
+		accountService = module.get(AccountService);
 		orm = await setupEntities();
 	});
 
@@ -258,7 +277,11 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			system: undefined,
 		});
-		mockExternalUserAccount = accountFactory.buildWithId({ user: mockExternalUser, password: defaultPasswordHash });
+		mockExternalUserAccount = accountFactory.buildWithId({
+			user: mockExternalUser,
+			password: defaultPasswordHash,
+			system: systemFactory.buildWithId(),
+		});
 
 		mockUsers = [
 			mockSuperheroUser,
@@ -342,7 +365,7 @@ describe('AccountUc', () => {
 			).resolves.not.toThrow();
 		});
 		it('should use email as account user name in lower case', async () => {
-			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
+			const accountSaveSpy = jest.spyOn(accountService, 'save');
 			const testMail = 'AN@AVAILABLE.MAIL';
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
@@ -364,7 +387,7 @@ describe('AccountUc', () => {
 			expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 		});
 		it('should always update account user name AND user email together.', async () => {
-			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
+			const accountSaveSpy = jest.spyOn(accountService, 'save');
 			const userUpdateSpy = jest.spyOn(userRepo, 'save');
 			const testMail = 'an@available.mail';
 			await expect(
@@ -598,7 +621,7 @@ describe('AccountUc', () => {
 				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 			);
 			const expected = new AccountSearchListResponse(
-				[AccountResponseMapper.mapToResponse(mockStudentAccount)],
+				[AccountResponseMapper.mapToResponseFromEntity(mockStudentAccount)],
 				1,
 				0,
 				1
@@ -623,30 +646,6 @@ describe('AccountUc', () => {
 				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQueryParams
 			);
 			expect(accounts.data).toStrictEqual([]);
-		});
-		it('should throw, if skip is smaller than 0', async () => {
-			await expect(
-				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ skip: -1 } as AccountSearchQueryParams
-				)
-			).rejects.toThrow('Skip is less than 0.');
-		});
-		it('should throw, if limit is smaller than 1', async () => {
-			await expect(
-				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ limit: 0 } as AccountSearchQueryParams
-				)
-			).rejects.toThrow('Limit is less than 1.');
-		});
-		it('should throw, if limit is greater than 100', async () => {
-			await expect(
-				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ limit: 101 } as AccountSearchQueryParams
-				)
-			).rejects.toThrow('Limit is greater than 100.');
 		});
 		it('should throw, if user has not the right permissions', async () => {
 			await expect(
