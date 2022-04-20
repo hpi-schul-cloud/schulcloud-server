@@ -1,4 +1,4 @@
-import { Entity, Property, OneToOne, Index } from '@mikro-orm/core';
+import { Entity, Property, OneToOne, Index, ManyToOne } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { System } from './system.entity';
 import { User } from './user.entity';
@@ -24,7 +24,7 @@ export class Account extends BaseEntityWithTimestamps {
 	@OneToOne({ entity: () => User, fieldName: 'userId' })
 	user: User;
 
-	@OneToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
+	@ManyToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
 	system?: System;
 
 	@Property({ nullable: true })
