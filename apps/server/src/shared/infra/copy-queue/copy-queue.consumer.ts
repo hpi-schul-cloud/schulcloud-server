@@ -1,5 +1,6 @@
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
+import { Course } from '@shared/domain';
 import { CopyQueueRoutingKeys } from './copy-queue.interface';
 
 @Injectable()
@@ -9,8 +10,7 @@ export class CopyQueueConsumer {
 		routingKey: CopyQueueRoutingKeys.COURSE,
 		queue: 'server-built-in-copy-queue',
 	})
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	public handleCourseCopy(msg: {}) {
+	public handleCourseCopy(msg: Course) {
 		// TODO: call domain service for course copy.
 		console.log(`Received message: ${JSON.stringify(msg)}`);
 	}
