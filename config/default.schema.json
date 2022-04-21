@@ -452,14 +452,16 @@
 			"properties": {
 				"IS_CONFIGURABLE": {
 					"type": "boolean",
-					"default": false,
 					"description": "Allows school admin to toggle teachers' STUDENT_LIST permission."
 				},
 				"IS_ENABLED_BY_DEFAULT": {
 					"type": "boolean",
-					"default": true,
 					"description": "Grants teachers STUDENT_LIST permission by default."
 				}
+			},
+			"default": {
+				"IS_CONFIGURABLE": false,
+				"IS_ENABLED_BY_DEFAULT": true
 			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED": {

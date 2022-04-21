@@ -39,9 +39,5 @@
 		"ADMIN_CLIENTID": "admin-cli",
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dbildungscloud"
-	},
-	"TEACHER_STUDENT_VISIBILITY": {
-		"IS_CONFIGURABLE": true,
-		"IS_ENABLED_BY_DEFAULT": true
 	}
 }
