@@ -117,7 +117,7 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			const result = await repo.findByUsername('USER@EXAMPLE.COM');
+			const [result] = await repo.searchByUsernameExactMatch('USER@EXAMPLE.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
@@ -127,15 +127,13 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			let result: Account[];
+			let [accounts] = await repo.searchByUsernameExactMatch('USER@example.COM');
+			expect(accounts).toHaveLength(1);
+			expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 
-			result = await repo.findByUsername('USER@example.COM');
-			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-
-			result = await repo.findByUsername('user@example.com');
-			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+			[accounts] = await repo.searchByUsernameExactMatch('user@example.com');
+			expect(accounts).toHaveLength(1);
+			expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
 		it('should not find by wildcard', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
@@ -143,13 +141,11 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			let result: Account[];
+			let [accounts] = await repo.searchByUsernameExactMatch('USER@EXAMPLECCOM');
+			expect(accounts).toHaveLength(0);
 
-			result = await repo.findByUsername('USER@EXAMPLECCOM');
-			expect(result).toHaveLength(0);
-
-			result = await repo.findByUsername('.*');
-			expect(result).toHaveLength(0);
+			[accounts] = await repo.searchByUsernameExactMatch('.*');
+			expect(accounts).toHaveLength(0);
 		});
 	});
 });

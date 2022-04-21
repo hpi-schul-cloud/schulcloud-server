@@ -16,11 +16,3 @@ notifications:
   - when: pullapprove.approved
     comment: The review is completed. @{{ author }}, please follow further instructions from
       our Review-Guidelines https://docs.dbildungscloud.de/display/SCDOK/Review-Guidelines
-
-groups:
-  general:
-    reviews:
-      required: 1 # 1 approval from this group are required
-    reviewers:
-      teams:
-        - general
