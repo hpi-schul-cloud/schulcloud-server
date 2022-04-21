@@ -782,6 +782,11 @@
 			"default": false,
 			"description": "Toggle for legacy course overview."
 		},
+		"ROOM_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "feature toggle activate Room view link."
+		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
 			"default": false,
