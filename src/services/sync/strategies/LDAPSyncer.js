@@ -61,7 +61,7 @@ class LDAPSyncer extends Syncer {
 			this.stats.users += ldapUsers.length;
 			await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
 		} catch (err) {
-			this.logError('Error while syncing', { error: err, syncId: this.syncId });
+			syncLogger.error('Error while syncing process Ldap Users', { error: err, syncId: this.syncId });
 			this.stats.errors.push(err);
 		}
 	}
@@ -73,7 +73,7 @@ class LDAPSyncer extends Syncer {
 			this.stats.classes += ldapClasses.length;
 			await this.sendLdapClasses(ldapClasses, school);
 		} catch (err) {
-			this.logError('Error while syncing', { error: err, syncId: this.syncId });
+			syncLogger.error('Error while syncing process Ldap Classes', { error: err, syncId: this.syncId });
 			this.stats.errors.push(err);
 		}
 	}
