@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { BoardElementResponse, BoardResponse } from '../controller/dto/board-task.response';
+import { BoardElementResponse, BoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
@@ -64,24 +64,6 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				courseName: course.name,
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
-			};
-
-			const result = mapper.mapToResponse(board);
-
-			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
-		});
-
-		it('should map locked task on board to response', () => {
-			const course = courseFactory.buildWithId();
-			const task = taskFactory.buildWithId({ course });
-			const board = {
-				roomId: 'roomId',
-				displayColor: '#ACACAC',
-				title: 'boardTitle',
-				courseName: course.name,
-				elements: [
-					{ type: RoomBoardElementTypes.LOCKEDTASK, content: { id: task.id, name: task.name, allowed: false } },
-				],
 			};
 
 			const result = mapper.mapToResponse(board);

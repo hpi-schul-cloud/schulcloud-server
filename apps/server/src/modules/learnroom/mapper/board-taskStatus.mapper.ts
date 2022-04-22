@@ -1,5 +1,5 @@
 import { ITaskStatus } from '@shared/domain';
-import { BoardTaskStatusResponse } from '../controller/dto/board-task-status.response';
+import { BoardTaskStatusResponse } from '../controller/dto';
 
 export class BoardTaskStatusMapper {
 	static mapToResponse(status: ITaskStatus): BoardTaskStatusResponse {
