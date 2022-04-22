@@ -4,7 +4,16 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { BaseRule } from '.';
+import { User } from '../entity';
 import { Role } from '../entity/role.entity';
+import { IEntity } from '../interface';
+import { Actions } from './actions.enum';
+
+class TestRule extends BaseRule {
+	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
+		throw new Error('Method not implemented.');
+	}
+}
 
 describe('permissions.service', () => {
 	let orm: MikroORM;
@@ -14,10 +23,10 @@ describe('permissions.service', () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BaseRule],
+			providers: [TestRule],
 		}).compile();
 
-		service = await module.get(BaseRule);
+		service = await module.get(TestRule);
 	});
 
 	afterAll(async () => {

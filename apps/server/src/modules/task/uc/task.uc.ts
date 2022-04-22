@@ -1,33 +1,40 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination, Counted, SortOrder, TaskWithStatusVo, ITaskStatus, User } from '@shared/domain';
-
-import { TaskRepo, UserRepo } from '@shared/repo';
-
-import { TaskAuthorizationService, TaskParentPermission, TaskDashBoardPermission } from './task.authorization.service';
+import {
+	Counted,
+	Course,
+	EntityId,
+	IPagination,
+	ITaskStatus,
+	Lesson,
+	SortOrder,
+	TaskWithStatusVo,
+	User,
+} from '@shared/domain';
+import { Actions, Permission } from '@shared/domain/rules';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 
 @Injectable()
 export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
-		private readonly authorizationService: TaskAuthorizationService,
-		private readonly userRepo: UserRepo
+		private readonly authorizationService: AuthorizationService,
+		private readonly userRepo: UserRepo,
+		private readonly courseRepo: CourseRepo,
+		private readonly lessonRepo: LessonRepo
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		// load the user including all roles
 		const user = await this.userRepo.findById(userId, true);
 
-		if (
-			!this.authorizationService.hasOneOfTaskDashboardPermissions(user, [
-				TaskDashBoardPermission.teacherDashboard,
-				TaskDashBoardPermission.studentDashboard,
-			])
-		) {
-			throw new UnauthorizedException();
-		}
+		this.authorizationService.checkOneOfPermissions(user, [
+			Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
+			Permission.TASK_DASHBOARD_VIEW_V3,
+		]);
 
-		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.read);
-		const lessons = await this.authorizationService.getPermittedLessons(user, courses);
+		const courses = await this.getPermittedCourses(user, Actions.read);
+		const lessons = await this.getPermittedLessons(user, courses);
 
 		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
 		const finishedCourseIds = courses.filter((c) => c.isFinished()).map((c) => c.id);
@@ -47,7 +54,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.write)) {
+			if (this.authorizationService.hasPermission(user, task, Actions.write)) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
@@ -65,12 +72,9 @@ export class TaskUC {
 
 		// load the user including all roles
 		const user = await this.userRepo.findById(userId, true);
-
-		if (this.authorizationService.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.studentDashboard)) {
+		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
 			response = await this.findAllForStudent(user, pagination);
-		} else if (
-			this.authorizationService.hasOneOfTaskDashboardPermissions(user, TaskDashBoardPermission.teacherDashboard)
-		) {
+		} else if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
 			response = await this.findAllForTeacher(user, pagination);
 		} else {
 			throw new UnauthorizedException();
@@ -82,7 +86,7 @@ export class TaskUC {
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
 		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
 
-		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.read)) {
+		if (!this.authorizationService.hasPermission(user, task, Actions.read)) {
 			throw new UnauthorizedException();
 		}
 
@@ -94,10 +98,7 @@ export class TaskUC {
 		await this.taskRepo.save(task);
 
 		// add status
-		const status = this.authorizationService.hasOneOfTaskDashboardPermissions(
-			user,
-			TaskDashBoardPermission.teacherDashboard
-		)
+		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
 			? task.createTeacherStatusForUser(user)
 			: task.createStudentStatusForUser(user);
 
@@ -107,9 +108,9 @@ export class TaskUC {
 	}
 
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.read);
+		const courses = await this.getPermittedCourses(user, Actions.read);
 		const openCourses = courses.filter((c) => !c.isFinished());
-		const lessons = await this.authorizationService.getPermittedLessons(user, openCourses);
+		const lessons = await this.getPermittedLessons(user, openCourses);
 
 		const dueDate = this.getDefaultMaxDueDate();
 		const notFinished = { userId: user.id, value: false };
@@ -136,9 +137,9 @@ export class TaskUC {
 	}
 
 	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courses = await this.authorizationService.getPermittedCourses(user, TaskParentPermission.write);
+		const courses = await this.getPermittedCourses(user, Actions.write);
 		const openCourses = courses.filter((c) => !c.isFinished());
-		const lessons = await this.authorizationService.getPermittedLessons(user, openCourses);
+		const lessons = await this.getPermittedLessons(user, openCourses);
 
 		const notFinished = { userId: user.id, value: false };
 
@@ -163,6 +164,39 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
+	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
+	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
+	private async getPermittedCourses(user: User, neededPermission: Actions): Promise<Course[]> {
+		let permittedCourses: Course[] = [];
+
+		if (neededPermission === Actions.write) {
+			[permittedCourses] = await this.courseRepo.findAllForTeacher(user.id);
+		} else if (neededPermission === Actions.read) {
+			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
+		}
+
+		return permittedCourses;
+	}
+
+	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
+		const writeCourses = courses.filter((c) => this.authorizationService.hasPermission(user, c, Actions.write));
+		const readCourses = courses.filter((c) => !writeCourses.includes(c));
+
+		const writeCourseIds = writeCourses.map((c) => c.id);
+		const readCourseIds = readCourses.map((c) => c.id);
+
+		// idea as combined query:
+		// [{courseIds: onlyWriteCoursesIds}, { courseIds: onlyReadCourses, filter: { hidden: false }}]
+		const [[writeLessons], [readLessons]] = await Promise.all([
+			this.lessonRepo.findAllByCourseIds(writeCourseIds),
+			this.lessonRepo.findAllByCourseIds(readCourseIds, { hidden: false }),
+		]);
+
+		const permittedLessons = [...writeLessons, ...readLessons];
+
+		return permittedLessons;
+	}
+
 	private getDefaultMaxDueDate(): Date {
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -173,7 +207,7 @@ export class TaskUC {
 	async delete(userId: EntityId, taskId: EntityId) {
 		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
 
-		if (!this.authorizationService.hasTaskPermission(user, task, TaskParentPermission.write)) {
+		if (!this.authorizationService.hasPermission(user, task, Actions.write)) {
 			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
 		}
 
