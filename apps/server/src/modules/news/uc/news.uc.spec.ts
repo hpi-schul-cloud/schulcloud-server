@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICreateNews, NewsTargetModel } from '@shared/domain';
 import { NewsRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@src/modules/authorization/authorization.service';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
