@@ -235,8 +235,6 @@ const ignorePathsList = [
 	/|(.*\/classModel\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/classes($|\/$))/,
 	/|(.*\/classes\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/grades($|\/$))/,
-	/|(.*\/grades\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/classes\/successor($|\/$))/,
 	/|(.*\/classes\/successor\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/courses\/[0-9a-f]{24}\/members($|\/$))/,

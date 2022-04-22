@@ -23,7 +23,7 @@ describe('UserLinkImportService', () => {
 		expect(usersLinkImportService).to.not.equal(undefined);
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-4606
+	// https://ticketsystem.dbildungscloud.de/browse/SC-4606
 	xit('student can not use link import service', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
@@ -38,7 +38,7 @@ describe('UserLinkImportService', () => {
 		}
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-4606
+	// https://ticketsystem.dbildungscloud.de/browse/SC-4606
 	xit('teacher can not use link import service', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);

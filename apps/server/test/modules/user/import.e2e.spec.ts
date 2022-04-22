@@ -704,7 +704,20 @@ describe('ImportUser Controller (e2e)', () => {
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.AUTO)).toEqual(true);
 							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.MANUAL)).toEqual(true);
-							expect(result.data.length).toBeGreaterThanOrEqual(9);
+							expect(result.data.length).toEqual(9);
+						});
+						it('should filter by match type none also deleted matches', async () => {
+							const importUsers = importUserFactory.buildList(10, { school });
+							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
+							await em.persistAndFlush(importUsers);
+							importUsers[0].revokeMatch();
+							await em.persistAndFlush(importUsers);
+							const query: FilterImportUserParams = { match: [FilterMatchType.NONE] };
+							const response = await request(app.getHttpServer()).get('/user/import').query(query).expect(200);
+							const result = response.body as ImportUserListResponse;
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.AUTO)).toEqual(true);
+							expect(result.data.some((iu) => iu.match?.matchedBy !== MatchType.MANUAL)).toEqual(true);
+							expect(result.data.length).toEqual(10);
 						});
 						it('should filter by match type admin (manual)', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
@@ -754,6 +767,7 @@ describe('ImportUser Controller (e2e)', () => {
 					});
 				});
 			});
+
 			describe('updates', () => {
 				let user: User;
 				let school: School;

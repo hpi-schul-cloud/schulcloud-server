@@ -7,7 +7,7 @@ info:
     
   contact:
     name: support
-    email: info@hpi-schul-cloud.de
+    email: info@dbildungscloud.de
   license:
     name: GPL-3.0
     url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
@@ -48,10 +48,6 @@ components:
     classes:
       description: TODO
     classes_list:
-      description: TODO
-    grades:
-      description: TODO
-    grades_list:
       description: TODO
     successor:
       description: TODO
@@ -1279,189 +1275,6 @@ paths:
       tags:
         - classes
       security: []
-  /grades:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/grades'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/grades_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - grades
-      security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/grades'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - grades
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/grades'
-  '/grades/{_id}':
-    get:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of grades to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/grades'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - grades
-      security: []
-    put:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of grades to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/grades'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - grades
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/grades'
-    patch:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of grades to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/grades'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - grades
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/grades'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of grades to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/grades'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - grades
-      security: []
   /classes/successor:
     get:
       parameters:
@@ -1722,8 +1535,6 @@ tags:
     description: A classModel service.
   - name: classes
     description: A classes service.
-  - name: grades
-    description: A grades service.
   - name: users
     description: A users service.
     
