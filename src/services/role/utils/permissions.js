@@ -15,9 +15,6 @@ const ROLES = {
 /**
  * Set or remove permission, depending of the env value
  *
- * 'opt-out', 'enabled' - set the permissions to the given role
- * 'opt-in', 'disabled', undefined - removes them from the given role
- *
  * @param {String} env
  * @param {String} role
  * @param  {...String} permissions
