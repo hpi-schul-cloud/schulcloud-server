@@ -53,19 +53,19 @@ When these paths are accessed an error with context `[DEPRECATED-PATH]` is logge
 
 ## Setup
 
-For more detailed setup instructions, take a look at [setup](https://docs.hpi-schul-cloud.org/display/SCDOK/Setup).
-The whole application setup with all dependencies can be found in [System Architecture](https://docs.hpi-schul-cloud.org/display/TSC/System+Architecture). It contains information about how different application components are connected to each other.
+For more detailed setup instructions, take a look at [setup](https://docs.dbildungscloud.de/display/SCDOK/Setup).
+The whole application setup with all dependencies can be found in [System Architecture](https://docs.dbildungscloud.de/display/DBH/System+Architecture). It contains information about how different application components are connected to each other.
 
 ## Debugger Configuration in Visual Studio Code
 
-For more details how to set up Visual Studio Code, read [this document](https://docs.hpi-schul-cloud.org/display/SCDOK/Visual+Studio+Code).
+For more details how to set up Visual Studio Code, read [this document](https://docs.dbildungscloud.de/display/DBH/Visual+Studio+Code+-+Beginners+Guide).
 
 ## How to name your branch and create a pull request (PR)
 
-1. Take the Ticket Number from JIRA (ticketsystem.hpi-schul-cloud.org), e.g. SC-999
+1. Take the Ticket Number from JIRA (ticketsystem.dbildungscloud.de), e.g. SC-999
 2. Name the feature branch beginning with Ticket Number, all words separated by dash "-", e.g. `feature/SC-999-fantasy-problem`
 3. Create a PR on branch develop containing the Ticket Number in PR title
-4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically. For more information check our Definition of Done [here](https://docs.hpi-schul-cloud.org/pages/viewpage.action?pageId=92831762).
+4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically. For more information check our Definition of Done [here](https://docs.dbildungscloud.de/pages/viewpage.action?pageId=92831762).
 
 ## Committing
 

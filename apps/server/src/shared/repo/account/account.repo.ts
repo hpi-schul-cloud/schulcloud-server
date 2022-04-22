@@ -1,45 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { EntityNotFoundError } from '@shared/common';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 import { User } from '@shared/domain/entity/user.entity';
+import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
-	repo = this.em.getRepository(Account);
-
-	async create(account: Account): Promise<Account> {
-		await this.repo.persistAndFlush(account);
-		return account;
-	}
-
-	async findById(accountId: EntityId): Promise<Account> {
-		const account = await this.findOneById(accountId);
-		return account;
-	}
-
-	async update(account: Account): Promise<Account> {
-		await this.repo.persistAndFlush(account);
-		return account;
-	}
-
-	async delete(accountId: EntityId): Promise<Account> {
-		const account = await this.findOneById(accountId);
-		await this.em.removeAndFlush(account);
-		return account;
-	}
-
-	private async findOneById(accountId: EntityId): Promise<Account> {
-		const account = await this.repo.findOneOrFail(
-			{ id: accountId },
-			{
-				failHandler: (entityName: string, where: Record<string, unknown>) => {
-					return new EntityNotFoundError(entityName, where);
-				},
-			}
-		);
-		return account;
+	get entityName() {
+		return Account;
 	}
 
 	/**
@@ -47,42 +16,60 @@ export class AccountRepo extends BaseRepo<Account> {
 	 * @param userId the user id
 	 * @throws {EntityNotFoundError}
 	 */
-	async findByUserId(userId: EntityId): Promise<Account> {
-		const account = await this.repo.findOneOrFail({ user: userId });
-		return account;
+	async findByUserId(userId: EntityId): Promise<Account | null> {
+		return this._em.findOne(Account, { user: userId });
 	}
 
-	async tryFindByUserId(userId: EntityId): Promise<Account | undefined> {
-		const account = (await this.repo.findOne({ user: userId })) ?? undefined;
-		return account;
-	}
-
-	async findOneByUser(user: User): Promise<Account> {
+	async findOneByUser(user: User): Promise<Account | null> {
 		return this.findByUserId(user.id);
 	}
 
-	/**
-	 * Finds the users with the exact usernames.
-	 * Return an empty list, if no account with given username was found.
-	 * @param userName The exact username.
-	 */
-	async findByUsername(userName: string): Promise<Account[]> {
-		const account = await this.repo.find({
-			// find mail case-insensitive by regex
-			username: new RegExp(`^${userName.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i'),
-		});
-		return account;
+	getObjectReference<Entity extends AnyEntity<Entity>>(
+		entityName: EntityName<Entity>,
+		id: Primary<Entity> | Primary<Entity>[]
+	): Entity {
+		return this._em.getReference(entityName, id);
 	}
 
-	/**
-	 * Searches through all accounts and will return all accounts
-	 * with a partial or full match. The search is case-insensitive.
-	 * @param username The regular expression.
-	 */
-	async searchByUsername(username: string): Promise<Account[]> {
-		const accounts = await this.repo.find({
-			username: new RegExp(username, 'i'),
-		});
-		return accounts;
+	saveWithoutFlush(account: Account): void {
+		this._em.persist(account);
+	}
+
+	async flush(): Promise<void> {
+		await this._em.flush();
+	}
+
+	async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<[Account[], number]> {
+		return this.searchByUsername(username, skip, limit, true);
+	}
+
+	async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<[Account[], number]> {
+		return this.searchByUsername(username, skip, limit, false);
+	}
+
+	private async searchByUsername(
+		username: string,
+		offset: number,
+		limit: number,
+		exactMatch: boolean
+	): Promise<[Account[], number]> {
+		// escapes every character, that's not a unicode letter or number
+		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
+		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
+		return this._em.findAndCount(
+			this.entityName,
+			{
+				// NOTE: The default behavior of the MongoDB driver allows
+				// to pass regular expressions directly into the where clause
+				// without the need of using the $re operator, this will NOT
+				// work with SQL drivers
+				username: new RegExp(searchUsername, 'i'),
+			},
+			{
+				offset,
+				limit,
+				orderBy: { username: 1 },
+			}
+		);
 	}
 }

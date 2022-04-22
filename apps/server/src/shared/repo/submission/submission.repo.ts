@@ -1,22 +1,18 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-
-import { Counted, EntityId, CourseGroup, Submission } from '@shared/domain';
+import { Counted, CourseGroup, EntityId, Submission } from '@shared/domain';
+import { BaseRepo } from '../base.repo';
 
 // TODO: add scope helper
 
 @Injectable()
-export class SubmissionRepo {
-	constructor(private readonly em: EntityManager) {}
-
-	async findById(id: EntityId): Promise<Submission> {
-		const submission = await this.em.findOneOrFail(Submission, { id });
-		return submission;
+export class SubmissionRepo extends BaseRepo<Submission> {
+	get entityName() {
+		return Submission;
 	}
 
 	async findAllByTaskIds(taskIds: EntityId[]): Promise<Counted<Submission[]>> {
-		const [submissions, count] = await this.em.findAndCount(Submission, {
+		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
 
@@ -24,21 +20,13 @@ export class SubmissionRepo {
 	}
 
 	async findAllByUserId(userId: EntityId): Promise<Counted<Submission[]>> {
-		const result = await this.em.findAndCount(Submission, await this.byUserIdQuery(userId));
+		const result = await this._em.findAndCount(this.entityName, await this.byUserIdQuery(userId));
 		return result;
 	}
 
 	private async byUserIdQuery(userId: EntityId): Promise<FilterQuery<Submission>> {
-		const courseGroupsOfUser = await this.em.find(CourseGroup, { students: userId });
+		const courseGroupsOfUser = await this._em.find(CourseGroup, { students: userId });
 		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
 		return query;
-	}
-
-	async save(submission: Submission): Promise<void> {
-		await this.em.persistAndFlush(submission);
-	}
-
-	async delete(submission: Submission): Promise<void> {
-		await this.em.removeAndFlush(submission);
 	}
 }

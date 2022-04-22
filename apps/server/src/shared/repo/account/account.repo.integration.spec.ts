@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory, accountFactory, systemFactory, cleanupCollections, importUserFactory } from '@shared/testing';
+import { userFactory, accountFactory, cleanupCollections, importUserFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -38,54 +38,8 @@ describe('account repo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('create', () => {
-		it('should create and return an account', async () => {
-			let account = new Account({
-				username: 'Max Mustermann',
-				user: userFactory.build(),
-				system: systemFactory.build(),
-			});
-			expect(account.id).toBeNull();
-			account = await repo.create(account);
-			expect(account.id).not.toBeNull();
-			expect(account.id).toBeDefined();
-		});
-	});
-
-	describe('findById', () => {
-		it('should return an account', async () => {
-			const account = await repo.findById(mockAccounts[0].id);
-			expect(account).toEqual<Account>(mockAccounts[0]);
-		});
-
-		it('should throw entity not found error', async () => {
-			await expect(repo.findById('')).rejects.toThrowError('Account entity not found.');
-		});
-	});
-
-	describe('update', () => {
-		it('should update and return an account', async () => {
-			const account1 = mockAccounts[0];
-			account1.activated = true;
-			await repo.update(account1);
-			const account2 = await repo.findById(mockAccounts[0].id);
-			expect(account1).toEqual(account2);
-		});
-
-		it('should throw entity not found error', async () => {
-			await expect(repo.update({ id: '' } as Account)).rejects.toThrowError();
-		});
-	});
-
-	describe('delete', () => {
-		it('should delete and return an account', async () => {
-			const account = await repo.delete(mockAccounts[0].id);
-			await expect(em.find(Account, { id: account.id })).resolves.toEqual([]);
-		});
-
-		it('should throw entity not found error', async () => {
-			await expect(repo.delete('')).rejects.toThrowError('Account entity not found.');
-		});
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(Account);
 	});
 
 	describe('findByUserId', () => {
@@ -97,11 +51,12 @@ describe('account repo', () => {
 			expect(account.id).toEqual(accountToFind.id);
 		});
 	});
+
 	describe('findOneByUser', () => {
 		it('should find by User and return an account', async () => {
 			const user = userFactory.buildWithId();
 			const account = new Account({ username: 'Max Mustermann', user });
-			await repo.create(account);
+			await repo.save(account);
 
 			const result = await repo.findOneByUser(user);
 			expect(result).toEqual(account);
@@ -120,6 +75,41 @@ describe('account repo', () => {
 			);
 		});
 	});
+
+	describe('getObjectReference', () => {
+		it('should return a valid reference', async () => {
+			const user = userFactory.build();
+			const account = accountFactory.build({ user });
+			await em.persistAndFlush([user, account]);
+
+			const reference = repo.getObjectReference(User, account.user.id);
+
+			expect(reference).toBe(user);
+		});
+	});
+
+	describe('saveWithoutFlush', () => {
+		it('should add an account to the persist stack', () => {
+			const account = accountFactory.build();
+
+			repo.saveWithoutFlush(account);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+		});
+	});
+
+	describe('flush', () => {
+		it('should flush after save', async () => {
+			const account = accountFactory.build();
+			em.persist(account);
+
+			expect(account.id).toBeNull();
+
+			await repo.flush();
+
+			expect(account.id).not.toBeNull();
+		});
+	});
+
 	describe('findByUsername', () => {
 		it('should find account by user name', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
@@ -127,7 +117,7 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			const result = await repo.findByUsername('USER@EXAMPLE.COM');
+			const [result] = await repo.searchByUsernameExactMatch('USER@EXAMPLE.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
@@ -137,15 +127,13 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			let result: Account[];
+			let [accounts] = await repo.searchByUsernameExactMatch('USER@example.COM');
+			expect(accounts).toHaveLength(1);
+			expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 
-			result = await repo.findByUsername('USER@example.COM');
-			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
-
-			result = await repo.findByUsername('user@example.com');
-			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+			[accounts] = await repo.searchByUsernameExactMatch('user@example.com');
+			expect(accounts).toHaveLength(1);
+			expect(accounts[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
 		it('should not find by wildcard', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
@@ -153,13 +141,11 @@ describe('account repo', () => {
 			await em.persistAndFlush([account]);
 			em.clear();
 
-			let result: Account[];
+			let [accounts] = await repo.searchByUsernameExactMatch('USER@EXAMPLECCOM');
+			expect(accounts).toHaveLength(0);
 
-			result = await repo.findByUsername('USER@EXAMPLECCOM');
-			expect(result).toHaveLength(0);
-
-			result = await repo.findByUsername('.*');
-			expect(result).toHaveLength(0);
+			[accounts] = await repo.searchByUsernameExactMatch('.*');
+			expect(accounts).toHaveLength(0);
 		});
 	});
 });

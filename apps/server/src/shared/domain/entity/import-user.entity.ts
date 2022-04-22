@@ -1,9 +1,7 @@
-import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
-
 import { System } from './system.entity';
-
 import type { User } from './user.entity';
 
 export interface IImportUserProperties {

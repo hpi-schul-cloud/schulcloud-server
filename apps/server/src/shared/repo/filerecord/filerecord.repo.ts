@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
 
 import { Counted, EntityId, FileRecord, IFindOptions, SortOrder } from '@shared/domain';
 
 import { FileRecordScope } from './filerecord-scope';
+import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class FileRecordRepo {
-	constructor(private readonly em: EntityManager) {}
+export class FileRecordRepo extends BaseRepo<FileRecord> {
+	get entityName() {
+		return FileRecord;
+	}
 
 	async findOneById(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(false);
@@ -21,14 +23,6 @@ export class FileRecordRepo {
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
-	}
-
-	async save(fileRecords: FileRecord | FileRecord[]): Promise<void> {
-		await this.em.persistAndFlush(fileRecords);
-	}
-
-	async delete(fileRecords: FileRecord | FileRecord[]): Promise<void> {
-		await this.em.removeAndFlush(fileRecords);
 	}
 
 	async findBySchoolIdAndParentId(
@@ -69,7 +63,7 @@ export class FileRecordRepo {
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
-		const [fileRecords, count] = await this.em.findAndCount(FileRecord, scope.query, {
+		const [fileRecords, count] = await this._em.findAndCount(FileRecord, scope.query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,
@@ -79,7 +73,7 @@ export class FileRecordRepo {
 	}
 
 	private async findOneOrFail(scope: FileRecordScope): Promise<FileRecord> {
-		const fileRecord = await this.em.findOneOrFail(FileRecord, scope.query);
+		const fileRecord = await this._em.findOneOrFail(FileRecord, scope.query);
 
 		return fileRecord;
 	}

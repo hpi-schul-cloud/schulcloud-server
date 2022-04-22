@@ -1,26 +1,23 @@
 import bcrypt from 'bcryptjs';
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { wrap } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
 	ForbiddenOperationError,
-	InvalidArgumentError,
-	UnauthorizedError,
 	ValidationError,
 } from '@shared/common/error';
 import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
 import { AccountRepo, UserRepo } from '@shared/repo';
 import {
-	AccountByIdBody,
+	AccountByIdBodyParams,
 	AccountByIdParams,
-	AccountByIdResponse,
+	AccountResponse,
 	AccountSearchListResponse,
 	AccountSearchType,
-	AccountSearchQuery,
-	AccountSearchResponse,
+	AccountSearchQueryParams,
 	PatchMyAccountParams,
 } from '../controller/dto';
+import { AccountResponseMapper } from '../mapper/account-response.mapper';
 
 type UserPreferences = {
 	// first login completed
@@ -40,45 +37,42 @@ export class AccountUc {
 	 *
 	 * @param currentUser the request user
 	 * @param query the request query
-	 * @throws {InvalidArgumentError}
-	 * @throws {UnauthorizedError}
+	 * @throws {ValidationError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQuery): Promise<AccountSearchListResponse> {
+	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
 
 		if (skip < 0) {
-			throw new InvalidArgumentError('Skip is less than 0.');
+			throw new ValidationError('Skip is less than 0.');
 		}
 		if (limit < 1) {
-			throw new InvalidArgumentError('Limit is less than 1.');
+			throw new ValidationError('Limit is less than 1.');
 		}
 		if (limit > 100) {
-			throw new InvalidArgumentError('Limit is greater than 100.');
+			throw new ValidationError('Limit is greater than 100.');
 		}
-		if (!((await this.isSuperhero(currentUser)) || (await this.isAdmin(currentUser)))) {
-			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
+		if (!(await this.isSuperhero(currentUser)) || (await this.isAdmin(currentUser))) {
+			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 
 		switch (query.type) {
 			case AccountSearchType.USER_ID:
 				// eslint-disable-next-line no-case-declarations
-				const account = await this.accountRepo.tryFindByUserId(query.value);
-				return account === undefined
+				const account = await this.accountRepo.findByUserId(query.value);
+				return account === null
 					? new AccountSearchListResponse([], 0, 0, 0)
-					: new AccountSearchListResponse([new AccountSearchResponse(account)], 1, 0, 1);
+					: new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
 			case AccountSearchType.USERNAME:
 				// eslint-disable-next-line no-case-declarations
-				const accounts = await this.accountRepo.searchByUsername(query.value);
+				const [accounts, total] = await this.accountRepo.searchByUsernamePartialMatch(query.value, skip, limit);
 				// eslint-disable-next-line no-case-declarations
-				const accountList = accounts
-					.map((tempAccount) => new AccountSearchResponse(tempAccount))
-					.sort((a, b) => (a.username > b.username ? 1 : -1))
-					.slice(skip, skip + limit);
-				return new AccountSearchListResponse(accountList, accounts.length, skip, limit);
+				const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
+				return new AccountSearchListResponse(accountList, total, skip, limit);
 			default:
-				throw new InvalidArgumentError('Invalid search type.');
+				throw new ValidationError('Invalid search type.');
 		}
 	}
 
@@ -87,15 +81,15 @@ export class AccountUc {
 	 *
 	 * @param currentUser the request user
 	 * @param params the request parameters
-	 * @throws {UnauthorizedError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
+	async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to search for accounts.');
+			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 		const account = await this.accountRepo.findById(params.id);
-		return new AccountByIdResponse(account);
+		return AccountResponseMapper.mapToResponse(account);
 	}
 
 	/**
@@ -104,26 +98,58 @@ export class AccountUc {
 	 * @param currentUser the request user
 	 * @param params the request parameters
 	 * @param body the request body
-	 * @throws {UnauthorizedError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
 	async updateAccountById(
 		currentUser: ICurrentUser,
 		params: AccountByIdParams,
-		body: AccountByIdBody
-	): Promise<AccountByIdResponse> {
-		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to update an account.');
+		body: AccountByIdBodyParams
+	): Promise<AccountResponse> {
+		const executingUser = await this.userRepo.findById(currentUser.userId, true);
+		const targetAccount = await this.accountRepo.findById(params.id);
+		const targetUser = await this.userRepo.findById(targetAccount.user.id, true);
+
+		let updateUser = false;
+		let updateAccount = false;
+
+		if (!this.hasPermissionsToUpdateAccount(executingUser, targetUser)) {
+			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
+		}
+		if (body.password !== undefined) {
+			targetAccount.password = await this.calcPasswordHash(body.password);
+			targetUser.forcePasswordChange = true;
+			updateUser = true;
+			updateAccount = true;
+		}
+		if (body.username !== undefined) {
+			const newMail = body.username.toLowerCase();
+			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
+			targetUser.email = newMail;
+			targetAccount.username = newMail;
+			updateUser = true;
+			updateAccount = true;
+		}
+		if (body.activated !== undefined) {
+			targetAccount.activated = body.activated;
+			updateAccount = true;
 		}
 
-		const account = await this.accountRepo.findById(params.id);
-		const user = await this.userRepo.findById(account.user.id);
-		body.password = await this.calcPasswordHash(body.password);
-		user.forcePasswordChange = true;
-		wrap(account).assign(body);
-		await this.accountRepo.update(account);
-		await this.userRepo.update(user);
-		return new AccountByIdResponse(account);
+		if (updateUser) {
+			try {
+				await this.userRepo.save(targetUser);
+			} catch (err) {
+				throw new EntityNotFoundError(User.name);
+			}
+		}
+		if (updateAccount) {
+			try {
+				await this.accountRepo.save(targetAccount);
+			} catch (err) {
+				throw new EntityNotFoundError(Account.name);
+			}
+		}
+		return AccountResponseMapper.mapToResponse(targetAccount);
 	}
 
 	/**
@@ -131,28 +157,27 @@ export class AccountUc {
 	 *
 	 * @param currentUser the request user
 	 * @param params the request parameters
-	 * @throws {UnauthorizedError}
+	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountByIdResponse> {
+	async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<AccountResponse> {
 		if (!(await this.isSuperhero(currentUser))) {
-			throw new UnauthorizedError('Current user is not authorized to delete an account.');
+			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
-		const account = await this.accountRepo.delete(params.id);
-		return new AccountByIdResponse(account);
+		const account = await this.accountRepo.findById(params.id);
+		await this.accountRepo.delete(account);
+		return AccountResponseMapper.mapToResponse(account);
 	}
 
 	/**
 	 * This method allows to update my (currentUser) account details.
 	 *
-	 * @param currentUser the current user
+	 * @param currentUserId the current user
 	 * @param params account details
 	 */
-	async updateMyAccount(currentUser: EntityId, params: PatchMyAccountParams) {
-		let account: Account;
-		try {
-			account = await this.accountRepo.findByUserId(currentUser);
-		} catch (err) {
+	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
+		const account = await this.accountRepo.findByUserId(currentUserId);
+		if (!account) {
 			throw new EntityNotFoundError('Account');
 		}
 
@@ -166,7 +191,7 @@ export class AccountUc {
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(currentUser, true);
+			user = await this.userRepo.findById(currentUserId, true);
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
@@ -207,14 +232,14 @@ export class AccountUc {
 
 		if (updateUser) {
 			try {
-				await this.userRepo.update(user);
+				await this.userRepo.save(user);
 			} catch (err) {
 				throw new EntityNotFoundError(User.name);
 			}
 		}
 		if (updateAccount) {
 			try {
-				await this.accountRepo.update(account);
+				await this.accountRepo.save(account);
 			} catch (err) {
 				throw new EntityNotFoundError(Account.name);
 			}
@@ -251,10 +276,9 @@ export class AccountUc {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
-		let account: Account;
-		try {
-			account = await this.accountRepo.findByUserId(userId);
-		} catch (err) {
+		const account = await this.accountRepo.findByUserId(userId);
+
+		if (!account) {
 			throw new EntityNotFoundError(Account.name);
 		}
 
@@ -270,59 +294,15 @@ export class AccountUc {
 
 		try {
 			account.password = await this.calcPasswordHash(password);
-			await this.accountRepo.update(account);
+			await this.accountRepo.save(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
 		}
 		try {
 			user.forcePasswordChange = false;
-			await this.userRepo.update(user);
+			await this.userRepo.save(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
-		}
-	}
-
-	/**
-	 * This method is used to administratively change a user's password.
-	 *
-	 * @param currentUserId the current user
-	 * @param targetUserId  the target user, whose password is changed
-	 * @param passwordNew the target user's new password
-	 */
-	async changePasswordForUser(currentUserId: EntityId, targetUserId: EntityId, passwordNew: string): Promise<void> {
-		// load user data
-		let targetAccount: Account;
-		let currentUser: User;
-		let targetUser: User;
-		try {
-			targetAccount = await this.accountRepo.findByUserId(targetUserId);
-		} catch (err) {
-			throw new EntityNotFoundError('Account');
-		}
-		try {
-			currentUser = await this.userRepo.findById(currentUserId, true);
-			targetUser = await this.userRepo.findById(targetUserId, true);
-		} catch (err) {
-			throw new EntityNotFoundError('User');
-		}
-
-		// check permission
-		if (!this.hasPermissionsToChangePassword(currentUser, targetUser)) {
-			throw new ForbiddenException("No permission to change this user's password");
-		}
-
-		// set user must change password on next login
-		try {
-			targetUser.forcePasswordChange = true;
-			await this.userRepo.update(targetUser);
-		} catch (err) {
-			throw new EntityNotFoundError('User');
-		}
-		try {
-			targetAccount.password = await this.calcPasswordHash(passwordNew);
-			await this.accountRepo.update(targetAccount);
-		} catch (err) {
-			throw new EntityNotFoundError('Account');
 		}
 	}
 
@@ -354,22 +334,22 @@ export class AccountUc {
 		);
 	}
 
-	private hasPermissionsToChangePassword(currentUser: User, targetUser: User) {
-		if (this.hasRole(currentUser, 'superhero')) {
+	private hasPermissionsToUpdateAccount(currentUser: User, targetUser: User) {
+		if (this.isDemoUser(currentUser) || this.isDemoUser(targetUser)) {
+			return false;
+		}
+		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
 		if (!(currentUser.school.id === targetUser.school.id)) {
 			return false;
 		}
-		if (this.isDemoUser(currentUser)) {
-			return false;
-		}
 
 		const permissionsToCheck: string[] = [];
-		if (this.hasRole(targetUser, 'student')) {
+		if (this.hasRole(targetUser, RoleName.STUDENT)) {
 			permissionsToCheck.push('STUDENT_EDIT');
 		}
-		if (this.hasRole(targetUser, 'teacher')) {
+		if (this.hasRole(targetUser, RoleName.TEACHER)) {
 			permissionsToCheck.push('TEACHER_EDIT');
 		}
 		if (permissionsToCheck.length === 0) {
@@ -389,9 +369,9 @@ export class AccountUc {
 	}
 
 	private async checkUniqueEmail(account: Account, user: User, email: string): Promise<void> {
-		const [foundUsers, foundAccounts] = await Promise.all([
+		const [foundUsers, [foundAccounts]] = await Promise.all([
 			this.userRepo.findByEmail(email),
-			this.accountRepo.findByUsername(email),
+			this.accountRepo.searchByUsernameExactMatch(email),
 		]);
 
 		if (
