@@ -3,21 +3,21 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { Role } from '../../shared/domain/entity/role.entity';
-import { PermissionService } from '../../shared/domain/service';
+import { BaseRule } from '.';
+import { Role } from '../entity/role.entity';
 
 describe('permissions.service', () => {
 	let orm: MikroORM;
-	let service: PermissionService;
+	let service: BaseRule;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [PermissionService],
+			providers: [BaseRule],
 		}).compile();
 
-		service = await module.get(PermissionService);
+		service = await module.get(BaseRule);
 	});
 
 	afterAll(async () => {

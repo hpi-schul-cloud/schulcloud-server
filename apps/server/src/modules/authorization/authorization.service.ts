@@ -1,66 +1,25 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, NewsTargetModel } from '@shared/domain';
-import { FeathersAuthProvider } from './feathers-auth.provider';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Actions, BaseRule, Course, CourseRule, IEntity, Task, TaskRule, User } from '@shared/domain';
+
+// TODO move to authorization module
 
 @Injectable()
-export class AuthorizationService {
-	constructor(private feathersAuthProvider: FeathersAuthProvider) {}
-
-	/**
-	 * Get all permissions a user has for a specific entity
-	 * @param userId
-	 * @param targetModel
-	 * @param targetId
-	 * @returns The list of entity permissions for the user
-	 */
-	async getEntityPermissions(userId: EntityId, targetModel: NewsTargetModel, targetId: EntityId): Promise<string[]> {
-		const permissions =
-			targetModel === NewsTargetModel.School
-				? await this.feathersAuthProvider.getUserSchoolPermissions(userId, targetId)
-				: await this.feathersAuthProvider.getUserTargetPermissions(userId, targetModel, targetId);
-		return permissions;
+export class AuthorizationService extends BaseRule {
+	constructor(private readonly courseRule: CourseRule, private readonly taskRule: TaskRule) {
+		super();
 	}
 
-	/**
-	 * Ensure that a user has sufficient permissions for a specific entity
-	 * @param userId
-	 * @param targetModel
-	 * @param targetId
-	 * @param permissions
-	 * @throws UnauthorizedException if the permissions are not satisfied
-	 */
-	async checkEntityPermissions(
-		userId: EntityId,
-		targetModel: NewsTargetModel,
-		targetId: EntityId,
-		permissions: string[]
-	): Promise<void> {
-		if (!Array.isArray(permissions) || permissions.length === 0)
-			throw new UnauthorizedException('missing at least one permission to be checked');
-		const entityPermissions = await this.getEntityPermissions(userId, targetModel, targetId);
-		const hasPermissions = permissions.every((p) => entityPermissions.includes(p));
-		if (!hasPermissions) {
-			throw new UnauthorizedException('Insufficient permissions');
+	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
+		let permission = false;
+
+		if (entity instanceof Task) {
+			permission = this.taskRule.hasPermission(user, entity, action);
+		} else if (entity instanceof Course) {
+			permission = this.courseRule.hasPermission(user, entity, action);
+		} else {
+			throw new NotImplementedException('RULE_NOT_IMPLEMENT');
 		}
-	}
 
-	/**
-	 * Get all entities for which a user has specific permissions
-	 * @param userId
-	 * @param targetModel
-	 * @param permissions
-	 * @returns The list of ids of all entities that satisfy the provided permissions for the user
-	 */
-	async getPermittedEntities(
-		userId: EntityId,
-		targetModel: NewsTargetModel,
-		permissions: string[]
-	): Promise<EntityId[]> {
-		const entitiyIds =
-			targetModel === NewsTargetModel.School
-				? await this.feathersAuthProvider.getPermittedSchools(userId)
-				: await this.feathersAuthProvider.getPermittedTargets(userId, targetModel, permissions);
-
-		return entitiyIds;
+		return permission;
 	}
 }
