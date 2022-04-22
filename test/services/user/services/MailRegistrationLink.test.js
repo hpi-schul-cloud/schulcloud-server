@@ -23,7 +23,7 @@ describe('MailRegistrationLinkService', () => {
 		expect(mailRegistrationLinkService).to.not.equal(undefined);
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-5127
+	// https://ticketsystem.dbildungscloud.de/browse/SC-5127
 	xit('student can not create', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
@@ -38,7 +38,7 @@ describe('MailRegistrationLinkService', () => {
 		}
 	});
 
-	// https://ticketsystem.schul-cloud.org/browse/SC-5127
+	// https://ticketsystem.dbildungscloud.de/browse/SC-5127
 	xit('teacher can not create', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);

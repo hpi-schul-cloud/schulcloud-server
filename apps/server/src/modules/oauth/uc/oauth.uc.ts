@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ILogger, Logger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
-import jwtDecode from 'jwt-decode';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo';
 import { System, User } from '@shared/domain';
@@ -9,6 +8,8 @@ import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.pro
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { lastValueFrom } from 'rxjs';
 import QueryString from 'qs';
+import jwt from 'jsonwebtoken';
+import JwksRsa from 'jwks-rsa';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
@@ -30,23 +31,26 @@ export class OauthUc {
 		this.logger = new Logger(OauthUc.name);
 	}
 
-	// 0- start Oauth Process
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		// get the authorization code
 		const code: string = this.checkAuthorizationCode(query);
-		// get the Tokens using the authorization code
-		const queryToken: OauthTokenResponse = await this.requestToken(code, systemId);
-		// extract the uuid from the token
-		const uuid = this.decodeToken(queryToken.id_token);
-		// get the user using the uuid
+
+		const system: System = await this.systemRepo.findById(systemId);
+
+		const queryToken: OauthTokenResponse = await this.requestToken(code, system);
+
+		const decodedToken: IJWT = await this.validateToken(queryToken.id_token, system);
+
+		const uuid: string = this.extractUUID(decodedToken);
+
 		const user: User = await this.findUserById(uuid, systemId);
-		// create JWT for the user
-		const jwt: string = await this.getJWTForUser(user);
-		// send response back
+
+		const jwtResponse: string = await this.getJWTForUser(user);
+
 		const response: OAuthResponse = new OAuthResponse();
-		response.jwt = jwt;
+		response.jwt = jwtResponse;
 		response.idToken = queryToken.id_token;
-		response.logoutEndpoint = (await this.systemRepo.findById(systemId)).oauthConfig.logoutEndpoint;
+		response.logoutEndpoint = system.oauthConfig.logoutEndpoint;
+
 		return response;
 	}
 
@@ -64,16 +68,13 @@ export class OauthUc {
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
-	// 1- use Authorization Code to get a valid Token
-	async requestToken(code: string, systemId: string): Promise<OauthTokenResponse> {
-		const system: System = await this.systemRepo.findById(systemId);
+	async requestToken(code: string, system: System): Promise<OauthTokenResponse> {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			system,
 			decryptedClientSecret,
 			code
 		);
-
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
 			tokenRequestPayload.tokenEndpoint,
 			QueryString.stringify(tokenRequestPayload.tokenRequestParams),
@@ -84,22 +85,37 @@ export class OauthUc {
 				},
 			}
 		);
-
 		const responseToken = await lastValueFrom(responseTokenObservable);
 		return responseToken.data;
 	}
 
-	// 2- decode the Token to extract the UUID
-	decodeToken(token: string): string {
-		const decodedJwt: IJWT = jwtDecode(token);
+	async _getPublicKey(system: System): Promise<string> {
+		const client: JwksRsa.JwksClient = JwksRsa({
+			cache: true,
+			jwksUri: system.oauthConfig.jwksEndpoint,
+		});
+		const key: JwksRsa.SigningKey = await client.getSigningKey();
+		return key.getPublicKey();
+	}
+
+	async validateToken(idToken: string, system: System): Promise<IJWT> {
+		const publicKey = await this._getPublicKey(system);
+		const verifiedJWT = jwt.verify(idToken, publicKey, {
+			algorithms: ['RS256'],
+			issuer: system.oauthConfig.issuer,
+			audience: system.oauthConfig.clientId,
+		});
+		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
+			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
+		return verifiedJWT as IJWT;
+	}
+
+	extractUUID(decodedJwt: IJWT): string {
 		if (!decodedJwt || !decodedJwt.uuid) throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
 		const { uuid } = decodedJwt;
 		return uuid;
 	}
 
-	// 1.1- Token Validation? (later)
-
-	// 3- get user using the UUID (userHelpers.js?)
 	async findUserById(uuid: string, systemId: string): Promise<User> {
 		let user: User;
 		try {
@@ -110,12 +126,9 @@ export class OauthUc {
 		return user;
 	}
 
-	// 3.1- User bestätigen?
-
-	// 4- JWT erzeugen (oder finden)
 	async getJWTForUser(user: User): Promise<string> {
-		const jwt: string = await this.jwtService.generateJwt(user.id);
-		return jwt;
+		const jwtResponse: string = await this.jwtService.generateJwt(user.id);
+		return jwtResponse;
 	}
 }
 

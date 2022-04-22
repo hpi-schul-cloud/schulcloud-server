@@ -13,9 +13,23 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { of } from 'rxjs';
 import { NotFoundException } from '@nestjs/common';
+import jwt from 'jsonwebtoken';
 import { OauthUc } from '.';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+
+jest.mock('jwks-rsa', () => {
+	return () => ({
+		getKeys: jest.fn(),
+		getSigningKey: jest.fn().mockResolvedValue({
+			kid: 'kid',
+			alg: 'alg',
+			getPublicKey: jest.fn().mockReturnValue('publicKey'),
+			rsaPublicKey: 'publicKey',
+		}),
+		getSigningKeys: jest.fn(),
+	});
+});
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
@@ -131,7 +145,8 @@ describe('OAuthUc', () => {
 
 	describe('startOauth', () => {
 		it('should extract query to code as string', async () => {
-			const response = await service.startOauth(defaultQuery, '1234');
+			jest.spyOn(service, 'validateToken').mockResolvedValue({ uuid: '123' });
+			const response = await service.startOauth(defaultQuery, defaultSystemId);
 			expect(response).toEqual({ jwt: defaultJWT, idToken: defaultJWT, logoutEndpoint: 'mock_logoutEndpoint' });
 		});
 	});
@@ -157,24 +172,54 @@ describe('OAuthUc', () => {
 			}).toThrow(OAuthSSOError);
 		});
 	});
+
 	describe('requestToken', () => {
 		it('should get token from the external server', async () => {
 			const defaultSystem = systemFactory.build();
-			const responseToken = await service.requestToken(defaultAuthCode, defaultSystem.id);
-			expect(systemRepo.findById).toBeCalledWith(defaultSystem.id);
+			const responseToken = await service.requestToken(defaultAuthCode, defaultSystem);
 			expect(responseToken).toStrictEqual(defaultTokenResponse);
 		});
 	});
 
-	describe('decodeToken', () => {
+	describe('_getPublicKey', () => {
+		it('should get public key from the external server', async () => {
+			const defaultSystem = systemFactory.build();
+			const publicKey = await service._getPublicKey(defaultSystem);
+			expect(publicKey).toStrictEqual('publicKey');
+		});
+	});
+
+	describe('validateToken', () => {
+		it('should validate id_token and return it decoded', async () => {
+			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+				return { uuid: '123456' };
+			});
+			const defaultSystem = systemFactory.build();
+			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
+			const decodedJwt = await service.validateToken(defaultJWT, defaultSystem);
+			expect(decodedJwt.uuid).toStrictEqual('123456');
+		});
+		it('should throw an error', async () => {
+			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+				return 'string';
+			});
+			const defaultSystem = systemFactory.build();
+			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
+			await expect(service.validateToken(defaultJWT, defaultSystem)).rejects.toEqual(
+				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
+			);
+		});
+	});
+
+	describe('extractUUID', () => {
 		it('should get uuid from id_token', () => {
-			const uuid: string = service.decodeToken(defaultJWT);
+			const uuid: string = service.extractUUID({ uuid: '123' });
 			expect(uuid).toStrictEqual('123');
 		});
 
 		it('should throw an error for id_token that does not exist an uuid', () => {
 			expect(() => {
-				const uuid: string = service.decodeToken(wrongJWT);
+				const uuid: string = service.extractUUID({ uuid: '' });
 				return uuid;
 			}).toThrow(OAuthSSOError);
 		});
@@ -197,9 +242,9 @@ describe('OAuthUc', () => {
 	describe('getJWTForUser', () => {
 		it('should return a JWT for a user', async () => {
 			const resolveJWTSpy = jest.spyOn(jwtService, 'generateJwt');
-			const jwt = await service.getJWTForUser(defaultUser);
+			const jwtResult = await service.getJWTForUser(defaultUser);
 			expect(resolveJWTSpy).toHaveBeenCalled();
-			expect(jwt).toStrictEqual(defaultJWT);
+			expect(jwtResult).toStrictEqual(defaultJWT);
 		});
 	});
 });
