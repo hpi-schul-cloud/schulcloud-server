@@ -249,7 +249,7 @@ export class AccountUc {
 			return false;
 		}
 
-		return this.permissionService.hasAllPermissions(currentUser, permissionsToCheck);
+		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
 	}
 
 	private calcPasswordHash(password: string): Promise<string> {
