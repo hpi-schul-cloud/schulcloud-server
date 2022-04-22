@@ -281,7 +281,7 @@ const setDefaultStudentListPermission = async (hook) => {
 		hook.data.permissions.teacher = hook.data.permissions.teacher || {};
 		hook.data.permissions.teacher.STUDENT_LIST = true;
 	}
-	return Promise.resolve(hook);
+	return hook;
 };
 
 const preventSystemsChange = async (context) => {
