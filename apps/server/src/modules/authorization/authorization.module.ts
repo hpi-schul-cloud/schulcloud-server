@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { FeathersModule } from '@shared/infra/feathers';
-import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
+import { FeathersAuthorizationService } from './feathers-authorization.service';
 import { FeathersJwtProvider } from './feathers-jwt.provider';
 
 @Module({
 	imports: [FeathersModule],
-	providers: [AuthorizationService, FeathersAuthProvider, FeathersJwtProvider],
-	exports: [AuthorizationService, FeathersJwtProvider],
+	providers: [FeathersAuthorizationService, FeathersAuthProvider, FeathersJwtProvider],
+	exports: [FeathersAuthorizationService, FeathersJwtProvider],
 })
 export class AuthorizationModule {}

@@ -1,13 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { LoggerModule } from '@src/core/logger';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UnauthorizedException } from '@nestjs/common';
-import { NewsTargetModel, ICreateNews } from '@shared/domain';
-
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ICreateNews, NewsTargetModel } from '@shared/domain';
 import { NewsRepo } from '@shared/repo';
-import { courseNewsFactory } from '@shared/testing';
+import { LoggerModule } from '@src/core/logger';
+import { FeathersAuthorizationService } from '@src/modules/authorization/authorization.service';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -66,7 +64,7 @@ describe('NewsUc', () => {
 					},
 				},
 				{
-					provide: AuthorizationService,
+					provide: FeathersAuthorizationService,
 					useValue: {
 						checkEntityPermissions(user) {
 							if (userId !== user) {
