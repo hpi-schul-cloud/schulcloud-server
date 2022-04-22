@@ -4,4 +4,5 @@ export interface CopyQueueServiceOptions {
 
 export enum CopyQueueRoutingKeys {
 	COURSE = 'course',
+	LESSON = 'lesson',
 }

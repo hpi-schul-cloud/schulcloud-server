@@ -1,6 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain/entity/course.entity';
+import { Course, Lesson } from '@shared/domain';
+import { OperationStatus } from '@shared/domain/entity/operation-status.entity';
 import { CopyQueueRoutingKeys, CopyQueueServiceOptions } from './copy-queue.interface';
 
 @Injectable()
@@ -10,7 +11,21 @@ export class CopyQueueService {
 		@Inject('COPY_QUEUE_OPTIONS') private readonly options: CopyQueueServiceOptions
 	) {}
 
-	public async copyCourse(course: Course): Promise<void> {
-		await this.amqpConnection.publish(this.options.exchange, CopyQueueRoutingKeys.COURSE, course, { persistent: true });
+	public async copyCourse(course: Course, operation: OperationStatus): Promise<void> {
+		await this.amqpConnection.publish(
+			this.options.exchange,
+			CopyQueueRoutingKeys.COURSE,
+			{ course, operation },
+			{ persistent: true }
+		);
+	}
+
+	public async copyLesson(lesson: Lesson, operation: OperationStatus): Promise<void> {
+		await this.amqpConnection.publish(
+			this.options.exchange,
+			CopyQueueRoutingKeys.LESSON,
+			{ lesson, operation },
+			{ persistent: true }
+		);
 	}
 }
