@@ -962,14 +962,16 @@ describe('TaskUC', () => {
 			taskRepo.save.mockResolvedValue();
 		});
 
-		it.skip('should check for permission to finish the task', async () => {
+		it('should check for permission to finish the task', async () => {
+			const spy = jest.spyOn(authorizationService, 'hasPermission');
 			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(authorizationService.hasPermission).toBeCalledWith(user, task, Actions.read);
+			expect(spy).toBeCalledWith(user, task, Actions.read);
 		});
 
 		it('should throw UnauthorizedException when not permitted', async () => {
 			const user2 = userFactory.buildWithId();
 			task = taskFactory.buildWithId({ creator: user2 });
+			taskRepo.findById.mockResolvedValue(task);
 			await expect(async () => {
 				await service.changeFinishedForUser(user.id, task.id, true);
 			}).rejects.toThrow(UnauthorizedException);
@@ -1000,7 +1002,8 @@ describe('TaskUC', () => {
 
 		describe('with teacherDashboard permission', () => {
 			beforeEach(() => {
-				user = userFactory.buildWithId();
+				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
+				user = setupUser(permissions);
 				task = taskFactory.buildWithId({ creator: user });
 				userRepo.findById.mockResolvedValue(user);
 				taskRepo.findById.mockResolvedValue(task);
