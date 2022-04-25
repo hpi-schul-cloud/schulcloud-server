@@ -107,7 +107,9 @@ describe('[ImportUserModule]', () => {
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-				const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+				const permissionServiceSpy = jest
+					.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+					.mockReturnValue();
 				const importUserRepoFindImportUsersSpy = jest
 					.spyOn(importUserRepo, 'findImportUsers')
 					.mockResolvedValueOnce([[], 0]);
@@ -127,7 +129,9 @@ describe('[ImportUserModule]', () => {
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-				const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+				const permissionServiceSpy = jest
+					.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+					.mockReturnValue();
 				const userRepoFindUnmatchedSpy = jest.spyOn(userRepo, 'findWithoutImportUser').mockResolvedValueOnce([[], 0]);
 				const query = {};
 				const [result, count] = await uc.findAllUnmatchedUsers(user.id, query);
@@ -148,7 +152,9 @@ describe('[ImportUserModule]', () => {
 					const user = userFactory.buildWithId();
 					const importUser = importUserFactory.buildWithId({ school });
 					const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-					const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+					const permissionServiceSpy = jest
+						.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+						.mockReturnValue();
 					const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 					const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
 
@@ -174,7 +180,9 @@ describe('[ImportUserModule]', () => {
 							.mockResolvedValueOnce(currentUser)
 							.mockResolvedValueOnce(usermatch);
 
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserRepoHasMatchdSpy = jest.spyOn(importUserRepo, 'hasMatch').mockResolvedValueOnce(null);
 
@@ -212,7 +220,9 @@ describe('[ImportUserModule]', () => {
 							.mockResolvedValueOnce(currentUser)
 							.mockResolvedValueOnce(usermatch);
 
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const otherImportUser = importUserFactory.buildWithId();
 						const importUserRepoHasMatchdSpy = jest
@@ -253,7 +263,9 @@ describe('[ImportUserModule]', () => {
 						const user = userFactory.buildWithId();
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
 
@@ -273,7 +285,9 @@ describe('[ImportUserModule]', () => {
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
 
@@ -294,7 +308,9 @@ describe('[ImportUserModule]', () => {
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
 
@@ -322,7 +338,9 @@ describe('[ImportUserModule]', () => {
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, user).buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
 
@@ -350,7 +368,9 @@ describe('[ImportUserModule]', () => {
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, usermatch).buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
-						const permissionServiceSpy = jest.spyOn(permissionService, 'checkAllPermissions').mockReturnValue();
+						const permissionServiceSpy = jest
+							.spyOn(permissionService, 'checkUserHasAllSchoolPermissions')
+							.mockReturnValue();
 						const importUserRepoFindByIdSpy = jest.spyOn(importUserRepo, 'findById').mockResolvedValueOnce(importUser);
 						const importUserSaveSpy = jest.spyOn(importUserRepo, 'save').mockResolvedValueOnce();
 
@@ -422,7 +442,7 @@ describe('[ImportUserModule]', () => {
 				});
 				userRepoByIdSpy = userRepo.findById.mockResolvedValue(currentUser);
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
-				permissionServiceSpy = permissionService.checkAllPermissions.mockReturnValue();
+				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
 				accountRepoFindByUserIdSpy = accountRepo.findOneByUser.mockResolvedValue(account);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
@@ -512,7 +532,7 @@ describe('[ImportUserModule]', () => {
 				school.officialSchoolNumber = 'foo';
 				currentUser = userFactory.buildWithId({ school });
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
-				permissionServiceSpy = permissionService.checkAllPermissions.mockReturnValue();
+				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
 				setConfig(system.id);
@@ -572,7 +592,7 @@ describe('[ImportUserModule]', () => {
 				currentUser = userFactory.buildWithId({ school });
 
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
-				permissionServiceSpy = permissionService.checkAllPermissions.mockReturnValue();
+				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValue(Promise.resolve());
 			});
 			afterEach(() => {

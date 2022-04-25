@@ -2,22 +2,23 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ALL_RULES } from '@shared/domain';
+import { Role } from '@shared/domain/entity/role.entity';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { Role } from '../../shared/domain/entity/role.entity';
-import { PermissionService } from '../../shared/domain/service';
+import { AuthorizationService } from './authorization.service';
 
 describe('permissions.service', () => {
 	let orm: MikroORM;
-	let service: PermissionService;
+	let service: AuthorizationService;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [PermissionService],
+			providers: [AuthorizationService, ...ALL_RULES],
 		}).compile();
 
-		service = await module.get(PermissionService);
+		service = await module.get(AuthorizationService);
 	});
 
 	afterAll(async () => {
