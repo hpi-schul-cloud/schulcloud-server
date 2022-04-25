@@ -14,14 +14,13 @@ export class AccountRepo extends BaseRepo<Account> {
 	/**
 	 * Finds an account by user id.
 	 * @param userId the user id
-	 * @throws {EntityNotFoundError}
 	 */
 	async findByUserId(userId: EntityId): Promise<Account | null> {
 		return this._em.findOne(Account, { user: userId });
 	}
 
-	async findOneByUser(user: User): Promise<Account | null> {
-		return this.findByUserId(user.id);
+	async findOneByUser(user: User): Promise<Account> {
+		return this._em.findOneOrFail(Account, { user: user.id });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
