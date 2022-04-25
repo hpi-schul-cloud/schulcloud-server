@@ -48,7 +48,8 @@ describe('account repo', () => {
 			await em.persistAndFlush(accountToFind);
 			em.clear();
 			const account = await repo.findByUserId(accountToFind.user.id);
-			expect(account.id).toEqual(accountToFind.id);
+			expect(account).toBeDefined();
+			expect(account?.id).toEqual(accountToFind.id);
 		});
 	});
 

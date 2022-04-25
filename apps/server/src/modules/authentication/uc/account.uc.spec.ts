@@ -635,15 +635,6 @@ describe('AccountUc', () => {
 			expect(accounts.total).toBeGreaterThan(1);
 			expect(accounts.data.length).toBeGreaterThan(1);
 		});
-		// Todo how do we test this, or should we test this behavior?
-		// Todo should this test go into an integration test?
-		it('should return an empty list, if skip is to large', async () => {
-			const accounts = await accountUc.searchAccounts(
-				{ userId: mockSuperheroUser.id } as ICurrentUser,
-				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQueryParams
-			);
-			expect(accounts.data).toStrictEqual([]);
-		});
 		it('should throw, if skip is smaller than 0', async () => {
 			await expect(
 				accountUc.searchAccounts(
