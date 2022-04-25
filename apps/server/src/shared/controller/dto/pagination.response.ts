@@ -7,15 +7,15 @@ export abstract class PaginationResponse<T> {
 		this.limit = limit;
 	}
 
-	@ApiProperty()
+	@ApiProperty({ description: 'The items for the current page.' })
 	abstract data: T;
 
-	@ApiProperty({ type: 'number' })
+	@ApiProperty({ description: 'The total amount of items.', type: 'number' })
 	total: number;
 
-	@ApiProperty({ type: 'number' })
+	@ApiProperty({ description: 'The amount of items skipped from the start.', type: 'number' })
 	skip?: number;
 
-	@ApiProperty({ type: 'number' })
+	@ApiProperty({ description: 'The page size of the response.', type: 'number' })
 	limit?: number;
 }
