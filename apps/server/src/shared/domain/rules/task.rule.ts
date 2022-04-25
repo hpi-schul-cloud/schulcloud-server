@@ -4,11 +4,6 @@ import { Actions } from './actions.enum';
 import { BaseRule } from './base.rule';
 import { CourseRule } from './course.rule';
 
-export enum TaskDashBoardPermission {
-	teacherDashboard = 'TASK_DASHBOARD_TEACHER_VIEW_V3',
-	studentDashboard = 'TASK_DASHBOARD_VIEW_V3',
-}
-
 @Injectable()
 export class TaskRule extends BaseRule {
 	constructor(private readonly courseRule: CourseRule) {
