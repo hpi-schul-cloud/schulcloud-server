@@ -20,8 +20,7 @@ import {
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
-
-	@Get()
+	/*
 	// TODO Do we still need this?
 	@Patch(':id/pw')
 	@ApiOperation({ summary: 'Updates the password of an account with given id.' })
@@ -37,8 +36,10 @@ export class AccountController {
 	): Promise<void> {
 		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
 	}
+*/
 
 	// TODO Is this for superheros AND admins or just for superheros?
+	@Get()
 	@ApiOperation({
 		summary: 'Returns all accounts which satisfies the given criteria. Superhero or administrator role is REQUIRED.',
 	})
