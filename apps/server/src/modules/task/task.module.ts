@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PermissionService } from '@shared/domain';
-
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-
+import { AuthorizationModule } from '../authorization';
 import { TaskController } from './controller/task.controller';
 import { TaskUC } from './uc';
-import { TaskAuthorizationService } from './uc/task.authorization.service';
 
 @Module({
-	imports: [],
+	imports: [AuthorizationModule],
 	controllers: [TaskController],
-	providers: [TaskUC, TaskRepo, TaskAuthorizationService, LessonRepo, CourseRepo, UserRepo, PermissionService],
+	providers: [TaskUC, TaskRepo, LessonRepo, CourseRepo, UserRepo],
 })
 export class TaskModule {}
