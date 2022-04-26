@@ -10,12 +10,13 @@ import { IEntity } from '../interface';
 import { Actions } from './actions.enum';
 
 class TestRule extends BaseRule {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
 		throw new Error('Method not implemented.');
 	}
 }
 
-describe('permissions.service', () => {
+describe('base.rule', () => {
 	let orm: MikroORM;
 	let service: BaseRule;
 
