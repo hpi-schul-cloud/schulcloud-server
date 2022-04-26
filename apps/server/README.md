@@ -28,7 +28,7 @@ docker run \
   quay.io/minio/minio server /data --console-address ":9001"
 ```
 
-5. Have Keycloak (IAM Provider) run [currently not needed, but will be mandatory in the future]. For more information look [here](./doc/keycloak.md).
+5. Have Keycloak (IAM Provider) run [currently not needed, but will be mandatory in the future]. For more information look [here](./nestjs-application/keycloak.html).
 
 ```bash
 docker run \
