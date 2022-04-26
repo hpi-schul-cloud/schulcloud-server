@@ -1,13 +1,13 @@
+import { MikroORM } from '@mikro-orm/core';
+import { BadRequestException } from '@nestjs/common';
 import {
-	taskBoardElementFactory,
-	lessonBoardElementFactory,
 	boardFactory,
-	taskFactory,
+	lessonBoardElementFactory,
 	lessonFactory,
 	setupEntities,
+	taskBoardElementFactory,
+	taskFactory,
 } from '@shared/testing';
-import { BadRequestException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
 
 describe('Board Entity', () => {
 	let orm: MikroORM;
@@ -124,6 +124,17 @@ describe('Board Entity', () => {
 
 			expect(board.references.count()).toEqual(1);
 		});
+
+		it('should add new tasks to the beginning of the list', () => {
+			const task = taskFactory.buildWithId();
+			const existingTask = taskFactory.buildWithId();
+			const taskElement = taskBoardElementFactory.buildWithId({ target: existingTask });
+			const board = boardFactory.buildWithId({ references: [taskElement] });
+
+			board.syncTasksFromList([existingTask, task]);
+
+			expect(board.references[0].target.id).toEqual(task.id);
+		});
 	});
 
 	describe('syncLessonsFromList', () => {
@@ -164,6 +175,17 @@ describe('Board Entity', () => {
 			board.syncLessonsFromList([lesson]);
 
 			expect(board.references.count()).toEqual(1);
+		});
+
+		it('should add new lessons to the beginning of the list', () => {
+			const lesson = lessonFactory.buildWithId();
+			const existinglesson = lessonFactory.buildWithId();
+			const lessonElement = lessonBoardElementFactory.buildWithId({ target: existinglesson });
+			const board = boardFactory.buildWithId({ references: [lessonElement] });
+
+			board.syncLessonsFromList([existinglesson, lesson]);
+
+			expect(board.references[0].target.id).toEqual(lesson.id);
 		});
 	});
 });
