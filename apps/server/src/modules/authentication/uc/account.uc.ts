@@ -176,10 +176,14 @@ export class AccountUc {
 	 * @param params account details
 	 */
 	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
-		const account = await this.accountRepo.findByUserId(currentUserId);
-		if (!account) {
-			throw new EntityNotFoundError('Account');
+		let user: User;
+		try {
+			user = await this.userRepo.findById(currentUserId, true);
+		} catch (err) {
+			throw new EntityNotFoundError('User');
 		}
+
+		const account = await this.accountRepo.findOneByUser(user);
 
 		if (account.system) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
@@ -187,13 +191,6 @@ export class AccountUc {
 
 		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
-		}
-
-		let user: User;
-		try {
-			user = await this.userRepo.findById(currentUserId, true);
-		} catch (err) {
-			throw new EntityNotFoundError('User');
 		}
 
 		if (this.isDemoUser(user)) {
@@ -276,11 +273,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
-		const account = await this.accountRepo.findByUserId(userId);
-
-		if (!account) {
-			throw new EntityNotFoundError(Account.name);
-		}
+		const account = await this.accountRepo.findOneByUser(user);
 
 		if (account.system) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
