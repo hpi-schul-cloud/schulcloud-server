@@ -1,8 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Actions, BaseRule, Course, CourseRule, IEntity, Task, TaskRule, User } from '@shared/domain';
 
-// TODO move to authorization module
-
 @Injectable()
 export class AuthorizationService extends BaseRule {
 	constructor(private readonly courseRule: CourseRule, private readonly taskRule: TaskRule) {

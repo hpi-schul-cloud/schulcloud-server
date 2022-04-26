@@ -5,7 +5,7 @@ import { EntityId, NewsTargetModel } from '@shared/domain';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
 
-describe('AuthorizationService', () => {
+describe('FeatherAuthorizationService', () => {
 	let service: FeathersAuthorizationService;
 	let authProvider: FeathersAuthProvider;
 	const userId = new ObjectId().toHexString();

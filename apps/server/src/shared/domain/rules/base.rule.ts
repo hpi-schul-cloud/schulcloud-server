@@ -11,8 +11,6 @@ export abstract class BaseRule {
 	 * Recursively resolve all roles and permissions of a user.
 	 * IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.
 	 * Please make sure you populate them before calling this method.
-	 * @param user
-	 * @returns
 	 */
 	resolvePermissions(user: User): string[] {
 		if (!user.roles.isInitialized(true)) {
@@ -45,12 +43,6 @@ export abstract class BaseRule {
 		return permissions;
 	}
 
-	/**
-	 * Determines whether a user has all the rights specified in requiredPermissions
-	 * @param user
-	 * @param requiredPermissions
-	 * @returns boolean
-	 */
 	hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
@@ -61,9 +53,6 @@ export abstract class BaseRule {
 	}
 
 	/**
-	 * Determines whether a user has all the rights specified in requiredPermissions
-	 * @param user
-	 * @param requiredPermissions
 	 * @throws UnauthorizedException
 	 */
 	checkAllPermissions(user: User, requiredPermissions: string[]): void {
@@ -73,12 +62,6 @@ export abstract class BaseRule {
 		}
 	}
 
-	/**
-	 * Determines whether a user has at least one of the rights specified in requiredPermissions
-	 * @param user
-	 * @param requiredPermissions
-	 * @returns boolean
-	 */
 	hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
@@ -89,9 +72,6 @@ export abstract class BaseRule {
 	}
 
 	/**
-	 * Determines whether a user has at least one of the rights specified in requiredPermissions
-	 * @param user
-	 * @param requiredPermissions
 	 * @throws UnauthorizedException
 	 */
 	checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
@@ -128,20 +108,11 @@ export abstract class BaseRule {
 		return res;
 	}
 
-	/**
-	 * Determines whether a user has access to the specified entity with same scope.
-	 * @param user
-	 * @param entity
-	 * @returns boolean
-	 */
 	isSameSchool(user: User, entity: IEntityWithSchool) {
 		return user.school === entity.school;
 	}
 
 	/**
-	 * Determines whether a user has access to the specified entity with same scope.
-	 * @param user
-	 * @param entity
 	 * @throws UnauthorizedException
 	 */
 	checkSameSchool(user: User, entity: IEntityWithSchool) {
@@ -152,13 +123,8 @@ export abstract class BaseRule {
 	}
 
 	/**
-	 * Determines whether a user has a role
-	 *
 	 * Please not use role instead of permission. It is only for do something for target if it has the role xy.
 	 * For each other operations please define, use the string based permissions inside the roles.
-	 * @param user
-	 * @param roleName
-	 * @returns
 	 */
 	hasRole(user: User, roleName: string) {
 		if (!user.roles.isInitialized(true)) {
