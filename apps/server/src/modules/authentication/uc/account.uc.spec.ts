@@ -92,6 +92,17 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
+						findOneByUser: (user: User): Promise<Account> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === user.id);
+
+							if (account) {
+								return Promise.resolve(account);
+							}
+							if (user.id === 'accountWithoutUser') {
+								return Promise.resolve(mockStudentAccount);
+							}
+							throw new EntityNotFoundError(Account.name);
+						},
 						findById: (accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
