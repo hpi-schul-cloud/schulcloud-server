@@ -54,7 +54,7 @@ export class AccountUc {
 		if (limit > 100) {
 			throw new ValidationError('Limit is greater than 100.');
 		}
-		if (!(await this.isSuperhero(currentUser)) || (await this.isAdmin(currentUser))) {
+		if (!(await this.isSuperhero(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 

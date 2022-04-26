@@ -1,9 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query, ForbiddenException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError, UnauthorizedError } from '@shared/common';
-import { ParseObjectIdPipe } from '@shared/controller';
+import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { AccountUc } from '../uc/account.uc';
 import {
 	AccountByIdBodyParams,
@@ -20,31 +19,14 @@ import {
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountUc: AccountUc) {}
-	/*
-	// TODO Do we still need this?
-	@Patch(':id/pw')
-	@ApiOperation({ summary: 'Updates the password of an account with given id.' })
-	@ApiResponse({ status: 200, description: 'Updated password successfully.' })
-	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 401, type: UnauthorizedError, description: 'No JWT provided.' })
-	@ApiResponse({ status: 403, type: ForbiddenException, description: 'No permission to change the user password.' })
-	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account or user not found.' })
-	async changePassword(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id', ParseObjectIdPipe) userId: string,
-		@Body() { password }: ChangePasswordParams
-	): Promise<void> {
-		await this.accountUc.changePasswordForUser(currentUser.userId, userId, password);
-	}
-*/
 
 	@Get()
 	@ApiOperation({
-		summary: 'Returns all accounts which satisfies the given criteria. Superhero or administrator role is REQUIRED.',
+		summary: 'Returns all accounts which satisfies the given criteria. Superhero role is REQUIRED.',
 	})
 	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQueryParams
