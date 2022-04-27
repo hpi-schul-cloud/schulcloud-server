@@ -5,7 +5,7 @@ export interface IFileStorageConfig extends ICoreModuleConfig {}
 
 const config: IFileStorageConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
-	LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string[],
+	LOG_LEVEL: (Configuration.get('NEST_LOG_LEVEL') as string).split(','),
 };
 
 export default () => config;

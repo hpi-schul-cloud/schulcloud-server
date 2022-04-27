@@ -724,13 +724,8 @@
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
 		"NEST_LOG_LEVEL": {
-			"type": "array",
-			"uniqueItems": true,
-			"items": {
-				"type": "string",
-				"enum": ["log", "error", "warn", "debug", "verbose"]
-			},
-			"default": ["error"],
+			"type": "string",
+			"default": "error",
 			"description": "Nest Log level for api."
 		},
 		"SYSTEM_LOG_LEVEL": {
