@@ -54,7 +54,7 @@ export class AccountUc {
 		if (limit > 100) {
 			throw new ValidationError('Limit is greater than 100.');
 		}
-		if (!(await this.isSuperhero(currentUser))) {
+		if (!(await this.isSuperhero(currentUser)) && !(await this.isAdmin(currentUser))) {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 
@@ -331,7 +331,7 @@ export class AccountUc {
 		if (this.isDemoUser(currentUser) || this.isDemoUser(targetUser)) {
 			return false;
 		}
-		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
+		if (this.hasRole(currentUser, RoleName.SUPERHERO) || this.hasRole(currentUser, RoleName.ADMIN)) {
 			return true;
 		}
 		if (!(currentUser.school.id === targetUser.school.id)) {

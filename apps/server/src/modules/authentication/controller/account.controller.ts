@@ -22,11 +22,11 @@ export class AccountController {
 
 	@Get()
 	@ApiOperation({
-		summary: 'Returns all accounts which satisfies the given criteria. Superhero role is REQUIRED.',
+		summary: 'Returns all accounts which satisfies the given criteria. Superhero or administrator role is REQUIRED.',
 	})
 	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQueryParams
