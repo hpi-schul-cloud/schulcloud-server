@@ -55,7 +55,10 @@ export class AccountUc {
 			case AccountSearchType.USER_ID:
 				// eslint-disable-next-line no-case-declarations
 				const account = await this.accountService.findByUserId(query.value);
-				return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
+				if (account) {
+					return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
+				}
+				return new AccountSearchListResponse([], 0, 0, 0);
 			case AccountSearchType.USERNAME:
 				// eslint-disable-next-line no-case-declarations
 				const { accounts, total } = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
@@ -167,12 +170,7 @@ export class AccountUc {
 	 * @param params account details
 	 */
 	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
-		let account: AccountDto;
-		try {
-			account = await this.accountService.findByUserId(currentUserId);
-		} catch (err) {
-			throw new EntityNotFoundError('Account');
-		}
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
 
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
@@ -269,12 +267,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
-		let account: AccountDto;
-		try {
-			account = await this.accountService.findByUserId(userId);
-		} catch (err) {
-			throw new EntityNotFoundError(Account.name);
-		}
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
 
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');

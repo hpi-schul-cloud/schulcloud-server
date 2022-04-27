@@ -1,3 +1,4 @@
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
@@ -48,31 +49,24 @@ describe('account repo', () => {
 			await em.persistAndFlush(accountToFind);
 			em.clear();
 			const account = await repo.findByUserId(accountToFind.user.id);
-			expect(account.id).toEqual(accountToFind.id);
+			expect(account?.id).toEqual(accountToFind.id);
 		});
 	});
 
-	describe('findOneByUser', () => {
-		it('should find by User and return an account', async () => {
-			const user = userFactory.buildWithId();
-			const account = new Account({ username: 'Max Mustermann', user });
-			await repo.save(account);
+	describe('findByUserIdOrFail', () => {
+		it('should findByUserIdOrFail', async () => {
+			const accountToFind = accountFactory.build();
+			await em.persistAndFlush(accountToFind);
+			em.clear();
+			const account = await repo.findByUserIdOrFail(accountToFind.user.id);
+			expect(account?.id).toEqual(accountToFind.id);
+		});
 
-			const result = await repo.findOneByUser(user);
-			expect(result).toEqual(account);
-		});
-		it('should throw an error', async () => {
-			const user = userFactory.buildWithId();
-			await expect(repo.findOneByUser(user)).rejects.toThrowError();
-		});
-		it('should not respond with an account for wrong id given', async () => {
-			const user = userFactory.build();
-			const account = accountFactory.build();
-			const otherSchoolsImportUser = importUserFactory.build();
-			await em.persistAndFlush([user, account, otherSchoolsImportUser]);
-			await expect(async () => repo.findOneByUser({} as unknown as User)).rejects.toThrowError(
-				'Account not found ({ user: null })'
-			);
+		it('should findByUserIdOrFail', async () => {
+			const accountToFind = accountFactory.build();
+			await em.persistAndFlush(accountToFind);
+			em.clear();
+			await expect(repo.findByUserIdOrFail('Nonexistent-ID')).rejects.toThrow(NotFoundError);
 		});
 	});
 

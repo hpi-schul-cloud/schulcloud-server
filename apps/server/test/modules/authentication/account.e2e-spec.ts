@@ -94,7 +94,7 @@ describe('Account Controller (e2e)', () => {
 
 	describe('[PATCH] me/password', () => {
 		it(`should update the current user's (temporary) password`, async () => {
-			currentUser = mapUserToCurrentUser(studentAccount.user);
+			currentUser = mapUserToCurrentUser(studentAccount.user, studentAccount);
 			const params: PatchMyPasswordParams = {
 				password: 'Valid12$',
 				confirmPassword: 'Valid12$',
@@ -108,7 +108,7 @@ describe('Account Controller (e2e)', () => {
 			expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
 		});
 		it('should reject if new password is weak', async () => {
-			currentUser = mapUserToCurrentUser(studentAccount.user);
+			currentUser = mapUserToCurrentUser(studentAccount.user, studentAccount);
 			const params: PatchMyPasswordParams = {
 				password: 'weak',
 				confirmPassword: 'weak',
@@ -123,7 +123,7 @@ describe('Account Controller (e2e)', () => {
 	describe('[PATCH] me', () => {
 		it(`should update a users account`, async () => {
 			const newEmailValue = 'new@mail.com';
-			currentUser = mapUserToCurrentUser(studentAccount.user);
+			currentUser = mapUserToCurrentUser(studentAccount.user, studentAccount);
 			const params: PatchMyAccountParams = {
 				passwordOld: defaultPassword,
 				email: newEmailValue,
@@ -137,7 +137,7 @@ describe('Account Controller (e2e)', () => {
 		});
 
 		it('should reject if new email is not valid', async () => {
-			currentUser = mapUserToCurrentUser(studentAccount.user);
+			currentUser = mapUserToCurrentUser(studentAccount.user, studentAccount);
 			const params: PatchMyAccountParams = {
 				passwordOld: defaultPassword,
 				email: 'invalid',
@@ -151,7 +151,7 @@ describe('Account Controller (e2e)', () => {
 
 	describe('[GET]', () => {
 		it('should search for user id', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USER_ID,
 				value: studentAccount.user.id,
@@ -165,7 +165,7 @@ describe('Account Controller (e2e)', () => {
 				.expect(200);
 		});
 		it('should search for user name', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USERNAME,
 				value: '',
@@ -179,7 +179,7 @@ describe('Account Controller (e2e)', () => {
 				.expect(200);
 		});
 		it('should reject if type is unknown', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			const query: AccountSearchQueryParams = {
 				type: '' as AccountSearchType,
 				value: '',
@@ -193,7 +193,7 @@ describe('Account Controller (e2e)', () => {
 				.expect(400);
 		});
 		it('should reject if user is not authorized', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
+			currentUser = mapUserToCurrentUser(adminAccount.user, adminAccount);
 			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USERNAME,
 				value: '',
@@ -210,26 +210,26 @@ describe('Account Controller (e2e)', () => {
 
 	describe('[GET] :id', () => {
 		it('should return account for account id', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			await request(app.getHttpServer()) //
 				.get(`${basePath}/${studentAccount.id}`)
 				.expect(200);
 		});
 		it('should reject if id has invalid format', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			await request(app.getHttpServer()) //
 				.get(`${basePath}/qwerty`)
 				.send()
 				.expect(400);
 		});
 		it('should reject if user is not a authorized', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
+			currentUser = mapUserToCurrentUser(adminAccount.user, adminAccount);
 			await request(app.getHttpServer()) //
 				.get(`${basePath}/${studentAccount.id}`)
 				.expect(403);
 		});
 		it('should reject not existing account id', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			await request(app.getHttpServer()) //
 				.get(`${basePath}/000000000000000000000000`)
 				.expect(404);
@@ -238,7 +238,7 @@ describe('Account Controller (e2e)', () => {
 
 	describe('[PATCH] :id', () => {
 		it('should update account', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
 			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
@@ -250,7 +250,7 @@ describe('Account Controller (e2e)', () => {
 				.expect(200);
 		});
 		it('should reject if user is not authorized', async () => {
-			currentUser = mapUserToCurrentUser(studentAccount.user);
+			currentUser = mapUserToCurrentUser(studentAccount.user, studentAccount);
 			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
@@ -262,7 +262,7 @@ describe('Account Controller (e2e)', () => {
 				.expect(403);
 		});
 		it('should reject not existing account id', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, studentAccount);
 			const body: AccountByIdBodyParams = {
 				password: defaultPassword,
 				username: studentAccount.username,
@@ -277,25 +277,25 @@ describe('Account Controller (e2e)', () => {
 
 	describe('[DELETE] :id', () => {
 		it('should delete account', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, studentAccount);
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/${studentAccount.id}`)
 				.expect(200);
 		});
 		it('should reject invalid account id format', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, studentAccount);
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/qwerty`)
 				.expect(400);
 		});
 		it('should reject if user is not a authorized', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
+			currentUser = mapUserToCurrentUser(adminAccount.user, adminAccount);
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/${studentAccount.id}`)
 				.expect(403);
 		});
 		it('should reject not existing account id', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroAccount.user, studentAccount);
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/000000000000000000000000`)
 				.expect(404);

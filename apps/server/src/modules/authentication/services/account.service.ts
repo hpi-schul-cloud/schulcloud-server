@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Account, EntityId, User } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common';
+import { Account, EntityId } from '@shared/domain';
 import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountDto } from './dto/account.dto';
@@ -13,37 +14,53 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	async findByUserId(userId: EntityId): Promise<AccountDto> {
+	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async findOneByUser(user: User): Promise<AccountDto> {
-		const accountEntity = await this.accountRepo.findByUserId(user.id);
+	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
+		const accountEntity = await this.accountRepo.findByUserId(userId);
+		if (!accountEntity) {
+			throw new EntityNotFoundError('Account');
+		}
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
 	async save(accountDto: AccountDto): Promise<void> {
 		const user = await this.userRepo.findById(accountDto.userId);
 		const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
-		const account = new Account({
-			user,
-			system,
-			username: accountDto.username,
-			activated: accountDto.activated,
-			expiresAt: accountDto.expiresAt,
-			lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
-			password: accountDto.password,
-			token: accountDto.token,
-			credentialHash: accountDto.credentialHash,
-		});
+		let account: Account;
+		if (accountDto.id) {
+			account = await this.accountRepo.findById(accountDto.id);
+			account.user = user;
+			account.system = system;
+			account.username = accountDto.username;
+			account.activated = accountDto.activated;
+			account.expiresAt = accountDto.expiresAt;
+			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
+			account.password = accountDto.password;
+			account.credentialHash = accountDto.credentialHash;
+			account.token = accountDto.token;
+		} else {
+			account = new Account({
+				user,
+				system,
+				username: accountDto.username,
+				activated: accountDto.activated,
+				expiresAt: accountDto.expiresAt,
+				lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
+				password: accountDto.password,
+				token: accountDto.token,
+				credentialHash: accountDto.credentialHash,
+			});
+		}
 		await this.accountRepo.save(account);
 		return Promise.resolve();
 	}
 
-	async delete(account: AccountDto) {
-		const accountEntity = await this.accountRepo.findById(account.id);
-		return this.accountRepo.delete(accountEntity);
+	async delete(account: AccountDto): Promise<void> {
+		return this.accountRepo.deleteById(account.id);
 	}
 
 	async searchByUsernamePartialMatch(

@@ -81,7 +81,18 @@ describe('AccountUc', () => {
 						delete: (account: AccountDto): Promise<AccountDto> => {
 							return Promise.resolve(account);
 						},
-						findByUserId: (userId: EntityId): Promise<AccountDto> => {
+						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+
+							if (account) {
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
+							}
+							if (userId === 'accountWithoutUser') {
+								return Promise.resolve(null);
+							}
+							throw new EntityNotFoundError(Account.name);
+						},
+						findByUserIdOrFail: (userId: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
 
 							if (account) {
