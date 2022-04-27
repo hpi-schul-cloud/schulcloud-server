@@ -21,7 +21,8 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	credentialHash?: string;
 
-	@OneToOne({ entity: () => User, fieldName: 'userId', nullable: true })
+	@OneToOne({ entity: () => User, fieldName: 'userId', nullable: true, unique: false })
+	@Index()
 	user: User;
 
 	@ManyToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
