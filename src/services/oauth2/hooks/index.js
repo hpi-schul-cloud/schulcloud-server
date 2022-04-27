@@ -41,13 +41,18 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('teams').find({
+			query: {
+				'userIds.userId': hook.params.account.userId,
+			},
+		}),
 		hook.app.service('ltiTools').find({
 			query: {
 				oAuthClientId: hook.params.consentRequest.client.client_id,
 				isLocal: true,
 			},
 		}),
-	]).then(([user, tools]) =>
+	]).then(([user, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -67,6 +72,7 @@ const setIdToken = (hook) => {
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
 						schoolId: user.schoolId,
+						teams: scope.includes('teams') ? userTeams.data.map((team) => `${team._id}||${team.name}`) : undefined,
 					},
 				};
 				return hook;
