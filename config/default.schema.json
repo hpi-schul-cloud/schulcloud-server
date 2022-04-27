@@ -288,7 +288,7 @@
 			"properties": {
 				"URI": {
 					"type": "string",
-					"default" : null,
+					"default": null,
 					"description": "The ErWIn IDM base URI."
 				},
 				"TENANT": {
@@ -723,11 +723,21 @@
 			"description": "Log level for api.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
+		"NEST_LOG_LEVEL": {
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"type": "string",
+				"enum": ["log", "error", "warn", "debug", "verbose"]
+			},
+			"default": ["error"],
+			"description": "Nest Log level for api."
+		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",
 			"description": "Spezial logs.",
-			"enum": ["requestError","systemLogs","request","sendRequests"]
+			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
 		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
@@ -860,9 +870,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"PROMETHEUS"
-				]
+				"required": ["PROMETHEUS"]
 			}
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -874,9 +882,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"FEATURE_USER_MIGRATION_SYSTEM_ID"
-				]
+				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
 			}
 		},
 		"ANTIVIRUS": {

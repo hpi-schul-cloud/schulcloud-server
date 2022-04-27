@@ -1,4 +1,6 @@
-import { ConsoleLogger, Injectable, Scope } from '@nestjs/common';
+import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ILoggerConfig } from './interfaces';
 import { ILogger } from './interfaces/logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
@@ -15,4 +17,9 @@ export class Logger extends ConsoleLogger implements ILogger {
 	 * @param context when initialized in a provider, use setContext with CustomProviderClass.name
 	 * @param isTimestampEnabled
 	 */
+	constructor(context: string, private readonly configService: ConfigService<ILoggerConfig, true>) {
+		super(context);
+		const logLevels = this.configService.get<LogLevel[]>('LOG_LEVEL');
+		this.setLogLevels(logLevels);
+	}
 }

@@ -1,11 +1,11 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
-import _ from 'lodash';
+import { ApiValidationError, BusinessError } from '@shared/common';
+import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
-import { BusinessError, ApiValidationError } from '@shared/common';
-import { Logger, ILogger } from '@src/core/logger';
+import _ from 'lodash';
+import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
-import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
 
 const isFeathersError = (error: Error): error is FeathersError => {
 	if (!(error && 'type' in error)) return false;
@@ -116,18 +116,20 @@ const writeErrorLog = (error: unknown, logger: ILogger): void => {
 
 @Catch()
 export class GlobalErrorFilter<T = unknown> implements ExceptionFilter<T> {
-	private static readonly logger: ILogger = new Logger('Error');
+	constructor(private logger: Logger) {
+		this.logger.setContext('Error');
+	}
 
 	// eslint-disable-next-line class-methods-use-this
 	catch(error: T, host: ArgumentsHost): void {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
-		writeErrorLog(error, GlobalErrorFilter.logger);
+		writeErrorLog(error, this.logger);
 		const errorResponse: ErrorResponse = this.createErrorResponse(error);
 		response.status(errorResponse.code).json(errorResponse);
 	}
 
 	createErrorResponse(error: T): ErrorResponse {
-		return createErrorResponse(error, GlobalErrorFilter.logger);
+		return createErrorResponse(error, this.logger);
 	}
 }

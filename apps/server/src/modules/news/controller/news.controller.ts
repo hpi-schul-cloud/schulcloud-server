@@ -1,16 +1,16 @@
-import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { PaginationParams, ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
-import { ParseObjectIdPipe, PaginationParams } from '@shared/controller';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { NewsUc } from '../uc/news.uc';
-
-import { CreateNewsParams, FilterNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from './dto';
 import { NewsMapper } from '../mapper/news.mapper';
+import { NewsUc } from '../uc/news.uc';
+import { CreateNewsParams, FilterNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from './dto';
 
 @ApiTags('News')
 @Authenticate('jwt')
 @Controller('news')
+//@UseInterceptors(LoggingInterceptor)
 export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 

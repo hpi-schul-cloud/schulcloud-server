@@ -1,17 +1,17 @@
-import { ApiTags } from '@nestjs/swagger';
 import { Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
-
-import { ICurrentUser } from '@shared/domain';
+import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
+import { ICurrentUser } from '@shared/domain';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { TaskMapper } from '../mapper/task.mapper';
 import { TaskUC } from '../uc/task.uc';
 import { TaskListResponse, TaskResponse } from './dto';
-import { TaskMapper } from '../mapper/task.mapper';
 
 @ApiTags('Task')
 @Authenticate('jwt')
 @Controller('tasks')
+//@UseInterceptors(LoggingInterceptor)
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC) {}
 
