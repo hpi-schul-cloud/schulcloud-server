@@ -1,3 +1,5 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
@@ -15,10 +17,7 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-
 import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { UserImportPermissions } from '../constants';
 
 @Injectable()

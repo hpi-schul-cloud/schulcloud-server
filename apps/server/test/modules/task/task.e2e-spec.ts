@@ -1,25 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroORM } from '@mikro-orm/core';
-
-import { ICurrentUser, Task } from '@shared/domain';
-import { ServerTestModule } from '@src/server.module';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ICurrentUser, Permission, Task } from '@shared/domain';
+import {
+	cleanupCollections,
+	courseFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	submissionFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import {
-	courseFactory,
-	userFactory,
-	taskFactory,
-	submissionFactory,
-	roleFactory,
-	cleanupCollections,
-	mapUserToCurrentUser,
-} from '@shared/testing';
-import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
+import { ServerTestModule } from '@src/server.module';
 import { ObjectID } from 'bson';
+import { Request } from 'express';
+import request from 'supertest';
 
 const tomorrow = new Date(Date.now() + 86400000);
 
@@ -112,7 +110,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.teacherDashboard] });
+			const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3] });
 			const user = userFactory.build({ roles });
 
 			return user;
@@ -548,7 +546,7 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+			const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 			const user = userFactory.build({ roles });
 
 			return user;

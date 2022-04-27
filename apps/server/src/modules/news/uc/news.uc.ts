@@ -11,7 +11,7 @@ import {
 } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 
@@ -19,7 +19,7 @@ type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 export class NewsUc {
 	constructor(
 		private newsRepo: NewsRepo,
-		private authorizationService: AuthorizationService //private logger: Logger
+		private authorizationService: FeathersAuthorizationService // private logger: Logger
 	) {
 		// this.logger.setContext(NewsUc.name);
 	}
