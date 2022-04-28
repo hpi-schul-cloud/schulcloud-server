@@ -38,14 +38,17 @@ const setSubject = (hook) => {
 };
 
 const setIdToken = (hook) => {
+	const scope = hook.params.consentRequest.requested_scope;
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		hook.app.service('teams').find({
-			query: {
-				'userIds.userId': hook.params.account.userId,
-			},
-		}),
+		scope.includes('teams')
+			? hook.app.service('teams').find({
+					query: {
+						'userIds.userId': hook.params.account.userId,
+					},
+			  })
+			: undefined,
 		hook.app.service('ltiTools').find({
 			query: {
 				oAuthClientId: hook.params.consentRequest.client.client_id,
@@ -64,7 +67,6 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const scope = hook.params.consentRequest.requested_scope;
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
