@@ -331,7 +331,7 @@ export class AccountUc {
 		if (this.isDemoUser(currentUser) || this.isDemoUser(targetUser)) {
 			return false;
 		}
-		if (this.hasRole(currentUser, RoleName.SUPERHERO) || this.hasRole(currentUser, RoleName.ADMIN)) {
+		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
 		if (!(currentUser.school.id === targetUser.school.id)) {
