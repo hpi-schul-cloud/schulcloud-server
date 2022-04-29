@@ -40,5 +40,6 @@
 		"ADMIN_CLIENTID": "admin-cli",
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dbildungscloud"
-	}
+	},
+	"NEST_LOG_LEVEL": ""
 }

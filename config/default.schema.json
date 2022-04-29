@@ -269,11 +269,6 @@
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"description": "Secret key to S3"
-				},
-				"LOG_LEVEL": {
-					"type": "string",
-					"description": "Secret key to S3",
-					"default": "error"
 				}
 			}
 		},
@@ -725,13 +720,13 @@
 		},
 		"NEST_LOG_LEVEL": {
 			"type": "string",
-			"default": "error",
-			"description": "Nest Log level for api."
+			"default": "error,http",
+			"description": "Nest Log level for api. Different log level can be activated separately by adding the value to the comma separated list. For example 'log,error,warn,debug,verbose,http' The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'."
 		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",
-			"description": "Spezial logs.",
+			"description": "Special logs.",
 			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
 		},
 		"SYNC_QUEUE_NAME": {

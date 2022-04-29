@@ -30,5 +30,5 @@
 		"ADMIN_PASSWORD": "dbildungscloud"
 	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
-	"NEST_LOG_LEVEL": "log,error,warn,debug,verbose"
+	"NEST_LOG_LEVEL": "log,error,warn,debug,verbose,http"
 }

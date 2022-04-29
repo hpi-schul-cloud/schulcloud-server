@@ -33,7 +33,6 @@ import {
 
 @ApiTags('file')
 @Authenticate('jwt')
-@UseInterceptors(RequestLoggingInterceptor)
 @Controller('file')
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
@@ -86,6 +85,7 @@ export class FilesStorageController {
 	}
 
 	@Patch('/rename/:fileRecordId/')
+	@UseInterceptors(RequestLoggingInterceptor)
 	async patchFilename(
 		@Param() params: SingleFileParams,
 		@Body() renameFileParam: RenameFileParams,
@@ -99,6 +99,7 @@ export class FilesStorageController {
 	}
 
 	@Delete('/delete/:schoolId/:parentType/:parentId')
+	@UseInterceptors(RequestLoggingInterceptor)
 	async delete(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -115,6 +116,7 @@ export class FilesStorageController {
 	}
 
 	@Delete('/delete/:fileRecordId')
+	@UseInterceptors(RequestLoggingInterceptor)
 	async deleteFile(
 		@Param() params: SingleFileParams,
 		@CurrentUser() currentUser: ICurrentUser
