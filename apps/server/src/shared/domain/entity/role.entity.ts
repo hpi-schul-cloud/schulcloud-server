@@ -1,4 +1,4 @@
-import { Entity, Property, Index, ManyToMany, Collection, Unique } from '@mikro-orm/core';
+import { Entity, Property, ManyToMany, Collection, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IRoleProperties {

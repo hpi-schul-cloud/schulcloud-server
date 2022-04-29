@@ -34,6 +34,10 @@
 			{
 				"title": "Git",
 				"file": "git.md"
+			},
+			{
+				"title": "Keycloak",
+				"file": "keycloak.md"
 			}
 		]
 	}

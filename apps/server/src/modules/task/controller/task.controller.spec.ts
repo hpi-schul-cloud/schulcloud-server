@@ -1,7 +1,6 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TaskRepo, UserRepo } from '@shared/repo';
 import { TaskUC } from '../uc';
-import { TaskAuthorizationService } from '../uc/task.authorization.service';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {
@@ -10,22 +9,9 @@ describe('TaskController', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				TaskUC,
 				{
-					provide: TaskRepo,
-					useValue: {},
-				},
-				{
-					provide: UserRepo,
-					useValue: {},
-				},
-				{
-					provide: TaskAuthorizationService,
-					useValue: {
-						getPermittedCourses() {
-							throw new Error('Please write a mock for TaskAuthorizationService.getPermittedCourses');
-						},
-					},
+					provide: TaskUC,
+					useValue: createMock<TaskUC>(),
 				},
 			],
 			controllers: [TaskController],
