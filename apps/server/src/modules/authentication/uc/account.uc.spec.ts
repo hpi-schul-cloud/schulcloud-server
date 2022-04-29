@@ -75,7 +75,7 @@ describe('AccountUc', () => {
 						delete: (account: Account): Promise<Account> => {
 							return Promise.resolve(account);
 						},
-						findByUserId: (userId: EntityId): Promise<Account> => {
+						findByUserId: (userId: EntityId): Promise<Account | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
 
 							if (account) {
@@ -83,6 +83,9 @@ describe('AccountUc', () => {
 							}
 							if (userId === 'accountWithoutUser') {
 								return Promise.resolve(mockStudentAccount);
+							}
+							if (userId === 'missingAccount') {
+								return Promise.resolve(null);
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
@@ -614,6 +617,14 @@ describe('AccountUc', () => {
 				0,
 				1
 			);
+			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
+		});
+		it('should return empty result, if search type is userId and account does not exist', async () => {
+			const accounts = await accountUc.searchAccounts(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ type: AccountSearchType.USER_ID, value: 'missingAccount' } as AccountSearchQueryParams
+			);
+			const expected = new AccountSearchListResponse([], 0, 0, 0);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 		});
 		it('should return one or more accounts, if search type is username', async () => {

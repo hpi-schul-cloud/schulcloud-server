@@ -121,6 +121,10 @@ describe('account repo', () => {
 			const [result] = await repo.searchByUsernameExactMatch('USER@EXAMPLE.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ username: originalUsername }));
+
+			const [result2] = await repo.searchByUsernamePartialMatch('user');
+			expect(result2).toHaveLength(1);
+			expect(result2[0]).toEqual(expect.objectContaining({ username: originalUsername }));
 		});
 		it('should find account by user name, ignoring case', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
