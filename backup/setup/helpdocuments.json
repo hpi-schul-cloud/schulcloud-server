@@ -136,5 +136,21 @@
 				"content": "<a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Uebersicht-Vorlagen.pdf'>Übersicht der Vorlagen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Checkliste_Struktur-einer-Testphase.pdf'>Checkliste: Struktur einer Testphase [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Elternbrief.pdf'>Elternbrief [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Laptopordnung.pdf'>Laptopordnung [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Nutzungsordnung-fuer-Informations-und-Kommunikationstechnik.pdf'>Nutzungsordnung für Informations- und Kommunikationstechnik [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Nuzungsordnung-fuer-mobile-Endgeraete.pdf'>Nuzungsordnung für mobile Endgeräte [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/default/Willkommensordner/Vorlagen/Schulleiterbrief.pdf'>Schulleiterbrief [.pdf]</a><br>"
 			}
 		]
+	},
+	{
+		"_id": {
+			"$oid": "5fa2c57719a6ee585daf7d04"
+		},
+		"theme": "n21",
+		"data": [
+			{
+				"title": "Begleitmaterial",
+				"content": "<a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/global/Willkommensordner/Begleitmaterial/Broschuere_HPI-Schul-Cloud-und-Lernen-4.0.pdf'>Broschüre: HPI Schul-Cloud und Lernen 4.0 [.pdf]</a><br>"
+			},
+			{
+				"title": "Datenschutz",
+				"content": "<a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/n21/Willkommensordner/Datenschutz/Nutzungsordnung_Schueler-innen.pdf'>Nutzungsordnung zwischen Schule und Schüler [.pdf]</a><br>"
+			}
+		]
 	}
 ]
