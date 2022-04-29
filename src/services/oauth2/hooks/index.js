@@ -108,10 +108,17 @@ const managesOwnConsents = (hook) => {
 	throw new Forbidden("You want to manage another user's consents");
 };
 
+const validatePermissionForNextcloud = (hook) => {
+	const user = hook.app.service('users').get(hook.params.account.userId);
+	const roles = hook.app.service('roles').find(user.roles.roleId);
+	if (roles.forEach((role) => role.permissions.contains('NEXTCLOUD_USER'))) return hook;
+	throw new Forbidden('You are forbidden from logging into Nextcloud');
+}
+
 exports.hooks = {
 	clients: {
 		before: {
-			all: [authenticate('jwt'), globalHooks.ifNotLocal(globalHooks.isSuperHero())],
+			all: [authenticate('jwt'), globalHooks.ifNotLocal(globalHooks.isSuperHero()), validatePermissionForNextcloud],
 		},
 	},
 	loginRequest: {
@@ -121,7 +128,7 @@ exports.hooks = {
 	},
 	consentRequest: {
 		before: {
-			all: [authenticate('jwt')],
+			all: [authenticate('jwt'), validatePermissionForNextcloud],
 			patch: [injectConsentRequest, validateSubject, setIdToken],
 		},
 	},
