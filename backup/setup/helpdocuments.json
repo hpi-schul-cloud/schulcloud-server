@@ -144,12 +144,8 @@
 		"theme": "n21",
 		"data": [
 			{
-				"title": "Begleitmaterial",
-				"content": "<a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/global/Willkommensordner/Begleitmaterial/Broschuere_HPI-Schul-Cloud-und-Lernen-4.0.pdf'>Broschüre: HPI Schul-Cloud und Lernen 4.0 [.pdf]</a><br>"
-			},
-			{
-				"title": "Datenschutz",
-				"content": "<a target='_blank' rel='noopener' href='https://cloud-instances.s3.hidrive.strato.com/n21/Willkommensordner/Datenschutz/Nutzungsordnung_Schueler-innen.pdf'>Nutzungsordnung zwischen Schule und Schüler [.pdf]</a><br>"
+				"title": "Allgemein",
+				"content": "<a target='_blank' rel='noopener' href=' https://www.n-21.de/projekte-projektbereiche/niedersaechsische-bildungscloud/broschuere-erste-schritte-in-der-nbc'>Broschüre: Erste Schritte in der NBC</a><br>"
 			}
 		]
 	}
