@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
@@ -8,13 +7,14 @@ import {
 } from '@shared/common/error';
 import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
+import bcrypt from 'bcryptjs';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountResponse,
 	AccountSearchListResponse,
-	AccountSearchType,
 	AccountSearchQueryParams,
+	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';

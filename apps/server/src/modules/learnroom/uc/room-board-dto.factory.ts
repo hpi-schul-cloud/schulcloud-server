@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import {
-	Course,
 	Board,
-	User,
-	TaskWithStatusVo,
-	Lesson,
-	BoardElementType,
 	BoardElement,
-	Task,
+	BoardElementType,
+	Course,
 	ITaskStatus,
+	Lesson,
+	Task,
+	TaskWithStatusVo,
+	User,
 } from '@shared/domain';
+import { RoomBoardDTO, RoomBoardElementDTO, RoomBoardElementTypes } from '../types/room-board.types';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomBoardDTO, RoomBoardElementDTO, LockedTaskDTO, RoomBoardElementTypes } from '../types/room-board.types';
 
 class DtoCreator {
 	room: Course;
@@ -52,9 +52,9 @@ class DtoCreator {
 		const filtered = elements.filter((element) => {
 			let result = false;
 			if (element.boardElementType === BoardElementType.Task) {
-				result = this.authorisationService.hasTaskListPermission(this.user, element.target as Task);
+				result = this.authorisationService.hasTaskReadPermission(this.user, element.target as Task);
 			} else if (element.boardElementType === BoardElementType.Lesson) {
-				result = this.authorisationService.hasLessonListPermission(this.user, element.target as Lesson);
+				result = this.authorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
 			}
 			return result;
 		});
@@ -85,16 +85,6 @@ class DtoCreator {
 
 	private mapTaskElement(element: BoardElement): RoomBoardElementDTO {
 		const task = element.target as Task;
-
-		const hasReadPermission = this.authorisationService.hasTaskReadPermission(this.user, task);
-		if (hasReadPermission) {
-			return this.mapTaskWithStatusVO(task);
-		}
-
-		return this.mapLockedTask(task);
-	}
-
-	private mapTaskWithStatusVO(task: Task): RoomBoardElementDTO {
 		const status = this.createTaskStatus(task);
 
 		const content = new TaskWithStatusVo(task, status);
@@ -109,15 +99,6 @@ class DtoCreator {
 			status = task.createStudentStatusForUser(this.user);
 		}
 		return status;
-	}
-
-	private mapLockedTask(task: Task): RoomBoardElementDTO {
-		const content: LockedTaskDTO = {
-			id: task.id,
-			name: task.name,
-		};
-		const result = { type: RoomBoardElementTypes.LOCKEDTASK, content };
-		return result;
 	}
 
 	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {

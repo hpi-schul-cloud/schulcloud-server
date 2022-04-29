@@ -2,6 +2,7 @@ import { Collection, Entity, ManyToMany, ManyToOne, Property, Index } from '@mik
 import type { Role } from './role.entity';
 import type { School } from './school.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { IEntityWithSchool } from '../interface';
 
 export enum LanguageType {
 	DE = 'de',
@@ -27,7 +28,7 @@ export interface IUserProperties {
 @Index({ properties: ['firstName', 'lastName'] })
 @Index({ properties: ['ldapId', 'school'] })
 @Index({ properties: ['school', 'roles'] })
-export class User extends BaseEntityWithTimestamps {
+export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	@Property()
 	@Index()
 	// @Unique()
