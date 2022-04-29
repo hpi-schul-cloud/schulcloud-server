@@ -54,12 +54,6 @@ describe('AccountUc', () => {
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
-	const mockUserIdMap = new Map<string, User>();
-	const mockAccountIdMap = new Map<string, Account>();
-	const mockAccountUserIdMap = new Map<string, Account>();
-	const mockAccountUsernameMap = new Map<string, Account>();
-	const mockUserMailMap = new Map<string, User>();
-
 	afterAll(async () => {
 		await module.close();
 		await orm.close();
@@ -128,10 +122,6 @@ describe('AccountUc', () => {
 						searchByUsernamePartialMatch: (): Promise<[Account[], number]> => {
 							return Promise.resolve([mockAccounts, mockAccounts.length]);
 						},
-						searchByUsername: (): Promise<Account[]> => {
-							const accounts = mockAccountIdMap.values();
-							return Promise.resolve(Array.from(accounts));
-						},
 					},
 				},
 				{
@@ -154,7 +144,7 @@ describe('AccountUc', () => {
 								return Promise.resolve([mockExternalUser]);
 							}
 							if (email === 'multiple@user.email') {
-								return Promise.resolve(Array.from(mockUserMailMap.values()));
+								return Promise.resolve(mockUsers);
 							}
 							return Promise.resolve([]);
 						},
@@ -309,16 +299,6 @@ describe('AccountUc', () => {
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
 		];
-
-		for (let i = 0; i < mockUsers.length; i += 1) {
-			mockUserIdMap.set(mockUsers[i].id, mockUsers[i]);
-			mockUserMailMap.set(mockUsers[i].email, mockUsers[i]);
-		}
-		for (let i = 0; i < mockAccounts.length; i += 1) {
-			mockAccountUserIdMap.set(mockAccounts[i].user.id, mockAccounts[i]);
-			mockAccountUsernameMap.set(mockAccounts[i].username, mockAccounts[i]);
-			mockAccountIdMap.set(mockAccounts[i].id, mockAccounts[i]);
-		}
 	});
 
 	describe('updateMyAccount', () => {

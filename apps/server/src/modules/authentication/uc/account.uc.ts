@@ -176,12 +176,7 @@ export class AccountUc {
 	 * @param params account details
 	 */
 	async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
-		let user: User;
-		try {
-			user = await this.userRepo.findById(currentUserId, true);
-		} catch (err) {
-			throw new EntityNotFoundError('User');
-		}
+		const user = await this.userRepo.findById(currentUserId, true);
 
 		const account = await this.accountRepo.findOneByUser(user);
 
