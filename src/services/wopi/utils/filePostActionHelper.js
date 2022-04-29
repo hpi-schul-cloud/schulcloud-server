@@ -23,7 +23,7 @@ const deleteFile = (file, payload, account, app) => {
  * https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html
  * adoption: the lockId was checked in a hook before
  */
-const lock = (file) => {
+const lock = (file) => 
 	file.lockId = mongoose.Types.ObjectId();
 	return FileModel.update({ _id: file._id }, file)
 		.exec()
@@ -31,11 +31,11 @@ const lock = (file) => {
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
-const getLock = (file) => {
+const getLock = (file) =>
 	FileModel.findOne({ _id: file._id })
 		.exec()
 		.then(() => Promise.resolve({ lockId: file.lockId }));
-};
+
 /** https://wopirest.readthedocs.io/en/latest/files/Unlock.html */
 const unlock = (file) => FileModel.update({ _id: file._id }, { $unset: { lockId: 1 } }).exec();
 
