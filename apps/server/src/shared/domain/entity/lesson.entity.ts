@@ -1,5 +1,6 @@
-import { Entity, ManyToOne, Property, Index } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property, Index, OneToMany, Collection } from '@mikro-orm/core';
 import { ILearnroomElement } from '@shared/domain/interface';
+import { Task } from './task.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 
@@ -25,6 +26,9 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	@Property()
 	position: number;
+
+	@OneToMany('Task', 'lesson', { orphanRemoval: true })
+	tasks = new Collection<Task>(this);
 
 	constructor(props: ILessonProperties) {
 		super();
