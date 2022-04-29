@@ -8,6 +8,8 @@ import {
 } from '@shared/common/error';
 import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -18,8 +20,6 @@ import {
 	PatchMyAccountParams,
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
-import { AccountService } from '../services/account.service';
-import { AccountDto } from '../services/dto/account.dto';
 
 type UserPreferences = {
 	// first login completed

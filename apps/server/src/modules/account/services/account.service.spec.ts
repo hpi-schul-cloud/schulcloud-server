@@ -1,4 +1,4 @@
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User } from '@shared/domain';
@@ -197,8 +197,6 @@ describe('AccountService', () => {
 			expect(accountSave.mock.calls[0][0]).toMatchObject({
 				username: 'asdf@asdf.de',
 				password: defaultPasswordHash,
-				createdAt: accountToSave.createdAt,
-				updatedAt: accountToSave.updatedAt,
 			});
 		});
 	});

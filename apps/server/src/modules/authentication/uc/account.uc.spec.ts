@@ -1,6 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
@@ -11,10 +13,9 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountEntityToDtoMapper } from '../../account/mapper/account-entity-to-dto.mapper';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
-import { AccountService } from '../services/account.service';
-import { AccountDto } from '../services/dto/account.dto';
+
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {

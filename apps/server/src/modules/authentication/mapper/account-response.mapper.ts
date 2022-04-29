@@ -1,6 +1,6 @@
 import { Account } from '@shared/domain';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AccountResponse } from '../controller/dto';
-import { AccountDto } from '../services/dto/account.dto';
 
 export class AccountResponseMapper {
 	static mapToResponseFromEntity(account: Account): AccountResponse {

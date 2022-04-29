@@ -11,9 +11,10 @@ import {
 	System,
 	User,
 } from '@shared/domain';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { accountFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
@@ -25,7 +26,7 @@ describe('[ImportUserModule]', () => {
 	describe('UserUc', () => {
 		let module: TestingModule;
 		let uc: UserImportUc;
-		let accountRepo: DeepMocked<AccountRepo>;
+		let accountService: DeepMocked<AccountService>;
 		let importUserRepo: DeepMocked<ImportUserRepo>;
 		let schoolRepo: DeepMocked<SchoolRepo>;
 		let systemRepo: DeepMocked<SystemRepo>;
@@ -38,8 +39,8 @@ describe('[ImportUserModule]', () => {
 				imports: [MongoMemoryDatabaseModule.forRoot()],
 				providers: [
 					{
-						provide: AccountRepo,
-						useValue: createMock<AccountRepo>(),
+						provide: AccountService,
+						useValue: createMock<AccountService>(),
 					},
 					UserImportUc,
 					{
@@ -65,7 +66,7 @@ describe('[ImportUserModule]', () => {
 				],
 			}).compile();
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
-			accountRepo = module.get(AccountRepo);
+			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
 			schoolRepo = module.get(SchoolRepo);
 			systemRepo = module.get(SystemRepo);
@@ -79,7 +80,7 @@ describe('[ImportUserModule]', () => {
 
 		it('should be defined', () => {
 			expect(uc).toBeDefined();
-			expect(accountRepo).toBeDefined();
+			expect(accountService).toBeDefined();
 			expect(importUserRepo).toBeDefined();
 			expect(schoolRepo).toBeDefined();
 			expect(systemRepo).toBeDefined();
@@ -394,7 +395,6 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[saveAllUsersMatches]', () => {
-			let account: Account;
 			let system: System;
 			let school: School;
 			let currentUser: User;
@@ -409,7 +409,7 @@ describe('[ImportUserModule]', () => {
 			let importUserRepoDeleteImportUsersBySchoolSpy: jest.SpyInstance;
 			let schoolRepoSaveSpy: jest.SpyInstance;
 			let userRepoFlushSpy: jest.SpyInstance;
-			let accountRepoFindByUserIdSpy: jest.SpyInstance;
+			let accountServiceFindByUserIdSpy: jest.SpyInstance;
 			beforeEach(() => {
 				system = systemFactory.buildWithId();
 				school = schoolFactory.buildWithId({ systems: [system] });
@@ -419,7 +419,6 @@ describe('[ImportUserModule]', () => {
 				school.officialSchoolNumber = 'foo';
 
 				currentUser = userFactory.buildWithId({ school });
-				account = accountFactory.buildWithId({ user: currentUser });
 
 				userMatch1 = userFactory.buildWithId({ school });
 				userMatch2 = userFactory.buildWithId({ school });
@@ -444,7 +443,13 @@ describe('[ImportUserModule]', () => {
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
-				accountRepoFindByUserIdSpy = accountRepo.findByUserIdOrFail.mockResolvedValue(account);
+				accountServiceFindByUserIdSpy = accountService.findByUserIdOrFail.mockResolvedValue({
+					id: 'dummyId',
+					userId: currentUser.id,
+					username: currentUser.email,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				});
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
 			});
@@ -452,7 +457,7 @@ describe('[ImportUserModule]', () => {
 				userRepoByIdSpy.mockRestore();
 				permissionServiceSpy.mockRestore();
 				importUserRepoFindImportUsersSpy.mockRestore();
-				accountRepoFindByUserIdSpy.mockRestore();
+				accountServiceFindByUserIdSpy.mockRestore();
 				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
 				schoolRepoSaveSpy.mockRestore();
 				userRepoFlushSpy.mockRestore();
@@ -470,11 +475,11 @@ describe('[ImportUserModule]', () => {
 					.spyOn(importUserRepo, 'findImportUsers')
 					.mockResolvedValueOnce([[importUser1, importUser2, importUser3], 3]);
 
-				const userRepoSaveWithoutFlushSpy = jest.spyOn(userRepo, 'saveWithoutFlush');
+				const userRepoSaveSpy = jest.spyOn(userRepo, 'save');
 
 				await uc.saveAllUsersMatches(currentUser.id);
-				expect(userRepoSaveWithoutFlushSpy).toHaveBeenCalledTimes(2);
-				userRepoSaveWithoutFlushSpy.mockRestore();
+				expect(userRepoSaveSpy).toHaveBeenCalledTimes(2);
+				userRepoSaveSpy.mockRestore();
 			});
 			it('should save ldap info to user', async () => {
 				importUserRepoFindImportUsersSpy = jest
@@ -483,7 +488,7 @@ describe('[ImportUserModule]', () => {
 
 				userMatch1.ldapId = importUser1.ldapId;
 				userMatch2.ldapId = importUser2.ldapId;
-				const userRepoSaveWithoutFlushSpy = jest.spyOn(userRepo, 'saveWithoutFlush').mockReturnValue();
+				const userRepoSaveWithoutFlushSpy = jest.spyOn(userRepo, 'save').mockReturnValue(Promise.resolve());
 
 				await uc.saveAllUsersMatches(currentUser.id);
 
