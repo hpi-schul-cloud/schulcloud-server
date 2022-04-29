@@ -11,7 +11,6 @@ import { TaskListResponse, TaskResponse } from './dto';
 @ApiTags('Task')
 @Authenticate('jwt')
 @Controller('tasks')
-//@UseInterceptors(LoggingInterceptor)
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC) {}
 

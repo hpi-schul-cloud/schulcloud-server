@@ -11,6 +11,7 @@ import {
 } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
+import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
@@ -19,9 +20,10 @@ type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 export class NewsUc {
 	constructor(
 		private newsRepo: NewsRepo,
-		private authorizationService: FeathersAuthorizationService // private logger: Logger
+		private authorizationService: FeathersAuthorizationService,
+		private logger: Logger
 	) {
-		// this.logger.setContext(NewsUc.name);
+		this.logger.setContext(NewsUc.name);
 	}
 
 	/**
@@ -32,7 +34,7 @@ export class NewsUc {
 	 * @returns
 	 */
 	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
-		// this.logger.log(`create news as user ${userId}`);
+		this.logger.log(`create news as user ${userId}`);
 
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
@@ -49,7 +51,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		// this.logger.log(`news ${news.id} created by user ${userId}`);
+		this.logger.log(`news ${news.id} created by user ${userId}`);
 
 		return news;
 	}
@@ -62,7 +64,7 @@ export class NewsUc {
 	 * @returns
 	 */
 	async findAllForUser(userId: EntityId, scope?: INewsScope, options?: IFindOptions<News>): Promise<Counted<News[]>> {
-		// this.logger.log(`start find all news for user ${userId}`);
+		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
@@ -81,7 +83,7 @@ export class NewsUc {
 			})
 		);
 
-		// this.logger.log(`return ${newsList.length} news for user ${userId}`);
+		this.logger.log(`return ${newsList.length} news for user ${userId}`);
 
 		return [newsList, newsCount];
 	}
@@ -93,7 +95,7 @@ export class NewsUc {
 	 * @returns
 	 */
 	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
-		// this.logger.log(`start find one news ${id}`);
+		this.logger.log(`start find one news ${id}`);
 
 		const news = await this.newsRepo.findOneById(id);
 		const isPublished = news.displayAt > new Date();
@@ -117,7 +119,7 @@ export class NewsUc {
 	 * @returns
 	 */
 	async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
-		// this.logger.log(`start update news ${id}`);
+		this.logger.log(`start update news ${id}`);
 
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
@@ -141,7 +143,7 @@ export class NewsUc {
 	 * @returns
 	 */
 	async delete(id: EntityId, userId: EntityId): Promise<EntityId> {
-		// this.logger.log(`start remove news ${id}`);
+		this.logger.log(`start remove news ${id}`);
 
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
