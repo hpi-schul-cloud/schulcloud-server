@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, Lesson, TaskWithStatusVo } from '@shared/domain';
+import { Course, TaskWithStatusVo } from '@shared/domain';
 import { BoardElementResponse, BoardLessonResponse, BoardResponse, BoardTaskResponse } from '../controller/dto';
 import { LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';

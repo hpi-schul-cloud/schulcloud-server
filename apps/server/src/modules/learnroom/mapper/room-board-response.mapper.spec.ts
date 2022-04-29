@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
 import { BoardElementResponse, BoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';

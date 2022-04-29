@@ -111,7 +111,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 		if (this.isDraft()) {
 			return false;
 		}
-		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+		if (this.availableDate && this.availableDate < new Date(Date.now())) {
 			return false;
 		}
 		return true;

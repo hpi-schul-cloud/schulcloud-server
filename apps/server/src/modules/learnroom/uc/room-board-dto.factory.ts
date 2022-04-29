@@ -10,7 +10,7 @@ import {
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { LessonMetaData, RoomBoardDTO, RoomBoardElementDTO, RoomBoardElementTypes } from '../types/room-board.types';
+import { RoomBoardDTO, RoomBoardElementDTO, RoomBoardElementTypes } from '../types/room-board.types';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 class DtoCreator {
