@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User } from '@shared/domain';
-import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountService } from './account.service';
@@ -26,7 +26,6 @@ describe('AccountService', () => {
 
 	let mockTeacherAccount: Account;
 	let mockStudentAccount: Account;
-	const userRepoFindMock = jest.fn().mockImplementation((userId) => mockUsers.find((user) => user.id === userId));
 
 	afterAll(async () => {
 		await module.close();
@@ -44,18 +43,18 @@ describe('AccountService', () => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
-							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.user.id === account.user.id);
+							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.userId === account.userId);
 							if (accountEntity) {
 								Object.assign(accountEntity, account);
 							}
 
 							return Promise.resolve();
 						}),
-						deleteById: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
+						deleteById: jest.fn().mockImplementation((): Promise<void> => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -63,7 +62,7 @@ describe('AccountService', () => {
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -86,18 +85,6 @@ describe('AccountService', () => {
 						searchByUsernamePartialMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
 							return Promise.resolve([mockAccounts, mockAccounts.length]);
 						}),
-					},
-				},
-				{
-					provide: UserRepo,
-					useValue: {
-						findById: userRepoFindMock,
-					},
-				},
-				{
-					provide: SystemRepo,
-					useValue: {
-						findById: jest.fn().mockImplementation(() => null),
 					},
 				},
 			],
@@ -123,14 +110,12 @@ describe('AccountService', () => {
 			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
 		});
 		mockTeacherAccount = accountFactory.buildWithId({
-			user: mockTeacherUser,
+			userId: mockTeacherUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockStudentAccount = accountFactory.buildWithId({
-			user: mockStudentUser,
+			userId: mockStudentUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
@@ -171,7 +156,6 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepoFindMock).toHaveBeenCalledWith(mockTeacherUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
@@ -190,7 +174,6 @@ describe('AccountService', () => {
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
 			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(userRepoFindMock).toHaveBeenCalledWith(mockUserWithoutAccount.id);
 			// eslint-disable-next-line jest/unbound-method
 			const accountSave = accountRepo.save as jest.Mock;
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

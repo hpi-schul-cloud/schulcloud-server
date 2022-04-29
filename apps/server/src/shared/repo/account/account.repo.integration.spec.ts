@@ -48,7 +48,7 @@ describe('account repo', () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
-			const account = await repo.findByUserId(accountToFind.user.id);
+			const account = await repo.findByUserId(accountToFind.userId);
 			expect(account?.id).toEqual(accountToFind.id);
 		});
 	});
@@ -58,7 +58,7 @@ describe('account repo', () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
-			const account = await repo.findByUserIdOrFail(accountToFind.user.id);
+			const account = await repo.findByUserIdOrFail(accountToFind.userId);
 			expect(account?.id).toEqual(accountToFind.id);
 		});
 
@@ -72,11 +72,11 @@ describe('account repo', () => {
 
 	describe('getObjectReference', () => {
 		it('should return a valid reference', async () => {
-			const user = userFactory.build();
-			const account = accountFactory.build({ user });
+			const user = userFactory.buildWithId();
+			const account = accountFactory.build({ userId: user.id });
 			await em.persistAndFlush([user, account]);
 
-			const reference = repo.getObjectReference(User, account.user.id);
+			const reference = repo.getObjectReference(User, account.userId);
 
 			expect(reference).toBe(user);
 		});

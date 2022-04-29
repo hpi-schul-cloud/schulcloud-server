@@ -6,7 +6,7 @@ export class AccountResponseMapper {
 	static mapToResponseFromEntity(account: Account): AccountResponse {
 		return new AccountResponse({
 			id: account.id,
-			userId: account.user.id,
+			userId: account.userId,
 			activated: account.activated ?? false,
 			username: account.username,
 		});

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId } from '@shared/domain';
-import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { AccountRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountDto } from './dto/account.dto';
 
 @Injectable()
 export class AccountService {
-	constructor(private accountRepo: AccountRepo, private userRepo: UserRepo, private systemRepo: SystemRepo) {}
+	constructor(private accountRepo: AccountRepo) {}
 
 	async findById(id: EntityId): Promise<AccountDto> {
 		const accountEntity = await this.accountRepo.findById(id);
@@ -28,13 +28,11 @@ export class AccountService {
 	}
 
 	async save(accountDto: AccountDto): Promise<void> {
-		const user = await this.userRepo.findById(accountDto.userId);
-		const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
 		let account: Account;
 		if (accountDto.id) {
 			account = await this.accountRepo.findById(accountDto.id);
-			account.user = user;
-			account.system = system;
+			account.userId = accountDto.userId;
+			account.systemId = accountDto.systemId;
 			account.username = accountDto.username;
 			account.activated = accountDto.activated;
 			account.expiresAt = accountDto.expiresAt;
@@ -44,8 +42,8 @@ export class AccountService {
 			account.token = accountDto.token;
 		} else {
 			account = new Account({
-				user,
-				system,
+				userId: accountDto.userId,
+				systemId: accountDto.systemId,
 				username: accountDto.username,
 				activated: accountDto.activated,
 				expiresAt: accountDto.expiresAt,

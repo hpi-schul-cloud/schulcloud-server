@@ -11,11 +11,11 @@ export class AccountRepo extends BaseRepo<Account> {
 	}
 
 	async findByUserId(userId: EntityId): Promise<Account | null> {
-		return this._em.findOne(Account, { user: userId });
+		return this._em.findOne(Account, { userId });
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
-		return this._em.findOneOrFail(Account, { user: userId });
+		return this._em.findOneOrFail(Account, { userId });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
