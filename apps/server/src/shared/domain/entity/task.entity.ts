@@ -107,6 +107,16 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 		return !!this.private;
 	}
 
+	isPublished(): boolean {
+		if (this.isDraft()) {
+			return false;
+		}
+		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+			return false;
+		}
+		return true;
+	}
+
 	private getSubmissionItems(): Submission[] {
 		if (!this.submissions.isInitialized(true)) {
 			throw new Error('Submissions items are not loaded.');

@@ -38,6 +38,27 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.position = props.position || 0;
 	}
 
+	private getTasksItems(): Task[] {
+		if (!this.tasks.isInitialized(true)) {
+			throw new Error('Lessons trying to access their tasks that are not loaded.');
+		}
+		const tasks = this.tasks.getItems();
+		return tasks;
+	}
+
+	getNumberOfTasksForStudent(): number {
+		const tasks = this.getTasksItems();
+		const filtered = tasks.filter((task) => {
+			return task.isPublished();
+		});
+		return filtered.length;
+	}
+
+	getNumberOfTasksForTeacher(): number {
+		const tasks = this.getTasksItems();
+		return tasks.length;
+	}
+
 	publish() {
 		this.hidden = false;
 	}
