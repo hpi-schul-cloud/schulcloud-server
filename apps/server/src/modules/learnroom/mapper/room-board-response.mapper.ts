@@ -64,6 +64,7 @@ export class RoomBoardResponseMapper {
 			hidden: lesson.hidden,
 			createdAt: lesson.createdAt,
 			updatedAt: lesson.updatedAt,
+			numberOfTasks: 372,
 		});
 
 		const lessonCourse = lesson.course;
