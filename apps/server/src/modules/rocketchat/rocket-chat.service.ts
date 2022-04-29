@@ -1,5 +1,7 @@
 /* istanbul ignore file */
-import { HttpService, Inject, Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
+import { lastValueFrom } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 export interface RocketChatOptions {
@@ -10,7 +12,7 @@ export interface RocketChatOptions {
 	adminToken?: string;
 }
 
-type GenericData = Record<string, any>;
+type GenericData = Record<string, unknown>;
 
 export class RocketChatError extends Error {
 	private statusCode: number;
@@ -165,38 +167,40 @@ export class RocketChatService {
 	}
 
 	private async get(path: string, authToken: string, userId: string): Promise<GenericData> {
-		const response = await this.httpService
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			.get(`${this.options.uri}${path}`, {
-				headers: {
-					'X-Auth-Token': authToken,
-					'X-User-ID': userId,
-				},
-			})
-			.pipe(
-				catchError((e) => {
-					throw new RocketChatError(e);
+		const response = await lastValueFrom(
+			this.httpService
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				.get(`${this.options.uri}${path}`, {
+					headers: {
+						'X-Auth-Token': authToken,
+						'X-User-ID': userId,
+					},
 				})
-			)
-			.toPromise();
+				.pipe(
+					catchError((e) => {
+						throw new RocketChatError(e);
+					})
+				)
+		);
 		return response?.data as GenericData;
 	}
 
 	private async post(path: string, authToken: string, userId: string, body: GenericData): Promise<GenericData> {
-		const response = await this.httpService
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			.post(`${this.options.uri}${path}`, body, {
-				headers: {
-					'X-Auth-Token': authToken,
-					'X-User-ID': userId,
-				},
-			})
-			.pipe(
-				catchError((e) => {
-					throw new RocketChatError(e);
+		const response = await lastValueFrom(
+			this.httpService
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				.post(`${this.options.uri}${path}`, body, {
+					headers: {
+						'X-Auth-Token': authToken,
+						'X-User-ID': userId,
+					},
 				})
-			)
-			.toPromise();
+				.pipe(
+					catchError((e) => {
+						throw new RocketChatError(e);
+					})
+				)
+		);
 		return response?.data as GenericData;
 	}
 
@@ -212,18 +216,19 @@ export class RocketChatService {
 			this.adminIdAndToken = newVar;
 			return newVar;
 		}
-		const response = await this.httpService
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			.post(`${this.options.uri}/api/v1/login`, {
-				user: this.options.adminUser,
-				password: this.options.adminPassword,
-			})
-			.pipe(
-				catchError((e) => {
-					throw new RocketChatError(e);
+		const response = await lastValueFrom(
+			this.httpService
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				.post(`${this.options.uri}/api/v1/login`, {
+					user: this.options.adminUser,
+					password: this.options.adminPassword,
 				})
-			)
-			.toPromise();
+				.pipe(
+					catchError((e) => {
+						throw new RocketChatError(e);
+					})
+				)
+		);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const responseJson = response?.data;
