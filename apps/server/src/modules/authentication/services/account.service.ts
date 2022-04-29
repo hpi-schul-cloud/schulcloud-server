@@ -78,8 +78,9 @@ export class AccountService {
 	}
 
 	private mapSearchResult(accountEntities: [Account[], number]) {
+		const foundAccounts = accountEntities[0];
 		const accountDtos: AccountDto[] = [];
-		accountEntities[0].forEach((accountEntity) => {
+		foundAccounts.forEach((accountEntity) => {
 			accountDtos.push(AccountEntityToDtoMapper.mapToDto(accountEntity));
 		});
 		return { accounts: accountDtos, total: accountEntities[1] };

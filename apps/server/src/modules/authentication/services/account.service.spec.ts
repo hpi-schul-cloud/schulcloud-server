@@ -1,4 +1,4 @@
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User } from '@shared/domain';
@@ -15,6 +15,7 @@ describe('AccountService', () => {
 	let mockAccounts: Account[];
 	let mockUsers: User[];
 	let accountRepo: AccountRepo;
+	let userRepo: UserRepo;
 
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
@@ -26,7 +27,6 @@ describe('AccountService', () => {
 
 	let mockTeacherAccount: Account;
 	let mockStudentAccount: Account;
-	const userRepoFindMock = jest.fn().mockImplementation((userId) => mockUsers.find((user) => user.id === userId));
 
 	afterAll(async () => {
 		await module.close();
@@ -51,7 +51,7 @@ describe('AccountService', () => {
 
 							return Promise.resolve();
 						}),
-						deleteById: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
+						deleteById: jest.fn().mockImplementation((): Promise<void> => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
@@ -78,11 +78,9 @@ describe('AccountService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						}),
-						searchByUsernameExactMatch: jest
-							.fn()
-							.mockImplementation((username: string): Promise<[Account[], number]> => {
-								return Promise.resolve([[mockTeacherAccount], 1]);
-							}),
+						searchByUsernameExactMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
+							return Promise.resolve([[mockTeacherAccount], 1]);
+						}),
 						searchByUsernamePartialMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
 							return Promise.resolve([mockAccounts, mockAccounts.length]);
 						}),
@@ -91,7 +89,7 @@ describe('AccountService', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findById: userRepoFindMock,
+						findById: jest.fn().mockImplementation((userId) => mockUsers.find((user) => user.id === userId)),
 					},
 				},
 				{
@@ -104,6 +102,7 @@ describe('AccountService', () => {
 		}).compile();
 		accountRepo = module.get(AccountRepo);
 		accountService = module.get(AccountService);
+		userRepo = module.get(UserRepo);
 		orm = await setupEntities();
 	});
 
@@ -171,7 +170,7 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepoFindMock).toHaveBeenCalledWith(mockTeacherUser.id);
+			expect(userRepo.findById).toHaveBeenCalledWith(mockTeacherUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
@@ -190,15 +189,13 @@ describe('AccountService', () => {
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
 			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(userRepoFindMock).toHaveBeenCalledWith(mockUserWithoutAccount.id);
+			expect(userRepo.findById).toHaveBeenCalledWith(mockUserWithoutAccount.id);
 			// eslint-disable-next-line jest/unbound-method
 			const accountSave = accountRepo.save as jest.Mock;
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(accountSave.mock.calls[0][0]).toMatchObject({
 				username: 'asdf@asdf.de',
 				password: defaultPasswordHash,
-				createdAt: accountToSave.createdAt,
-				updatedAt: accountToSave.updatedAt,
 			});
 		});
 	});
