@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, ICurrentUser, Counted, Course } from '@shared/domain';
-import { PaginationQuery } from '@shared/controller';
+import { PaginationParams } from '@shared/controller';
 import { CourseUc } from '../uc/course.uc';
 import { CourseController } from './course.controller';
 
@@ -17,7 +17,7 @@ describe('course controller', () => {
 					provide: CourseUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAllByUser(userId: EntityId, options?: PaginationQuery): Promise<Counted<Course[]>> {
+						findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {
 							throw new Error('Please write a mock for CourseUc.findByUser.');
 						},
 					},
@@ -34,7 +34,7 @@ describe('course controller', () => {
 			const spy = jest
 				.spyOn(uc, 'findAllByUser')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((userId: EntityId, options?: PaginationQuery) => {
+				.mockImplementation((userId: EntityId, options?: PaginationParams) => {
 					const courses = new Array(5).map(() => ({} as Course));
 					return Promise.resolve([courses, 5]);
 				});
@@ -59,7 +59,7 @@ describe('course controller', () => {
 			jest
 				.spyOn(uc, 'findAllByUser')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((userId: EntityId, options?: PaginationQuery) => {
+				.mockImplementation((userId: EntityId, options?: PaginationParams) => {
 					return Promise.resolve([[courseMock], 1]);
 				});
 			const currentUser = { userId: 'userId' } as ICurrentUser;

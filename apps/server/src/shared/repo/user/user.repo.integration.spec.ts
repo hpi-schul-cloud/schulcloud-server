@@ -4,7 +4,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { importUserFactory, schoolFactory, userFactory, roleFactory, cleanupCollections } from '@shared/testing';
+import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { UserRepo } from './user.repo';
 
@@ -26,23 +26,40 @@ describe('user repo', () => {
 		await module.close();
 	});
 
+	afterEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
 		expect(typeof repo.findById).toEqual('function');
 	});
 
-	describe('findById', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
+	it('should implement entityName getter', () => {
+		expect(repo.entityName).toBe(User);
+	});
 
+	describe('findById', () => {
 		it('should return right keys', async () => {
 			const user = userFactory.build();
 
 			await em.persistAndFlush([user]);
 			const result = await repo.findById(user.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'roles',
+					'firstName',
+					'lastName',
+					'email',
+					'school',
+					'_id',
+					'ldapId',
+					'forcePasswordChange',
+					'preferences',
+					'language',
+				].sort()
 			);
 		});
 
@@ -98,13 +115,23 @@ describe('user repo', () => {
 			userB = userFactory.build({ ldapId: '111' });
 			await em.persistAndFlush([userA, userB]);
 		});
-		afterEach(async () => {
-			await cleanupCollections(em);
-		});
 		it('should return right keys', async () => {
 			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'roles', 'firstName', 'lastName', 'email', 'school', '_id', 'ldapId'].sort()
+				[
+					'createdAt',
+					'updatedAt',
+					'roles',
+					'firstName',
+					'lastName',
+					'email',
+					'school',
+					'_id',
+					'ldapId',
+					'forcePasswordChange',
+					'preferences',
+					'language',
+				].sort()
 			);
 		});
 
@@ -123,10 +150,6 @@ describe('user repo', () => {
 	});
 
 	describe('findWithoutImportUser', () => {
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		const persistUserAndSchool = async () => {
 			const school = schoolFactory.build();
 			const user = userFactory.build({ school });
@@ -254,6 +277,79 @@ describe('user repo', () => {
 			expect(result).not.toContain(otherUser);
 			expect(result.length).toEqual(1);
 			expect(count).toEqual(2);
+		});
+
+		it('should throw an error by passing invalid schoolId', async () => {
+			const school = schoolFactory.build();
+			// id do not exist
+			await expect(repo.findWithoutImportUser(school)).rejects.toThrowError();
+		});
+	});
+
+	describe('findByEmail', () => {
+		it('should find user by email', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findByEmail('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should find user by email, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: User[];
+
+			result = await repo.findByEmail('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+
+			result = await repo.findByEmail('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: User[];
+
+			result = await repo.findByEmail('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
+
+			result = await repo.findByEmail('.*');
+			expect(result).toHaveLength(0);
+		});
+	});
+
+	describe('saveWithoutFlush', () => {
+		it('should add a user to the persist stack', () => {
+			const user = userFactory.build();
+
+			repo.saveWithoutFlush(user);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+		});
+	});
+
+	describe('flush', () => {
+		it('should flush after save', async () => {
+			const user = userFactory.build();
+			em.persist(user);
+
+			expect(user.id).toBeNull();
+
+			await repo.flush();
+
+			expect(user.id).not.toBeNull();
 		});
 	});
 });

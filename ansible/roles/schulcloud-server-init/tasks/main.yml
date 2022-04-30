@@ -11,7 +11,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
-      apiVersion: v1
+      api_version: v1
       kind: ConfigMap
       name: api-db-init-file
     when: not WITH_SCHULCLOUD_INIT
@@ -28,7 +28,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
-      apiVersion: apps/v1
+      api_version: apps/v1
       kind: Deployment
       name: management-deployment
     when: not WITH_SCHULCLOUD_INIT
@@ -45,7 +45,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
-      apiVersion: v1
+      api_version: v1
       kind: Service
       name: mgmt-svc
     when: not WITH_SCHULCLOUD_INIT
@@ -62,7 +62,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
-      apiVersion: batch/v1
+      api_version: batch/v1
       kind: Job
       name: api-db-init-job
     when: not WITH_SCHULCLOUD_INIT

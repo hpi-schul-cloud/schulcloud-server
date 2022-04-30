@@ -55,17 +55,27 @@ class LDAPSyncer extends Syncer {
 	}
 
 	async processLdapUsers(school) {
-		syncLogger.info(`Getting users for school ${school.name}`, { syncId: this.syncId });
-		const ldapUsers = await this.ldapService.getUsers(this.system.ldapConfig, school);
-		this.stats.users += ldapUsers.length;
-		await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
+		try {
+			syncLogger.info(`Getting users for school ${school.name}`, { syncId: this.syncId });
+			const ldapUsers = await this.ldapService.getUsers(this.system.ldapConfig, school);
+			this.stats.users += ldapUsers.length;
+			await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
+		} catch (err) {
+			syncLogger.error('Error while syncing process Ldap Users', { error: err, syncId: this.syncId });
+			this.stats.errors.push(err);
+		}
 	}
 
 	async processLdapClasses(school) {
-		syncLogger.info(`Getting classes for school ${school.name}`, { syncId: this.syncId });
-		const ldapClasses = await this.ldapService.getClasses(this.system.ldapConfig, school);
-		this.stats.classes += ldapClasses.length;
-		await this.sendLdapClasses(ldapClasses, school);
+		try {
+			syncLogger.info(`Getting classes for school ${school.name}`, { syncId: this.syncId });
+			const ldapClasses = await this.ldapService.getClasses(this.system.ldapConfig, school);
+			this.stats.classes += ldapClasses.length;
+			await this.sendLdapClasses(ldapClasses, school);
+		} catch (err) {
+			syncLogger.error('Error while syncing process Ldap Classes', { error: err, syncId: this.syncId });
+			this.stats.errors.push(err);
+		}
 	}
 
 	async sendLdapSchools(ldapSchools, currentYear, federalState) {

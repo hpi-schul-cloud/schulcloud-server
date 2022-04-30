@@ -21,7 +21,7 @@ export class RoomsAuthorisationService {
 		return hasPermission;
 	}
 
-	hasTaskListPermission(user: User, task: Task): boolean {
+	hasTaskReadPermission(user: User, task: Task): boolean {
 		const isCreator = task.creator === user;
 		let hasCoursePermission = false;
 
@@ -32,7 +32,7 @@ export class RoomsAuthorisationService {
 		if (task.course) {
 			hasCoursePermission = this.hasCourseReadPermission(user, task.course);
 
-			if (task.private || (task.availableDate && task.availableDate > new Date(Date.now()))) {
+			if (!task.isPublished()) {
 				hasCoursePermission = this.hasCourseWritePermission(user, task.course);
 			}
 		}
@@ -42,20 +42,7 @@ export class RoomsAuthorisationService {
 		return hasPermission;
 	}
 
-	hasTaskReadPermission(user: User, task: Task): boolean {
-		let hasPermission = false;
-
-		if (task.private) {
-			const isCreator = task.creator === user;
-			hasPermission = isCreator;
-		} else {
-			hasPermission = this.hasTaskListPermission(user, task);
-		}
-
-		return hasPermission;
-	}
-
-	hasLessonListPermission(user: User, lesson: Lesson): boolean {
+	hasLessonReadPermission(user: User, lesson: Lesson): boolean {
 		let hasCoursePermission = false;
 		hasCoursePermission = this.hasCourseReadPermission(user, lesson.course);
 		if (lesson.hidden) {

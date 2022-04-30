@@ -1,22 +1,19 @@
-import { Injectable } from '@nestjs/common';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
-
-import { EntityId, IFindOptions, Task, Counted, SortOrder } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { Counted, EntityId, IFindOptions, SortOrder, Task } from '@shared/domain';
+import { BaseRepo } from '../base.repo';
 import { TaskScope } from './task-scope';
 
 @Injectable()
-export class TaskRepo {
-	constructor(private readonly em: EntityManager) {}
-
-	async findById(id: EntityId): Promise<Task> {
-		const task = await this.em.findOneOrFail(Task, { id });
-		await this.em.populate(task, ['course', 'lesson', 'submissions']);
-		return task;
+export class TaskRepo extends BaseRepo<Task> {
+	get entityName() {
+		return Task;
 	}
 
-	async save(task: Task): Promise<void> {
-		await this.em.persistAndFlush(task);
+	async findById(id: EntityId): Promise<Task> {
+		const task = await super.findById(id);
+		await this._em.populate(task, ['course', 'lesson', 'submissions']);
+		return task;
 	}
 
 	async findAllFinishedByParentIds(
@@ -78,13 +75,13 @@ export class TaskRepo {
 		// It exist indexes for dueDate and for _id but no combined index, because it is to expensive for only small performance boost.
 		const order = { dueDate: SortOrder.desc, id: SortOrder.asc };
 
-		const [tasks, count] = await this.em.findAndCount(Task, scope.query, {
+		const [tasks, count] = await this._em.findAndCount(Task, scope.query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,
 		});
 
-		await this.em.populate(tasks, ['course', 'lesson', 'submissions']);
+		await this._em.populate(tasks, ['course', 'lesson', 'submissions']);
 
 		return [tasks, count];
 	}
@@ -186,18 +183,14 @@ export class TaskRepo {
 
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
 		const { pagination, order } = options || {};
-		const [taskEntities, count] = await this.em.findAndCount(Task, query, {
+		const [taskEntities, count] = await this._em.findAndCount(Task, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order as QueryOrderMap<Task>,
 		});
 
-		await this.em.populate(taskEntities, ['course', 'lesson', 'submissions']);
+		await this._em.populate(taskEntities, ['course', 'lesson', 'submissions']);
 
 		return [taskEntities, count];
-	}
-
-	async delete(task: Task): Promise<void> {
-		await this.em.removeAndFlush(task);
 	}
 }

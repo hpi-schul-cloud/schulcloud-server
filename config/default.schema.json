@@ -58,7 +58,7 @@
 				},
 				"AVAILABLE_LANGUAGES": {
 					"type": "string",
-					"default": "de,en,es",
+					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
 			}
@@ -237,6 +237,12 @@
 					"default": "http://localhost:4444",
 					"description": "The URI of the file service"
 				},
+				"INCOMING_REQUEST_TIMEOUT": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "Timeout for incoming requests to the File-Storage in milliseconds."
+				},
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",
@@ -258,6 +264,42 @@
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"description": "Secret key to S3"
+				}
+			}
+		},
+		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) feature."
+		},
+		"IDENTITY_MANAGEMENT": {
+			"type": "object",
+			"description": "Identity management server properties.",
+			"properties": {
+				"URI": {
+					"type": "string",
+					"default" : null,
+					"description": "The ErWIn IDM base URI."
+				},
+				"TENANT": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM tenant."
+				},
+				"ADMIN_CLIENTID": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin client."
+				},
+				"ADMIN_USER": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin user."
+				},
+				"ADMIN_PASSWORD": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM admin password."
 				}
 			}
 		},
@@ -327,7 +369,7 @@
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
 		"S3_KEY": {
@@ -369,12 +411,12 @@
 			"type": "string",
 			"description": "Password for the antivirus service, only used for legacy file implementation"
 		},
-		"ANTIVIRUS_EXCHANGE" : {
+		"ANTIVIRUS_EXCHANGE": {
 			"type": "string",
 			"default": "antivirus",
 			"description": "rabbitmq exchange name for antivirus"
 		},
-		"ANTIVIRUS_ROUTING_KEY" : {
+		"ANTIVIRUS_ROUTING_KEY": {
 			"type": "string",
 			"default": "scan_file",
 			"description": "rabbitmq routing key"
@@ -393,7 +435,12 @@
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
-			"description": "The used theming."
+			"description": "Oauth Login Endpoints Enabled."
+		},
+		"FEATURE_LOGIN_LINK_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Login via Link generation (to the right form)."
 		},
 		"SC_TITLE": {
 			"type": "string",
@@ -477,22 +524,22 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de/etherpad/api/1",
+			"default": "https://dbildungscloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default": "https://etherpad.hpi-schul-cloud.de/p",
+			"default": "https://etherpad.dbildungscloud.de/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de/etherpad/p",
+			"default": "https://dbildungscloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",
-			"default": "etherpad.hpi-schul-cloud.de",
+			"default": "etherpad.dbildungscloud.de",
 			"description": "The old etherpad domain."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
@@ -630,7 +677,13 @@
 			"type": "integer",
 			"minimum": 0,
 			"default": 8000,
-			"description": "Default timeout for external requests in milliseconds."
+			"description": "Timeout for outgoing requests from server to external systems in milliseconds."
+		},
+		"INCOMING_REQUEST_TIMEOUT_API": {
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Timeout for incoming requests to the API in milliseconds."
 		},
 		"FEATURE_SYNCER_CONSUMER_ENABLE": {
 			"type": "boolean",
@@ -681,7 +734,7 @@
 		},
 		"JWT_AUD": {
 			"type": "string",
-			"default": "https://hpi-schul-cloud.de",
+			"default": "https://dbildungscloud.de",
 			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
 		},
 		"KEEP_ALIVE": {
@@ -691,12 +744,12 @@
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
-			"default": "ticketsystem@schul-cloud.org",
+			"default": "ticketsystem@dbildungscloud.de",
 			"description": "Email address used for reporting a problem"
 		},
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
 			"type": "string",
-			"default": "ticketsystem@schul-cloud.org",
+			"default": "ticketsystem@dbildungscloud.de",
 			"description": "Email addresses used for reporting a wish"
 		},
 		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
@@ -724,10 +777,10 @@
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
 		},
-		"LEGACY_COURSE_OVERVIEW_ENABLED": {
+		"ROOM_VIEW_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Toggle for legacy course overview."
+			"description": "feature toggle activate Room view link."
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
@@ -738,6 +791,21 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
+		},
+		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
+			"type": "string",
+			"default": "",
+			"description": "SystemId for migration of users from system"
+		},
+		"FEATURE_COURSE_COPY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
 		}
 	},
 	"required": [
@@ -765,7 +833,23 @@
 				}
 			},
 			"then": {
-				"required": ["PROMETHEUS"]
+				"required": [
+					"PROMETHEUS"
+				]
+			}
+		},
+		"FEATURE_USER_MIGRATION_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_USER_MIGRATION_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"FEATURE_USER_MIGRATION_SYSTEM_ID"
+				]
 			}
 		},
 		"ANTIVIRUS": {

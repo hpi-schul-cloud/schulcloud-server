@@ -1,12 +1,12 @@
-import { Entity, Collection, ManyToMany, OneToOne, IdentifiedReference, wrap } from '@mikro-orm/core';
+import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { BaseEntityWithTimestamps } from './base.entity';
-import { BoardElement, BoardElementType } from './boardelement.entity';
 import { ILearnroomElement } from '../interface';
 import { EntityId } from '../types';
-import type { Task } from './task.entity';
-import type { Lesson } from './lesson.entity';
+import { BaseEntityWithTimestamps } from './base.entity';
+import { BoardElement, BoardElementType } from './boardelement.entity';
 import type { Course } from './course.entity';
+import type { Lesson } from './lesson.entity';
+import type { Task } from './task.entity';
 
 export type BoardProps = {
 	references: BoardElement[];
@@ -99,24 +99,26 @@ export class Board extends BaseEntityWithTimestamps {
 	}
 
 	private addTasksOnList(taskList: Task[]) {
-		taskList.forEach((task) => {
-			const alreadyContained = this.references
-				.getItems()
-				.find((ref) => ref.boardElementType === BoardElementType.Task && ref.target === task);
-			if (!alreadyContained) {
-				this.references.add(BoardElement.FromTask(task));
-			}
+		const current = this.references.getItems();
+		const tasksToAdd = taskList.filter((task) => {
+			const contained = current.find((ref) => ref.boardElementType === BoardElementType.Task && ref.target === task);
+			return !contained;
 		});
+		const elementsToAdd = tasksToAdd.map((task) => BoardElement.FromTask(task));
+		const newList = [...elementsToAdd, ...current];
+		this.references.set(newList);
 	}
 
 	private addLessonsOnList(lessonList: Lesson[]) {
-		lessonList.forEach((lesson) => {
-			const alreadyContained = this.references
-				.getItems()
-				.find((ref) => ref.boardElementType === BoardElementType.Lesson && ref.target === lesson);
-			if (!alreadyContained) {
-				this.references.add(BoardElement.FromLesson(lesson));
-			}
+		const current = this.references.getItems();
+		const lessonsToAdd = lessonList.filter((lesson) => {
+			const contained = current.find(
+				(ref) => ref.boardElementType === BoardElementType.Lesson && ref.target === lesson
+			);
+			return !contained;
 		});
+		const elementsToAdd = lessonsToAdd.map((lesson) => BoardElement.FromLesson(lesson));
+		const newList = [...elementsToAdd, ...current];
+		this.references.set(newList);
 	}
 }

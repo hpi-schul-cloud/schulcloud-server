@@ -12,8 +12,8 @@ const COURSE_FEATURES = {
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
-		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user', index: true }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	};
@@ -141,18 +141,14 @@ classSchema.virtual('displayName').get(function displayName() {
 classSchema.set('toObject', { virtuals: true });
 classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
 
-const gradeSchema = getUserGroupSchema();
-
 enableAuditLog(courseSchema);
 enableAuditLog(courseGroupSchema);
 enableAuditLog(classSchema);
-enableAuditLog(gradeSchema);
 
 const courseModel = mongoose.model('course', courseSchema);
 // represents a sub-group of students inside a course, e.g. for projects etc.
 const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
 const classModel = mongoose.model('class', classSchema);
-const gradeModel = mongoose.model('grade', gradeSchema);
 
 module.exports = {
 	COURSE_FEATURES,
@@ -160,6 +156,5 @@ module.exports = {
 	courseSchema,
 	courseGroupModel,
 	classModel,
-	gradeModel,
 	getClassDisplayName,
 };

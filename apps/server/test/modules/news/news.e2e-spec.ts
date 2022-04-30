@@ -1,16 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import moment from 'moment';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, News, NewsTargetModel } from '@shared/domain';
-import { ServerTestModule } from '@src/server.module';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { CreateNewsParams, NewsResponse, NewsListResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
+import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
+import { ServerTestModule } from '@src/server.module';
+import { Request } from 'express';
+import moment from 'moment';
+import request from 'supertest';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
@@ -49,7 +49,7 @@ describe('News Controller (e2e)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(AuthorizationService)
+			.overrideProvider(FeathersAuthorizationService)
 			.useValue({
 				checkEntityPermissions() {},
 				getPermittedEntities(userId, targetModel) {

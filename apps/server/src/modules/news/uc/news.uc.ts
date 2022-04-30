@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import {
 	EntityId,
-	IFindOptions,
-	News,
-	SortOrder,
-	NewsTargetModel,
 	ICreateNews,
+	IFindOptions,
 	INewsScope,
 	IUpdateNews,
+	News,
+	NewsTargetModel,
+	SortOrder,
 } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
-import { Logger, ILogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
+import { ILogger, Logger } from '@src/core/logger';
+import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 
@@ -20,7 +20,7 @@ type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 export class NewsUc {
 	private logger: ILogger;
 
-	constructor(private newsRepo: NewsRepo, private authorizationService: AuthorizationService) {
+	constructor(private newsRepo: NewsRepo, private authorizationService: FeathersAuthorizationService) {
 		this.logger = new Logger(NewsUc.name);
 	}
 
@@ -47,7 +47,7 @@ export class NewsUc {
 			creator: userId,
 			target: targetId,
 		});
-		await this.newsRepo.persistAndFlush(news);
+		await this.newsRepo.save(news);
 
 		this.logger.log(`news ${news.id} created by user ${userId}`);
 
@@ -129,7 +129,7 @@ export class NewsUc {
 			}
 		}
 
-		await this.newsRepo.persistAndFlush(news);
+		await this.newsRepo.save(news);
 
 		return news;
 	}
@@ -146,7 +146,7 @@ export class NewsUc {
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
 
-		await this.newsRepo.removeAndFlush(news);
+		await this.newsRepo.delete(news);
 
 		return id;
 	}

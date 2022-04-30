@@ -1,9 +1,8 @@
-import { Entity, Enum, IdentifiedReference, Index, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { IEntityWithSchool } from '../interface';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
-
 import { System } from './system.entity';
-
 import type { User } from './user.entity';
 
 export interface IImportUserProperties {
@@ -32,13 +31,14 @@ export enum RoleName {
 	STUDENT = 'student',
 	TEACHER = 'teacher',
 	ADMIN = 'administrator',
+	SUPERHERO = 'superhero',
 }
 
 @Entity({ tableName: 'importusers' })
 @Unique({ properties: ['school', 'ldapId'] })
 @Unique({ properties: ['school', 'ldapDn'] })
 @Unique({ properties: ['school', 'email'] })
-export class ImportUser extends BaseEntityWithTimestamps {
+export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	constructor(props: IImportUserProperties) {
 		super();
 		this.school = wrap(props.school).toReference();
