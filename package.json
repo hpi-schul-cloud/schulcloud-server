@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.12.0",
+	"version": "27.14.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -96,6 +96,7 @@
 		"@mikro-orm/nestjs": "^5.0.0",
 		"@nestjs/axios": "^0.0.5",
 		"@nestjs/common": "^8.2.6",
+		"@nestjs/config": "^2.0.0",
 		"@nestjs/core": "^8.2.6",
 		"@nestjs/jwt": "^8.0.0",
 		"@nestjs/microservices": "^8.2.6",
@@ -139,6 +140,7 @@
 		"html-entities": "^2.3.2",
 		"jose": "^1.28.1",
 		"jsonwebtoken": "8.5.1",
+		"jwks-rsa": "^2.0.5",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.19",
 		"migrate-mongoose": "^4.0.0",
@@ -181,7 +183,7 @@
 		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"winston": "^3.2.0",
+		"winston": "^3.7.2",
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {

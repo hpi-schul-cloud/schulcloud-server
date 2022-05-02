@@ -1,6 +1,5 @@
 {
 	"$schema": "./default.schema.json",
-	"REQUEST_TIMEOUT": 600000,
 	"FEATURE_API_VALIDATION_ENABLED": true,
 	"FEATURE_API_RESPONSE_VALIDATION_ENABLED": true,
 	"API_HOST": "http://host.docker.internal:3030",
@@ -29,5 +28,6 @@
 		"ADMIN_CLIENTID": "admin-cli",
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dbildungscloud"
-	}
+	},
+	"INCOMING_REQUEST_TIMEOUT_API": 60000
 }

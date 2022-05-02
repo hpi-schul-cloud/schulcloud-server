@@ -29,6 +29,5 @@
 		"SERVERNAME": "messenger.schule",
 		"SECRET": "SECRET",
 		"STUDENT_ROOM_CREATION": false
-	},
-	"REQUEST_TIMEOUT": 8000
+	}
 }

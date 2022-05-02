@@ -1,6 +1,6 @@
 import { Entity, Property, Index, ManyToOne, ManyToMany, Collection, Unique } from '@mikro-orm/core';
 
-import { ILearnroom } from '@shared/domain/interface';
+import { ILearnroom, IEntityWithSchool } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -29,7 +29,7 @@ const DEFAULT = {
 };
 
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps implements ILearnroom {
+export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEntityWithSchool {
 	@Property()
 	name: string = DEFAULT.name;
 
