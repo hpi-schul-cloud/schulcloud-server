@@ -10,7 +10,6 @@ import { CreateNewsParams, FilterNewsParams, NewsListResponse, NewsResponse, Upd
 @ApiTags('News')
 @Authenticate('jwt')
 @Controller('news')
-//@UseInterceptors(LoggingInterceptor)
 export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 
