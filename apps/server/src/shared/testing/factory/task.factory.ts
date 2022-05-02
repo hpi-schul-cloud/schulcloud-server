@@ -1,9 +1,9 @@
+import { ITaskProperties, Task } from '@shared/domain';
+import { User } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
-
-import { Task, ITaskProperties } from '@shared/domain';
-import type { User } from '@shared/domain/entity';
-
 import { BaseFactory } from './base.factory';
+import { schoolFactory } from './school.factory';
+import { userFactory } from './user.factory';
 
 const yesterday = new Date(Date.now() - 86400000);
 
@@ -20,6 +20,14 @@ class TaskFactory extends BaseFactory<Task, ITaskProperties> {
 }
 
 export const taskFactory = TaskFactory.define(Task, ({ sequence }) => {
+	const school = schoolFactory.build();
+	const creator = userFactory.build({ school });
 	// private is by default in constructor true, but in the most test cases we need private: false
-	return { name: `task #${sequence}`, private: false, availableDate: yesterday };
+	return {
+		name: `task #${sequence}`,
+		private: false,
+		availableDate: yesterday,
+		creator,
+		school,
+	};
 });

@@ -20,7 +20,7 @@ module.exports = {
 		// Use regex to get only matched fields
 		// /files/fileModel/
 		// [A-Za-z0-9]{10} ==> matched CUcACAnvKd
-		// example https://hpi-schul-cloud.de/link/CUcACAnvKd
+		// example https://dbildungscloud.de/link/CUcACAnvKd
 
 		const linkQuery = { target: { $regex: /files\/fileModel/g } };
 		const amountProm = LinkModelOld.find(linkQuery).countDocuments();

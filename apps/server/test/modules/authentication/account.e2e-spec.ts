@@ -5,13 +5,15 @@ import { Request } from 'express';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ServerTestModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { roleFactory, schoolFactory, userFactory, mapUserToCurrentUser, accountFactory } from '@shared/testing';
+import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
-	ChangePasswordParams,
+	AccountByIdBodyParams,
+	AccountSearchQueryParams,
+	AccountSearchType,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/authentication/controller/dto';
-import { User, ICurrentUser, Account } from '@shared/domain';
+import { Account, ICurrentUser, RoleName, User } from '@shared/domain';
 
 describe('Account Controller (e2e)', () => {
 	const basePath = '/account';
@@ -23,6 +25,7 @@ describe('Account Controller (e2e)', () => {
 	let adminAccount: Account;
 	let teacherAccount: Account;
 	let studentAccount: Account;
+	let superheroAccount: Account;
 
 	let currentUser: ICurrentUser;
 
@@ -35,10 +38,12 @@ describe('Account Controller (e2e)', () => {
 		const adminRoles = roleFactory.build({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] });
 		const teacherRoles = roleFactory.build({ name: 'teacher', permissions: ['STUDENT_EDIT'] });
 		const studentRoles = roleFactory.build({ name: 'student', permissions: [] });
+		const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
 
 		const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
 		const teacherUser = userFactory.buildWithId({ school, roles: [teacherRoles] });
 		const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
+		const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 
 		const mapUserToAccount = (user: User): Account => {
 			return accountFactory.buildWithId({
@@ -51,11 +56,12 @@ describe('Account Controller (e2e)', () => {
 		adminAccount = mapUserToAccount(adminUser);
 		teacherAccount = mapUserToAccount(teacherUser);
 		studentAccount = mapUserToAccount(studentUser);
+		superheroAccount = mapUserToAccount(superheroUser);
 
 		em.persist(school);
-		em.persist([adminRoles, teacherRoles, studentRoles]);
-		em.persist([adminUser, teacherUser, studentUser]);
-		em.persist([adminAccount, teacherAccount, studentAccount]);
+		em.persist([adminRoles, teacherRoles, studentRoles, superheroRoles]);
+		em.persist([adminUser, teacherUser, studentUser, superheroUser]);
+		em.persist([adminAccount, teacherAccount, studentAccount, superheroAccount]);
 		await em.flush();
 	};
 
@@ -84,27 +90,6 @@ describe('Account Controller (e2e)', () => {
 		// await cleanupCollections(em);
 		await app.close();
 		await orm.close();
-	});
-
-	describe('[PATCH] :id/pw', () => {
-		it(`should update a user's password as administrator`, async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const params: ChangePasswordParams = { password: 'Valid12$' };
-			await request(app.getHttpServer()) //
-				.patch(`${basePath}/${teacherAccount.user.id}/pw`)
-				.send(params)
-				.expect(200);
-			const updatedAccount = await em.findOneOrFail(Account, teacherAccount.id);
-			expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
-		});
-		it('should reject if password is weak', async () => {
-			currentUser = mapUserToCurrentUser(adminAccount.user);
-			const params: ChangePasswordParams = { password: 'weak' };
-			await request(app.getHttpServer()) //
-				.patch(`${basePath}/${teacherAccount.user.id}/pw`)
-				.send(params)
-				.expect(400);
-		});
 	});
 
 	describe('[PATCH] me/password', () => {
@@ -161,6 +146,159 @@ describe('Account Controller (e2e)', () => {
 				.patch(`${basePath}/me`)
 				.send(params)
 				.expect(400);
+		});
+	});
+
+	describe('[GET]', () => {
+		it('should search for user id', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USER_ID,
+				value: studentAccount.user.id,
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
+		});
+		it('should search for user name', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USERNAME,
+				value: '',
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
+		});
+		it('should reject if type is unknown', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const query: AccountSearchQueryParams = {
+				type: '' as AccountSearchType,
+				value: '',
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(400);
+		});
+		it('should reject if user is not authorized', async () => {
+			currentUser = mapUserToCurrentUser(adminAccount.user);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USERNAME,
+				value: '',
+				skip: 5,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(403);
+		});
+	});
+
+	describe('[GET] :id', () => {
+		it('should return account for account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/${studentAccount.id}`)
+				.expect(200);
+		});
+		it('should reject if id has invalid format', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/qwerty`)
+				.send()
+				.expect(400);
+		});
+		it('should reject if user is not a authorized', async () => {
+			currentUser = mapUserToCurrentUser(adminAccount.user);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/${studentAccount.id}`)
+				.expect(403);
+		});
+		it('should reject not existing account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			await request(app.getHttpServer()) //
+				.get(`${basePath}/000000000000000000000000`)
+				.expect(404);
+		});
+	});
+
+	describe('[PATCH] :id', () => {
+		it('should update account', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const body: AccountByIdBodyParams = {
+				password: defaultPassword,
+				username: studentAccount.username,
+				activated: true,
+			};
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/${studentAccount.id}`)
+				.send(body)
+				.expect(200);
+		});
+		it('should reject if user is not authorized', async () => {
+			currentUser = mapUserToCurrentUser(studentAccount.user);
+			const body: AccountByIdBodyParams = {
+				password: defaultPassword,
+				username: studentAccount.username,
+				activated: true,
+			};
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/${studentAccount.id}`)
+				.send(body)
+				.expect(403);
+		});
+		it('should reject not existing account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			const body: AccountByIdBodyParams = {
+				password: defaultPassword,
+				username: studentAccount.username,
+				activated: true,
+			};
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/000000000000000000000000`)
+				.send(body)
+				.expect(404);
+		});
+	});
+
+	describe('[DELETE] :id', () => {
+		it('should delete account', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/${studentAccount.id}`)
+				.expect(200);
+		});
+		it('should reject invalid account id format', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/qwerty`)
+				.expect(400);
+		});
+		it('should reject if user is not a authorized', async () => {
+			currentUser = mapUserToCurrentUser(adminAccount.user);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/${studentAccount.id}`)
+				.expect(403);
+		});
+		it('should reject not existing account id', async () => {
+			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			await request(app.getHttpServer()) //
+				.delete(`${basePath}/000000000000000000000000`)
+				.expect(404);
 		});
 	});
 });
