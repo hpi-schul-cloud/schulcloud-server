@@ -41,7 +41,7 @@ describe('permissons service', () => {
 			const school = await testHelper.createTestSchool();
 			expect(school.permissions.teacher.STUDENT_LIST).to.be.true;
 
-			const admin = await testHelper.createTestUser({ schoolId: school.id, roles: ['administrator'] });
+			const admin = await testHelper.createTestUser({ schoolId: school._id, roles: ['administrator'] });
 			const params = await testHelper.generateRequestParamsFromUser(admin);
 			params.query = {};
 			const data = { permission: { isEnabled: false } };
