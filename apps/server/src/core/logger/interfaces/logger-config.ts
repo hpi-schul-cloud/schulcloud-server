@@ -1,5 +1,5 @@
-import { LogLevel } from '@nestjs/common';
+import { AvailableLogLevel } from './logger.interface';
 
 export interface ILoggerConfig {
-	LOG_LEVEL: string[] | LogLevel[];
+	NEST_LOG_LEVEL: AvailableLogLevel[];
 }

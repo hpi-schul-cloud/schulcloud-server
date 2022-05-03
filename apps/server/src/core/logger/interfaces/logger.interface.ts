@@ -1,3 +1,7 @@
+import { LogLevel } from '@nestjs/common';
+
+export type AvailableLogLevel = LogLevel | 'http';
+
 export type RequestLoggingBody = {
 	userId?: string;
 	request: { url: string; method: string; params: unknown; query: unknown };
