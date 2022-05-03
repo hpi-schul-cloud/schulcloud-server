@@ -1,14 +1,17 @@
 import { NotFound } from '@feathersjs/errors';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpStatus } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { BusinessError } from '@shared/common';
-import { GlobalErrorFilter } from './global-error.filter';
+import { Logger } from '@src/core/logger';
 import { ErrorResponse } from '../dto/error.response';
+import { GlobalErrorFilter } from './global-error.filter';
 
 describe('GlobalErrorFilter', () => {
 	let errorFilter: GlobalErrorFilter;
+	const logger: DeepMocked<Logger> = createMock<Logger>();
 	beforeAll(() => {
-		errorFilter = new GlobalErrorFilter();
+		errorFilter = new GlobalErrorFilter(logger);
 	});
 
 	describe('createErrorResponse', () => {

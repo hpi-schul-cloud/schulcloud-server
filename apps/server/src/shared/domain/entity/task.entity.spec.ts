@@ -47,6 +47,28 @@ describe('Task Entity', () => {
 		});
 	});
 
+	describe('isPublished', () => {
+		it('should return false for private task', () => {
+			const task = taskFactory.draft().build();
+			expect(task.isPublished()).toEqual(false);
+		});
+
+		it('should return false before available Date', () => {
+			const task = taskFactory.build({ availableDate: new Date(Date.now() + 10000) });
+			expect(task.isPublished()).toEqual(false);
+		});
+
+		it('should return true after available Date', () => {
+			const task = taskFactory.build({ availableDate: new Date(Date.now() - 10000) });
+			expect(task.isPublished()).toEqual(true);
+		});
+
+		it('should return true without available Date', () => {
+			const task = taskFactory.build({ availableDate: undefined });
+			expect(task.isPublished()).toEqual(true);
+		});
+	});
+
 	describe('isFinished', () => {
 		let user: User;
 

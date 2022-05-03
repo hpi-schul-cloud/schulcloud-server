@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
@@ -207,20 +208,61 @@ describe('RoomBoardDTOMapper', () => {
 
 			it('should set lessons for student', () => {
 				const result = mapper.createDTO({ room, board, user: student });
-				const resultLessons = result.elements.map((el) => el.content as Lesson);
-				expect(resultLessons).toEqual(lessons);
+				expect(result.elements.length).toEqual(3);
 			});
 
 			it('should set lessons for teacher', () => {
 				const result = mapper.createDTO({ room, board, user: teacher });
-				const resultLessons = result.elements.map((el) => el.content as Lesson);
-				expect(resultLessons).toEqual(lessons);
+				expect(result.elements.length).toEqual(3);
 			});
 
 			it('should set lessons for substitutionTeacher', () => {
 				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
-				const resultLessons = result.elements.map((el) => el.content as Lesson);
-				expect(resultLessons).toEqual(lessons);
+				expect(result.elements.length).toEqual(3);
+			});
+		});
+
+		describe('when board contains lesson with tasks', () => {
+			let teacher: User;
+			let student: User;
+			let substitutionTeacher: User;
+			let board: Board;
+			let room: Course;
+			let lesson: Lesson;
+
+			beforeEach(() => {
+				teacher = userFactory.buildWithId();
+				student = userFactory.buildWithId();
+				substitutionTeacher = userFactory.buildWithId();
+				room = courseFactory.buildWithId({
+					teachers: [teacher],
+					students: [student],
+					substitutionTeachers: [substitutionTeacher],
+				});
+				board = boardFactory.buildWithId({ course: room });
+				lesson = lessonFactory.build({ course: room });
+				taskFactory.build({ course: room, lesson });
+				taskFactory.draft().build({ course: room, lesson });
+				board.syncLessonsFromList([lesson]);
+				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
+			});
+
+			it('should set set number of published tasks for student', () => {
+				const result = mapper.createDTO({ room, board, user: student });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfTasks).toEqual(1);
+			});
+
+			it('should set lessons for teacher', () => {
+				const result = mapper.createDTO({ room, board, user: teacher });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfTasks).toEqual(2);
+			});
+
+			it('should set lessons for substitutionTeacher', () => {
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfTasks).toEqual(2);
 			});
 		});
 

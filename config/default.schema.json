@@ -6,6 +6,11 @@
 		"$schema": {
 			"type": "string"
 		},
+		"NODE_ENV": {
+			"type": "string",
+			"enum": ["development", "test", "production", "migration"],
+			"default": "production"
+		},
 		"CLIENT_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -278,7 +283,7 @@
 			"properties": {
 				"URI": {
 					"type": "string",
-					"default" : null,
+					"default": null,
 					"description": "The ErWIn IDM base URI."
 				},
 				"TENANT": {
@@ -452,21 +457,28 @@
 			"default": "HPI Schul-Cloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
-		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
-			"type": "string",
-			"default": "enabled",
-			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
-			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
-		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
 			"default": true,
 			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
 		},
-		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		"TEACHER_STUDENT_VISIBILITY": {
+			"type": "object",
+			"description": "Configuration regarding teachers' STUDENT_LIST permission.",
+			"properties": {
+				"IS_CONFIGURABLE": {
+					"type": "boolean",
+					"description": "Allows school admin to toggle teachers' STUDENT_LIST permission."
+				},
+				"IS_ENABLED_BY_DEFAULT": {
+					"type": "boolean",
+					"description": "Grants teachers STUDENT_LIST permission by default."
+				}
+			},
+			"default": {
+				"IS_CONFIGURABLE": false,
+				"IS_ENABLED_BY_DEFAULT": true
+			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
@@ -707,6 +719,23 @@
 			"default": "error",
 			"description": "Log level for queue based syncers (e.g. LDAP)"
 		},
+		"LOG_LEVEL": {
+			"type": "string",
+			"default": "error",
+			"description": "Log level for api.",
+			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
+		},
+		"NEST_AVAILABLE_LOG_LEVELS": {
+			"type": "string",
+			"default": "error,http",
+			"description": "Nest Log level for api. Different log level can be activated separately by adding the value to the comma separated list. For example 'log,error,warn,debug,verbose,http' The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'."
+		},
+		"SYSTEM_LOG_LEVEL": {
+			"type": "string",
+			"default": "requestError",
+			"description": "Special logs.",
+			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
+		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
@@ -833,9 +862,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"PROMETHEUS"
-				]
+				"required": ["PROMETHEUS"]
 			}
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -847,9 +874,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"FEATURE_USER_MIGRATION_SYSTEM_ID"
-				]
+				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
 			}
 		},
 		"ANTIVIRUS": {

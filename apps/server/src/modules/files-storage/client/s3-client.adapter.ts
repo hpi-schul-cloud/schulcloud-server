@@ -1,28 +1,28 @@
 import {
+	CopyObjectCommand,
+	CopyObjectCommandOutput,
 	CreateBucketCommand,
+	DeleteObjectsCommand,
 	GetObjectCommand,
 	S3Client,
 	ServiceOutputTypes,
-	CopyObjectCommand,
-	DeleteObjectsCommand,
-	CopyObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
-
-import { ILogger, Logger } from '@src/core/logger';
-
-import { S3Config, IGetFileResponse, IStorageClient, IFile, ICopyFiles } from '../interface';
+import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
-	private logger: ILogger;
-
 	private deletedFolderName = 'trash';
 
-	constructor(@Inject('S3_Client') readonly client: S3Client, @Inject('S3_Config') readonly config: S3Config) {
-		this.logger = new Logger('S3Client');
+	constructor(
+		@Inject('S3_Client') readonly client: S3Client,
+		@Inject('S3_Config') readonly config: S3Config,
+		private logger: Logger
+	) {
+		this.logger.setContext(S3ClientAdapter.name);
 	}
 
 	async createBucket() {

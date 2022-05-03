@@ -1,7 +1,8 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import { DurationLoggingInterceptor } from '@shared/common';
 import { Logger } from '@src/core/logger';
+import request from 'supertest';
 import { createTestModule } from './test/create-test.module';
 
 describe('DurationLoggingInterceptor', () => {
@@ -9,15 +10,13 @@ describe('DurationLoggingInterceptor', () => {
 		let app: INestApplication;
 		let interceptor: DurationLoggingInterceptor;
 
-		const loggerSpy = jest.spyOn(Logger.prototype, 'verbose');
+		const logger: DeepMocked<Logger> = createMock<Logger>();
 
 		beforeEach(() => {
-			interceptor = new DurationLoggingInterceptor();
+			interceptor = new DurationLoggingInterceptor(logger);
 		});
 
-		afterEach(() => {
-			loggerSpy.mockReset();
-		});
+		afterEach(() => {});
 
 		it(`should not transform the response and produce before- and after-log`, async () => {
 			app = (await createTestModule(interceptor)).createNestApplication();
@@ -25,7 +24,7 @@ describe('DurationLoggingInterceptor', () => {
 			await app.init();
 			await request(app.getHttpServer()).get('/').expect(200).expect('Schulcloud Server API');
 
-			expect(loggerSpy).toBeCalledTimes(2);
+			expect(logger.verbose).toBeCalledTimes(2);
 
 			await app.close();
 		});
