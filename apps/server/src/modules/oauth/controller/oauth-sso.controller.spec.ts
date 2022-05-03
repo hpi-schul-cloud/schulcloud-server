@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Test, TestingModule } from '@nestjs/testing';
-import { getMockRes } from '@jest-mock/express';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { getMockRes } from '@jest-mock/express';
+import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
-import { OauthSSOController } from './oauth-sso.controller';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { Logger } from '@src/core/logger';
+import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
-import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OauthSSOController } from './oauth-sso.controller';
 
 describe('OAuthController', () => {
 	Configuration.set('HOST', 'https://mock.de');
@@ -24,6 +26,10 @@ describe('OAuthController', () => {
 					provide: OauthUc,
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					useValue: oauthUcMock,
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

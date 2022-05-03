@@ -1,13 +1,11 @@
-import { Console, Command } from 'nestjs-console';
 import { Logger } from '@src/core/logger';
+import { Command, Console } from 'nestjs-console';
 import { DeleteFilesUc } from '../uc';
 
 @Console({ command: 'files', description: 'file deletion console' })
 export class DeleteFilesConsole {
-	private logger: Logger;
-
-	constructor(private deleteFilesUc: DeleteFilesUc) {
-		this.logger = new Logger(DeleteFilesConsole.name);
+	constructor(private deleteFilesUc: DeleteFilesUc, private logger: Logger) {
+		this.logger.setContext(DeleteFilesConsole.name);
 	}
 
 	@Command({

@@ -25,6 +25,7 @@ import { ServerController } from './server.controller';
 const serverModules = [
 	ConfigModule.forRoot({
 		isGlobal: true,
+		validationOptions: { infer: true },
 		load: [serverConfig],
 	}),
 	CoreModule,

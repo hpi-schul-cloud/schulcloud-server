@@ -1,14 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
-import { Request } from 'express';
-import busboy from 'busboy';
-import internal from 'stream';
-import path from 'path';
-
-import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord, ScanStatus, Counted } from '@shared/domain';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { ILogger, Logger } from '@src/core/logger';
-
+import { FileRecordRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger';
+import busboy from 'busboy';
+import { Request } from 'express';
+import path from 'path';
+import internal from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileParams,
@@ -17,19 +15,18 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { IFile } from '../interface/file';
 import { ICopyFiles } from '../interface';
+import { IFile } from '../interface/file';
 
 @Injectable()
 export class FilesStorageUC {
-	private logger: ILogger;
-
 	constructor(
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
-		private readonly antivirusService: AntivirusService
+		private readonly antivirusService: AntivirusService,
+		private logger: Logger
 	) {
-		this.logger = new Logger('FilesStorageUC');
+		this.logger.setContext(FilesStorageUC.name);
 	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {

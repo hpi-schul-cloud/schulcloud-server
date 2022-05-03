@@ -11,17 +11,19 @@ import {
 } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
-import { ILogger, Logger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 
 @Injectable()
 export class NewsUc {
-	private logger: ILogger;
-
-	constructor(private newsRepo: NewsRepo, private authorizationService: FeathersAuthorizationService) {
-		this.logger = new Logger(NewsUc.name);
+	constructor(
+		private newsRepo: NewsRepo,
+		private authorizationService: FeathersAuthorizationService,
+		private logger: Logger
+	) {
+		this.logger.setContext(NewsUc.name);
 	}
 
 	/**

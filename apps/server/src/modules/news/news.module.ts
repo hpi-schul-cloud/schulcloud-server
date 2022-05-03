@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
 import { NewsRepo } from '@shared/repo';
-import { NewsUc } from './uc/news.uc';
+import { Logger } from '@src/core/logger';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { NewsController } from './controller/news.controller';
 import { TeamNewsController } from './controller/team-news.controller';
+import { NewsUc } from './uc/news.uc';
 
 /* NewsController
  * to enable:
@@ -13,9 +13,9 @@ import { TeamNewsController } from './controller/team-news.controller';
  * - update backup/setup/news.json from db after migration has been executed
  */
 @Module({
-	imports: [AuthorizationModule, LoggerModule],
+	imports: [AuthorizationModule],
 	controllers: [NewsController, TeamNewsController],
-	providers: [NewsUc, NewsRepo],
+	providers: [NewsUc, NewsRepo, Logger],
 	exports: [NewsUc],
 })
 export class NewsModule {}
