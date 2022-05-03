@@ -278,7 +278,7 @@
 			"properties": {
 				"URI": {
 					"type": "string",
-					"default" : null,
+					"default": null,
 					"description": "The ErWIn IDM base URI."
 				},
 				"TENANT": {
@@ -452,21 +452,28 @@
 			"default": "HPI Schul-Cloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
-		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
-			"type": "string",
-			"default": "enabled",
-			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
-			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
-		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
 			"type": "boolean",
 			"default": true,
 			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
 		},
-		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		"TEACHER_STUDENT_VISIBILITY": {
+			"type": "object",
+			"description": "Configuration regarding teachers' STUDENT_LIST permission.",
+			"properties": {
+				"IS_CONFIGURABLE": {
+					"type": "boolean",
+					"description": "Allows school admin to toggle teachers' STUDENT_LIST permission."
+				},
+				"IS_ENABLED_BY_DEFAULT": {
+					"type": "boolean",
+					"description": "Grants teachers STUDENT_LIST permission by default."
+				}
+			},
+			"default": {
+				"IS_CONFIGURABLE": false,
+				"IS_ENABLED_BY_DEFAULT": true
+			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
@@ -833,9 +840,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"PROMETHEUS"
-				]
+				"required": ["PROMETHEUS"]
 			}
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -847,9 +852,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"FEATURE_USER_MIGRATION_SYSTEM_ID"
-				]
+				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
 			}
 		},
 		"ANTIVIRUS": {
