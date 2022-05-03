@@ -48,7 +48,7 @@ const addSecret = (context) => {
 };
 
 const isBBBTool = (tool) => tool.name && tool.name === 'Video-Konferenz mit BigBlueButton';
-const isNextcloudTool = (tool) => tool.oAuthClientId && tool.oAuthClientId === 'Nextcloud';
+const isNextcloudTool = (tool) => tool.name && tool.name === 'Nextcloud';
 
 const filterFindBBB = (context) => {
 	let hasVideoconferenceItems = false;
@@ -70,8 +70,8 @@ const filterFindNextcloud = (context) => {
 		hasNextCloudItems = context.result.data.some((tool) => isNextcloudTool(tool));
 	}
 	if (hasNextCloudItems) {
-		// if school feature disabled, remove bbb tools from results data
-		const { features = [] } = context.params.school;
+		// if school feature disabled, remove Nextcloud tools from results data
+		const { features = [] } = context.params.school.features;
 		if (!features.includes(SCHOOL_FEATURES.NEXTCLOUD)) {
 			context.result.data = context.result.data.filter((tool) => !isNextcloudTool(tool));
 		}
