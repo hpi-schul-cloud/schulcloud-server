@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
 import { BoardElementResponse, BoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
@@ -73,13 +73,21 @@ describe('room board response mapper', () => {
 
 		it('should map lessons on board to response', () => {
 			const course = courseFactory.buildWithId();
-			const lesson = lessonFactory.buildWithId({ course, hidden: true });
+			const lessonMetadata = {
+				id: 'lessonId',
+				name: 'lesson',
+				hidden: false,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				numberOfTasks: 0,
+				courseName: course.name,
+			};
 			const board = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				courseName: course.name,
-				elements: [{ type: RoomBoardElementTypes.LESSON, content: lesson }],
+				elements: [{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata }],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -89,7 +97,15 @@ describe('room board response mapper', () => {
 
 		it('should map mix of tasks and lessons on board to response', () => {
 			const course = courseFactory.buildWithId();
-			const lesson = lessonFactory.buildWithId({ course, hidden: true });
+			const lessonMetadata = {
+				id: 'lessonId',
+				name: 'lesson',
+				hidden: false,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				numberOfTasks: 1,
+				courseName: course.name,
+			};
 			const task = taskFactory.buildWithId({ course });
 			const status = {
 				graded: 0,
@@ -105,7 +121,7 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				courseName: course.name,
 				elements: [
-					{ type: RoomBoardElementTypes.LESSON, content: lesson },
+					{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata },
 					{ type: RoomBoardElementTypes.TASK, content: { task, status } },
 				],
 			};

@@ -1,7 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const { iff, isProvider } = require('feathers-hooks-common');
 
-const { BadRequest } = require('../../../errors');
+const { BadRequest, Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
 
@@ -41,6 +42,10 @@ class HandlePermissions {
 	}
 
 	async patch(id, data, params) {
+		if (!Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
+			throw new Forbidden('Configuring student visibility is not allowed.');
+		}
+
 		const { permission } = data;
 		const { schoolId } = params.account;
 		const school = await getSchool(this.app, schoolId);

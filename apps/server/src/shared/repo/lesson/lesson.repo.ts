@@ -22,7 +22,7 @@ export class LessonRepo extends BaseRepo<Lesson> {
 
 		const [lessons, count] = await this._em.findAndCount(Lesson, scope.query, { orderBy: order });
 
-		await this._em.populate(lessons, ['course']);
+		await this._em.populate(lessons, ['course', 'tasks']);
 
 		return [lessons, count];
 	}

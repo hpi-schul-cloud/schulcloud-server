@@ -1,7 +1,8 @@
-import { Collection, Entity, ManyToOne, OneToMany, ManyToMany, Property, Index } from '@mikro-orm/core';
-import { EntityId } from '../types/entity-id';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { School } from '@shared/domain/entity/school.entity';
+import { IEntityWithSchool } from '../interface';
 import { ILearnroomElement } from '../interface/learnroom';
-
+import { EntityId } from '../types/entity-id';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { Lesson } from './lesson.entity';
@@ -14,8 +15,9 @@ export interface ITaskProperties {
 	availableDate?: Date;
 	dueDate?: Date;
 	private?: boolean;
-	creator?: User;
+	creator: User;
 	course?: Course;
+	school: School;
 	lesson?: Lesson;
 	submissions?: Submission[];
 	finished?: User[];
@@ -48,7 +50,7 @@ export type TaskParentDescriptions = { courseName: string; lessonName: string; c
 @Index({ properties: ['id', 'private'] })
 @Index({ properties: ['finished', 'course'] })
 @Index({ properties: ['finished', 'course'] })
-export class Task extends BaseEntityWithTimestamps implements ILearnroomElement {
+export class Task extends BaseEntityWithTimestamps implements ILearnroomElement, IEntityWithSchool {
 	@Property()
 	name: string;
 
@@ -65,13 +67,17 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	@Property()
 	private = true;
 
-	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
 	@Index()
+	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
 	creator?: User;
 
 	@Index()
 	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
 	course?: Course;
+
+	@Index()
+	@ManyToOne('School', { fieldName: 'schoolId' })
+	school: School;
 
 	@Index()
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
@@ -93,6 +99,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 		if (props.private !== undefined) this.private = props.private;
 		this.creator = props.creator;
 		this.course = props.course;
+		this.school = props.school;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
@@ -105,6 +112,16 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement 
 	isDraft(): boolean {
 		// private can be undefined in the database
 		return !!this.private;
+	}
+
+	isPublished(): boolean {
+		if (this.isDraft()) {
+			return false;
+		}
+		if (this.availableDate && this.availableDate > new Date(Date.now())) {
+			return false;
+		}
+		return true;
 	}
 
 	private getSubmissionItems(): Submission[] {
