@@ -107,7 +107,7 @@ const managesOwnConsents = (hook) => {
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
-
+exports.setIdToken = setIdToken;
 exports.hooks = {
 	clients: {
 		before: {
