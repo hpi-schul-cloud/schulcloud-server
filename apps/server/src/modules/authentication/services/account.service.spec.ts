@@ -15,6 +15,7 @@ describe('AccountService', () => {
 	let mockAccounts: Account[];
 	let mockUsers: User[];
 	let accountRepo: AccountRepo;
+	let systemRepo: SystemRepo;
 	let userRepo: UserRepo;
 
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -95,12 +96,15 @@ describe('AccountService', () => {
 				{
 					provide: SystemRepo,
 					useValue: {
-						findById: jest.fn().mockImplementation(() => null),
+						findById: jest.fn().mockImplementation((systemId: string) => ({
+							id: systemId,
+						})),
 					},
 				},
 			],
 		}).compile();
 		accountRepo = module.get(AccountRepo);
+		systemRepo = module.get(SystemRepo);
 		accountService = module.get(AccountService);
 		userRepo = module.get(UserRepo);
 		orm = await setupEntities();
@@ -134,6 +138,10 @@ describe('AccountService', () => {
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
 		mockUsers = [mockTeacherUser, mockStudentUser, mockUserWithoutAccount];
+
+		(userRepo.findById as jest.Mock).mockClear();
+		(systemRepo.findById as jest.Mock).mockClear();
+		(accountRepo.save as jest.Mock).mockClear();
 	});
 
 	describe('findById', () => {
@@ -149,7 +157,7 @@ describe('AccountService', () => {
 			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
 		it('should return null', async () => {
-			const resultAccount = await accountService.findByUserId('nonExsitentId');
+			const resultAccount = await accountService.findByUserId('nonExistentId');
 			expect(resultAccount).toBeNull();
 		});
 	});
@@ -159,8 +167,8 @@ describe('AccountService', () => {
 			const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
 			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
-		it('should return null', async () => {
-			await expect(accountService.findByUserIdOrFail('nonExsitentId')).rejects.toThrow(EntityNotFoundError);
+		it('should throw EntityNotFoundError', async () => {
+			await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
 		});
 	});
 
@@ -175,6 +183,31 @@ describe('AccountService', () => {
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
 				activated: mockTeacherAccountDto.activated,
+			});
+		});
+		it("should update an existing account's system", async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			mockTeacherAccountDto.username = 'changedUsername@example.org';
+			mockTeacherAccountDto.systemId = 'dummySystemId';
+			await accountService.save(mockTeacherAccountDto);
+			expect(userRepo.findById).toHaveBeenCalledWith(mockTeacherUser.id);
+			expect(accountRepo.save).toHaveBeenCalledWith({
+				...mockTeacherAccount,
+				username: mockTeacherAccountDto.username,
+				system: { id: mockTeacherAccountDto.systemId },
+			});
+		});
+		it("should update an existing account's user", async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			mockTeacherAccountDto.username = 'changedUsername@example.org';
+			mockTeacherAccountDto.userId = mockStudentUser.id;
+			await accountService.save(mockTeacherAccountDto);
+			expect(userRepo.findById).toHaveBeenCalledWith(mockStudentUser.id);
+			expect(accountRepo.save).toHaveBeenCalledWith({
+				...mockTeacherAccount,
+				username: mockTeacherAccountDto.username,
+				activated: mockTeacherAccountDto.activated,
+				user: mockStudentUser,
 			});
 		});
 		it('should save a new account', async () => {
