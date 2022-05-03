@@ -54,7 +54,7 @@ describe('account repo', () => {
 	});
 
 	describe('findByUserIdOrFail', () => {
-		it('should findByUserIdOrFail', async () => {
+		it('should find a user by id', async () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
@@ -62,7 +62,7 @@ describe('account repo', () => {
 			expect(account?.id).toEqual(accountToFind.id);
 		});
 
-		it('should findByUserIdOrFail', async () => {
+		it('should throw if id does not exist', async () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
