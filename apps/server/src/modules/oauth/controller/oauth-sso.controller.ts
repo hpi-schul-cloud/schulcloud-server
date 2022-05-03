@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe/parse-object-id.pipe';
-import { ILogger, Logger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { Response } from 'express';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthUc } from '../uc/oauth.uc';
@@ -12,10 +12,8 @@ import { OAuthResponse } from './dto/oauth.response';
 @ApiTags('SSO')
 @Controller('sso')
 export class OauthSSOController {
-	private logger: ILogger;
-
-	constructor(private readonly oauthUc: OauthUc) {
-		this.logger = new Logger(OauthSSOController.name);
+	constructor(private readonly oauthUc: OauthUc, private logger: Logger) {
+		this.logger.setContext(OauthSSOController.name);
 	}
 
 	@Get('oauth/:systemid')

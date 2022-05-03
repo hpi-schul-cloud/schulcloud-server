@@ -1,10 +1,11 @@
+import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICreateNews, NewsTargetModel } from '@shared/domain';
 import { NewsRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 import { NewsUc } from './news.uc';
 
@@ -42,7 +43,6 @@ describe('NewsUc', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule],
 			providers: [
 				NewsUc,
 				{
@@ -82,6 +82,10 @@ describe('NewsUc', () => {
 							return NEWS_PERMISSIONS;
 						},
 					},
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

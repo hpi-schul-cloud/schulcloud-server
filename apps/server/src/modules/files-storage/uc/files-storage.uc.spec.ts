@@ -1,25 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Busboy } from 'busboy';
-
-import { FileRecordRepo } from '@shared/repo';
+import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-
+import { FileRecordRepo } from '@shared/repo';
+import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { Busboy } from 'busboy';
+import { Request } from 'express';
+import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
+	CopyFileParams,
+	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
 	SingleFileParams,
-	CopyFilesOfParentParams,
-	CopyFileParams,
 } from '../controller/dto/file-storage.params';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { IGetFileResponse } from '../interface/storage-client';
-
 import { FilesStorageUC } from './files-storage.uc';
 
 describe('FilesStorageUC', () => {
@@ -71,6 +69,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: AntivirusService,
 					useValue: createMock<AntivirusService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

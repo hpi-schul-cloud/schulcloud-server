@@ -1,34 +1,33 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ILogger, Logger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
-import { SystemRepo } from '@shared/repo/system';
-import { UserRepo } from '@shared/repo';
+import { Inject, Injectable } from '@nestjs/common';
 import { System, User } from '@shared/domain';
-import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
-import { lastValueFrom } from 'rxjs';
-import QueryString from 'qs';
+import { UserRepo } from '@shared/repo';
+import { SystemRepo } from '@shared/repo/system';
+import { Logger } from '@src/core/logger';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import jwt from 'jsonwebtoken';
 import JwksRsa from 'jwks-rsa';
-import { TokenRequestPayload } from '../controller/dto/token-request.payload';
-import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
+import QueryString from 'qs';
+import { lastValueFrom } from 'rxjs';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
+import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from '../controller/dto/oauth.response';
-import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
+import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
 
 @Injectable()
 export class OauthUc {
-	private logger: ILogger;
-
 	constructor(
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private httpService: HttpService,
-		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService
+		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
+		private logger: Logger
 	) {
-		this.logger = new Logger(OauthUc.name);
+		this.logger.setContext(OauthUc.name);
 	}
 
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
