@@ -18,7 +18,7 @@ export class Logger extends ConsoleLogger implements ILogger {
 	 */
 	constructor(private readonly configService: ConfigService<ILoggerConfig, true>) {
 		super();
-		const logLevels = this.configService.get<AvailableLogLevel[]>('NEST_LOG_LEVEL');
+		const logLevels = this.configService.get<AvailableLogLevel[]>('AVAILABLE_LOG_LEVELS');
 		this.setLogLevels(logLevels as LogLevel[]);
 	}
 
