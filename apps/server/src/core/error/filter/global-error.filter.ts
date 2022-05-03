@@ -3,8 +3,7 @@ import { ApiValidationError, BusinessError } from '@shared/common';
 import { ILogger, Logger } from '@src/core/logger';
 import { Response } from 'express';
 import _ from 'lodash';
-import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
-import { ErrorResponse } from '../dto/error.response';
+import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
 import { FeathersError } from '../interface';
 
 const isFeathersError = (error: Error): error is FeathersError => {

@@ -5,7 +5,7 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryptio
 import { UserRepo } from '@shared/repo';
 import { SystemRepo } from '@shared/repo/system';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization/feathers-jwt.provider';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import jwt from 'jsonwebtoken';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';

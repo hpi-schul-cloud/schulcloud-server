@@ -11,13 +11,13 @@ import { ILogger } from './interfaces/logger.interface';
  */
 export class Logger extends ConsoleLogger implements ILogger {
 	/**
-	 * This Logger Service can be initialized with a context, that will be added to every log.
+	 * This Logger Service can be injected into every Class,
+	 * use setContext() with CustomProviderClass.name that will be added to every log.
 	 * It implements @ILogger which provides the logger methods.
 	 * CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES
-	 * @param context when initialized in a provider, use setContext with CustomProviderClass.name
 	 */
-	constructor(context: string, private readonly configService: ConfigService<ILoggerConfig, true>) {
-		super(context);
+	constructor(private readonly configService: ConfigService<ILoggerConfig, true>) {
+		super();
 		const logLevels = this.configService.get<LogLevel[]>('LOG_LEVEL');
 		this.setLogLevels(logLevels);
 	}
