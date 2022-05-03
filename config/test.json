@@ -41,5 +41,5 @@
 		"ADMIN_USER": "dbildungscloud",
 		"ADMIN_PASSWORD": "dbildungscloud"
 	},
-	"NEST_LOG_LEVEL": ""
+	"NEST_AVAILABLE_LOG_LEVELS": ""
 }
