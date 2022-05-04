@@ -1,5 +1,7 @@
-import { Injectable, Scope, ConsoleLogger } from '@nestjs/common';
-import { ILogger } from './logger.interface';
+import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ILoggerConfig, RequestLoggingBody } from './interfaces';
+import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
@@ -9,10 +11,22 @@ import { ILogger } from './logger.interface';
  */
 export class Logger extends ConsoleLogger implements ILogger {
 	/**
-	 * This Logger Service can be initialized with a context, that will be added to every log.
+	 * This Logger Service can be injected into every Class,
+	 * use setContext() with CustomProviderClass.name that will be added to every log.
 	 * It implements @ILogger which provides the logger methods.
 	 * CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES
-	 * @param context when initialized in a provider, use setContext with CustomProviderClass.name
-	 * @param isTimestampEnabled
 	 */
+	constructor(private readonly configService: ConfigService<ILoggerConfig, true>) {
+		super();
+		const logLevels = this.configService.get<AvailableLogLevel[]>('AVAILABLE_LOG_LEVELS');
+		this.setLogLevels(logLevels as LogLevel[]);
+	}
+
+	http(message: RequestLoggingBody, context?: string): void {
+		const logLevel = 'http';
+		if (!this.isLevelEnabled(logLevel as LogLevel)) {
+			return;
+		}
+		this.printMessages([JSON.stringify(message)], context || this.context, 'HTTP Request' as LogLevel);
+	}
 }

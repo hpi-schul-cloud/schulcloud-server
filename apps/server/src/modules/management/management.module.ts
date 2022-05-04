@@ -1,20 +1,28 @@
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { FileSystemModule } from '@shared/infra/file-system';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
-import { MongoMemoryDatabaseModule, DatabaseManagementService, DatabaseManagementModule } from '@shared/infra/database';
+import { DatabaseManagementModule, DatabaseManagementService, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
-
-import { DatabaseManagementController } from './controller/database-management.controller';
-import { DatabaseManagementUc } from './uc/database-management.uc';
-import { BsonConverter } from './converter/bson.converter';
+import { FileSystemModule } from '@shared/infra/file-system';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import serverConfig from '@src/server.config';
 import { DatabaseManagementConsole } from './console/database-management.console';
+import { DatabaseManagementController } from './controller/database-management.controller';
+import { BsonConverter } from './converter/bson.converter';
+import { DatabaseManagementUc } from './uc/database-management.uc';
 
-const imports = [FileSystemModule, DatabaseManagementModule];
+const imports = [
+	FileSystemModule,
+	DatabaseManagementModule,
+	ConfigModule.forRoot({
+		isGlobal: true,
+		validationOptions: { infer: true },
+		load: [serverConfig],
+	}),
+];
 
 const providers = [
 	DatabaseManagementUc,

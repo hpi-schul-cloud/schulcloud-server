@@ -1,12 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-
-import { PermissionService, User, LanguageType } from '@shared/domain';
+import { MikroORM } from '@mikro-orm/core';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
-
-import { UserConfig } from '../user.config';
 import { UserUC } from './user.uc';
 
 describe('UserUc', () => {
@@ -14,7 +12,7 @@ describe('UserUc', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let orm: MikroORM;
-	let config: DeepMocked<UserConfig>;
+	let config: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -37,8 +35,8 @@ describe('UserUc', () => {
 					useValue: createMock<PermissionService>(),
 				},
 				{
-					provide: UserConfig,
-					useValue: createMock<UserConfig>(),
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();
@@ -46,7 +44,7 @@ describe('UserUc', () => {
 		service = module.get(UserUC);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
-		config = module.get(UserConfig);
+		config = module.get(ConfigService);
 	});
 
 	it('should be defined', () => {
@@ -81,7 +79,7 @@ describe('UserUc', () => {
 			user = userFactory.buildWithId({ roles: [] });
 			userRepo.findById.mockResolvedValue(user);
 			userRepo.save.mockResolvedValue();
-			config.getAvailableLanguages.mockReturnValue(['de']);
+			config.get.mockReturnValue(['de']);
 		});
 
 		afterEach(() => {

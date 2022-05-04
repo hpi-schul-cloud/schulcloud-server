@@ -1,10 +1,11 @@
-import moment from 'moment';
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { FilesRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { DeleteFilesConsole } from './delete-files.console';
+import { Logger } from '@src/core/logger';
+import moment from 'moment';
 import { DeleteFilesUc } from '../uc';
+import { DeleteFilesConsole } from './delete-files.console';
 
 describe('DeleteFilesController', () => {
 	let console: DeleteFilesConsole;
@@ -12,7 +13,6 @@ describe('DeleteFilesController', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule],
 			controllers: [DeleteFilesConsole],
 			providers: [
 				{
@@ -28,6 +28,10 @@ describe('DeleteFilesController', () => {
 				{
 					provide: FileStorageAdapter,
 					useValue: {},
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
