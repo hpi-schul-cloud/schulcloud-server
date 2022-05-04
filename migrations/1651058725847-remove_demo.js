@@ -151,11 +151,7 @@ module.exports = {
 			{
 				_id: '0000d186816abba584714d03',
 				name: 'demoTeacher',
-				permissions: [
-					'LESSONS_VIEW',
-					'SUBMISSIONS_SCHOOL_VIEW',
-					'TOOL_NEW_VIEW',
-				],
+				permissions: ['LESSONS_VIEW', 'SUBMISSIONS_SCHOOL_VIEW', 'TOOL_NEW_VIEW', ],
 				roles: ['0000d186816abba584714d00'],
 			},
 		];
