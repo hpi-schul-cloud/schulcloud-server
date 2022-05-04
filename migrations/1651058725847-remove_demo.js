@@ -39,42 +39,39 @@ const usersModelSearch = async (searchRoles) =>
 		.lean()
 		.exec();
 
-const userUpdate = async (user) =>
-	Users.updateOne({ _id: user._id }, { roles: user.roles })
-		.exec();
+const userUpdate = async (user) => Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
 
 const rolesModelSearch = async (searchRoles) =>
 	Roles.find({ roles: { $elemMatch: { $in: searchRoles } } })
 		.lean()
 		.exec();
 
-const roleUpdate = async (role) => 
-	Roles.updateOne({ _id: role._id }, { roles: role.roles })
-		.exec();
+const roleUpdate = async (role) => Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
 
-const rolesDelete = async (roles) =>
-	Roles.deleteMany({ _id: { $in: roles } });
+const rolesDelete = async (roles) => Roles.deleteMany({ _id: { $in: roles } });
 
 const substitutRoles = async (srcRolesIDs, dstRolesIDs, searchFnc, updateFnc) => {
 	const list = await searchFnc(srcRolesIDs);
 	await Promise.all(list.map(async (elem) => {
-		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
-		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(dstRolesIDs, role));
-		elem.roles = [elem.roles, dstRolesIDs];
-		elem.roles = elem.roles.flat();
-		await updateFnc(elem);
-	}));
+			elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
+			elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(dstRolesIDs, role));
+			elem.roles = [elem.roles, dstRolesIDs];
+			elem.roles = elem.roles.flat();
+			await updateFnc(elem);
+        })
+    );
 };
 
 const removeRole = async (srcRolesIDs, searchFnc, updateFnc) => {
 	const list = await searchFnc(srcRolesIDs);
 	await Promise.all(list.map(async (elem) => {
-		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
-		await updateFnc;
-	}));
+            elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
+            await updateFnc(elem);
+        })
+    );
 };
 
-const replaceRoles = async ( srcName, dstName) => {
+const replaceRoles = async (srcName, dstName) => {
 	const srcRoles = await Roles.find({ name: srcName }).lean().exec();
 	const srcRolesIDs = srcRoles.map((role) => role._id);
 	const dstRoles = await Roles.find({ name: dstName }).lean().exec();
@@ -87,7 +84,7 @@ const replaceRoles = async ( srcName, dstName) => {
 	info(`The ${srcName} role is removed.`);
 };
 
-const removeRoles = async ( srcName ) => {
+const removeRoles = async (srcName) => {
 	const srcRoles = await Roles.find({ name: srcName }).lean().exec();
 	const srcRolesIDs = srcRoles.map((role) => role._id);
 	await removeRole(srcRolesIDs, usersModelSearch, userUpdate);
@@ -101,8 +98,8 @@ const removeRoles = async ( srcName ) => {
 module.exports = {
 	up: async function up() {
 		await connect();
-		await replaceRoles('demoTeacher','teacher');
-		await replaceRoles('demoStudent','student');
+		await replaceRoles('demoTeacher', 'teacher');
+		await replaceRoles('demoStudent', 'student');
 		await removeRoles('demo');
 		await close();
 	},
