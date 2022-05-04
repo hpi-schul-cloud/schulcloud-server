@@ -12,6 +12,8 @@ const createTestLtiTool = (appPromise) => async ({
 	resource_link_id = '0',
 	isTemplate = null,
 	originTool = null,
+	oAuthClientId = 'lti-tool',
+	isLocal = true,
 } = {}) => {
 	const app = await appPromise;
 	return app
@@ -27,6 +29,8 @@ const createTestLtiTool = (appPromise) => async ({
 			resource_link_id,
 			isTemplate,
 			originTool,
+			oAuthClientId,
+			isLocal
 		})
 		.then((ltiTool) => {
 			createdltiToolsIds.push(ltiTool._id.toString());

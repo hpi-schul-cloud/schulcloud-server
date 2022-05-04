@@ -4,7 +4,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const { setIdToken } = require('../../../../src/services/oauth2/hooks/index');
 
-describe.only('oauth2 token test', () => {
+describe('oauth2 token test', () => {
 	let app;
 	let server;
 
@@ -35,6 +35,9 @@ describe.only('oauth2 token test', () => {
                 },
                 query: {
                     accept: true
+                },
+                school: {
+                    features: []
                 }
             },
             data:{
@@ -48,11 +51,8 @@ describe.only('oauth2 token test', () => {
 
 	it('scope groups unset', async () => {
         const testTeam = await testObjects.createTestTeamWithOwner();
-        const testTool = await testObjects.createTestLtiTool({
-            oAuthClientId: "123",
-            isLocal: true
-        });
-        
+        const testTool = await testObjects.createTestLtiTool();
+
         const result = await setIdToken({
             app,
             params: {
