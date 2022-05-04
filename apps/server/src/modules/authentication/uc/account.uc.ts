@@ -293,11 +293,6 @@ export class AccountUc {
 		});
 	}
 
-	private async isAdmin(currentUser: ICurrentUser): Promise<boolean> {
-		const user = await this.userRepo.findById(currentUser.userId, true);
-		return user.roles.getItems().some((role) => role.name === RoleName.ADMIN);
-	}
-
 	private async isSuperhero(currentUser: ICurrentUser): Promise<boolean> {
 		const user = await this.userRepo.findById(currentUser.userId, true);
 		return user.roles.getItems().some((role) => role.name === RoleName.SUPERHERO);
