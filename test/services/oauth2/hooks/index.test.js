@@ -4,34 +4,25 @@ const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const { setIdToken } = require('../../../../src/services/oauth2/hooks/index');
 
-describe('oauth2 token test', () => {
+describe.only('oauth2 token test', () => {
 	let app;
 	let server;
+    let createHook;
 
 	before(async () => {
 		app = await appPromise;
 		server = app.listen(0);
-	});
-
-	after(() => {
-		server.close();
-	});
-
-	it('scope groups set', async () => {
-        const testTeam = await testObjects.createTestTeamWithOwner();
-        const testTool = await testObjects.createTestLtiTool();
-
-        const result = await setIdToken({
+        createHook = (clientId, userId, scopes) => ({
             app,
             params: {
-                consentRequest:{
-                    requested_scope: "groups",
+                consentRequest: {
+                    requested_scope: scopes ? scopes : "",
                     client: {
-                        client_id: testTool.oAuthClientId
+                        client_id: clientId
                     }
                 },
                 account: {
-                    userId: testTeam.user._id
+                    userId: userId
                 },
                 query: {
                     accept: true
@@ -40,41 +31,59 @@ describe('oauth2 token test', () => {
                     features: []
                 }
             },
-            data:{
-                session:{}
+            data: {
+                session: {}
             }
         });
-
-        expect(result).to.not.equal(undefined);
-        expect(result.data.session.id_token.groups).to.not.equal(undefined);
 	});
 
-	it('scope groups unset', async () => {
-        const testTeam = await testObjects.createTestTeamWithOwner();
-        const testTool = await testObjects.createTestLtiTool();
+	after(() => {
+		server.close();
+	});
 
-        const result = await setIdToken({
-            app,
-            params: {
-                consentRequest:{
-                    requested_scope: "",
-                    client: {
-                        client_id: testTool.oAuthClientId
-                    }
-                },
-                account: {
-                    userId: testTeam.user._id
-                },
-                query: {
-                    accept: true
-                }
-            },
-            data:{
-                session:{}
-            }
+    describe('when scope groups is set', () => {
+        it('id_token groups should be defined', async () => {
+            // Arrange
+            const testTeam = await testObjects.createTestTeamWithOwner();
+            const testTool = await testObjects.createTestLtiTool();
+
+            // Act
+            const result = await setIdToken(createHook(testTool.oAuthClientId, testTeam.user._id, "groups"));
+
+            // Assert
+            expect(result).to.not.equal(undefined);
+            expect(result.data.session.id_token.groups).to.not.equal(undefined);
         });
 
-        expect(result).to.not.equal(undefined);
-        expect(result.data.session.id_token.groups).to.equal(undefined);
-	});
+        it('id_token groups should contain teamid', async () => {
+            // Arrange
+            const testTeam = await testObjects.createTestTeamWithOwner();
+            const testTool = await testObjects.createTestLtiTool();
+
+            // Act
+            const result = await setIdToken(createHook(testTool.oAuthClientId, testTeam.user._id, "groups"));
+
+            // Assert
+            expect(result).to.not.equal(undefined);
+            expect(result.data.session.id_token.groups).to.not.equal(undefined);
+            const expectedTeamId = testObjects.info()["teams"][0];
+            expect(result.data.session.id_token.groups[0].gid).to.equal(expectedTeamId);
+            expect(result.data.session.id_token.groups[0].displayName).to.match(new RegExp("(?=_test)_test", "g"))
+        });
+    });
+
+    describe('when scope groups is not set', () => {
+        it('id_token groups should be undefined', async () => {
+            // Arrange
+            const testTeam = await testObjects.createTestTeamWithOwner();
+            const testTool = await testObjects.createTestLtiTool();
+
+            // Act
+            const result = await setIdToken(createHook(testTool.oAuthClientId, testTeam.user._id));
+
+            // Assert
+            expect(result).to.not.equal(undefined);
+            expect(result.data.session.id_token.groups).to.equal(undefined);
+        });
+    });
 });
