@@ -42,7 +42,7 @@ class HandlePermissions {
 	}
 
 	async patch(id, data, params) {
-		if (!Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
+		if (this.permission === 'STUDENT_LIST' && !Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
 			throw new Forbidden('Configuring student visibility is not allowed.');
 		}
 
