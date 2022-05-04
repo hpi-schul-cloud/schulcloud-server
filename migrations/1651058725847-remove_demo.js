@@ -104,12 +104,12 @@ module.exports = {
 		const demo = await Roles.find({ name: 'demo' }).lean().exec();
 		const demoIDs = demo.map((role) => role._id);
 		const demoUsers = await removeRoles(demoIDs, usersModelSearch);
-		for (const user in demoUsers) {
+		for (const user of demoUsers) {
 			// eslint-disable-next-line no-await-in-loop
 			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
 		}
 		const demoRoless = await removeRoles(demoIDs, rolesModelSearch);
-		for (const role in demoRoless) {
+		for (const role of demoRoless) {
 			// eslint-disable-next-line no-await-in-loop
 			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
 		}
