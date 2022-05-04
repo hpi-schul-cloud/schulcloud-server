@@ -1,8 +1,16 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import {
+	BadRequestException,
+	ForbiddenException,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from '@nestjs/common';
+import { Actions, Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { AuthorizationService } from '@src/modules/authorization';
 import busboy from 'busboy';
 import { Request } from 'express';
 import path from 'path';
@@ -24,38 +32,46 @@ export class FilesStorageUC {
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService,
-		private logger: Logger
+		private logger: Logger,
+		private readonly authorizationService: AuthorizationService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
 		// @TODO check permissions of schoolId by user
-		try {
-			const result = await new Promise((resolve, reject) => {
-				const requestStream = busboy({ headers: req.headers });
 
-				// eslint-disable-next-line @typescript-eslint/no-misused-promises
-				requestStream.on('file', async (_name, file, info): Promise<void> => {
-					const fileDescription = this.createFileDescription(file, info, req);
-					try {
-						const record = await this.uploadFile(userId, params, fileDescription);
-						resolve(record);
-					} catch (error) {
-						requestStream.emit('error', error);
-					}
-				});
+		if (
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				params.parentType as unknown as never,
+				params.parentId,
+				Actions.read
+			))
+		) {
+			throw new ForbiddenException();
+		}
+		const result = await new Promise((resolve, reject) => {
+			const requestStream = busboy({ headers: req.headers });
 
-				requestStream.on('error', (e) => {
-					reject(e);
-				});
-				req.pipe(requestStream);
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			requestStream.on('file', async (_name, file, info): Promise<void> => {
+				const fileDescription = this.createFileDescription(file, info, req);
+				try {
+					const record = await this.uploadFile(userId, params, fileDescription);
+					resolve(record);
+				} catch (error) {
+					requestStream.emit('error', error);
+				}
 			});
 
-			return result as FileRecord;
-		} catch (error) {
-			throw new BadRequestException(error);
-		}
+			requestStream.on('error', (e) => {
+				reject(e);
+			});
+			req.pipe(requestStream);
+		});
+
+		return result as FileRecord;
 	}
 
 	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
@@ -114,23 +130,30 @@ export class FilesStorageUC {
 	}
 
 	async download(userId: EntityId, params: DownloadFileParams) {
-		try {
-			// @TODO check permissions of schoolId by user
-			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
-			if (entity.name !== params.fileName) {
-				throw new NotFoundException('File not found');
-			} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-				throw new Error('File is blocked');
-			}
-			const res = await this.downloadFile(entity.schoolId, entity.id);
+		// @TODO check permissions of schoolId by user
+		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 
-			return res;
-		} catch (error) {
-			if (error instanceof NotFoundException) {
-				throw error;
-			}
-			throw new BadRequestException(error);
+		if (
+			!this.authorizationService.hasPermission(currentUser, entity, Actions.read) ||
+			!(await this.authorizationService.hasPermissionByReferences(
+				currentUser.id,
+				entity.parentType as unknown as never,
+				entity.parentId,
+				Actions.read
+			))
+		) {
+			throw new ForbiddenException();
 		}
+
+		if (entity.name !== params.fileName) {
+			throw new NotFoundException('File not found');
+		} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+			throw new NotAcceptableException('File is blocked');
+		}
+		const res = await this.downloadFile(entity.schoolId, entity.id);
+
+		return res;
 	}
 
 	async downloadBySecurityToken(token: string) {
@@ -194,6 +217,16 @@ export class FilesStorageUC {
 	}
 
 	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		if (
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				params.parentType as unknown as never,
+				params.parentId,
+				Actions.write
+			))
+		) {
+			throw new ForbiddenException();
+		}
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		if (count > 0) {
 			await this.delete(fileRecords);
@@ -204,12 +237,28 @@ export class FilesStorageUC {
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		if (
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				fileRecord.parentType as unknown as never,
+				fileRecord.parentId,
+				Actions.write
+			))
+		) {
+			throw new ForbiddenException();
+		}
 		await this.delete([fileRecord]);
 
 		return fileRecord;
 	}
 
 	async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			params.parentType as unknown as never,
+			params.parentId,
+			Actions.read
+		);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
 			params.schoolId,
 			params.parentId
@@ -222,6 +271,16 @@ export class FilesStorageUC {
 
 	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+		if (
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				fileRecord.parentType as unknown as never,
+				fileRecord.parentId,
+				Actions.write
+			))
+		) {
+			throw new ForbiddenException();
+		}
 		await this.restore([fileRecord]);
 
 		return fileRecord;
@@ -232,6 +291,22 @@ export class FilesStorageUC {
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<FileRecord[]>> {
+		if (
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				params.parentType as unknown as never,
+				params.parentId,
+				Actions.read
+			)) &&
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				copyFilesParams.target.parentType as unknown as never,
+				copyFilesParams.target.parentId,
+				Actions.read
+			))
+		) {
+			throw new ForbiddenException();
+		}
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count === 0) {
@@ -245,6 +320,24 @@ export class FilesStorageUC {
 
 	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+
+		if (
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				fileRecord.parentType as unknown as never,
+				fileRecord.parentId,
+				Actions.read
+			)) &&
+			!(await this.authorizationService.hasPermissionByReferences(
+				userId,
+				copyFileParams.target.parentType as unknown as never,
+				copyFileParams.target.parentId,
+				Actions.read
+			))
+		) {
+			throw new ForbiddenException();
+		}
+
 		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
 
 		return newRecord[0];
