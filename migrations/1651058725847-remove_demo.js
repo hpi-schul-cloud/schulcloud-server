@@ -58,24 +58,23 @@ const substitutRoles = async (srcRolesIDs, dstRolesIDs, useModelFnc) => {
 	});
 };
 
+const removeRoles = async (srcRolesIDs, useModelFnc) => {
+	const list = await useModelFnc(srcRolesIDs);
+	return list.map((elem) => {
+		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
+		return elem;
+	});
+}
+
 module.exports = {
 	up: async function up() {
 		await connect();
 		const demoTeachers = await Roles.find({ name: 'demoTeacher' }).lean().exec();
 		const demoTeachersIDs = demoTeachers.map((teacher) => teacher._id);
-		const demoStudents = await Roles.find({ name: 'demoStudent' }).lean().exec();
-		const demoStudentsIDs = demoStudents.map((student) => student._id);
 		const teachers = await Roles.find({ name: 'teacher' }).lean().exec();
 		const teachersIDs = teachers.map((teacher) => teacher._id);
-		const students = await Roles.find({ name: 'student' }).lean().exec();
-		const studentsIDs = students.map((student) => student._id);
 		const teacherList = await substitutRoles(demoTeachersIDs, teachersIDs, usersModelSearch);
 		for (const user of teacherList) {
-			// eslint-disable-next-line no-await-in-loop
-			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-		}
-		const studentsList = await substitutRoles(demoStudentsIDs, studentsIDs, usersModelSearch);
-		for (const user of studentsList) {
 			// eslint-disable-next-line no-await-in-loop
 			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
 		}
@@ -85,12 +84,36 @@ module.exports = {
 			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
 		}
 		await Roles.deleteMany({ _id: { $in: demoTeachersIDs } });
+
+		const demoStudents = await Roles.find({ name: 'demoStudent' }).lean().exec();
+		const demoStudentsIDs = demoStudents.map((student) => student._id);
+		const students = await Roles.find({ name: 'student' }).lean().exec();
+		const studentsIDs = students.map((student) => student._id);
+		const studentsList = await substitutRoles(demoStudentsIDs, studentsIDs, usersModelSearch);
+		for (const user of studentsList) {
+			// eslint-disable-next-line no-await-in-loop
+			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
+		}
 		const subDemoUserRole = await substitutRoles(demoStudentsIDs, studentsIDs, rolesModelSearch);
 		for (const role of subDemoUserRole) {
 			// eslint-disable-next-line no-await-in-loop
 			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
 		}
 		await Roles.deleteMany({ _id: { $in: demoStudentsIDs } });
+
+		const demo = await Roles.find({ name: 'demo' }).lean().exec();
+		const demoIDs = demo.map((role) => role._id);
+		const demoUsers = await removeRoles(demoIDs, usersModelSearch);
+		for (const user in demoUsers) {
+			// eslint-disable-next-line no-await-in-loop
+			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
+		}
+		const demoRoless = await removeRoles(demoIDs, rolesModelSearch);
+		for (const role in demoRoless) {
+			// eslint-disable-next-line no-await-in-loop
+			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
+		}
+		await Roles.deleteMany({ _id: { $in: demoIDs } });
 		await close();
 	},
 
