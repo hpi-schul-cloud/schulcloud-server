@@ -64,7 +64,7 @@ const removeRoles = async (srcRolesIDs, useModelFnc) => {
 		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
 		return elem;
 	});
-}
+};
 
 module.exports = {
 	up: async function up() {
@@ -120,9 +120,9 @@ module.exports = {
 	down: async function down() {
 		await connect();
 		const demoRole = [{
-			'_id': '0000d186816abba584714d00',
-			'name': 'demo',
-			'permissions': [
+			_id: '0000d186816abba584714d00',
+			name: 'demo',
+			permissions: [
 				'BASE_VIEW',
 				'CALENDAR_VIEW',
 				'CLASS_VIEW',
@@ -142,15 +142,15 @@ module.exports = {
 			roles: [],
 		},
 		{
-			'_id': '0000d186816abba584714d02',
-			'name': 'demoStudent',
-			'permissions': [],
+			_id: '0000d186816abba584714d02',
+			name: 'demoStudent',
+			permissions: [],
 			roles: ['0000d186816abba584714d00'],
 		},
 		{
-			'_id': '0000d186816abba584714d03',
-			'name': 'demoTeacher',
-			'permissions': [
+			_id: '0000d186816abba584714d03',
+			name: 'demoTeacher',
+			permissions: [
 				'LESSONS_VIEW',
 				'SUBMISSIONS_SCHOOL_VIEW',
 				'TOOL_NEW_VIEW',
