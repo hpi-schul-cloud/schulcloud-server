@@ -66,9 +66,8 @@ describe.only('oauth2 token test', () => {
             // Assert
             expect(result).to.not.equal(undefined);
             expect(result.data.session.id_token.groups).to.not.equal(undefined);
-            const expectedTeamId = testObjects.info()["teams"][0];
-            expect(result.data.session.id_token.groups[0].gid).to.equal(expectedTeamId);
-            expect(result.data.session.id_token.groups[0].displayName).to.match(new RegExp("(?=_test)_test", "g"))
+            expect(result.data.session.id_token.groups[0].gid.toString()).to.equal(testTeam.team._id.toString());
+            expect(result.data.session.id_token.groups[0].displayName).to.match(new RegExp("(?=_test)_test", "g"));
         });
     });
 

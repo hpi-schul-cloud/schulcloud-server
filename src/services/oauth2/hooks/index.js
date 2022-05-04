@@ -82,7 +82,6 @@ const setIdToken = (hook) => {
 							: undefined,
 					},
 				};
-				console.log(hook.data.session.id_token);
 				return hook;
 			})
 	);
