@@ -39,93 +39,71 @@ const usersModelSearch = async (searchRoles) =>
 		.lean()
 		.exec();
 
+const userUpdate = async (user) =>
+	Users.updateOne({ _id: user._id }, { roles: user.roles })
+		.exec();
+
 const rolesModelSearch = async (searchRoles) =>
 	Roles.find({ roles: { $elemMatch: { $in: searchRoles } } })
 		.lean()
 		.exec();
 
-const substitutRoles = async (srcRolesIDs, dstRolesIDs, useModelFnc) => {
-	const list = await useModelFnc(srcRolesIDs);
-	return list.map((elem) => {
+const roleUpdate = async (role) => 
+	Roles.updateOne({ _id: role._id }, { roles: role.roles })
+		.exec();
+
+const rolesDelete = async (roles) =>
+	Roles.deleteMany({ _id: { $in: roles } });
+
+const substitutRoles = async (srcRolesIDs, dstRolesIDs, searchFnc, updateFnc) => {
+	const list = await searchFnc(srcRolesIDs);
+	await Promise.all(list.map(async (elem) => {
 		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
 		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(dstRolesIDs, role));
 		elem.roles = [elem.roles, dstRolesIDs];
 		elem.roles = elem.roles.flat();
-		return elem;
-	});
+		await updateFnc(elem);
+	}));
 };
 
-const removeRoles = async (srcRolesIDs, useModelFnc) => {
-	const list = await useModelFnc(srcRolesIDs);
-	return list.map((elem) => {
+const removeRole = async (srcRolesIDs, searchFnc, updateFnc) => {
+	const list = await searchFnc(srcRolesIDs);
+	await Promise.all(list.map(async (elem) => {
 		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
-		return elem;
-	});
+		await updateFnc;
+	}));
+};
+
+const replaceRoles = async ( srcName, dstName) => {
+	const srcRoles = await Roles.find({ name: srcName }).lean().exec();
+	const srcRolesIDs = srcRoles.map((role) => role._id);
+	const dstRoles = await Roles.find({ name: dstName }).lean().exec();
+	const dstRolesIDs = dstRoles.map((role) => role._id);
+	await substitutRoles(srcRolesIDs, dstRolesIDs, usersModelSearch, userUpdate);
+	info(`All User with the role ${srcName} are upgraded to ${dstName}`);
+	await substitutRoles(srcRolesIDs, dstRolesIDs, rolesModelSearch, roleUpdate);
+	info(`No role inherit from the ${srcName} role more.`);
+	await rolesDelete(srcRolesIDs);
+	info(`The ${srcName} role is removed.`);
+};
+
+const removeRoles = async ( srcName ) => {
+	const srcRoles = await Roles.find({ name: srcName }).lean().exec();
+	const srcRolesIDs = srcRoles.map((role) => role._id);
+	await removeRole(srcRolesIDs, usersModelSearch, userUpdate);
+	info(`The ${srcName} role are removed from all Users.`);
+	await removeRole(srcRolesIDs, rolesModelSearch, roleUpdate);
+	info(`No role inherit from the ${srcName} role more.`);
+	await rolesDelete(srcRolesIDs);
+	info(`The ${srcName} role is removed.`);
 };
 
 module.exports = {
 	up: async function up() {
 		await connect();
-		const demoTeachers = await Roles.find({ name: 'demoTeacher' }).lean().exec();
-		const demoTeachersIDs = demoTeachers.map((teacher) => teacher._id);
-		const teachers = await Roles.find({ name: 'teacher' }).lean().exec();
-		const teachersIDs = teachers.map((teacher) => teacher._id);
-		const teacherList = await substitutRoles(demoTeachersIDs, teachersIDs, usersModelSearch);
-		for (const user of teacherList) {
-			// eslint-disable-next-line no-await-in-loop
-			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-			info(`The user ${user._id} is upgraded to an teacher.`);
-		}
-		info(`All User with the role demoTeacher are upgraded to teacher`);
-		const subDemoTeacherRole = await substitutRoles(demoTeachersIDs, teachersIDs, rolesModelSearch);
-		for (const role of subDemoTeacherRole) {
-			// eslint-disable-next-line no-await-in-loop
-			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
-			info(`The role ${role.id} inherit from the role teacher now.`);
-		}
-		info(`No role inherit from the demoTeacher role more.`);
-		await Roles.deleteMany({ _id: { $in: demoTeachersIDs } });
-		info(`The demoTeacher role is removed.`);
-
-		const demoStudents = await Roles.find({ name: 'demoStudent' }).lean().exec();
-		const demoStudentsIDs = demoStudents.map((student) => student._id);
-		const students = await Roles.find({ name: 'student' }).lean().exec();
-		const studentsIDs = students.map((student) => student._id);
-		const studentsList = await substitutRoles(demoStudentsIDs, studentsIDs, usersModelSearch);
-		for (const user of studentsList) {
-			// eslint-disable-next-line no-await-in-loop
-			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-			info(`The user ${user._id} is upgraded to an student.`);
-		}
-		info(`All User with the role demoStudent are upgraded to student`);
-		const subDemoUserRole = await substitutRoles(demoStudentsIDs, studentsIDs, rolesModelSearch);
-		for (const role of subDemoUserRole) {
-			// eslint-disable-next-line no-await-in-loop
-			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
-			info(`The role ${role.id} inherit from the student teacher now.`);
-		}
-		info(`No role inherit from the demoStudent role more.`);
-		await Roles.deleteMany({ _id: { $in: demoStudentsIDs } });
-		info(`The demoStudent role is removed.`);
-
-		const demo = await Roles.find({ name: 'demo' }).lean().exec();
-		const demoIDs = demo.map((role) => role._id);
-		const demoUsers = await removeRoles(demoIDs, usersModelSearch);
-		for (const user of demoUsers) {
-			// eslint-disable-next-line no-await-in-loop
-			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-			info(`The demo role where removed from the user ${user._id}.`);
-		}
-		info(`The demo role are removed from all Users.`);
-		const demoRoless = await removeRoles(demoIDs, rolesModelSearch);
-		for (const role of demoRoless) {
-			// eslint-disable-next-line no-await-in-loop
-			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
-			info(`The demo role are removed from the role ${role._id}`);
-		}
-		info(`No role inherit from the demo role more.`);
-		await Roles.deleteMany({ _id: { $in: demoIDs } });
-		info(`The demo role is removed.`);
+		await replaceRoles('demoTeacher','teacher');
+		await replaceRoles('demoStudent','student');
+		await removeRoles('demo');
 		await close();
 	},
 
