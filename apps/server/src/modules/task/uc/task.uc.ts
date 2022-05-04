@@ -11,7 +11,7 @@ import {
 	User,
 } from '@shared/domain';
 import { Actions, Permission } from '@shared/domain/rules';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 
 @Injectable()
@@ -19,14 +19,13 @@ export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
-		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
 		// load the user including all roles
-		const user = await this.userRepo.findById(userId, true);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [
 			Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
@@ -71,7 +70,7 @@ export class TaskUC {
 		let response: Counted<TaskWithStatusVo[]>;
 
 		// load the user including all roles
-		const user = await this.userRepo.findById(userId, true);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
 			response = await this.findAllForStudent(user, pagination);
 		} else if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
@@ -84,7 +83,10 @@ export class TaskUC {
 	}
 
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
-		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
+		const [user, task] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.taskRepo.findById(taskId),
+		]);
 
 		if (!this.authorizationService.hasPermission(user, task, Actions.read)) {
 			throw new UnauthorizedException();
@@ -205,7 +207,10 @@ export class TaskUC {
 	}
 
 	async delete(userId: EntityId, taskId: EntityId) {
-		const [user, task] = await Promise.all([this.userRepo.findById(userId, true), this.taskRepo.findById(taskId)]);
+		const [user, task] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.taskRepo.findById(taskId),
+		]);
 
 		if (!this.authorizationService.hasPermission(user, task, Actions.write)) {
 			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
