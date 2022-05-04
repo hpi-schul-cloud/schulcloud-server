@@ -4,6 +4,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
+import { CopyQueueModule } from '@shared/infra/copy-queue/copy-queue.module';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { MailModule } from '@shared/infra/mail';
@@ -40,6 +41,7 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
+	CopyQueueModule.forRoot({ exchange: 'copy-queue' }),
 	FilesModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
