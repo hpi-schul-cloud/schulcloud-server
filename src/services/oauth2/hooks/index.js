@@ -74,9 +74,15 @@ const setIdToken = (hook) => {
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
 						schoolId: user.schoolId,
-						groups: scope.includes('groups') ? userTeams.data.map((team) => `${team._id}||${team.name}`) : undefined,
+						groups: scope.includes('groups')
+							? userTeams.data.map((team) => ({
+									gid: team._id,
+									displayName: team.name,
+							  }))
+							: undefined,
 					},
 				};
+				console.log(hook.data.session.id_token);
 				return hook;
 			})
 	);
