@@ -32,7 +32,7 @@ export class RoomsAuthorisationService {
 		if (task.course) {
 			hasCoursePermission = this.hasCourseReadPermission(user, task.course);
 
-			if (task.private || (task.availableDate && task.availableDate > new Date(Date.now()))) {
+			if (!task.isPublished()) {
 				hasCoursePermission = this.hasCourseWritePermission(user, task.course);
 			}
 		}

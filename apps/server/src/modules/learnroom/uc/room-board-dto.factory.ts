@@ -103,8 +103,27 @@ class DtoCreator {
 
 	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.LESSON;
-		const content = element.target as Lesson;
+		const lesson = element.target as Lesson;
+		const content = {
+			id: lesson.id,
+			name: lesson.name,
+			hidden: lesson.hidden,
+			createdAt: lesson.createdAt,
+			updatedAt: lesson.updatedAt,
+			numberOfTasks: this.getNumberOfLessonTasks(lesson),
+			courseName: lesson.course.name,
+		};
 		return { type, content };
+	}
+
+	private getNumberOfLessonTasks(lesson: Lesson) {
+		let numberOfTasks: number;
+		if (this.isTeacher()) {
+			numberOfTasks = lesson.getNumberOfTasksForTeacher();
+		} else {
+			numberOfTasks = lesson.getNumberOfTasksForStudent();
+		}
+		return numberOfTasks;
 	}
 
 	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {

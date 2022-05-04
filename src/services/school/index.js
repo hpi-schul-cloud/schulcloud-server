@@ -93,18 +93,11 @@ module.exports = function schoolServices() {
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
 
-	const ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration.get('ADMIN_TOGGLE_STUDENT_VISIBILITY');
+	app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
+	const handlePermissionsService = app.service('/school/teacher/studentvisibility');
+	handlePermissionsService.hooks(handlePermissionsHooks);
 
-	if (ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {
-		app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
-		const handlePermissionsService = app.service('/school/teacher/studentvisibility');
-		handlePermissionsService.hooks(handlePermissionsHooks);
-	}
-
-	const FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED = Configuration.get(
-		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
-	);
-	if (FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED) {
+	if (Configuration.get('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED')) {
 		app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
 		const handleLernStorePermissionsService = app.service('/school/student/studentlernstorevisibility');
 		handleLernStorePermissionsService.hooks(handlePermissionsHooks);
