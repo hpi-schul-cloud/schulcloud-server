@@ -1,5 +1,4 @@
 const service = require('feathers-mongoose');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -97,9 +96,7 @@ module.exports = function schoolServices() {
 	const handlePermissionsService = app.service('/school/teacher/studentvisibility');
 	handlePermissionsService.hooks(handlePermissionsHooks);
 
-	if (Configuration.get('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED')) {
-		app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
-		const handleLernStorePermissionsService = app.service('/school/student/studentlernstorevisibility');
-		handleLernStorePermissionsService.hooks(handlePermissionsHooks);
-	}
+	app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
+	const handleLernStorePermissionsService = app.service('/school/student/studentlernstorevisibility');
+	handleLernStorePermissionsService.hooks(handlePermissionsHooks);
 };

@@ -73,7 +73,15 @@ describe('permissons service', () => {
 		});
 
 		describe('patch', () => {
-			it('changes the LERNSTORE_VIEW permission', async () => {
+			it('throws Forbidden if FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED is false', async () => {
+				Configuration.set('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED', 'false');
+
+				await expect(service.patch(null, {}, testParams)).to.be.rejectedWith(Forbidden);
+			});
+
+			it('changes the LERNSTORE_VIEW permission if FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED is true', async () => {
+				Configuration.set('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED', 'true');
+
 				expect(testSchool.permissions.student).to.be.undefined;
 
 				const data = { permission: { isEnabled: false } };
