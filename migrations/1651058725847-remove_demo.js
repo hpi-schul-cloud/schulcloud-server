@@ -119,6 +119,46 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
+		const demoRole = [{
+			'_id': '0000d186816abba584714d00',
+			'name': 'demo',
+			'permissions': [
+				'BASE_VIEW',
+				'CALENDAR_VIEW',
+				'CLASS_VIEW',
+				'COURSE_VIEW',
+				'CONTENT_VIEW',
+				'DASHBOARD_VIEW',
+				'FILESTORAGE_CREATE',
+				'FILESTORAGE_VIEW',
+				'HOMEWORK_VIEW',
+				'NEWS_VIEW',
+				'RELEASES_VIEW',
+				'SUBMISSIONS_VIEW',
+				'TEAM_VIEW',
+				'TOOL_VIEW',
+				'TOPIC_VIEW',
+			],
+			roles: [],
+		},
+		{
+			'_id': '0000d186816abba584714d02',
+			'name': 'demoStudent',
+			'permissions': [],
+			roles: ['0000d186816abba584714d00'],
+		},
+		{
+			'_id': '0000d186816abba584714d03',
+			'name': 'demoTeacher',
+			'permissions': [
+				'LESSONS_VIEW',
+				'SUBMISSIONS_SCHOOL_VIEW',
+				'TOOL_NEW_VIEW',
+			],
+			roles: ['0000d186816abba584714d00'],
+		},
+		];
+		await Roles.insertMany(demoRole);
 		await close();
 	},
 };
