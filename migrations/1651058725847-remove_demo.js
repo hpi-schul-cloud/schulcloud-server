@@ -47,12 +47,10 @@ const rolesModelSearch = async (searchRoles) =>
 const substitutRoles = async (srcRolesIDs, dstRolesIDs, useModelFnc) => {
 	const list = await useModelFnc(srcRolesIDs);
 	return list.map((elem) => {
-		const testInclude = elem.roles.map((role) => objectStringArrayInclude(dstRolesIDs, role)).includes(true);
-		if (!testInclude) {
-			elem.roles = elem.roles.map((role) => (objectStringArrayInclude(srcRolesIDs, role) ? dstRolesIDs : role));
-		} else {
-			elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
-		}
+		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
+		elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(dstRolesIDs, role));
+		elem.roles = [elem.roles, dstRolesIDs];
+		elem.roles = elem.roles.flat();
 		return elem;
 	});
 };
