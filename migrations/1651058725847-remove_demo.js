@@ -52,23 +52,25 @@ const rolesDelete = async (roles) => Roles.deleteMany({ _id: { $in: roles } });
 
 const substitutRoles = async (srcRolesIDs, dstRolesIDs, searchFnc, updateFnc) => {
 	const list = await searchFnc(srcRolesIDs);
-	await Promise.all(list.map(async (elem) => {
+	await Promise.all(
+		list.map(async (elem) => {
 			elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
 			elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(dstRolesIDs, role));
 			elem.roles = [elem.roles, dstRolesIDs];
 			elem.roles = elem.roles.flat();
 			await updateFnc(elem);
-        })
-    );
+		})
+	);
 };
 
 const removeRole = async (srcRolesIDs, searchFnc, updateFnc) => {
 	const list = await searchFnc(srcRolesIDs);
-	await Promise.all(list.map(async (elem) => {
-            elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
-            await updateFnc(elem);
-        })
-    );
+	await Promise.all(
+		list.map(async (elem) => {
+			elem.roles = elem.roles.filter((role) => !objectStringArrayInclude(srcRolesIDs, role));
+			await updateFnc(elem);
+		})
+	);
 };
 
 const replaceRoles = async (srcName, dstName) => {
