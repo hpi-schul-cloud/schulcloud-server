@@ -1,15 +1,16 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
+import { PassportStrategy } from '@nestjs/passport';
+import { User } from '@shared/domain';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
-import { JwtValidationAdapter } from './jwt-validation.adapter';
 import { JwtExtractor } from './jwt-extractor';
+import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly userRepo: UserRepo, private readonly jwtValidationAdapter: JwtValidationAdapter) {
+	constructor(protected readonly _em: EntityManager, private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([
 				ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -27,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
 		// check user exists
 		try {
-			await this.userRepo.findById(userId);
+			await this._em.findOneOrFail(User, { id: userId });
 		} catch (err) {
 			throw new UnauthorizedException('Unauthorized.');
 		}
