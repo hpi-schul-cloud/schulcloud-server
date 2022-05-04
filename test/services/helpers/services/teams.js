@@ -13,7 +13,7 @@ const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
 const createTeam = () => async (owner) =>
 	teamsModel
 		.create({
-			name: `${Date.now()}_test`,	//Do not use Date.now in tests!
+			name: `${Date.now()}_test`, // Do not use Date.now in tests!
 			schoolId: owner.schoolId,
 			schoolIds: [owner.schoolId],
 			userIds: [await createTeamUser(owner._id, owner.schoolId, 'teamowner')],
