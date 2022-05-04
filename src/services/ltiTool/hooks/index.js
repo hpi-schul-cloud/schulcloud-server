@@ -48,7 +48,7 @@ const addSecret = (context) => {
 };
 
 const isBBBTool = (tool) => tool.name && tool.name === 'Video-Konferenz mit BigBlueButton';
-const isNextcloudTool = (tool) => tool.name && tool.name === 'Nextcloud';
+// const isNextcloudTool = (tool) => tool.name && tool.name === 'Nextcloud';
 
 const filterFindBBB = (context) => {
 	let hasVideoconferenceItems = false;
@@ -64,19 +64,19 @@ const filterFindBBB = (context) => {
 	}
 };
 
-const filterFindNextcloud = (context) => {
-	let hasNextCloudItems = false;
-	if (context.result && context.result.data && Array.isArray(context.result.data)) {
-		hasNextCloudItems = context.result.data.some((tool) => isNextcloudTool(tool));
-	}
-	if (hasNextCloudItems) {
-		// if school feature disabled, remove Nextcloud tools from results data
-		const { features = [] } = context.params.school.features;
-		if (!features.includes(SCHOOL_FEATURES.NEXTCLOUD)) {
-			context.result.data = context.result.data.filter((tool) => !isNextcloudTool(tool));
-		}
-	}
-};
+// const filterFindNextcloud = (context) => {
+// 	let hasNextCloudItems = false;
+// 	if (context.result && context.result.data && Array.isArray(context.result.data)) {
+// 		hasNextCloudItems = context.result.data.some((tool) => isNextcloudTool(tool));
+// 	}
+// 	if (hasNextCloudItems) {
+// 		// if school feature disabled, remove Nextcloud tools from results data
+// 		const { features = [] } = context.params.school.features;
+// 		if (!features.includes(SCHOOL_FEATURES.NEXTCLOUD)) {
+// 			context.result.data = context.result.data.filter((tool) => !isNextcloudTool(tool));
+// 		}
+// 	}
+// };
 
 const filterGetBBB = (context) => {
 	if (context.data && isBBBTool(context.data)) {
@@ -87,14 +87,14 @@ const filterGetBBB = (context) => {
 	}
 };
 
-const filterGetNextcloud = (context) => {
-	if (context.data && isNextcloudTool(context.data)) {
-		const { features } = context.params.school;
-		if (!features.includes(SCHOOL_FEATURES.NEXTCLOUD)) {
-			throw new Forbidden('school feature disabled');
-		}
-	}
-};
+// const filterGetNextcloud = (context) => {
+// 	if (context.data && isNextcloudTool(context.data)) {
+// 		const { features } = context.params.school;
+// 		if (!features.includes(SCHOOL_FEATURES.NEXTCLOUD)) {
+// 			throw new Forbidden('school feature disabled');
+// 		}
+// 	}
+// };
 
 const restrictToUsersOwnTools = async (context) => {
 	const currentUserId = context.params.account.userId;
@@ -125,8 +125,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [globalHooks.ifNotLocal(protectSecrets), filterFindBBB, filterFindNextcloud],
-	get: [globalHooks.ifNotLocal(protectSecrets), filterGetBBB, filterGetNextcloud],
+	find: [globalHooks.ifNotLocal(protectSecrets), filterFindBBB],
+	get: [globalHooks.ifNotLocal(protectSecrets), filterGetBBB],
 	create: [],
 	update: [],
 	patch: [globalHooks.ifNotLocal(protectSecrets)],

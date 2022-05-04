@@ -1,3 +1,4 @@
+/* eslint-disable promise/no-nesting */
 const { authenticate } = require('@feathersjs/authentication');
 
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
@@ -108,32 +109,32 @@ const managesOwnConsents = (hook) => {
 	throw new Forbidden("You want to manage another user's consents");
 };
 
-const validatePermissionForNextcloud = (hook) => {
-	hook.app
-		.service('users')
-		.get(hook.params.account.userId)
-		.then((user) => {
-			hook.app
-				.service('roles')
-				.find(user.roles.roleId)
-				.then((roles) => {
-					if (
-						roles.forEach((role) => {
-							if (role.permissions.includes('NEXTCLOUD_USER')) return hook;
-						})
-					)
-						throw new Forbidden('You are forbidden from logging into Nextcloud');
-				});
-			return hook;
-		})
-		.catch(new Forbidden('You are forbidden from logging into Nextcloud'));
-	return hook;
-};
+// const validatePermissionForNextcloud = (hook) => {
+// 	hook.app
+// 		.service('users')
+// 		.get(hook.params.account.userId)
+// 		.then((user) => {
+// 			hook.app
+// 				.service('roles')
+// 				.find(user.roles.roleId)
+// 				.then((roles) => {
+// 					if (
+// 						roles.forEach((role) => {
+// 							if (role.permissions.includes('NEXTCLOUD_USER')) return hook;
+// 						})
+// 					)
+// 						throw new Forbidden('You are forbidden from logging into Nextcloud');
+// 				});
+// 			return hook;
+// 		})
+// 		.catch(new Forbidden('You are forbidden from logging into Nextcloud'));
+// 	return hook;
+// };
 
 exports.hooks = {
 	clients: {
 		before: {
-			all: [authenticate('jwt'), globalHooks.ifNotLocal(globalHooks.isSuperHero()), validatePermissionForNextcloud],
+			all: [authenticate('jwt'), globalHooks.ifNotLocal(globalHooks.isSuperHero())],
 		},
 	},
 	loginRequest: {
@@ -143,7 +144,7 @@ exports.hooks = {
 	},
 	consentRequest: {
 		before: {
-			all: [authenticate('jwt'), validatePermissionForNextcloud],
+			all: [authenticate('jwt')],
 			patch: [injectConsentRequest, validateSubject, setIdToken],
 		},
 	},
