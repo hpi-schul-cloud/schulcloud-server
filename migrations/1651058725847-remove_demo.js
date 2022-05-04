@@ -76,18 +76,18 @@ module.exports = {
 		for (const user of teacherList) {
 			// eslint-disable-next-line no-await-in-loop
 			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-			info("The user ${user._id} is upgraded to an teacher.");
+			info(`The user ${user._id} is upgraded to an teacher.`);
 		}
-		info('All User with the role demoTeacher are upgraded to teacher');
+		info(`All User with the role demoTeacher are upgraded to teacher`);
 		const subDemoTeacherRole = await substitutRoles(demoTeachersIDs, teachersIDs, rolesModelSearch);
 		for (const role of subDemoTeacherRole) {
 			// eslint-disable-next-line no-await-in-loop
 			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
-			info("The role ${role.id} inherit from the role teacher now.");
+			info(`The role ${role.id} inherit from the role teacher now.`);
 		}
-		info('No role inherit from the demoTeacher role more.');
+		info(`No role inherit from the demoTeacher role more.`);
 		await Roles.deleteMany({ _id: { $in: demoTeachersIDs } });
-		info('The demoTeacher role is removed.');
+		info(`The demoTeacher role is removed.`);
 
 		const demoStudents = await Roles.find({ name: 'demoStudent' }).lean().exec();
 		const demoStudentsIDs = demoStudents.map((student) => student._id);
@@ -97,18 +97,18 @@ module.exports = {
 		for (const user of studentsList) {
 			// eslint-disable-next-line no-await-in-loop
 			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-			info("The user ${user._id} is upgraded to an student.");
+			info(`The user ${user._id} is upgraded to an student.`);
 		}
-		info('All User with the role demoStudent are upgraded to student');
+		info(`All User with the role demoStudent are upgraded to student`);
 		const subDemoUserRole = await substitutRoles(demoStudentsIDs, studentsIDs, rolesModelSearch);
 		for (const role of subDemoUserRole) {
 			// eslint-disable-next-line no-await-in-loop
 			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
-			info("The role ${role.id} inherit from the student teacher now.");
+			info(`The role ${role.id} inherit from the student teacher now.`);
 		}
-		info('No role inherit from the demoStudent role more.');
+		info(`No role inherit from the demoStudent role more.`);
 		await Roles.deleteMany({ _id: { $in: demoStudentsIDs } });
-		info('The demoStudent role is removed.');
+		info(`The demoStudent role is removed.`);
 
 		const demo = await Roles.find({ name: 'demo' }).lean().exec();
 		const demoIDs = demo.map((role) => role._id);
@@ -116,18 +116,18 @@ module.exports = {
 		for (const user of demoUsers) {
 			// eslint-disable-next-line no-await-in-loop
 			await Users.updateOne({ _id: user._id }, { roles: user.roles }).exec();
-			info("The demo role where removed from the user ${user._id}.");
+			info(`The demo role where removed from the user ${user._id}.`);
 		}
-		info('The demo role are removed from all Users.');
+		info(`The demo role are removed from all Users.`);
 		const demoRoless = await removeRoles(demoIDs, rolesModelSearch);
 		for (const role of demoRoless) {
 			// eslint-disable-next-line no-await-in-loop
 			await Roles.updateOne({ _id: role._id }, { roles: role.roles }).exec();
-			info("The demo role are removed from the role ${role._id}");
+			info(`The demo role are removed from the role ${role._id}`);
 		}
-		info('No role inherit from the demo role more.');
+		info(`No role inherit from the demo role more.`);
 		await Roles.deleteMany({ _id: { $in: demoIDs } });
-		info('The demo role is removed.');
+		info(`The demo role is removed.`);
 		await close();
 	},
 
