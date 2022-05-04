@@ -27,7 +27,6 @@ const checkPermissions = (context) => {
 const hooks = {
 	before: {
 		all: [authenticate('jwt'), lookupSchool, iff(isProvider('external'), restrictToCurrentSchool)],
-		get: [globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW')],
 		patch: [globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE'), checkPermissions],
 	},
 };
@@ -40,23 +39,6 @@ class HandlePermissions {
 	constructor(role, permission) {
 		this.role = role || '';
 		this.permission = permission || '';
-	}
-
-	async find(params) {
-		const school = await getSchool(this.app, params.account.schoolId);
-		const schoolPermission = ((school.permissions || [])[this.role] || [])[this.permission];
-		let isEnabled = false;
-		if (schoolPermission === undefined) {
-			const role = await this.app.service('roles').find({
-				query: {
-					name: this.role,
-				},
-			});
-			isEnabled = role.data[0].permissions.includes(this.permission);
-		} else {
-			isEnabled = schoolPermission;
-		}
-		return { isEnabled };
 	}
 
 	async patch(id, data, params) {
