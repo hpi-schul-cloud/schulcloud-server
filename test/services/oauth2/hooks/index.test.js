@@ -4,7 +4,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const { setIdToken } = require('../../../../src/services/oauth2/hooks/index');
 
-describe.only('oauth2 token test', () => {
+describe('oauth2 token test', () => {
 	let app;
 	let server;
     let createHook;
@@ -64,8 +64,6 @@ describe.only('oauth2 token test', () => {
             const result = await setIdToken(createHook(testTool.oAuthClientId, testTeam.user._id, "groups"));
 
             // Assert
-            expect(result).to.not.equal(undefined);
-            expect(result.data.session.id_token.groups).to.not.equal(undefined);
             expect(result.data.session.id_token.groups[0].gid.toString()).to.equal(testTeam.team._id.toString());
             expect(result.data.session.id_token.groups[0].displayName).to.match(new RegExp("(?=_test)_test", "g"));
         });

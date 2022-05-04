@@ -47,7 +47,7 @@ const setIdToken = (hook) => {
 					query: {
 						'userIds.userId': hook.params.account.userId,
 					},
-			  })
+			  }, '_id name')
 			: undefined,
 		hook.app.service('ltiTools').find({
 			query: {
