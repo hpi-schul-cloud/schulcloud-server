@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { alert } = require('../src/logger');
+const { info } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
