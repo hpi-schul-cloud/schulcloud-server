@@ -3,18 +3,25 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects');
 const { Forbidden } = require('../../../../src/errors');
+const { HandlePermissions, handlePermissionsHooks } = require('../../../../src/services/school/services/permissions');
 
 describe('permissons service', () => {
 	let app;
 	let server;
 	let service;
 	let testHelper;
+	let testSchool;
+	let testUser;
+	let testParams;
 
 	before(async () => {
 		app = await appPromise;
 		testHelper = testObjects(appPromise);
 		server = await app.listen(0);
-		service = app.service('/school/teacher/studentvisibility');
+		testSchool = await testHelper.createTestSchool();
+		testUser = await testHelper.createTestUser({ schoolId: testSchool._id, roles: ['administrator'] });
+		testParams = await testHelper.generateRequestParamsFromUser(testUser);
+		testParams.query = {};
 	});
 
 	after(async () => {
@@ -22,31 +29,58 @@ describe('permissons service', () => {
 		await server.close();
 	});
 
-	it('registered the permissions services', () => {
-		expect(service).to.not.be.null;
-	});
-
-	describe('patch', () => {
-		it('throws Forbidden if TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is false', async () => {
-			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', 'false');
-			const admin = await testHelper.createTestUser({ roles: ['administrator'] });
-			const params = await testHelper.generateRequestParamsFromUser(admin);
-			params.query = {};
-			await expect(service.patch(null, {}, params)).to.be.rejectedWith(Forbidden);
+	describe('for STUDENT_LIST permission', () => {
+		before(async () => {
+			app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
+			service = app.service('/school/teacher/studentvisibility');
+			service.hooks(handlePermissionsHooks);
 		});
 
-		it('changes the STUDENT_LIST permission if TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is true ', async () => {
-			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', 'true');
+		it('registered the service', () => {
+			expect(service).to.not.be.null;
+		});
 
-			const school = await testHelper.createTestSchool();
-			expect(school.permissions.teacher.STUDENT_LIST).to.be.true;
+		describe('patch', () => {
+			it('throws Forbidden if TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is false', async () => {
+				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', 'false');
 
-			const admin = await testHelper.createTestUser({ schoolId: school._id, roles: ['administrator'] });
-			const params = await testHelper.generateRequestParamsFromUser(admin);
-			params.query = {};
-			const data = { permission: { isEnabled: false } };
-			await expect(service.patch(null, data, params)).to.eventually.deep.include({
-				permissions: { teacher: { STUDENT_LIST: false } },
+				await expect(service.patch(null, {}, testParams)).to.be.rejectedWith(Forbidden);
+			});
+
+			it('changes the STUDENT_LIST permission if TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE is true', async () => {
+				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE', 'true');
+
+				expect(testSchool.permissions.teacher.STUDENT_LIST).to.be.true;
+
+				const data = { permission: { isEnabled: false } };
+				const result = await service.patch(null, data, testParams);
+				await expect(result.permissions).to.deep.include({
+					teacher: { STUDENT_LIST: false },
+				});
+			});
+		});
+	});
+
+	describe('for LERNSTORE_VIEW permission', () => {
+		before(async () => {
+			app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
+			service = app.service('/school/student/studentlernstorevisibility');
+			service.hooks(handlePermissionsHooks);
+		});
+
+		it('registered the service', () => {
+			expect(service).to.not.be.null;
+		});
+
+		describe('patch', () => {
+			it('changes the LERNSTORE_VIEW permission', async () => {
+				expect(testSchool.permissions.student).to.be.undefined;
+
+				const data = { permission: { isEnabled: false } };
+				const result = await service.patch(null, data, testParams);
+				expect(result.permissions).to.deep.include({
+					student: { LERNSTORE_VIEW: false },
+				});
 			});
 		});
 	});
