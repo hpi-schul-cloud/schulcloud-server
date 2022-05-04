@@ -35,11 +35,15 @@ const Users = mongoose.model(
 const objectStringArrayInclude = (inputArray, searchVaule) =>
 	inputArray.map((inVal) => String(inVal) === String(searchVaule)).includes(true);
 
-const usersModelSearch = async (searchRoles) => 
-	Users.find({ roles: { $elemMatch: { $in: searchRoles } } }).lean().exec();
+const usersModelSearch = async (searchRoles) =>
+	Users.find({ roles: { $elemMatch: { $in: searchRoles } } })
+		.lean()
+		.exec();
 
-const rolesModelSearch = async (searchRoles) => 
-	Roles.find({ roles: { $elemMatch: { $in: searchRoles } } }).lean().exec();
+const rolesModelSearch = async (searchRoles) =>
+	Roles.find({ roles: { $elemMatch: { $in: searchRoles } } })
+		.lean()
+		.exec();
 
 const substitutRoles = async (srcRolesIDs, dstRolesIDs, useModelFnc) => {
 	const list = await useModelFnc(srcRolesIDs);
