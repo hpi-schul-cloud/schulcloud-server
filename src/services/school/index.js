@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -92,11 +93,15 @@ module.exports = function schoolServices() {
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
 
-	app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
-	const handlePermissionsService = app.service('/school/teacher/studentvisibility');
-	handlePermissionsService.hooks(handlePermissionsHooks);
+	if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
+		app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
+		const handlePermissionsService = app.service('/school/teacher/studentvisibility');
+		handlePermissionsService.hooks(handlePermissionsHooks);
+	}
 
-	app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
-	const handleLernStorePermissionsService = app.service('/school/student/studentlernstorevisibility');
-	handleLernStorePermissionsService.hooks(handlePermissionsHooks);
+	if (Configuration.get('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED')) {
+		app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
+		const handleLernStorePermissionsService = app.service('/school/student/studentlernstorevisibility');
+		handleLernStorePermissionsService.hooks(handlePermissionsHooks);
+	}
 };

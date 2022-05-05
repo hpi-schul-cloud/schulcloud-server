@@ -1,33 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const { iff, isProvider } = require('feathers-hooks-common');
 
-const { BadRequest, Forbidden } = require('../../../errors');
+const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
-
-const checkPermissions = (context) => {
-	if (
-		context.path === 'school/teacher/studentvisibility' &&
-		!Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')
-	) {
-		throw new Forbidden('Configuring student visibility is not allowed.');
-	}
-
-	if (
-		context.path === 'school/student/studentlernstorevisibility' &&
-		!Configuration.get('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED')
-	) {
-		throw new Forbidden('Configuring lernstore access is not allowed.');
-	}
-
-	return context;
-};
 
 const hooks = {
 	before: {
 		all: [authenticate('jwt'), lookupSchool, iff(isProvider('external'), restrictToCurrentSchool)],
-		patch: [globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE'), checkPermissions],
+		patch: [globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE')],
 	},
 };
 
