@@ -190,7 +190,7 @@ describe('AccountService', () => {
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
-				system: { id: mockTeacherAccountDto.systemId },
+				systemId: mockTeacherAccountDto.systemId,
 			});
 		});
 		it("should update an existing account's user", async () => {
@@ -202,7 +202,7 @@ describe('AccountService', () => {
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
 				activated: mockTeacherAccountDto.activated,
-				user: mockStudentUser,
+				userId: mockStudentUser.id,
 			});
 		});
 		it('should save a new account', async () => {
