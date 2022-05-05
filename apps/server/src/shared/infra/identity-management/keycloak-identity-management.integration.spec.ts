@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak';
 import { IdentityManagement } from './identity-management';
 import { KeycloakIdentityManagement } from './keycloak-identity-management';
 
@@ -33,7 +34,7 @@ xdescribe('KeycloakIdentityManagement', () => {
 				{ provide: 'IdentityManagement', useClass: KeycloakIdentityManagement },
 				{ provide: 'KeycloakAdminClient', useClass: KeycloakAdminClient },
 				{
-					provide: 'KeycloakSettings',
+					provide: KeycloakSettings,
 					useValue: {
 						baseUrl: Configuration.get('IDENTITY_MANAGEMENT__URI') as string,
 						realmName: Configuration.get('IDENTITY_MANAGEMENT__TENANT') as string,

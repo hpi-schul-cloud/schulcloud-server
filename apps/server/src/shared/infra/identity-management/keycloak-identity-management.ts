@@ -3,23 +3,9 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 /* eslint-disable no-nested-ternary */
 import { Inject, Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { GrantTypes } from '@keycloak/keycloak-admin-client/lib/utils/auth';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak';
 import { IdentityManagement } from './identity-management';
-
-interface KcSettings {
-	realmName: string;
-	baseUrl: string;
-	credentials: KcCredentials;
-	sourceRealm: string;
-}
-
-interface KcCredentials {
-	grantType: GrantTypes;
-	username: string;
-	password: string;
-	clientId: string;
-}
 
 @Injectable()
 export class KeycloakIdentityManagement extends IdentityManagement {
@@ -29,7 +15,7 @@ export class KeycloakIdentityManagement extends IdentityManagement {
 
 	public constructor(
 		@Inject(KeycloakAdminClient) private readonly kcAdminClient: KeycloakAdminClient,
-		@Inject('KeycloakSettings') private readonly kcSettings: KcSettings
+		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
 	) {
 		super();
 		kcAdminClient.setConfig({

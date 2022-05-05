@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak';
 import { IdentityManagement } from './identity-management';
 import { KeycloakIdentityManagement } from './keycloak-identity-management';
 
@@ -27,7 +28,7 @@ describe('KeycloakIdentityManagement', () => {
 					},
 				},
 				{
-					provide: 'KeycloakSettings',
+					provide: KeycloakSettings,
 					useValue: 'empty',
 				},
 			],
