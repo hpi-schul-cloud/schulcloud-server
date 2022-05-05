@@ -65,7 +65,7 @@ describe('oauth2 token test', () => {
 
 			// Assert
 			expect(result.data.session.id_token.groups[0].gid.toString()).to.equal(testTeam.team._id.toString());
-			expect(result.data.session.id_token.groups[0].displayName).to.match('(?=_test)_test', 'g');
+			expect(result.data.session.id_token.groups[0].displayName).to.match(/(?=_test)_test/, 'g');
 		});
 	});
 
