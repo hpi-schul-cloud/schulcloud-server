@@ -45,7 +45,7 @@ describe('AccountService', () => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
-							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.user.id === account.user.id);
+							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.userId === account.userId);
 							if (accountEntity) {
 								Object.assign(accountEntity, account);
 							}
@@ -56,7 +56,7 @@ describe('AccountService', () => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -64,7 +64,7 @@ describe('AccountService', () => {
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -126,14 +126,12 @@ describe('AccountService', () => {
 			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
 		});
 		mockTeacherAccount = accountFactory.buildWithId({
-			user: mockTeacherUser,
+			userId: mockTeacherUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockStudentAccount = accountFactory.buildWithId({
-			user: mockStudentUser,
+			userId: mockStudentUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
@@ -178,7 +176,6 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepo.findById).toHaveBeenCalledWith(mockTeacherUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
@@ -190,7 +187,6 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.systemId = 'dummySystemId';
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepo.findById).toHaveBeenCalledWith(mockTeacherUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
@@ -202,7 +198,6 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.userId = mockStudentUser.id;
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepo.findById).toHaveBeenCalledWith(mockStudentUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
@@ -222,7 +217,6 @@ describe('AccountService', () => {
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
 			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(userRepo.findById).toHaveBeenCalledWith(mockUserWithoutAccount.id);
 			// eslint-disable-next-line jest/unbound-method
 			const accountSave = accountRepo.save as jest.Mock;
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
