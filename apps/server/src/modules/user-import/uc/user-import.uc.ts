@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { EntityNotFoundError, UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	Account,
 	Counted,
@@ -216,7 +216,8 @@ export class UserImportUc {
 		const { user } = importUser;
 		user.ldapId = importUser.ldapId;
 
-		const account = await this.accountRepo.findOneByUser(user);
+		const account: Account = await this.accountRepo.findByUserIdOrFail(user.id);
+
 		account.system = this.accountRepo.getObjectReference(System, importUser.system.id);
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
