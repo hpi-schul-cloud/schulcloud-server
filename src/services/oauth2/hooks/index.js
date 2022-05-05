@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
-const Hydra = require('../hydra.js');
+const Hydra = require('../hydra');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -43,11 +43,14 @@ const setIdToken = (hook) => {
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
 		scope.includes('groups')
-			? hook.app.service('teams').find({
-					query: {
-						'userIds.userId': hook.params.account.userId,
+			? hook.app.service('teams').find(
+					{
+						query: {
+							'userIds.userId': hook.params.account.userId,
+						},
 					},
-			  }, '_id name')
+					'_id name'
+			  )
 			: undefined,
 		hook.app.service('ltiTools').find({
 			query: {
