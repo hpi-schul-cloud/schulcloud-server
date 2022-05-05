@@ -3,7 +3,6 @@ const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
-
 describe('ltiTool service', () => {
 	let app;
 	let server;
