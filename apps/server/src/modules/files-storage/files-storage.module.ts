@@ -1,27 +1,26 @@
-import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
-import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ConfigModule } from '@nestjs/config';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-
-import { FileRecordRepo } from '@shared/repo';
-import { AuthModule } from '@src/modules/authentication/auth.module';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ALL_ENTITIES } from '@shared/domain';
+import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
-import { CoreModule } from '@src/core';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
-import { ALL_ENTITIES } from '@shared/domain';
-import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
-
-import { FilesStorageController } from './controller/files-storage.controller';
+import { FileRecordRepo } from '@shared/repo';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { CoreModule } from '@src/core';
+import { Logger } from '@src/core/logger';
+import { AuthModule } from '@src/modules/authentication/auth.module';
 import { S3ClientAdapter } from './client/s3-client.adapter';
-import { S3Config } from './interface/config';
-import { FilesStorageUC } from './uc/files-storage.uc';
-import { FileRecordUC } from './uc/file-record.uc';
 import { FileSecurityController } from './controller/file-security.controller';
+import { FilesStorageController } from './controller/files-storage.controller';
 import fileStorageConfig from './files-storage.config';
+import { S3Config } from './interface/config';
+import { FileRecordUC } from './uc/file-record.uc';
+import { FilesStorageUC } from './uc/files-storage.uc';
 
 // The configurations lookup
 // config/development.json for development
@@ -73,6 +72,7 @@ const providers = [
 	},
 	S3ClientAdapter,
 	FileRecordRepo,
+	Logger,
 ];
 
 const controllers = [FilesStorageController, FileSecurityController];

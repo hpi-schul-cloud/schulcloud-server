@@ -1,23 +1,34 @@
-import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Req, StreamableFile } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
+	Req,
+	StreamableFile,
+	UseInterceptors,
+} from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
-
+import { RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-
+import { Request } from 'express';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
 import {
-	FileRecordResponse,
-	DownloadFileParams,
-	FileRecordParams,
-	SingleFileParams,
-	RenameFileParams,
-	FileRecordListResponse,
-	FileParams,
-	CopyFilesOfParentParams,
 	CopyFileParams,
+	CopyFilesOfParentParams,
+	DownloadFileParams,
+	FileParams,
+	FileRecordListResponse,
+	FileRecordParams,
+	FileRecordResponse,
+	RenameFileParams,
+	SingleFileParams,
 } from './dto';
 
 @ApiTags('file')
@@ -74,6 +85,7 @@ export class FilesStorageController {
 	}
 
 	@Patch('/rename/:fileRecordId/')
+	@UseInterceptors(RequestLoggingInterceptor)
 	async patchFilename(
 		@Param() params: SingleFileParams,
 		@Body() renameFileParam: RenameFileParams,
@@ -87,6 +99,7 @@ export class FilesStorageController {
 	}
 
 	@Delete('/delete/:schoolId/:parentType/:parentId')
+	@UseInterceptors(RequestLoggingInterceptor)
 	async delete(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -103,6 +116,7 @@ export class FilesStorageController {
 	}
 
 	@Delete('/delete/:fileRecordId')
+	@UseInterceptors(RequestLoggingInterceptor)
 	async deleteFile(
 		@Param() params: SingleFileParams,
 		@CurrentUser() currentUser: ICurrentUser

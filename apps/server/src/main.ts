@@ -11,6 +11,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 import { Logger } from '@nestjs/common';
 import { MailService, Mail } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
+import { AccountService } from '@src/modules/authentication/services/account.service';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
@@ -49,6 +50,8 @@ async function bootstrap() {
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
 
 	// mount instances
 	const rootExpress = express();

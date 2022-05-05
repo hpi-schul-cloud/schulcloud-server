@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
@@ -6,6 +5,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
+import bcrypt from 'bcryptjs';
 import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -15,8 +15,8 @@ import {
 	AccountByIdParams,
 	AccountResponse,
 	AccountSearchListResponse,
-	AccountSearchType,
 	AccountSearchQueryParams,
+	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';

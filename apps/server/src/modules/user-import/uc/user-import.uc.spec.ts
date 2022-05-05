@@ -1,24 +1,15 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	Account,
-	ImportUser,
-	MatchCreator,
-	MatchCreatorScope,
-	PermissionService,
-	School,
-	System,
-	User,
-} from '@shared/domain';
+import { ImportUser, MatchCreator, MatchCreatorScope, PermissionService, School, System, User } from '@shared/domain';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
 

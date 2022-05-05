@@ -1,4 +1,4 @@
-import { TaskWithStatusVo, Lesson, EntityId } from '@shared/domain';
+import { TaskWithStatusVo, EntityId } from '@shared/domain';
 
 export type RoomBoardDTO = {
 	roomId: string;
@@ -7,18 +7,22 @@ export type RoomBoardDTO = {
 	elements: RoomBoardElementDTO[];
 };
 
-export type LockedTaskDTO = {
-	id: EntityId;
-	name: string;
-};
-
 export enum RoomBoardElementTypes {
 	TASK = 'task',
-	LOCKEDTASK = 'lockedtask',
 	LESSON = 'lesson',
 }
 
+export type LessonMetaData = {
+	id: EntityId;
+	name: string;
+	hidden: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+	numberOfTasks: number;
+	courseName: string;
+};
+
 export type RoomBoardElementDTO = {
 	type: RoomBoardElementTypes;
-	content: TaskWithStatusVo | LockedTaskDTO | Lesson;
+	content: TaskWithStatusVo | LessonMetaData;
 };

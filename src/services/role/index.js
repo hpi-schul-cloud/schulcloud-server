@@ -43,7 +43,7 @@ module.exports = function setup() {
 	});
 
 	definePermissions(
-		'ADMIN_TOGGLE_STUDENT_VISIBILITY',
+		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT',
 		ROLES.TEACHER,
 		PERMISSIONS.STUDENT_LIST
 		// TODO: importent add this again, after school permission service can handle multiple permissions

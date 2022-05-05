@@ -1,24 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-
-import { ServerTestModule } from '@src/server.module';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ICurrentUser, Permission } from '@shared/domain';
+import {
+	cleanupCollections,
+	courseFactory,
+	lessonFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
-import { ICurrentUser } from '@shared/domain';
-import {
-	courseFactory,
-	userFactory,
-	taskFactory,
-	lessonFactory,
-	roleFactory,
-	cleanupCollections,
-	mapUserToCurrentUser,
-} from '@shared/testing';
-import { TaskDashBoardPermission } from '@src/modules/task/uc/task.authorization.service';
+import { ServerTestModule } from '@src/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 class API {
 	app: INestApplication;
@@ -97,7 +95,7 @@ describe('Task controller (e2e)', () => {
 		});
 	});
 
-	describe(`task/finished with ${TaskDashBoardPermission.teacherDashboard} permission`, () => {
+	describe(`task/finished with ${Permission.TASK_DASHBOARD_TEACHER_VIEW_V3} permission`, () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
@@ -136,7 +134,7 @@ describe('Task controller (e2e)', () => {
 		});
 
 		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.teacherDashboard] });
+			const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3] });
 			const user = userFactory.build({ roles });
 
 			return user;
@@ -187,7 +185,7 @@ describe('Task controller (e2e)', () => {
 		});
 	});
 
-	describe(`task/finished with ${TaskDashBoardPermission.studentDashboard} permission`, () => {
+	describe(`task/finished with ${Permission.TASK_DASHBOARD_VIEW_V3} permission`, () => {
 		let app: INestApplication;
 		let orm: MikroORM;
 		let em: EntityManager;
@@ -227,7 +225,7 @@ describe('Task controller (e2e)', () => {
 
 		describe('api endpoint', () => {
 			const setup = () => {
-				const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+				const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 				const user = userFactory.build({ roles });
 
 				return user;
@@ -265,7 +263,7 @@ describe('Task controller (e2e)', () => {
 
 		describe('when user is the creator', () => {
 			const setup = () => {
-				const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+				const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 				const user = userFactory.build({ roles });
 
 				return user;
@@ -314,7 +312,7 @@ describe('Task controller (e2e)', () => {
 		describe('when user has write permission in course', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
-					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 					const user = userFactory.build({ roles });
 					const course = courseFactory.isFinished().build({ teachers: [user] });
 
@@ -446,7 +444,7 @@ describe('Task controller (e2e)', () => {
 
 			describe('when courses are open', () => {
 				const setup = () => {
-					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 					const user = userFactory.build({ roles });
 					const course = courseFactory.isOpen().build({ teachers: [user] });
 
@@ -580,7 +578,7 @@ describe('Task controller (e2e)', () => {
 		describe('when user has read permission in course', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
-					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 					const user = userFactory.build({ roles });
 					const course = courseFactory.isFinished().build({ students: [user] });
 
@@ -712,7 +710,7 @@ describe('Task controller (e2e)', () => {
 
 			describe('when courses are open', () => {
 				const setup = () => {
-					const roles = roleFactory.buildList(1, { permissions: [TaskDashBoardPermission.studentDashboard] });
+					const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
 					const user = userFactory.build({ roles });
 					const course = courseFactory.isOpen().build({ students: [user] });
 

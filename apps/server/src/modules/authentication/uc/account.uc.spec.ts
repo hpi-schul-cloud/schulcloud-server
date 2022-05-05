@@ -88,10 +88,7 @@ describe('AccountUc', () => {
 							if (account) {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
-							if (userId === 'accountWithoutUser') {
-								return Promise.resolve(null);
-							}
-							throw new EntityNotFoundError(Account.name);
+							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
@@ -278,6 +275,11 @@ describe('AccountUc', () => {
 		mockUnknownRoleUserAccount = accountFactory.buildWithId({
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
+		});
+		mockExternalUserAccount = accountFactory.buildWithId({
+			userId: mockExternalUser.id,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
 		});
 		mockExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
@@ -628,6 +630,15 @@ describe('AccountUc', () => {
 				0,
 				1
 			);
+			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
+		});
+
+		it('should return empty list, if account is not found', async () => {
+			const accounts = await accountUc.searchAccounts(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ type: AccountSearchType.USER_ID, value: 'nonExistentId' } as AccountSearchQueryParams
+			);
+			const expected = new AccountSearchListResponse([], 0, 0, 0);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 		});
 		it('should return one or more accounts, if search type is username', async () => {

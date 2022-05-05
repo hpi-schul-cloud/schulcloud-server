@@ -4,6 +4,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { User } from './user.entity';
 import type { Course } from './course.entity';
 import { School } from './school.entity';
+import { IEntityWithSchool } from '../interface';
 
 export interface ICourseGroupProperties {
 	course: Course;
@@ -12,7 +13,7 @@ export interface ICourseGroupProperties {
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroup extends BaseEntityWithTimestamps {
+export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	@Index()
 	students = new Collection<User>(this);

@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { createMock } from '@golevelup/ts-jest';
+import { Collection } from '@mikro-orm/core';
+import { HttpModule, HttpService } from '@nestjs/axios';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerModule } from '@src/core/logger';
-
-import { UserRepo } from '@shared/repo/user/user.repo';
+import { Role, School, System, User } from '@shared/domain';
 import { SystemRepo } from '@shared/repo/system';
-import { User, School, Role, System } from '@shared/domain';
+import { UserRepo } from '@shared/repo/user/user.repo';
+import { systemFactory } from '@shared/testing/factory/system.factory';
+import { Logger } from '@src/core/logger';
 import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
-import { Collection } from '@mikro-orm/core';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { systemFactory } from '@shared/testing/factory/system.factory';
-import { of } from 'rxjs';
-import { NotFoundException } from '@nestjs/common';
 import jwt from 'jsonwebtoken';
+import { of } from 'rxjs';
 import { OauthUc } from '.';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -81,9 +81,13 @@ describe('OAuthUc', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule, HttpModule],
+			imports: [HttpModule],
 			providers: [
 				OauthUc,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 				{
 					provide: 'OAuthEncryptionService',
 					useValue: {
