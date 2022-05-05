@@ -444,7 +444,7 @@ describe('[ImportUserModule]', () => {
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
-				accountRepoFindByUserIdSpy = accountRepo.findOneByUser.mockResolvedValue(account);
+				accountRepoFindByUserIdSpy = accountRepo.findByUserIdOrFail.mockResolvedValue(account);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
 			});
