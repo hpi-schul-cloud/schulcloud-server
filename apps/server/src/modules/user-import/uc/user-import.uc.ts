@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityNotFoundError, UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	Account,
 	Counted,
@@ -16,9 +16,14 @@ import {
 	School,
 	System,
 	User,
+	Permission,
 } from '@shared/domain';
 import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { UserImportPermissions } from '../constants';
+
+export type UserImportPermissions =
+	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
+	| Permission.SCHOOL_IMPORT_USERS_UPDATE
+	| Permission.SCHOOL_IMPORT_USERS_VIEW;
 
 @Injectable()
 export class UserImportUc {
@@ -52,7 +57,7 @@ export class UserImportUc {
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
 	}
@@ -66,7 +71,7 @@ export class UserImportUc {
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
 
@@ -91,7 +96,7 @@ export class UserImportUc {
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (currentUser.school.id !== importUser.school.id) {
@@ -106,7 +111,7 @@ export class UserImportUc {
 
 	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
@@ -135,14 +140,14 @@ export class UserImportUc {
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
 
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
@@ -163,7 +168,7 @@ export class UserImportUc {
 
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 		if (!school.ldapSchoolIdentifier || school.inUserMigration !== true || !school.inMaintenanceSince) {
 			throw new BadRequestException('School cannot exit from user migration mode');
@@ -175,7 +180,7 @@ export class UserImportUc {
 	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
 		this.featureEnabled();
 		const migrationSystem = await this.getMigrationSystem();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 		if (!school.officialSchoolNumber || (school.inUserMigration !== undefined && school.inUserMigration !== null)) {
 			throw new BadRequestException('School cannot be set in user migration');
@@ -193,7 +198,7 @@ export class UserImportUc {
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		this.featureEnabled();
-		const currentUser = await this.getCurrentUser(currentUserId, UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE);
+		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.ldapSchoolIdentifier) {
 			throw new BadRequestException('Sync cannot be activated for school');

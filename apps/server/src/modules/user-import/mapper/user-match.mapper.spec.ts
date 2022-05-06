@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { MatchCreator } from '@shared/domain';
+import { MatchCreator, RoleName } from '@shared/domain';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchType, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
@@ -37,22 +37,22 @@ describe('[UserMatchMapper]', () => {
 	describe('[mapToResponse] from domain', () => {
 		describe('When having a user provided only', () => {
 			it('should map role name student', () => {
-				const user = userFactory.build({ roles: [roleFactory.build({ name: 'student' })] });
+				const user = userFactory.build({ roles: [roleFactory.build({ name: RoleName.STUDENT })] });
 				const result = UserMatchMapper.mapToResponse(user);
 				expect(result.roleNames).toContainEqual(UserRole.STUDENT);
 			});
 			it('should map role name admin', () => {
-				const user = userFactory.build({ roles: [roleFactory.build({ name: 'administrator' })] });
+				const user = userFactory.build({ roles: [roleFactory.build({ name: RoleName.ADMINISTRATOR })] });
 				const result = UserMatchMapper.mapToResponse(user);
 				expect(result.roleNames).toContainEqual(UserRole.ADMIN);
 			});
 			it('should map role name teacher', () => {
-				const user = userFactory.build({ roles: [roleFactory.build({ name: 'teacher' })] });
+				const user = userFactory.build({ roles: [roleFactory.build({ name: RoleName.TEACHER })] });
 				const result = UserMatchMapper.mapToResponse(user);
 				expect(result.roleNames).toContainEqual(UserRole.TEACHER);
 			});
 			it('should not map other role names like superhero', () => {
-				const user = userFactory.build({ roles: [roleFactory.build({ name: 'superhero' })] });
+				const user = userFactory.build({ roles: [roleFactory.build({ name: RoleName.SUPERHERO })] });
 				const result = UserMatchMapper.mapToResponse(user);
 				expect(result.roleNames.length).toEqual(0);
 			});

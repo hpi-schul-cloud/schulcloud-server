@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { roleFactory } from '@shared/testing';
+import { cleanupCollections, roleFactory } from '@shared/testing';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -56,6 +56,8 @@ describe('role repo', () => {
 	describe('findByName', () => {
 		afterEach(async () => {
 			await em.nativeDelete(Role, {});
+			await cleanupCollections(em);
+			em.clear();
 		});
 
 		it('should return right keys', async () => {
@@ -73,8 +75,9 @@ describe('role repo', () => {
 			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 
 			await em.persistAndFlush([roleA, roleB]);
+			em.clear();
 			const result = await repo.findByName(RoleName.STUDENT);
-			expect(result).toEqual(roleA);
+			expect(result.id).toEqual(roleA.id);
 		});
 
 		it('should throw an error if roles by name doesnt exist', async () => {
@@ -85,6 +88,7 @@ describe('role repo', () => {
 	describe('findById', () => {
 		afterEach(async () => {
 			await em.nativeDelete(Role, {});
+			em.clear();
 		});
 
 		it('should return right keys', async () => {

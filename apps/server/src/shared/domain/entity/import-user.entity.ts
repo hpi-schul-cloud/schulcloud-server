@@ -19,7 +19,7 @@ export interface IImportUserProperties {
 	firstName: string;
 	lastName: string;
 	email: string; // TODO VO
-	roleNames?: RoleName[];
+	roleNames?: IImportUserRoleName[];
 	classNames?: string[];
 	user?: User;
 	matchedBy?: MatchCreator;
@@ -89,7 +89,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 	email: string;
 
 	@Enum({ fieldName: 'roles' })
-	roleNames: RoleName[] = [];
+	roleNames: IImportUserRoleName[] = [];
 
 	@Property()
 	classNames: string[] = [];
