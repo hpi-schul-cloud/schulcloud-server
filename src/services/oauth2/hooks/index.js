@@ -116,7 +116,6 @@ const managesOwnConsents = (hook) => {
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
-exports.setIdToken = setIdToken;
 
 // N21-91. Magic Strings are not desireable
 const validatePermissionForNextcloud = (hook) =>
@@ -133,10 +132,14 @@ const validatePermissionForNextcloud = (hook) =>
 			tools.data.length > 0 &&
 			tools.data[0].name === 'SchulcloudNextcloud' &&
 			!user.permissions.includes('NEXTCLOUD_USER')
-		)
+		) {
 			throw new Forbidden('You are not allowed to use Nextcloud');
+		}
 		return hook;
 	});
+
+exports.setIdToken = setIdToken;
+exports.validatePermissionForNextcloud = validatePermissionForNextcloud;
 
 exports.hooks = {
 	clients: {
