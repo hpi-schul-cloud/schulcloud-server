@@ -46,7 +46,7 @@ const addSecret = (context) => {
 
 	return context;
 };
-// N21-91. Magic Strings are not desireable
+// TODO N21-91. Magic Strings are not desireable
 const isBBBTool = (tool) => tool.name && tool.name === 'Video-Konferenz mit BigBlueButton';
 
 const filterFindBBB = (context) => {

@@ -114,9 +114,13 @@ describe('oauth2 token test', () => {
 			const testTool = await testObjects.createTestLtiTool({ name: 'SchulcloudNextcloud', oAuthClientId: 'Nextcloud' });
 
 			// Act and Assert
-			await expect(
-				validatePermissionForNextcloud(createHook(testTool.oAuthClientId, testUser._id, ''))
-			).to.be.rejectedWith(Forbidden);
+			try {
+				validatePermissionForNextcloud(createHook(testTool.oAuthClientId, testUser._id, ''));
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal('You are not allowed to use Nextcloud');
+			}
 		});
 	});
 });

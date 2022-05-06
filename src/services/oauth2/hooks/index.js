@@ -117,7 +117,7 @@ const managesOwnConsents = (hook) => {
 	throw new Forbidden("You want to manage another user's consents");
 };
 
-// N21-91. Magic Strings are not desireable
+// TODO N21-91. Magic Strings are not desireable
 const validatePermissionForNextcloud = (hook) =>
 	Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
@@ -128,9 +128,10 @@ const validatePermissionForNextcloud = (hook) =>
 			},
 		}),
 	]).then(([user, tools]) => {
+		const filtredToolsData = tools.data.filter((toolData) => toolData.name === 'SchulcloudNextcloud');
 		if (
-			tools.data.length > 0 &&
-			tools.data[0].name === 'SchulcloudNextcloud' &&
+			filtredToolsData.length > 0 &&
+			filtredToolsData.name === 'SchulcloudNextcloud' &&
 			!user.permissions.includes('NEXTCLOUD_USER')
 		) {
 			throw new Forbidden('You are not allowed to use Nextcloud');
