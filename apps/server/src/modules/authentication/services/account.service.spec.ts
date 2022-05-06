@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Role, School, User } from '@shared/domain';
+import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
@@ -115,15 +115,15 @@ describe('AccountService', () => {
 
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockTeacherAccount = accountFactory.buildWithId({
 			user: mockTeacherUser,

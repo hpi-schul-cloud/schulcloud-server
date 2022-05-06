@@ -1,4 +1,4 @@
-export enum RoleNames {
+export enum RoleName {
 	ADMINISTRATOR = 'administrator',
 	COURSEADMINISTRATOR = 'courseAdministrator',
 	COURSESTUDENT = 'courseStudent',
@@ -19,3 +19,11 @@ export enum RoleNames {
 	TEAMOWNER = 'teamowner',
 	USER = 'user',
 }
+export type IUserRoleName =
+	| RoleName.ADMINISTRATOR
+	| RoleName.TEACHER
+	| RoleName.STUDENT
+	| RoleName.SUPERHERO
+	| RoleName.EXPERT
+	| RoleName.DEMOSTUDENT
+	| RoleName.DEMOTEACHER;

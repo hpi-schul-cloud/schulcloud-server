@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { ImportUser, IImportUserProperties, RoleName, MatchCreator, User } from '@shared/domain';
+import { ImportUser, IImportUserProperties, MatchCreator, User, RoleName } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';
