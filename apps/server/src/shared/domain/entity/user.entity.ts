@@ -17,6 +17,7 @@ export interface IUserProperties {
 	lastName: string;
 	school: School;
 	roles: Role[];
+	ldapDn?: string;
 	ldapId?: string;
 	language?: LanguageType;
 	forcePasswordChange?: boolean;
@@ -50,6 +51,10 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 
 	@Property({ nullable: true })
 	@Index()
+	ldapDn?: string;
+
+	@Property({ nullable: true })
+	@Index()
 	ldapId?: string;
 
 	@Property({ nullable: true })
@@ -68,6 +73,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.email = props.email;
 		this.school = props.school;
 		this.roles.set(props.roles);
+		this.ldapDn = props.ldapDn;
 		this.ldapId = props.ldapId;
 		this.forcePasswordChange = props.forcePasswordChange;
 		this.language = props.language;
