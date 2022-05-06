@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { ImportUser, IImportUserProperties, MatchCreator, User, RoleName } from '@shared/domain';
+import { ImportUser, IImportUserProperties, MatchCreator, User, RoleName, IImportUserRoleName } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';
@@ -23,7 +23,7 @@ export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequenc
 		firstName: `John${sequence}`,
 		lastName: `Doe${sequence}`,
 		email: `user-${sequence}@example.com`,
-		roleNames: [RoleName.STUDENT],
+		roleNames: [RoleName.STUDENT as IImportUserRoleName],
 		classNames: ['firstClass'],
 		flagged: false,
 	};
