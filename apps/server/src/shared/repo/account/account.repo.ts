@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
-import { User } from '@shared/domain/entity/user.entity';
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 
 @Injectable()
@@ -11,12 +10,12 @@ export class AccountRepo extends BaseRepo<Account> {
 		return Account;
 	}
 
-	async findByUserId(userId: EntityId): Promise<Account> {
-		return this._em.findOneOrFail(Account, { user: userId });
+	async findByUserId(userId: EntityId): Promise<Account | null> {
+		return this._em.findOne(Account, { user: userId });
 	}
 
-	async findOneByUser(user: User): Promise<Account> {
-		return this.findByUserId(user.id);
+	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
+		return this._em.findOneOrFail(Account, { user: userId });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
@@ -40,6 +39,11 @@ export class AccountRepo extends BaseRepo<Account> {
 
 	async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<[Account[], number]> {
 		return this.searchByUsername(username, skip, limit, false);
+	}
+
+	deleteById(accountId: EntityId) {
+		const accountReference = this._em.getReference(Account, accountId);
+		return this._em.removeAndFlush(accountReference);
 	}
 
 	private async searchByUsername(

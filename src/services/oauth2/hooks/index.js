@@ -43,12 +43,15 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
-		scope.includes('teams')
-			? hook.app.service('teams').find({
-					query: {
-						'userIds.userId': hook.params.account.userId,
+		scope.includes('groups')
+			? hook.app.service('teams').find(
+					{
+						query: {
+							'userIds.userId': hook.params.account.userId,
+						},
 					},
-			  })
+					'_id name'
+			  )
 			: undefined,
 		hook.app.service('ltiTools').find({
 			query: {
@@ -75,7 +78,12 @@ const setIdToken = (hook) => {
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
 						schoolId: user.schoolId,
-						teams: scope.includes('teams') ? userTeams.data.map((team) => `${team._id}||${team.name}`) : undefined,
+						groups: scope.includes('groups')
+							? userTeams.data.map((team) => ({
+									gid: team._id,
+									displayName: team.name,
+							  }))
+							: undefined,
 					},
 				};
 				return hook;
@@ -108,9 +116,7 @@ const managesOwnConsents = (hook) => {
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
-
-// function => if login to 'Nextcloud' and not permission.include('NEXTCLOUD_USER') then reject
-
+exports.setIdToken = setIdToken;
 exports.hooks = {
 	clients: {
 		before: {

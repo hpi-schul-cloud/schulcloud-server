@@ -65,7 +65,7 @@ describe('class hooks', () => {
 		before(async () => {
 			configBefore = Configuration.toObject({});
 			app = await appPromise;
-			Configuration.set('ADMIN_TOGGLE_STUDENT_VISIBILITY', 'opt-in');
+			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
 			server = await app.listen(0);
 		});
 

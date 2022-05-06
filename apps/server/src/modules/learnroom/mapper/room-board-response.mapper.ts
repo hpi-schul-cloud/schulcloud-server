@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Course, Lesson, TaskWithStatusVo } from '@shared/domain';
+import { Course, TaskWithStatusVo } from '@shared/domain';
 import { BoardElementResponse, BoardLessonResponse, BoardResponse, BoardTaskResponse } from '../controller/dto';
-import { RoomBoardDTO, RoomBoardElementTypes } from '../types';
+import { LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class RoomBoardResponseMapper {
 			if (element.type === RoomBoardElementTypes.TASK) {
 				elements.push(this.mapTask(element.content as TaskWithStatusVo));
 			} else if (element.type === RoomBoardElementTypes.LESSON) {
-				elements.push(this.mapLesson(element.content as Lesson));
+				elements.push(this.mapLesson(element.content as LessonMetaData));
 			}
 		});
 		return elements;
@@ -57,17 +57,16 @@ export class RoomBoardResponseMapper {
 		return boardElementResponse;
 	};
 
-	private mapLesson = (lesson: Lesson): BoardElementResponse => {
+	private mapLesson = (lesson: LessonMetaData): BoardElementResponse => {
 		const mappedLesson = new BoardLessonResponse({
 			id: lesson.id,
 			name: lesson.name,
 			hidden: lesson.hidden,
 			createdAt: lesson.createdAt,
 			updatedAt: lesson.updatedAt,
+			numberOfTasks: lesson.numberOfTasks,
+			courseName: lesson.courseName,
 		});
-
-		const lessonCourse = lesson.course;
-		mappedLesson.courseName = lessonCourse.name;
 
 		const boardElementResponse = new BoardElementResponse({
 			type: RoomBoardElementTypes.LESSON,
