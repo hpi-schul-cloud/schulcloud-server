@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError } from '@mikro-orm/core';
+import { NotFoundError, ValidationError, NullCacheAdapter } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName } from '@shared/domain';
@@ -12,8 +12,9 @@ describe('role repo', () => {
 	let em: EntityManager;
 
 	beforeAll(async () => {
+		// em.clear do not clear the resultCache, it must be disabled for this test
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ resultCache: { adapter: NullCacheAdapter } })],
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);
@@ -22,6 +23,11 @@ describe('role repo', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(async () => {
+		await em.nativeDelete(Role, {});
+		await cleanupCollections(em);
 	});
 
 	it('should be defined', () => {
@@ -54,12 +60,6 @@ describe('role repo', () => {
 	});
 
 	describe('findByName', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-			await cleanupCollections(em);
-			em.clear();
-		});
-
 		it('should return right keys', async () => {
 			const roleA = roleFactory.build({ name: RoleName.STUDENT });
 
@@ -77,20 +77,16 @@ describe('role repo', () => {
 			await em.persistAndFlush([roleA, roleB]);
 			em.clear();
 			const result = await repo.findByName(RoleName.STUDENT);
-			expect(result.id).toEqual(roleA.id);
+			expect(result).toEqual(roleA);
 		});
 
 		it('should throw an error if roles by name doesnt exist', async () => {
+			em.clear();
 			await expect(repo.findByName(RoleName.STUDENT)).rejects.toThrow(NotFoundError);
 		});
 	});
 
 	describe('findById', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-			em.clear();
-		});
-
 		it('should return right keys', async () => {
 			const roleA = roleFactory.build();
 
