@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { BaseRule } from '.';
@@ -12,7 +12,7 @@ import { Actions } from './actions.enum';
 class TestRule extends BaseRule {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
-		throw new Error('Method not implemented.');
+		return true;
 	}
 }
 
@@ -358,6 +358,22 @@ describe('base.rule', () => {
 			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
 			expect(() => service.hasRole(user, 'c')).toThrowError();
+		});
+	});
+
+	describe('[checkPermission]', () => {
+		it('should throw when hasPermission is false', () => {
+			const user = userFactory.build();
+			const spy = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
+			expect(() => service.checkPermission(user, user, Actions.read)).toThrowError(ForbiddenException);
+			spy.mockRestore();
+		});
+	});
+
+	describe('[hasPermission]', () => {
+		it('should return boolean', () => {
+			const user = userFactory.build();
+			expect(service.hasPermission(user, user, Actions.read)).toBe(true);
 		});
 	});
 });

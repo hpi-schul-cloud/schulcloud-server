@@ -1,10 +1,12 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { NotImplementedException } from '@nestjs/common';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, ALL_RULES, BaseEntity } from '@shared/domain';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from './authorization.service';
+import { AllowedEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 class TestEntity extends BaseEntity {}
@@ -12,6 +14,7 @@ class TestEntity extends BaseEntity {}
 describe('authorization.service', () => {
 	let orm: MikroORM;
 	let service: AuthorizationService;
+	let loader: DeepMocked<ReferenceLoader>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -28,6 +31,7 @@ describe('authorization.service', () => {
 		}).compile();
 
 		service = await module.get(AuthorizationService);
+		loader = await module.get(ReferenceLoader);
 	});
 
 	afterAll(async () => {
@@ -59,6 +63,41 @@ describe('authorization.service', () => {
 
 			const response = service.hasPermission(user, course, Actions.write);
 			expect(response).toBe(true);
+		});
+	});
+
+	describe('hasPermissionByReferences', () => {
+		it('should call ReferenceLoader.getUserWithPermissions', async () => {
+			const userId = new ObjectId().toHexString();
+			const entityName = AllowedEntityType.Course;
+			const entityId = new ObjectId().toHexString();
+			const spy = jest.spyOn(service, 'hasPermission');
+			spy.mockReturnValue(true);
+			await service.hasPermissionByReferences(userId, entityName, entityId, Actions.read);
+			expect(loader.getUserWithPermissions).lastCalledWith(userId);
+		});
+		it('should call ReferenceLoader.loadEntity', async () => {
+			const userId = new ObjectId().toHexString();
+			const entityName = AllowedEntityType.Course;
+			const entityId = new ObjectId().toHexString();
+			const spy = jest.spyOn(service, 'hasPermission');
+			spy.mockReturnValue(true);
+
+			await service.hasPermissionByReferences(userId, entityName, entityId, Actions.read);
+			expect(loader.loadEntity).lastCalledWith(entityName, entityId);
+		});
+	});
+
+	describe('checkPermissionByReferences', () => {
+		it('should call ReferenceLoader.getUserWithPermissions', () => {
+			const userId = new ObjectId().toHexString();
+			const entityName = AllowedEntityType.Course;
+			const entityId = new ObjectId().toHexString();
+			const spy = jest.spyOn(service, 'hasPermission');
+			spy.mockReturnValue(false);
+			void expect(() =>
+				service.checkPermissionByReferences(userId, entityName, entityId, Actions.read)
+			).rejects.toThrowError(ForbiddenException);
 		});
 	});
 });

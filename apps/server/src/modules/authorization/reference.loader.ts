@@ -13,7 +13,7 @@ export class ReferenceLoader {
 		private readonly schoolRepo: SchoolRepo
 	) {}
 
-	async loadEntity(entityName: AllowedEntityType, entityId: string) {
+	async loadEntity(entityName: AllowedEntityType, entityId: EntityId) {
 		let entity: Task | Course | FileRecord | School | User;
 		if (entityName === AllowedEntityType.Task) {
 			entity = await this.taskRepo.findById(entityId);

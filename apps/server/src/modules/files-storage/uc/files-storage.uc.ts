@@ -130,14 +130,11 @@ export class FilesStorageUC {
 	}
 
 	async download(userId: EntityId, params: DownloadFileParams) {
-		// @TODO check permissions of schoolId by user
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (
-			!this.authorizationService.hasPermission(currentUser, entity, Actions.read) ||
 			!(await this.authorizationService.hasPermissionByReferences(
-				currentUser.id,
+				userId,
 				entity.parentType as unknown as never,
 				entity.parentId,
 				Actions.read
@@ -297,7 +294,7 @@ export class FilesStorageUC {
 				params.parentType as unknown as never,
 				params.parentId,
 				Actions.read
-			)) &&
+			)) ||
 			!(await this.authorizationService.hasPermissionByReferences(
 				userId,
 				copyFilesParams.target.parentType as unknown as never,
@@ -327,7 +324,7 @@ export class FilesStorageUC {
 				fileRecord.parentType as unknown as never,
 				fileRecord.parentId,
 				Actions.read
-			)) &&
+			)) ||
 			!(await this.authorizationService.hasPermissionByReferences(
 				userId,
 				copyFileParams.target.parentType as unknown as never,

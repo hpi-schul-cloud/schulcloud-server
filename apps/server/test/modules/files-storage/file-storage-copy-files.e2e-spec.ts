@@ -8,6 +8,7 @@ import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
+	courseFactory,
 	fileRecordFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -132,7 +133,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('copy files of parent', () => {
 		let validId: string;
-		const targetParentId: EntityId = new ObjectId().toHexString();
+		let targetParentId: EntityId;
 		let copyFilesParams: CopyFilesOfParentParams;
 
 		describe('with bad request data', () => {
@@ -141,18 +142,20 @@ describe(`${baseRouteName} (api)`, () => {
 				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
 				const user = userFactory.build({ roles, school });
+				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school]);
+				await em.persistAndFlush([user, school, targetParent]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
 				validId = user.school.id;
+				targetParentId = targetParent.id;
 
 				copyFilesParams = {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParentType.Task,
+						parentType: FileRecordParentType.Course,
 					},
 				};
 			});
@@ -209,17 +212,20 @@ describe(`${baseRouteName} (api)`, () => {
 				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
 				const user = userFactory.build({ roles, school });
+				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, school, targetParent]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
 				validId = user.school.id;
+				targetParentId = targetParent.id;
+
 				copyFilesParams = {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParentType.Task,
+						parentType: FileRecordParentType.Course,
 					},
 				};
 			});
@@ -243,7 +249,7 @@ describe(`${baseRouteName} (api)`, () => {
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
 					parentId: targetParentId,
-					parentType: FileRecordParentType.Task,
+					parentType: FileRecordParentType.Course,
 					type: 'text/plain',
 				});
 			});
@@ -275,22 +281,27 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('copy single file', () => {
 		let copyFileParams: CopyFileParams;
 		let validId: string;
-		const targetParentId: EntityId = new ObjectId().toHexString();
+		let targetParentId: EntityId;
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
 				const user = userFactory.build({ roles, school });
+				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, school, targetParent]);
 				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+				targetParentId = targetParent.id;
+
 				validId = user.school.id;
 				copyFileParams = {
 					target: {
 						schoolId: validId,
 						parentId: targetParentId,
-						parentType: FileRecordParentType.Task,
+						parentType: FileRecordParentType.Course,
 					},
 					fileNamePrefix: 'copy from',
 				};
@@ -316,11 +327,23 @@ describe(`${baseRouteName} (api)`, () => {
 				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
 				const user = userFactory.build({ roles, school });
+				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, school, targetParent]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
+				targetParentId = targetParent.id;
+
+				validId = user.school.id;
+				copyFileParams = {
+					target: {
+						schoolId: validId,
+						parentId: targetParentId,
+						parentType: FileRecordParentType.Course,
+					},
+					fileNamePrefix: 'copy from',
+				};
 
 				const { result } = await api.postUploadFile(`/file/upload/${school.id}/schools/${school.id}`, 'test1.txt');
 
@@ -341,7 +364,7 @@ describe(`${baseRouteName} (api)`, () => {
 					id: expect.any(String) as string,
 					name: expect.any(String) as string,
 					parentId: targetParentId,
-					parentType: FileRecordParentType.Task,
+					parentType: FileRecordParentType.Course,
 					type: 'text/plain',
 				});
 			});
