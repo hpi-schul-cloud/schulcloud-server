@@ -28,9 +28,9 @@ export class IdentityManagementConsole {
 
 		try {
 			await this.client.auth(this.settings.credentials);
-			this.console.info('Connected to Keycloak...');
+			this.console.info('Connected to Keycloak');
 		} catch {
-			throw new Error('Keycloak is not reachable or authentication failed.');
+			throw new Error('Keycloak is not reachable or authentication failed');
 		}
 	}
 
@@ -40,6 +40,7 @@ export class IdentityManagementConsole {
 		const users = (await this.client.users.find()).filter(
 			(user) => user.username !== this.settings.credentials.username
 		);
+		// eslint-disable-next-line no-restricted-syntax
 		for (const user of users) {
 			// eslint-disable-next-line no-await-in-loop
 			await this.client.users.del({
@@ -56,6 +57,7 @@ export class IdentityManagementConsole {
 		let userCount = 0;
 		const users = await this.loadUsers();
 		const accounts = await this.loadAccounts();
+		// eslint-disable-next-line no-restricted-syntax
 		for (const user of users) {
 			const account = accounts.find((a) => a.userId.$oid === user._id.$oid);
 			if (account) {
@@ -70,8 +72,7 @@ export class IdentityManagementConsole {
 					credentials: [
 						{
 							type: 'password',
-							secretData:
-								'{"value": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla", "salt": "", "additionalParameters": {}}',
+							secretData: `{"value": "${account.password}", "salt": "", "additionalParameters": {}}`,
 							credentialData: '{ "hashIterations": 10, "algorithm": "bcrypt", "additionalParameters": {}}',
 						},
 					],
