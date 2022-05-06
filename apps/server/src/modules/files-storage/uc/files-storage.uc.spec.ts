@@ -7,6 +7,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { AuthorizationService } from '@src/modules/authorization';
 import { Busboy } from 'busboy';
 import { Request } from 'express';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
@@ -73,6 +74,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();

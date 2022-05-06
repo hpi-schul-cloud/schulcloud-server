@@ -14,7 +14,8 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationModule, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@src/modules/authorization';
+import { ReferenceLoader } from '@src/modules/authorization/reference.loader';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -34,6 +35,7 @@ describe('TaskUC', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let referenceLoader: DeepMocked<ReferenceLoader>;
 	let orm: MikroORM;
 	let user!: User;
 
@@ -53,7 +55,9 @@ describe('TaskUC', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [AuthorizationModule],
+			imports: [
+				/* AuthorizationModule, MongoMemoryDatabaseModule.forRoot({ entities: ALL_ENTITIES }) */
+			],
 			providers: [
 				TaskUC,
 				{
@@ -71,6 +75,10 @@ describe('TaskUC', () => {
 				{
 					provide: LessonRepo,
 					useValue: createMock<LessonRepo>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();
@@ -90,6 +98,13 @@ describe('TaskUC', () => {
 	const setUserRepoMock = {
 		findById: () => {
 			const spy = userRepo.findById.mockResolvedValue(user);
+			return spy;
+		},
+	};
+
+	const seAuthorizationServiceMock = {
+		getUserWithPermissions: () => {
+			const spy = authorizationService.getUserWithPermissions.mockResolvedValue(user);
 			return spy;
 		},
 	};
@@ -136,6 +151,7 @@ describe('TaskUC', () => {
 		const spy2 = setCourseRepoMock.findAllForTeacher(data?.courses);
 		const spy3 = setCourseRepoMock.findAllByUserId(data?.courses);
 		const spy4 = setLessonRepoMock.findAllForTeacher(data?.lessons);
+		const spy5 = seAuthorizationServiceMock.getUserWithPermissions();
 		const spy6 = setUserRepoMock.findById();
 		const spy7 = setTaskRepoMock.findAllByParentIds(data?.tasks);
 
@@ -143,6 +159,7 @@ describe('TaskUC', () => {
 			spy1.mockRestore();
 			spy2.mockRestore();
 			spy3.mockRestore();
+			spy5.mockRestore();
 			spy4.mockRestore();
 			spy6.mockRestore();
 			spy7.mockRestore();
@@ -156,13 +173,12 @@ describe('TaskUC', () => {
 			user = setupUser(permissions);
 		});
 
-		it('should call user repo findById', async () => {
+		it('should call auth getUserWithPermissions() with userId', async () => {
 			const mockRestore = findAllMock();
-			const spy = setUserRepoMock.findById();
 
 			await service.findAllFinished(user.id);
 
-			expect(spy).toHaveBeenCalled();
+			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 
 			mockRestore();
 		});
@@ -226,9 +242,12 @@ describe('TaskUC', () => {
 			const task = taskFactory.finished(student).build();
 			const mockRestore = findAllMock({ tasks: [task] });
 			const status = task.createStudentStatusForUser(student);
+			authorizationService.hasPermission.mockReturnValue(false);
 
 			const [data] = await service.findAllFinished(student.id);
 
+			expect(data[0].task).toEqual(task);
+			expect(data[0].status).toEqual(status);
 			expect(data[0]).toEqual({ task, status });
 
 			mockRestore();
@@ -370,6 +389,9 @@ describe('TaskUC', () => {
 
 			it('should fail with UnauthorizedException', async () => {
 				const mockRestore = findAllMock({});
+				authorizationService.checkOneOfPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
 				await expect(() => service.findAllFinished(user.id)).rejects.toThrow(UnauthorizedException);
 
 				mockRestore();
@@ -383,15 +405,37 @@ describe('TaskUC', () => {
 			user = setupUser(permissions);
 		});
 
-		it('should throw if user has no required permission', async () => {
+		it('should call authorizationService.hasAllPermissions with [Permission.TASK_DASHBOARD_VIEW_V3]', async () => {
 			const permissions = [];
 			user = setupUser(permissions);
 			const mockRestore = findAllMock();
 
 			const paginationParams = new PaginationParams();
+			await service.findAll(user.id, paginationParams);
+			expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.TASK_DASHBOARD_VIEW_V3]);
+			mockRestore();
+		});
+
+		it('should call authorizationService.hasAllPermissions with [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3]', async () => {
+			const permissions = [];
+			user = setupUser(permissions);
+			const mockRestore = findAllMock();
+			authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+			const paginationParams = new PaginationParams();
+			await service.findAll(user.id, paginationParams);
+			expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3]);
+			mockRestore();
+		});
+
+		it('should throw if user has no required permission', async () => {
+			const permissions = [];
+			user = setupUser(permissions);
+			const mockRestore = findAllMock();
+			authorizationService.hasAllPermissions.mockReturnValue(false);
+
+			const paginationParams = new PaginationParams();
 			const action = async () => service.findAll(user.id, paginationParams);
 			await expect(action()).rejects.toThrow();
-
 			mockRestore();
 		});
 
@@ -621,6 +665,8 @@ describe('TaskUC', () => {
 			beforeEach(() => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				user = setupUser(permissions);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 			});
 
 			it('should return a counted result', async () => {
@@ -901,15 +947,16 @@ describe('TaskUC', () => {
 		});
 
 		it('should check for permission to finish the task', async () => {
-			const spy = jest.spyOn(authorizationService, 'hasPermission');
 			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(spy).toBeCalledWith(user, task, Actions.read);
+			expect(authorizationService.hasPermission).toBeCalledWith(user, task, Actions.read);
 		});
 
 		it('should throw UnauthorizedException when not permitted', async () => {
 			const user2 = userFactory.buildWithId();
 			task = taskFactory.buildWithId({ creator: user2 });
 			taskRepo.findById.mockResolvedValue(task);
+			authorizationService.hasPermission.mockReturnValue(false);
+
 			await expect(async () => {
 				await service.changeFinishedForUser(user.id, task.id, true);
 			}).rejects.toThrow(UnauthorizedException);
@@ -965,12 +1012,16 @@ describe('TaskUC', () => {
 		describe('with studentDashboard permission', () => {
 			it('should create teacher status', async () => {
 				task.createStudentStatusForUser = jest.fn();
+				authorizationService.hasPermission.mockReturnValue(true);
+				authorizationService.hasOneOfPermissions.mockReturnValue(false);
 				await service.changeFinishedForUser(user.id, task.id, true);
 				expect(task.createStudentStatusForUser).toBeCalled();
 			});
 
 			it('should return task and student status', async () => {
 				task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
+				authorizationService.hasPermission.mockReturnValue(true);
+				authorizationService.hasOneOfPermissions.mockReturnValue(false);
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
@@ -992,6 +1043,7 @@ describe('TaskUC', () => {
 		it('should throw UnauthorizedException when not permitted', async () => {
 			task = taskFactory.buildWithId();
 			taskRepo.findById.mockResolvedValue(task);
+			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await service.delete(user.id, task.id);
 			}).rejects.toThrow(new ForbiddenException('USER_HAS_NOT_PERMISSIONS'));
@@ -1000,6 +1052,10 @@ describe('TaskUC', () => {
 		it('should call TaskRepo.delete() with Task', async () => {
 			await service.delete(user.id, task.id);
 			expect(taskRepo.delete).toBeCalledWith(task);
+		});
+		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
+			await service.delete(user.id, task.id);
+			expect(authorizationService.hasPermission).toBeCalledWith(user, task, Actions.write);
 		});
 	});
 });

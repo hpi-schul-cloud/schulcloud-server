@@ -1,31 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import S3rver from 's3rver';
-
-import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ApiValidationError } from '@shared/common';
+import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
+import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import {
+	cleanupCollections,
+	fileRecordFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolFactory,
+	userFactory,
+} from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import {
 	CopyFileParams,
 	CopyFilesOfParentParams,
 	FileRecordListResponse,
 	FileRecordResponse,
 } from '@src/modules/files-storage/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
-import {
-	userFactory,
-	roleFactory,
-	cleanupCollections,
-	mapUserToCurrentUser,
-	fileRecordFactory,
-	schoolFactory,
-} from '@shared/testing';
-import { ApiValidationError } from '@shared/common';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { createMock } from '@golevelup/ts-jest';
+import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { Request } from 'express';
+import S3rver from 's3rver';
+import request from 'supertest';
 
 const baseRouteName = '/file/copy';
 
@@ -143,7 +142,7 @@ describe(`${baseRouteName} (api)`, () => {
 				const school = schoolFactory.build();
 				const user = userFactory.build({ roles, school });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, school]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);

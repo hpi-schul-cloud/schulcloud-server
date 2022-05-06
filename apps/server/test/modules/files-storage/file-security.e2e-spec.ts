@@ -1,23 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-
-import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ApiValidationError } from '@shared/common';
 import { FileRecord, FileRecordParentType, ICurrentUser } from '@shared/domain';
 import {
-	userFactory,
-	roleFactory,
 	cleanupCollections,
-	mapUserToCurrentUser,
 	fileRecordFactory,
+	mapUserToCurrentUser,
+	roleFactory,
 	schoolFactory,
+	userFactory,
 } from '@shared/testing';
-import { ApiValidationError } from '@shared/common';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FileRecordListResponse, ScanResultParams } from '@src/modules/files-storage/controller/dto';
+import { FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 const baseRouteName = '/file-security';
 const scanResult: ScanResultParams = { virus_detected: false };

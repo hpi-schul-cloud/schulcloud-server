@@ -1,19 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
-import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import S3rver from 's3rver';
 import { createMock } from '@golevelup/ts-jest';
-
-import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FileRecord, ICurrentUser } from '@shared/domain';
-import { userFactory, cleanupCollections, mapUserToCurrentUser } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { EntityId, FileRecord, ICurrentUser } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { cleanupCollections, mapUserToCurrentUser, schoolFactory, userFactory } from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
+import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { Request } from 'express';
+import S3rver from 's3rver';
+import request from 'supertest';
 
 class API {
 	app: INestApplication;
@@ -59,7 +58,7 @@ describe('file-storage controller (e2e)', () => {
 	let currentUser: ICurrentUser;
 	let api: API;
 	let s3instance: S3rver;
-	const validId = new ObjectId().toHexString();
+	let validId: EntityId;
 
 	beforeAll(async () => {
 		const port = 10000 + createRndInt(10000);
@@ -108,11 +107,12 @@ describe('file-storage controller (e2e)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		const user = userFactory.build();
+		const school = schoolFactory.build();
+		const user = userFactory.build({ school });
 
-		await em.persistAndFlush([user]);
+		await em.persistAndFlush([user, school]);
 		em.clear();
-
+		validId = school.id;
 		currentUser = mapUserToCurrentUser(user);
 	});
 
@@ -197,7 +197,7 @@ describe('file-storage controller (e2e)', () => {
 			});
 
 			it('should return status 404 for wrong filename', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const response = await api.getDownloadFile(`/file/download/${result.id}/wrong-name.txt`);
 
 				expect(response.error.message).toEqual('File not found');
@@ -213,7 +213,7 @@ describe('file-storage controller (e2e)', () => {
 
 		describe(`with valid request data`, () => {
 			it('should return status 200 for successful download', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const response = await api.getDownloadFile(`/file/download/${result.id}/${result.name}`);
 
 				expect(response.status).toEqual(200);
@@ -224,7 +224,7 @@ describe('file-storage controller (e2e)', () => {
 	describe('file-security.download()', () => {
 		describe('with bad request data', () => {
 			it('should return status 404 for wrong token', async () => {
-				await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const response = await api.getDownloadFile('/file-security/download/test-token');
 
 				expect(response.status).toEqual(404);
@@ -233,7 +233,7 @@ describe('file-storage controller (e2e)', () => {
 
 		describe(`with valid request data`, () => {
 			it('should return status 200 for successful download', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/users/${validId}`);
+				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
 				const newRecord = await em.findOneOrFail(FileRecord, result.id);
 				const response = await api.getDownloadFile(

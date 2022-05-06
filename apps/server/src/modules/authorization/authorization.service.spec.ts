@@ -1,9 +1,11 @@
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, ALL_RULES, BaseEntity } from '@shared/domain';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from './authorization.service';
+import { ReferenceLoader } from './reference.loader';
 
 class TestEntity extends BaseEntity {}
 
@@ -15,7 +17,14 @@ describe('authorization.service', () => {
 		orm = await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationService, ...ALL_RULES],
+			providers: [
+				AuthorizationService,
+				...ALL_RULES,
+				{
+					provide: ReferenceLoader,
+					useValue: createMock<ReferenceLoader>(),
+				},
+			],
 		}).compile();
 
 		service = await module.get(AuthorizationService);
