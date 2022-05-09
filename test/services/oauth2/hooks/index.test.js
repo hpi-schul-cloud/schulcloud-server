@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const { Forbidden } = require('../../../../src/errors');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const { setIdToken, validatePermissionForNextcloud } = require('../../../../src/services/oauth2/hooks/index');
@@ -108,14 +107,14 @@ describe('oauth2 token test', () => {
 			// Assert
 			expect(result).to.not.equal(undefined); // returned hook confirms the check passed
 		});
-		it('user has role without permission', async () => {
+		it.only('user has role without permission', async () => {
 			// Arrange
 			const testUser = await testObjects.createTestUser();
 			const testTool = await testObjects.createTestLtiTool({ name: 'SchulcloudNextcloud', oAuthClientId: 'Nextcloud' });
 
 			// Act and Assert
 			try {
-				validatePermissionForNextcloud(createHook(testTool.oAuthClientId, testUser._id, ''));
+				await validatePermissionForNextcloud(createHook(testTool.oAuthClientId, testUser._id, ''));
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');

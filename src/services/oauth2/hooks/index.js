@@ -131,7 +131,7 @@ const validatePermissionForNextcloud = (hook) =>
 		const filtredToolsData = tools.data.filter((toolData) => toolData.name === 'SchulcloudNextcloud');
 		if (
 			filtredToolsData.length > 0 &&
-			filtredToolsData.name === 'SchulcloudNextcloud' &&
+			filtredToolsData[0].name === 'SchulcloudNextcloud' &&
 			!user.permissions.includes('NEXTCLOUD_USER')
 		) {
 			throw new Forbidden('You are not allowed to use Nextcloud');
