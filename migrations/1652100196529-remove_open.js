@@ -27,6 +27,6 @@ module.exports = {
 	},
 
 	down: async function down() {
-        alert(`Nothing cann be revert`);
+		alert(`Nothing cann be revert`);
 	},
 };
