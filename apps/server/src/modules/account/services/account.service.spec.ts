@@ -162,6 +162,30 @@ describe('AccountService', () => {
 				activated: mockTeacherAccountDto.activated,
 			});
 		});
+
+		it("should update an existing account's system", async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			mockTeacherAccountDto.username = 'changedUsername@example.org';
+			mockTeacherAccountDto.systemId = 'dummySystemId';
+			await accountService.save(mockTeacherAccountDto);
+			expect(accountRepo.save).toHaveBeenCalledWith({
+				...mockTeacherAccount,
+				username: mockTeacherAccountDto.username,
+				systemId: mockTeacherAccountDto.systemId,
+			});
+		});
+		it("should update an existing account's user", async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			mockTeacherAccountDto.username = 'changedUsername@example.org';
+			mockTeacherAccountDto.userId = mockStudentUser.id;
+			await accountService.save(mockTeacherAccountDto);
+			expect(accountRepo.save).toHaveBeenCalledWith({
+				...mockTeacherAccount,
+				username: mockTeacherAccountDto.username,
+				activated: mockTeacherAccountDto.activated,
+				userId: mockStudentUser.id,
+			});
+		});
 		it('should save a new account', async () => {
 			const accountToSave: AccountDto = {
 				createdAt: new Date(),
