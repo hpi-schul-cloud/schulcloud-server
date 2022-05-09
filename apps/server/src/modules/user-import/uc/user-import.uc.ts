@@ -214,6 +214,7 @@ export class UserImportUc {
 			return;
 		}
 		const { user } = importUser;
+		user.ldapDn = importUser.ldapDn;
 		user.ldapId = importUser.ldapId;
 
 		const account: Account = await this.accountRepo.findByUserIdOrFail(user.id);

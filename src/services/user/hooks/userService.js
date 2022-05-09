@@ -278,16 +278,10 @@ const securePatching = async (context) => {
 	const isSuperHero = actingUser.roles.find((r) => r.name === 'superhero');
 	const isAdmin = actingUser.roles.find((r) => r.name === 'administrator');
 	const isTeacher = actingUser.roles.find((r) => r.name === 'teacher');
-	const isDemoStudent = actingUser.roles.find((r) => r.name === 'demoStudent');
-	const isDemoTeacher = actingUser.roles.find((r) => r.name === 'demoTeacher');
 	const targetIsStudent = targetUser.roles.find((r) => r.name === 'student');
 
 	if (isSuperHero) {
 		return context;
-	}
-
-	if (isDemoStudent || isDemoTeacher) {
-		return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
 	}
 
 	if (!ObjectId.equal(targetUser.schoolId, actingUser.schoolId)) {
