@@ -4,6 +4,7 @@ import { Account, EntityId } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountDto } from './dto/account.dto';
+import { AccountSaveDto } from './dto/account.save.dto';
 
 @Injectable()
 export class AccountService {
@@ -27,7 +28,10 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	async save(accountDto: AccountDto): Promise<void> {
+	async save(accountDto: AccountSaveDto): Promise<void> {
+		// Check if the ID is correct?
+		// const user = await this.userRepo.findById(accountDto.userId);
+		// const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
 		let account: Account;
 		if (accountDto.id) {
 			account = await this.accountRepo.findById(accountDto.id);
@@ -76,10 +80,10 @@ export class AccountService {
 	}
 
 	private mapSearchResult(accountEntities: [Account[], number]) {
-		const accountDtos: AccountDto[] = [];
-		accountEntities[0].forEach((accountEntity) => {
-			accountDtos.push(AccountEntityToDtoMapper.mapToDto(accountEntity));
-		});
+		const foundAccounts = accountEntities[0];
+		const accountDtos: AccountDto[] = foundAccounts.map((accountEntity) =>
+			AccountEntityToDtoMapper.mapToDto(accountEntity)
+		);
 		return { accounts: accountDtos, total: accountEntities[1] };
 	}
 }

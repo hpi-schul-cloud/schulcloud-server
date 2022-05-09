@@ -12,7 +12,7 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
-} from '@src/modules/authentication/controller/dto';
+} from '@src/modules/account/controller/dto';
 import { Account, ICurrentUser, RoleName, User } from '@shared/domain';
 
 describe('Account Controller (e2e)', () => {

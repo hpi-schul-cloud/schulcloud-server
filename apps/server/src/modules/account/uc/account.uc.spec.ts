@@ -13,7 +13,7 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { AccountEntityToDtoMapper } from '../../account/mapper/account-entity-to-dto.mapper';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
 
 import { AccountUc } from './account.uc';
