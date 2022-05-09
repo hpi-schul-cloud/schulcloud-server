@@ -216,6 +216,7 @@ export class UserImportUc {
 			return;
 		}
 		const { user } = importUser;
+		user.ldapDn = importUser.ldapDn;
 		user.ldapId = importUser.ldapId;
 
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);

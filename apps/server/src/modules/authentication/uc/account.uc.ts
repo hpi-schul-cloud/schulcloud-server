@@ -187,10 +187,6 @@ export class AccountUc {
 			throw new EntityNotFoundError('User');
 		}
 
-		if (this.isDemoUser(user)) {
-			throw new ForbiddenOperationError('Demo users can not change their account details.');
-		}
-
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
@@ -257,10 +253,6 @@ export class AccountUc {
 			throw new EntityNotFoundError(User.name);
 		}
 
-		if (this.isDemoUser(user)) {
-			throw new ForbiddenOperationError('Demo users can not change their password.');
-		}
-
 		const userPreferences = <UserPreferences>user.preferences;
 
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
@@ -304,10 +296,6 @@ export class AccountUc {
 		return user.roles.getItems().some((role) => role.name === RoleName.SUPERHERO);
 	}
 
-	private isDemoUser(currentUser: User) {
-		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
-	}
-
 	private hasPermissionsToChangeOwnName(currentUser: User) {
 		return (
 			this.hasRole(currentUser, 'superhero') ||
@@ -317,9 +305,6 @@ export class AccountUc {
 	}
 
 	private hasPermissionsToUpdateAccount(currentUser: User, targetUser: User) {
-		if (this.isDemoUser(currentUser) || this.isDemoUser(targetUser)) {
-			return false;
-		}
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}

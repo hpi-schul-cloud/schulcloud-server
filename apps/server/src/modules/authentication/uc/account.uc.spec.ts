@@ -31,8 +31,6 @@ describe('AccountUc', () => {
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
-	let mockDemoTeacherUser: User;
-	let mockDemoStudentUser: User;
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
@@ -43,8 +41,6 @@ describe('AccountUc', () => {
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
-	let mockDemoTeacherAccount: Account;
-	let mockDemoStudentAccount: Account;
 	let mockOtherTeacherAccount: Account;
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
@@ -199,10 +195,6 @@ describe('AccountUc', () => {
 			school: mockSchool,
 			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
 		});
-		mockDemoTeacherUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoTeacher', permissions: ['STUDENT_EDIT'] })],
-		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
@@ -210,10 +202,6 @@ describe('AccountUc', () => {
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [new Role({ name: 'student', permissions: [] })],
-		});
-		mockDemoStudentUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoStudent', permissions: [] })],
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
@@ -244,10 +232,6 @@ describe('AccountUc', () => {
 			userId: mockTeacherUser.id,
 			password: defaultPasswordHash,
 		});
-		mockDemoTeacherAccount = accountFactory.buildWithId({
-			userId: mockDemoTeacherUser.id,
-			password: defaultPasswordHash,
-		});
 		mockOtherTeacherAccount = accountFactory.buildWithId({
 			userId: mockOtherTeacherUser.id,
 			password: defaultPasswordHash,
@@ -258,10 +242,6 @@ describe('AccountUc', () => {
 		});
 		mockStudentAccount = accountFactory.buildWithId({
 			userId: mockStudentUser.id,
-			password: defaultPasswordHash,
-		});
-		mockDemoStudentAccount = accountFactory.buildWithId({
-			userId: mockDemoStudentUser.id,
 			password: defaultPasswordHash,
 		});
 		mockAccountWithoutRole = accountFactory.buildWithId({
@@ -291,10 +271,8 @@ describe('AccountUc', () => {
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
-			mockDemoTeacherUser,
 			mockOtherTeacherUser,
 			mockStudentUser,
-			mockDemoStudentUser,
 			mockDifferentSchoolAdminUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
@@ -306,10 +284,8 @@ describe('AccountUc', () => {
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
-			mockDemoTeacherAccount,
 			mockOtherTeacherAccount,
 			mockStudentAccount,
-			mockDemoStudentAccount,
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
@@ -494,22 +470,6 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 		});
-		it('should throw if user is a demo student', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoStudentAccount.userId, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoTeacherAccount.userId, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw if user can not be updated', async () => {
 			await expect(
 				accountUc.updateMyAccount(mockTeacherUser.id, {
@@ -585,20 +545,6 @@ describe('AccountUc', () => {
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId, 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
-		});
-		it('should throw if user is a demo student', async () => {
-			mockDemoStudentUser.forcePasswordChange = false;
-			mockDemoStudentUser.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoStudentAccount.userId, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			mockDemoTeacherUser.forcePasswordChange = false;
-			mockDemoTeacherUser.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoTeacherAccount.userId, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if user can not be updated', async () => {
 			mockStudentUser.forcePasswordChange = false;
@@ -759,12 +705,6 @@ describe('AccountUc', () => {
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {
-			it('superhero cannot edit demo user', async () => {
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockDemoTeacherAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
-			});
 			it('admin can edit teacher', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
@@ -776,12 +716,6 @@ describe('AccountUc', () => {
 				const params = { id: mockStudentAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
-			});
-			it('demo teacher cannot edit student', async () => {
-				const currentUser = { userId: mockDemoTeacherUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('admin can edit student', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
