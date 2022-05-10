@@ -1,33 +1,21 @@
 import { IAccount, IAccountUpdate } from '@shared/domain';
 
 /* eslint-disable no-nested-ternary */
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak';
-import { IdentityManagement } from './identity-management';
+import { IdentityManagementService } from '../identity-management.service';
+import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 @Injectable()
-export class KeycloakIdentityManagement extends IdentityManagement {
-	private lastAuthorizationTime = 0;
-
-	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
-
-	public constructor(
-		@Inject(KeycloakAdminClient) private readonly kcAdminClient: KeycloakAdminClient,
-		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
-	) {
+export class KeycloakIdentityManagementService extends IdentityManagementService {
+	public constructor(private readonly kcAdminClient: KeycloakAdministrationService) {
 		super();
-		kcAdminClient.setConfig({
-			baseUrl: kcSettings.baseUrl,
-			realmName: kcSettings.realmName,
-		});
 	}
 
 	async createAccount(account: IAccount, password?: string): Promise<string> {
-		await this.authorizeAccess();
-
-		const id = await this.kcAdminClient.users.create({
+		const id = await (
+			await this.kcAdminClient.callKcAdminClient()
+		).users.create({
 			username: account.userName,
 			email: account.email,
 			firstName: account.firstName,
@@ -45,8 +33,9 @@ export class KeycloakIdentityManagement extends IdentityManagement {
 	}
 
 	async updateAccount(accountId: string, account: IAccountUpdate): Promise<string> {
-		await this.authorizeAccess();
-		await this.kcAdminClient.users.update(
+		await (
+			await this.kcAdminClient.callKcAdminClient()
+		).users.update(
 			{ id: accountId },
 			{
 				email: account.email,
@@ -58,14 +47,12 @@ export class KeycloakIdentityManagement extends IdentityManagement {
 	}
 
 	async updateAccountPassword(accountId: string, password: string): Promise<string> {
-		await this.authorizeAccess();
 		await this.resetPassword(accountId, password);
 		return accountId;
 	}
 
 	async findAccountById(accountId: string): Promise<IAccount> {
-		await this.authorizeAccess();
-		const keycloakUser = await this.kcAdminClient.users.findOne({ id: accountId });
+		const keycloakUser = await (await this.kcAdminClient.callKcAdminClient()).users.findOne({ id: accountId });
 		if (!keycloakUser) {
 			throw Error(`Account '${accountId}' not found`);
 		}
@@ -73,23 +60,13 @@ export class KeycloakIdentityManagement extends IdentityManagement {
 	}
 
 	async getAllAccounts(): Promise<IAccount[]> {
-		await this.authorizeAccess();
-		const keycloakUsers = await this.kcAdminClient.users.find();
+		const keycloakUsers = await (await this.kcAdminClient.callKcAdminClient()).users.find();
 		return keycloakUsers.map((user: UserRepresentation) => this.extractAccount(user));
 	}
 
 	async deleteAccountById(accountId: string): Promise<string> {
-		await this.authorizeAccess();
-		await this.kcAdminClient.users.del({ id: accountId });
+		await (await this.kcAdminClient.callKcAdminClient()).users.del({ id: accountId });
 		return accountId;
-	}
-
-	private async authorizeAccess() {
-		const elapsedTimeMilliseconds = new Date().getTime() - this.lastAuthorizationTime;
-		if (elapsedTimeMilliseconds > KeycloakIdentityManagement.AUTHORIZATION_TIMEBOX_MS) {
-			await this.kcAdminClient.auth(this.kcSettings.credentials);
-			this.lastAuthorizationTime = new Date().getTime();
-		}
 	}
 
 	private extractAccount(user: UserRepresentation): IAccount {
@@ -103,7 +80,9 @@ export class KeycloakIdentityManagement extends IdentityManagement {
 	}
 
 	private async resetPassword(accountId: string, password: string) {
-		await this.kcAdminClient.users.resetPassword({
+		await (
+			await this.kcAdminClient.callKcAdminClient()
+		).users.resetPassword({
 			id: accountId,
 			credential: {
 				temporary: false,

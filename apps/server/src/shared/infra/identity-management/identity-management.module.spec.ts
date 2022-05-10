@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdentityManagement } from './identity-management';
+import { IdentityManagementService } from './identity-management.service';
 import { IdentityManagementModule } from './identity-management.module';
 
 describe('IdentityManagementModule', () => {
 	let module: TestingModule;
-	let idm: IdentityManagement;
+	let idm: IdentityManagementService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [IdentityManagementModule],
 		}).compile();
-		idm = module.get(IdentityManagement);
+		idm = module.get(IdentityManagementService);
 	});
 
 	afterAll(async () => {

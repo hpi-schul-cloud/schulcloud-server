@@ -1,24 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { IdentityManagementConsole } from '@src/console/identity-management.console';
-import { IKeycloakSettings, KeycloakSettings } from '@shared/infra/identity-management/keycloak';
-import { ConsoleWriterService } from '@shared/infra/console';
 import { v1 } from 'uuid';
+import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakManagementUc } from './Keycloak-management.uc';
+import { KeycloakAdministrationService } from '../keycloak-administration.service';
 
-describe('IdentityManagementConsole', () => {
+describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
-	let console: IdentityManagementConsole;
-	let writer: ConsoleWriterService;
+	let uc: KeycloakManagementUc;
 	let client: KeycloakAdminClient;
 	let settings: IKeycloakSettings;
+
+	// TODO check logic
+
+	const adminUsername = 'admin';
 
 	const getSettings = (): IKeycloakSettings => {
 		return {
 			baseUrl: 'http://localhost:8080',
 			realmName: 'master',
+			clientId: 'dBildungscloud',
 			credentials: {
-				username: 'username',
+				username: adminUsername,
 				password: 'password',
 				grantType: 'password',
 				clientId: 'client-id',
@@ -43,17 +47,22 @@ describe('IdentityManagementConsole', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
+				KeycloakManagementUc,
 				{
-					provide: ConsoleWriterService,
+					provide: KeycloakAdministrationService,
 					useValue: {
-						info: jest.fn(),
+						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
+							return Promise.resolve(client);
+						}),
+						testKcConnection: jest.fn().mockResolvedValue(true),
+						getAdminUser: jest.fn().mockResolvedValue(adminUsername),
 					},
 				},
 				{
 					provide: KeycloakAdminClient,
 					useValue: {
 						auth: jest.fn().mockImplementation(async (): Promise<void> => {
-							if (settings.credentials.username !== 'username') {
+							if (settings.credentials.username !== adminUsername) {
 								throw new Error();
 							}
 
@@ -73,27 +82,26 @@ describe('IdentityManagementConsole', () => {
 				},
 			],
 		}).compile();
-		writer = module.get(ConsoleWriterService);
+		uc = module.get(KeycloakManagementUc);
 		client = module.get(KeycloakAdminClient);
 		settings = module.get(KeycloakSettings);
-		console = new IdentityManagementConsole(writer, client, settings);
 	});
 
-	beforeEach(() => {
-		settings = getSettings();
+	describe('check', () => {
+		it('should return true', async () => {
+			await expect(uc.check()).resolves.toBe(true);
+		});
 	});
 
-	it('check', async () => {
-		await expect(console.check()).resolves.not.toThrow();
+	describe('clean', () => {
+		it('should clean successfully', async () => {
+			await expect(uc.clean()).resolves.not.toThrow();
+		});
 	});
-	it('check should fail', async () => {
-		settings.credentials.username = '';
-		await expect(console.check()).rejects.toThrow();
-	});
-	it('clean', async () => {
-		await expect(console.clean()).resolves.not.toThrow();
-	});
-	it('seed', async () => {
-		await expect(console.seed()).resolves.not.toThrow();
+
+	describe('seed', () => {
+		it('should clean successfully', async () => {
+			await expect(uc.seed()).resolves.not.toThrow();
+		});
 	});
 });

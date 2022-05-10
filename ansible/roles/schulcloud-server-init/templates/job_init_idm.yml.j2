@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+  name: api-idm-init-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: api-idm-init
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        command: ['/bin/sh', '-c']
+        args: ['npm run nest:start:console -- idm seed']
+      restartPolicy: Never
+  backoffLimit: 4

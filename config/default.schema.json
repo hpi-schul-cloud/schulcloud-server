@@ -291,6 +291,11 @@
 					"default": null,
 					"description": "The ErWIn IDM tenant."
 				},
+				"CLIENTID": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM tenant client."
+				},
 				"ADMIN_CLIENTID": {
 					"type": "string",
 					"default": null,

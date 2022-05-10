@@ -6,16 +6,15 @@ You find the whole [documentation published as GitHub Page](https://hpi-schul-cl
 
 # Requirements
 
-* Node.js (see `.nvmrc` for version)
-* MongoDB (`4.x`)
-* RabbitMQ (configure using `RABBITMQ_URL`, see `default.schema.json`)
+- Node.js (see `.nvmrc` for version)
+- MongoDB (`4.x`)
+- RabbitMQ (configure using `RABBITMQ_URL`, see `default.schema.json`)
 
 ## preconditions
 
-
-1. Have a MongoDB started, run `mongod` 
-2. Have some seed data in datase, use `npm run setup` to reset the db and apply seed data
-3. Have RabbitMQ started, run `docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management`. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login). 
+1. Have a MongoDB started, run `mongod`
+2. Have some seed data in database, use `npm run setup` to reset the db and apply seed data
+3. Have RabbitMQ started, run `docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management`. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login).
 4. Have MinIO (S3 compatible object storage), run [optional if you need files-storage module]
 
 ```bash
@@ -28,17 +27,21 @@ docker run \
   quay.io/minio/minio server /data --console-address ":9001"
 ```
 
-5. Have Keycloak (IAM Provider) run [currently not needed, but will be mandatory in the future]. For more information look [here](./nestjs-application/keycloak.html).
+5. Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look [here](./nestjs-application/keycloak.html).
+
+Change directory to the `schulcloud-server` root folder. Execute following command to setup the ErWIn-IDM container:
 
 ```bash
 docker run \
-  --name keycloak \
+  --name erwinidm \
   -p 8080:8080 \
   -p 8443:8443 \
   -v "$PWD/backup/keycloak:/tmp/realms" \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
 ```
+
+To add seed data into ErWIn-IDM, use `npm run setup:idm` to reset and apply seed data.
 
 ## How to start the application
 
@@ -59,7 +62,6 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:start:files-storage:debug` run **file storage** in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:files-storage:prod` start **file storage** in production mode, requires `nest:build` to be executed beforehand
 
-
 ### How to build and serve the documentation
 
 - `nest:docs:build` builds code documentation and module relations into /documentation folder
@@ -76,7 +78,7 @@ To run a specific command run `npm run nest:console:dev -- command <param>`. The
 
 # How to test the nest-application with jest
 
- NestJS must not use _.test.[ts|js] as filename but instead either \*.spec.ts for unit-tests beside tested files or \*.e2e-spec.ts in test folder for end-to-end tests. This ensures legacy/feathers/mocha tests can be separated from jest test suites.
+NestJS must not use \_.test.[ts|js] as filename but instead either \*.spec.ts for unit-tests beside tested files or \*.e2e-spec.ts in test folder for end-to-end tests. This ensures legacy/feathers/mocha tests can be separated from jest test suites.
 
 The application must pass the following statement which executes separate checks:
 
@@ -84,7 +86,7 @@ The application must pass the following statement which executes separate checks
 
 To test a subset, use
 
-- `nest:test:all` execute unit and e2e tests 
+- `nest:test:all` execute unit and e2e tests
 - `nest:test:e2e` execute e2e tests only
 - `nest:test:spec` execute unit tests (without e2e) only
 
@@ -94,7 +96,7 @@ To test a subset, use
 - `nest:test:debug` executes tests with debugging
 
 - `nest:lint` run eslint to report linter issues and apply formatting
-- `nest:lint:fix` run eslint to report and auto-fix fixable linter issues and apply formatting 
+- `nest:lint:fix` run eslint to report and auto-fix fixable linter issues and apply formatting
 
 # Quality gates
 
@@ -102,7 +104,7 @@ With coverage on tests and static code analysis we ensure some quality gates whi
 
 - ESLint with prettier ensures formatting and static code analysis to pass, see `.eslintrc.js` for details.
 - Tests ensure functional requirements via unit & e2e tests.
-- Coverage on tests ensures a coverage of 80% on NestJS code, see `jest.config.ts` for details. 
+- Coverage on tests ensures a coverage of 80% on NestJS code, see `jest.config.ts` for details.
 
 Gates are part of pull request checks.
 
@@ -111,7 +113,6 @@ Gates are part of pull request checks.
 The NestJS applicaiton serves a documentation at [:3030/v3/docs](http://localhost:3030/v3/docs). The JSON-representation can be found at `/v3/docs-json` to be used for generating a client application.
 
 Legacy/feathers Swagger UI documentation when running the server locally, it is served at [:3030/docs/](http://localhost:3030/docs/).
-
 
 # Legacy (feathers) testing with mocha
 
@@ -150,4 +151,4 @@ Feel free to find related documentation:
 - https://jestjs.io/
 - https://mikro-orm.io/
 - https://min.io/
-- https://www.rabbitmq.com/ 
+- https://www.rabbitmq.com/
