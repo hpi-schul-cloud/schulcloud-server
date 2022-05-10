@@ -5,8 +5,6 @@ import { User } from '../entity/user.entity';
 import { IEntity, IEntityWithSchool } from '../interface';
 import { Actions } from './actions.enum';
 
-// todo replace strings 
-
 export abstract class BaseRule {
 	abstract hasPermission(user: User, entity: IEntity, action: Actions): boolean;
 	/**
