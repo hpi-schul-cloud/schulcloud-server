@@ -60,7 +60,7 @@ export class AccountService {
 		return Promise.resolve();
 	}
 
-	async delete(account: AccountDto): Promise<void> {
+	delete(account: AccountDto): Promise<void> {
 		return this.accountRepo.deleteById(account.id);
 	}
 
