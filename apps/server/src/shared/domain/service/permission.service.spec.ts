@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { PermissionService } from '.';
 import { Role } from '../entity/role.entity';
+import { Permission } from '../rules';
 
 describe('resolvePermissions', () => {
 	let orm: MikroORM;
@@ -25,64 +26,70 @@ describe('resolvePermissions', () => {
 	});
 
 	it('should return permissions of a user with one role', () => {
-		const role = roleFactory.build({ permissions: ['a'] });
+		const role = roleFactory.build({ permissions: [Permission.CALENDAR_EDIT] });
 		const user = userFactory.build({ roles: [role] });
 
 		const permissions = service.resolvePermissions(user);
 
-		expect(permissions).toEqual(['a']);
+		expect(permissions).toEqual([Permission.CALENDAR_EDIT]);
 	});
 
 	it('should return permissions of a user with many roles', () => {
-		const roleA = roleFactory.build({ permissions: ['a'] });
-		const roleB = roleFactory.build({ permissions: ['b'] });
+		const roleA = roleFactory.build({ permissions: [Permission.CALENDAR_EDIT] });
+		const roleB = roleFactory.build({ permissions: [Permission.CALENDAR_CREATE] });
 		const user = userFactory.build({ roles: [roleA, roleB] });
 
 		const permissions = service.resolvePermissions(user);
 
-		expect(permissions.sort()).toEqual(['a', 'b'].sort());
+		expect(permissions.sort()).toEqual([Permission.CALENDAR_EDIT, Permission.CALENDAR_CREATE].sort());
 	});
 
 	it('should return unique permissions', () => {
-		const roleA = roleFactory.build({ permissions: ['a', 'b'] });
-		const roleB = roleFactory.build({ permissions: ['b', 'c'] });
+		const roleA = roleFactory.build({ permissions: [Permission.CALENDAR_EDIT, Permission.CALENDAR_CREATE] });
+		const roleB = roleFactory.build({ permissions: [Permission.CALENDAR_CREATE, Permission.CALENDAR_VIEW] });
 		const user = userFactory.build({ roles: [roleA, roleB] });
 
 		const permissions = service.resolvePermissions(user);
 
-		expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+		expect(permissions.sort()).toEqual(
+			[Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT, Permission.CALENDAR_CREATE].sort()
+		);
 	});
 
 	it('should return the permissions of the 1st level sub role', () => {
-		const roleB = roleFactory.build({ permissions: ['b'] });
-		const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
+		const roleB = roleFactory.build({ permissions: [Permission.CALENDAR_EDIT] });
+		const roleA = roleFactory.build({ permissions: [Permission.CALENDAR_VIEW], roles: [roleB] });
 		const user = userFactory.build({ roles: [roleA] });
 
 		const permissions = service.resolvePermissions(user);
 
-		expect(permissions.sort()).toEqual(['a', 'b'].sort());
+		expect(permissions.sort()).toEqual([Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT].sort());
 	});
 
 	it('should return the permissions of nested sub roles', () => {
-		const roleC = roleFactory.build({ permissions: ['c'] });
-		const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
-		const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
+		const roleC = roleFactory.build({ permissions: [Permission.CALENDAR_CREATE] });
+		const roleB = roleFactory.build({ permissions: [Permission.CALENDAR_EDIT], roles: [roleC] });
+		const roleA = roleFactory.build({ permissions: [Permission.CALENDAR_VIEW], roles: [roleB] });
 		const user = userFactory.build({ roles: [roleA] });
 
 		const permissions = service.resolvePermissions(user);
 
-		expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+		expect(permissions.sort()).toEqual(
+			[Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT, Permission.CALENDAR_CREATE].sort()
+		);
 	});
 
 	it('should return unique permissions of nested sub roles', () => {
-		const roleC = roleFactory.build({ permissions: ['c', 'a'] });
-		const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
-		const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
+		const roleC = roleFactory.build({ permissions: [Permission.CALENDAR_CREATE, Permission.CALENDAR_VIEW] });
+		const roleB = roleFactory.build({ permissions: [Permission.CALENDAR_EDIT], roles: [roleC] });
+		const roleA = roleFactory.build({ permissions: [Permission.CALENDAR_VIEW], roles: [roleB] });
 		const user = userFactory.build({ roles: [roleA] });
 
 		const permissions = service.resolvePermissions(user);
 
-		expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+		expect(permissions.sort()).toEqual(
+			[Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT, Permission.CALENDAR_CREATE].sort()
+		);
 	});
 
 	it('should throw an error if the roles are not populated', () => {
@@ -113,27 +120,27 @@ describe('resolvePermissions', () => {
 				expect(result).toEqual(false);
 			});
 			it('should succeed when user has all given permissions', () => {
-				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
+				const role = roleFactory.build({ permissions: [Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasUserAllSchoolPermissions(user, [Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT]);
 				expect(result).toEqual(true);
 			});
 			it('should fail when user has some given permissions only', () => {
-				const role = roleFactory.build({ permissions: ['permission1'] });
+				const role = roleFactory.build({ permissions: [Permission.CALENDAR_VIEW] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasUserAllSchoolPermissions(user, [Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT]);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has none given permissions', () => {
 				const role = roleFactory.build({ permissions: [] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllSchoolPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasUserAllSchoolPermissions(user, [Permission.CALENDAR_VIEW, Permission.CALENDAR_EDIT]);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has only different than the given permissions', () => {
-				const role = roleFactory.build({ permissions: ['permission3'] });
+				const role = roleFactory.build({ permissions: [Permission.CALENDAR_CREATE] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasUserAllSchoolPermissions(user, ['permission1']);
+				const result = service.hasUserAllSchoolPermissions(user, [Permission.CALENDAR_VIEW]);
 				expect(result).toEqual(false);
 			});
 		});
@@ -142,7 +149,7 @@ describe('resolvePermissions', () => {
 			it('should throw when hasUserAllSchoolPermissions is false', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(false);
-				expect(() => service.checkUserHasAllSchoolPermissions(user, ['permission1'])).toThrowError(
+				expect(() => service.checkUserHasAllSchoolPermissions(user, [Permission.CALENDAR_VIEW])).toThrowError(
 					UnauthorizedException
 				);
 				spy.mockRestore();
@@ -150,7 +157,7 @@ describe('resolvePermissions', () => {
 			it('should not throw when hasUserAllSchoolPermissions is true', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(true);
-				service.checkUserHasAllSchoolPermissions(user, ['permission1']);
+				service.checkUserHasAllSchoolPermissions(user, [Permission.CALENDAR_VIEW]);
 				spy.mockRestore();
 			});
 		});
