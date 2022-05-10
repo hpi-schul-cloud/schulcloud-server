@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
+import { Actions, EntityId, FileRecord, FileRecordParentType, Permission, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -193,18 +194,18 @@ describe('FilesStorageUC', () => {
 
 		describe('Tests of permission handling', () => {
 			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.upload(userId, fileUploadParams, request);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					fileUploadParams.parentType,
 					fileUploadParams.parentId,
-					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 				await expect(service.upload(userId, fileUploadParams, request)).rejects.toThrow();
 			});
 		});
@@ -296,19 +297,19 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.download(userId, fileDownloadParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					{ action: Actions.read, requiredPermissions: ['BASE_VIEW'] }
+					{ action: Actions.read, requiredPermissions: [Permission.FILESTORAGE_VIEW] }
 				);
 			});
 
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 				await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 			});
 		});
@@ -404,19 +405,19 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.deleteFilesOfParent(userId, requestParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					requestParams.parentType,
 					requestParams.parentId,
-					{ action: Actions.write, requiredPermissions: ['FILE_DELETE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_REMOVE] }
 				);
 			});
 
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 				await expect(service.deleteFilesOfParent(userId, requestParams)).rejects.toThrow();
 			});
 		});
@@ -455,19 +456,19 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.deleteOneFile(userId, requestParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					{ action: Actions.write, requiredPermissions: ['FILE_DELETE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_REMOVE] }
 				);
 			});
 
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 				await expect(service.deleteOneFile(userId, requestParams)).rejects.toThrow();
 			});
 		});
@@ -530,19 +531,19 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.restoreFilesOfParent(userId, requestParams);
 				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					requestParams.parentType,
 					requestParams.parentId,
-					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
 			it('should throw Error', async () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new Error());
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 				await expect(service.restoreFilesOfParent(userId, requestParams)).rejects.toThrow();
 			});
 		});
@@ -581,19 +582,19 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.restoreOneFile(userId, requestParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					{ action: Actions.write, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
 				await expect(service.restoreOneFile(userId, requestParams)).rejects.toThrow();
 			});
 		});
@@ -677,30 +678,43 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences by sourceParentParams', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences by sourceParentParams', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					sourceParentParams.parentType,
 					sourceParentParams.parentId,
-					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
-			it('should call authorizationService.hasPermissionByReferences by copyFilesParams', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences by copyFilesParams', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					copyFilesParams.target.parentType,
 					copyFilesParams.target.parentId,
-					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
+			it('should throw Error if first check true', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				await expect(service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams)).rejects.toThrow();
+			});
+
+			it('should throw Error if second check true', async () => {
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				await expect(service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams)).rejects.toThrow();
+			});
+
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 				await expect(service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams)).rejects.toThrow();
 			});
 		});
@@ -784,30 +798,41 @@ describe('FilesStorageUC', () => {
 		});
 
 		describe('Tests of permission handling', () => {
-			it('should call authorizationService.hasPermissionByReferences', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.copyOneFile(userId, requestParams, copyFileParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
-			it('should call authorizationService.hasPermissionByReferences by copyFileParams', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(true);
+			it('should call authorizationService.checkPermissionByReferences by copyFileParams', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				await service.copyOneFile(userId, requestParams, copyFileParams);
-				expect(authorizationService.hasPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					copyFileParams.target.parentType,
 					copyFileParams.target.parentId,
-					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
+					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
+			it('should throw Error if first check true', async () => {
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
+			});
+			it('should throw Error if second check true', async () => {
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
+			});
 			it('should throw Error', async () => {
-				authorizationService.hasPermissionByReferences.mockResolvedValue(false);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 				await expect(service.copyOneFile(userId, requestParams, copyFileParams)).rejects.toThrow();
 			});
 		});

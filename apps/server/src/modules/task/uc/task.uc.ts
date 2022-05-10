@@ -1,16 +1,17 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
+	Actions,
 	Counted,
 	Course,
 	EntityId,
 	IPagination,
 	ITaskStatus,
 	Lesson,
+	Permission,
 	SortOrder,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { Actions, Permission } from '@shared/domain/rules';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 
@@ -56,7 +57,7 @@ export class TaskUC {
 			if (
 				this.authorizationService.hasPermission(user, task, {
 					action: Actions.write,
-					requiredPermissions: ['HOMEWORK_VIEW'],
+					requiredPermissions: [],
 				})
 			) {
 				status = task.createTeacherStatusForUser(user);
@@ -93,14 +94,10 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		if (
-			!this.authorizationService.hasPermission(user, task, {
-				action: Actions.read,
-				requiredPermissions: ['HOMEWORK_VIEW'],
-			})
-		) {
-			throw new UnauthorizedException();
-		}
+		this.authorizationService.checkPermission(user, task, {
+			action: Actions.read,
+			requiredPermissions: [],
+		});
 
 		if (isFinished) {
 			task.finishForUser(user);
@@ -194,7 +191,7 @@ export class TaskUC {
 		const writeCourses = courses.filter((c) =>
 			this.authorizationService.hasPermission(user, c, {
 				action: Actions.write,
-				requiredPermissions: ['HOMEWORK_VIEW'],
+				requiredPermissions: [],
 			})
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
@@ -227,10 +224,7 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		if (!this.authorizationService.hasPermission(user, task, { action: Actions.write, requiredPermissions: [] })) {
-			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
-		}
-
+		this.authorizationService.checkPermission(user, task, { action: Actions.write, requiredPermissions: [] });
 		await this.taskRepo.delete(task);
 		return true;
 	}

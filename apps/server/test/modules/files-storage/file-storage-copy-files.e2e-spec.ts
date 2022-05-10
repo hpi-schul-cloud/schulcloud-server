@@ -4,7 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
+import { EntityId, FileRecordParentType, ICurrentUser, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
@@ -140,7 +140,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+				});
 				const user = userFactory.build({ school, roles });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
@@ -210,7 +212,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+				});
 				const user = userFactory.build({ school, roles });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
@@ -286,7 +290,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+				});
 				const user = userFactory.build({ school, roles });
 				const targetParent = courseFactory.build({ teachers: [user] });
 
@@ -325,7 +331,9 @@ describe(`${baseRouteName} (api)`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
 				const school = schoolFactory.build();
-				const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+				});
 				const user = userFactory.build({ school, roles });
 				const targetParent = courseFactory.build({ teachers: [user] });
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '../entity';
+import type { Course, User } from '../entity';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BaseRule } from './base.rule';

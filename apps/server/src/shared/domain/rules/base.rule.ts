@@ -1,9 +1,8 @@
 import { Collection } from '@mikro-orm/core';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { Role } from '../entity/role.entity';
+import type { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
-import { IEntity, IEntityWithSchool } from '../interface';
-import { IPermissionContext } from '../interface/permission';
+import { IEntity, IEntityWithSchool, IPermissionContext } from '../interface';
 
 export abstract class BaseRule {
 	abstract hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean;

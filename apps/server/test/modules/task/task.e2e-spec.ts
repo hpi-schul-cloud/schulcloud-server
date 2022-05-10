@@ -111,7 +111,7 @@ describe('Task Controller (e2e)', () => {
 
 		const setup = () => {
 			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3, 'HOMEWORK_VIEW'],
+				permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
 			});
 			const user = userFactory.build({ roles });
 
@@ -548,7 +548,9 @@ describe('Task Controller (e2e)', () => {
 		});
 
 		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3, 'HOMEWORK_VIEW'] });
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.TASK_DASHBOARD_VIEW_V3],
+			});
 			const user = userFactory.build({ roles });
 
 			return user;

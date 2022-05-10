@@ -1,18 +1,6 @@
 import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common';
-import {
-	BaseRule,
-	Course,
-	CourseRule,
-	EntityId,
-	FileRecord,
-	IEntity,
-	School,
-	Task,
-	TaskRule,
-	User,
-} from '@shared/domain';
+import { BaseRule, Course, CourseRule, EntityId, IEntity, School, Task, TaskRule, User } from '@shared/domain';
 import { IPermissionContext } from '@shared/domain/interface/permission';
-import { FileRecordRule } from '@shared/domain/rules/file-record.rule';
 import { SchoolRule } from '@shared/domain/rules/school.rule';
 import { AllowedEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -22,7 +10,6 @@ export class AuthorizationService extends BaseRule {
 	constructor(
 		private readonly courseRule: CourseRule,
 		private readonly taskRule: TaskRule,
-		private readonly fileRecordRule: FileRecordRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly service: ReferenceLoader
 	) {
@@ -38,8 +25,6 @@ export class AuthorizationService extends BaseRule {
 			permission = this.courseRule.hasPermission(user, entity, context);
 		} else if (entity instanceof School) {
 			permission = this.schoolRule.hasPermission(user, entity, context);
-		} else if (entity instanceof FileRecord) {
-			permission = this.fileRecordRule.hasPermission(user, entity, context);
 		} else {
 			throw new NotImplementedException('RULE_NOT_IMPLEMENT');
 		}

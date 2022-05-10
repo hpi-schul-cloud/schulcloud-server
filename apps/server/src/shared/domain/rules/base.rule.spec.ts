@@ -6,11 +6,8 @@ import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, 
 import { BaseRule } from '.';
 import { User } from '../entity';
 import { Role } from '../entity/role.entity';
-import { IEntity } from '../interface';
-import { IPermissionContext } from '../interface/permission';
+import { IEntity, IPermissionContext, Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
-import { Permission } from './permission.enum';
-import { RoleName } from './rolename.enum';
 
 class TestRule extends BaseRule {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

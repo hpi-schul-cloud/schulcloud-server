@@ -15,7 +15,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ReferenceLoader } from '@src/modules/authorization/reference.loader';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -35,7 +34,6 @@ describe('TaskUC', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let referenceLoader: DeepMocked<ReferenceLoader>;
 	let orm: MikroORM;
 	let user!: User;
 
@@ -55,9 +53,7 @@ describe('TaskUC', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				/* AuthorizationModule, MongoMemoryDatabaseModule.forRoot({ entities: ALL_ENTITIES }) */
-			],
+			imports: [],
 			providers: [
 				TaskUC,
 				{
@@ -948,21 +944,22 @@ describe('TaskUC', () => {
 
 		it('should check for permission to finish the task', async () => {
 			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(authorizationService.hasPermission).toBeCalledWith(user, task, {
+			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.read,
-				requiredPermissions: ['HOMEWORK_VIEW'],
+				requiredPermissions: [],
 			});
 		});
 
-		it('should throw UnauthorizedException when not permitted', async () => {
+		it('should throw ForbiddenException when not permitted', async () => {
 			const user2 = userFactory.buildWithId();
 			task = taskFactory.buildWithId({ creator: user2 });
 			taskRepo.findById.mockResolvedValue(task);
-			authorizationService.hasPermission.mockReturnValue(false);
-
+			authorizationService.checkPermission.mockImplementation(() => {
+				throw new ForbiddenException();
+			});
 			await expect(async () => {
 				await service.changeFinishedForUser(user.id, task.id, true);
-			}).rejects.toThrow(UnauthorizedException);
+			}).rejects.toThrow(ForbiddenException);
 		});
 
 		it('should finish the task for the user', async () => {
@@ -1046,10 +1043,12 @@ describe('TaskUC', () => {
 		it('should throw UnauthorizedException when not permitted', async () => {
 			task = taskFactory.buildWithId();
 			taskRepo.findById.mockResolvedValue(task);
-			authorizationService.hasPermission.mockReturnValue(false);
+			authorizationService.checkPermission.mockImplementation(() => {
+				throw new ForbiddenException();
+			});
 			await expect(async () => {
 				await service.delete(user.id, task.id);
-			}).rejects.toThrow(new ForbiddenException('USER_HAS_NOT_PERMISSIONS'));
+			}).rejects.toThrow(new ForbiddenException());
 		});
 
 		it('should call TaskRepo.delete() with Task', async () => {
@@ -1058,7 +1057,7 @@ describe('TaskUC', () => {
 		});
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
 			await service.delete(user.id, task.id);
-			expect(authorizationService.hasPermission).toBeCalledWith(user, task, {
+			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});

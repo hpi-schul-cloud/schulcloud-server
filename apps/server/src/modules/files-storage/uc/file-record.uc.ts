@@ -1,7 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { Actions, Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { Actions, Counted, EntityId, FileRecord, Permission, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedEntityType } from '@src/modules/authorization/interfaces';
 import {
 	FileRecordParams,
 	RenameFileParams,
@@ -18,12 +19,16 @@ export class FileRecordUC {
 
 	async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 
-		this.authorizationService.checkPermission(currentUser, entity, {
-			action: Actions.write,
-			requiredPermissions: ['FILE_CREATE'],
-		});
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			entity.parentType as unknown as AllowedEntityType,
+			entity.parentId,
+			{
+				action: Actions.write,
+				requiredPermissions: [Permission.FILESTORAGE_EDIT],
+			}
+		);
 
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
 		if (fileRecords.find((item) => item.name === data.fileName)) {
@@ -41,8 +46,8 @@ export class FileRecordUC {
 			params.parentType as unknown as never,
 			params.parentId,
 			{
-				action: Actions.write,
-				requiredPermissions: ['BASE_VIEW'],
+				action: Actions.read,
+				requiredPermissions: [Permission.FILESTORAGE_VIEW],
 			}
 		);
 

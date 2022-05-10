@@ -1,12 +1,11 @@
 import {
 	BadRequestException,
-	ForbiddenException,
 	Injectable,
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
-import { Actions, Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import { Actions, Counted, EntityId, FileRecord, Permission, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -39,21 +38,16 @@ export class FilesStorageUC {
 	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
-		// @TODO check permissions of schoolId by user
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			params.parentType as unknown as never,
+			params.parentId,
+			{
+				action: Actions.write,
+				requiredPermissions: [Permission.FILESTORAGE_CREATE],
+			}
+		);
 
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
-				userId,
-				params.parentType as unknown as never,
-				params.parentId,
-				{
-					action: Actions.read,
-					requiredPermissions: ['FILE_CREATE'],
-				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
 		const result = await new Promise((resolve, reject) => {
 			const requestStream = busboy({ headers: req.headers });
 
@@ -135,19 +129,15 @@ export class FilesStorageUC {
 	async download(userId: EntityId, params: DownloadFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
-				userId,
-				entity.parentType as unknown as never,
-				entity.parentId,
-				{
-					action: Actions.read,
-					requiredPermissions: ['BASE_VIEW'],
-				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			entity.parentType as unknown as never,
+			entity.parentId,
+			{
+				action: Actions.read,
+				requiredPermissions: [Permission.FILESTORAGE_VIEW],
+			}
+		);
 
 		if (entity.name !== params.fileName) {
 			throw new NotFoundException('File not found');
@@ -220,19 +210,15 @@ export class FilesStorageUC {
 	}
 
 	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
-				userId,
-				params.parentType as unknown as never,
-				params.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: ['FILE_DELETE'],
-				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			params.parentType as unknown as never,
+			params.parentId,
+			{
+				action: Actions.write,
+				requiredPermissions: [Permission.FILESTORAGE_REMOVE],
+			}
+		);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		if (count > 0) {
 			await this.delete(fileRecords);
@@ -243,19 +229,15 @@ export class FilesStorageUC {
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
-				userId,
-				fileRecord.parentType as unknown as never,
-				fileRecord.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: ['FILE_DELETE'],
-				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			fileRecord.parentType as unknown as never,
+			fileRecord.parentId,
+			{
+				action: Actions.write,
+				requiredPermissions: [Permission.FILESTORAGE_REMOVE],
+			}
+		);
 		await this.delete([fileRecord]);
 
 		return fileRecord;
@@ -267,8 +249,8 @@ export class FilesStorageUC {
 			params.parentType as unknown as never,
 			params.parentId,
 			{
-				action: Actions.read,
-				requiredPermissions: ['FILE_CREATE'],
+				action: Actions.write,
+				requiredPermissions: [Permission.FILESTORAGE_CREATE],
 			}
 		);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
@@ -283,19 +265,15 @@ export class FilesStorageUC {
 
 	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
-				userId,
-				fileRecord.parentType as unknown as never,
-				fileRecord.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: ['FILE_CREATE'],
-				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			fileRecord.parentType as unknown as never,
+			fileRecord.parentId,
+			{
+				action: Actions.write,
+				requiredPermissions: [Permission.FILESTORAGE_CREATE],
+			}
+		);
 		await this.restore([fileRecord]);
 
 		return fileRecord;
@@ -306,28 +284,27 @@ export class FilesStorageUC {
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<FileRecord[]>> {
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
+		await Promise.all([
+			this.authorizationService.checkPermissionByReferences(
 				userId,
 				params.parentType as unknown as never,
 				params.parentId,
 				{
-					action: Actions.read,
-					requiredPermissions: ['FILE_CREATE'],
+					action: Actions.write,
+					requiredPermissions: [Permission.FILESTORAGE_CREATE],
 				}
-			)) ||
-			!(await this.authorizationService.hasPermissionByReferences(
+			),
+			this.authorizationService.checkPermissionByReferences(
 				userId,
 				copyFilesParams.target.parentType as unknown as never,
 				copyFilesParams.target.parentId,
 				{
-					action: Actions.read,
-					requiredPermissions: ['FILE_CREATE'],
+					action: Actions.write,
+					requiredPermissions: [Permission.FILESTORAGE_CREATE],
 				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
+			),
+		]);
+
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count === 0) {
@@ -341,29 +318,26 @@ export class FilesStorageUC {
 
 	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-
-		if (
-			!(await this.authorizationService.hasPermissionByReferences(
+		await Promise.all([
+			this.authorizationService.checkPermissionByReferences(
 				userId,
 				fileRecord.parentType as unknown as never,
 				fileRecord.parentId,
 				{
-					action: Actions.read,
-					requiredPermissions: ['FILE_CREATE'],
+					action: Actions.write,
+					requiredPermissions: [Permission.FILESTORAGE_CREATE],
 				}
-			)) ||
-			!(await this.authorizationService.hasPermissionByReferences(
+			),
+			this.authorizationService.checkPermissionByReferences(
 				userId,
 				copyFileParams.target.parentType as unknown as never,
 				copyFileParams.target.parentId,
 				{
-					action: Actions.read,
-					requiredPermissions: ['FILE_CREATE'],
+					action: Actions.write,
+					requiredPermissions: [Permission.FILESTORAGE_CREATE],
 				}
-			))
-		) {
-			throw new ForbiddenException();
-		}
+			),
+		]);
 
 		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
 
