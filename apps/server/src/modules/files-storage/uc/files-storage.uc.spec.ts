@@ -199,7 +199,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileUploadParams.parentType,
 					fileUploadParams.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 
@@ -303,7 +303,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['BASE_VIEW'] }
 				);
 			});
 
@@ -411,7 +411,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					requestParams.parentType,
 					requestParams.parentId,
-					Actions.write
+					{ action: Actions.write, requiredPermissions: ['FILE_DELETE'] }
 				);
 			});
 
@@ -462,7 +462,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					Actions.write
+					{ action: Actions.write, requiredPermissions: ['FILE_DELETE'] }
 				);
 			});
 
@@ -537,7 +537,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					requestParams.parentType,
 					requestParams.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 
@@ -588,7 +588,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					Actions.write
+					{ action: Actions.write, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 
@@ -684,7 +684,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					sourceParentParams.parentType,
 					sourceParentParams.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 
@@ -695,7 +695,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					copyFilesParams.target.parentType,
 					copyFilesParams.target.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 
@@ -791,7 +791,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 
@@ -802,7 +802,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					copyFileParams.target.parentType,
 					copyFileParams.target.parentId,
-					Actions.read
+					{ action: Actions.read, requiredPermissions: ['FILE_CREATE'] }
 				);
 			});
 

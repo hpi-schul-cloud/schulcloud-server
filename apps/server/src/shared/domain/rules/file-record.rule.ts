@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { FileRecord, User } from '@shared/domain';
-import { Actions } from './actions.enum';
+import { IPermissionContext } from '../interface/permission';
 import { BaseRule } from './base.rule';
 import { CourseRule } from './course.rule';
 
@@ -10,10 +10,11 @@ export class FileRecordRule extends BaseRule {
 		super();
 	}
 
-	hasPermission(user: User, entity: FileRecord, action: Actions): boolean {
+	hasPermission(user: User, entity: FileRecord, context: IPermissionContext): boolean {
 		const isCreator = this.hasAccessToEntity(user, entity, ['creatorId']);
+		const hasPermission = this.hasAllPermissions(user, context.requiredPermissions);
 
-		const hasPermission = isCreator;
-		return hasPermission;
+		const result = hasPermission && isCreator;
+		return result;
 	}
 }

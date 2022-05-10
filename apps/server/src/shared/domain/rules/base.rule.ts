@@ -3,13 +3,13 @@ import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
 import { IEntity, IEntityWithSchool } from '../interface';
-import { Actions } from './actions.enum';
+import { IPermissionContext } from '../interface/permission';
 
 export abstract class BaseRule {
-	abstract hasPermission(user: User, entity: IEntity, action: Actions): boolean;
+	abstract hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean;
 
-	checkPermission(user: User, entity: IEntity, action: Actions) {
-		if (!this.hasPermission(user, entity, action)) {
+	checkPermission(user: User, entity: IEntity, context: IPermissionContext) {
+		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}
 	}
@@ -51,8 +51,8 @@ export abstract class BaseRule {
 	}
 
 	hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
-		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
-			return false;
+		if (requiredPermissions.length === 0) {
+			return true;
 		}
 		const usersPermissions = this.resolvePermissions(user);
 		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));

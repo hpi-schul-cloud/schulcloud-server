@@ -46,7 +46,10 @@ export class FilesStorageUC {
 				userId,
 				params.parentType as unknown as never,
 				params.parentId,
-				Actions.read
+				{
+					action: Actions.read,
+					requiredPermissions: ['FILE_CREATE'],
+				}
 			))
 		) {
 			throw new ForbiddenException();
@@ -137,7 +140,10 @@ export class FilesStorageUC {
 				userId,
 				entity.parentType as unknown as never,
 				entity.parentId,
-				Actions.read
+				{
+					action: Actions.read,
+					requiredPermissions: ['BASE_VIEW'],
+				}
 			))
 		) {
 			throw new ForbiddenException();
@@ -219,7 +225,10 @@ export class FilesStorageUC {
 				userId,
 				params.parentType as unknown as never,
 				params.parentId,
-				Actions.write
+				{
+					action: Actions.write,
+					requiredPermissions: ['FILE_DELETE'],
+				}
 			))
 		) {
 			throw new ForbiddenException();
@@ -239,7 +248,10 @@ export class FilesStorageUC {
 				userId,
 				fileRecord.parentType as unknown as never,
 				fileRecord.parentId,
-				Actions.write
+				{
+					action: Actions.write,
+					requiredPermissions: ['FILE_DELETE'],
+				}
 			))
 		) {
 			throw new ForbiddenException();
@@ -254,7 +266,10 @@ export class FilesStorageUC {
 			userId,
 			params.parentType as unknown as never,
 			params.parentId,
-			Actions.read
+			{
+				action: Actions.read,
+				requiredPermissions: ['FILE_CREATE'],
+			}
 		);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
 			params.schoolId,
@@ -273,7 +288,10 @@ export class FilesStorageUC {
 				userId,
 				fileRecord.parentType as unknown as never,
 				fileRecord.parentId,
-				Actions.write
+				{
+					action: Actions.write,
+					requiredPermissions: ['FILE_CREATE'],
+				}
 			))
 		) {
 			throw new ForbiddenException();
@@ -293,13 +311,19 @@ export class FilesStorageUC {
 				userId,
 				params.parentType as unknown as never,
 				params.parentId,
-				Actions.read
+				{
+					action: Actions.read,
+					requiredPermissions: ['FILE_CREATE'],
+				}
 			)) ||
 			!(await this.authorizationService.hasPermissionByReferences(
 				userId,
 				copyFilesParams.target.parentType as unknown as never,
 				copyFilesParams.target.parentId,
-				Actions.read
+				{
+					action: Actions.read,
+					requiredPermissions: ['FILE_CREATE'],
+				}
 			))
 		) {
 			throw new ForbiddenException();
@@ -323,13 +347,19 @@ export class FilesStorageUC {
 				userId,
 				fileRecord.parentType as unknown as never,
 				fileRecord.parentId,
-				Actions.read
+				{
+					action: Actions.read,
+					requiredPermissions: ['FILE_CREATE'],
+				}
 			)) ||
 			!(await this.authorizationService.hasPermissionByReferences(
 				userId,
 				copyFileParams.target.parentType as unknown as never,
 				copyFileParams.target.parentId,
-				Actions.read
+				{
+					action: Actions.read,
+					requiredPermissions: ['FILE_CREATE'],
+				}
 			))
 		) {
 			throw new ForbiddenException();

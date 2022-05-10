@@ -948,7 +948,10 @@ describe('TaskUC', () => {
 
 		it('should check for permission to finish the task', async () => {
 			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(authorizationService.hasPermission).toBeCalledWith(user, task, Actions.read);
+			expect(authorizationService.hasPermission).toBeCalledWith(user, task, {
+				action: Actions.read,
+				requiredPermissions: ['HOMEWORK_VIEW'],
+			});
 		});
 
 		it('should throw UnauthorizedException when not permitted', async () => {
@@ -1055,7 +1058,10 @@ describe('TaskUC', () => {
 		});
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
 			await service.delete(user.id, task.id);
-			expect(authorizationService.hasPermission).toBeCalledWith(user, task, Actions.write);
+			expect(authorizationService.hasPermission).toBeCalledWith(user, task, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
 		});
 	});
 });

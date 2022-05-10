@@ -44,7 +44,7 @@ describe('authorization.service', () => {
 			const entity = new TestEntity();
 
 			const exec = () => {
-				service.hasPermission(user, entity, Actions.write);
+				service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
 			};
 			expect(exec).toThrowError(NotImplementedException);
 		});
@@ -53,7 +53,7 @@ describe('authorization.service', () => {
 			const user = userFactory.build();
 			const task = taskFactory.build({ creator: user });
 
-			const response = service.hasPermission(user, task, Actions.write);
+			const response = service.hasPermission(user, task, { action: Actions.write, requiredPermissions: [] });
 			expect(response).toBe(true);
 		});
 
@@ -61,7 +61,7 @@ describe('authorization.service', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ teachers: [user] });
 
-			const response = service.hasPermission(user, course, Actions.write);
+			const response = service.hasPermission(user, course, { action: Actions.write, requiredPermissions: [] });
 			expect(response).toBe(true);
 		});
 	});
@@ -73,7 +73,10 @@ describe('authorization.service', () => {
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(true);
-			await service.hasPermissionByReferences(userId, entityName, entityId, Actions.read);
+			await service.hasPermissionByReferences(userId, entityName, entityId, {
+				action: Actions.read,
+				requiredPermissions: [],
+			});
 			expect(loader.getUserWithPermissions).lastCalledWith(userId);
 		});
 		it('should call ReferenceLoader.loadEntity', async () => {
@@ -83,7 +86,10 @@ describe('authorization.service', () => {
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(true);
 
-			await service.hasPermissionByReferences(userId, entityName, entityId, Actions.read);
+			await service.hasPermissionByReferences(userId, entityName, entityId, {
+				action: Actions.read,
+				requiredPermissions: [],
+			});
 			expect(loader.loadEntity).lastCalledWith(entityName, entityId);
 		});
 	});
@@ -96,7 +102,10 @@ describe('authorization.service', () => {
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(false);
 			void expect(() =>
-				service.checkPermissionByReferences(userId, entityName, entityId, Actions.read)
+				service.checkPermissionByReferences(userId, entityName, entityId, {
+					action: Actions.read,
+					requiredPermissions: [],
+				})
 			).rejects.toThrowError(ForbiddenException);
 		});
 	});

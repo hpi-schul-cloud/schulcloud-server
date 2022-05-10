@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common';
 import {
-	Actions,
 	BaseRule,
 	Course,
 	CourseRule,
@@ -12,6 +11,7 @@ import {
 	TaskRule,
 	User,
 } from '@shared/domain';
+import { IPermissionContext } from '@shared/domain/interface/permission';
 import { FileRecordRule } from '@shared/domain/rules/file-record.rule';
 import { SchoolRule } from '@shared/domain/rules/school.rule';
 import { AllowedEntityType } from './interfaces';
@@ -29,17 +29,17 @@ export class AuthorizationService extends BaseRule {
 		super();
 	}
 
-	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
+	hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean {
 		let permission = false;
 
 		if (entity instanceof Task) {
-			permission = this.taskRule.hasPermission(user, entity, action);
+			permission = this.taskRule.hasPermission(user, entity, context);
 		} else if (entity instanceof Course) {
-			permission = this.courseRule.hasPermission(user, entity, action);
+			permission = this.courseRule.hasPermission(user, entity, context);
 		} else if (entity instanceof School) {
-			permission = this.schoolRule.hasPermission(user, entity, action);
+			permission = this.schoolRule.hasPermission(user, entity, context);
 		} else if (entity instanceof FileRecord) {
-			permission = this.fileRecordRule.hasPermission(user, entity, action);
+			permission = this.fileRecordRule.hasPermission(user, entity, context);
 		} else {
 			throw new NotImplementedException('RULE_NOT_IMPLEMENT');
 		}
@@ -51,7 +51,7 @@ export class AuthorizationService extends BaseRule {
 		userId: EntityId,
 		entityName: AllowedEntityType,
 		entityId: EntityId,
-		action: Actions
+		context: IPermissionContext
 	): Promise<boolean> {
 		let permission = false;
 		const [user, entity] = await Promise.all([
@@ -59,7 +59,7 @@ export class AuthorizationService extends BaseRule {
 			this.service.loadEntity(entityName, entityId),
 		]);
 
-		permission = this.hasPermission(user, entity, action);
+		permission = this.hasPermission(user, entity, context);
 
 		return permission;
 	}
@@ -68,9 +68,9 @@ export class AuthorizationService extends BaseRule {
 		userId: EntityId,
 		entityName: AllowedEntityType,
 		entityId: EntityId,
-		action: Actions
+		context: IPermissionContext
 	) {
-		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, action))) {
+		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
 			throw new ForbiddenException();
 		}
 	}

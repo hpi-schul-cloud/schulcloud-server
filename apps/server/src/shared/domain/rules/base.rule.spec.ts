@@ -7,11 +7,12 @@ import { BaseRule } from '.';
 import { User } from '../entity';
 import { Role } from '../entity/role.entity';
 import { IEntity } from '../interface';
+import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
 
 class TestRule extends BaseRule {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
+	hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean {
 		return true;
 	}
 }
@@ -115,12 +116,7 @@ describe('base.rule', () => {
 			it('should fail, when no permissions are given to be checked', () => {
 				const user = userFactory.build();
 				const result = service.hasAllPermissions(user, []);
-				expect(result).toEqual(false);
-			});
-			it('should fail, when no permissions (array) is given to be checked', () => {
-				const user = userFactory.build();
-				const result = service.hasAllPermissions(user, 'foo' as unknown as []);
-				expect(result).toEqual(false);
+				expect(result).toEqual(true);
 			});
 			it('should succeed when user has all given permissions', () => {
 				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
@@ -365,7 +361,9 @@ describe('base.rule', () => {
 		it('should throw when hasPermission is false', () => {
 			const user = userFactory.build();
 			const spy = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
-			expect(() => service.checkPermission(user, user, Actions.read)).toThrowError(ForbiddenException);
+			expect(() => service.checkPermission(user, user, { action: Actions.read, requiredPermissions: [] })).toThrowError(
+				ForbiddenException
+			);
 			spy.mockRestore();
 		});
 	});
@@ -373,7 +371,7 @@ describe('base.rule', () => {
 	describe('[hasPermission]', () => {
 		it('should return boolean', () => {
 			const user = userFactory.build();
-			expect(service.hasPermission(user, user, Actions.read)).toBe(true);
+			expect(service.hasPermission(user, user, { action: Actions.read, requiredPermissions: [] })).toBe(true);
 		});
 	});
 });

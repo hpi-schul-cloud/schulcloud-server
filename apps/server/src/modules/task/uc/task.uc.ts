@@ -53,7 +53,12 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.hasPermission(user, task, Actions.write)) {
+			if (
+				this.authorizationService.hasPermission(user, task, {
+					action: Actions.write,
+					requiredPermissions: ['HOMEWORK_VIEW'],
+				})
+			) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
@@ -88,7 +93,12 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		if (!this.authorizationService.hasPermission(user, task, Actions.read)) {
+		if (
+			!this.authorizationService.hasPermission(user, task, {
+				action: Actions.read,
+				requiredPermissions: ['HOMEWORK_VIEW'],
+			})
+		) {
 			throw new UnauthorizedException();
 		}
 
@@ -181,7 +191,12 @@ export class TaskUC {
 	}
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
-		const writeCourses = courses.filter((c) => this.authorizationService.hasPermission(user, c, Actions.write));
+		const writeCourses = courses.filter((c) =>
+			this.authorizationService.hasPermission(user, c, {
+				action: Actions.write,
+				requiredPermissions: ['HOMEWORK_VIEW'],
+			})
+		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 
 		const writeCourseIds = writeCourses.map((c) => c.id);
@@ -212,7 +227,7 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		if (!this.authorizationService.hasPermission(user, task, Actions.write)) {
+		if (!this.authorizationService.hasPermission(user, task, { action: Actions.write, requiredPermissions: [] })) {
 			throw new ForbiddenException('USER_HAS_NOT_PERMISSIONS');
 		}
 

@@ -20,7 +20,10 @@ export class FileRecordUC {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
 
-		this.authorizationService.checkPermission(currentUser, entity, Actions.write);
+		this.authorizationService.checkPermission(currentUser, entity, {
+			action: Actions.write,
+			requiredPermissions: ['FILE_CREATE'],
+		});
 
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
 		if (fileRecords.find((item) => item.name === data.fileName)) {
@@ -37,7 +40,10 @@ export class FileRecordUC {
 			userId,
 			params.parentType as unknown as never,
 			params.parentId,
-			Actions.write
+			{
+				action: Actions.write,
+				requiredPermissions: ['BASE_VIEW'],
+			}
 		);
 
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);

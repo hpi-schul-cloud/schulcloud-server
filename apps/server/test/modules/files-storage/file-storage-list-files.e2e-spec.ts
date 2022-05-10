@@ -78,9 +78,9 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('with bad request data', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			const roles = roleFactory.buildList(1, { permissions: [] });
 			const school = schoolFactory.build();
-			const user = userFactory.build({ roles, school });
+			const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+			const user = userFactory.build({ school, roles });
 
 			await em.persistAndFlush([user]);
 			em.clear();
@@ -126,9 +126,9 @@ describe(`${baseRouteName} (api)`, () => {
 	describe(`with valid request data`, () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			const roles = roleFactory.buildList(1, { permissions: [] });
 			const school = schoolFactory.build();
-			const user = userFactory.build({ roles, school });
+			const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+			const user = userFactory.build({ school, roles });
 
 			await em.persistAndFlush([user]);
 			em.clear();

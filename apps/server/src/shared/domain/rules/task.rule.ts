@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import type { Task, User } from '@shared/domain';
-import { Actions } from './actions.enum';
+import { Task, User } from '../entity';
+import { IPermissionContext } from '../interface/permission';
 import { BaseRule } from './base.rule';
 import { CourseRule } from './course.rule';
 
@@ -10,15 +10,17 @@ export class TaskRule extends BaseRule {
 		super();
 	}
 
-	hasPermission(user: User, task: Task, action: Actions): boolean {
-		const isCreator = this.hasAccessToEntity(user, task, ['creator']);
+	hasPermission(user: User, entity: Task, context: IPermissionContext): boolean {
+		const { action, requiredPermissions } = context;
+		const hasPermission = this.hasAllPermissions(user, requiredPermissions);
+		const isCreator = this.hasAccessToEntity(user, entity, ['creator']);
 		let hasCoursePermission = false;
-
-		if (task.course) {
-			hasCoursePermission = this.courseRule.hasPermission(user, task.course, action);
+		if (entity.course) {
+			const { course } = entity;
+			hasCoursePermission = this.courseRule.hasPermission(user, course, { action, requiredPermissions: [] });
 		}
-		const hasPermission = isCreator || hasCoursePermission;
+		const result = hasPermission && (isCreator || hasCoursePermission);
 
-		return hasPermission;
+		return result;
 	}
 }

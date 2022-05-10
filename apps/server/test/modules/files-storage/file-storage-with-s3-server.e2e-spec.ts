@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, FileRecord, ICurrentUser } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { cleanupCollections, mapUserToCurrentUser, schoolFactory, userFactory } from '@shared/testing';
+import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
@@ -108,7 +108,8 @@ describe('file-storage controller (e2e)', () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		const school = schoolFactory.build();
-		const user = userFactory.build({ school });
+		const roles = roleFactory.buildList(1, { permissions: ['FILE_CREATE', 'BASE_VIEW'] });
+		const user = userFactory.build({ school, roles });
 
 		await em.persistAndFlush([user, school]);
 		em.clear();
