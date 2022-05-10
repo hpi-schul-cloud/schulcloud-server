@@ -16,6 +16,21 @@ export class KeycloakConsole {
 		private readonly keycloakManagementUc: KeycloakManagementUc
 	) {}
 
+	static retryFlags: CommandOption[] = [
+		{
+			flags: '-rc, --retry-count <value>',
+			description: 'If the command fails, it will be retried this number of times. Default is no retry.',
+			required: false,
+			defaultValue: 1,
+		},
+		{
+			flags: '-rd, --retry-delay <value>',
+			description: 'If "retry" is active, this delay is used between each retry. Default is 10 seconds.',
+			required: false,
+			defaultValue: 10,
+		},
+	];
+
 	@Command({ command: 'check', description: 'Test the connection to the IDM.' })
 	async check(): Promise<void> {
 		if (await this.keycloakManagementUc.check()) {
@@ -28,26 +43,67 @@ export class KeycloakConsole {
 	@Command({
 		command: 'clean',
 		description: 'Remove all users from the IDM.',
+		options: KeycloakConsole.retryFlags,
 	})
-	async clean(): Promise<void> {
-		try {
-			const count = await this.keycloakManagementUc.clean();
-			this.console.info(`Cleaned ${count} users from IDM`);
-		} catch {
-			throw defaultError;
-		}
+	async clean(options: IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'clean',
+			async () => {
+				const count = await this.keycloakManagementUc.clean();
+				this.console.info(`Cleaned ${count} users into IDM`);
+				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
 	}
 
 	@Command({
 		command: 'seed',
 		description: 'Add all seed users to the IDM.',
+		options: KeycloakConsole.retryFlags,
 	})
-	async seed(): Promise<void> {
-		try {
-			const count = await this.keycloakManagementUc.seed();
-			this.console.info(`Seeded ${count} users from IDM`);
-		} catch {
-			throw defaultError;
+	async seed(options: IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'seed',
+			async () => {
+				const count = await this.keycloakManagementUc.seed();
+				this.console.info(`Seeded ${count} users into IDM`);
+				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
+	private async repeatCommand<T>(
+		commandName: string,
+		command: () => Promise<T>,
+		count: number,
+		delay: number
+	): Promise<T> {
+		let repetitions = 0;
+		while (repetitions < count) {
+			repetitions += 1;
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				return await command();
+			} catch {
+				if (repetitions < count) {
+					this.console.info(
+						`Command '${commandName}' failed, retry in ${delay} seconds. Execution ${repetitions} / ${count}`
+					);
+					// eslint-disable-next-line no-await-in-loop
+					await this.delay(delay * 1000);
+				} else {
+					break;
+				}
+			}
 		}
+		throw defaultError;
+	}
+
+	private delay(ms: number) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 }

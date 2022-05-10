@@ -17,6 +17,6 @@ spec:
         - secretRef:
             name: api-secret
         command: ['/bin/sh', '-c']
-        args: ['npm run nest:start:console -- idm seed']
+        args: ['npm run nest:start:console -- idm seed -rc 60']
       restartPolicy: Never
   backoffLimit: 4
