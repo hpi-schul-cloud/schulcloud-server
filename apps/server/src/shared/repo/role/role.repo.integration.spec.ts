@@ -1,9 +1,9 @@
-import { NotFoundError, ValidationError } from '@mikro-orm/core';
+import { NotFoundError, ValidationError, NullCacheAdapter } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '@shared/domain';
+import { Role, RoleName } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { roleFactory } from '@shared/testing';
+import { cleanupCollections, roleFactory } from '@shared/testing';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
@@ -12,8 +12,9 @@ describe('role repo', () => {
 	let em: EntityManager;
 
 	beforeAll(async () => {
+		// em.clear do not clear the resultCache, it must be disabled for this test
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ resultCache: { adapter: NullCacheAdapter } })],
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);
@@ -22,6 +23,11 @@ describe('role repo', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(async () => {
+		await em.nativeDelete(Role, {});
+		await cleanupCollections(em);
 	});
 
 	it('should be defined', () => {
@@ -36,18 +42,16 @@ describe('role repo', () => {
 
 	describe('entity', () => {
 		it.skip('should fail for double creating a unique role name.', async () => {
-			const nameA = `a${Date.now()}`;
-			const roleA1 = roleFactory.build({ name: nameA });
+			const roleA1 = roleFactory.build({ name: RoleName.STUDENT });
 			await em.persistAndFlush([roleA1]);
-			const roleA2 = roleFactory.build({ name: nameA });
+			const roleA2 = roleFactory.build({ name: RoleName.STUDENT });
 
 			await expect(em.persistAndFlush([roleA2])).rejects.toThrow(ValidationError);
 		});
 
 		it.skip('should fail for double creating a unique role name in same step', async () => {
-			const nameA = `a${Date.now()}`;
-			const roleA1 = roleFactory.build({ name: nameA });
-			const roleA2 = roleFactory.build({ name: nameA });
+			const roleA1 = roleFactory.build({ name: RoleName.STUDENT });
+			const roleA2 = roleFactory.build({ name: RoleName.STUDENT });
 
 			await expect(em.persistAndFlush([roleA1, roleA2])).rejects.toThrow(ValidationError);
 		});
@@ -56,44 +60,33 @@ describe('role repo', () => {
 	});
 
 	describe('findByName', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-		});
-
 		it('should return right keys', async () => {
-			const nameA = `a${Date.now()}`;
-			const roleA = roleFactory.build({ name: nameA });
+			const roleA = roleFactory.build({ name: RoleName.STUDENT });
 
 			await em.persistAndFlush([roleA]);
-			const result = await repo.findByName(nameA);
+			const result = await repo.findByName(RoleName.STUDENT);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
 			);
 		});
 
 		it('should return one role that matched by name', async () => {
-			const nameA = `a${Date.now()}`;
-			const nameB = `b${Date.now()}`;
-			const roleA = roleFactory.build({ name: nameA });
-			const roleB = roleFactory.build({ name: nameB });
+			const roleA = roleFactory.build({ name: RoleName.STUDENT });
+			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 
 			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.findByName(nameA);
+			em.clear();
+			const result = await repo.findByName(RoleName.STUDENT);
 			expect(result).toEqual(roleA);
 		});
 
 		it('should throw an error if roles by name doesnt exist', async () => {
-			const nameA = `a${Date.now()}`;
-
-			await expect(repo.findByName(nameA)).rejects.toThrow(NotFoundError);
+			em.clear();
+			await expect(repo.findByName(RoleName.STUDENT)).rejects.toThrow(NotFoundError);
 		});
 	});
 
 	describe('findById', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-		});
-
 		it('should return right keys', async () => {
 			const roleA = roleFactory.build();
 

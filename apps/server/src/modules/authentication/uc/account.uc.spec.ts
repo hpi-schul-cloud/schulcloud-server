@@ -1,7 +1,17 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
+import {
+	Account,
+	EntityId,
+	ICurrentUser,
+	Permission,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	User,
+} from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import {
@@ -184,31 +194,37 @@ describe('AccountUc', () => {
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'superhero', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.SUPERHERO, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] })],
 		});
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutRole = userFactory.buildWithId({
 			school: mockSchool,
@@ -216,11 +232,11 @@ describe('AccountUc', () => {
 		});
 		mockUnknownRoleUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'undefinedRole', permissions: [''] })],
+			roles: [new Role({ name: 'undefinedRole' as RoleName, permissions: ['' as Permission] })],
 		});
 		mockExternalUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 
 		mockSuperheroAccount = accountFactory.buildWithId({

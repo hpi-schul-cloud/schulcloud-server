@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICreateNews, NewsTargetModel } from '@shared/domain';
+import { ICreateNews, NewsTargetModel, Permission } from '@shared/domain';
 import { NewsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
@@ -14,7 +14,7 @@ describe('NewsUc', () => {
 	let repo: NewsRepo;
 	const courseTargetId = 'course1';
 	const teamTargetId = 'team1';
-	const NEWS_PERMISSIONS = ['NEWS_VIEW', 'NEWS_EDIT'];
+	const NEWS_PERMISSIONS = [Permission.NEWS_VIEW, Permission.NEWS_EDIT];
 
 	const userId = new ObjectId().toString();
 	const schoolId = new ObjectId().toString();
