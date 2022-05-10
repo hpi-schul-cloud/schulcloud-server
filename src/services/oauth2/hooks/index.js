@@ -1,3 +1,4 @@
+/* eslint-disable promise/no-nesting */
 const { authenticate } = require('@feathersjs/authentication');
 
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
@@ -115,7 +116,32 @@ const managesOwnConsents = (hook) => {
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
+
+// TODO N21-91. Magic Strings are not desireable
+const validatePermissionForNextcloud = (hook) =>
+	Promise.all([
+		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('ltiTools').find({
+			query: {
+				oAuthClientId: hook.params.loginRequest.client.client_id,
+				isLocal: true,
+			},
+		}),
+	]).then(([user, tools]) => {
+		const filtredToolsData = tools.data.filter((toolData) => toolData.name === 'SchulcloudNextcloud');
+		if (
+			filtredToolsData.length > 0 &&
+			filtredToolsData[0].name === 'SchulcloudNextcloud' &&
+			!user.permissions.includes('NEXTCLOUD_USER')
+		) {
+			throw new Forbidden('You are not allowed to use Nextcloud');
+		}
+		return hook;
+	});
+
 exports.setIdToken = setIdToken;
+exports.validatePermissionForNextcloud = validatePermissionForNextcloud;
+
 exports.hooks = {
 	clients: {
 		before: {
@@ -124,7 +150,7 @@ exports.hooks = {
 	},
 	loginRequest: {
 		before: {
-			patch: [authenticate('jwt'), injectLoginRequest, setSubject],
+			patch: [authenticate('jwt'), injectLoginRequest, setSubject, validatePermissionForNextcloud],
 		},
 	},
 	consentRequest: {
