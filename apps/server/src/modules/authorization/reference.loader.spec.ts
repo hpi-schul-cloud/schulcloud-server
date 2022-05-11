@@ -14,7 +14,6 @@ describe('reference.loader', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
@@ -51,7 +50,6 @@ describe('reference.loader', () => {
 		userRepo = await module.get(UserRepo);
 		courseRepo = await module.get(CourseRepo);
 		taskRepo = await module.get(TaskRepo);
-		fileRecordRepo = await module.get(FileRecordRepo);
 		schoolRepo = await module.get(SchoolRepo);
 	});
 
