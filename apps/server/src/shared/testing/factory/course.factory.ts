@@ -1,6 +1,6 @@
 import { DeepPartial } from 'fishery';
 
-import { Course, School, ICourseProperties } from '@shared/domain';
+import { Course, ICourseProperties } from '@shared/domain';
 
 import { schoolFactory } from './school.factory';
 import { BaseFactory } from './base.factory';

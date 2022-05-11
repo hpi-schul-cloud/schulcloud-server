@@ -14,8 +14,17 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
-import { UserImportPermissions } from '@src/modules/user-import/constants';
-import { ICurrentUser, ImportUser, MatchCreator, RoleName, School, System, SortOrder, User } from '@shared/domain';
+import {
+	ICurrentUser,
+	ImportUser,
+	MatchCreator,
+	School,
+	System,
+	SortOrder,
+	User,
+	RoleName,
+	Permission,
+} from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import {
 	FilterImportUserParams,
@@ -30,10 +39,10 @@ import {
 	UpdateMatchParams,
 	UserMatchListResponse,
 	UserMatchResponse,
+	FilterUserParams,
+	UpdateFlagParams,
 } from '@src/modules/user-import/controller/dto';
-import { UpdateFlagParams } from '@src/modules/user-import/controller/dto/update-flag.params';
 import { PaginationParams } from '@shared/controller';
-import { FilterUserParams } from '@src/modules/user-import/controller/dto/filter-user.params';
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 describe('ImportUser Controller (e2e)', () => {
@@ -42,10 +51,10 @@ describe('ImportUser Controller (e2e)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	const authenticatedUser = async (permissions: UserImportPermissions[] = []) => {
+	const authenticatedUser = async (permissions: Permission[] = []) => {
 		const system = systemFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo' });
-		const roles = [roleFactory.build({ name: 'administrator', permissions })];
+		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);
 		const user = userFactory.build({
 			school,
@@ -185,12 +194,12 @@ describe('ImportUser Controller (e2e)', () => {
 				});
 			});
 
-			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW', () => {
+			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_VIEW', () => {
 				let user: User;
 				let school: School;
 				let system: System;
 				beforeEach(async () => {
-					({ school, system, user } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
+					({ school, system, user } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_VIEW]));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
@@ -227,12 +236,12 @@ describe('ImportUser Controller (e2e)', () => {
 					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
 				});
 			});
-			describe('When current user has permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
+			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				let user: User;
 				let school: School;
 				let system: System;
 				beforeEach(async () => {
-					({ user, school, system } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+					({ user, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
 					setConfig(system._id.toString());
 				});
@@ -278,7 +287,7 @@ describe('ImportUser Controller (e2e)', () => {
 					await request(app.getHttpServer()).post(`/user/import/startUserMigration`).send().expect(401);
 				});
 			});
-			describe('When current user has permissions UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE', () => {
+			describe('When current user has permissions Permission.SCHOOL_IMPORT_USERS_MIGRATE', () => {
 				let user: User;
 				let system: System;
 				beforeEach(async () => {
@@ -322,7 +331,7 @@ describe('ImportUser Controller (e2e)', () => {
 			let user: User;
 			let school: School;
 			beforeEach(async () => {
-				({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+				({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 				currentUser = mapUserToCurrentUser(user);
 			});
 			describe('[setMatch]', () => {
@@ -426,7 +435,7 @@ describe('ImportUser Controller (e2e)', () => {
 				beforeEach(async () => {
 					await cleanupCollections(em);
 
-					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]));
+					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_VIEW]));
 
 					currentUser = mapUserToCurrentUser(user);
 				});
@@ -453,7 +462,7 @@ describe('ImportUser Controller (e2e)', () => {
 							expect(listResponse.data.some((elem) => elem.userId === currentSchoolsUser.id)).toEqual(false);
 						});
 						it('should respond userMatch with all properties', async () => {
-							const currentSchoolsUser = userFactory.withRole('teacher').build({
+							const currentSchoolsUser = userFactory.withRole(RoleName.TEACHER).build({
 								school,
 							});
 							await em.persistAndFlush([currentSchoolsUser]);
@@ -538,7 +547,7 @@ describe('ImportUser Controller (e2e)', () => {
 					});
 					it('should return importUsers with all properties including match and roles', async () => {
 						const otherSchoolsImportUser = importUserFactory.build();
-						const userMatch = userFactory.withRole('teacher').build({ school });
+						const userMatch = userFactory.withRole(RoleName.TEACHER).build({ school });
 						const currentSchoolsImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
 						await em.persistAndFlush([otherSchoolsImportUser, currentSchoolsImportUser]);
 						em.clear();
@@ -772,14 +781,14 @@ describe('ImportUser Controller (e2e)', () => {
 				let user: User;
 				let school: School;
 				beforeEach(async () => {
-					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]));
+					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
 				});
 
 				describe('[setMatch]', () => {
 					describe('[PATCH] user/import/:id/match', () => {
 						it('should set a manual match', async () => {
-							const userToBeMatched = userFactory.withRole('student').build({
+							const userToBeMatched = userFactory.withRole(RoleName.STUDENT).build({
 								school,
 							});
 							const unmatchedImportUser = importUserFactory.build({
@@ -798,13 +807,13 @@ describe('ImportUser Controller (e2e)', () => {
 							expect(importUserResponse.match?.userId).toEqual(userToBeMatched.id);
 						});
 						it('should update an existing auto match to manual', async () => {
-							const userMatch = userFactory.withRole('student').build({
+							const userMatch = userFactory.withRole(RoleName.STUDENT).build({
 								school,
 							});
 							const alreadyMatchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
 								school,
 							});
-							const manualUserMatch = userFactory.withRole('student').build({
+							const manualUserMatch = userFactory.withRole(RoleName.STUDENT).build({
 								school,
 							});
 							await em.persistAndFlush([userMatch, alreadyMatchedImportUser, manualUserMatch]);
@@ -825,7 +834,7 @@ describe('ImportUser Controller (e2e)', () => {
 				describe('[removeMatch]', () => {
 					describe('[DELETE] user/import/:id/match', () => {
 						it('should remove a match', async () => {
-							const userMatch = userFactory.withRole('student').build({
+							const userMatch = userFactory.withRole(RoleName.STUDENT).build({
 								school,
 							});
 							const importUserWithMatch = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
@@ -893,7 +902,7 @@ describe('ImportUser Controller (e2e)', () => {
 				let user: User;
 				let school: School;
 				beforeEach(async () => {
-					({ user, school } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
 					school.officialSchoolNumber = 'foo';
 					school.inMaintenanceSince = new Date();
 					school.ldapSchoolIdentifier = 'foo';
@@ -920,7 +929,7 @@ describe('ImportUser Controller (e2e)', () => {
 				let system: System;
 				describe('POST user/import/startUserMigration', () => {
 					it('should set in user migration mode', async () => {
-						({ user, system } = await authenticatedUser([UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE]));
+						({ user, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
 						currentUser = mapUserToCurrentUser(user);
 						Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 
@@ -939,8 +948,8 @@ describe('ImportUser Controller (e2e)', () => {
 						});
 						const roles = [
 							roleFactory.build({
-								name: 'administrator',
-								permissions: [UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE],
+								name: RoleName.ADMINISTRATOR,
+								permissions: [Permission.SCHOOL_IMPORT_USERS_MIGRATE],
 							}),
 						];
 						await em.persistAndFlush([school, ...roles]);

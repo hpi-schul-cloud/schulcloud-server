@@ -13,7 +13,7 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
-import { Account, ICurrentUser, RoleName, User } from '@shared/domain';
+import { Account, ICurrentUser, RoleName, Permission, User } from '@shared/domain';
 
 describe('Account Controller (e2e)', () => {
 	const basePath = '/account';
@@ -40,9 +40,12 @@ describe('Account Controller (e2e)', () => {
 	const setup = async () => {
 		const school = schoolFactory.buildWithId();
 
-		const adminRoles = roleFactory.build({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] });
-		const teacherRoles = roleFactory.build({ name: 'teacher', permissions: ['STUDENT_EDIT'] });
-		const studentRoles = roleFactory.build({ name: 'student', permissions: [] });
+		const adminRoles = roleFactory.build({
+			name: RoleName.ADMINISTRATOR,
+			permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
+		});
+		const teacherRoles = roleFactory.build({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] });
+		const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 		const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
 
 		adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
