@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ConsoleWriterModule, ConsoleWriterService } from '@shared/infra/console';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { KeycloakConsole } from './console/keycloak-management.console';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
@@ -8,6 +8,7 @@ import { IKeycloakSettings, KeycloakSettings } from './interface/keycloak-settin
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 
 @Module({
+	imports: [ConsoleWriterModule],
 	providers: [
 		KeycloakAdminClient,
 		KeycloakAdministrationService,
@@ -26,7 +27,6 @@ import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 			} as IKeycloakSettings,
 		},
 		KeycloakManagementUc,
-		ConsoleWriterService,
 		KeycloakConsole,
 	],
 	exports: [KeycloakAdministrationService, KeycloakConsole],
