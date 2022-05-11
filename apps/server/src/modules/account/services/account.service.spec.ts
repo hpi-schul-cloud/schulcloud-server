@@ -77,11 +77,9 @@ describe('AccountService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						}),
-						searchByUsernameExactMatch: jest
-							.fn()
-							.mockImplementation((username: string): Promise<[Account[], number]> => {
-								return Promise.resolve([[mockTeacherAccount], 1]);
-							}),
+						searchByUsernameExactMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
+							return Promise.resolve([[mockTeacherAccount], 1]);
+						}),
 						searchByUsernamePartialMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
 							return Promise.resolve([mockAccounts, mockAccounts.length]);
 						}),
@@ -119,7 +117,6 @@ describe('AccountService', () => {
 		});
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
-		mockUsers = [mockTeacherUser, mockStudentUser, mockUserWithoutAccount];
 	});
 
 	describe('findById', () => {
@@ -145,7 +142,7 @@ describe('AccountService', () => {
 			const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
 			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
-		it('should return null', async () => {
+		it('should throw EntityNotFoundError', async () => {
 			await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
 		});
 	});
