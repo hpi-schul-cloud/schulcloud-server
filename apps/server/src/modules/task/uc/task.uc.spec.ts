@@ -98,7 +98,7 @@ describe('TaskUC', () => {
 		},
 	};
 
-	const seAuthorizationServiceMock = {
+	const setAuthorizationServiceMock = {
 		getUserWithPermissions: () => {
 			const spy = authorizationService.getUserWithPermissions.mockResolvedValue(user);
 			return spy;
@@ -147,7 +147,7 @@ describe('TaskUC', () => {
 		const spy2 = setCourseRepoMock.findAllForTeacher(data?.courses);
 		const spy3 = setCourseRepoMock.findAllByUserId(data?.courses);
 		const spy4 = setLessonRepoMock.findAllForTeacher(data?.lessons);
-		const spy5 = seAuthorizationServiceMock.getUserWithPermissions();
+		const spy5 = setAuthorizationServiceMock.getUserWithPermissions();
 		const spy6 = setUserRepoMock.findById();
 		const spy7 = setTaskRepoMock.findAllByParentIds(data?.tasks);
 

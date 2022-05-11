@@ -4,9 +4,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, ALL_RULES, BaseEntity } from '@shared/domain';
-import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from './authorization.service';
-import { AllowedEntityType } from './interfaces';
+import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 class TestEntity extends BaseEntity {}
@@ -64,12 +64,27 @@ describe('authorization.service', () => {
 			const response = service.hasPermission(user, course, { action: Actions.write, requiredPermissions: [] });
 			expect(response).toBe(true);
 		});
+
+		it('can resolve school', () => {
+			const school = schoolFactory.build();
+			const user = userFactory.build({ school });
+
+			const response = service.hasPermission(user, school, { action: Actions.write, requiredPermissions: [] });
+			expect(response).toBe(true);
+		});
+
+		it('can resolve user', () => {
+			const user = userFactory.build();
+
+			const response = service.hasPermission(user, user, { action: Actions.write, requiredPermissions: [] });
+			expect(response).toBe(true);
+		});
 	});
 
 	describe('hasPermissionByReferences', () => {
 		it('should call ReferenceLoader.getUserWithPermissions', async () => {
 			const userId = new ObjectId().toHexString();
-			const entityName = AllowedEntityType.Course;
+			const entityName = AllowedAuthorizationEntityType.Course;
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(true);
@@ -81,7 +96,7 @@ describe('authorization.service', () => {
 		});
 		it('should call ReferenceLoader.loadEntity', async () => {
 			const userId = new ObjectId().toHexString();
-			const entityName = AllowedEntityType.Course;
+			const entityName = AllowedAuthorizationEntityType.Course;
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(true);
@@ -97,7 +112,7 @@ describe('authorization.service', () => {
 	describe('checkPermissionByReferences', () => {
 		it('should call ReferenceLoader.getUserWithPermissions', () => {
 			const userId = new ObjectId().toHexString();
-			const entityName = AllowedEntityType.Course;
+			const entityName = AllowedAuthorizationEntityType.Course;
 			const entityId = new ObjectId().toHexString();
 			const spy = jest.spyOn(service, 'hasPermission');
 			spy.mockReturnValue(false);
@@ -107,6 +122,15 @@ describe('authorization.service', () => {
 					requiredPermissions: [],
 				})
 			).rejects.toThrowError(ForbiddenException);
+		});
+	});
+
+	describe('getUserWithPermissions', () => {
+		it('should call ReferenceLoader.getUserWithPermissions', async () => {
+			const userId = new ObjectId().toHexString();
+
+			await service.getUserWithPermissions(userId);
+			expect(loader.getUserWithPermissions).lastCalledWith(userId);
 		});
 	});
 });

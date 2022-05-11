@@ -1,8 +1,19 @@
 import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseRule, Course, CourseRule, EntityId, IEntity, School, Task, TaskRule, User } from '@shared/domain';
+import {
+	BaseRule,
+	Course,
+	CourseRule,
+	EntityId,
+	IEntity,
+	School,
+	Task,
+	TaskRule,
+	User,
+	UserRule,
+} from '@shared/domain';
 import { IPermissionContext } from '@shared/domain/interface/permission';
 import { SchoolRule } from '@shared/domain/rules/school.rule';
-import { AllowedEntityType } from './interfaces';
+import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 @Injectable()
@@ -11,6 +22,7 @@ export class AuthorizationService extends BaseRule {
 		private readonly courseRule: CourseRule,
 		private readonly taskRule: TaskRule,
 		private readonly schoolRule: SchoolRule,
+		private readonly userRule: UserRule,
 		private readonly service: ReferenceLoader
 	) {
 		super();
@@ -25,6 +37,8 @@ export class AuthorizationService extends BaseRule {
 			permission = this.courseRule.hasPermission(user, entity, context);
 		} else if (entity instanceof School) {
 			permission = this.schoolRule.hasPermission(user, entity, context);
+		} else if (entity instanceof User) {
+			permission = this.userRule.hasPermission(user, entity, context);
 		} else {
 			throw new NotImplementedException('RULE_NOT_IMPLEMENT');
 		}
@@ -34,7 +48,7 @@ export class AuthorizationService extends BaseRule {
 
 	async hasPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedEntityType,
+		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		context: IPermissionContext
 	): Promise<boolean> {
@@ -51,7 +65,7 @@ export class AuthorizationService extends BaseRule {
 
 	async checkPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedEntityType,
+		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		context: IPermissionContext
 	) {

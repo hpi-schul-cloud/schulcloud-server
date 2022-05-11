@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { CourseRepo, FileRecordRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AllowedEntityType } from './interfaces';
+import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 describe('reference.loader', () => {
@@ -65,36 +65,33 @@ describe('reference.loader', () => {
 
 	describe('loadEntity', () => {
 		it('should call taskRepo.findById', async () => {
-			await service.loadEntity(AllowedEntityType.Task, entityId);
+			await service.loadEntity(AllowedAuthorizationEntityType.Task, entityId);
 			expect(taskRepo.findById).toBeCalledWith(entityId);
 		});
 		it('should call courseRepo.findById', async () => {
-			await service.loadEntity(AllowedEntityType.Course, entityId);
+			await service.loadEntity(AllowedAuthorizationEntityType.Course, entityId);
 			expect(courseRepo.findById).toBeCalledWith(entityId);
 		});
-		it('should call fileRecordRepo.findById', async () => {
-			await service.loadEntity(AllowedEntityType.FileRecord, entityId);
-			expect(fileRecordRepo.findById).toBeCalledWith(entityId);
-		});
+
 		it('should call schoolRepo.findById', async () => {
-			await service.loadEntity(AllowedEntityType.School, entityId);
+			await service.loadEntity(AllowedAuthorizationEntityType.School, entityId);
 			expect(schoolRepo.findById).toBeCalledWith(entityId);
 		});
 		it('should call userRepo.findById', async () => {
-			await service.loadEntity(AllowedEntityType.User, entityId);
+			await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
 			expect(userRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {
 			const user = userFactory.build();
 			userRepo.findById.mockResolvedValue(user);
-			const result = await service.loadEntity(AllowedEntityType.User, entityId);
+			const result = await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
 			expect(result).toBe(user);
 		});
 
 		it('should call ReferenceLoader.getUserWithPermissions', () => {
 			void expect(async () =>
-				service.loadEntity('AllowedEntityType.User' as AllowedEntityType.User, entityId)
+				service.loadEntity('AllowedEntityType.User' as AllowedAuthorizationEntityType.User, entityId)
 			).rejects.toThrow();
 		});
 	});

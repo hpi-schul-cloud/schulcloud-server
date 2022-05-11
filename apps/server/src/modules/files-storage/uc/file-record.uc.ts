@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { Actions, Counted, EntityId, FileRecord, Permission, ScanStatus } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedEntityType } from '@src/modules/authorization/interfaces';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import {
 	FileRecordParams,
 	RenameFileParams,
@@ -22,7 +22,7 @@ export class FileRecordUC {
 
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
-			entity.parentType as unknown as AllowedEntityType,
+			entity.parentType as unknown as AllowedAuthorizationEntityType,
 			entity.parentId,
 			{
 				action: Actions.write,

@@ -1,7 +1,7 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, EntityId, FileRecord, School, Task, User } from '@shared/domain';
-import { CourseRepo, FileRecordRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { AllowedEntityType } from './interfaces';
+import { Course, EntityId, School, Task, User } from '@shared/domain';
+import { CourseRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { AllowedAuthorizationEntityType } from './interfaces';
 
 @Injectable()
 export class ReferenceLoader {
@@ -9,21 +9,18 @@ export class ReferenceLoader {
 		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly taskRepo: TaskRepo,
-		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly schoolRepo: SchoolRepo
 	) {}
 
-	async loadEntity(entityName: AllowedEntityType, entityId: EntityId) {
-		let entity: Task | Course | FileRecord | School | User;
-		if (entityName === AllowedEntityType.Task) {
+	async loadEntity(entityName: AllowedAuthorizationEntityType, entityId: EntityId) {
+		let entity: Task | Course | User | School | User;
+		if (entityName === AllowedAuthorizationEntityType.Task) {
 			entity = await this.taskRepo.findById(entityId);
-		} else if (entityName === AllowedEntityType.Course) {
+		} else if (entityName === AllowedAuthorizationEntityType.Course) {
 			entity = await this.courseRepo.findById(entityId);
-		} else if (entityName === AllowedEntityType.FileRecord) {
-			entity = await this.fileRecordRepo.findById(entityId);
-		} else if (entityName === AllowedEntityType.School) {
+		} else if (entityName === AllowedAuthorizationEntityType.School) {
 			entity = await this.schoolRepo.findById(entityId);
-		} else if (entityName === AllowedEntityType.User) {
+		} else if (entityName === AllowedAuthorizationEntityType.User) {
 			entity = await this.userRepo.findById(entityId);
 		} else {
 			throw new NotImplementedException('REPO_NOT_IMPLEMENT');
