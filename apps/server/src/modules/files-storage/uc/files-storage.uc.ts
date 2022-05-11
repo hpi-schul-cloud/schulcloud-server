@@ -5,7 +5,7 @@ import {
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
-import { Actions, Counted, EntityId, FileRecord, Permission, ScanStatus } from '@shared/domain';
+import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -22,8 +22,10 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
+import { PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
+import { FileStorageMapper } from '../mapper/parent-type.mapper';
 
 @Injectable()
 export class FilesStorageUC {
@@ -38,15 +40,7 @@ export class FilesStorageUC {
 	}
 
 	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			params.parentType as unknown as never,
-			params.parentId,
-			{
-				action: Actions.write,
-				requiredPermissions: [Permission.FILESTORAGE_CREATE],
-			}
-		);
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 
 		const result = await new Promise((resolve, reject) => {
 			const requestStream = busboy({ headers: req.headers });
@@ -126,18 +120,20 @@ export class FilesStorageUC {
 		return res;
 	}
 
+	private async checkPermission(
+		userId: EntityId,
+		parentType: FileRecordParentType,
+		parentId: EntityId,
+		context: IPermissionContext
+	) {
+		const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+	}
+
 	async download(userId: EntityId, params: DownloadFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			entity.parentType as unknown as never,
-			entity.parentId,
-			{
-				action: Actions.read,
-				requiredPermissions: [Permission.FILESTORAGE_VIEW],
-			}
-		);
+		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
 
 		if (entity.name !== params.fileName) {
 			throw new NotFoundException('File not found');
@@ -210,15 +206,7 @@ export class FilesStorageUC {
 	}
 
 	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			params.parentType as unknown as never,
-			params.parentId,
-			{
-				action: Actions.write,
-				requiredPermissions: [Permission.FILESTORAGE_REMOVE],
-			}
-		);
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		if (count > 0) {
 			await this.delete(fileRecords);
@@ -229,30 +217,14 @@ export class FilesStorageUC {
 
 	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			fileRecord.parentType as unknown as never,
-			fileRecord.parentId,
-			{
-				action: Actions.write,
-				requiredPermissions: [Permission.FILESTORAGE_REMOVE],
-			}
-		);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
 		await this.delete([fileRecord]);
 
 		return fileRecord;
 	}
 
 	async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			params.parentType as unknown as never,
-			params.parentId,
-			{
-				action: Actions.write,
-				requiredPermissions: [Permission.FILESTORAGE_CREATE],
-			}
-		);
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
 			params.schoolId,
 			params.parentId
@@ -265,15 +237,7 @@ export class FilesStorageUC {
 
 	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			fileRecord.parentType as unknown as never,
-			fileRecord.parentId,
-			{
-				action: Actions.write,
-				requiredPermissions: [Permission.FILESTORAGE_CREATE],
-			}
-		);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
 		await this.restore([fileRecord]);
 
 		return fileRecord;
@@ -285,23 +249,12 @@ export class FilesStorageUC {
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<FileRecord[]>> {
 		await Promise.all([
-			this.authorizationService.checkPermissionByReferences(
+			this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create),
+			this.checkPermission(
 				userId,
-				params.parentType as unknown as never,
-				params.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: [Permission.FILESTORAGE_CREATE],
-				}
-			),
-			this.authorizationService.checkPermissionByReferences(
-				userId,
-				copyFilesParams.target.parentType as unknown as never,
+				copyFilesParams.target.parentType,
 				copyFilesParams.target.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: [Permission.FILESTORAGE_CREATE],
-				}
+				PermissionContexts.create
 			),
 		]);
 
@@ -319,23 +272,12 @@ export class FilesStorageUC {
 	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await Promise.all([
-			this.authorizationService.checkPermissionByReferences(
+			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),
+			this.checkPermission(
 				userId,
-				fileRecord.parentType as unknown as never,
-				fileRecord.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: [Permission.FILESTORAGE_CREATE],
-				}
-			),
-			this.authorizationService.checkPermissionByReferences(
-				userId,
-				copyFileParams.target.parentType as unknown as never,
+				copyFileParams.target.parentType,
 				copyFileParams.target.parentId,
-				{
-					action: Actions.write,
-					requiredPermissions: [Permission.FILESTORAGE_CREATE],
-				}
+				PermissionContexts.create
 			),
 		]);
 

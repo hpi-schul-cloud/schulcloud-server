@@ -13,7 +13,7 @@ export class ReferenceLoader {
 	) {}
 
 	async loadEntity(entityName: AllowedAuthorizationEntityType, entityId: EntityId) {
-		let entity: Task | Course | User | School | User;
+		let entity: Task | Course | User | School;
 		if (entityName === AllowedAuthorizationEntityType.Task) {
 			entity = await this.taskRepo.findById(entityId);
 		} else if (entityName === AllowedAuthorizationEntityType.Course) {
