@@ -13,12 +13,12 @@ import {
 	School,
 	System,
 	User,
+	Permission,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { accountFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { UserImportPermissions } from '../constants';
 import { UserImportUc } from './user-import.uc';
 
 describe('[ImportUserModule]', () => {
@@ -115,7 +115,7 @@ describe('[ImportUserModule]', () => {
 					.mockResolvedValueOnce([[], 0]);
 				const result = await uc.findAllImportUsers(user.id, {}, {});
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(user.school, {}, {});
 				expect(result[0]).toHaveLength(0);
 				expect(result[1]).toEqual(0);
@@ -136,7 +136,7 @@ describe('[ImportUserModule]', () => {
 				const query = {};
 				const [result, count] = await uc.findAllUnmatchedUsers(user.id, query);
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_VIEW]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
 				expect(result.length).toEqual(0);
 				expect(count).toEqual(0);
 				userRepoByIdSpy.mockRestore();
@@ -194,9 +194,7 @@ describe('[ImportUserModule]', () => {
 						await uc.setMatch(currentUser.id, importUser.id, usermatch.id);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [
-							UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE,
-						]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
 						expect(importUserRepoHasMatchdSpy).toHaveBeenCalledWith(usermatch);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).toEqual(usermatch);
@@ -238,9 +236,7 @@ describe('[ImportUserModule]', () => {
 							UserAlreadyAssignedToImportUserError
 						);
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [
-							UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE,
-						]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
 						expect(importUserRepoHasMatchdSpy).toHaveBeenCalledWith(usermatch);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).not.toEqual(usermatch);
@@ -256,7 +252,7 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[setFlag]', () => {
-			describe('When having permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
+			describe('When having permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When not having same school for user and importuser', () => {
 					it('should not change flag', async () => {
 						const school = schoolFactory.buildWithId();
@@ -294,7 +290,7 @@ describe('[ImportUserModule]', () => {
 						const result = await uc.updateFlag(user.id, importUser.id, true);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(importUser.flagged).toEqual(true);
@@ -317,7 +313,7 @@ describe('[ImportUserModule]', () => {
 						const result = await uc.updateFlag(user.id, importUser.id, false);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(importUser.flagged).toEqual(false);
@@ -331,7 +327,7 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[removeMatch]', () => {
-			describe('When having permission UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE', () => {
+			describe('When having permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When having same school for user and importuser', () => {
 					it('should revoke match', async () => {
 						const school = schoolFactory.buildWithId();
@@ -350,7 +346,7 @@ describe('[ImportUserModule]', () => {
 						const result = await uc.removeMatch(user.id, importUser.id);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(result).toBe(importUser);
 						expect(result.user).toBeUndefined();
@@ -380,7 +376,7 @@ describe('[ImportUserModule]', () => {
 						await expect(async () => uc.removeMatch(user.id, importUser.id)).rejects.toThrowError(ForbiddenException);
 
 						expect(userRepoByIdSpy).toHaveBeenCalledWith(user.id, true);
-						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [UserImportPermissions.SCHOOL_IMPORT_USERS_UPDATE]);
+						expect(permissionServiceSpy).toHaveBeenCalledWith(user, [Permission.SCHOOL_IMPORT_USERS_UPDATE]);
 						expect(importUserRepoFindByIdSpy).toHaveBeenCalledWith(importUser.id);
 						expect(importUser.user).toEqual(usermatch);
 						expect(importUser.matchedBy).toEqual(MatchCreator.AUTO);
@@ -444,7 +440,7 @@ describe('[ImportUserModule]', () => {
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
 				permissionServiceSpy = permissionService.checkUserHasAllSchoolPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
-				accountRepoFindByUserIdSpy = accountRepo.findOneByUser.mockResolvedValue(account);
+				accountRepoFindByUserIdSpy = accountRepo.findByUserIdOrFail.mockResolvedValue(account);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				schoolRepoSaveSpy = schoolRepo.save.mockReturnValueOnce(Promise.resolve());
 			});
@@ -461,9 +457,7 @@ describe('[ImportUserModule]', () => {
 				await uc.saveAllUsersMatches(currentUser.id);
 
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [
-					UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE,
-				]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 			});
 			it('should not save ldap info to user if missing mandatory fields', async () => {
 				importUserRepoFindImportUsersSpy = jest
@@ -556,9 +550,7 @@ describe('[ImportUserModule]', () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [
-					UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE,
-				]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 			});
 			it('Should save school params', async () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
@@ -604,9 +596,7 @@ describe('[ImportUserModule]', () => {
 				await uc.endSchoolInMaintenance(currentUser.id);
 
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
-				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [
-					UserImportPermissions.SCHOOL_IMPORT_USERS_MIGRATE,
-				]);
+				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 			});
 			it('should remove inMaitenanceSince for school', async () => {
 				await uc.endSchoolInMaintenance(currentUser.id);

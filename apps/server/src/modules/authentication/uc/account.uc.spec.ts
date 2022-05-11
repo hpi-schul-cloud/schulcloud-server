@@ -1,9 +1,19 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
-import { AccountRepo, UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	Account,
+	EntityId,
+	ICurrentUser,
+	Permission,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	User,
+} from '@shared/domain';
+import { UserRepo } from '@shared/repo';
+import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -11,14 +21,17 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
+import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
+import { AccountService } from '../services/account.service';
+import { AccountDto } from '../services/dto/account.dto';
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
 	let accountUc: AccountUc;
 	let userRepo: UserRepo;
-	let accountRepo: AccountRepo;
+	let accountService: AccountService;
 	let orm: MikroORM;
 
 	let mockSchool: School;
@@ -27,8 +40,6 @@ describe('AccountUc', () => {
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
-	let mockDemoTeacherUser: User;
-	let mockDemoStudentUser: User;
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
@@ -39,8 +50,6 @@ describe('AccountUc', () => {
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
-	let mockDemoTeacherAccount: Account;
-	let mockDemoStudentAccount: Account;
 	let mockOtherTeacherAccount: Account;
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
@@ -64,52 +73,76 @@ describe('AccountUc', () => {
 			providers: [
 				AccountUc,
 				{
-					provide: AccountRepo,
+					provide: AccountService,
 					useValue: {
-						save: jest.fn().mockImplementation((account: Account): Promise<void> => {
+						save: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
+							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.user.id === account.userId);
+							Object.assign(accountEntity, account);
+
 							return Promise.resolve();
 						}),
-						delete: (account: Account): Promise<Account> => {
+						delete: (account: AccountDto): Promise<AccountDto> => {
 							return Promise.resolve(account);
 						},
-						findByUserId: (userId: EntityId): Promise<Account> => {
+						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
 
 							if (account) {
-								return Promise.resolve(account);
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
+							}
+							return Promise.resolve(null);
+						},
+						findByUserIdOrFail: (userId: EntityId): Promise<AccountDto> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+
+							if (account) {
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
 							if (userId === 'accountWithoutUser') {
-								return Promise.resolve(mockStudentAccount);
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						findById: (accountId: EntityId): Promise<Account> => {
+						findById: (accountId: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
 							if (account) {
-								return Promise.resolve(account);
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-						searchByUsernameExactMatch: (username: string): Promise<[Account[], number]> => {
+						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountDto[]; total: number }> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
-								return Promise.resolve([[account], mockAccounts.length]);
+								return Promise.resolve({ accounts: [AccountEntityToDtoMapper.mapToDto(account)], total: 1 });
 							}
 							if (username === 'not@available.username') {
-								return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
+								return Promise.resolve({
+									accounts: [AccountEntityToDtoMapper.mapToDto(mockExternalUserAccount)],
+									total: 1,
+								});
+								// return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
 							}
 							if (username === 'multiple@account.username') {
-								return Promise.resolve([mockAccounts, mockAccounts.length]);
+								return Promise.resolve({
+									accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
+									total: mockAccounts.length,
+								});
 							}
-							return Promise.resolve([[], 0]);
+							return Promise.resolve({
+								accounts: [],
+								total: 0,
+							});
 						},
-						searchByUsernamePartialMatch: (): Promise<[Account[], number]> => {
-							return Promise.resolve([mockAccounts, mockAccounts.length]);
+						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountDto[]; total: number }> => {
+							return Promise.resolve({
+								accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
+								total: mockAccounts.length,
+							});
 						},
 					},
 				},
@@ -151,7 +184,7 @@ describe('AccountUc', () => {
 
 		accountUc = module.get(AccountUc);
 		userRepo = module.get(UserRepo);
-		accountRepo = module.get(AccountRepo);
+		accountService = module.get(AccountService);
 		orm = await setupEntities();
 	});
 
@@ -161,39 +194,37 @@ describe('AccountUc', () => {
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'superhero', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.SUPERHERO, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] })],
 		});
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
-		});
-		mockDemoTeacherUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoTeacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
-		});
-		mockDemoStudentUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoStudent', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutRole = userFactory.buildWithId({
 			school: mockSchool,
@@ -201,11 +232,11 @@ describe('AccountUc', () => {
 		});
 		mockUnknownRoleUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'undefinedRole', permissions: [''] })],
+			roles: [new Role({ name: 'undefinedRole' as RoleName, permissions: ['' as Permission] })],
 		});
 		mockExternalUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 
 		mockSuperheroAccount = accountFactory.buildWithId({
@@ -215,11 +246,6 @@ describe('AccountUc', () => {
 		});
 		mockTeacherAccount = accountFactory.buildWithId({
 			user: mockTeacherUser,
-			password: defaultPasswordHash,
-			system: undefined,
-		});
-		mockDemoTeacherAccount = accountFactory.buildWithId({
-			user: mockDemoTeacherUser,
 			password: defaultPasswordHash,
 			system: undefined,
 		});
@@ -238,11 +264,6 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			system: undefined,
 		});
-		mockDemoStudentAccount = accountFactory.buildWithId({
-			user: mockDemoStudentUser,
-			password: defaultPasswordHash,
-			system: undefined,
-		});
 		mockAccountWithoutRole = accountFactory.buildWithId({
 			user: mockUserWithoutRole,
 			password: defaultPasswordHash,
@@ -258,16 +279,18 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			system: undefined,
 		});
-		mockExternalUserAccount = accountFactory.buildWithId({ user: mockExternalUser, password: defaultPasswordHash });
+		mockExternalUserAccount = accountFactory.buildWithId({
+			user: mockExternalUser,
+			password: defaultPasswordHash,
+			system: systemFactory.buildWithId(),
+		});
 
 		mockUsers = [
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
-			mockDemoTeacherUser,
 			mockOtherTeacherUser,
 			mockStudentUser,
-			mockDemoStudentUser,
 			mockDifferentSchoolAdminUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
@@ -279,10 +302,8 @@ describe('AccountUc', () => {
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
-			mockDemoTeacherAccount,
 			mockOtherTeacherAccount,
 			mockStudentAccount,
-			mockDemoStudentAccount,
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
@@ -342,7 +363,7 @@ describe('AccountUc', () => {
 			).resolves.not.toThrow();
 		});
 		it('should use email as account user name in lower case', async () => {
-			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
+			const accountSaveSpy = jest.spyOn(accountService, 'save');
 			const testMail = 'AN@AVAILABLE.MAIL';
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
@@ -364,7 +385,7 @@ describe('AccountUc', () => {
 			expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 		});
 		it('should always update account user name AND user email together.', async () => {
-			const accountSaveSpy = jest.spyOn(accountRepo, 'save');
+			const accountSaveSpy = jest.spyOn(accountService, 'save');
 			const userUpdateSpy = jest.spyOn(userRepo, 'save');
 			const testMail = 'an@available.mail';
 			await expect(
@@ -467,22 +488,6 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 		});
-		it('should throw if user is a demo student', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoStudentAccount.user.id, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoTeacherAccount.user.id, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw if user can not be updated', async () => {
 			await expect(
 				accountUc.updateMyAccount(mockTeacherUser.id, {
@@ -559,20 +564,6 @@ describe('AccountUc', () => {
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
 		});
-		it('should throw if user is a demo student', async () => {
-			mockDemoStudentAccount.user.forcePasswordChange = false;
-			mockDemoStudentAccount.user.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			mockDemoTeacherAccount.user.forcePasswordChange = false;
-			mockDemoTeacherAccount.user.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoTeacherAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw if user can not be updated', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
 			mockStudentAccount.user.preferences = { firstLogin: false };
@@ -598,11 +589,20 @@ describe('AccountUc', () => {
 				{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 			);
 			const expected = new AccountSearchListResponse(
-				[AccountResponseMapper.mapToResponse(mockStudentAccount)],
+				[AccountResponseMapper.mapToResponseFromEntity(mockStudentAccount)],
 				1,
 				0,
 				1
 			);
+			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
+		});
+
+		it('should return empty list, if account is not found', async () => {
+			const accounts = await accountUc.searchAccounts(
+				{ userId: mockSuperheroUser.id } as ICurrentUser,
+				{ type: AccountSearchType.USER_ID, value: 'nonExistentId' } as AccountSearchQueryParams
+			);
+			const expected = new AccountSearchListResponse([], 0, 0, 0);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 		});
 		it('should return one or more accounts, if search type is username', async () => {
@@ -623,30 +623,6 @@ describe('AccountUc', () => {
 				{ type: AccountSearchType.USERNAME, value: '', skip: 1000 } as AccountSearchQueryParams
 			);
 			expect(accounts.data).toStrictEqual([]);
-		});
-		it('should throw, if skip is smaller than 0', async () => {
-			await expect(
-				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ skip: -1 } as AccountSearchQueryParams
-				)
-			).rejects.toThrow('Skip is less than 0.');
-		});
-		it('should throw, if limit is smaller than 1', async () => {
-			await expect(
-				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ limit: 0 } as AccountSearchQueryParams
-				)
-			).rejects.toThrow('Limit is less than 1.');
-		});
-		it('should throw, if limit is greater than 100', async () => {
-			await expect(
-				accountUc.searchAccounts(
-					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ limit: 101 } as AccountSearchQueryParams
-				)
-			).rejects.toThrow('Limit is greater than 100.');
 		});
 		it('should throw, if user has not the right permissions', async () => {
 			await expect(
@@ -747,12 +723,6 @@ describe('AccountUc', () => {
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {
-			it('superhero cannot edit demo user', async () => {
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockDemoTeacherAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
-			});
 			it('admin can edit teacher', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
@@ -764,12 +734,6 @@ describe('AccountUc', () => {
 				const params = { id: mockStudentAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
-			});
-			it('demo teacher cannot edit student', async () => {
-				const currentUser = { userId: mockDemoTeacherUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('admin can edit student', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;

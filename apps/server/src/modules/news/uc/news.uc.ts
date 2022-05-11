@@ -8,13 +8,14 @@ import {
 	News,
 	NewsTargetModel,
 	SortOrder,
+	Counted,
+	Permission,
 } from '@shared/domain';
-import { Counted } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 
-type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
+type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
 @Injectable()
 export class NewsUc {
@@ -37,7 +38,7 @@ export class NewsUc {
 		this.logger.log(`create news as user ${userId}`);
 
 		const { targetModel, targetId } = params.target;
-		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
+		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 
 		const { target, displayAt: paramDisplayAt, ...props } = params;
 		// set news as published by default
@@ -67,7 +68,7 @@ export class NewsUc {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished; // default is only published news
-		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
+		const permissions: [NewsPermission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
 
@@ -122,7 +123,9 @@ export class NewsUc {
 		this.logger.log(`start update news ${id}`);
 
 		const news = await this.newsRepo.findOneById(id);
-		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
+		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, [
+			Permission.NEWS_EDIT,
+		]);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const [key, value] of Object.entries(params)) {
@@ -153,7 +156,7 @@ export class NewsUc {
 		return id;
 	}
 
-	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: Permission[]) {
+	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: NewsPermission[]) {
 		let targets: NewsTargetFilter[];
 
 		if (scope?.target == null) {
@@ -201,7 +204,7 @@ export class NewsUc {
 	 * @param unpublished news with displayAt set to future date are not published for users with view permission
 	 * @returns
 	 */
-	private static getRequiredPermissions(unpublished: boolean): [Permission] {
-		return unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
+	private static getRequiredPermissions(unpublished: boolean): [NewsPermission] {
+		return unpublished ? [Permission.NEWS_EDIT] : [Permission.NEWS_VIEW];
 	}
 }

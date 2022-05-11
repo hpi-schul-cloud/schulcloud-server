@@ -11,7 +11,7 @@ const { ConsentVersionModel } = require('../../src/services/consent/model');
 const run = async () => {
 	database.connect();
 
-	const userRoles = await RoleModel.find({ name: { $in: ['user', 'demo'] } }).exec();
+	const userRoles = await RoleModel.find({ name: { $in: ['user'] } }).exec();
 	const addPermissions = ['PRIVACY_VIEW'];
 
 	const chain = [];

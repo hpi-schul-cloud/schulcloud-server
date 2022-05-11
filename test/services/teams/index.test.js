@@ -114,28 +114,6 @@ describe('Test team basic methods', () => {
 			}
 		});
 
-		it('is not allowed for demoStudent', async () => {
-			const demoStudent = await createTestUser({ roles: ['demoStudent'] });
-			const username = demoStudent.email;
-			const password = 'Schulcloud1!';
-			await createTestAccount({ username, password }, 'local', demoStudent);
-			const params = await generateRequestParams({ username, password });
-
-			try {
-				const record = {
-					name: 'test',
-					schoolId: demoStudent.schoolId,
-					schoolIds: [demoStudent.schoolId],
-					userIds: [demoStudent._id],
-				};
-				await teamService.create(record, { ...params, query: {} }).catch((e) => {
-					expect(e.name).to.equal('Forbidden');
-					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
-				});
-			} finally {
-				await cleanup();
-			}
-		});
 	});
 });
 

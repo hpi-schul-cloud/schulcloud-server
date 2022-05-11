@@ -7,7 +7,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@src/server.module';
 import { DashboardResponse } from '@src/modules/learnroom/controller/dto';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { DashboardEntity, GridElement, ICurrentUser } from '@shared/domain';
+import { DashboardEntity, GridElement, ICurrentUser, Permission } from '@shared/domain';
 import { IDashboardRepo } from '@shared/repo';
 import { courseFactory, userFactory, roleFactory, mapUserToCurrentUser } from '@shared/testing';
 
@@ -45,7 +45,7 @@ describe('Dashboard Controller (e2e)', () => {
 	});
 
 	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: ['TASK_DASHBOARD_TEACHER_VIEW_V3'] });
+		const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3] });
 		const user = userFactory.build({ roles });
 
 		return user;
