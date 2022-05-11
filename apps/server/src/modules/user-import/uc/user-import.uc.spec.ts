@@ -571,6 +571,16 @@ describe('[ImportUserModule]', () => {
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(InternalServerErrorException);
 			});
+			it('should throw if school is already in inUserMigration', async () => {
+				school.inUserMigration = true;
+				const result = uc.startSchoolInUserMigration(currentUser.id);
+				await expect(result).rejects.toThrowError(BadRequestException);
+			});
+			it('should throw if school has no officialSchoolNumber ', async () => {
+				school.officialSchoolNumber = undefined;
+				const result = uc.startSchoolInUserMigration(currentUser.id);
+				await expect(result).rejects.toThrowError(BadRequestException);
+			});
 		});
 
 		describe('[endSchoolMaintenance]', () => {

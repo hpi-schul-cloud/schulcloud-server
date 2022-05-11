@@ -135,7 +135,7 @@ describe('AccountService', () => {
 			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
 		it('should return null', async () => {
-			const resultAccount = await accountService.findByUserId('nonExsitentId');
+			const resultAccount = await accountService.findByUserId('nonExistentId');
 			expect(resultAccount).toBeNull();
 		});
 	});
@@ -146,7 +146,7 @@ describe('AccountService', () => {
 			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
 		it('should return null', async () => {
-			await expect(accountService.findByUserIdOrFail('nonExsitentId')).rejects.toThrow(EntityNotFoundError);
+			await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
 		});
 	});
 
