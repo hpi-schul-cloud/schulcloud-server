@@ -27,6 +27,7 @@ describe('FilesStorageUC', () => {
 	let service: FilesStorageUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let antivirusService: DeepMocked<AntivirusService>;
 	let request: DeepMocked<Request>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
@@ -86,6 +87,7 @@ describe('FilesStorageUC', () => {
 
 		service = module.get(FilesStorageUC);
 		authorizationService = module.get(AuthorizationService);
+		antivirusService = module.get(AntivirusService);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		fileRecords = [
@@ -674,6 +676,45 @@ describe('FilesStorageUC', () => {
 				expect(fileRecordsRes).toEqual(
 					expect.arrayContaining([expect.objectContaining({ parentType: FileRecordParentType.Task })])
 				);
+			});
+		});
+
+		describe('copy with securityCheck', () => {
+			beforeEach(() => {
+				fileRecords = [
+					fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
+					fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
+					fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+				];
+				fileRecords[0].updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
+				fileRecords[1].updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
+				storageClient.copy.mockResolvedValue([]);
+			});
+			it('should call fileRecordRepo.save for two entities', async () => {
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
+			});
+
+			it('should call storageClient.copy for two paths', async () => {
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+
+				expect(storageClient.copy).toHaveBeenCalledWith([
+					{
+						sourcePath: expect.any(String) as string,
+						targetPath: expect.any(String) as string,
+					},
+					{
+						sourcePath: expect.any(String) as string,
+						targetPath: expect.any(String) as string,
+					},
+				]);
+			});
+
+			it('should call antivirusService.send for on entity with ScanStatus.PENDING', async () => {
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+
+				expect(antivirusService.send).toHaveBeenCalledTimes(1);
 			});
 		});
 
