@@ -1,8 +1,8 @@
-import { Entity, Enum, Property, Index, Embeddable, Embedded } from '@mikro-orm/core';
-import { v4 as uuid } from 'uuid';
+import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { v4 as uuid } from 'uuid';
 import type { EntityId } from '../types/entity-id';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -15,10 +15,7 @@ export enum FileRecordParentType {
 	'User' = 'users',
 	'School' = 'schools',
 	'Course' = 'courses',
-	'Team' = 'teams',
-	'DashboardModel' = 'dashboard', // without s
 	'Task' = 'tasks',
-	// card
 }
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;
