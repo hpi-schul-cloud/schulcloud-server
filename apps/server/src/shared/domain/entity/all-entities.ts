@@ -17,7 +17,6 @@ import { User } from './user.entity';
 import { System } from './system.entity';
 import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { Account } from './account.entity';
-import { OperationStatus } from './operation-status.entity';
 
 export const ALL_ENTITIES = [
 	Account,
@@ -48,5 +47,4 @@ export const ALL_ENTITIES = [
 	ImportUser,
 	FileRecord,
 	FileSecurityCheck,
-	OperationStatus,
 ];
