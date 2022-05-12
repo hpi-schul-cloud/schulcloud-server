@@ -7,6 +7,7 @@ import { ConsoleWriterService } from '@shared/infra/console';
 import { DatabaseManagementModule, DatabaseManagementService, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { FileSystemModule } from '@shared/infra/file-system';
+import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import serverConfig from '@src/server.config';
 import { DatabaseManagementConsole } from './console/database-management.console';
@@ -16,6 +17,7 @@ import { DatabaseManagementUc } from './uc/database-management.uc';
 
 const imports = [
 	FileSystemModule,
+	KeycloakModule,
 	DatabaseManagementModule,
 	ConfigModule.forRoot({
 		isGlobal: true,

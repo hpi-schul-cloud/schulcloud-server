@@ -67,6 +67,23 @@
       name: api-db-init-job
     when: not WITH_SCHULCLOUD_INIT
 
+  - name: IDM Init Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: configmap_file_init_idm.yml.j2
+    when: WITH_SCHULCLOUD_INIT and WITH_ERWINIDM
+
+  - name: Remove IDM Init Configmap File
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: v1
+      kind: ConfigMap
+      name: api-idm-init-file
+    when: not (WITH_SCHULCLOUD_INIT and WITH_ERWINIDM)
+
   - name: IDM Init Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

@@ -6,9 +6,11 @@ import { KeycloakConsole } from './console/keycloak-management.console';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { IKeycloakSettings, KeycloakSettings } from './interface/keycloak-settings.interface';
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
+import { KeycloakManagementController } from './controller/keycloak-management.controller';
 
 @Module({
 	imports: [ConsoleWriterModule],
+	controllers: [KeycloakManagementController],
 	providers: [
 		KeycloakAdminClient,
 		KeycloakAdministrationService,

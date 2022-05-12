@@ -9,13 +9,24 @@ spec:
     spec:
       containers:
       - name: api-idm-init
-        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        image: schulcloud/infra-tools:latest
         envFrom:
         - configMapRef:
             name: api-configmap
         - secretRef:
             name: api-secret
-        command: ['/bin/sh', '-c']
-        args: ['npm run nest:start:console -- idm seed -rc 60']
+        volumeMounts:
+        - name: script
+          mountPath: /init-idm.sh
+          subPath: init-idm.sh
+        command: ['/bin/sh','-c']
+        args: ['cp /init-idm.sh /init-idm.run.sh && chmod +x /init-idm.run.sh &&./init-idm.run.sh']
+      volumes:
+      - name: script
+        configMap:
+          name: api-idm-init-file
+          items:
+          - key: init-idm.sh
+            path: init-idm.sh
       restartPolicy: Never
   backoffLimit: 4
