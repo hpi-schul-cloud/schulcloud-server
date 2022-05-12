@@ -813,7 +813,7 @@
 		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
-			"default": null,
+			"default": "lernen.cloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
 		"FEATURE_COURSE_SHARE": {
