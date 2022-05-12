@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Task, User, Course, Lesson } from '@shared/domain/entity';
+import { Task, User, Course } from '@shared/domain/entity';
+import { CopyStatusDTO, CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 
 export type TaskCopyParams = {
 	originalTask: Task;
 	destinationCourse: Course;
-	destinationLesson?: Lesson;
+	// destinationLesson?: Lesson;
 	user: User;
 };
 
@@ -12,26 +13,6 @@ export type TaskCopyResponse = {
 	copy: Task;
 	status: CopyStatusDTO;
 };
-
-export type CopyStatusDTO = {
-	title: string;
-	type: CopyElementType;
-	status: CopyStatusEnum;
-	elements?: CopyStatusDTO[];
-};
-
-export enum CopyElementType {
-	'TASK' = 'task',
-	'FILE' = 'file',
-	'LEAF' = 'leaf',
-}
-
-export enum CopyStatusEnum {
-	'SUCCESS' = 'success',
-	'FAIL' = 'failure', // but tried
-	'NOT_DOING' = 'not-doing', // for functional reasons
-	'NOT_SUPPORTET' = 'not-supported', // might be implemented in the future
-}
 
 @Injectable()
 export class TaskCopyService {
@@ -61,7 +42,7 @@ export class TaskCopyService {
 				{
 					title: 'files',
 					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_SUPPORTET,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
 			],
 		};

@@ -1,7 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
-import { CopyElementType, CopyStatusEnum, TaskCopyService } from './task-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
 	let module: TestingModule;
