@@ -21,10 +21,6 @@ const imports = [
 				name: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
 				type: 'direct',
 			},
-			{
-				name: 'copy-queue', // TODO: configurable
-				type: 'direct',
-			},
 		],
 		uri: Configuration.get('RABBITMQ_URI') as string,
 	}),
