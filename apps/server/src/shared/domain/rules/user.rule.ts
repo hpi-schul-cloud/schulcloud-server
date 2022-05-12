@@ -24,7 +24,7 @@ export class UserRule extends BaseRule {
 					permissionsToCheck.push('STUDENT_EDIT');
 					break;
 				default:
-					break;
+					return false;
 			}
 		}
 
@@ -37,7 +37,7 @@ export class UserRule extends BaseRule {
 					permissionsToCheck.push('TEACHER_EDIT');
 					break;
 				default:
-					break;
+					return false;
 			}
 		}
 
