@@ -1,0 +1,68 @@
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+<<<<<<< HEAD
+import { UserRepo } from '@shared/repo';
+import { JwtStrategy } from './strategy/jwt.strategy';
+||||||| 229c043a3
+import { UserModule } from '@src/modules/user';
+import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { PermissionService } from '@shared/domain';
+import { JwtStrategy } from './strategy/jwt.strategy';
+=======
+import { PassportModule } from '@nestjs/passport';
+import { PermissionService } from '@shared/domain';
+import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
+>>>>>>> main
+import { jwtConstants } from './constants';
+<<<<<<< HEAD
+import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
+||||||| 229c043a3
+import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
+import { AccountUc } from './uc/account.uc';
+import { AccountController } from './controller/account.controller';
+import { AccountService } from './services/account.service';
+=======
+import { AccountController } from './controller/account.controller';
+import { AccountService } from './services/account.service';
+import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { AccountUc } from './uc/account.uc';
+>>>>>>> main
+
+@Module({
+<<<<<<< HEAD
+	imports: [PassportModule, JwtModule.register(jwtConstants)],
+	providers: [JwtStrategy, JwtValidationAdapter, UserRepo],
+	controllers: [],
+	exports: [],
+||||||| 229c043a3
+	imports: [PassportModule, JwtModule.register(jwtConstants), UserModule],
+	providers: [
+		JwtStrategy,
+		JwtValidationAdapter,
+		UserRepo,
+		AccountRepo,
+		SystemRepo,
+		AccountUc,
+		AccountService,
+		PermissionService,
+	],
+	controllers: [AccountController],
+	exports: [AccountUc],
+=======
+	imports: [PassportModule, JwtModule.register(jwtConstants)],
+	providers: [
+		JwtStrategy,
+		JwtValidationAdapter,
+		UserRepo,
+		AccountRepo,
+		SystemRepo,
+		AccountUc,
+		AccountService,
+		PermissionService,
+	],
+	controllers: [AccountController],
+	exports: [AccountUc],
+>>>>>>> main
+})
+export class AuthModule {}
