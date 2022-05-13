@@ -131,7 +131,7 @@ describe('task copy service', () => {
 			expect(result.copy.course).toEqual(course);
 		});
 
-		it('should status to success', () => {
+		it('should set status to success', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const originalTask = taskFactory.buildWithId({});
@@ -145,7 +145,7 @@ describe('task copy service', () => {
 			expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
-		it('should status title to title of the copy', () => {
+		it('should set status title to title of the copy', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const originalTask = taskFactory.buildWithId({});
@@ -159,7 +159,7 @@ describe('task copy service', () => {
 			expect(result.status.title).toEqual(result.copy.name);
 		});
 
-		it('should status type to task', () => {
+		it('should set status type to task', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const originalTask = taskFactory.buildWithId({});

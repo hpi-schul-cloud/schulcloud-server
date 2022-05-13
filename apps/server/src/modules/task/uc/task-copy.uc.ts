@@ -10,7 +10,7 @@ export type TaskCopyParentParams = {
 };
 
 @Injectable()
-export class TaskCopyUc {
+export class TaskCopyUC {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly taskRepo: TaskRepo,

@@ -8,11 +8,11 @@ import { TaskCopyParams, TaskCopyService } from '../../../shared/domain/service/
 import { CourseRepo, TaskRepo, UserRepo } from '../../../shared/repo';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '../../../shared/testing';
 import { AuthorizationService } from '../../authorization';
-import { TaskCopyUc } from './task-copy.uc';
+import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
 	let orm: MikroORM;
-	let uc: TaskCopyUc;
+	let uc: TaskCopyUC;
 	let userRepo: UserRepo;
 	let taskRepo: TaskRepo;
 	let courseRepo: CourseRepo;
@@ -30,7 +30,7 @@ describe('task copy uc', () => {
 	beforeEach(async () => {
 		const module = await Test.createTestingModule({
 			providers: [
-				TaskCopyUc,
+				TaskCopyUC,
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -54,7 +54,7 @@ describe('task copy uc', () => {
 			],
 		}).compile();
 
-		uc = module.get(TaskCopyUc);
+		uc = module.get(TaskCopyUC);
 		userRepo = module.get(UserRepo);
 		taskRepo = module.get(TaskRepo);
 		authorisation = module.get(AuthorizationService);
@@ -146,6 +146,7 @@ describe('task copy uc', () => {
 				const task = taskFactory.buildWithId();
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: IEntity, action: Actions) => {
 					if (e === task) return false;
 					return true;
@@ -173,6 +174,7 @@ describe('task copy uc', () => {
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: IEntity, action: Actions) => {
 					if (e === course) return false;
 					return true;
