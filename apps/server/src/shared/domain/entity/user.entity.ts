@@ -42,7 +42,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 
 	@Index()
 	@ManyToMany('Role', undefined, { fieldName: 'roles' })
-	roles = new Collection<Role>(this);
+	roles: Collection<Role>;
 
 	@Index()
 	@ManyToOne('School', { fieldName: 'schoolId' })
@@ -67,7 +67,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.lastName = props.lastName;
 		this.email = props.email;
 		this.school = props.school;
-		this.roles.set(props.roles);
+		this.roles = new Collection<Role>(this, props.roles);
 		this.ldapId = props.ldapId;
 		this.forcePasswordChange = props.forcePasswordChange;
 		this.language = props.language;

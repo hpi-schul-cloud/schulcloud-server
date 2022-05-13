@@ -2,24 +2,17 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
-import {
-	roleFactory,
-	userFactory,
-	mapUserToCurrentUser,
-	accountFactory,
-	schoolFactory, systemFactory,
-} from '@shared/testing';
+import { roleFactory, userFactory, mapUserToCurrentUser, accountFactory, schoolFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/server.module';
 import request from 'supertest';
 import { Request } from 'express';
-import {ICurrentUser, RoleName} from '@shared/domain';
+import { ICurrentUser, RoleName } from '@shared/domain';
 
 describe('/user/:id/account', () => {
 	const basePath = '/user';
-	const school = schoolFactory.buildWithId();
-	const roles = [roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] })];
-	const user = userFactory.buildWithId({ school, roles });
+	const role = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+	const user = userFactory.buildWithId({ roles: [role] });
 	const account = accountFactory.buildWithId({
 		user,
 		username: user.email,
@@ -48,25 +41,25 @@ describe('/user/:id/account', () => {
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
 
-		await em.persistAndFlush([school, roles, user, account]);
-		em.clear();
+		await em.persistAndFlush([role, user, account]);
 	});
 
 	afterAll(async () => {
-		await module.close();
-		await app.close();
 		await orm.close();
+		await app.close();
+		await module.close();
 	});
 
 	it('should return status 200', async () => {
-		currentUser = mapUserToCurrentUser(user);
+		currentUser = mapUserToCurrentUser(user, account);
 		const userId = user.id;
-		await request(app.getHttpServer()) //
-			.get(`${basePath}/${userId}/account`)
-			.expect(200);
+		const result = await request(app.getHttpServer()) //
+			.get(`${basePath}/${userId}/account`);
+
+		expect(result).toBeDefined();
 	});
 	it('should return status 403', async () => {
-		currentUser = {} as ICurrentUser;
+		currentUser = mapUserToCurrentUser(user);
 		const userId = user.id;
 		await request(app.getHttpServer()) //
 			.get(`${basePath}/${userId}/account`)
