@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-
-import { FileRecordRepo } from '@shared/repo';
-import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ConflictException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId, FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain';
+import { FileRecordRepo } from '@shared/repo';
+import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import {
 	FileRecordParams,
 	RenameFileParams,
@@ -46,6 +46,10 @@ describe('FileRecordUC', () => {
 				{
 					provide: FileRecordRepo,
 					useValue: createMock<FileRecordRepo>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();
