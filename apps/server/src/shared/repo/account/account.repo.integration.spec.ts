@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { userFactory, accountFactory, cleanupCollections, importUserFactory } from '@shared/testing';
+import { userFactory, accountFactory, cleanupCollections } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -66,7 +66,7 @@ describe('account repo', () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
-			await expect(repo.findByUserIdOrFail('Nonexistent-ID')).rejects.toThrow(NotFoundError);
+			await expect(repo.findByUserIdOrFail('123456789012')).rejects.toThrow(NotFoundError);
 		});
 	});
 

@@ -1,4 +1,5 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
@@ -20,10 +21,10 @@ export class Account extends BaseEntityWithTimestamps {
 	credentialHash?: string;
 
 	@Property({ nullable: true, unique: false })
-	userId: string;
+	userId: ObjectId;
 
 	@Property({ nullable: true })
-	systemId?: string;
+	systemId?: ObjectId;
 
 	@Property({ nullable: true })
 	lasttriedFailedLogin?: Date;

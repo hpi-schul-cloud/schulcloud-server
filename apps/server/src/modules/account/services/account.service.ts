@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId } from '@shared/domain';
@@ -35,8 +36,8 @@ export class AccountService {
 		let account: Account;
 		if (accountDto.id) {
 			account = await this.accountRepo.findById(accountDto.id);
-			account.userId = accountDto.userId;
-			account.systemId = accountDto.systemId;
+			account.userId = new ObjectId(accountDto.userId);
+			account.systemId = new ObjectId(accountDto.systemId);
 			account.username = accountDto.username;
 			account.activated = accountDto.activated;
 			account.expiresAt = accountDto.expiresAt;
@@ -46,8 +47,8 @@ export class AccountService {
 			account.token = accountDto.token;
 		} else {
 			account = new Account({
-				userId: accountDto.userId,
-				systemId: accountDto.systemId,
+				userId: new ObjectId(accountDto.userId),
+				systemId: new ObjectId(accountDto.systemId),
 				username: accountDto.username,
 				activated: accountDto.activated,
 				expiresAt: accountDto.expiresAt,

@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
@@ -54,15 +55,14 @@ describe('AccountService', () => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
-
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
 							if (account) {
 								return Promise.resolve(account);
 							}
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.userId === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -153,22 +153,24 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
 			await accountService.save(mockTeacherAccountDto);
-			expect(accountRepo.save).toHaveBeenCalledWith({
-				...mockTeacherAccount,
-				username: mockTeacherAccountDto.username,
-				activated: mockTeacherAccountDto.activated,
-			});
+			expect(accountRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					...mockTeacherAccount,
+					username: mockTeacherAccountDto.username,
+					activated: mockTeacherAccountDto.activated,
+				})
+			);
 		});
 
 		it("should update an existing account's system", async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
-			mockTeacherAccountDto.systemId = 'dummySystemId';
+			mockTeacherAccountDto.systemId = '123456789012';
 			await accountService.save(mockTeacherAccountDto);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
-				systemId: mockTeacherAccountDto.systemId,
+				systemId: new ObjectId(mockTeacherAccountDto.systemId),
 			});
 		});
 		it("should update an existing account's user", async () => {
@@ -180,7 +182,7 @@ describe('AccountService', () => {
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
 				activated: mockTeacherAccountDto.activated,
-				userId: mockStudentUser.id,
+				userId: new ObjectId(mockStudentUser.id),
 			});
 		});
 		it('should save a new account', async () => {
