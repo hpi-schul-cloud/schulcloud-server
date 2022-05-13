@@ -2,143 +2,81 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, LanguageType } from '@shared/domain';
-import { cleanupCollections, roleFactory, userFactory, mapUserToCurrentUser } from '@shared/testing';
+import {
+	roleFactory,
+	userFactory,
+	mapUserToCurrentUser,
+	accountFactory,
+	schoolFactory, systemFactory,
+} from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { AccountResponse } from '@src/modules/user/controller/dto';
 import { ServerTestModule } from '@src/server.module';
-import { Request } from 'express';
 import request from 'supertest';
+import { Request } from 'express';
+import {ICurrentUser, RoleName} from '@shared/domain';
 
-const baseRouteName = '/user/:id/account';
-
-class API {
-	app: INestApplication;
-
-	routeName: string;
-
-	constructor(app: INestApplication, routeName: string) {
-		this.app = app;
-		this.routeName = routeName;
-	}
-
-	async account() {
-		const response = await request(this.app.getHttpServer()).get(this.routeName).set('Accept', 'application/json');
-
-		return {
-			result: response.body as AccountResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
-describe(baseRouteName, () => {
-	describe('with user is not logged in', () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let api: API;
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate() {
-						return false;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-			api = new API(app, baseRouteName);
-		});
-
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await cleanupCollections(em);
-
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles });
-
-			await em.persistAndFlush([user]);
-			em.clear();
-		});
-
-		it('should return status 403', async () => {
-			const response = await api.account();
-
-			expect(response.status).toEqual(403);
-		});
+describe('/user/:id/account', () => {
+	const basePath = '/user';
+	const school = schoolFactory.buildWithId();
+	const roles = [roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] })];
+	const user = userFactory.buildWithId({ school, roles });
+	const account = accountFactory.buildWithId({
+		user,
+		username: user.email,
 	});
 
-	describe('without bad request data', () => {});
+	let module: TestingModule;
+	let app: INestApplication;
+	let orm: MikroORM;
+	let em: EntityManager;
+	let currentUser: ICurrentUser;
 
-	describe('without valid request data', () => {
-		let app: INestApplication;
-		let orm: MikroORM;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
 			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
+			.compile();
+		app = await module.createNestApplication().init();
+		orm = app.get(MikroORM);
+		em = app.get(EntityManager);
 
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-			em = module.get(EntityManager);
-			api = new API(app, baseRouteName);
-		});
+		await em.persistAndFlush([school, roles, user, account]);
+		em.clear();
+	});
 
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-		});
+	afterAll(async () => {
+		await module.close();
+		await app.close();
+		await orm.close();
+	});
 
-		beforeEach(async () => {
-			await cleanupCollections(em);
-
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles, language: LanguageType.DE });
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-		});
-
-		it('should return status 200 for successful request.', async () => {
-			const response = await api.account();
-
-			expect(response.status).toEqual(200);
-		});
-
-		it('should return ResolvedUserResponse.', async () => {
-			const response = await api.account();
-
-			expect(response.result.id).toEqual(currentUser.userId);
-		});
+	it('should return status 200', async () => {
+		currentUser = mapUserToCurrentUser(user);
+		const userId = user.id;
+		await request(app.getHttpServer()) //
+			.get(`${basePath}/${userId}/account`)
+			.expect(200);
+	});
+	it('should return status 403', async () => {
+		currentUser = {} as ICurrentUser;
+		const userId = user.id;
+		await request(app.getHttpServer()) //
+			.get(`${basePath}/${userId}/account`)
+			.expect(403);
+	});
+	it('should return status 404', async () => {
+		currentUser = mapUserToCurrentUser(user);
+		const userId = '';
+		await request(app.getHttpServer()) //
+			.get(`${basePath}/${userId}/account`)
+			.expect(404);
 	});
 });
