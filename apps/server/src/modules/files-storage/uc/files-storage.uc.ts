@@ -264,7 +264,7 @@ export class FilesStorageUC {
 			return [fileRecords, count];
 		}
 
-		const newRecords = await this.copy(userId, fileRecords, copyFilesParams.target);
+		const newRecords = await this.storageCopy(userId, fileRecords, copyFilesParams.target);
 
 		return newRecords;
 	}
@@ -281,12 +281,12 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
+		const [newRecord] = await this.storageCopy(userId, [fileRecord], copyFileParams.target);
 
 		return newRecord[0];
 	}
 
-	private async copy(
+	private async storageCopy(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
 		targetParams: FileRecordParams
@@ -305,6 +305,7 @@ export class FilesStorageUC {
 					sourcePath: [item.schoolId, item.id].join('/'),
 					targetPath: [entity.schoolId, entity.id].join('/'),
 				});
+
 				return entity;
 			})
 		);
