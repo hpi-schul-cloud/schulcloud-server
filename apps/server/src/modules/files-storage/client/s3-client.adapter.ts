@@ -36,7 +36,7 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException(err, 'S3 Client');
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
 		}
 	}
 
@@ -58,7 +58,7 @@ export class S3ClientAdapter implements IStorageClient {
 				etag: data.ETag,
 			};
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3 Client');
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 		}
 	}
 
@@ -88,7 +88,7 @@ export class S3ClientAdapter implements IStorageClient {
 				return this.create(path, file);
 			}
 
-			throw new InternalServerErrorException(err, 'S3 Client');
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
 		}
 	}
 
@@ -108,7 +108,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3 Client');
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
 		}
 	}
 
@@ -129,7 +129,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3 Client');
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
 		}
 	}
 
@@ -153,7 +153,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3 Client');
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
 		}
 	}
 

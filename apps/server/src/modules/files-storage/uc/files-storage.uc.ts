@@ -57,7 +57,7 @@ export class FilesStorageUC {
 			});
 
 			requestStream.on('error', (e) => {
-				reject(e);
+				reject(new BadRequestException(e, 'FilesStorageUC:upload requestStream'));
 			});
 			req.pipe(requestStream);
 		});
@@ -83,8 +83,8 @@ export class FilesStorageUC {
 		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 		try {
 			await this.fileRecordRepo.save(entity);
-			const folder = [params.schoolId, entity.id].join('/');
-			await this.storageClient.create(folder, fileDescription);
+			const filePath = this.createPath(params.schoolId, entity.id);
+			await this.storageClient.create(filePath, fileDescription);
 			await this.antivirusService.send(entity);
 
 			return entity;
@@ -108,9 +108,13 @@ export class FilesStorageUC {
 	}
 
 	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
-		const pathToFile = [schoolId, fileRecordId].join('/');
+		try {
+			const pathToFile = [schoolId, fileRecordId].join('/');
 
-		return pathToFile;
+			return pathToFile;
+		} catch (err) {
+			throw new BadRequestException(err, 'FilesStorageUC:createPath');
+		}
 	}
 
 	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
@@ -136,9 +140,9 @@ export class FilesStorageUC {
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
 
 		if (entity.name !== params.fileName) {
-			throw new NotFoundException('File not found');
+			throw new NotFoundException('FilesStorageUC:File not found');
 		} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException('File is blocked');
+			throw new NotAcceptableException('FilesStorageUC:File is blocked');
 		}
 		const res = await this.downloadFile(entity.schoolId, entity.id);
 
@@ -146,17 +150,10 @@ export class FilesStorageUC {
 	}
 
 	async downloadBySecurityToken(token: string) {
-		try {
-			const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-			const res = await this.downloadFile(entity.schoolId, entity.id);
+		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+		const res = await this.downloadFile(entity.schoolId, entity.id);
 
-			return res;
-		} catch (error) {
-			if (error instanceof NotFoundException) {
-				throw error;
-			}
-			throw new BadRequestException(error);
-		}
+		return res;
 	}
 
 	private checkFilenameExists(filename: string, fileRecords: FileRecord[]): string {
@@ -201,7 +198,7 @@ export class FilesStorageUC {
 		} catch (err) {
 			await this.unmarkForDelete(fileRecords);
 
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'FilesStorageUC:delete');
 		}
 	}
 
@@ -302,8 +299,8 @@ export class FilesStorageUC {
 				await this.fileRecordRepo.save(entity);
 
 				paths.push({
-					sourcePath: [item.schoolId, item.id].join('/'),
-					targetPath: [entity.schoolId, entity.id].join('/'),
+					sourcePath: this.createPath(item.schoolId, item.id),
+					targetPath: this.createPath(entity.schoolId, entity.id),
 				});
 
 				return entity;
@@ -329,7 +326,7 @@ export class FilesStorageUC {
 			await this.storageClient.restore(paths);
 		} catch (err) {
 			await this.markForDelete(fileRecords);
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'FilesStorageUC:restore');
 		}
 	}
 }
