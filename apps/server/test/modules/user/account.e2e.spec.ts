@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
-import { roleFactory, userFactory, mapUserToCurrentUser, accountFactory, schoolFactory } from '@shared/testing';
+import { roleFactory, userFactory, mapUserToCurrentUser, accountFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/server.module';
 import request from 'supertest';
@@ -53,10 +53,9 @@ describe('/user/:id/account', () => {
 	it('should return status 200', async () => {
 		currentUser = mapUserToCurrentUser(user, account);
 		const userId = user.id;
-		const result = await request(app.getHttpServer()) //
-			.get(`${basePath}/${userId}/account`);
-
-		expect(result).toBeDefined();
+		await request(app.getHttpServer()) //
+			.get(`${basePath}/${userId}/account`)
+			.expect(200);
 	});
 	it('should return status 403', async () => {
 		currentUser = mapUserToCurrentUser(user);
