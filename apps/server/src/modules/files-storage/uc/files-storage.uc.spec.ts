@@ -679,15 +679,22 @@ describe('FilesStorageUC', () => {
 			});
 		});
 
-		describe('copy with securityCheck', () => {
+		describe('copy with securityCheck and deletedSince', () => {
 			beforeEach(() => {
 				fileRecords = [
 					fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text.txt' }),
 					fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-two.txt' }),
 					fileRecordFactory.buildWithId({ parentId: userId, schoolId, name: 'text-tree.txt' }),
+					fileRecordFactory.buildWithId({
+						parentId: userId,
+						schoolId,
+						name: 'text-four.txt',
+						deletedSince: new Date(),
+					}),
 				];
 				fileRecords[0].updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
 				fileRecords[1].updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
+
 				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
 				storageClient.copy.mockResolvedValue([]);
 			});
