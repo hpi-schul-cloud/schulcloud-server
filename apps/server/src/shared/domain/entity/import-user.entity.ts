@@ -1,6 +1,5 @@
 import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
-import { IEntityWithSchool } from '../interface';
-import { RoleName } from '../rules';
+import { IEntityWithSchool, RoleName } from '../interface';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import { System } from './system.entity';

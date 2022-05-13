@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { Test, TestingModule } from '@nestjs/testing';
 import { NewsTargetModel } from '@shared/domain';
+import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 describe('FeathersAuthProvider', () => {
@@ -27,7 +27,7 @@ describe('FeathersAuthProvider', () => {
 				{
 					provide: FeathersServiceProvider,
 					useValue: {
-						getService(name) {
+						getService(name: string) {
 							if (name === 'users') {
 								return {
 									get(user) {
@@ -42,28 +42,28 @@ describe('FeathersAuthProvider', () => {
 							}
 							if (name === 'courses/:scopeId/userPermissions/') {
 								return {
-									get(user, route) {
+									get() {
 										return Promise.resolve(coursePermissions);
 									},
 								};
 							}
 							if (name === 'teams/:scopeId/userPermissions/') {
 								return {
-									get(user, route) {
+									get() {
 										return Promise.resolve(teamPermissions);
 									},
 								};
 							}
 							if (name === 'schools/:scopeId/userPermissions/') {
 								return {
-									get(user, route) {
+									get() {
 										return Promise.resolve(schoolPermissions);
 									},
 								};
 							}
 							if (name === '/users/:scopeId/courses') {
 								return {
-									find(params) {
+									find() {
 										const defaultCourses = [
 											{
 												_id: courseId,
@@ -75,7 +75,7 @@ describe('FeathersAuthProvider', () => {
 							}
 							if (name === '/users/:scopeId/teams') {
 								return {
-									find(params) {
+									find() {
 										const defaultTeams = [
 											{
 												_id: teamId,
