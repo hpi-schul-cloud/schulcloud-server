@@ -295,22 +295,23 @@ export class FilesStorageUC {
 		const newRecords: FileRecord[] = [];
 		const paths: Array<ICopyFiles> = [];
 
-		// eslint-disable-next-line no-restricted-syntax
-		for await (const item of sourceFileRecords) {
-			if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
-				const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
-				if (item.securityCheck.status !== ScanStatus.PENDING) {
-					entity.securityCheck = item.securityCheck;
-				}
+		await Promise.all(
+			sourceFileRecords.map(async (item) => {
+				if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
+					const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+					if (item.securityCheck.status !== ScanStatus.PENDING) {
+						entity.securityCheck = item.securityCheck;
+					}
 
-				await this.fileRecordRepo.save(entity);
-				newRecords.push(entity);
-				paths.push({
-					sourcePath: [item.schoolId, item.id].join('/'),
-					targetPath: [entity.schoolId, entity.id].join('/'),
-				});
-			}
-		}
+					await this.fileRecordRepo.save(entity);
+					newRecords.push(entity);
+					paths.push({
+						sourcePath: [item.schoolId, item.id].join('/'),
+						targetPath: [entity.schoolId, entity.id].join('/'),
+					});
+				}
+			})
+		);
 
 		try {
 			await this.storageClient.copy(paths);
