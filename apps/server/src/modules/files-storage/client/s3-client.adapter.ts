@@ -8,7 +8,7 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
@@ -36,7 +36,7 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'S3 Client');
 		}
 	}
 
@@ -58,7 +58,7 @@ export class S3ClientAdapter implements IStorageClient {
 				etag: data.ETag,
 			};
 		} catch (err) {
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'S3 Client');
 		}
 	}
 
@@ -87,7 +87,8 @@ export class S3ClientAdapter implements IStorageClient {
 
 				return this.create(path, file);
 			}
-			throw new InternalServerErrorException(err);
+
+			throw new InternalServerErrorException(err, 'S3 Client');
 		}
 	}
 
@@ -107,7 +108,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'S3 Client');
 		}
 	}
 
@@ -128,7 +129,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'S3 Client');
 		}
 	}
 
@@ -152,7 +153,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, 'S3 Client');
 		}
 	}
 
