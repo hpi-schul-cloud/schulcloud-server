@@ -140,9 +140,9 @@ export class FilesStorageUC {
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
 
 		if (entity.name !== params.fileName) {
-			throw new NotFoundException('FilesStorageUC:File not found');
+			throw new NotFoundException('File not found', 'FilesStorageUC:download');
 		} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException('FilesStorageUC:File is blocked');
+			throw new NotAcceptableException('File is blocked', 'FilesStorageUC:download');
 		}
 		const res = await this.downloadFile(entity.schoolId, entity.id);
 
