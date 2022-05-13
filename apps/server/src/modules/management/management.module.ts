@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
@@ -15,9 +16,8 @@ import { DatabaseManagementController } from './controller/database-management.c
 import { BsonConverter } from './converter/bson.converter';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
-const imports = [
+const baseImports = [
 	FileSystemModule,
-	KeycloakModule,
 	DatabaseManagementModule,
 	ConfigModule.forRoot({
 		isGlobal: true,
@@ -25,6 +25,10 @@ const imports = [
 		load: [serverConfig],
 	}),
 ];
+
+const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
+	? [...baseImports, KeycloakModule]
+	: baseImports;
 
 const providers = [
 	DatabaseManagementUc,

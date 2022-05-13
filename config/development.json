@@ -21,15 +21,7 @@
 		"S3_BUCKET": "schulcloud",
 		"S3_REGION": "eu-central-1"
 	},
-	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
-	"IDENTITY_MANAGEMENT": {
-		"URI": "http://localhost:8080/",
-		"TENANT": "dBildungscloud",
-		"CLIENTID": "dBildungscloud",
-		"ADMIN_CLIENTID": "admin-cli",
-		"ADMIN_USER": "dbildungscloud",
-		"ADMIN_PASSWORD": "dBildungscloud"
-	},
+	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": false,
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
 	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http"
 }
