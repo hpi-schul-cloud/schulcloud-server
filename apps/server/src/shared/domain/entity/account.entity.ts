@@ -1,12 +1,11 @@
-import { Entity, Index, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, Property, Index } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { System } from './system.entity';
-import { User } from './user.entity';
 
 export type IAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'accounts' })
-@Index({ properties: ['user', 'system'] })
+@Index({ properties: ['userId', 'systemId'] })
 export class Account extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
@@ -21,12 +20,11 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	credentialHash?: string;
 
-	@OneToOne({ entity: () => User, fieldName: 'userId', nullable: true, unique: false })
-	@Index()
-	user: User;
+	@Property({ nullable: true, unique: false })
+	userId: ObjectId;
 
-	@ManyToOne({ entity: () => System, fieldName: 'systemId', nullable: true })
-	system?: System;
+	@Property({ nullable: true })
+	systemId?: ObjectId;
 
 	@Property({ nullable: true })
 	lasttriedFailedLogin?: Date;
@@ -43,8 +41,8 @@ export class Account extends BaseEntityWithTimestamps {
 		this.password = props.password;
 		this.token = props.token;
 		this.credentialHash = props.credentialHash;
-		this.user = props.user;
-		this.system = props.system;
+		this.userId = props.userId;
+		this.systemId = props.systemId;
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
 		this.expiresAt = props.expiresAt;
 		this.activated = props.activated;
