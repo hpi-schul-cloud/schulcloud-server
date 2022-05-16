@@ -1,26 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import S3rver from 's3rver';
-
-import { FilesStorageTestModule, config } from '@src/modules/files-storage/files-storage.module';
-import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { EntityId, FileRecordParentType, ICurrentUser } from '@shared/domain';
-import {
-	userFactory,
-	roleFactory,
-	cleanupCollections,
-	mapUserToCurrentUser,
-	fileRecordFactory,
-	schoolFactory,
-} from '@shared/testing';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { EntityId, FileRecordParentType, ICurrentUser, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { createMock } from '@golevelup/ts-jest';
+import {
+	cleanupCollections,
+	fileRecordFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolFactory,
+	userFactory,
+} from '@shared/testing';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
+import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
+import { Request } from 'express';
+import S3rver from 's3rver';
+import request from 'supertest';
 
 const baseRouteName = '/file/delete';
 
@@ -132,9 +131,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
-				const user = userFactory.build({ roles, school });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
+				});
+				const user = userFactory.build({ school, roles });
 
 				await em.persistAndFlush([user]);
 				em.clear();
@@ -182,9 +183,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
-				const user = userFactory.build({ roles, school });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
+				});
+				const user = userFactory.build({ school, roles });
 
 				await em.persistAndFlush([user]);
 				em.clear();
@@ -247,9 +250,11 @@ describe(`${baseRouteName} (api)`, () => {
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
-				const user = userFactory.build({ roles, school });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
+				});
+				const user = userFactory.build({ school, roles });
 
 				await em.persistAndFlush([user]);
 				em.clear();
@@ -272,9 +277,11 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const roles = roleFactory.buildList(1, { permissions: [] });
 				const school = schoolFactory.build();
-				const user = userFactory.build({ roles, school });
+				const roles = roleFactory.buildList(1, {
+					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
+				});
+				const user = userFactory.build({ school, roles });
 
 				await em.persistAndFlush([user]);
 				em.clear();

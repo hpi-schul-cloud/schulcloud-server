@@ -1,24 +1,27 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { BaseRule } from '.';
 import { User } from '../entity';
 import { Role } from '../entity/role.entity';
-import { IEntity } from '../interface';
+import { IEntity, IPermissionContext, Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
 
 class TestRule extends BaseRule {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	hasPermission(user: User, entity: IEntity, action: Actions): boolean {
-		throw new Error('Method not implemented.');
+	hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean {
+		return true;
 	}
 }
 
 describe('base.rule', () => {
 	let orm: MikroORM;
 	let service: BaseRule;
+	const permissionA = 'a' as Permission;
+	const permissionB = 'b' as Permission;
+	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -35,64 +38,64 @@ describe('base.rule', () => {
 	});
 	describe('[resolvePermissions]', () => {
 		it('should return permissions of a user with one role', () => {
-			const role = roleFactory.build({ permissions: ['a'] });
+			const role = roleFactory.build({ permissions: [permissionA] });
 			const user = userFactory.build({ roles: [role] });
 
 			const permissions = service.resolvePermissions(user);
 
-			expect(permissions).toEqual(['a']);
+			expect(permissions).toEqual([permissionA]);
 		});
 
 		it('should return permissions of a user with many roles', () => {
-			const roleA = roleFactory.build({ permissions: ['a'] });
-			const roleB = roleFactory.build({ permissions: ['b'] });
+			const roleA = roleFactory.build({ permissions: [permissionA] });
+			const roleB = roleFactory.build({ permissions: [permissionB] });
 			const user = userFactory.build({ roles: [roleA, roleB] });
 
 			const permissions = service.resolvePermissions(user);
 
-			expect(permissions.sort()).toEqual(['a', 'b'].sort());
+			expect(permissions.sort()).toEqual([permissionA, permissionB].sort());
 		});
 
 		it('should return unique permissions', () => {
-			const roleA = roleFactory.build({ permissions: ['a', 'b'] });
-			const roleB = roleFactory.build({ permissions: ['b', 'c'] });
+			const roleA = roleFactory.build({ permissions: [permissionA, permissionB] });
+			const roleB = roleFactory.build({ permissions: [permissionB, permissionC] });
 			const user = userFactory.build({ roles: [roleA, roleB] });
 
 			const permissions = service.resolvePermissions(user);
 
-			expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
 		});
 
 		it('should return the permissions of the 1st level sub role', () => {
-			const roleB = roleFactory.build({ permissions: ['b'] });
-			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
+			const roleB = roleFactory.build({ permissions: [permissionB] });
+			const roleA = roleFactory.build({ permissions: [permissionA], roles: [roleB] });
 			const user = userFactory.build({ roles: [roleA] });
 
 			const permissions = service.resolvePermissions(user);
 
-			expect(permissions.sort()).toEqual(['a', 'b'].sort());
+			expect(permissions.sort()).toEqual([permissionA, permissionB].sort());
 		});
 
 		it('should return the permissions of nested sub roles', () => {
-			const roleC = roleFactory.build({ permissions: ['c'] });
-			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
-			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
+			const roleC = roleFactory.build({ permissions: [permissionC] });
+			const roleB = roleFactory.build({ permissions: [permissionB], roles: [roleC] });
+			const roleA = roleFactory.build({ permissions: [permissionA], roles: [roleB] });
 			const user = userFactory.build({ roles: [roleA] });
 
 			const permissions = service.resolvePermissions(user);
 
-			expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
 		});
 
 		it('should return unique permissions of nested sub roles', () => {
-			const roleC = roleFactory.build({ permissions: ['c', 'a'] });
-			const roleB = roleFactory.build({ permissions: ['b'], roles: [roleC] });
-			const roleA = roleFactory.build({ permissions: ['a'], roles: [roleB] });
+			const roleC = roleFactory.build({ permissions: [permissionC, permissionA] });
+			const roleB = roleFactory.build({ permissions: [permissionB], roles: [roleC] });
+			const roleA = roleFactory.build({ permissions: [permissionA], roles: [roleB] });
 			const user = userFactory.build({ roles: [roleA] });
 
 			const permissions = service.resolvePermissions(user);
 
-			expect(permissions.sort()).toEqual(['a', 'b', 'c'].sort());
+			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
 		});
 
 		it('should throw an error if the roles are not populated', () => {
@@ -115,35 +118,30 @@ describe('base.rule', () => {
 			it('should fail, when no permissions are given to be checked', () => {
 				const user = userFactory.build();
 				const result = service.hasAllPermissions(user, []);
-				expect(result).toEqual(false);
-			});
-			it('should fail, when no permissions (array) is given to be checked', () => {
-				const user = userFactory.build();
-				const result = service.hasAllPermissions(user, 'foo' as unknown as []);
-				expect(result).toEqual(false);
+				expect(result).toEqual(true);
 			});
 			it('should succeed when user has all given permissions', () => {
-				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
+				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasAllPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasAllPermissions(user, [permissionA, permissionB]);
 				expect(result).toEqual(true);
 			});
 			it('should fail when user has some given permissions only', () => {
-				const role = roleFactory.build({ permissions: ['permission1'] });
+				const role = roleFactory.build({ permissions: [permissionA] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasAllPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasAllPermissions(user, [permissionA, permissionB]);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has none given permissions', () => {
 				const role = roleFactory.build({ permissions: [] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasAllPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasAllPermissions(user, [permissionA, permissionB]);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has only different than the given permissions', () => {
-				const role = roleFactory.build({ permissions: ['permission3'] });
+				const role = roleFactory.build({ permissions: [permissionC] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasAllPermissions(user, ['permission1']);
+				const result = service.hasAllPermissions(user, [permissionA]);
 				expect(result).toEqual(false);
 			});
 		});
@@ -152,13 +150,13 @@ describe('base.rule', () => {
 			it('should throw when hasAllPermissions is false', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasAllPermissions').mockReturnValue(false);
-				expect(() => service.checkAllPermissions(user, ['permission1'])).toThrowError(UnauthorizedException);
+				expect(() => service.checkAllPermissions(user, [permissionA])).toThrowError(UnauthorizedException);
 				spy.mockRestore();
 			});
 			it('should not throw when hasAllPermissions is true', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasAllPermissions').mockReturnValue(true);
-				service.checkAllPermissions(user, ['permission1']);
+				service.checkAllPermissions(user, [permissionA]);
 				spy.mockRestore();
 			});
 		});
@@ -175,27 +173,27 @@ describe('base.rule', () => {
 				expect(result).toEqual(false);
 			});
 			it('should succeed when user has all given permissions', () => {
-				const role = roleFactory.build({ permissions: ['permission1', 'permission2'] });
+				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasOneOfPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasOneOfPermissions(user, [permissionA, permissionB]);
 				expect(result).toEqual(true);
 			});
 			it('should success when user has some given permissions only', () => {
-				const role = roleFactory.build({ permissions: ['permission1'] });
+				const role = roleFactory.build({ permissions: [permissionA] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasOneOfPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasOneOfPermissions(user, [permissionA, permissionB]);
 				expect(result).toEqual(true);
 			});
 			it('should fail when user has none given permissions', () => {
 				const role = roleFactory.build({ permissions: [] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasOneOfPermissions(user, ['permission1', 'permission2']);
+				const result = service.hasOneOfPermissions(user, [permissionA, permissionB]);
 				expect(result).toEqual(false);
 			});
 			it('should fail when user has only different than the given permissions', () => {
-				const role = roleFactory.build({ permissions: ['permission3'] });
+				const role = roleFactory.build({ permissions: [permissionC] });
 				const user = userFactory.build({ roles: [role] });
-				const result = service.hasOneOfPermissions(user, ['permission1']);
+				const result = service.hasOneOfPermissions(user, [permissionA]);
 				expect(result).toEqual(false);
 			});
 		});
@@ -204,13 +202,13 @@ describe('base.rule', () => {
 			it('should throw when hasOneOfPermissions is false', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasOneOfPermissions').mockReturnValue(false);
-				expect(() => service.checkOneOfPermissions(user, ['permission1'])).toThrowError(UnauthorizedException);
+				expect(() => service.checkOneOfPermissions(user, [permissionA])).toThrowError(UnauthorizedException);
 				spy.mockRestore();
 			});
 			it('should not throw when hasOneOfPermissions is true', () => {
 				const user = userFactory.build();
 				const spy = jest.spyOn(service, 'hasOneOfPermissions').mockReturnValue(true);
-				service.checkOneOfPermissions(user, ['permission1']);
+				service.checkOneOfPermissions(user, [permissionA]);
 				spy.mockRestore();
 			});
 		});
@@ -325,30 +323,30 @@ describe('base.rule', () => {
 
 	describe('[hasRole]', () => {
 		it('should return "true" if a user with one role', () => {
-			const role = roleFactory.build({ name: 'a' });
+			const role = roleFactory.build({ name: RoleName.STUDENT });
 			const user = userFactory.build({ roles: [role] });
 
-			const permissions = service.hasRole(user, 'a');
+			const permissions = service.hasRole(user, RoleName.STUDENT);
 
 			expect(permissions).toEqual(true);
 		});
 
 		it('should return "true" if a user with many roles', () => {
-			const roleA = roleFactory.build({ name: 'a' });
-			const roleB = roleFactory.build({ name: 'b' });
+			const roleA = roleFactory.build({ name: RoleName.STUDENT });
+			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 			const user = userFactory.build({ roles: [roleA, roleB] });
 
-			const permissions = service.hasRole(user, 'b');
+			const permissions = service.hasRole(user, RoleName.TEACHER);
 
 			expect(permissions).toEqual(true);
 		});
 
 		it('should return false if a user has not a role ', () => {
-			const roleA = roleFactory.build({ name: 'a' });
-			const roleB = roleFactory.build({ name: 'b' });
+			const roleA = roleFactory.build({ name: RoleName.STUDENT });
+			const roleB = roleFactory.build({ name: RoleName.TEACHER });
 			const user = userFactory.build({ roles: [roleA, roleB] });
 
-			const permissions = service.hasRole(user, 'c');
+			const permissions = service.hasRole(user, RoleName.ADMINISTRATOR);
 
 			expect(permissions).toEqual(false);
 		});
@@ -357,7 +355,25 @@ describe('base.rule', () => {
 			const user = userFactory.build();
 			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
-			expect(() => service.hasRole(user, 'c')).toThrowError();
+			expect(() => service.hasRole(user, permissionC)).toThrowError();
+		});
+	});
+
+	describe('[checkPermission]', () => {
+		it('should throw when hasPermission is false', () => {
+			const user = userFactory.build();
+			const spy = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
+			expect(() => service.checkPermission(user, user, { action: Actions.read, requiredPermissions: [] })).toThrowError(
+				ForbiddenException
+			);
+			spy.mockRestore();
+		});
+	});
+
+	describe('[hasPermission]', () => {
+		it('should return boolean', () => {
+			const user = userFactory.build();
+			expect(service.hasPermission(user, user, { action: Actions.read, requiredPermissions: [] })).toBe(true);
 		});
 	});
 });

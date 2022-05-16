@@ -72,7 +72,7 @@ describe('[ImportUserMapper]', () => {
 				firstName: 'Eva',
 				lastName: 'Rakäthe',
 				classNames: ['firstClass'],
-				roleNames: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMIN],
+				roleNames: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMINISTRATOR],
 				ldapDn: 'uid=Eva_Rak123,foo=bar,...',
 				flagged: true,
 			});

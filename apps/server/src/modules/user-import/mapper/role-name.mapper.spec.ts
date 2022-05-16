@@ -1,11 +1,11 @@
-import { RoleName } from '@shared/domain';
+import { RoleName, IImportUserRoleName } from '@shared/domain';
 import { FilterRoleType, UserRole } from '../controller/dto';
 import { RoleNameMapper } from './role-name.mapper';
 
 describe('[RoleNameMapper]', () => {
 	describe('mapToResponse (from domain)', () => {
 		it('should map admin role to response', () => {
-			const roleName = RoleName.ADMIN;
+			const roleName = RoleName.ADMINISTRATOR;
 			const result = RoleNameMapper.mapToResponse(roleName);
 			expect(result).toEqual(UserRole.ADMIN);
 		});
@@ -20,7 +20,7 @@ describe('[RoleNameMapper]', () => {
 			expect(result).toEqual(UserRole.STUDENT);
 		});
 		it('should fail for invalid input', () => {
-			const roleName = 'foo' as unknown as RoleName;
+			const roleName = 'foo' as unknown as IImportUserRoleName;
 			expect(() => RoleNameMapper.mapToResponse(roleName)).toThrowError('invalid role name from domain');
 		});
 	});
@@ -28,7 +28,7 @@ describe('[RoleNameMapper]', () => {
 		it('should map admin role to domain', () => {
 			const roleName = FilterRoleType.ADMIN;
 			const result = RoleNameMapper.mapToDomain(roleName);
-			expect(result).toEqual(RoleName.ADMIN);
+			expect(result).toEqual(RoleName.ADMINISTRATOR);
 		});
 		it('should map teacher role to domain', () => {
 			const roleName = FilterRoleType.TEACHER;

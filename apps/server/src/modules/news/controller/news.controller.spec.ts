@@ -1,9 +1,7 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { NewsRepo } from '@shared/repo';
-import { NewsController } from './news.controller';
 import { NewsUc } from '../uc';
+import { NewsController } from './news.controller';
 
 describe('NewsController', () => {
 	let controller: NewsController;
@@ -11,12 +9,10 @@ describe('NewsController', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [NewsController],
-			imports: [LoggerModule, AuthorizationModule],
 			providers: [
-				NewsUc,
 				{
-					provide: NewsRepo,
-					useValue: {},
+					provide: NewsUc,
+					useValue: createMock<NewsUc>(),
 				},
 			],
 		}).compile();
