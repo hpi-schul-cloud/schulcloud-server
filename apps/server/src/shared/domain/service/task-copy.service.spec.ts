@@ -27,7 +27,6 @@ describe('task copy service', () => {
 	});
 
 	describe('handleCopyTask', () => {
-		// TODO: extract setup
 		it('should assign user as creator', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
