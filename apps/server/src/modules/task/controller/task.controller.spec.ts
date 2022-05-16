@@ -1,6 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskUC } from '../uc';
+import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {
@@ -12,6 +13,10 @@ describe('TaskController', () => {
 				{
 					provide: TaskUC,
 					useValue: createMock<TaskUC>(),
+				},
+				{
+					provide: TaskCopyUC,
+					useValue: createMock<TaskCopyUC>(),
 				},
 			],
 			controllers: [TaskController],

@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { Actions, IEntity, User } from '../../../shared/domain';
+import { Actions, IEntity, IPermissionContext, User } from '../../../shared/domain';
 import { TaskCopyParams, TaskCopyService } from '../../../shared/domain/service/task-copy.service';
 import { CourseRepo, TaskRepo, UserRepo } from '../../../shared/repo';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '../../../shared/testing';
@@ -67,13 +67,15 @@ describe('task copy uc', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const task = taskFactory.buildWithId();
-			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
+			const userSpy = jest
+				.spyOn(authorisation, 'getUserWithPermissions')
+				.mockImplementation(() => Promise.resolve(user));
 			const taskSpy = jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
 			const authSpy = jest
 				.spyOn(authorisation, 'hasPermission')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((u: User, e: IEntity, action: Actions) => true);
+				.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => true);
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
 				title: 'taskCopy',
@@ -94,7 +96,7 @@ describe('task copy uc', () => {
 		it('should fetch correct user', async () => {
 			const { course, user, task, userSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(userSpy).toBeCalledWith(user.id, true);
+			expect(userSpy).toBeCalledWith(user.id);
 		});
 
 		it('should fetch correct task', async () => {
@@ -112,13 +114,19 @@ describe('task copy uc', () => {
 		it('should check authorisation for task', async () => {
 			const { course, user, task, authSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(authSpy).toBeCalledWith(user, task, Actions.read);
+			expect(authSpy).toBeCalledWith(user, task, {
+				action: Actions.read,
+				requiredPermissions: [],
+			});
 		});
 
 		it('should check authorisation for destination course', async () => {
 			const { course, user, task, authSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(authSpy).toBeCalledWith(user, course, Actions.write);
+			expect(authSpy).toBeCalledWith(user, course, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
 		});
 
 		it('should call copy service', async () => {
@@ -147,10 +155,12 @@ describe('task copy uc', () => {
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: IEntity, action: Actions) => {
-					if (e === task) return false;
-					return true;
-				});
+				jest
+					.spyOn(authorisation, 'hasPermission')
+					.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => {
+						if (e === task) return false;
+						return true;
+					});
 				return { user, course, task };
 			};
 
@@ -175,10 +185,12 @@ describe('task copy uc', () => {
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: IEntity, action: Actions) => {
-					if (e === course) return false;
-					return true;
-				});
+				jest
+					.spyOn(authorisation, 'hasPermission')
+					.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => {
+						if (e === course) return false;
+						return true;
+					});
 				return { user, course, task };
 			};
 
