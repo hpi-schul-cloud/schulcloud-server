@@ -292,25 +292,37 @@ export class FilesStorageUC {
 		targetParams: FileRecordParams
 	): Promise<Counted<FileRecord[]>> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
-		let newRecords: FileRecord[] = [];
+		const newRecords: FileRecord[] = [];
 		const paths: Array<ICopyFiles> = [];
 
-		newRecords = await Promise.all(
+		await Promise.all(
 			sourceFileRecords.map(async (item) => {
-				const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
-				entity.securityCheck = item.securityCheck;
-				await this.fileRecordRepo.save(entity);
+				if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
+					const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+					if (item.securityCheck.status !== ScanStatus.PENDING) {
+						entity.securityCheck = item.securityCheck;
+					}
 
-				paths.push({
-					sourcePath: [item.schoolId, item.id].join('/'),
-					targetPath: [entity.schoolId, entity.id].join('/'),
-				});
-				return entity;
+					await this.fileRecordRepo.save(entity);
+					newRecords.push(entity);
+					paths.push({
+						sourcePath: [item.schoolId, item.id].join('/'),
+						targetPath: [entity.schoolId, entity.id].join('/'),
+					});
+				}
 			})
 		);
 
 		try {
 			await this.storageClient.copy(paths);
+			const pendedFileRecords = newRecords.filter((item) => {
+				if (item.securityCheck.status === ScanStatus.PENDING) {
+					return this.antivirusService.send(item);
+				}
+				return false;
+			});
+
+			await Promise.all(pendedFileRecords);
 			return [newRecords, newRecords.length];
 		} catch (error) {
 			await this.fileRecordRepo.delete(newRecords);
