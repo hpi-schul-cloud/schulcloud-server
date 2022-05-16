@@ -845,7 +845,7 @@
 			"type": "integer",
 			"default": 104857600,
 			"description": "The maximum file size that can be handled by the WOPI API."
-		},
+		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
