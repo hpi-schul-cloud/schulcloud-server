@@ -1,8 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
-import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountService } from './account.service';
@@ -13,10 +14,7 @@ describe('AccountService', () => {
 	let accountService: AccountService;
 	let orm: MikroORM;
 	let mockAccounts: Account[];
-	let mockUsers: User[];
 	let accountRepo: AccountRepo;
-	let systemRepo: SystemRepo;
-	let userRepo: UserRepo;
 
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
@@ -45,7 +43,7 @@ describe('AccountService', () => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
-							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.user.id === account.user.id);
+							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.userId === account.userId);
 							if (accountEntity) {
 								Object.assign(accountEntity, account);
 							}
@@ -56,15 +54,14 @@ describe('AccountService', () => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
-
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
 							if (account) {
 								return Promise.resolve(account);
 							}
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -87,26 +84,10 @@ describe('AccountService', () => {
 						}),
 					},
 				},
-				{
-					provide: UserRepo,
-					useValue: {
-						findById: jest.fn().mockImplementation((userId) => mockUsers.find((user) => user.id === userId)),
-					},
-				},
-				{
-					provide: SystemRepo,
-					useValue: {
-						findById: jest.fn().mockImplementation((systemId: string) => ({
-							id: systemId,
-						})),
-					},
-				},
 			],
 		}).compile();
 		accountRepo = module.get(AccountRepo);
-		systemRepo = module.get(SystemRepo);
 		accountService = module.get(AccountService);
-		userRepo = module.get(UserRepo);
 		orm = await setupEntities();
 	});
 
@@ -125,23 +106,10 @@ describe('AccountService', () => {
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
-		mockTeacherAccount = accountFactory.buildWithId({
-			user: mockTeacherUser,
-			password: defaultPasswordHash,
-			system: undefined,
-		});
-		mockStudentAccount = accountFactory.buildWithId({
-			user: mockStudentUser,
-			password: defaultPasswordHash,
-			system: undefined,
-		});
+		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPasswordHash });
+		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPasswordHash });
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
-		mockUsers = [mockTeacherUser, mockStudentUser, mockUserWithoutAccount];
-
-		(userRepo.findById as jest.Mock).mockClear();
-		(systemRepo.findById as jest.Mock).mockClear();
-		(accountRepo.save as jest.Mock).mockClear();
 	});
 
 	describe('findById', () => {
@@ -173,28 +141,38 @@ describe('AccountService', () => {
 	});
 
 	describe('save', () => {
+		beforeAll(() => {
+			jest.useFakeTimers('modern');
+			jest.setSystemTime(new Date(2020, 1, 1));
+		});
+
+		afterAll(() => {
+			jest.useRealTimers();
+		});
+
 		it('should update an existing account', async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepo.findById).toHaveBeenCalledWith(mockTeacherUser.id);
-			expect(accountRepo.save).toHaveBeenCalledWith({
-				...mockTeacherAccount,
-				username: mockTeacherAccountDto.username,
-				activated: mockTeacherAccountDto.activated,
-			});
+			expect(accountRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					...mockTeacherAccount,
+					username: mockTeacherAccountDto.username,
+					activated: mockTeacherAccountDto.activated,
+				})
+			);
 		});
+
 		it("should update an existing account's system", async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
-			mockTeacherAccountDto.systemId = 'dummySystemId';
+			mockTeacherAccountDto.systemId = '123456789012';
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepo.findById).toHaveBeenCalledWith(mockTeacherUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
-				system: { id: mockTeacherAccountDto.systemId },
+				systemId: new ObjectId(mockTeacherAccountDto.systemId),
 			});
 		});
 		it("should update an existing account's user", async () => {
@@ -202,15 +180,51 @@ describe('AccountService', () => {
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.userId = mockStudentUser.id;
 			await accountService.save(mockTeacherAccountDto);
-			expect(userRepo.findById).toHaveBeenCalledWith(mockStudentUser.id);
 			expect(accountRepo.save).toHaveBeenCalledWith({
 				...mockTeacherAccount,
 				username: mockTeacherAccountDto.username,
 				activated: mockTeacherAccountDto.activated,
-				user: mockStudentUser,
+				userId: new ObjectId(mockStudentUser.id),
+			});
+		});
+		it("should keep existing account's system undefined on update", async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			mockTeacherAccountDto.username = 'changedUsername@example.org';
+			mockTeacherAccountDto.systemId = undefined;
+			await accountService.save(mockTeacherAccountDto);
+			expect(accountRepo.save).toHaveBeenCalledWith({
+				...mockTeacherAccount,
+				username: mockTeacherAccountDto.username,
+				systemId: mockTeacherAccountDto.systemId,
 			});
 		});
 		it('should save a new account', async () => {
+			const accountToSave: AccountDto = {
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				username: 'asdf@asdf.de',
+				userId: mockUserWithoutAccount.id,
+				systemId: '012345678912',
+				password: defaultPasswordHash,
+			} as AccountDto;
+			(accountRepo.findById as jest.Mock).mockClear();
+			(accountRepo.save as jest.Mock).mockClear();
+			await accountService.save(accountToSave);
+			expect(accountRepo.findById).not.toHaveBeenCalled();
+			expect(accountRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: null,
+					username: accountToSave.username,
+					userId: new ObjectId(accountToSave.userId),
+					systemId: new ObjectId(accountToSave.systemId),
+					password: defaultPasswordHash,
+					createdAt: accountToSave.createdAt,
+					updatedAt: accountToSave.updatedAt,
+				})
+			);
+		});
+
+		it("should keep account's system undefined on save", async () => {
 			const accountToSave: AccountDto = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -222,16 +236,19 @@ describe('AccountService', () => {
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
 			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(userRepo.findById).toHaveBeenCalledWith(mockUserWithoutAccount.id);
-			// eslint-disable-next-line jest/unbound-method
-			const accountSave = accountRepo.save as jest.Mock;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(accountSave.mock.calls[0][0]).toMatchObject({
-				username: 'asdf@asdf.de',
-				password: defaultPasswordHash,
-			});
+			expect(accountRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: null,
+					createdAt: accountToSave.createdAt,
+					updatedAt: accountToSave.updatedAt,
+					username: accountToSave.username,
+					userId: new ObjectId(accountToSave.userId),
+					password: defaultPasswordHash,
+				})
+			);
 		});
 	});
+
 	describe('delete', () => {
 		it('should delete account via repo', async () => {
 			await accountService.delete(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
