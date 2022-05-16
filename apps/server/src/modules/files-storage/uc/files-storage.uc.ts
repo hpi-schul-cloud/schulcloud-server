@@ -39,9 +39,11 @@ export class FilesStorageUC {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
-	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
-
+	private async addRequestStreamToRequestPipe(
+		userId: EntityId,
+		params: FileRecordParams,
+		req: Request
+	): Promise<FileRecord> {
 		const result = await new Promise((resolve, reject) => {
 			const requestStream = busboy({ headers: req.headers });
 
@@ -63,6 +65,14 @@ export class FilesStorageUC {
 		});
 
 		return result as FileRecord;
+	}
+
+	public async upload(userId: EntityId, params: FileRecordParams, req: Request) {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+
+		const result = await this.addRequestStreamToRequestPipe(userId, params, req);
+
+		return result;
 	}
 
 	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
@@ -130,23 +140,31 @@ export class FilesStorageUC {
 		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 
-	async download(userId: EntityId, params: DownloadFileParams) {
+	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
+		if (entity.name !== params.fileName) {
+			throw new NotFoundException('File not found', `${FilesStorageUC.name}:download`);
+		}
+	}
+
+	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
+		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+			throw new NotAcceptableException('File is blocked', `${FilesStorageUC.name}:download`);
+		}
+	}
+
+	public async download(userId: EntityId, params: DownloadFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
 
-		// outsource this logic from download method
-		if (entity.name !== params.fileName) {
-			throw new NotFoundException('File not found', `${FilesStorageUC.name}:download`);
-		} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException('File is blocked', `${FilesStorageUC.name}:download`);
-		}
+		this.checkFileName(entity, params);
+		this.checkScanStatus(entity);
 		const res = await this.downloadFile(entity.schoolId, entity.id);
 
 		return res;
 	}
 
-	async downloadBySecurityToken(token: string) {
+	public async downloadBySecurityToken(token: string) {
 		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 		const res = await this.downloadFile(entity.schoolId, entity.id);
 
@@ -199,7 +217,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		if (count > 0) {
@@ -209,7 +227,7 @@ export class FilesStorageUC {
 		return [fileRecords, count];
 	}
 
-	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
 		await this.delete([fileRecord]);
@@ -217,7 +235,7 @@ export class FilesStorageUC {
 		return fileRecord;
 	}
 
-	async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
 			params.schoolId,
@@ -229,7 +247,7 @@ export class FilesStorageUC {
 		return [fileRecords, count];
 	}
 
-	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
 		await this.restore([fileRecord]);
@@ -237,7 +255,7 @@ export class FilesStorageUC {
 		return fileRecord;
 	}
 
-	async copyFilesOfParent(
+	public async copyFilesOfParent(
 		userId: string,
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
@@ -263,7 +281,7 @@ export class FilesStorageUC {
 		return newRecords;
 	}
 
-	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
+	public async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await Promise.all([
 			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),

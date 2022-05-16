@@ -18,17 +18,26 @@ export class FileRecordUC {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
+	private checkDouplicatedNames(fileRecords: FileRecord[], data: RenameFileParams): void | ConflictException {
+		if (fileRecords.find((item) => item.name === data.fileName)) {
+			throw new ConflictException('FILE_NAME_EXISTS');
+		}
+	}
+
+	private setNewFileName(entity: FileRecord, data: RenameFileParams) {
+		entity.name = data.fileName;
+	}
+
 	async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.update);
 
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
-		if (fileRecords.find((item) => item.name === data.fileName)) {
-			throw new ConflictException('FILE_NAME_EXISTS');
-		} else {
-			entity.name = data.fileName;
-			await this.fileRecordRepo.save(entity);
-		}
+		this.checkDouplicatedNames(fileRecords, data);
+
+		this.setNewFileName(entity, data);
+		await this.fileRecordRepo.save(entity);
+
 		return entity;
 	}
 
@@ -40,9 +49,15 @@ export class FileRecordUC {
 		return countedFileRecords;
 	}
 
+	private getStatusFromScanResult(scanResultDto: ScanResultParams) {
+		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
+
+		return status;
+	}
+
 	async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
 		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
+		const status = this.getStatusFromScanResult(scanResultDto);
 		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
 
 		await this.fileRecordRepo.save(entity);
