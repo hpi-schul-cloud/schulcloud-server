@@ -37,7 +37,7 @@ export class AccountService {
 		if (accountDto.id) {
 			account = await this.accountRepo.findById(accountDto.id);
 			account.userId = new ObjectId(accountDto.userId);
-			account.systemId = new ObjectId(accountDto.systemId);
+			account.systemId = accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined;
 			account.username = accountDto.username;
 			account.activated = accountDto.activated;
 			account.expiresAt = accountDto.expiresAt;
@@ -48,7 +48,7 @@ export class AccountService {
 		} else {
 			account = new Account({
 				userId: new ObjectId(accountDto.userId),
-				systemId: new ObjectId(accountDto.systemId),
+				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
 				username: accountDto.username,
 				activated: accountDto.activated,
 				expiresAt: accountDto.expiresAt,

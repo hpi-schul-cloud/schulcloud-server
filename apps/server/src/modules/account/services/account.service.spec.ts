@@ -14,7 +14,6 @@ describe('AccountService', () => {
 	let accountService: AccountService;
 	let orm: MikroORM;
 	let mockAccounts: Account[];
-	let mockUsers: User[];
 	let accountRepo: AccountRepo;
 
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -107,14 +106,8 @@ describe('AccountService', () => {
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
-		mockTeacherAccount = accountFactory.buildWithId({
-			userId: mockTeacherUser.id,
-			password: defaultPasswordHash,
-		});
-		mockStudentAccount = accountFactory.buildWithId({
-			userId: mockStudentUser.id,
-			password: defaultPasswordHash,
-		});
+		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPasswordHash });
+		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPasswordHash });
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
 	});
@@ -148,6 +141,15 @@ describe('AccountService', () => {
 	});
 
 	describe('save', () => {
+		beforeAll(() => {
+			jest.useFakeTimers('modern');
+			jest.setSystemTime(new Date(2020, 1, 1));
+		});
+
+		afterAll(() => {
+			jest.useRealTimers();
+		});
+
 		it('should update an existing account', async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
@@ -185,7 +187,44 @@ describe('AccountService', () => {
 				userId: new ObjectId(mockStudentUser.id),
 			});
 		});
+		it("should keep existing account's system undefined on update", async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			mockTeacherAccountDto.username = 'changedUsername@example.org';
+			mockTeacherAccountDto.systemId = undefined;
+			await accountService.save(mockTeacherAccountDto);
+			expect(accountRepo.save).toHaveBeenCalledWith({
+				...mockTeacherAccount,
+				username: mockTeacherAccountDto.username,
+				systemId: mockTeacherAccountDto.systemId,
+			});
+		});
 		it('should save a new account', async () => {
+			const accountToSave: AccountDto = {
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				username: 'asdf@asdf.de',
+				userId: mockUserWithoutAccount.id,
+				systemId: '012345678912',
+				password: defaultPasswordHash,
+			} as AccountDto;
+			(accountRepo.findById as jest.Mock).mockClear();
+			(accountRepo.save as jest.Mock).mockClear();
+			await accountService.save(accountToSave);
+			expect(accountRepo.findById).not.toHaveBeenCalled();
+			expect(accountRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: null,
+					username: accountToSave.username,
+					userId: new ObjectId(accountToSave.userId),
+					systemId: new ObjectId(accountToSave.systemId),
+					password: defaultPasswordHash,
+					createdAt: accountToSave.createdAt,
+					updatedAt: accountToSave.updatedAt,
+				})
+			);
+		});
+
+		it("should keep account's system undefined on save", async () => {
 			const accountToSave: AccountDto = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -197,15 +236,19 @@ describe('AccountService', () => {
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
 			expect(accountRepo.findById).not.toHaveBeenCalled();
-			// eslint-disable-next-line jest/unbound-method
-			const accountSave = accountRepo.save as jest.Mock;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(accountSave.mock.calls[0][0]).toMatchObject({
-				username: 'asdf@asdf.de',
-				password: defaultPasswordHash,
-			});
+			expect(accountRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: null,
+					createdAt: accountToSave.createdAt,
+					updatedAt: accountToSave.updatedAt,
+					username: accountToSave.username,
+					userId: new ObjectId(accountToSave.userId),
+					password: defaultPasswordHash,
+				})
+			);
 		});
 	});
+
 	describe('delete', () => {
 		it('should delete account via repo', async () => {
 			await accountService.delete(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
