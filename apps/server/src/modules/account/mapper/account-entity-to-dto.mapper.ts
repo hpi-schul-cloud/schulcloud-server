@@ -7,14 +7,14 @@ export class AccountEntityToDtoMapper {
 			id: account.id,
 			createdAt: account.createdAt,
 			updatedAt: account.updatedAt,
-			userId: account.user.id,
+			userId: account.userId.toString(),
 			username: account.username,
 			activated: account.activated,
 			credentialHash: account.credentialHash,
 			expiresAt: account.expiresAt,
 			lasttriedFailedLogin: account.lasttriedFailedLogin,
 			password: account.password,
-			systemId: account.system ? account.system.id : undefined,
+			systemId: account.systemId?.toString(),
 			token: account.token,
 		});
 	}
