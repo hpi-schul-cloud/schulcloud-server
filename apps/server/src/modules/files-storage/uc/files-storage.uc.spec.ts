@@ -27,6 +27,7 @@ describe('FilesStorageUC', () => {
 	let service: FilesStorageUC;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let antivirusService: DeepMocked<AntivirusService>;
 	let request: DeepMocked<Request>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
 	let orm: MikroORM;
@@ -86,6 +87,7 @@ describe('FilesStorageUC', () => {
 
 		service = module.get(FilesStorageUC);
 		authorizationService = module.get(AuthorizationService);
+		antivirusService = module.get(AntivirusService);
 		storageClient = module.get(S3ClientAdapter);
 		fileRecordRepo = module.get(FileRecordRepo);
 		fileRecords = [
@@ -677,6 +679,61 @@ describe('FilesStorageUC', () => {
 			});
 		});
 
+		describe('copy with securityCheck and deletedSince', () => {
+			it('should not call fileRecordRepo.save if just blocked', async () => {
+				fileRecords = fileRecordFactory.buildList(1, { parentId: userId, schoolId });
+				fileRecords[0].updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+			});
+
+			it('should not call fileRecordRepo.save if set deletedSince', async () => {
+				fileRecords = fileRecordFactory.buildList(1, { parentId: userId, schoolId, deletedSince: new Date() });
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+			});
+
+			it('should call fileRecordRepo.save for two entities [pended and verified]', async () => {
+				fileRecords = fileRecordFactory.buildList(3, { parentId: userId, schoolId });
+				fileRecords[0].updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
+				fileRecords[1].updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 3]);
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
+			});
+
+			it('should call storageClient.copy for two paths', async () => {
+				fileRecords = fileRecordFactory.buildList(3, { parentId: userId, schoolId });
+				fileRecords[0].updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
+				fileRecords[1].updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 3]);
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+
+				expect(storageClient.copy).toHaveBeenCalledWith([
+					{
+						sourcePath: expect.any(String) as string,
+						targetPath: expect.any(String) as string,
+					},
+					{
+						sourcePath: expect.any(String) as string,
+						targetPath: expect.any(String) as string,
+					},
+				]);
+			});
+
+			it('should call antivirusService.send for on entity with ScanStatus.PENDING', async () => {
+				fileRecords = fileRecordFactory.buildList(1, { parentId: userId, schoolId });
+				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValue([fileRecords, 1]);
+				await service.copyFilesOfParent(userId, sourceParentParams, copyFilesParams);
+
+				expect(antivirusService.send).toHaveBeenCalledTimes(1);
+			});
+		});
+
 		describe('Tests of permission handling', () => {
 			it('should call authorizationService.checkPermissionByReferences by sourceParentParams', async () => {
 				authorizationService.checkPermissionByReferences.mockResolvedValue();
@@ -794,6 +851,61 @@ describe('FilesStorageUC', () => {
 			it('should return file response with parentType equal task', async () => {
 				const fileRecordsRes = await service.copyOneFile(userId, requestParams, copyFileParams);
 				expect(fileRecordsRes).toEqual(expect.objectContaining({ parentType: FileRecordParentType.Task }));
+			});
+		});
+
+		describe('copy with securityCheck and deletedSince', () => {
+			it('should not call fileRecordRepo.save if file has ScanStatus.BLOCKED', async () => {
+				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
+				fileRecord.updateSecurityCheckStatus(ScanStatus.BLOCKED, 'virus');
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+			});
+
+			it('should not call fileRecordRepo.save if set deletedSince', async () => {
+				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId, deletedSince: new Date() });
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
+			});
+
+			it('should call fileRecordRepo.save for entity if file has ScanStatus.VERIFIED', async () => {
+				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
+				fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call fileRecordRepo.save for entity if file has ScanStatus.PENDING', async () => {
+				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(1);
+			});
+
+			it('should call storageClient.copy', async () => {
+				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+
+				expect(storageClient.copy).toHaveBeenCalledWith([
+					{
+						sourcePath: expect.any(String) as string,
+						targetPath: expect.any(String) as string,
+					},
+				]);
+			});
+
+			it('should call antivirusService.send for on entity if file has ScanStatus.PENDING', async () => {
+				fileRecord = fileRecordFactory.build({ parentId: userId, schoolId });
+				fileRecordRepo.findOneById.mockResolvedValue(fileRecord);
+				await service.copyOneFile(userId, requestParams, copyFileParams);
+
+				expect(antivirusService.send).toHaveBeenCalledTimes(1);
 			});
 		});
 
