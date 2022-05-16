@@ -3,7 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ImportUser, MatchCreator, MatchCreatorScope, RoleName, School, User } from '@shared/domain';
+import {
+	IImportUserRoleName,
+	ImportUser,
+	MatchCreator,
+	MatchCreatorScope,
+	RoleName,
+	School,
+	User,
+} from '@shared/domain';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { ImportUserRepo } from '.';
 
@@ -445,14 +453,17 @@ describe('ImportUserRepo', () => {
 		it('should contain importusers with role name administrator', async () => {
 			const school = schoolFactory.build();
 			const importUser = importUserFactory.build({
-				roleNames: [RoleName.ADMIN],
+				roleNames: [RoleName.ADMINISTRATOR],
 				school,
 			});
-			const otherImportUser = importUserFactory.build({ roleNames: [RoleName.ADMIN, RoleName.TEACHER], school });
+			const otherImportUser = importUserFactory.build({
+				roleNames: [RoleName.ADMINISTRATOR, RoleName.TEACHER],
+				school,
+			});
 			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.STUDENT] });
 			const otherSkippedImportUser = importUserFactory.build({ roleNames: [] });
 			await em.persistAndFlush([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]);
-			const [results, count] = await repo.findImportUsers(importUser.school, { role: RoleName.ADMIN });
+			const [results, count] = await repo.findImportUsers(importUser.school, { role: RoleName.ADMINISTRATOR });
 			expect(results).toContain(importUser); // single match
 			expect(results).toContain(otherImportUser); //  contains match
 			expect(count).toEqual(2); // no other role name or no role name
@@ -464,7 +475,7 @@ describe('ImportUserRepo', () => {
 				school,
 			});
 			const otherImportUser = importUserFactory.build({ roleNames: [RoleName.STUDENT, RoleName.TEACHER], school });
-			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.ADMIN] });
+			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.ADMINISTRATOR] });
 			const otherSkippedImportUser = importUserFactory.build({ roleNames: [] });
 			await em.persistAndFlush([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]);
 			const [results, count] = await repo.findImportUsers(importUser.school, { role: RoleName.STUDENT });
@@ -478,7 +489,10 @@ describe('ImportUserRepo', () => {
 				roleNames: [RoleName.TEACHER],
 				school,
 			});
-			const otherImportUser = importUserFactory.build({ roleNames: [RoleName.ADMIN, RoleName.TEACHER], school });
+			const otherImportUser = importUserFactory.build({
+				roleNames: [RoleName.ADMINISTRATOR, RoleName.TEACHER],
+				school,
+			});
 			const skippedImportUser = importUserFactory.build({ roleNames: [RoleName.STUDENT] });
 			const otherSkippedImportUser = importUserFactory.build({ roleNames: [] });
 			await em.persistAndFlush([school, importUser, otherImportUser, skippedImportUser, otherSkippedImportUser]);
@@ -491,7 +505,7 @@ describe('ImportUserRepo', () => {
 			const school = schoolFactory.build();
 			await em.persistAndFlush(school);
 			await expect(async () =>
-				repo.findImportUsers(school, { role: 'foo' as unknown as RoleName })
+				repo.findImportUsers(school, { role: 'foo' as unknown as IImportUserRoleName })
 			).rejects.toThrowError('unexpected role name');
 		});
 	});

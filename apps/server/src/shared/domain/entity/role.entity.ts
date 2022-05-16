@@ -1,28 +1,21 @@
-import { Entity, Property, ManyToMany, Collection, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/core';
+import { Permission, RoleName } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface IRoleProperties {
-	permissions?: string[];
+	permissions?: Permission[];
 	roles?: Role[];
-	name: string;
+	name: RoleName;
 }
 
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntityWithTimestamps {
 	@Property()
 	@Unique()
-	name: string;
+	name: RoleName;
 
-	// @Enum({ items: ['a', 'b', 'c'] }) in array with no permission is valid => validator function
 	@Property()
-	permissions: string[] = [];
-	// TODO: enum
-
-	// @ManyToMany('Role', 'roles')
-	// roles = new Collection<Role>(this);
-
-	// @ManyToMany({ fieldName: 'roles', type: Role })
-	// roles = new Collection<Role>(this);
+	permissions: Permission[] = [];
 
 	@ManyToMany({ entity: 'Role' })
 	roles = new Collection<Role>(this);

@@ -1,7 +1,19 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import {
+	Account,
+	EntityId,
+	ICurrentUser,
+	Permission,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	User,
+} from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import {
@@ -13,8 +25,7 @@ import {
 } from '../controller/dto';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
-import { AccountService } from '../services/account.service';
-import { AccountDto } from '../services/dto/account.dto';
+
 import { AccountUc } from './account.uc';
 
 describe('AccountUc', () => {
@@ -30,8 +41,6 @@ describe('AccountUc', () => {
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
-	let mockDemoTeacherUser: User;
-	let mockDemoStudentUser: User;
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
@@ -42,8 +51,6 @@ describe('AccountUc', () => {
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
-	let mockDemoTeacherAccount: Account;
-	let mockDemoStudentAccount: Account;
 	let mockOtherTeacherAccount: Account;
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
@@ -73,7 +80,9 @@ describe('AccountUc', () => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
 							}
-							const accountEntity = mockAccounts.find((tempAccount) => tempAccount.user.id === account.userId);
+							const accountEntity = mockAccounts.find(
+								(tempAccount) => tempAccount.userId.toString() === account.userId
+							);
 							Object.assign(accountEntity, account);
 
 							return Promise.resolve();
@@ -82,7 +91,7 @@ describe('AccountUc', () => {
 							return Promise.resolve(account);
 						},
 						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
@@ -90,7 +99,7 @@ describe('AccountUc', () => {
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<AccountDto> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
@@ -199,39 +208,37 @@ describe('AccountUc', () => {
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'superhero', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.SUPERHERO, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] })],
 		});
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
-		});
-		mockDemoTeacherUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoTeacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
-		});
-		mockDemoStudentUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoStudent', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutRole = userFactory.buildWithId({
 			school: mockSchool,
@@ -239,77 +246,62 @@ describe('AccountUc', () => {
 		});
 		mockUnknownRoleUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'undefinedRole', permissions: [''] })],
+			roles: [new Role({ name: 'undefinedRole' as RoleName, permissions: ['' as Permission] })],
 		});
 		mockExternalUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 
 		mockSuperheroAccount = accountFactory.buildWithId({
-			user: mockSuperheroUser,
+			userId: mockSuperheroUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockTeacherAccount = accountFactory.buildWithId({
-			user: mockTeacherUser,
+			userId: mockTeacherUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
-		});
-		mockDemoTeacherAccount = accountFactory.buildWithId({
-			user: mockDemoTeacherUser,
-			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockOtherTeacherAccount = accountFactory.buildWithId({
-			user: mockOtherTeacherUser,
+			userId: mockOtherTeacherUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockAdminAccount = accountFactory.buildWithId({
-			user: mockAdminUser,
+			userId: mockAdminUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockStudentAccount = accountFactory.buildWithId({
-			user: mockStudentUser,
+			userId: mockStudentUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
-		});
-		mockDemoStudentAccount = accountFactory.buildWithId({
-			user: mockDemoStudentUser,
-			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockAccountWithoutRole = accountFactory.buildWithId({
-			user: mockUserWithoutRole,
+			userId: mockUserWithoutRole.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockDifferentSchoolAdminAccount = accountFactory.buildWithId({
-			user: mockDifferentSchoolAdminUser,
+			userId: mockDifferentSchoolAdminUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockUnknownRoleUserAccount = accountFactory.buildWithId({
-			user: mockUnknownRoleUser,
+			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
-			system: undefined,
 		});
 		mockExternalUserAccount = accountFactory.buildWithId({
-			user: mockExternalUser,
+			userId: mockExternalUser.id,
 			password: defaultPasswordHash,
-			system: systemFactory.buildWithId(),
+			systemId: systemFactory.buildWithId().id,
+		});
+		mockExternalUserAccount = accountFactory.buildWithId({
+			userId: mockExternalUser.id,
+			password: defaultPasswordHash,
+			systemId: systemFactory.buildWithId().id,
 		});
 
 		mockUsers = [
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
-			mockDemoTeacherUser,
 			mockOtherTeacherUser,
 			mockStudentUser,
-			mockDemoStudentUser,
 			mockDifferentSchoolAdminUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
@@ -321,10 +313,8 @@ describe('AccountUc', () => {
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
-			mockDemoTeacherAccount,
 			mockOtherTeacherAccount,
 			mockStudentAccount,
-			mockDemoStudentAccount,
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
@@ -334,8 +324,8 @@ describe('AccountUc', () => {
 
 	describe('updateMyAccount', () => {
 		it('should throw if user does not exist', async () => {
-			mockStudentAccount.user.forcePasswordChange = true;
-			mockStudentAccount.user.preferences = { firstLogin: true };
+			mockStudentUser.forcePasswordChange = true;
+			mockStudentUser.preferences = { firstLogin: true };
 			await expect(accountUc.updateMyAccount('accountWithoutUser', { passwordOld: defaultPassword })).rejects.toThrow(
 				EntityNotFoundError
 			);
@@ -349,7 +339,7 @@ describe('AccountUc', () => {
 		});
 		it('should throw if account is external', async () => {
 			await expect(
-				accountUc.updateMyAccount(mockExternalUserAccount.user.id, {
+				accountUc.updateMyAccount(mockExternalUserAccount.userId.toString(), {
 					passwordOld: defaultPassword,
 				})
 			).rejects.toThrow(ForbiddenOperationError);
@@ -509,22 +499,6 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 		});
-		it('should throw if user is a demo student', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoStudentAccount.user.id, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoTeacherAccount.user.id, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw if user can not be updated', async () => {
 			await expect(
 				accountUc.updateMyAccount(mockTeacherUser.id, {
@@ -546,7 +520,7 @@ describe('AccountUc', () => {
 	describe('replaceMyTemporaryPassword', () => {
 		it('should throw if passwords do not match', async () => {
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, 'FooPasswd!1')
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), defaultPassword, 'FooPasswd!1')
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 
@@ -562,73 +536,63 @@ describe('AccountUc', () => {
 		});
 		it('should throw if account is external', async () => {
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockExternalUserAccount.user.id, defaultPassword, defaultPassword)
+				accountUc.replaceMyTemporaryPassword(
+					mockExternalUserAccount.userId.toString(),
+					defaultPassword,
+					defaultPassword
+				)
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if not the users password is temporary', async () => {
-			mockStudentAccount.user.forcePasswordChange = false;
-			mockStudentAccount.user.preferences = { firstLogin: true };
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = { firstLogin: true };
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, defaultPassword)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), defaultPassword, defaultPassword)
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if old password is the same as new password', async () => {
-			mockStudentAccount.user.forcePasswordChange = false;
-			mockStudentAccount.user.preferences = { firstLogin: false };
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = { firstLogin: false };
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, defaultPassword)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), defaultPassword, defaultPassword)
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if old password is undefined', async () => {
-			mockStudentAccount.user.forcePasswordChange = false;
-			mockStudentAccount.user.preferences = { firstLogin: false };
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = { firstLogin: false };
 			mockStudentAccount.password = undefined;
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, defaultPassword, defaultPassword)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), defaultPassword, defaultPassword)
 			).rejects.toThrow(Error);
 		});
 		it('should allow to set strong password, if the admin manipulated the users password', async () => {
-			mockStudentAccount.user.forcePasswordChange = true;
-			mockStudentAccount.user.preferences = { firstLogin: true };
+			mockStudentUser.forcePasswordChange = true;
+			mockStudentUser.preferences = { firstLogin: true };
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
 		});
 		it('should allow to set strong password, if this is the users first login', async () => {
-			mockStudentAccount.user.forcePasswordChange = false;
-			mockStudentAccount.user.preferences = { firstLogin: false };
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = { firstLogin: false };
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
 		});
-		it('should throw if user is a demo student', async () => {
-			mockDemoStudentAccount.user.forcePasswordChange = false;
-			mockDemoStudentAccount.user.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			mockDemoTeacherAccount.user.forcePasswordChange = false;
-			mockDemoTeacherAccount.user.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoTeacherAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw if user can not be updated', async () => {
-			mockStudentAccount.user.forcePasswordChange = false;
-			mockStudentAccount.user.preferences = { firstLogin: false };
-			mockStudentAccount.user.firstName = 'failToUpdate';
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = { firstLogin: false };
+			mockStudentUser.firstName = 'failToUpdate';
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), 'DummyPasswd!2', 'DummyPasswd!2')
 			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if account can not be updated', async () => {
-			mockStudentAccount.user.forcePasswordChange = false;
-			mockStudentAccount.user.preferences = { firstLogin: false };
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = { firstLogin: false };
 			mockStudentAccount.username = 'fail@to.update';
 			await expect(
-				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId.toString(), 'DummyPasswd!2', 'DummyPasswd!2')
 			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
@@ -774,12 +738,6 @@ describe('AccountUc', () => {
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {
-			it('superhero cannot edit demo user', async () => {
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockDemoTeacherAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
-			});
 			it('admin can edit teacher', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
@@ -791,12 +749,6 @@ describe('AccountUc', () => {
 				const params = { id: mockStudentAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
-			});
-			it('demo teacher cannot edit student', async () => {
-				const currentUser = { userId: mockDemoTeacherUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('admin can edit student', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;

@@ -1,8 +1,9 @@
+/* eslint-disable promise/no-nesting */
 const { authenticate } = require('@feathersjs/authentication');
 
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
-const Hydra = require('../hydra.js');
+const Hydra = require('../hydra');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -38,16 +39,27 @@ const setSubject = (hook) => {
 };
 
 const setIdToken = (hook) => {
+	const scope = hook.params.consentRequest.requested_scope;
 	if (!hook.params.query.accept) return hook;
 	return Promise.all([
 		hook.app.service('users').get(hook.params.account.userId),
+		scope.includes('groups')
+			? hook.app.service('teams').find(
+					{
+						query: {
+							'userIds.userId': hook.params.account.userId,
+						},
+					},
+					'_id name'
+			  )
+			: undefined,
 		hook.app.service('ltiTools').find({
 			query: {
 				oAuthClientId: hook.params.consentRequest.client.client_id,
 				isLocal: true,
 			},
 		}),
-	]).then(([user, tools]) =>
+	]).then(([user, userTeams, tools]) =>
 		hook.app
 			.service('pseudonym')
 			.find({
@@ -59,7 +71,6 @@ const setIdToken = (hook) => {
 			.then((pseudonyms) => {
 				const { pseudonym } = pseudonyms.data[0];
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
-				const scope = hook.params.consentRequest.requested_scope;
 				hook.data.session = {
 					id_token: {
 						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
@@ -67,6 +78,12 @@ const setIdToken = (hook) => {
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
 						schoolId: user.schoolId,
+						groups: scope.includes('groups')
+							? userTeams.data.map((team) => ({
+									gid: team._id,
+									displayName: team.name,
+							  }))
+							: undefined,
 					},
 				};
 				return hook;
@@ -100,6 +117,31 @@ const managesOwnConsents = (hook) => {
 	throw new Forbidden("You want to manage another user's consents");
 };
 
+// TODO N21-91. Magic Strings are not desireable
+const validatePermissionForNextcloud = (hook) =>
+	Promise.all([
+		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('ltiTools').find({
+			query: {
+				oAuthClientId: hook.params.loginRequest.client.client_id,
+				isLocal: true,
+			},
+		}),
+	]).then(([user, tools]) => {
+		const filtredToolsData = tools.data.filter((toolData) => toolData.name === 'SchulcloudNextcloud');
+		if (
+			filtredToolsData.length > 0 &&
+			filtredToolsData[0].name === 'SchulcloudNextcloud' &&
+			!user.permissions.includes('NEXTCLOUD_USER')
+		) {
+			throw new Forbidden('You are not allowed to use Nextcloud');
+		}
+		return hook;
+	});
+
+exports.setIdToken = setIdToken;
+exports.validatePermissionForNextcloud = validatePermissionForNextcloud;
+
 exports.hooks = {
 	clients: {
 		before: {
@@ -108,7 +150,7 @@ exports.hooks = {
 	},
 	loginRequest: {
 		before: {
-			patch: [authenticate('jwt'), injectLoginRequest, setSubject],
+			patch: [authenticate('jwt'), injectLoginRequest, setSubject, validatePermissionForNextcloud],
 		},
 	},
 	consentRequest: {
