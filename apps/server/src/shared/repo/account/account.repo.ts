@@ -3,6 +3,7 @@ import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
@@ -10,12 +11,12 @@ export class AccountRepo extends BaseRepo<Account> {
 		return Account;
 	}
 
-	async findByUserId(userId: EntityId): Promise<Account | null> {
-		return this._em.findOne(Account, { user: userId });
+	async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
+		return this._em.findOne(Account, { userId: new ObjectId(userId) });
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
-		return this._em.findOneOrFail(Account, { user: userId });
+	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
+		return this._em.findOneOrFail(Account, { userId: new ObjectId(userId) });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
