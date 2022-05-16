@@ -7,25 +7,48 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/server.module';
 import request from 'supertest';
 import { Request } from 'express';
-import { ICurrentUser, RoleName } from '@shared/domain';
+import { Account, ICurrentUser, RoleName, User } from '@shared/domain';
 
 describe('/user/:id/account', () => {
 	const basePath = '/user';
-	const role = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-	const user = userFactory.buildWithId({ roles: [role] });
-	const account = accountFactory.buildWithId({
-		user,
-		username: user.email,
-	});
 
-	let module: TestingModule;
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
+
+	let studentAccount: Account;
+	let superheroAccount: Account;
+
+	let studentUser: User;
+	let superheroUser: User;
+
 	let currentUser: ICurrentUser;
 
+	const setup = async () => {
+		const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+		const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+
+		studentUser = userFactory.buildWithId({ roles: [studentRoles] });
+		superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
+
+		const mapUserToAccount = (user: User): Account => {
+			return accountFactory.buildWithId({
+				user,
+				username: user.email,
+				system: undefined,
+			});
+		};
+		studentAccount = mapUserToAccount(studentUser);
+		superheroAccount = mapUserToAccount(superheroUser);
+
+		em.persist([studentRoles, superheroRoles]);
+		em.persist([studentUser, superheroUser]);
+		em.persist([studentAccount, superheroAccount]);
+		await em.flush();
+	};
+
 	beforeAll(async () => {
-		module = await Test.createTestingModule({
+		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
 			.overrideGuard(JwtAuthGuard)
@@ -37,35 +60,35 @@ describe('/user/:id/account', () => {
 				},
 			})
 			.compile();
-		app = await module.createNestApplication().init();
+
+		app = module.createNestApplication();
+		await app.init();
 		orm = app.get(MikroORM);
 		em = app.get(EntityManager);
-
-		await em.persistAndFlush([role, user, account]);
+		await setup();
 	});
 
 	afterAll(async () => {
 		await orm.close();
 		await app.close();
-		await module.close();
 	});
 
 	it('should return status 200', async () => {
-		currentUser = mapUserToCurrentUser(user, account);
-		const userId = user.id;
+		currentUser = mapUserToCurrentUser(superheroAccount.user, superheroAccount);
+		const userId = studentUser.id;
 		await request(app.getHttpServer()) //
 			.get(`${basePath}/${userId}/account`)
 			.expect(200);
 	});
 	it('should return status 403', async () => {
-		currentUser = mapUserToCurrentUser(user);
-		const userId = user.id;
+		currentUser = mapUserToCurrentUser(studentUser);
+		const userId = studentUser.id;
 		await request(app.getHttpServer()) //
 			.get(`${basePath}/${userId}/account`)
 			.expect(403);
 	});
 	it('should return status 404', async () => {
-		currentUser = mapUserToCurrentUser(user);
+		currentUser = mapUserToCurrentUser(superheroUser);
 		const userId = '';
 		await request(app.getHttpServer()) //
 			.get(`${basePath}/${userId}/account`)
