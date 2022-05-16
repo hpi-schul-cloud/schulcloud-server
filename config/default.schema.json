@@ -272,6 +272,11 @@
 				}
 			}
 		},
+		"WOPI_MAX_FILE_SIZE": {
+			"type": "integer",
+			"default": 104857600,
+			"description": "The maximum file size that can be handled by the WOPI API."
+		},		
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -840,11 +845,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for copy/duplicate a course feature."
-		},
-		"WOPI_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 104857600,
-			"description": "The maximum file size that can be handled by the WOPI API."
 		}
 	},
 	"required": [
