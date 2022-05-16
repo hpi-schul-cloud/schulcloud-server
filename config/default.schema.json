@@ -811,6 +811,11 @@
 			"default": false,
 			"description": "feature toggle activate Room view link."
 		},
+		"ACCESSIBILITY_REPORT_EMAIL": {
+			"type": "string",
+			"default": "lernen.cloud@dataport.de",
+			"description": "Email to report accessibility issue"
+		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
 			"default": false,

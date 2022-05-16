@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { PermissionService } from '.';
 import { Role } from '../entity/role.entity';
-import { Permission } from '../rules';
+import { Permission } from '../interface';
 
 describe('resolvePermissions', () => {
 	let orm: MikroORM;
