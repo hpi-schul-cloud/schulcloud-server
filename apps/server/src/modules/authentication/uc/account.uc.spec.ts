@@ -1,7 +1,17 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import { Account, EntityId, ICurrentUser, PermissionService, Role, School, User } from '@shared/domain';
+import {
+	Account,
+	EntityId,
+	ICurrentUser,
+	Permission,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	User,
+} from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import {
@@ -30,8 +40,6 @@ describe('AccountUc', () => {
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
-	let mockDemoTeacherUser: User;
-	let mockDemoStudentUser: User;
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
@@ -42,8 +50,6 @@ describe('AccountUc', () => {
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
-	let mockDemoTeacherAccount: Account;
-	let mockDemoStudentAccount: Account;
 	let mockOtherTeacherAccount: Account;
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
@@ -188,39 +194,37 @@ describe('AccountUc', () => {
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'superhero', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.SUPERHERO, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] })],
 		});
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
-		});
-		mockDemoTeacherUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoTeacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'teacher', permissions: ['STUDENT_EDIT'] })],
+			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
-		});
-		mockDemoStudentUser = userFactory.buildWithId({
-			school: mockSchool,
-			roles: [new Role({ name: 'demoStudent', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'administrator', permissions: ['TEACHER_EDIT', 'STUDENT_EDIT'] })],
+			roles: [
+				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+			],
 		});
 		mockUserWithoutRole = userFactory.buildWithId({
 			school: mockSchool,
@@ -228,11 +232,11 @@ describe('AccountUc', () => {
 		});
 		mockUnknownRoleUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'undefinedRole', permissions: [''] })],
+			roles: [new Role({ name: 'undefinedRole' as RoleName, permissions: ['' as Permission] })],
 		});
 		mockExternalUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: 'student', permissions: [] })],
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 
 		mockSuperheroAccount = accountFactory.buildWithId({
@@ -242,11 +246,6 @@ describe('AccountUc', () => {
 		});
 		mockTeacherAccount = accountFactory.buildWithId({
 			user: mockTeacherUser,
-			password: defaultPasswordHash,
-			system: undefined,
-		});
-		mockDemoTeacherAccount = accountFactory.buildWithId({
-			user: mockDemoTeacherUser,
 			password: defaultPasswordHash,
 			system: undefined,
 		});
@@ -262,11 +261,6 @@ describe('AccountUc', () => {
 		});
 		mockStudentAccount = accountFactory.buildWithId({
 			user: mockStudentUser,
-			password: defaultPasswordHash,
-			system: undefined,
-		});
-		mockDemoStudentAccount = accountFactory.buildWithId({
-			user: mockDemoStudentUser,
 			password: defaultPasswordHash,
 			system: undefined,
 		});
@@ -295,10 +289,8 @@ describe('AccountUc', () => {
 			mockSuperheroUser,
 			mockAdminUser,
 			mockTeacherUser,
-			mockDemoTeacherUser,
 			mockOtherTeacherUser,
 			mockStudentUser,
-			mockDemoStudentUser,
 			mockDifferentSchoolAdminUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
@@ -310,10 +302,8 @@ describe('AccountUc', () => {
 			mockSuperheroAccount,
 			mockAdminAccount,
 			mockTeacherAccount,
-			mockDemoTeacherAccount,
 			mockOtherTeacherAccount,
 			mockStudentAccount,
-			mockDemoStudentAccount,
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
@@ -498,22 +488,6 @@ describe('AccountUc', () => {
 				})
 			).resolves.not.toThrow();
 		});
-		it('should throw if user is a demo student', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoStudentAccount.user.id, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockDemoTeacherAccount.user.id, {
-					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
-				})
-			).rejects.toThrow(ForbiddenOperationError);
-		});
 		it('should throw if user can not be updated', async () => {
 			await expect(
 				accountUc.updateMyAccount(mockTeacherUser.id, {
@@ -589,20 +563,6 @@ describe('AccountUc', () => {
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
 			).resolves.not.toThrow();
-		});
-		it('should throw if user is a demo student', async () => {
-			mockDemoStudentAccount.user.forcePasswordChange = false;
-			mockDemoStudentAccount.user.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoStudentAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
-		});
-		it('should throw if user is a demo teacher', async () => {
-			mockDemoTeacherAccount.user.forcePasswordChange = false;
-			mockDemoTeacherAccount.user.preferences = { firstLogin: false };
-			await expect(
-				accountUc.replaceMyTemporaryPassword(mockDemoTeacherAccount.user.id, 'DummyPasswd!2', 'DummyPasswd!2')
-			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if user can not be updated', async () => {
 			mockStudentAccount.user.forcePasswordChange = false;
@@ -763,12 +723,6 @@ describe('AccountUc', () => {
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {
-			it('superhero cannot edit demo user', async () => {
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockDemoTeacherAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
-			});
 			it('admin can edit teacher', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: mockTeacherAccount.id } as AccountByIdParams;
@@ -780,12 +734,6 @@ describe('AccountUc', () => {
 				const params = { id: mockStudentAccount.id } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
-			});
-			it('demo teacher cannot edit student', async () => {
-				const currentUser = { userId: mockDemoTeacherUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
 			});
 			it('admin can edit student', async () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;

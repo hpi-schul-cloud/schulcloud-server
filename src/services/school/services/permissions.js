@@ -1,15 +1,13 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const { iff, isProvider } = require('feathers-hooks-common');
 
-const { BadRequest, Forbidden } = require('../../../errors');
+const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
 
 const hooks = {
 	before: {
 		all: [authenticate('jwt'), lookupSchool, iff(isProvider('external'), restrictToCurrentSchool)],
-		get: [globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW')],
 		patch: [globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE')],
 	},
 };
@@ -24,28 +22,7 @@ class HandlePermissions {
 		this.permission = permission || '';
 	}
 
-	async find(params) {
-		const school = await getSchool(this.app, params.account.schoolId);
-		const schoolPermission = ((school.permissions || [])[this.role] || [])[this.permission];
-		let isEnabled = false;
-		if (schoolPermission === undefined) {
-			const role = await this.app.service('roles').find({
-				query: {
-					name: this.role,
-				},
-			});
-			isEnabled = role.data[0].permissions.includes(this.permission);
-		} else {
-			isEnabled = schoolPermission;
-		}
-		return { isEnabled };
-	}
-
 	async patch(id, data, params) {
-		if (!Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
-			throw new Forbidden('Configuring student visibility is not allowed.');
-		}
-
 		const { permission } = data;
 		const { schoolId } = params.account;
 		const school = await getSchool(this.app, schoolId);

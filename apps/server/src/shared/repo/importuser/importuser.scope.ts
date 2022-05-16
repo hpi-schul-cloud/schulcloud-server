@@ -68,14 +68,14 @@ export class ImportUserScope extends Scope<ImportUser> {
 
 	byRole(roleName: RoleName): ImportUserScope {
 		switch (roleName) {
-			case RoleName.ADMIN:
-				this.addQuery({ roleNames: { $in: ['administrator'] } });
+			case RoleName.ADMINISTRATOR:
+				this.addQuery({ roleNames: { $in: [RoleName.ADMINISTRATOR] } });
 				break;
 			case RoleName.STUDENT:
-				this.addQuery({ roleNames: { $in: ['student'] } });
+				this.addQuery({ roleNames: { $in: [RoleName.STUDENT] } });
 				break;
 			case RoleName.TEACHER:
-				this.addQuery({ roleNames: { $in: ['teacher'] } });
+				this.addQuery({ roleNames: { $in: [RoleName.TEACHER] } });
 				break;
 			default:
 				throw new Error('unexpected role name');

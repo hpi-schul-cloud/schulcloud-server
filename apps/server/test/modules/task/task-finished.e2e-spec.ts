@@ -134,7 +134,9 @@ describe('Task controller (e2e)', () => {
 		});
 
 		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3] });
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
+			});
 			const user = userFactory.build({ roles });
 
 			return user;
@@ -312,7 +314,9 @@ describe('Task controller (e2e)', () => {
 		describe('when user has write permission in course', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
-					const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
+					const roles = roleFactory.buildList(1, {
+						permissions: [Permission.TASK_DASHBOARD_VIEW_V3],
+					});
 					const user = userFactory.build({ roles });
 					const course = courseFactory.isFinished().build({ teachers: [user] });
 
@@ -444,7 +448,9 @@ describe('Task controller (e2e)', () => {
 
 			describe('when courses are open', () => {
 				const setup = () => {
-					const roles = roleFactory.buildList(1, { permissions: [Permission.TASK_DASHBOARD_VIEW_V3] });
+					const roles = roleFactory.buildList(1, {
+						permissions: [Permission.TASK_DASHBOARD_VIEW_V3],
+					});
 					const user = userFactory.build({ roles });
 					const course = courseFactory.isOpen().build({ teachers: [user] });
 

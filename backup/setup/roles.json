@@ -261,37 +261,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "0000d186816abba584714d00"
-		},
-		"name": "demo",
-		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [],
-		"permissions": [
-			"BASE_VIEW",
-			"CALENDAR_VIEW",
-			"CLASS_VIEW",
-			"COURSE_VIEW",
-			"CONTENT_VIEW",
-			"DASHBOARD_VIEW",
-			"FILESTORAGE_CREATE",
-			"FILESTORAGE_VIEW",
-			"HOMEWORK_VIEW",
-			"NEWS_VIEW",
-			"RELEASES_VIEW",
-			"SUBMISSIONS_VIEW",
-			"TEAM_VIEW",
-			"TOOL_VIEW",
-			"TOPIC_VIEW"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "0000d186816abba584714d01"
 		},
 		"name": "helpdesk",
@@ -309,48 +278,6 @@
 		"permissions": [
 			"HELPDESK_EDIT",
 			"HELPDESK_VIEW"
-		],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "0000d186816abba584714d02"
-		},
-		"name": "demoStudent",
-		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [
-			{
-				"$oid": "0000d186816abba584714d00"
-			}
-		],
-		"permissions": [],
-		"__v": 0
-	},
-	{
-		"_id": {
-			"$oid": "0000d186816abba584714d03"
-		},
-		"name": "demoTeacher",
-		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"createdAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
-		},
-		"roles": [
-			{
-				"$oid": "0000d186816abba584714d00"
-			}
-		],
-		"permissions": [
-			"LESSONS_VIEW",
-			"SUBMISSIONS_SCHOOL_VIEW",
-			"TOOL_NEW_VIEW"
 		],
 		"__v": 0
 	},
