@@ -57,7 +57,7 @@ export class FilesStorageUC {
 			});
 
 			requestStream.on('error', (e) => {
-				reject(new BadRequestException(e, 'FilesStorageUC:upload requestStream'));
+				reject(new BadRequestException(e, `${FilesStorageUC.name}:upload requestStream`));
 			});
 			req.pipe(requestStream);
 		});
@@ -108,13 +108,9 @@ export class FilesStorageUC {
 	}
 
 	private createPath(schoolId: EntityId, fileRecordId: EntityId): string {
-		try {
-			const pathToFile = [schoolId, fileRecordId].join('/');
+		const pathToFile = [schoolId, fileRecordId].join('/');
 
-			return pathToFile;
-		} catch (err) {
-			throw new BadRequestException(err, 'FilesStorageUC:createPath');
-		}
+		return pathToFile;
 	}
 
 	private async downloadFile(schoolId: EntityId, fileRecordId: EntityId) {
@@ -139,10 +135,11 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
 
+		// outsource this logic from download method
 		if (entity.name !== params.fileName) {
-			throw new NotFoundException('File not found', 'FilesStorageUC:download');
+			throw new NotFoundException('File not found', `${FilesStorageUC.name}:download`);
 		} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException('File is blocked', 'FilesStorageUC:download');
+			throw new NotAcceptableException('File is blocked', `${FilesStorageUC.name}:download`);
 		}
 		const res = await this.downloadFile(entity.schoolId, entity.id);
 
@@ -198,7 +195,7 @@ export class FilesStorageUC {
 		} catch (err) {
 			await this.unmarkForDelete(fileRecords);
 
-			throw new InternalServerErrorException(err, 'FilesStorageUC:delete');
+			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:delete`);
 		}
 	}
 
@@ -261,7 +258,7 @@ export class FilesStorageUC {
 			return [fileRecords, count];
 		}
 
-		const newRecords = await this.storageCopy(userId, fileRecords, copyFilesParams.target);
+		const newRecords = await this.copy(userId, fileRecords, copyFilesParams.target);
 
 		return newRecords;
 	}
@@ -278,12 +275,12 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const [newRecord] = await this.storageCopy(userId, [fileRecord], copyFileParams.target);
+		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
 
 		return newRecord[0];
 	}
 
-	private async storageCopy(
+	private async copy(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
 		targetParams: FileRecordParams
@@ -326,7 +323,7 @@ export class FilesStorageUC {
 			await this.storageClient.restore(paths);
 		} catch (err) {
 			await this.markForDelete(fileRecords);
-			throw new InternalServerErrorException(err, 'FilesStorageUC:restore');
+			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:restore`);
 		}
 	}
 }

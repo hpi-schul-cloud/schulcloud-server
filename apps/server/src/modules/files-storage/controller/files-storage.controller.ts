@@ -1,6 +1,7 @@
 import {
 	BadRequestException,
 	Body,
+	ConflictException,
 	Controller,
 	Delete,
 	ForbiddenException,
@@ -43,7 +44,7 @@ export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
 
 	@ApiOperation({ summary: 'Streamable upload of a binary file.' })
-	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -66,7 +67,6 @@ export class FilesStorageController {
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
 	@ApiResponse({ status: 200, type: StreamableFile })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 406, type: NotAcceptableException })
@@ -112,6 +112,11 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({
+		status: 409,
+		type: ConflictException,
+		description: 'File with same name already exist in parent scope.',
+	})
 	@Patch('/rename/:fileRecordId/')
 	@UseInterceptors(RequestLoggingInterceptor)
 	async patchFilename(
@@ -127,11 +132,11 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({
-		summary: 'Restore all files of a parent entityId for deletion. The files are  delete final after time.',
+		summary:
+			'Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.',
 	})
 	@ApiResponse({ status: 200, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:schoolId/:parentType/:parentId')
@@ -151,10 +156,9 @@ export class FilesStorageController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Mark a single file for deletion. The file is delete final after time.' })
+	@ApiOperation({ summary: 'Mark a single file for deletion. The files are permanently deleted after a certain time.' })
 	@ApiResponse({ status: 200, type: FileRecordResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:fileRecordId')
@@ -171,9 +175,8 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Restore all files of a parent entityId that are marked for deletion.' })
-	@ApiResponse({ status: 200, type: FileRecordListResponse })
+	@ApiResponse({ status: 201, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post('/restore/:schoolId/:parentType/:parentId')
 	async restore(
@@ -192,9 +195,8 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Restore a single file that is marked for deletion.' })
-	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post('/restore/:fileRecordId')
@@ -210,9 +212,8 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Copy all files of a parent entityId to a target entitId' })
-	@ApiResponse({ status: 200, type: FileRecordListResponse })
+	@ApiResponse({ status: 201, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/copy/:schoolId/:parentType/:parentId')
@@ -237,9 +238,8 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Copy a single file in the same target entityId scope.' })
-	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
