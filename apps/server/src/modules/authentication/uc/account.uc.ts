@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -46,28 +46,33 @@ export class AccountUc {
 	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
 		const limit = query.limit ?? 10;
+		const executingUser = await this.userRepo.findById(currentUser.userId, true);
 
-		if (!(await this.isSuperhero(currentUser))) {
-			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
+		if (query.type === AccountSearchType.USERNAME) {
+			if (!(await this.isSuperhero(currentUser))) {
+				throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
+			}
+			// eslint-disable-next-line no-case-declarations
+			const { accounts, total } = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
+			// eslint-disable-next-line no-case-declarations
+			const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
+			return new AccountSearchListResponse(accountList, total, skip, limit);
+		}
+		if (query.type === AccountSearchType.USER_ID) {
+			const targetUser = await this.userRepo.findById(query.value, true);
+			const permission = this.hasPermissionsToAccessAccount(executingUser, targetUser, 'READ');
+
+			if (!permission) {
+				throw new ForbiddenOperationError('Current user is not authorized to search for accounts by user id.');
+			}
+			const account = await this.accountService.findByUserId(query.value);
+			if (account) {
+				return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
+			}
+			return new AccountSearchListResponse([], 0, 0, 0);
 		}
 
-		switch (query.type) {
-			case AccountSearchType.USER_ID:
-				// eslint-disable-next-line no-case-declarations
-				const account = await this.accountService.findByUserId(query.value);
-				if (account) {
-					return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
-				}
-				return new AccountSearchListResponse([], 0, 0, 0);
-			case AccountSearchType.USERNAME:
-				// eslint-disable-next-line no-case-declarations
-				const { accounts, total } = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
-				// eslint-disable-next-line no-case-declarations
-				const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
-				return new AccountSearchListResponse(accountList, total, skip, limit);
-			default:
-				throw new ValidationError('Invalid search type.');
-		}
+		throw new BadRequestException('Unknown Search Type');
 	}
 
 	/**
@@ -107,7 +112,7 @@ export class AccountUc {
 		let updateUser = false;
 		let updateAccount = false;
 
-		if (!this.hasPermissionsToUpdateAccount(executingUser, targetUser)) {
+		if (!this.hasPermissionsToAccessAccount(executingUser, targetUser, 'UPDATE')) {
 			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
 		}
 		if (body.password !== undefined) {
@@ -181,10 +186,6 @@ export class AccountUc {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
 
-		if (this.isDemoUser(user)) {
-			throw new ForbiddenOperationError('Demo users can not change their account details.');
-		}
-
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
@@ -251,10 +252,6 @@ export class AccountUc {
 			throw new EntityNotFoundError(User.name);
 		}
 
-		if (this.isDemoUser(user)) {
-			throw new ForbiddenOperationError('Demo users can not change their password.');
-		}
-
 		const userPreferences = <UserPreferences>user.preferences;
 
 		if (!user.forcePasswordChange && userPreferences.firstLogin) {
@@ -287,6 +284,31 @@ export class AccountUc {
 		}
 	}
 
+	/**
+	 * This method processes the GET request on the user/:id/account endpoint from the user controller
+	 * @param currentUser the request user
+	 * @param id the request parameter
+	 * @throws {ForbiddenOperationError}
+	 * @throws {NotImplementedException}
+	 * @throws {EntityNotFoundError}
+	 */
+	async findAccountByUserId(currentUser: ICurrentUser, id: string): Promise<AccountResponse | null> {
+		const executingUser = await this.userRepo.findById(currentUser.userId, true);
+		const targetUser = await this.userRepo.findById(id, true);
+
+		const permission = this.hasPermissionsToAccessAccount(executingUser, targetUser, 'READ');
+
+		if (!permission) {
+			throw new ForbiddenOperationError('Current user is not authorized to search for accounts by user id.');
+		}
+
+		const account = await this.accountService.findByUserId(id);
+		if (!account) {
+			return null;
+		}
+		return AccountResponseMapper.mapToResponse(account);
+	}
+
 	private hasRole(user: User, roleName: string) {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;
@@ -298,10 +320,6 @@ export class AccountUc {
 		return user.roles.getItems().some((role) => role.name === RoleName.SUPERHERO);
 	}
 
-	private isDemoUser(currentUser: User) {
-		return this.hasRole(currentUser, 'demoStudent') || this.hasRole(currentUser, 'demoTeacher');
-	}
-
 	private hasPermissionsToChangeOwnName(currentUser: User) {
 		return (
 			this.hasRole(currentUser, 'superhero') ||
@@ -310,10 +328,11 @@ export class AccountUc {
 		);
 	}
 
-	private hasPermissionsToUpdateAccount(currentUser: User, targetUser: User) {
-		if (this.isDemoUser(currentUser) || this.isDemoUser(targetUser)) {
-			return false;
-		}
+	private hasPermissionsToAccessAccount(
+		currentUser: User,
+		targetUser: User,
+		action: 'READ' | 'UPDATE' | 'DELETE' | 'CREATE'
+	) {
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
@@ -323,10 +342,40 @@ export class AccountUc {
 
 		const permissionsToCheck: string[] = [];
 		if (this.hasRole(targetUser, RoleName.STUDENT)) {
-			permissionsToCheck.push('STUDENT_EDIT');
+			switch (action) {
+				case 'READ':
+					permissionsToCheck.push('STUDENT_LIST');
+					break;
+				case 'UPDATE':
+					permissionsToCheck.push('STUDENT_EDIT');
+					break;
+				case 'CREATE':
+					permissionsToCheck.push('STUDENT_CREATE');
+					break;
+				case 'DELETE':
+					permissionsToCheck.push('STUDENT_DELETE');
+					break;
+				default:
+					return false;
+			}
 		}
 		if (this.hasRole(targetUser, RoleName.TEACHER)) {
-			permissionsToCheck.push('TEACHER_EDIT');
+			switch (action) {
+				case 'READ':
+					permissionsToCheck.push('TEACHER_LIST');
+					break;
+				case 'UPDATE':
+					permissionsToCheck.push('TEACHER_EDIT');
+					break;
+				case 'CREATE':
+					permissionsToCheck.push('TEACHER_CREATE');
+					break;
+				case 'DELETE':
+					permissionsToCheck.push('TEACHER_DELETE');
+					break;
+				default:
+					return false;
+			}
 		}
 		if (permissionsToCheck.length === 0) {
 			// target user is neither student nor teacher. Undefined what to do

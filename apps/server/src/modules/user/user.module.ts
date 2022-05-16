@@ -1,14 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PermissionService } from '@shared/domain';
-import { AccountRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { AccountService } from '../authentication/services/account.service';
-import { AuthorizationModule } from '../authorization';
+import { UserRepo } from '@shared/repo';
 import { UserController } from './controller';
 import { UserUC } from './uc';
 
 @Module({
-	imports: [AuthorizationModule],
 	controllers: [UserController],
-	providers: [UserRepo, PermissionService, UserUC, AccountService, AccountRepo, SystemRepo],
+	providers: [UserRepo, PermissionService, UserUC],
 })
 export class UserModule {}

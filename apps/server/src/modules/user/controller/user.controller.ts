@@ -1,15 +1,13 @@
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
-import { ValidationError } from 'class-validator';
-import { EntityNotFoundError, ForbiddenOperationError } from '@shared/common';
 import { ResolvedUserMapper } from '../mapper';
 import { UserUC } from '../uc/user.uc';
 
-import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse, AccountResponse } from './dto';
+import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
 
 @ApiTags('User')
 @Authenticate('jwt')
@@ -25,19 +23,6 @@ export class UserController {
 		const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
 
 		return resolvedUser;
-	}
-
-	@Get(':id/account')
-	@ApiOperation({ summary: 'Returns the account of the user with given id. Administrator role is REQUIRED.' })
-	@ApiResponse({ status: 200, type: AccountResponse, description: 'Returns the account.' })
-	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User has no read permission' })
-	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'User not found.' })
-	async findAccountByUserId(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id') id: string
-	): Promise<AccountResponse | null> {
-		return this.userUc.findAccountByUserId(currentUser, id);
 	}
 
 	@Patch('/language')

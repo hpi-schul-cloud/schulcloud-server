@@ -1,22 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ForbiddenOperationError } from '@shared/common';
-import { Actions, EntityId, ICurrentUser, LanguageType, PermissionService, User } from '@shared/domain';
+import { EntityId, LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { AccountService } from '@src/modules/authentication/services/account.service';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AccountResponse, ChangeLanguageParams } from '../controller/dto';
+import { ChangeLanguageParams } from '../controller/dto';
 import { IUserConfig } from '../interfaces';
-import { AccountResponseMapper } from '../mapper/account-response.mapper';
 
 @Injectable()
 export class UserUC {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
-		private readonly configService: ConfigService<IUserConfig, true>,
-		private readonly authorizationService: AuthorizationService,
-		private readonly accountService: AccountService
+		private readonly configService: ConfigService<IUserConfig, true>
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -39,30 +33,5 @@ export class UserUC {
 		await this.userRepo.save(user);
 
 		return true;
-	}
-
-	/**
-	 * This method processes the GET request on the user/:id/account endpoint from the user controller
-	 * @param currentUser the request user
-	 * @param id the request parameter
-	 * @throws {ForbiddenOperationError}
-	 * @throws {NotImplementedException}
-	 * @throws {EntityNotFoundError}
-	 */
-	async findAccountByUserId(currentUser: ICurrentUser, id: string): Promise<AccountResponse | null> {
-		const executingUser = await this.userRepo.findById(currentUser.userId, true);
-		const targetUser = await this.userRepo.findById(id, true);
-
-		const permission = this.authorizationService.hasPermission(executingUser, targetUser, Actions.read);
-
-		if (!permission) {
-			throw new ForbiddenOperationError('Current user is not authorized to search for accounts by user id.');
-		}
-
-		const account = await this.accountService.findByUserId(id);
-		if (!account) {
-			return null;
-		}
-		return AccountResponseMapper.mapToResponse(account);
 	}
 }
