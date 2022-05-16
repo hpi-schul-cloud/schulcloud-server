@@ -24,24 +24,28 @@ export class FileRecordUC {
 		}
 	}
 
-	private setNewFileName(entity: FileRecord, data: RenameFileParams) {
+	private modifiedFileName(
+		entity: FileRecord,
+		fileRecordsInScope: FileRecord[],
+		data: RenameFileParams
+	): void | ConflictException {
+		this.checkDouplicatedNames(fileRecordsInScope, data);
 		entity.name = data.fileName;
 	}
 
-	async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
+	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.update);
 
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
-		this.checkDouplicatedNames(fileRecords, data);
 
-		this.setNewFileName(entity, data);
+		this.modifiedFileName(entity, fileRecords, data);
 		await this.fileRecordRepo.save(entity);
 
 		return entity;
 	}
 
-	async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
@@ -55,7 +59,7 @@ export class FileRecordUC {
 		return status;
 	}
 
-	async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
 		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 		const status = this.getStatusFromScanResult(scanResultDto);
 		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);

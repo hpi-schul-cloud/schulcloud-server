@@ -45,6 +45,7 @@ export class AntivirusService {
 	private getUrl(path: string, token: string) {
 		const newPath = path.replace(':token', encodeURIComponent(token));
 		const url = new URL(`${API_VERSION_PATH}${newPath}`, this.options.filesServiceBaseUrl);
+
 		return url.href;
 	}
 }
