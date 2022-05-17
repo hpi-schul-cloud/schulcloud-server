@@ -18,7 +18,7 @@ export class FileRecordUC {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	private checkDouplicatedNames(fileRecords: FileRecord[], data: RenameFileParams): void | ConflictException {
+	private checkDuplicatedNames(fileRecords: FileRecord[], data: RenameFileParams): void | ConflictException {
 		if (fileRecords.find((item) => item.name === data.fileName)) {
 			throw new ConflictException('FILE_NAME_EXISTS');
 		}
@@ -29,7 +29,7 @@ export class FileRecordUC {
 		fileRecordsInScope: FileRecord[],
 		data: RenameFileParams
 	): void | ConflictException {
-		this.checkDouplicatedNames(fileRecordsInScope, data);
+		this.checkDuplicatedNames(fileRecordsInScope, data);
 		entity.name = data.fileName;
 	}
 
