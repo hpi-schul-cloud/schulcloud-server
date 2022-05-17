@@ -22,7 +22,7 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { PermissionContexts } from '../files-storage.const';
+import { PermissionContexts, ErrorType } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
@@ -142,13 +142,13 @@ export class FilesStorageUC {
 
 	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (entity.name !== params.fileName) {
-			throw new NotFoundException('File not found', `${FilesStorageUC.name}:download`);
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND, `${FilesStorageUC.name}:download`);
 		}
 	}
 
 	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
 		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException('File is blocked', `${FilesStorageUC.name}:download`);
+			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED, `${FilesStorageUC.name}:download`);
 		}
 	}
 

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, EntityId, FileRecord, FileRecordParentType, Permission, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
@@ -19,6 +19,7 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
+import { ErrorType } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageUC } from './files-storage.uc';
 
@@ -255,14 +256,19 @@ describe('FilesStorageUC', () => {
 				await service.download(userId, fileDownloadParams);
 				expect(fileRecordRepo.findOneById).toBeCalledWith(fileDownloadParams.fileRecordId);
 			});
-			describe('Error Handling()', () => {
+
+			describe('Error Handling', () => {
 				it('should throw error if params with other filename', async () => {
 					const paramsWithOtherFilename = { fileRecordId: schoolId, fileName: 'other-name.txt' };
-					await expect(service.download(userId, paramsWithOtherFilename)).rejects.toThrow('File not found');
+
+					await expect(service.download(userId, paramsWithOtherFilename)).rejects.toThrowError(
+						new NotFoundException(ErrorType.FILE_NOT_FOUND)
+					);
 				});
 
 				it('should throw error if entity not found', async () => {
 					fileRecordRepo.findOneById.mockRejectedValue(new Error());
+
 					await expect(service.download(userId, fileDownloadParams)).rejects.toThrow();
 				});
 
@@ -270,7 +276,10 @@ describe('FilesStorageUC', () => {
 					const blockedFileRecord = fileRecordFactory.buildWithId({ name: 'text.txt' });
 					blockedFileRecord.securityCheck.status = ScanStatus.BLOCKED;
 					fileRecordRepo.findOneById.mockResolvedValue(blockedFileRecord);
-					await expect(service.download(userId, fileDownloadParams)).rejects.toThrow('File is blocked');
+
+					await expect(service.download(userId, fileDownloadParams)).rejects.toThrowError(
+						new NotAcceptableException(ErrorType.FILE_IS_BLOCKED)
+					);
 				});
 			});
 		});
