@@ -1,4 +1,4 @@
-import { Controller, All, ServiceUnavailableException } from '@nestjs/common';
+import { Controller, ServiceUnavailableException, Post } from '@nestjs/common';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
@@ -11,7 +11,7 @@ export class KeycloakManagementController {
 	 * @returns The number of seeded users
 	 * @throws ServiceUnavailableException if IDM is not ready.
 	 */
-	@All('seed')
+	@Post('seed')
 	async importSeedData(): Promise<number> {
 		if (await this.keycloakManagementUc.check()) {
 			try {

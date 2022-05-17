@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import fs from 'node:fs/promises';
-import { IJsonAccount, IJsonUser } from '../interface';
+import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from '../keycloak-administration.service';
 
 @Injectable()
 export class KeycloakManagementUc {
-	constructor(private readonly kcAdmin: KeycloakAdministrationService) {}
+	constructor(
+		private readonly kcAdmin: KeycloakAdministrationService,
+		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
+	) {}
 
 	public async check(): Promise<boolean> {
 		return this.kcAdmin.testKcConnection();
@@ -13,9 +16,8 @@ export class KeycloakManagementUc {
 
 	public async clean(): Promise<number> {
 		let kc = await this.kcAdmin.callKcAdminClient();
-		const users = (await kc.users.find()).filter(
-			(user) => user.id !== undefined && user.username !== this.kcAdmin.getAdminUser()
-		);
+		const adminUser = this.kcAdmin.getAdminUser();
+		const users = (await kc.users.find()).filter((user) => user.username !== adminUser);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const user of users) {
@@ -62,12 +64,12 @@ export class KeycloakManagementUc {
 	}
 
 	private async loadAccounts(): Promise<IJsonAccount[]> {
-		const data = await fs.readFile('./backup/setup/accounts.json', { encoding: 'utf-8' });
+		const data = await fs.readFile(this.inputFiles.accountsFile, { encoding: 'utf-8' });
 		return JSON.parse(data) as IJsonAccount[];
 	}
 
 	private async loadUsers(): Promise<IJsonUser[]> {
-		const data = await fs.readFile('./backup/setup/users.json', { encoding: 'utf-8' });
+		const data = await fs.readFile(this.inputFiles.usersFile, { encoding: 'utf-8' });
 		return JSON.parse(data) as IJsonUser[];
 	}
 }
