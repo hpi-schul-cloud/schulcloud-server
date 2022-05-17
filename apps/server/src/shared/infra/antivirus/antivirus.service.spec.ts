@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileRecord, FileRecordParentType } from '@shared/domain';
+import { FileRecord } from '@shared/domain';
+import { fileRecordFactory } from '@shared/testing';
+import { InternalServerErrorException } from '@nestjs/common';
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusService', () => {
@@ -33,18 +35,16 @@ describe('AntivirusService', () => {
 	});
 
 	describe('send()', () => {
-		it('should send given data to queue', async () => {
-			const fileRecord = new FileRecord({
-				size: 100,
-				name: 'test.txt',
-				mimeType: 'text/plain',
-				creatorId: '620abb23697023333eadea01',
-				schoolId: '620abb23697023333eadea00',
-				parentId: '620abb23697023333eadea00',
-				parentType: FileRecordParentType.School,
-			});
+		let fileRecord: FileRecord;
+
+		beforeEach(() => {
+			fileRecord = fileRecordFactory.build();
 			fileRecord.securityCheck.requestToken = 'test-token';
+		});
+
+		it('should send given data to queue', async () => {
 			await service.send(fileRecord);
+
 			const expectedParams = [
 				antivirusServiceOptions.exchange,
 				antivirusServiceOptions.routingKey,
@@ -56,6 +56,12 @@ describe('AntivirusService', () => {
 				{ persistent: true },
 			];
 			expect(amqpConnection.publish).toHaveBeenCalledWith(...expectedParams);
+		});
+
+		it('should throw with InternalServerErrorException by error', async () => {
+			amqpConnection.publish.mockRejectedValueOnce(new Error('fail'));
+
+			await expect(service.send(fileRecord)).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 });

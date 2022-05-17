@@ -18,21 +18,34 @@ export class FileRecordUC {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
+	private checkDuplicatedNames(fileRecords: FileRecord[], data: RenameFileParams): void | ConflictException {
+		if (fileRecords.find((item) => item.name === data.fileName)) {
+			throw new ConflictException('FILE_NAME_EXISTS');
+		}
+	}
+
+	private modifiedFileName(
+		entity: FileRecord,
+		fileRecordsInScope: FileRecord[],
+		data: RenameFileParams
+	): void | ConflictException {
+		this.checkDuplicatedNames(fileRecordsInScope, data);
+		entity.name = data.fileName;
+	}
+
+	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams) {
 		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
 		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.update);
 
 		const [fileRecords] = await this.fileRecordRepo.findBySchoolIdAndParentId(entity.schoolId, entity.parentId);
-		if (fileRecords.find((item) => item.name === data.fileName)) {
-			throw new ConflictException('FILE_NAME_EXISTS');
-		} else {
-			entity.name = data.fileName;
-			await this.fileRecordRepo.save(entity);
-		}
+
+		this.modifiedFileName(entity, fileRecords, data);
+		await this.fileRecordRepo.save(entity);
+
 		return entity;
 	}
 
-	async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async fileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
 
 		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
@@ -40,9 +53,15 @@ export class FileRecordUC {
 		return countedFileRecords;
 	}
 
-	async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
-		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+	private getStatusFromScanResult(scanResultDto: ScanResultParams) {
 		const status = scanResultDto.virus_detected ? ScanStatus.BLOCKED : ScanStatus.VERIFIED;
+
+		return status;
+	}
+
+	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams) {
+		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+		const status = this.getStatusFromScanResult(scanResultDto);
 		entity.updateSecurityCheckStatus(status, scanResultDto.virus_signature);
 
 		await this.fileRecordRepo.save(entity);
