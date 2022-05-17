@@ -86,6 +86,7 @@ const setIdToken = (hook) => {
 							: undefined,
 					},
 				};
+				console.log(hook.data.session);
 				return hook;
 			})
 	);
@@ -171,6 +172,11 @@ exports.hooks = {
 	consentSessions: {
 		before: {
 			all: [authenticate('jwt'), managesOwnConsents],
+		},
+	},
+	logoutRequest: {
+		before: {
+			patch: [authenticate('jwt')],
 		},
 	},
 };
