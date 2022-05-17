@@ -1,5 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
@@ -18,7 +16,12 @@ import {
 	User,
 	Permission,
 } from '@shared/domain';
-import { AccountRepo, ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+
+import { ImportUserRepo, SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 
 export type UserImportPermissions =
 	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
@@ -28,7 +31,7 @@ export type UserImportPermissions =
 @Injectable()
 export class UserImportUc {
 	constructor(
-		private readonly accountRepo: AccountRepo,
+		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly permissionService: PermissionService,
 		private readonly schoolRepo: SchoolRepo,
@@ -159,7 +162,6 @@ export class UserImportUc {
 				await this.updateUserAndAccount(importUser, school);
 			});
 			await this.userRepo.flush();
-			await this.accountRepo.flush();
 		}
 
 		await this.importUserRepo.deleteImportUsersBySchool(school);
@@ -222,14 +224,14 @@ export class UserImportUc {
 		user.ldapDn = importUser.ldapDn;
 		user.ldapId = importUser.ldapId;
 
-		const account: Account = await this.accountRepo.findByUserIdOrFail(user.id);
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);
 
-		account.system = this.accountRepo.getObjectReference(System, importUser.system.id);
+		account.systemId = importUser.system.id;
 		account.password = undefined;
 		account.username = `${school.ldapSchoolIdentifier}/${importUser.loginName}`;
 
-		this.userRepo.saveWithoutFlush(user);
-		this.accountRepo.saveWithoutFlush(account);
+		await this.userRepo.save(user);
+		await this.accountService.save(account);
 	}
 
 	private async getMigrationSystem(): Promise<System> {

@@ -14,6 +14,7 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { AuthModule } from '@src/modules/authentication/auth.module';
+import { AuthorizationModule } from '../authorization';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { FileSecurityController } from './controller/file-security.controller';
 import { FilesStorageController } from './controller/files-storage.controller';
@@ -38,6 +39,7 @@ const imports = [
 		isGlobal: true,
 		load: [fileStorageConfig],
 	}),
+	AuthorizationModule,
 	AuthModule,
 	CoreModule,
 	AntivirusModule.forRoot({
