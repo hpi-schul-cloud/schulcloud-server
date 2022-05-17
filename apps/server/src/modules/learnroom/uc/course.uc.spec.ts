@@ -1,13 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { Course, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseUc } from './course.uc';
 
 describe('course uc', () => {
 	let service: CourseUc;
-	let repo: CourseRepo;
+	let repo: DeepMocked<CourseRepo>;
 	let orm: MikroORM;
 
 	beforeAll(async () => {
@@ -24,11 +25,7 @@ describe('course uc', () => {
 				CourseUc,
 				{
 					provide: CourseRepo,
-					useValue: {
-						findAllByUserId(userId: EntityId, filters?, options?: IFindOptions<Course>): Promise<Counted<Course[]>> {
-							throw new Error('Please write a mock for TaskRepo.findAllByParentIds');
-						},
-					},
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -40,9 +37,7 @@ describe('course uc', () => {
 	describe('findByUser', () => {
 		it('should return courses of user', async () => {
 			const courses = courseFactory.buildList(5);
-			const spy = jest.spyOn(repo, 'findAllByUserId').mockImplementation((userId: EntityId) => {
-				return Promise.resolve([courses, 5]);
-			});
+			repo.findAllByUserId.mockResolvedValue([courses, 5]);
 
 			const [array, count] = await service.findAllByUser('someUserId');
 			expect(count).toEqual(5);
@@ -51,14 +46,12 @@ describe('course uc', () => {
 
 		it('should pass on options correctly', async () => {
 			const courses = courseFactory.buildList(5);
-			const spy = jest.spyOn(repo, 'findAllByUserId').mockImplementation((userId: EntityId) => {
-				return Promise.resolve([courses, 5]);
-			});
+			const spy = repo.findAllByUserId.mockResolvedValue([courses, 5]);
 
 			const pagination = { skip: 1, limit: 2 };
 			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
 
-			const [array, count] = await service.findAllByUser('someUserId', pagination);
+			await service.findAllByUser('someUserId', pagination);
 
 			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
 		});
