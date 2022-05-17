@@ -8,7 +8,7 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
@@ -25,36 +25,47 @@ export class S3ClientAdapter implements IStorageClient {
 		this.logger.setContext(S3ClientAdapter.name);
 	}
 
-	async createBucket() {
+	// is public but only used internally
+	public async createBucket() {
 		try {
+			this.logger.debug({ action: 'create bucket', params: { bucket: this.config.bucket } });
+
 			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
 			await this.client.send(req);
-		} catch (error) {
-			if (error instanceof Error) {
-				this.logger.error(`${error.message} "${this.config.bucket}"`);
+		} catch (err) {
+			if (err instanceof Error) {
+				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw error;
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
 		}
 	}
 
 	public async get(path: string): Promise<IGetFileResponse> {
-		const req = new GetObjectCommand({
-			Bucket: this.config.bucket,
-			Key: path,
-		});
+		try {
+			this.logger.debug({ action: 'get', params: { path, bucket: this.config.bucket } });
 
-		const data = await this.client.send(req);
+			const req = new GetObjectCommand({
+				Bucket: this.config.bucket,
+				Key: path,
+			});
 
-		return {
-			data: data.Body as Readable,
-			contentType: data.ContentType,
-			contentLength: data.ContentLength,
-			etag: data.ETag,
-		};
+			const data = await this.client.send(req);
+
+			return {
+				data: data.Body as Readable,
+				contentType: data.ContentType,
+				contentLength: data.ContentLength,
+				etag: data.ETag,
+			};
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
+		}
 	}
 
 	public async create(path: string, file: IFile): Promise<ServiceOutputTypes> {
 		try {
+			this.logger.debug({ action: 'create', params: { path, bucket: this.config.bucket } });
+
 			const req = {
 				Body: file.buffer,
 				Bucket: this.config.bucket,
@@ -69,64 +80,81 @@ export class S3ClientAdapter implements IStorageClient {
 			const a = await res.done();
 
 			return a;
-		} catch (error) {
+		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (error.Code && error.Code === 'NoSuchBucket') {
+			if (err.Code && err.Code === 'NoSuchBucket') {
 				await this.createBucket();
 
 				return this.create(path, file);
 			}
-			throw error;
+
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
 		}
 	}
 
 	public async delete(paths: string[]): Promise<CopyObjectCommandOutput[]> {
-		this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+		try {
+			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
-		const copyPaths = paths.map((path) => {
-			return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
-		});
+			const copyPaths = paths.map((path) => {
+				return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
+			});
 
-		const result = await this.copy(copyPaths);
+			const result = await this.copy(copyPaths);
 
-		// try catch with rollback is not needed,
-		// because the second copyRequest try override existing files in trash folder
-		await this.remove(paths);
+			// try catch with rollback is not needed,
+			// because the second copyRequest try override existing files in trash folder
+			await this.remove(paths);
 
-		return result;
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
+		}
 	}
 
 	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
-		this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+		try {
+			this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
 
-		const copyPaths = paths.map((path) => {
-			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
-		});
-
-		const result = await this.copy(copyPaths);
-
-		// try catch with rollback is not needed,
-		// because the second copyRequest try override existing files in trash folder
-		const deleteObjects = copyPaths.map((p) => p.sourcePath);
-		await this.remove(deleteObjects);
-
-		return result;
-	}
-
-	async copy(paths: ICopyFiles[]) {
-		const copyRequests = paths.map(async (path) => {
-			const req = new CopyObjectCommand({
-				Bucket: this.config.bucket,
-				CopySource: `${this.config.bucket}/${path.sourcePath}`,
-				Key: `${path.targetPath}`,
+			const copyPaths = paths.map((path) => {
+				return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
 			});
 
-			const data = await this.client.send(req);
+			const result = await this.copy(copyPaths);
 
-			return data;
-		});
+			// try catch with rollback is not needed,
+			// because the second copyRequest try override existing files in trash folder
+			const deleteObjects = copyPaths.map((p) => p.sourcePath);
+			await this.remove(deleteObjects);
 
-		return Promise.all(copyRequests);
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
+		}
+	}
+
+	public async copy(paths: ICopyFiles[]) {
+		try {
+			this.logger.debug({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+
+			const copyRequests = paths.map(async (path) => {
+				const req = new CopyObjectCommand({
+					Bucket: this.config.bucket,
+					CopySource: `${this.config.bucket}/${path.sourcePath}`,
+					Key: `${path.targetPath}`,
+				});
+
+				const data = await this.client.send(req);
+
+				return data;
+			});
+
+			const result = await Promise.all(copyRequests);
+
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
+		}
 	}
 
 	private async remove(paths: string[]) {

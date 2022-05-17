@@ -231,6 +231,10 @@
 				}
 			}
 		},
+		"NO_COLOR": {
+			"type": "string",
+			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
+		},
 		"FILES_STORAGE": {
 			"type": "object",
 			"description": "Files storage server properties, required always to be defined",
@@ -272,6 +276,11 @@
 				}
 			}
 		},
+		"WOPI_MAX_FILE_SIZE": {
+			"type": "integer",
+			"default": 20971520,
+			"description": "The maximum file size in bytes that can be handled by the WOPI API. Download of larger files throws an error."
+		},		
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -816,6 +825,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "feature toggle activate Room view link."
+		},
+		"ACCESSIBILITY_REPORT_EMAIL": {
+			"type": "string",
+			"default": "lernen.cloud@dataport.de",
+			"description": "Email to report accessibility issue"
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",

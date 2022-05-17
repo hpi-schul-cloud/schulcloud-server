@@ -14,6 +14,7 @@ const { canWrite, canRead } = require('../fileStorage/utils/filePermissionHelper
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const wopiPrefix = '/wopi/files/';
 
@@ -124,6 +125,9 @@ class WopiFilesContentsService {
 			.then((file) => {
 				if (!file) {
 					throw new NotFound('The requested file was not found! (3)');
+				}
+				if (file.size > Configuration.get('WOPI_MAX_FILE_SIZE')) {
+					throw new BadRequest('The requested file exceeds the WOPI file size limit.');
 				}
 				// generate signed Url for fetching file from storage
 				return signedUrlService

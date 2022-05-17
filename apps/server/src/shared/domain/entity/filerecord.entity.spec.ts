@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { FileRecordParentType, ScanStatus } from '.';
-import { IFileRecordProperties, FileRecord, FileSecurityCheck } from './filerecord.entity';
+import { FileRecord, FileSecurityCheck, IFileRecordProperties } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
 	let orm: MikroORM;
@@ -90,21 +90,6 @@ describe('FileRecord Entity', () => {
 			const fileRecord = fileRecordFactory.build();
 			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
 			expect(fileRecord.securityCheck?.requestToken).toBeUndefined();
-		});
-	});
-
-	describe('when updating the security status', () => {
-		it('should create a status object if not exists', () => {
-			const fileRecord = fileRecordFactory.build();
-			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'irrelevant');
-			expect(fileRecord.securityCheck).toBeDefined();
-		});
-
-		it('should set status and reason properties on the embedded object', () => {
-			const fileRecord = fileRecordFactory.build();
-			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'irrelevant');
-			expect(fileRecord.securityCheck?.status).toEqual(ScanStatus.WONT_CHECK);
-			expect(fileRecord.securityCheck?.reason).toEqual('irrelevant');
 		});
 	});
 
