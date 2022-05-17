@@ -1,18 +1,21 @@
-import { Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { TaskCopyMapper } from '../mapper/task-copy.mapper';
 import { TaskMapper } from '../mapper/task.mapper';
+import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse } from './dto';
+import { TaskCopyApiResponse, TaskListResponse, TaskResponse } from './dto';
+import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
 @Authenticate('jwt')
 @Controller('tasks')
 export class TaskController {
-	constructor(private readonly taskUc: TaskUC) {}
+	constructor(private readonly taskUc: TaskUC, private readonly taskCopyUc: TaskCopyUC) {}
 
 	@Get()
 	async findAll(
@@ -76,5 +79,20 @@ export class TaskController {
 		const result = await this.taskUc.delete(currentUser.userId, taskId);
 
 		return result;
+	}
+
+	@Post(':id/copy')
+	async copyTask(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param('id', ParseObjectIdPipe) taskId: string,
+		@Body() params: TaskCopyApiParams
+	): Promise<TaskCopyApiResponse> {
+		const copyStatus = await this.taskCopyUc.copyTask(
+			currentUser.userId,
+			taskId,
+			TaskCopyMapper.mapTaskCopyToDomain(params)
+		);
+		const dto = TaskCopyMapper.mapToResponse(copyStatus);
+		return dto;
 	}
 }
