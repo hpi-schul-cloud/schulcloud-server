@@ -275,7 +275,7 @@
 		"WOPI_MAX_FILE_SIZE": {
 			"type": "integer",
 			"default": 20971520,
-			"description": "The maximum file size that can be handled by the WOPI API."
+			"description": "The maximum file size in bytes that can be handled by the WOPI API. Download of larger files throws an error."
 		},		
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
