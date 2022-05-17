@@ -6,7 +6,6 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
 import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { FileRecordRepo } from './filerecord.repo';
-import { before } from 'lodash';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -32,6 +31,20 @@ describe('FileRecordRepo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(FileRecord);
+	});
+
+	describe('findOneById', () => {
+		it('should find an entity by its id and deletedSince is NOT defined', async () => {
+			const fileRecord = fileRecordFactory.build();
+
+			await em.persistAndFlush(fileRecord);
+			em.clear();
+
+			const result = await repo.findOneById(fileRecord.id);
+
+			expect(result).toBeDefined();
+			expect(result.id).toEqual(fileRecord.id);
+		});
 	});
 
 	describe('findOneByIdMarkedForDelete', () => {
