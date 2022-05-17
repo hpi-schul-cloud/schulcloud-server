@@ -508,6 +508,26 @@ describe('Task Controller (e2e)', () => {
 				});
 			});
 		});
+
+		describe('copy tasks', () => {
+			it('should duplicate a task', async () => {
+				const teacher = setup();
+				const course = courseFactory.build({
+					teachers: [teacher],
+				});
+				const task = taskFactory.build({ creator: teacher, course });
+
+				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+				const params = { courseId: course.id };
+
+				const response = await request(app.getHttpServer()).post(`/tasks/${task.id}/copy`).send(params);
+
+				expect(response.status).toEqual(201);
+			});
+		});
 	});
 
 	describe('As user with read permissions in courses', () => {

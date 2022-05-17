@@ -231,6 +231,10 @@
 				}
 			}
 		},
+		"NO_COLOR": {
+			"type": "string",
+			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
+		},
 		"FILES_STORAGE": {
 			"type": "object",
 			"description": "Files storage server properties, required always to be defined",
