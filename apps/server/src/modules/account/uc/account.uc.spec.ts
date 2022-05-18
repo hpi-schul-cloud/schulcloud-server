@@ -770,10 +770,10 @@ describe('AccountUc', () => {
 				let params = { type: AccountSearchType.USERNAME, value: mockAdminAccount.username } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
-				params = { type: AccountSearchType.USER_ID, value: mockTeacherAccount.username } as AccountSearchQueryParams;
+				params = { type: AccountSearchType.USERNAME, value: mockTeacherAccount.username } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
-				params = { type: AccountSearchType.USER_ID, value: mockStudentAccount.username } as AccountSearchQueryParams;
+				params = { type: AccountSearchType.USERNAME, value: mockStudentAccount.username } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 		});
