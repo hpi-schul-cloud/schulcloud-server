@@ -43,11 +43,13 @@ describe('AccountUc', () => {
 	let mockTeacherUser: User;
 	let mockOtherTeacherUser: User;
 	let mockStudentUser: User;
+	let mockOtherStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
 	let mockUnknownRoleUser: User;
 	let mockExternalUser: User;
 	let mockUserWithoutAccount: User;
 	let mockUserWithoutRole: User;
+	let mockStudentUserWithoutAccount: User;
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
@@ -106,17 +108,6 @@ describe('AccountUc', () => {
 							}
 							if (userId === 'accountWithoutUser') {
 								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
-							}
-							throw new EntityNotFoundError(Account.name);
-						},
-						findOneByUser: (user: User): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.user.id === user.id);
-
-							if (account) {
-								return Promise.resolve(account);
-							}
-							if (user.id === 'accountWithoutUser') {
-								return Promise.resolve(mockStudentAccount);
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
@@ -213,7 +204,19 @@ describe('AccountUc', () => {
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [
-				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+				new Role({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [
+						Permission.TEACHER_EDIT,
+						Permission.STUDENT_EDIT,
+						Permission.STUDENT_LIST,
+						Permission.TEACHER_LIST,
+						Permission.TEACHER_CREATE,
+						Permission.STUDENT_CREATE,
+						Permission.TEACHER_DELETE,
+						Permission.STUDENT_DELETE,
+					],
+				}),
 			],
 		});
 		mockTeacherUser = userFactory.buildWithId({
@@ -225,6 +228,10 @@ describe('AccountUc', () => {
 			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
+			school: mockSchool,
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
+		});
+		mockOtherStudentUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
@@ -249,6 +256,10 @@ describe('AccountUc', () => {
 			roles: [new Role({ name: 'undefinedRole' as RoleName, permissions: ['' as Permission] })],
 		});
 		mockExternalUser = userFactory.buildWithId({
+			school: mockSchool,
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
+		});
+		mockStudentUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
@@ -307,6 +318,8 @@ describe('AccountUc', () => {
 			mockExternalUser,
 			mockUserWithoutRole,
 			mockUserWithoutAccount,
+			mockStudentUserWithoutAccount,
+			mockOtherStudentUser,
 		];
 
 		mockAccounts = [
@@ -615,7 +628,7 @@ describe('AccountUc', () => {
 		it('should return empty list, if account is not found', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
-				{ type: AccountSearchType.USER_ID, value: 'nonExistentId' } as AccountSearchQueryParams
+				{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchQueryParams
 			);
 			const expected = new AccountSearchListResponse([], 0, 0, 0);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
@@ -641,7 +654,24 @@ describe('AccountUc', () => {
 		});
 		it('should throw, if user has not the right permissions', async () => {
 			await expect(
-				accountUc.searchAccounts({ userId: mockTeacherUser.id } as ICurrentUser, {} as AccountSearchQueryParams)
+				accountUc.searchAccounts(
+					{ userId: mockTeacherUser.id } as ICurrentUser,
+					{ type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams
+				)
+			).rejects.toThrow(ForbiddenOperationError);
+
+			await expect(
+				accountUc.searchAccounts(
+					{ userId: mockStudentUser.id } as ICurrentUser,
+					{ type: AccountSearchType.USER_ID, value: mockOtherStudentUser.id } as AccountSearchQueryParams
+				)
+			).rejects.toThrow(ForbiddenOperationError);
+
+			await expect(
+				accountUc.searchAccounts(
+					{ userId: mockStudentUser.id } as ICurrentUser,
+					{ type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams
+				)
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw, if search type is unknown', async () => {
@@ -651,6 +681,14 @@ describe('AccountUc', () => {
 					{ type: '' as AccountSearchType } as AccountSearchQueryParams
 				)
 			).rejects.toThrow('Invalid search type.');
+		});
+		it('should throw, if user is no superhero', async () => {
+			await expect(
+				accountUc.searchAccounts(
+					{ userId: mockTeacherUser.id } as ICurrentUser,
+					{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchQueryParams
+				)
+			).rejects.toThrow(ForbiddenOperationError);
 		});
 	});
 

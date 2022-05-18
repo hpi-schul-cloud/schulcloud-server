@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -72,7 +72,7 @@ export class AccountUc {
 			return new AccountSearchListResponse([], 0, 0, 0);
 		}
 
-		throw new BadRequestException('Unknown Search Type');
+		throw new BadRequestException('Invalid search type.');
 	}
 
 	/**
@@ -284,31 +284,6 @@ export class AccountUc {
 		}
 	}
 
-	/**
-	 * This method processes the GET request on the user/:id/account endpoint from the user controller
-	 * @param currentUser the request user
-	 * @param id the request parameter
-	 * @throws {ForbiddenOperationError}
-	 * @throws {NotImplementedException}
-	 * @throws {EntityNotFoundError}
-	 */
-	async findAccountByUserId(currentUser: ICurrentUser, id: string): Promise<AccountResponse | null> {
-		const executingUser = await this.userRepo.findById(currentUser.userId, true);
-		const targetUser = await this.userRepo.findById(id, true);
-
-		const permission = this.hasPermissionsToAccessAccount(executingUser, targetUser, 'READ');
-
-		if (!permission) {
-			throw new ForbiddenOperationError('Current user is not authorized to search for accounts by user id.');
-		}
-
-		const account = await this.accountService.findByUserId(id);
-		if (!account) {
-			return null;
-		}
-		return AccountResponseMapper.mapToResponse(account);
-	}
-
 	private hasRole(user: User, roleName: string) {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;
@@ -342,6 +317,7 @@ export class AccountUc {
 
 		const permissionsToCheck: string[] = [];
 		if (this.hasRole(targetUser, RoleName.STUDENT)) {
+			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'READ':
 					permissionsToCheck.push('STUDENT_LIST');
@@ -349,17 +325,19 @@ export class AccountUc {
 				case 'UPDATE':
 					permissionsToCheck.push('STUDENT_EDIT');
 					break;
-				case 'CREATE':
+				// for future endpoints
+				/* case 'CREATE':
 					permissionsToCheck.push('STUDENT_CREATE');
 					break;
 				case 'DELETE':
 					permissionsToCheck.push('STUDENT_DELETE');
-					break;
+					break; 
 				default:
-					return false;
+					return false; */
 			}
 		}
 		if (this.hasRole(targetUser, RoleName.TEACHER)) {
+			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'READ':
 					permissionsToCheck.push('TEACHER_LIST');
@@ -367,14 +345,15 @@ export class AccountUc {
 				case 'UPDATE':
 					permissionsToCheck.push('TEACHER_EDIT');
 					break;
-				case 'CREATE':
+				// for future endpoints
+				/* case 'CREATE':
 					permissionsToCheck.push('TEACHER_CREATE');
 					break;
 				case 'DELETE':
 					permissionsToCheck.push('TEACHER_DELETE');
-					break;
+					break; 
 				default:
-					return false;
+					return false; */
 			}
 		}
 		if (permissionsToCheck.length === 0) {

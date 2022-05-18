@@ -175,10 +175,10 @@ describe('Account Controller (e2e)', () => {
 		// We testing it here, because we are mocking the database in the use case unit tests
 		// and for realistic behavior we need database.
 		it('should search for user id with large skip', async () => {
-			currentUser = mapUserToCurrentUser(superheroAccount.user);
+			currentUser = mapUserToCurrentUser(superheroUser);
 			const query: AccountSearchQueryParams = {
 				type: AccountSearchType.USER_ID,
-				value: studentAccount.user.id,
+				value: studentUser.id,
 				skip: 50000,
 				limit: 5,
 			};
