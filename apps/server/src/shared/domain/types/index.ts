@@ -1,3 +1,4 @@
+export * from './copy.types';
 export * from './counted';
 export * from './entity-id';
 export * from './learnroom.types';
