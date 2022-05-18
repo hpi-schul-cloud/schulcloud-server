@@ -34,7 +34,7 @@
 
   - name: remove old migration Job
     kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
       api_version: batch/v1
