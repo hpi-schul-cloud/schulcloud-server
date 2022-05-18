@@ -10,16 +10,17 @@ const COPY_STATUS = ['success', 'failure', 'not-doing', 'not-implemented'] as co
 type ElementType = typeof COPY_ELEMENT_TYPE[number];
 type StatusType = typeof COPY_STATUS[number];
 export class TaskCopyApiResponse {
-	constructor({ title, type, status }: TaskCopyApiResponse) {
+	constructor({ id, title, type, status }: TaskCopyApiResponse) {
+		this.id = id;
 		this.title = title;
 		this.type = type;
 		this.status = status;
 	}
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'Id of copied element',
 	})
-	id?: string;
+	id: string;
 
 	@ApiProperty({
 		description: 'Title of copied element',
@@ -43,5 +44,5 @@ export class TaskCopyApiResponse {
 	@ApiPropertyOptional({
 		description: 'List of included sub elements',
 	})
-	elements?: TaskCopyApiResponse[];
+	elements?: { title: string; type: ElementType; status: StatusType }[];
 }

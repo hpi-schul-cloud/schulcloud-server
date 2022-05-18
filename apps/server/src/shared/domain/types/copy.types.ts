@@ -1,9 +1,9 @@
 export type CopyStatusDTO = {
-	id?: string;
+	id: string;
 	title: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
-	elements?: CopyStatusDTO[];
+	elements?: { title: string; type: CopyElementType; status: CopyStatusEnum }[];
 };
 
 export enum CopyElementType {

@@ -6,6 +6,7 @@ import { TaskCopyParentParams } from '../uc/task-copy.uc';
 export class TaskCopyMapper {
 	static mapToResponse(copyStatus: CopyStatusDTO): TaskCopyApiResponse {
 		const dto = new TaskCopyApiResponse({
+			id: copyStatus.id,
 			title: copyStatus.title,
 			type: copyStatus.type,
 			status: copyStatus.status,
@@ -15,9 +16,6 @@ export class TaskCopyMapper {
 			dto.elements = copyStatus.elements;
 		}
 
-		if (copyStatus.id) {
-			dto.id = copyStatus.id;
-		}
 		return dto;
 	}
 

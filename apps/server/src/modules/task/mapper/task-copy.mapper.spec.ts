@@ -34,6 +34,7 @@ describe('task copy mapper', () => {
 	describe('mapToResponse', () => {
 		it('should map status without sub elements into response', () => {
 			const copyStatus = {
+				id: 'id',
 				title: 'Test element',
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
@@ -44,6 +45,7 @@ describe('task copy mapper', () => {
 		});
 		it('should map status with sub elements into response', () => {
 			const copyStatus = {
+				id: 'id',
 				title: 'Test element',
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
@@ -52,6 +54,7 @@ describe('task copy mapper', () => {
 			const result = TaskCopyMapper.mapToResponse(copyStatus);
 
 			expect(result instanceof TaskCopyApiResponse).toEqual(true);
+			expect(result).toEqual(copyStatus);
 		});
 	});
 
