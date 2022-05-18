@@ -11,7 +11,6 @@ import { ServerConsole } from './server.console';
 
 @Module({
 	imports: [
-		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		ManagementModule,
 		ConsoleModule,
 		ConsoleWriterModule,
@@ -21,6 +20,7 @@ import { ServerConsole } from './server.console';
 			validationOptions: { infer: true },
 			load: [serverConfig],
 		}),
+		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 	],
 	providers: [
 		/** add console services as providers */
