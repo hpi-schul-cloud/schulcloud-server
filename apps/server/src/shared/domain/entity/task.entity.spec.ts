@@ -3,14 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
 	lessonFactory,
+	setupEntities,
+	submissionFactory,
 	taskFactory,
 	userFactory,
-	submissionFactory,
-	setupEntities,
 } from '@shared/testing';
-
-import { Task } from './task.entity';
 import { Submission } from './submission.entity';
+import { Task } from './task.entity';
 import { User } from './user.entity';
 
 describe('Task Entity', () => {
@@ -66,6 +65,28 @@ describe('Task Entity', () => {
 		it('should return true without available Date', () => {
 			const task = taskFactory.build({ availableDate: undefined });
 			expect(task.isPublished()).toEqual(true);
+		});
+	});
+
+	describe('isPlanned', () => {
+		it('should return false for private task', () => {
+			const task = taskFactory.draft().build();
+			expect(task.isPlanned()).toEqual(false);
+		});
+
+		it('should return true before available Date', () => {
+			const task = taskFactory.build({ availableDate: new Date(Date.now() + 10000) });
+			expect(task.isPlanned()).toEqual(true);
+		});
+
+		it('should return false after available Date', () => {
+			const task = taskFactory.build({ availableDate: new Date(Date.now() - 10000) });
+			expect(task.isPlanned()).toEqual(false);
+		});
+
+		it('should return false without available Date', () => {
+			const task = taskFactory.build({ availableDate: undefined });
+			expect(task.isPlanned()).toEqual(false);
 		});
 	});
 
