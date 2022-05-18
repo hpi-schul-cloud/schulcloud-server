@@ -15,7 +15,6 @@ const setClientDefaults = (data) => {
 module.exports = function oauth2() {
 	const app = this;
 	const hydraAdmin = Hydra(app.settings.services.hydra);
-	const hydraPub = Hydra(app.settings.services.hydraPub);
 
 	// hydra.isInstanceAlive()
 	// 	.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
@@ -61,13 +60,7 @@ module.exports = function oauth2() {
 	app.service('/oauth2/loginRequest').hooks(hooks.hooks.loginRequest);
 
 	app.use('/oauth2/logoutRequest', {
-		find() {
-			console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>GetLogoutRequest');
-			const resp = hydraPub.getLogoutRequest();
-			return resp;
-		},
 		patch(challenge, body) {
-			console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PutLogoutRequest');
 			return hydraAdmin.acceptLogoutRequest(challenge, body);
 		},
 	});
