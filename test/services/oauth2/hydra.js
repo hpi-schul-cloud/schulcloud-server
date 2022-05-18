@@ -13,6 +13,7 @@ describe('oauth2 service', function oauthTest() {
 	let baseUrlService;
 	let clientsService;
 	let loginService;
+	let logoutService;
 	let introspectService;
 	let consentService;
 	let toolService;
@@ -76,6 +77,7 @@ describe('oauth2 service', function oauthTest() {
 		baseUrlService = app.service('oauth2/baseUrl');
 		clientsService = app.service('oauth2/clients');
 		loginService = app.service('oauth2/loginRequest');
+		logoutService = app.service('oauth2/logoutRequest');
 		introspectService = app.service('oauth2/introspect');
 		consentService = app.service('oauth2/auth/sessions/consent');
 		toolService = app.service('ltiTools');
@@ -215,4 +217,18 @@ describe('oauth2 service', function oauthTest() {
 			.catch((err) => {
 				assert.strictEqual(404, err.statusCode);
 			}));
+	
+	it('PATCH Logout Request Accept', () => {
+		logoutService
+			.patch(
+				null,
+				{},
+				{
+					redirect_to: '',
+				}
+			)
+			.then((result) => {
+				assert.ok(result.redirect_to==='here');
+			});
+	});
 });
