@@ -130,6 +130,20 @@ describe('task copy service', () => {
 			expect(result.copy.course).toEqual(course);
 		});
 
+		it('should set status id to task copy id', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({});
+
+			const result = copyService.copyTaskMetadata({
+				originalTask,
+				destinationCourse: course,
+				user,
+			});
+
+			expect(result.status.id).toEqual(result.copy.id);
+		});
+
 		it('should set status to success', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();

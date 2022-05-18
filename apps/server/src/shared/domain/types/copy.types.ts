@@ -1,4 +1,5 @@
 export type CopyStatusDTO = {
+	id?: string;
 	title: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;

@@ -38,6 +38,7 @@ describe('TaskController', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 				const ucResult = {
+					id: 'id',
 					title: 'example title',
 					type: 'TASK' as CopyElementType,
 					status: 'SUCCESS' as CopyStatusEnum,

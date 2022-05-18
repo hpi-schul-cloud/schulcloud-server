@@ -16,6 +16,11 @@ export class TaskCopyApiResponse {
 		this.status = status;
 	}
 
+	@ApiPropertyOptional({
+		description: 'Id of copied element',
+	})
+	id?: string;
+
 	@ApiProperty({
 		description: 'Title of copied element',
 	})

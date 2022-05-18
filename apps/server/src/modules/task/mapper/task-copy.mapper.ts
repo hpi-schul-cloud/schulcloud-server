@@ -14,6 +14,10 @@ export class TaskCopyMapper {
 		if (copyStatus.elements) {
 			dto.elements = copyStatus.elements;
 		}
+
+		if (copyStatus.id) {
+			dto.id = copyStatus.id;
+		}
 		return dto;
 	}
 

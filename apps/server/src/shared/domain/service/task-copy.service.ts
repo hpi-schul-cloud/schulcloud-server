@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Task, User, Course } from '@shared/domain/entity';
-import { CopyStatusDTO, CopyElementType, CopyStatusEnum } from '@shared/domain/types';
+import { Course, Task, User } from '@shared/domain/entity';
+import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '@shared/domain/types';
 
 export type TaskCopyParams = {
 	originalTask: Task;
@@ -25,6 +25,7 @@ export class TaskCopyService {
 			course: params.destinationCourse,
 		});
 		const status = {
+			id: copy.id,
 			title: copy.name,
 			type: CopyElementType.TASK,
 			status: CopyStatusEnum.SUCCESS,
