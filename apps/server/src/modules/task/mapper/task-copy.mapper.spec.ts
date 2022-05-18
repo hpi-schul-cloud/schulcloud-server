@@ -54,7 +54,6 @@ describe('task copy mapper', () => {
 			const result = TaskCopyMapper.mapToResponse(copyStatus);
 
 			expect(result instanceof TaskCopyApiResponse).toEqual(true);
-			expect(result).toEqual(copyStatus);
 		});
 	});
 
