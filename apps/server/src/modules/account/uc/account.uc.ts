@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -41,7 +41,6 @@ export class AccountUc {
 	 * @param query the request query
 	 * @throws {ValidationError}
 	 * @throws {ForbiddenOperationError}
-	 * @throws {EntityNotFoundError}
 	 */
 	async searchAccounts(currentUser: ICurrentUser, query: AccountSearchQueryParams): Promise<AccountSearchListResponse> {
 		const skip = query.skip ?? 0;
@@ -72,7 +71,7 @@ export class AccountUc {
 			return new AccountSearchListResponse([], 0, 0, 0);
 		}
 
-		throw new BadRequestException('Invalid search type.');
+		throw new ValidationError('Invalid search type.');
 	}
 
 	/**
@@ -332,8 +331,10 @@ export class AccountUc {
 				case 'DELETE':
 					permissionsToCheck.push('STUDENT_DELETE');
 					break; 
+				*/
+				// unreachable
 				default:
-					return false; */
+					return false;
 			}
 		}
 		if (this.hasRole(targetUser, RoleName.TEACHER)) {
@@ -352,8 +353,10 @@ export class AccountUc {
 				case 'DELETE':
 					permissionsToCheck.push('TEACHER_DELETE');
 					break; 
+ 				*/
+				// unreachable
 				default:
-					return false; */
+					return false;
 			}
 		}
 		if (permissionsToCheck.length === 0) {

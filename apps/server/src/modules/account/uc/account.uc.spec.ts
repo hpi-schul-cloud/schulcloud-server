@@ -45,6 +45,7 @@ describe('AccountUc', () => {
 	let mockStudentUser: User;
 	let mockOtherStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
+	let mockDifferentSchoolTeacherUser: User;
 	let mockUnknownRoleUser: User;
 	let mockExternalUser: User;
 	let mockUserWithoutAccount: User;
@@ -221,11 +222,21 @@ describe('AccountUc', () => {
 		});
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
+			roles: [
+				new Role({
+					name: RoleName.TEACHER,
+					permissions: [Permission.STUDENT_EDIT, Permission.STUDENT_LIST, Permission.TEACHER_LIST],
+				}),
+			],
 		});
 		mockOtherTeacherUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
+			roles: [
+				new Role({
+					name: RoleName.TEACHER,
+					permissions: [Permission.STUDENT_EDIT, Permission.STUDENT_LIST, Permission.TEACHER_LIST],
+				}),
+			],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
@@ -237,9 +248,11 @@ describe('AccountUc', () => {
 		});
 		mockDifferentSchoolAdminUser = userFactory.buildWithId({
 			school: mockOtherSchool,
-			roles: [
-				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
-			],
+			roles: [...mockAdminUser.roles],
+		});
+		mockDifferentSchoolTeacherUser = userFactory.buildWithId({
+			school: mockOtherSchool,
+			roles: [...mockTeacherUser.roles],
 		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
@@ -624,7 +637,6 @@ describe('AccountUc', () => {
 			);
 			expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 		});
-
 		it('should return empty list, if account is not found', async () => {
 			const accounts = await accountUc.searchAccounts(
 				{ userId: mockSuperheroUser.id } as ICurrentUser,
@@ -689,6 +701,81 @@ describe('AccountUc', () => {
 					{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchQueryParams
 				)
 			).rejects.toThrow(ForbiddenOperationError);
+		});
+
+		describe('hasPermissionsToAccessAccount', () => {
+			it('admin can access teacher of the same school via user id', async () => {
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+			});
+			it('admin can access student of the same school via user id', async () => {
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+			});
+			it('admin can not access admin of the same school via user id', async () => {
+				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('admin can not access any account of a foreign school via user id', async () => {
+				const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
+
+				let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('teacher can access teacher of the same school via user id', async () => {
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockOtherTeacherUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+			});
+			it('teacher can access student of the same school via user id', async () => {
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+			});
+			it('teacher can not access admin of the same school via user id', async () => {
+				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('teacher can not access any account of a foreign school via user id', async () => {
+				const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;
+
+				let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('student can not access any other account via user id', async () => {
+				const currentUser = { userId: mockStudentUser.id } as ICurrentUser;
+
+				let params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('superhero can access any account via username', async () => {
+				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
+
+				let params = { type: AccountSearchType.USERNAME, value: mockAdminAccount.username } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockTeacherAccount.username } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockStudentAccount.username } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+			});
 		});
 	});
 
