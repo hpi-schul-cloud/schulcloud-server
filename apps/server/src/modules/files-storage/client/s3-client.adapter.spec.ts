@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Logger } from '@src/core/logger';
+import { InternalServerErrorException } from '@nestjs/common';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';
@@ -52,6 +53,7 @@ describe('S3ClientAdapter', () => {
 	describe('createBucket', () => {
 		it('should call send() of client', async () => {
 			await service.createBucket();
+
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: { Bucket: config.bucket },
@@ -162,25 +164,34 @@ describe('S3ClientAdapter', () => {
 	describe('delete', () => {
 		it('should call send() of client with copy objects', async () => {
 			await service.delete([pathToFile]);
+
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: { Bucket: 'test-bucket', CopySource: 'test-bucket/test/text.txt', Key: 'trash/test/text.txt' },
 				})
 			);
 		});
+
 		it('should call send() of client with delete objects', async () => {
 			await service.delete([pathToFile]);
+
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 				})
 			);
 		});
+
+		it('should throw an InternalServerErrorException by error', async () => {
+			// @ts-expect-error should run into error
+			await expect(service.delete(undefined)).rejects.toThrowError(InternalServerErrorException);
+		});
 	});
 
 	describe('restore', () => {
 		it('should call send() of client with copy objects', async () => {
 			await service.restore([pathToFile]);
+
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: {
@@ -191,18 +202,26 @@ describe('S3ClientAdapter', () => {
 				})
 			);
 		});
+
 		it('should call send() of client with delete objects', async () => {
 			await service.restore([pathToFile]);
+
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'trash/test/text.txt' }] } },
 				})
 			);
 		});
+
+		it('should throw an InternalServerErrorException by error', async () => {
+			// @ts-expect-error should run into error
+			await expect(service.restore(undefined)).rejects.toThrowError(InternalServerErrorException);
+		});
 	});
 
 	describe('copy', () => {
 		let pathsToCopy: ICopyFiles[];
+
 		beforeEach(() => {
 			pathsToCopy = [
 				{
@@ -211,6 +230,7 @@ describe('S3ClientAdapter', () => {
 				},
 			];
 		});
+
 		it('should call send() of client with copy objects', async () => {
 			await service.copy(pathsToCopy);
 			expect(client.send).toBeCalledWith(
@@ -222,6 +242,11 @@ describe('S3ClientAdapter', () => {
 					},
 				})
 			);
+		});
+
+		it('should throw an InternalServerErrorException by error', async () => {
+			// @ts-expect-error should run into error
+			await expect(service.copy(undefined)).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
 });

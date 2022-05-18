@@ -1,8 +1,15 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, FileRecord, ScanStatus } from '@shared/domain';
+import {
+	BadRequestException,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from '@nestjs/common';
+import { Counted, EntityId, FileRecord, FileRecordParentType, IPermissionContext, ScanStatus } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { AuthorizationService } from '@src/modules/authorization';
 import busboy from 'busboy';
 import { Request } from 'express';
 import path from 'path';
@@ -15,8 +22,10 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
+import { PermissionContexts, ErrorType } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
+import { FileStorageMapper } from '../mapper/parent-type.mapper';
 
 @Injectable()
 export class FilesStorageUC {
@@ -24,38 +33,46 @@ export class FilesStorageUC {
 		private readonly storageClient: S3ClientAdapter,
 		private readonly fileRecordRepo: FileRecordRepo,
 		private readonly antivirusService: AntivirusService,
-		private logger: Logger
+		private logger: Logger,
+		private readonly authorizationService: AuthorizationService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
 
-	async upload(userId: EntityId, params: FileRecordParams, req: Request) {
-		// @TODO check permissions of schoolId by user
-		try {
-			const result = await new Promise((resolve, reject) => {
-				const requestStream = busboy({ headers: req.headers });
+	private async addRequestStreamToRequestPipe(
+		userId: EntityId,
+		params: FileRecordParams,
+		req: Request
+	): Promise<FileRecord> {
+		const result = await new Promise((resolve, reject) => {
+			const requestStream = busboy({ headers: req.headers });
 
-				// eslint-disable-next-line @typescript-eslint/no-misused-promises
-				requestStream.on('file', async (_name, file, info): Promise<void> => {
-					const fileDescription = this.createFileDescription(file, info, req);
-					try {
-						const record = await this.uploadFile(userId, params, fileDescription);
-						resolve(record);
-					} catch (error) {
-						requestStream.emit('error', error);
-					}
-				});
-
-				requestStream.on('error', (e) => {
-					reject(e);
-				});
-				req.pipe(requestStream);
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			requestStream.on('file', async (_name, file, info): Promise<void> => {
+				const fileDescription = this.createFileDescription(file, info, req);
+				try {
+					const record = await this.uploadFile(userId, params, fileDescription);
+					resolve(record);
+				} catch (error) {
+					requestStream.emit('error', error);
+				}
 			});
 
-			return result as FileRecord;
-		} catch (error) {
-			throw new BadRequestException(error);
-		}
+			requestStream.on('error', (e) => {
+				reject(new BadRequestException(e, `${FilesStorageUC.name}:upload requestStream`));
+			});
+			req.pipe(requestStream);
+		});
+
+		return result as FileRecord;
+	}
+
+	public async upload(userId: EntityId, params: FileRecordParams, req: Request) {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+
+		const result = await this.addRequestStreamToRequestPipe(userId, params, req);
+
+		return result;
 	}
 
 	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
@@ -76,8 +93,8 @@ export class FilesStorageUC {
 		const entity = this.getNewFileRecord(fileName, fileDescription.size, fileDescription.mimeType, params, userId);
 		try {
 			await this.fileRecordRepo.save(entity);
-			const folder = [params.schoolId, entity.id].join('/');
-			await this.storageClient.create(folder, fileDescription);
+			const filePath = this.createPath(params.schoolId, entity.id);
+			await this.storageClient.create(filePath, fileDescription);
 			await this.antivirusService.send(entity);
 
 			return entity;
@@ -113,38 +130,45 @@ export class FilesStorageUC {
 		return res;
 	}
 
-	async download(userId: EntityId, params: DownloadFileParams) {
-		try {
-			// @TODO check permissions of schoolId by user
-			const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
-			if (entity.name !== params.fileName) {
-				throw new NotFoundException('File not found');
-			} else if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-				throw new Error('File is blocked');
-			}
-			const res = await this.downloadFile(entity.schoolId, entity.id);
+	private async checkPermission(
+		userId: EntityId,
+		parentType: FileRecordParentType,
+		parentId: EntityId,
+		context: IPermissionContext
+	) {
+		const allowedType = FileStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
+		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+	}
 
-			return res;
-		} catch (error) {
-			if (error instanceof NotFoundException) {
-				throw error;
-			}
-			throw new BadRequestException(error);
+	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
+		if (entity.name !== params.fileName) {
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND, `${FilesStorageUC.name}:download`);
 		}
 	}
 
-	async downloadBySecurityToken(token: string) {
-		try {
-			const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
-			const res = await this.downloadFile(entity.schoolId, entity.id);
-
-			return res;
-		} catch (error) {
-			if (error instanceof NotFoundException) {
-				throw error;
-			}
-			throw new BadRequestException(error);
+	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
+		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
+			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED, `${FilesStorageUC.name}:download`);
 		}
+	}
+
+	public async download(userId: EntityId, params: DownloadFileParams) {
+		const entity = await this.fileRecordRepo.findOneById(params.fileRecordId);
+
+		await this.checkPermission(userId, entity.parentType, entity.parentId, PermissionContexts.read);
+
+		this.checkFileName(entity, params);
+		this.checkScanStatus(entity);
+		const res = await this.downloadFile(entity.schoolId, entity.id);
+
+		return res;
+	}
+
+	public async downloadBySecurityToken(token: string) {
+		const entity = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
+		const res = await this.downloadFile(entity.schoolId, entity.id);
+
+		return res;
 	}
 
 	private checkFilenameExists(filename: string, fileRecords: FileRecord[]): string {
@@ -189,11 +213,12 @@ export class FilesStorageUC {
 		} catch (err) {
 			await this.unmarkForDelete(fileRecords);
 
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:delete`);
 		}
 	}
 
-	async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 		if (count > 0) {
 			await this.delete(fileRecords);
@@ -202,14 +227,16 @@ export class FilesStorageUC {
 		return [fileRecords, count];
 	}
 
-	async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+	public async deleteOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.delete);
 		await this.delete([fileRecord]);
 
 		return fileRecord;
 	}
 
-	async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentIdAndMarkedForDelete(
 			params.schoolId,
 			params.parentId
@@ -220,18 +247,29 @@ export class FilesStorageUC {
 		return [fileRecords, count];
 	}
 
-	async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
+	public async restoreOneFile(userId: EntityId, params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+		await this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create);
 		await this.restore([fileRecord]);
 
 		return fileRecord;
 	}
 
-	async copyFilesOfParent(
+	public async copyFilesOfParent(
 		userId: string,
 		params: FileRecordParams,
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<FileRecord[]>> {
+		await Promise.all([
+			this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create),
+			this.checkPermission(
+				userId,
+				copyFilesParams.target.parentType,
+				copyFilesParams.target.parentId,
+				PermissionContexts.create
+			),
+		]);
+
 		const [fileRecords, count] = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
 
 		if (count === 0) {
@@ -243,8 +281,18 @@ export class FilesStorageUC {
 		return newRecords;
 	}
 
-	async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
+	public async copyOneFile(userId: string, params: SingleFileParams, copyFileParams: CopyFileParams) {
 		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+		await Promise.all([
+			this.checkPermission(userId, fileRecord.parentType, fileRecord.parentId, PermissionContexts.create),
+			this.checkPermission(
+				userId,
+				copyFileParams.target.parentType,
+				copyFileParams.target.parentId,
+				PermissionContexts.create
+			),
+		]);
+
 		const [newRecord] = await this.copy(userId, [fileRecord], copyFileParams.target);
 
 		return newRecord[0];
@@ -256,25 +304,37 @@ export class FilesStorageUC {
 		targetParams: FileRecordParams
 	): Promise<Counted<FileRecord[]>> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
-		let newRecords: FileRecord[] = [];
+		const newRecords: FileRecord[] = [];
 		const paths: Array<ICopyFiles> = [];
 
-		newRecords = await Promise.all(
+		await Promise.all(
 			sourceFileRecords.map(async (item) => {
-				const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
-				entity.securityCheck = item.securityCheck;
-				await this.fileRecordRepo.save(entity);
+				if (item.securityCheck.status !== ScanStatus.BLOCKED && !item.deletedSince) {
+					const entity = this.getNewFileRecord(item.name, item.size, item.mimeType, targetParams, userId);
+					if (item.securityCheck.status !== ScanStatus.PENDING) {
+						entity.securityCheck = item.securityCheck;
+					}
 
-				paths.push({
-					sourcePath: [item.schoolId, item.id].join('/'),
-					targetPath: [entity.schoolId, entity.id].join('/'),
-				});
-				return entity;
+					await this.fileRecordRepo.save(entity);
+					newRecords.push(entity);
+					paths.push({
+						sourcePath: this.createPath(item.schoolId, item.id),
+						targetPath: this.createPath(entity.schoolId, entity.id),
+					});
+				}
 			})
 		);
 
 		try {
 			await this.storageClient.copy(paths);
+			const pendedFileRecords = newRecords.filter((item) => {
+				if (item.securityCheck.status === ScanStatus.PENDING) {
+					return this.antivirusService.send(item);
+				}
+				return false;
+			});
+
+			await Promise.all(pendedFileRecords);
 			return [newRecords, newRecords.length];
 		} catch (error) {
 			await this.fileRecordRepo.delete(newRecords);
@@ -292,7 +352,7 @@ export class FilesStorageUC {
 			await this.storageClient.restore(paths);
 		} catch (err) {
 			await this.markForDelete(fileRecords);
-			throw new InternalServerErrorException(err);
+			throw new InternalServerErrorException(err, `${FilesStorageUC.name}:restore`);
 		}
 	}
 }
