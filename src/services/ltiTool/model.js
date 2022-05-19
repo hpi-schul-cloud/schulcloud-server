@@ -40,6 +40,7 @@ const ltiToolSchema = new Schema({
 	friendlyUrl: { type: String, unique: true, sparse: true },
 	skipConsent: { type: Boolean },
 	openNewTab: { type: Boolean, default: false },
+	logout_url: { type: String },
 });
 
 function validateKey(value) {
