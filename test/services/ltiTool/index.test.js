@@ -125,4 +125,14 @@ describe('ltiTool service', () => {
 			expect(err.code).to.eq(403);
 		}
 	});
+
+	it('tools can be updated to be hidden', async () => {
+		const teacher = await testObjects.createTestUser({ roles: 'teacher' });
+		const tool = await testObjects.createTestLtiTool();
+		await testObjects.createTestCourse({ teacherIds: [teacher._id], ltiToolIds: [tool._id] });
+
+		const params = await generateRequestParamsFromUser(teacher);
+		const result = await app.service('ltiTools').patch(tool._id, { isHidden: true }, params);
+		expect(result.isHidden).to.be.true;
+	});
 });
