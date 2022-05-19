@@ -11,11 +11,11 @@ export class CopyMapper {
 			status: copyStatus.status,
 		});
 
-		if (copyStatus.elements) {
-			dto.elements = copyStatus.elements;
-		}
 		if (copyStatus.copyEntity) {
 			dto.id = copyStatus.copyEntity.id;
+		}
+		if (copyStatus.elements) {
+			dto.elements = copyStatus.elements;
 		}
 		return dto;
 	}
