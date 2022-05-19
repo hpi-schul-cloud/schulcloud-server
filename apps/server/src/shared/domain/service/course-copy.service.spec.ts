@@ -77,18 +77,6 @@ describe('course copy service', () => {
 			expect(result.copy.color).toEqual(originalCourse.color);
 		});
 
-		/* it.todo('should set dates of course according to current school year of user school', () => {
-			const user = userFactory.buildWithId();
-			const originalCourse = courseFactory.buildWithId();
-
-			const result = copyService.copyCourseMetadata({
-				originalCourse,
-				user,
-			});
-
-			expect(true).toEqual(false);
-		}); */
-
 		it('should not set any students', () => {
 			const user = userFactory.buildWithId();
 			const studentUser = userFactory.buildWithId();
@@ -150,96 +138,5 @@ describe('course copy service', () => {
 
 			expect(result.status.title).toEqual(result.copy.name);
 		});
-
-		/* it('should set destination course as parent', () => {
-			const originalCourse = courseFactory.build({});
-			const destinationCourse = courseFactory.build({});
-			const user = userFactory.build({});
-			const originalTask = taskFactory.build({ course: originalCourse });
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse,
-				user,
-			});
-
-			expect(result.copy.course).toEqual(destinationCourse);
-		});
-
-		it('should set copy as draft', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId();
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
-			});
-
-			expect(result.copy.private).toEqual(true);
-			expect(result.copy.availableDate).not.toBeDefined();
-		});
-
-
-		
-
-
-
-
-
-		it('should set status of description', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId({});
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
-			});
-
-			const descriptionStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'description'
-			);
-			expect(descriptionStatus).toBeDefined();
-			expect(descriptionStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-		});
-
-		it('should set status of submissions', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId({});
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
-			});
-
-			const submissionsStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
-			);
-			expect(submissionsStatus).toBeDefined();
-			expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-		});
-
-		it('should set status of files', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId({});
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
-			});
-
-			const filesStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
-			);
-			expect(filesStatus).toBeDefined();
-			expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-		}); */
 	});
 });
