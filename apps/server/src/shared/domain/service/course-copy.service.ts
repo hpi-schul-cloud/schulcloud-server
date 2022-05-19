@@ -48,13 +48,28 @@ export class CourseCopyService {
 				},
 				{
 					title: 'tasks',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
 				{
 					title: 'times',
 					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
+				},
+				{
+					title: 'lessons',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
+				},
+				{
+					title: 'files',
+					type: CopyElementType.FILE,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
+				},
+				{
+					title: 'coursegroups',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
 			],
 		};
