@@ -20,7 +20,7 @@ spec:
           mountPath: /init-idm.sh
           subPath: init-idm.sh
         command: ['/bin/sh','-c']
-        args: ['cp /init-idm.sh /init-idm.run.sh && chmod +x /init-idm.run.sh &&./init-idm.run.sh']
+        args: ['cp /init-idm.sh /init-idm.run.sh && chmod +x /init-idm.run.sh && ./init-idm.run.sh']
       volumes:
       - name: script
         configMap:

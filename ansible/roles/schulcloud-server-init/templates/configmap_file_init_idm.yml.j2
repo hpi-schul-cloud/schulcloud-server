@@ -8,4 +8,5 @@ metadata:
 data:
   init-idm.sh: |
     #! /bin/bash
+    set -euo pipefail
     curl --retry 90 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
