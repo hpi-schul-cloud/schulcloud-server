@@ -25,10 +25,10 @@ export class TaskCopyService {
 			course: params.destinationCourse,
 		});
 		const status = {
-			id: copy.id,
 			title: copy.name,
 			type: CopyElementType.TASK,
 			status: CopyStatusEnum.SUCCESS,
+			copyEntity: copy,
 			elements: [
 				{
 					title: 'description',

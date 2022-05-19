@@ -44,7 +44,6 @@ export class TaskCopyUC {
 			user,
 		});
 		await this.taskRepo.save(copy);
-		status.id = copy.id;
 		return status;
 	}
 }

@@ -103,6 +103,17 @@ describe('course copy service', () => {
 			expect(result.copy.teachers.contains(secondUser)).toEqual(false);
 		});
 
+		it('should set copy to status', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			expect(result.status.copyEntity).toEqual(result.copy);
+		});
 		it('should set status type to course', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
@@ -137,6 +148,150 @@ describe('course copy service', () => {
 			});
 
 			expect(result.status.title).toEqual(result.copy.name);
+		});
+
+		it('should set status of substitutionTeachers', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const substitutionTeachersStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'substitutionTeachers'
+			);
+			expect(substitutionTeachersStatus).toBeDefined();
+			expect(substitutionTeachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+		});
+
+		it('should set status of students', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const studentsStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'students'
+			);
+			expect(studentsStatus).toBeDefined();
+			expect(studentsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+		});
+
+		it('should set status of classes', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const classesStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'classes'
+			);
+			expect(classesStatus).toBeDefined();
+			expect(classesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+		});
+
+		it('should set status of ltiTools', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const ltiToolsStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'ltiTools'
+			);
+			expect(ltiToolsStatus).toBeDefined();
+			expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+		});
+
+		it('should set status of tasks', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const tasksStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.TASK && el.title === 'tasks'
+			);
+			expect(tasksStatus).toBeDefined();
+			expect(tasksStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+		});
+
+		it('should set status of times', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const timesStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'times'
+			);
+			expect(timesStatus).toBeDefined();
+			expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+		});
+
+		it('should set status of lessons', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const lessonsStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'lessons'
+			);
+			expect(lessonsStatus).toBeDefined();
+			expect(lessonsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+		});
+
+		it('should set status of files', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const filesStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.FILE && el.title === 'files'
+			);
+			expect(filesStatus).toBeDefined();
+			expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+		});
+
+		it('should set status of coursegroups', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const coursegroupsStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'coursegroups'
+			);
+			expect(coursegroupsStatus).toBeDefined();
+			expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 		});
 	});
 });

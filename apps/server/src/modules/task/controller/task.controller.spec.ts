@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatusDTO, CopyStatusEnum, ICurrentUser } from '@shared/domain';
+import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
 import { TaskUC } from '../uc';
 import { TaskCopyUC } from '../uc/task-copy.uc';
-import { TaskCopyApiResponse } from './dto/task-copy.response';
 import { TaskController } from './task.controller';
 
 describe('TaskController', () => {
@@ -38,7 +38,6 @@ describe('TaskController', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 				const ucResult = {
-					id: 'id',
 					title: 'example title',
 					type: 'TASK' as CopyElementType,
 					status: 'SUCCESS' as CopyStatusEnum,
@@ -64,7 +63,7 @@ describe('TaskController', () => {
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
 				const result = await controller.copyTask(currentUser, 'taskId', { courseId: 'id' });
-				expect(result).toBeInstanceOf(TaskCopyApiResponse);
+				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
 	});

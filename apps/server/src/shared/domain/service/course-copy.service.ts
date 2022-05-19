@@ -25,6 +25,7 @@ export class CourseCopyService {
 			title: copy.name,
 			type: CopyElementType.COURSE,
 			status: CopyStatusEnum.SUCCESS,
+			copyEntity: copy,
 			elements: [
 				{
 					title: 'substitutionTeachers',

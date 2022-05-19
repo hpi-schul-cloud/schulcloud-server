@@ -130,7 +130,7 @@ describe('task copy service', () => {
 			expect(result.copy.course).toEqual(course);
 		});
 
-		it('should set status id to task copy id', () => {
+		it('should set copy to status', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const originalTask = taskFactory.buildWithId({});
@@ -141,7 +141,7 @@ describe('task copy service', () => {
 				user,
 			});
 
-			expect(result.status.id).toEqual(result.copy.id);
+			expect(result.status.copyEntity).toEqual(result.copy);
 		});
 
 		it('should set status to success', () => {
