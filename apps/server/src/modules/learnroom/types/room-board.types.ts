@@ -1,4 +1,4 @@
-import { TaskWithStatusVo, EntityId } from '@shared/domain';
+import { EntityId, TaskWithStatusVo } from '@shared/domain';
 
 export type RoomBoardDTO = {
 	roomId: string;
@@ -18,7 +18,9 @@ export type LessonMetaData = {
 	hidden: boolean;
 	createdAt: Date;
 	updatedAt: Date;
-	numberOfTasks: number;
+	numberOfPublishedTasks: number;
+	numberOfDraftTasks?: number;
+	numberOfPlannedTasks?: number;
 	courseName: string;
 };
 
