@@ -229,6 +229,7 @@ describe('RoomBoardDTOMapper', () => {
 			let board: Board;
 			let room: Course;
 			let lesson: Lesson;
+			const inOneDay = new Date(Date.now() + 8.64e7);
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
@@ -241,28 +242,65 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				lesson = lessonFactory.build({ course: room });
-				taskFactory.build({ course: room, lesson });
-				taskFactory.draft().build({ course: room, lesson });
+				taskFactory.buildList(1, { course: room, lesson });
+				taskFactory.buildList(3, { course: room, lesson, availableDate: inOneDay });
+				taskFactory.draft().buildList(5, { course: room, lesson });
 				board.syncLessonsFromList([lesson]);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
-			it('should set set number of published tasks for student', () => {
+			it('should set number of published tasks for student', () => {
 				const result = mapper.createDTO({ room, board, user: student });
 				const lessonElement = result.elements[0].content as LessonMetaData;
-				expect(lessonElement.numberOfTasks).toEqual(1);
+				expect(lessonElement.numberOfPublishedTasks).toEqual(1);
 			});
 
-			it('should set lessons for teacher', () => {
+			it('should not set number of planned tasks for student', () => {
+				const result = mapper.createDTO({ room, board, user: student });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfPlannedTasks).toBeUndefined();
+			});
+
+			it('should not set number of draft tasks for student', () => {
+				const result = mapper.createDTO({ room, board, user: student });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfDraftTasks).toBeUndefined();
+			});
+
+			it('should set number of published tasks for teacher', () => {
 				const result = mapper.createDTO({ room, board, user: teacher });
 				const lessonElement = result.elements[0].content as LessonMetaData;
-				expect(lessonElement.numberOfTasks).toEqual(2);
+				expect(lessonElement.numberOfPublishedTasks).toEqual(1);
 			});
 
-			it('should set lessons for substitutionTeacher', () => {
+			it('should set number of planned tasks for teacher', () => {
+				const result = mapper.createDTO({ room, board, user: teacher });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfPlannedTasks).toEqual(3);
+			});
+
+			it('should set number of draft tasks for teacher', () => {
+				const result = mapper.createDTO({ room, board, user: teacher });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfDraftTasks).toEqual(5);
+			});
+
+			it('should set number of published tasks for substitution teacher', () => {
 				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				const lessonElement = result.elements[0].content as LessonMetaData;
-				expect(lessonElement.numberOfTasks).toEqual(2);
+				expect(lessonElement.numberOfPublishedTasks).toEqual(1);
+			});
+
+			it('should set number of planned tasks for substitution teacher', () => {
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfPlannedTasks).toEqual(3);
+			});
+
+			it('should set number of draft tasks for substitution teacher', () => {
+				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
+				const lessonElement = result.elements[0].content as LessonMetaData;
+				expect(lessonElement.numberOfDraftTasks).toEqual(5);
 			});
 		});
 
