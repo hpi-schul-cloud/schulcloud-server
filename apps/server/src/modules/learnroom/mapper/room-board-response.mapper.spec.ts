@@ -79,7 +79,9 @@ describe('room board response mapper', () => {
 				hidden: false,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				numberOfTasks: 0,
+				numberOfPublishedTasks: 1,
+				numberOfDraftTasks: 3,
+				numberOfPlannedTasks: 5,
 				courseName: course.name,
 			};
 			const board = {
@@ -103,7 +105,9 @@ describe('room board response mapper', () => {
 				hidden: false,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				numberOfTasks: 1,
+				numberOfPublishedTasks: 1,
+				numberOfDraftTasks: 3,
+				numberOfPlannedTasks: 5,
 				courseName: course.name,
 			};
 			const task = taskFactory.buildWithId({ course });
