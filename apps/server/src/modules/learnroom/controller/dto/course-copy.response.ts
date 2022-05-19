@@ -1,14 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CopyElementType, CopyStatusEnum } from '@shared/domain/types/copy.types';
 
 /**
  * DTO for returning a course copy status document via api.
  */
-
-const COPY_ELEMENT_TYPE = ['course', 'task', 'file', 'leaf'] as const;
-const COPY_STATUS = ['success', 'failure', 'not-doing', 'not-implemented'] as const;
-
-type ElementType = typeof COPY_ELEMENT_TYPE[number];
-type StatusType = typeof COPY_STATUS[number];
 export class CourseCopyApiResponse {
 	constructor({ title, type, status }: CourseCopyApiResponse) {
 		this.title = title;
@@ -28,17 +23,17 @@ export class CourseCopyApiResponse {
 
 	@ApiProperty({
 		type: 'string',
-		enum: COPY_ELEMENT_TYPE,
+		enum: CopyElementType,
 		description: 'Type of copied element',
 	})
-	type: ElementType;
+	type: CopyElementType;
 
 	@ApiProperty({
 		type: 'string',
-		enum: COPY_STATUS,
+		enum: CopyStatusEnum,
 		description: 'Copy progress status of copied element',
 	})
-	status: StatusType;
+	status: CopyStatusEnum;
 
 	@ApiPropertyOptional({
 		description: 'List of included sub elements',
