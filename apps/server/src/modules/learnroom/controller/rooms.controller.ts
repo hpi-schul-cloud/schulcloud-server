@@ -52,7 +52,7 @@ export class RoomsController {
 	@Post(':roomid/copy')
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('id', ParseObjectIdPipe) courseId: string
+		@Param('roomid', ParseObjectIdPipe) courseId: string
 	): Promise<CourseCopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, courseId);
 		const dto = CourseCopyMapper.mapToResponse(copyStatus);

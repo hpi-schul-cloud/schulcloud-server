@@ -22,7 +22,6 @@ export class CourseCopyService {
 			teachers: [params.user],
 		});
 		const status = {
-			id: copy.getMetadata().id,
 			title: copy.name,
 			type: CopyElementType.COURSE,
 			status: CopyStatusEnum.SUCCESS,

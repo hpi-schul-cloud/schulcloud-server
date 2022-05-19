@@ -115,17 +115,6 @@ describe('course copy service', () => {
 			expect(result.copy.teachers.contains(secondUser)).toEqual(false);
 		});
 
-		it('should set status id to course copy id', () => {
-			const user = userFactory.buildWithId();
-			const originalCourse = courseFactory.buildWithId();
-
-			const result = copyService.copyCourseMetadata({
-				originalCourse,
-				user,
-			});
-
-			expect(result.status.id).toEqual(result.copy.getMetadata().id);
-		});
 		it('should set status type to course', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();

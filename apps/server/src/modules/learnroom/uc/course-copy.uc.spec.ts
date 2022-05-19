@@ -118,10 +118,11 @@ describe('course copy uc', () => {
 			expect(coursePersistSpy).toBeCalledWith(copy);
 		});
 
-		it('should return status', async () => {
-			const { course, user, status } = setup();
+		it('should return status with additional copy id', async () => {
+			const { course, user, status, copy } = setup();
 			const result = await uc.copyCourse(user.id, course.id);
-			expect(result).toEqual(status);
+			const expectedResult = { id: copy.id, ...status };
+			expect(result).toEqual(expectedResult);
 		});
 
 		describe('when access to course is forbidden', () => {

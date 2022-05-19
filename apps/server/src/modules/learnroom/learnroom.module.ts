@@ -9,6 +9,7 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
+import { AuthorizationModule } from '../authorization';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -21,7 +22,7 @@ import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [],
+	imports: [AuthorizationModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,

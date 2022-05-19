@@ -28,6 +28,7 @@ export class CourseCopyUC {
 			user,
 		});
 		await this.courseRepo.save(copy);
+		status.id = copy.id;
 		return status;
 	}
 }
