@@ -133,7 +133,7 @@ export class TaskUC {
 			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
-				order: { dueDate: SortOrder.asc, id: SortOrder.asc },
+				order: { dueDate: SortOrder.asc, _id: SortOrder.asc },
 			}
 		);
 
@@ -161,7 +161,7 @@ export class TaskUC {
 			{ finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
-				order: { dueDate: SortOrder.desc, id: SortOrder.asc },
+				order: { dueDate: SortOrder.desc, _id: SortOrder.asc },
 			}
 		);
 
