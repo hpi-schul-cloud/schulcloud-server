@@ -217,7 +217,6 @@ describe('oauth2 service', function oauthTest() {
 			.catch((err) => {
 				assert.strictEqual(404, err.statusCode);
 			}));
-	
 	it('PATCH Logout Request Accept', () => {
 		logoutService
 			.patch(
@@ -228,7 +227,11 @@ describe('oauth2 service', function oauthTest() {
 				}
 			)
 			.then((result) => {
-				assert.ok(result.redirect_to==='here');
+				assert.ok(result.redirect_to === 'here');
+				return null;
+			})
+			.catch((err) => {
+				assert.strictEqual(404, err.statusCode);
 			});
 	});
 });
