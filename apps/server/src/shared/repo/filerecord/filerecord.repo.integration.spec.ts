@@ -33,6 +33,20 @@ describe('FileRecordRepo', () => {
 		expect(repo.entityName).toBe(FileRecord);
 	});
 
+	describe('findOneById', () => {
+		it('should find an entity by its id and deletedSince is NOT defined', async () => {
+			const fileRecord = fileRecordFactory.build();
+
+			await em.persistAndFlush(fileRecord);
+			em.clear();
+
+			const result = await repo.findOneById(fileRecord.id);
+
+			expect(result).toBeDefined();
+			expect(result.id).toEqual(fileRecord.id);
+		});
+	});
+
 	describe('findOneByIdMarkedForDelete', () => {
 		it('should find an entity by its id and deletedSince is defined', async () => {
 			const fileRecord = fileRecordFactory.build({ deletedSince: new Date() });
@@ -81,18 +95,45 @@ describe('FileRecordRepo', () => {
 	});
 
 	describe('findBySchoolIdAndParentId', () => {
-		it('should only find searched parent', async () => {
-			const parentId1 = new ObjectId().toHexString();
-			const parentId2 = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
+		const parentId1 = new ObjectId().toHexString();
+		const schoolId1 = new ObjectId().toHexString();
+		let fileRecords1: FileRecord[];
 
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				schoolId,
+		beforeEach(() => {
+			fileRecords1 = fileRecordFactory.buildList(3, {
+				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
+		});
+
+		// TODO: the next 2 pagination test are for private stuff and must be repeated in all or outsource
+		it('should work with pagination limit', async () => {
+			await em.persistAndFlush([...fileRecords1]);
+			em.clear();
+
+			const pagination = { limit: 1 };
+			const [fileRecords, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1, { pagination });
+
+			expect(count).toEqual(3);
+			expect(fileRecords.length).toEqual(1);
+		});
+
+		it('should work with pagination skip', async () => {
+			await em.persistAndFlush([...fileRecords1]);
+			em.clear();
+
+			const pagination = { skip: 1 };
+			const [fileRecords, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1, { pagination });
+
+			expect(count).toEqual(3);
+			expect(fileRecords.length).toEqual(2);
+		});
+
+		it('should only find searched parent', async () => {
+			const parentId2 = new ObjectId().toHexString();
 			const fileRecords2 = fileRecordFactory.buildList(3, {
-				schoolId,
+				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 			});
@@ -100,7 +141,7 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId, parentId1);
+			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -108,25 +149,17 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should only find searched school', async () => {
-			const parentId = new ObjectId().toHexString();
-			const schoolId1 = new ObjectId().toHexString();
 			const schoolId2 = new ObjectId().toHexString();
-
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
-				parentId,
-			});
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId2,
 				parentType: FileRecordParentType.Task,
-				parentId,
+				parentId: parentId1,
 			});
 
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId);
+			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -134,47 +167,45 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore deletedSince', async () => {
-			const parentId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-
-			const fileRecords = fileRecordFactory.buildList(3, {
-				schoolId,
-				parentType: FileRecordParentType.Task,
-				parentId,
-			});
-
 			const fileRecordsExpired = fileRecordFactory.buildList(3, {
-				schoolId,
-				parentType: FileRecordParentType.Task,
-				parentId,
-				deletedSince: new Date(),
-			});
-
-			await em.persistAndFlush([...fileRecords, ...fileRecordsExpired]);
-			em.clear();
-
-			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId, parentId);
-
-			expect(count).toEqual(3);
-			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
-		});
-	});
-
-	describe('findBySchoolIdAndParentIdAndMarkedForDelete', () => {
-		it('should only find searched parent', async () => {
-			const parentId1 = new ObjectId().toHexString();
-			const parentId2 = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				schoolId,
+				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 				deletedSince: new Date(),
 			});
+
+			await em.persistAndFlush([...fileRecords1, ...fileRecordsExpired]);
+			em.clear();
+
+			const [results, count] = await repo.findBySchoolIdAndParentId(schoolId1, parentId1);
+
+			expect(count).toEqual(3);
+			expect(results).toHaveLength(3);
+			expect(results.map((o) => o.id).sort()).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			);
+		});
+	});
+
+	describe('findBySchoolIdAndParentIdAndMarkedForDelete', () => {
+		const parentId1 = new ObjectId().toHexString();
+		const schoolId1 = new ObjectId().toHexString();
+		let fileRecords1: FileRecord[];
+
+		beforeEach(() => {
+			fileRecords1 = fileRecordFactory.buildList(3, {
+				schoolId: schoolId1,
+				parentType: FileRecordParentType.Task,
+				parentId: parentId1,
+				deletedSince: new Date(),
+			});
+		});
+
+		it('should only find searched parent', async () => {
+			const parentId2 = new ObjectId().toHexString();
+
 			const fileRecords2 = fileRecordFactory.buildList(3, {
-				schoolId,
+				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 				deletedSince: new Date(),
@@ -183,7 +214,7 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId, parentId1);
+			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId1);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -191,27 +222,19 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should only find searched school', async () => {
-			const parentId = new ObjectId().toHexString();
-			const schoolId1 = new ObjectId().toHexString();
 			const schoolId2 = new ObjectId().toHexString();
 
-			const fileRecords1 = fileRecordFactory.buildList(3, {
-				schoolId: schoolId1,
-				parentType: FileRecordParentType.Task,
-				parentId,
-				deletedSince: new Date(),
-			});
 			const fileRecords2 = fileRecordFactory.buildList(3, {
 				schoolId: schoolId2,
 				parentType: FileRecordParentType.Task,
-				parentId,
+				parentId: parentId1,
 				deletedSince: new Date(),
 			});
 
 			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId);
+			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId1);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
@@ -219,43 +242,40 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
-			const parentId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-
-			const fileRecords = fileRecordFactory.buildList(3, {
-				schoolId,
-				parentType: FileRecordParentType.Task,
-				parentId,
-				deletedSince: new Date(),
-			});
-
 			const fileRecordsExpired = fileRecordFactory.buildList(3, {
-				schoolId,
+				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
-				parentId,
+				parentId: parentId1,
 			});
 
-			await em.persistAndFlush([...fileRecords, ...fileRecordsExpired]);
+			await em.persistAndFlush([...fileRecords1, ...fileRecordsExpired]);
 			em.clear();
 
-			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId, parentId);
+			const [results, count] = await repo.findBySchoolIdAndParentIdAndMarkedForDelete(schoolId1, parentId1);
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual([fileRecords[0].id, fileRecords[1].id, fileRecords[2].id].sort());
+			expect(results.map((o) => o.id).sort()).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			);
 		});
 	});
 
 	describe('findBySecurityCheckRequestToken', () => {
-		it('should find an entity by its requestToken', async () => {
+		let fileRecord: FileRecord;
+
+		beforeEach(() => {
 			const schoolId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 
-			const fileRecord = fileRecordFactory.build({
+			fileRecord = fileRecordFactory.build({
 				schoolId,
 				parentType: FileRecordParentType.Task,
 				parentId,
 			});
+		});
+
+		it('should find an entity by its requestToken', async () => {
 			const token = fileRecord.securityCheck.requestToken || '';
 
 			await em.persistAndFlush(fileRecord);
@@ -268,14 +288,6 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should throw error by wrong requestToken', async () => {
-			const schoolId = new ObjectId().toHexString();
-			const parentId = new ObjectId().toHexString();
-
-			const fileRecord = fileRecordFactory.build({
-				schoolId,
-				parentType: FileRecordParentType.Task,
-				parentId,
-			});
 			const token = 'wrong-token';
 
 			await em.persistAndFlush(fileRecord);

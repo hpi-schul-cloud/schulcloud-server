@@ -1,9 +1,9 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
-import { EntityId, Board } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/repo';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Board, EntityId } from '@shared/domain';
+import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { RoomBoardDTO } from '../types/room-board.types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
-import { RoomBoardDTO } from '../types/room-board.types';
 
 @Injectable()
 export class RoomsUc {
@@ -31,8 +31,8 @@ export class RoomsUc {
 	private async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
 		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
 		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId);
-		board.syncLessonsFromList(courseLessons);
 		board.syncTasksFromList(courseTasks);
+		board.syncLessonsFromList(courseLessons);
 		await this.boardRepo.save(board);
 		return board;
 	}

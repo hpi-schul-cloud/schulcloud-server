@@ -1,8 +1,14 @@
 import {
+	BadRequestException,
 	Body,
+	ConflictException,
 	Controller,
 	Delete,
+	ForbiddenException,
 	Get,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
 	Param,
 	Patch,
 	Post,
@@ -11,8 +17,8 @@ import {
 	StreamableFile,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { RequestLoggingInterceptor } from '@shared/common';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -37,6 +43,12 @@ import {
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC, private readonly fileRecordUC: FileRecordUC) {}
 
+	@ApiOperation({ summary: 'Streamable upload of a binary file.' })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 400, type: BadRequestException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
 	async upload(
@@ -52,6 +64,13 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Streamable download of a binary file.' })
+	@ApiResponse({ status: 200, type: StreamableFile })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: 406, type: NotAcceptableException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
@@ -65,6 +84,10 @@ export class FilesStorageController {
 		});
 	}
 
+	@ApiOperation({ summary: 'Get a list of file meta data of a parent entityId.' })
+	@ApiResponse({ status: 200, type: FileRecordListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get('/list/:schoolId/:parentType/:parentId')
 	async list(
 		@Param() params: FileRecordParams,
@@ -84,6 +107,16 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Rename a single file.' })
+	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({
+		status: 409,
+		type: ConflictException,
+		description: 'File with same name already exist in parent scope.',
+	})
 	@Patch('/rename/:fileRecordId/')
 	@UseInterceptors(RequestLoggingInterceptor)
 	async patchFilename(
@@ -98,6 +131,14 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({
+		summary:
+			'Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.',
+	})
+	@ApiResponse({ status: 200, type: FileRecordListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:schoolId/:parentType/:parentId')
 	@UseInterceptors(RequestLoggingInterceptor)
 	async delete(
@@ -115,6 +156,11 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Mark a single file for deletion. The files are permanently deleted after a certain time.' })
+	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:fileRecordId')
 	@UseInterceptors(RequestLoggingInterceptor)
 	async deleteFile(
@@ -128,6 +174,10 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Restore all files of a parent entityId that are marked for deletion.' })
+	@ApiResponse({ status: 201, type: FileRecordListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post('/restore/:schoolId/:parentType/:parentId')
 	async restore(
 		@Param() params: FileRecordParams,
@@ -144,6 +194,11 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Restore a single file that is marked for deletion.' })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post('/restore/:fileRecordId')
 	async restoreFile(
 		@Param() params: SingleFileParams,
@@ -156,6 +211,11 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Copy all files of a parent entityId to a target entitId' })
+	@ApiResponse({ status: 201, type: FileRecordListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/copy/:schoolId/:parentType/:parentId')
 	async copy(
 		@Param() params: FileRecordParams,
@@ -177,6 +237,12 @@ export class FilesStorageController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Copy a single file in the same target entityId scope.' })
+	@ApiResponse({ status: 201, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/copy/:fileRecordId')
 	async copyFile(
 		@Param() params: SingleFileParams,

@@ -1,6 +1,6 @@
-import { Global, Module } from '@nestjs/common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { Global, Module } from '@nestjs/common';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage

@@ -9,6 +9,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
+import { ErrorType } from '@src/modules/files-storage/files-storage.const';
 import { config, FilesStorageTestModule } from '@src/modules/files-storage/files-storage.module';
 import { Request } from 'express';
 import S3rver from 's3rver';
@@ -203,7 +204,7 @@ describe('file-storage controller (e2e)', () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const response = await api.getDownloadFile(`/file/download/${result.id}/wrong-name.txt`);
 
-				expect(response.error.message).toEqual('File not found');
+				expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
 				expect(response.status).toEqual(404);
 			});
 
