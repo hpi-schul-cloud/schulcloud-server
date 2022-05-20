@@ -173,4 +173,9 @@ exports.hooks = {
 			all: [authenticate('jwt'), managesOwnConsents],
 		},
 	},
+	logoutRequest: {
+		before: {
+			patch: [authenticate('jwt')],
+		},
+	},
 };

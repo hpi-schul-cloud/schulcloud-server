@@ -14,7 +14,7 @@ const setClientDefaults = (data) => {
 
 module.exports = function oauth2() {
 	const app = this;
-	const hydra = Hydra(app.settings.services.hydra);
+	const hydraAdmin = Hydra(app.settings.services.hydra);
 
 	// hydra.isInstanceAlive()
 	// 	.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
@@ -30,60 +30,67 @@ module.exports = function oauth2() {
 
 	app.use('/oauth2/clients', {
 		find(params) {
-			return hydra.listOAuth2Clients(params);
+			return hydraAdmin.listOAuth2Clients(params);
 		},
 		get(id) {
-			return hydra.getOAuth2Client(id);
+			return hydraAdmin.getOAuth2Client(id);
 		},
 		create(data) {
-			return hydra.createOAuth2Client(setClientDefaults(data));
+			return hydraAdmin.createOAuth2Client(setClientDefaults(data));
 		},
 		update(id, data) {
-			return hydra.updateOAuth2Client(id, setClientDefaults(data));
+			return hydraAdmin.updateOAuth2Client(id, setClientDefaults(data));
 		},
 		remove(id) {
-			return hydra.deleteOAuth2Client(id);
+			return hydraAdmin.deleteOAuth2Client(id);
 		},
 	});
 	app.service('/oauth2/clients').hooks(hooks.hooks.clients);
 
 	app.use('/oauth2/loginRequest', {
 		get(challenge) {
-			return hydra.getLoginRequest(challenge);
+			return hydraAdmin.getLoginRequest(challenge);
 		},
 		patch(challenge, body, params) {
 			return params.query.accept
-				? hydra.acceptLoginRequest(challenge, body)
-				: hydra.rejectLoginRequest(challenge, body);
+				? hydraAdmin.acceptLoginRequest(challenge, body)
+				: hydraAdmin.rejectLoginRequest(challenge, body);
 		},
 	});
 	app.service('/oauth2/loginRequest').hooks(hooks.hooks.loginRequest);
 
+	app.use('/oauth2/logoutRequest', {
+		patch(challenge, body) {
+			return hydraAdmin.acceptLogoutRequest(challenge, body);
+		},
+	});
+	app.service('/oauth2/logoutRequest').hooks(hooks.hooks.logoutRequest);
+
 	app.use('/oauth2/consentRequest', {
 		get(challenge) {
-			return hydra.getConsentRequest(challenge);
+			return hydraAdmin.getConsentRequest(challenge);
 		},
 		patch(challenge, body, params) {
 			return params.query.accept
-				? hydra.acceptConsentRequest(challenge, body)
-				: hydra.rejectConsentRequest(challenge, body);
+				? hydraAdmin.acceptConsentRequest(challenge, body)
+				: hydraAdmin.rejectConsentRequest(challenge, body);
 		},
 	});
 	app.service('/oauth2/consentRequest').hooks(hooks.hooks.consentRequest);
 
 	app.use('/oauth2/introspect', {
 		create(data) {
-			return hydra.introspectOAuth2Token(data.token, 'openid');
+			return hydraAdmin.introspectOAuth2Token(data.token, 'openid');
 		},
 	});
 	app.service('/oauth2/introspect').hooks(hooks.hooks.introspect);
 
 	app.use('/oauth2/auth/sessions/consent', {
 		get(user) {
-			return hydra.listConsentSessions(user);
+			return hydraAdmin.listConsentSessions(user);
 		},
 		remove(user, params) {
-			return hydra.revokeConsentSession(user, params.query.client);
+			return hydraAdmin.revokeConsentSession(user, params.query.client);
 		},
 	});
 	app.service('/oauth2/auth/sessions/consent').hooks(hooks.hooks.consentSessions);
