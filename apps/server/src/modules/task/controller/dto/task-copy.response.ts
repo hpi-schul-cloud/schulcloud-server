@@ -4,7 +4,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
  * DTO for returning a task copy status document via api.
  */
 
-const COPY_ELEMENT_TYPE = ['task', 'file', 'leaf'] as const;
+const COPY_ELEMENT_TYPE = ['course', 'task', 'file', 'leaf'] as const;
 const COPY_STATUS = ['success', 'failure', 'not-doing', 'not-implemented'] as const;
 
 type ElementType = typeof COPY_ELEMENT_TYPE[number];
