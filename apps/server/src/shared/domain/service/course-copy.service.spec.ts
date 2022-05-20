@@ -164,7 +164,7 @@ describe('course copy service', () => {
 				(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
 			);
 			expect(metadataStatus).toBeDefined();
-			expect(metadataStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+			expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
 		it('should set status of teachers', () => {
