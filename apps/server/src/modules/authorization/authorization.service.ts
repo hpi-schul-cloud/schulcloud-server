@@ -32,9 +32,8 @@ export class AuthorizationService extends BaseRule {
 	}
 
 	hasPermission(user: User, entity: AllowedEntity, context: IPermissionContext): boolean {
-		let permission = false;
 		const rule = this.resolveRule(entity);
-		permission = rule.hasPermission(user, entity as Task & Course & User & School, context);
+		const permission = rule.hasPermission(user, entity as Task & Course & User & School, context);
 
 		return permission;
 	}
@@ -49,7 +48,6 @@ export class AuthorizationService extends BaseRule {
 			this.service.getUserWithPermissions(userId),
 			this.service.loadEntity(entityName, entityId),
 		]);
-
 		const permission = this.hasPermission(user, entity, context);
 
 		return permission;
