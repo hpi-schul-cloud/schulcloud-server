@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, ALL_RULES, BaseEntity } from '@shared/domain';
+import { Actions, ALL_RULES, BaseEntity, User } from '@shared/domain';
 import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
@@ -44,7 +44,7 @@ describe('authorization.service', () => {
 			const entity = new TestEntity();
 
 			const exec = () => {
-				service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
+				service.hasPermission(user, entity as User, { action: Actions.write, requiredPermissions: [] });
 			};
 			expect(exec).toThrowError(NotImplementedException);
 		});
