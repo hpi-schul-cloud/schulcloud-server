@@ -49,7 +49,7 @@ export class TaskUC {
 				lessonIdsOfOpenCourses,
 				lessonIdsOfFinishedCourses,
 			},
-			{ pagination }
+			{ pagination, order: { dueDate: SortOrder.desc } }
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -133,7 +133,7 @@ export class TaskUC {
 			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
-				order: { dueDate: SortOrder.asc, _id: SortOrder.asc },
+				order: { dueDate: SortOrder.asc },
 			}
 		);
 
@@ -161,7 +161,7 @@ export class TaskUC {
 			{ finished: notFinished, availableOn: new Date() },
 			{
 				pagination,
-				order: { dueDate: SortOrder.desc, _id: SortOrder.asc },
+				order: { dueDate: SortOrder.desc },
 			}
 		);
 

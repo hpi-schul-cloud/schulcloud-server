@@ -530,6 +530,26 @@ describe('TaskRepo', () => {
 				expect(result[2].id).toEqual(task3.id);
 				expect(result[3].id).toEqual(task4.id);
 			});
+
+			it('should order by id asc when no dueDate is set', async () => {
+				const teacher = userFactory.build();
+				const tasks: Task[] = [];
+				for (let i = 0; i < 30; i += 1) {
+					const task = taskFactory.build({ creator: teacher, dueDate: undefined });
+					tasks.push(task);
+				}
+				await em.persistAndFlush(tasks);
+				em.clear();
+
+				const [result] = await repo.findAllByParentIds({ creatorId: teacher.id }, undefined, {
+					order: { dueDate: SortOrder.asc },
+				});
+
+				const resultIds = result.map((task) => task.id);
+				const taskIds = tasks.map((task) => task.id).sort();
+
+				expect(resultIds).toEqual(taskIds);
+			});
 		});
 
 		describe('pagination', () => {
@@ -1286,13 +1306,16 @@ describe('TaskRepo', () => {
 			await em.persistAndFlush([task1, task2, task3, task4]);
 			em.clear();
 
-			const [tasks] = await repo.findAllFinishedByParentIds({
-				creatorId: user.id,
-				openCourseIds: [course.id],
-				lessonIdsOfOpenCourses: [],
-				finishedCourseIds: [],
-				lessonIdsOfFinishedCourses: [],
-			});
+			const [tasks] = await repo.findAllFinishedByParentIds(
+				{
+					creatorId: user.id,
+					openCourseIds: [course.id],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ order: { dueDate: SortOrder.desc } }
+			);
 
 			expect(tasks.map((t) => t.id)).toEqual([task4.id, task1.id, task2.id, task3.id]);
 		});
