@@ -1,27 +1,28 @@
 import { Module } from '@nestjs/common';
-
+import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import {
-	DashboardRepo,
-	DashboardModelMapper,
+	BoardRepo,
 	CourseRepo,
+	DashboardModelMapper,
+	DashboardRepo,
 	LessonRepo,
 	TaskRepo,
 	UserRepo,
-	BoardRepo,
 } from '@shared/repo';
-
-import { DashboardController } from './controller/dashboard.controller';
+import { AuthorizationModule } from '../authorization';
 import { CourseController } from './controller/course.controller';
-import { DashboardUc } from './uc/dashboard.uc';
-import { CourseUc } from './uc/course.uc';
+import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
-import { RoomsUc } from './uc/rooms.uc';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
-import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
+import { CourseCopyUC } from './uc/course-copy.uc';
+import { CourseUc } from './uc/course.uc';
+import { DashboardUc } from './uc/dashboard.uc';
 import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
+import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
+import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [],
+	imports: [AuthorizationModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -40,6 +41,8 @@ import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 		RoomBoardResponseMapper,
 		RoomsAuthorisationService,
 		RoomBoardDTOFactory,
+		CourseCopyService,
+		CourseCopyUC,
 	],
 })
 export class LearnroomModule {}
