@@ -3,12 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
-import { TaskCopyApiParams } from '../controller/dto/task-copy.params';
-import { TaskCopyApiResponse } from '../controller/dto/task-copy.response';
-import { TaskCopyParentParams } from '../uc/task-copy.uc';
-import { TaskCopyMapper } from './task-copy.mapper';
+import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
+import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
+import { CopyApiResponse } from '../controller/dto/copy.response';
+import { CopyMapper } from './copy.mapper';
 
-describe('task copy mapper', () => {
+describe('copy mapper', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
 
@@ -27,7 +27,7 @@ describe('task copy mapper', () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
-			providers: [TaskCopyMapper],
+			providers: [CopyMapper],
 		}).compile();
 	});
 
@@ -35,23 +35,24 @@ describe('task copy mapper', () => {
 		it('should map status without sub elements into response', () => {
 			const copyStatus = {
 				title: 'Test element',
-				type: CopyElementType.TASK,
+				type: CopyElementType.COURSE || CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
 			};
-			const result = TaskCopyMapper.mapToResponse(copyStatus);
+			const result = CopyMapper.mapToResponse(copyStatus);
 
-			expect(result instanceof TaskCopyApiResponse).toEqual(true);
+			expect(result instanceof CopyApiResponse).toEqual(true);
 		});
 		it('should map status with sub elements into response', () => {
 			const copyStatus = {
+				id: 'id',
 				title: 'Test element',
-				type: CopyElementType.TASK,
+				type: CopyElementType.COURSE || CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
-				elements: [{ title: 'Sub element', type: CopyElementType.FILE, status: CopyStatusEnum.NOT_DOING }],
+				elements: [{ title: 'Sub element', type: CopyElementType.FILE, status: CopyStatusEnum.NOT_IMPLEMENTED }],
 			};
-			const result = TaskCopyMapper.mapToResponse(copyStatus);
+			const result = CopyMapper.mapToResponse(copyStatus);
 
-			expect(result instanceof TaskCopyApiResponse).toEqual(true);
+			expect(result instanceof CopyApiResponse).toEqual(true);
 		});
 	});
 
@@ -62,7 +63,7 @@ describe('task copy mapper', () => {
 				const params: TaskCopyApiParams = {
 					courseId,
 				};
-				const result = TaskCopyMapper.mapTaskCopyToDomain(params);
+				const result = CopyMapper.mapTaskCopyToDomain(params);
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId: undefined,
@@ -77,7 +78,7 @@ describe('task copy mapper', () => {
 					courseId,
 					lessonId,
 				};
-				const result = TaskCopyMapper.mapTaskCopyToDomain(params);
+				const result = CopyMapper.mapTaskCopyToDomain(params);
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId,
