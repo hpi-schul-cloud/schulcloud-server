@@ -11,7 +11,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 4444
+    - port: {{ PORT_FILE_SERVICE }}
       targetPort: 4444
       protocol: TCP
       name: api-files

@@ -1,10 +1,11 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from 'bson';
-import { setupEntities, lessonFactory, taskFactory, courseFactory } from '../../testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory } from '../../testing';
 import { Task } from './task.entity';
 
 describe('Lesson Entity', () => {
 	let orm: MikroORM;
+	const inOneDay = new Date(Date.now() + 8.64e7);
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -14,13 +15,13 @@ describe('Lesson Entity', () => {
 		await orm.close();
 	});
 
-	describe('numberOfTasksForStudent', () => {
+	describe('numberOfPublishedTasks', () => {
 		describe('when tasks are not populated', () => {
 			it('should throw', () => {
 				const lesson = lessonFactory.build();
 				lesson.tasks.set([orm.em.getReference(Task, new ObjectId().toHexString())]);
 
-				expect(() => lesson.getNumberOfTasksForStudent()).toThrow();
+				expect(() => lesson.getNumberOfPublishedTasks()).toThrow();
 			});
 		});
 
@@ -31,7 +32,7 @@ describe('Lesson Entity', () => {
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson });
 
-				const result = lesson.getNumberOfTasksForStudent();
+				const result = lesson.getNumberOfPublishedTasks();
 				expect(result).toEqual(2);
 			});
 
@@ -41,41 +42,105 @@ describe('Lesson Entity', () => {
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson, private: true });
 
-				const result = lesson.getNumberOfTasksForStudent();
+				const result = lesson.getNumberOfPublishedTasks();
+				expect(result).toEqual(1);
+			});
+
+			it('should not count planned tasks', () => {
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build();
+				taskFactory.build({ course, lesson });
+				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
+
+				const result = lesson.getNumberOfPublishedTasks();
 				expect(result).toEqual(1);
 			});
 		});
 	});
 
-	describe('numberOfTasksForTeacher', () => {
+	describe('numberOfDraftTasks', () => {
 		describe('when tasks are not populated', () => {
 			it('should throw', () => {
 				const lesson = lessonFactory.build();
 				lesson.tasks.set([orm.em.getReference(Task, new ObjectId().toHexString())]);
 
-				expect(() => lesson.getNumberOfTasksForTeacher()).toThrow();
+				expect(() => lesson.getNumberOfDraftTasks()).toThrow();
 			});
 		});
 
 		describe('when tasks are populated', () => {
-			it('it should count public tasks', () => {
+			it('it should return number of draft tasks', () => {
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build();
-				taskFactory.build({ course, lesson });
-				taskFactory.build({ course, lesson });
+				taskFactory.build({ course, lesson, private: true });
+				taskFactory.build({ course, lesson, private: true });
 
-				const result = lesson.getNumberOfTasksForTeacher();
+				const result = lesson.getNumberOfDraftTasks();
 				expect(result).toEqual(2);
 			});
 
-			it('should count private tasks', () => {
+			it('should not count published tasks', () => {
 				const course = courseFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson, private: true });
 
-				const result = lesson.getNumberOfTasksForTeacher();
+				const result = lesson.getNumberOfDraftTasks();
+				expect(result).toEqual(1);
+			});
+
+			it('should not count planned tasks', () => {
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build();
+				taskFactory.build({ course, lesson, private: true });
+				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
+
+				const result = lesson.getNumberOfDraftTasks();
+				expect(result).toEqual(1);
+			});
+		});
+	});
+
+	describe('numberOfPlannedTasks', () => {
+		describe('when tasks are not populated', () => {
+			it('should throw', () => {
+				const lesson = lessonFactory.build();
+				lesson.tasks.set([orm.em.getReference(Task, new ObjectId().toHexString())]);
+
+				expect(() => lesson.getNumberOfPlannedTasks()).toThrow();
+			});
+		});
+
+		describe('when tasks are populated', () => {
+			it('it should return number of planned tasks', () => {
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build();
+				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
+				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
+
+				const result = lesson.getNumberOfPlannedTasks();
 				expect(result).toEqual(2);
+			});
+
+			it('should not count published tasks', () => {
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build();
+				taskFactory.build({ course, lesson });
+				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
+
+				const result = lesson.getNumberOfPlannedTasks();
+				expect(result).toEqual(1);
+			});
+
+			it('should not count draft tasks', () => {
+				const course = courseFactory.build();
+				const lesson = lessonFactory.build();
+				taskFactory.build({ course, lesson, private: true });
+				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
+				taskFactory.build({ course, lesson, private: true, availableDate: inOneDay });
+
+				const result = lesson.getNumberOfPlannedTasks();
+				expect(result).toEqual(1);
 			});
 		});
 	});
