@@ -169,19 +169,22 @@ export class TaskRepo extends BaseRepo<Task> {
 	}
 
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
-		const { pagination, order } = options || {};
+		const pagination = options?.pagination || {};
+		const order = options?.order || {};
 
 		// In order to solve pagination missmatches we apply a default order by _id. This is necessary
 		// because other fields like the dueDate can be equal or null.
 		// When pagination is used, sorting takes place on every page and if ambiguous leads to unwanted results.
 		// Note: Indexes for dueDate and for _id do exist but there's no combined index.
 		// This is okay, because the combined index would be too expensive for the particular purpose here.
-		const orderById = { _id: SortOrder.asc };
+		if (order._id == null) {
+			order._id = SortOrder.asc;
+		}
 
 		const [taskEntities, count] = await this._em.findAndCount(Task, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
-			orderBy: { ...order, ...orderById },
+			orderBy: order,
 		});
 
 		await this._em.populate(taskEntities, ['course', 'lesson', 'submissions']);
