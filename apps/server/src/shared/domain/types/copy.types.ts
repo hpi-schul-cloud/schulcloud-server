@@ -1,6 +1,7 @@
 import { BaseEntity } from '../entity/base.entity';
 
 export type CopyStatusDTO = {
+	id?: string;
 	title: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
