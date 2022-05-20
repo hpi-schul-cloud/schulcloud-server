@@ -1,4 +1,5 @@
 export type CopyStatusDTO = {
+	id?: string;
 	title: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
@@ -7,6 +8,7 @@ export type CopyStatusDTO = {
 
 export enum CopyElementType {
 	'TASK' = 'task',
+	'COURSE' = 'course',
 	'FILE' = 'file',
 	'LEAF' = 'leaf',
 }
