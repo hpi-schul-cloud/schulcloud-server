@@ -74,8 +74,6 @@ export class AccountUc {
 		throw new ValidationError('Invalid search type.');
 	}
 
-	// Test
-
 	/**
 	 * This method processes the request on the GET account with id endpoint from the account controller.
 	 *
