@@ -20,4 +20,5 @@ export enum CopyStatusEnum {
 	'FAIL' = 'failure', // but tried
 	'NOT_DOING' = 'not-doing', // for functional reasons
 	'NOT_IMPLEMENTED' = 'not-implemented', // might be implemented in the future
+	'PARTIAL' = 'partial', // parent is partial successful
 }
