@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Actions, Course, ITaskStatus, Lesson, Permission, Task, User } from '@shared/domain';
+import { Actions, Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -215,7 +215,7 @@ describe('TaskUC', () => {
 					lessonIdsOfOpenCourses: [],
 					lessonIdsOfFinishedCourses: [],
 				},
-				{ pagination: undefined },
+				{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
@@ -264,7 +264,7 @@ describe('TaskUC', () => {
 					lessonIdsOfOpenCourses: [],
 					lessonIdsOfFinishedCourses: [],
 				},
-				{ pagination: { skip: 5 } },
+				{ pagination: { skip: 5 }, order: { dueDate: SortOrder.desc } },
 			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
@@ -285,7 +285,7 @@ describe('TaskUC', () => {
 					lessonIdsOfOpenCourses: [],
 					lessonIdsOfFinishedCourses: [],
 				},
-				{ pagination: { limit: 5 } },
+				{ pagination: { limit: 5 }, order: { dueDate: SortOrder.desc } },
 			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
@@ -309,7 +309,7 @@ describe('TaskUC', () => {
 					lessonIdsOfOpenCourses: [lesson.id],
 					lessonIdsOfFinishedCourses: [],
 				},
-				{ pagination: undefined },
+				{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 
@@ -331,7 +331,7 @@ describe('TaskUC', () => {
 					lessonIdsOfOpenCourses: [],
 					lessonIdsOfFinishedCourses: [],
 				},
-				{ pagination: undefined },
+				{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 			];
 			expect(spy).toHaveBeenCalledWith(...expectedParams);
 

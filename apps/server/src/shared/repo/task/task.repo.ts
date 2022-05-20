@@ -1,4 +1,4 @@
-import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, IFindOptions, SortOrder, Task } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
@@ -26,8 +26,6 @@ export class TaskRepo extends BaseRepo<Task> {
 		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
-		const { pagination } = options || {};
-
 		const scope = new TaskScope('$or');
 
 		const parentsOpen = new TaskScope('$or');
@@ -70,20 +68,9 @@ export class TaskRepo extends BaseRepo<Task> {
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		// The dueDate can be similar to solve pagination request missmatches we must sort it over id too.
-		// Because after executing limit() in mongoDB it is resort by similar dueDates.
-		// It exist indexes for dueDate and for _id but no combined index, because it is to expensive for only small performance boost.
-		const order = { dueDate: SortOrder.desc, id: SortOrder.asc };
+		const countedTaskList = await this.findTasksAndCount(scope.query, options);
 
-		const [tasks, count] = await this._em.findAndCount(Task, scope.query, {
-			offset: pagination?.skip,
-			limit: pagination?.limit,
-			orderBy: order,
-		});
-
-		await this._em.populate(tasks, ['course', 'lesson', 'submissions']);
-
-		return [tasks, count];
+		return countedTaskList;
 	}
 
 	/**
@@ -182,11 +169,22 @@ export class TaskRepo extends BaseRepo<Task> {
 	}
 
 	private async findTasksAndCount(query: FilterQuery<Task>, options?: IFindOptions<Task>): Promise<Counted<Task[]>> {
-		const { pagination, order } = options || {};
+		const pagination = options?.pagination || {};
+		const order = options?.order || {};
+
+		// In order to solve pagination missmatches we apply a default order by _id. This is necessary
+		// because other fields like the dueDate can be equal or null.
+		// When pagination is used, sorting takes place on every page and if ambiguous leads to unwanted results.
+		// Note: Indexes for dueDate and for _id do exist but there's no combined index.
+		// This is okay, because the combined index would be too expensive for the particular purpose here.
+		if (order._id == null) {
+			order._id = SortOrder.asc;
+		}
+
 		const [taskEntities, count] = await this._em.findAndCount(Task, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
-			orderBy: order as QueryOrderMap<Task>,
+			orderBy: order,
 		});
 
 		await this._em.populate(taskEntities, ['course', 'lesson', 'submissions']);
