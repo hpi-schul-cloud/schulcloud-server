@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs
 import { BaseRule, Course, CourseRule, EntityId, School, Task, TaskRule, User, UserRule } from '@shared/domain';
 import { IPermissionContext } from '@shared/domain/interface/permission';
 import { SchoolRule } from '@shared/domain/rules/school.rule';
-import { AllowedAuthorizationEntityType } from './interfaces';
+import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthorizationService extends BaseRule {
 		this.rules.set(School.name, this.schoolRule);
 	}
 
-	private resolveRule(entity: Task | Course | User | School) {
+	private resolveRule(entity: AllowedEntity) {
 		const rule = this.rules.get(entity.constructor.name);
 		if (rule) {
 			return rule;
@@ -31,7 +31,7 @@ export class AuthorizationService extends BaseRule {
 		throw new NotImplementedException('RULE_NOT_IMPLEMENT');
 	}
 
-	hasPermission(user: User, entity: Task | Course | User | School, context: IPermissionContext): boolean {
+	hasPermission(user: User, entity: AllowedEntity, context: IPermissionContext): boolean {
 		let permission = false;
 		const rule = this.resolveRule(entity);
 		permission = rule.hasPermission(user, entity as Task & Course & User & School, context);
