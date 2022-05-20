@@ -1,8 +1,8 @@
-import { Entity, ManyToOne, Property, Index, OneToMany, Collection } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { ILearnroomElement } from '@shared/domain/interface';
-import { Task } from './task.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
+import { Task } from './task.entity';
 
 export interface ILessonProperties {
 	name: string;
@@ -46,7 +46,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		return tasks;
 	}
 
-	getNumberOfTasksForStudent(): number {
+	getNumberOfPublishedTasks(): number {
 		const tasks = this.getTasksItems();
 		const filtered = tasks.filter((task) => {
 			return task.isPublished();
@@ -54,9 +54,20 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		return filtered.length;
 	}
 
-	getNumberOfTasksForTeacher(): number {
+	getNumberOfDraftTasks(): number {
 		const tasks = this.getTasksItems();
-		return tasks.length;
+		const filtered = tasks.filter((task) => {
+			return task.isDraft();
+		});
+		return filtered.length;
+	}
+
+	getNumberOfPlannedTasks(): number {
+		const tasks = this.getTasksItems();
+		const filtered = tasks.filter((task) => {
+			return task.isPlanned();
+		});
+		return filtered.length;
 	}
 
 	publish() {

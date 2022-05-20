@@ -64,7 +64,9 @@ export class RoomBoardResponseMapper {
 			hidden: lesson.hidden,
 			createdAt: lesson.createdAt,
 			updatedAt: lesson.updatedAt,
-			numberOfTasks: lesson.numberOfTasks,
+			numberOfPublishedTasks: lesson.numberOfPublishedTasks,
+			numberOfDraftTasks: lesson.numberOfDraftTasks,
+			numberOfPlannedTasks: lesson.numberOfPlannedTasks,
 			courseName: lesson.courseName,
 		});
 

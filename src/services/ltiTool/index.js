@@ -24,6 +24,7 @@ module.exports = function () {
 		lean: true,
 	};
 
+	// TODO Filter hidden tools in server https://ticketsystem.dbildungscloud.de/browse/N21-119
 	app.use('/ltiTools', service(options));
 	const ltiToolService = app.service('/ltiTools');
 	ltiToolService.hooks(hooks);
