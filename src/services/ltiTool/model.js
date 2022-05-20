@@ -41,6 +41,7 @@ const ltiToolSchema = new Schema({
 	skipConsent: { type: Boolean },
 	openNewTab: { type: Boolean, default: false },
 	frontchannel_logout_uri: { type: String },
+	isHidden: { type: Boolean, default: false },
 });
 
 function validateKey(value) {
