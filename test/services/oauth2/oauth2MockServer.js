@@ -55,6 +55,12 @@ module.exports = function oauth2MockServer({ port = null }) {
 					});
 				});
 
+				mockOauth.patch('/oauth2/auth/requests/logout/accept', (req, res) => {
+					res.send({
+						redirect_to: 'here',
+					});
+				});
+
 				mockOauth.post('/oauth2/introspect', (req, res) => {
 					res.send({
 						active: false,
