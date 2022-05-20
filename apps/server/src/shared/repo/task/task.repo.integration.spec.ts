@@ -533,11 +533,7 @@ describe('TaskRepo', () => {
 
 			it('should order by id asc when no dueDate is set', async () => {
 				const teacher = userFactory.build();
-				const tasks: Task[] = [];
-				for (let i = 0; i < 30; i += 1) {
-					const task = taskFactory.build({ creator: teacher, dueDate: undefined });
-					tasks.push(task);
-				}
+				const tasks: Task[] = taskFactory.buildList(30, { creator: teacher, dueDate: undefined });
 				await em.persistAndFlush(tasks);
 				em.clear();
 
