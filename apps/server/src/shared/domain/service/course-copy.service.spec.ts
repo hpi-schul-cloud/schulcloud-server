@@ -126,7 +126,7 @@ describe('course copy service', () => {
 			expect(result.status.type).toEqual(CopyElementType.COURSE);
 		});
 
-		it('should set status to success', () => {
+		it('should set status to partial', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
@@ -135,7 +135,7 @@ describe('course copy service', () => {
 				user,
 			});
 
-			expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
+			expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
 		});
 
 		it('should set status title to title of the copy', () => {
@@ -148,6 +148,38 @@ describe('course copy service', () => {
 			});
 
 			expect(result.status.title).toEqual(result.copy.name);
+		});
+
+		it('should set status of metadata', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const metadataStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
+			);
+			expect(metadataStatus).toBeDefined();
+			expect(metadataStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+		});
+
+		it('should set status of teachers', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+
+			const result = copyService.copyCourseMetadata({
+				originalCourse,
+				user,
+			});
+
+			const teachersStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'teachers'
+			);
+			expect(teachersStatus).toBeDefined();
+			expect(teachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
 
 		it('should set status of substitutionTeachers', () => {

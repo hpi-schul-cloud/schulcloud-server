@@ -24,9 +24,19 @@ export class CourseCopyService {
 		const status = {
 			title: copy.name,
 			type: CopyElementType.COURSE,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 			copyEntity: copy,
 			elements: [
+				{
+					title: 'metadata',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.SUCCESS,
+				},
+				{
+					title: 'teachers',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.NOT_DOING,
+				},
 				{
 					title: 'substitutionTeachers',
 					type: CopyElementType.LEAF,

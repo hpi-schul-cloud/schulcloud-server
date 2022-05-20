@@ -27,9 +27,14 @@ export class TaskCopyService {
 		const status = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
 			copyEntity: copy,
 			elements: [
+				{
+					title: 'metadata',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.SUCCESS,
+				},
 				{
 					title: 'description',
 					type: CopyElementType.LEAF,
