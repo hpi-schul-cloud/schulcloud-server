@@ -130,7 +130,7 @@ describe('task copy service', () => {
 			expect(result.copy.course).toEqual(course);
 		});
 
-		it('should set status to success', () => {
+		it('should set copy to status', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const originalTask = taskFactory.buildWithId({});
@@ -141,7 +141,26 @@ describe('task copy service', () => {
 				user,
 			});
 
-			expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
+			expect(result.status.copyEntity).toEqual(result.copy);
+		});
+
+		it('should set status to partial, as long as file is not-implemented', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({});
+
+			const result = copyService.copyTaskMetadata({
+				originalTask,
+				destinationCourse: course,
+				user,
+			});
+
+			expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
+
+			// TODO once files status is no longer NOT_IMPLEMENTED, task status should change.
+			const fileStatus = result.status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
+			expect(fileStatus).toBeDefined();
+			expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 		});
 
 		it('should set status title to title of the copy', () => {
@@ -170,6 +189,24 @@ describe('task copy service', () => {
 			});
 
 			expect(result.status.type).toEqual(CopyElementType.TASK);
+		});
+
+		it('should set status of metadata', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({});
+
+			const result = copyService.copyTaskMetadata({
+				originalTask,
+				destinationCourse: course,
+				user,
+			});
+
+			const metadataStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
+			);
+			expect(metadataStatus).toBeDefined();
+			expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
 		it('should set status of description', () => {
