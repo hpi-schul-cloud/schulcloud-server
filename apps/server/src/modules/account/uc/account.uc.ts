@@ -333,9 +333,6 @@ export class AccountUc {
 					permissionsToCheck.push('STUDENT_DELETE');
 					break; 
 				*/
-				// unreachable
-				default:
-					return false;
 			}
 		}
 		if (this.hasRole(targetUser, RoleName.TEACHER)) {
@@ -355,9 +352,6 @@ export class AccountUc {
 					permissionsToCheck.push('TEACHER_DELETE');
 					break; 
  				*/
-				// unreachable
-				default:
-					return false;
 			}
 		}
 		if (permissionsToCheck.length === 0) {
