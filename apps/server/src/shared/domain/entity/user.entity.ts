@@ -1,8 +1,8 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property, Index } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { IEntityWithSchool } from '../interface';
+import { BaseEntityWithTimestamps } from './base.entity';
 import type { Role } from './role.entity';
 import type { School } from './school.entity';
-import { BaseEntityWithTimestamps } from './base.entity';
-import { IEntityWithSchool } from '../interface';
 
 export enum LanguageType {
 	DE = 'de',
@@ -28,6 +28,7 @@ export interface IUserProperties {
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
 @Index({ properties: ['ldapId', 'school'] })
+@Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
 export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	@Property()
