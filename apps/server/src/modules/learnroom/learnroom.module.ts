@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { BoardCopyService } from '@shared/domain/service/board-copy.service';
 import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import {
 	BoardRepo,
@@ -43,6 +44,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		RoomBoardDTOFactory,
 		CourseCopyService,
 		CourseCopyUC,
+		BoardCopyService,
 	],
 })
 export class LearnroomModule {}

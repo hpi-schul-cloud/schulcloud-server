@@ -1,12 +1,15 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, schoolFactory, setupEntities, userFactory } from '../../testing';
+import { boardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '../../testing';
 import { CopyElementType, CopyStatusEnum } from '../types/copy.types';
+import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
 	let copyService: CourseCopyService;
+	let boardCopyService: DeepMocked<BoardCopyService>;
 
 	let orm: MikroORM;
 
@@ -20,19 +23,28 @@ describe('course copy service', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			providers: [CourseCopyService],
+			providers: [
+				CourseCopyService,
+				{
+					provide: BoardCopyService,
+					useValue: createMock<BoardCopyService>(),
+				},
+			],
 		}).compile();
 
 		copyService = module.get(CourseCopyService);
+		boardCopyService = module.get(BoardCopyService);
 	});
 
 	describe('handleCopyCourse', () => {
 		it('should assign user as teacher', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -44,9 +56,11 @@ describe('course copy service', () => {
 			const destinationSchool = schoolFactory.buildWithId();
 			const originalCourse = courseFactory.build({ school: originalSchool });
 			const user = userFactory.build({ school: destinationSchool });
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -56,9 +70,11 @@ describe('course copy service', () => {
 		it('should set name of course', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -68,9 +84,11 @@ describe('course copy service', () => {
 		it('should set color of course', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -81,9 +99,11 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const studentUser = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId({ students: [studentUser] });
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -94,9 +114,11 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const secondUser = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId({ teachers: [secondUser] });
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -106,9 +128,11 @@ describe('course copy service', () => {
 		it('should add copy to status', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -118,9 +142,11 @@ describe('course copy service', () => {
 		it('should set status type to course', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -130,9 +156,11 @@ describe('course copy service', () => {
 		it('should set status to partial', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -142,9 +170,11 @@ describe('course copy service', () => {
 		it('should set status title to title of the copy', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -154,9 +184,11 @@ describe('course copy service', () => {
 		it('should set status of metadata', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -170,9 +202,11 @@ describe('course copy service', () => {
 		it('should set status of teachers', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -186,9 +220,11 @@ describe('course copy service', () => {
 		it('should set status of substitutionTeachers', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -202,9 +238,11 @@ describe('course copy service', () => {
 		it('should set status of students', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -218,9 +256,11 @@ describe('course copy service', () => {
 		it('should set status of classes', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -234,9 +274,11 @@ describe('course copy service', () => {
 		it('should set status of ltiTools', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -247,28 +289,14 @@ describe('course copy service', () => {
 			expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
 
-		it('should set status of tasks', () => {
-			const user = userFactory.buildWithId();
-			const originalCourse = courseFactory.buildWithId();
-
-			const result = copyService.copyCourseMetadata({
-				originalCourse,
-				user,
-			});
-
-			const tasksStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.TASK && el.title === 'tasks'
-			);
-			expect(tasksStatus).toBeDefined();
-			expect(tasksStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-		});
-
 		it('should set status of times', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -279,28 +307,14 @@ describe('course copy service', () => {
 			expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 		});
 
-		it('should set status of lessons', () => {
-			const user = userFactory.buildWithId();
-			const originalCourse = courseFactory.buildWithId();
-
-			const result = copyService.copyCourseMetadata({
-				originalCourse,
-				user,
-			});
-
-			const lessonsStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'lessons'
-			);
-			expect(lessonsStatus).toBeDefined();
-			expect(lessonsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-		});
-
 		it('should set status of files', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -314,9 +328,11 @@ describe('course copy service', () => {
 		it('should set status of coursegroups', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourseWithBoard({
 				originalCourse,
+				originalBoard,
 				user,
 			});
 
@@ -325,6 +341,45 @@ describe('course copy service', () => {
 			);
 			expect(coursegroupsStatus).toBeDefined();
 			expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+		});
+
+		it('should trigger copy of board', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
+			const boardCopySpy = boardCopyService.copyBoard.mockReturnValue({
+				title: 'board',
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+			});
+
+			const { copy } = copyService.copyCourseWithBoard({
+				originalCourse,
+				originalBoard,
+				user,
+			});
+
+			expect(boardCopySpy).toHaveBeenCalledWith({ originalBoard, destinationCourse: copy });
+		});
+
+		it('should add status of board copy to children', () => {
+			const user = userFactory.buildWithId();
+			const originalCourse = courseFactory.buildWithId();
+			const originalBoard = boardFactory.buildWithId({ course: originalCourse });
+			const boardStatus = {
+				title: 'board',
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+			};
+			boardCopyService.copyBoard.mockReturnValue(boardStatus);
+
+			const { status } = copyService.copyCourseWithBoard({
+				originalCourse,
+				originalBoard,
+				user,
+			});
+
+			expect(status.elements?.includes(boardStatus)).toEqual(true);
 		});
 	});
 });

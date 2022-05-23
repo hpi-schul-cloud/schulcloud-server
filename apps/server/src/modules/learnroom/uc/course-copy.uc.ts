@@ -2,12 +2,13 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Actions, CopyStatusDTO, EntityId, Permission } from '@shared/domain';
 import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { CourseRepo } from '../../../shared/repo';
+import { BoardRepo, CourseRepo } from '../../../shared/repo';
 
 @Injectable()
 export class CourseCopyUC {
 	constructor(
 		private readonly courseRepo: CourseRepo,
+		private readonly boardRepo: BoardRepo,
 		private readonly authorisation: AuthorizationService,
 		private readonly courseCopyService: CourseCopyService
 	) {}
@@ -23,8 +24,10 @@ export class CourseCopyUC {
 		) {
 			throw new ForbiddenException();
 		}
-		const { copy, status } = this.courseCopyService.copyCourseMetadata({
+		const originalBoard = await this.boardRepo.findByCourseId(courseId);
+		const { copy, status } = this.courseCopyService.copyCourseWithBoard({
 			originalCourse,
+			originalBoard,
 			user,
 		});
 		await this.courseRepo.save(copy);

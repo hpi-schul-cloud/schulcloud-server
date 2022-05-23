@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
+import { Board, Course, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '@shared/domain/types';
+import { BoardCopyService } from './board-copy.service';
 
 export type CourseCopyParams = {
 	originalCourse: Course;
+	originalBoard: Board;
 	user: User;
 };
 
@@ -14,7 +16,9 @@ export type CourseCopyResponse = {
 
 @Injectable()
 export class CourseCopyService {
-	copyCourseMetadata(params: CourseCopyParams): CourseCopyResponse {
+	constructor(private readonly boardCopyService: BoardCopyService) {}
+
+	copyCourseWithBoard(params: CourseCopyParams): CourseCopyResponse {
 		const copy = new Course({
 			school: params.user.school,
 			name: params.originalCourse.name,
@@ -58,17 +62,7 @@ export class CourseCopyService {
 					status: CopyStatusEnum.NOT_DOING,
 				},
 				{
-					title: 'tasks',
-					type: CopyElementType.TASK,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
 					title: 'times',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
-					title: 'lessons',
 					type: CopyElementType.LEAF,
 					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
@@ -84,6 +78,9 @@ export class CourseCopyService {
 				},
 			],
 		};
+		status.elements.push(
+			this.boardCopyService.copyBoard({ originalBoard: params.originalBoard, destinationCourse: copy })
+		);
 		return { copy, status };
 	}
 }

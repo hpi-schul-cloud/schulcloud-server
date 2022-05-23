@@ -1,22 +1,23 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { CourseCopyParams, CourseCopyService } from '@shared/domain/service/course-copy.service';
+import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Actions, IEntity, IPermissionContext, Permission, User } from '../../../shared/domain';
-import { CourseRepo, UserRepo } from '../../../shared/repo';
-import { courseFactory, setupEntities, userFactory } from '../../../shared/testing';
+import { BoardRepo, CourseRepo, UserRepo } from '../../../shared/repo';
+import { boardFactory, courseFactory, setupEntities, userFactory } from '../../../shared/testing';
 import { CourseCopyUC } from './course-copy.uc';
 
 describe('course copy uc', () => {
 	let orm: MikroORM;
 	let uc: CourseCopyUC;
-	let userRepo: UserRepo;
-	let courseRepo: CourseRepo;
-	let authorisation: AuthorizationService;
-	let courseCopyService: CourseCopyService;
+	let userRepo: DeepMocked<UserRepo>;
+	let courseRepo: DeepMocked<CourseRepo>;
+	let authorisation: DeepMocked<AuthorizationService>;
+	let courseCopyService: DeepMocked<CourseCopyService>;
+	let boardRepo: DeepMocked<BoardRepo>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -39,6 +40,10 @@ describe('course copy uc', () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
+					provide: BoardRepo,
+					useValue: createMock<BoardRepo>(),
+				},
+				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
@@ -53,6 +58,7 @@ describe('course copy uc', () => {
 		userRepo = module.get(UserRepo);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
+		boardRepo = module.get(BoardRepo);
 		courseCopyService = module.get(CourseCopyService);
 	});
 
@@ -60,29 +66,32 @@ describe('course copy uc', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			const userSpy = jest
-				.spyOn(authorisation, 'getUserWithPermissions')
-				.mockImplementation(() => Promise.resolve(user));
-			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-			const authSpy = jest
-				.spyOn(authorisation, 'hasPermission')
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => true);
+			const userSpy = authorisation.getUserWithPermissions.mockResolvedValue(user);
+			const courseSpy = courseRepo.findById.mockResolvedValue(course);
+			const board = boardFactory.buildWithId({ course });
+			const boardSpy = boardRepo.findByCourseId.mockResolvedValue(board);
+			const authSpy = authorisation.hasPermission.mockReturnValue(true);
 			const copy = courseFactory.buildWithId({ teachers: [user] });
 			const status = {
 				title: 'courseCopy',
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
 			};
-			const courseCopySpy = jest
-				.spyOn(courseCopyService, 'copyCourseMetadata')
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((params: CourseCopyParams) => ({
-					copy,
-					status,
-				}));
-			const coursePersistSpy = jest.spyOn(courseRepo, 'save');
-			return { user, course, userSpy, courseSpy, authSpy, copy, status, courseCopySpy, coursePersistSpy };
+			const courseCopySpy = courseCopyService.copyCourseWithBoard.mockReturnValue({ copy, status });
+			const coursePersistSpy = courseRepo.save.mockResolvedValue(undefined);
+			return {
+				user,
+				course,
+				userSpy,
+				courseSpy,
+				authSpy,
+				copy,
+				status,
+				courseCopySpy,
+				coursePersistSpy,
+				board,
+				boardSpy,
+			};
 		};
 
 		it('should fetch correct user', async () => {
@@ -106,10 +115,16 @@ describe('course copy uc', () => {
 			});
 		});
 
-		it('should call copy service', async () => {
-			const { course, user, courseCopySpy } = setup();
+		it('should get board of course', async () => {
+			const { course, user, boardSpy } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(courseCopySpy).toBeCalledWith({ originalCourse: course, user });
+			expect(boardSpy).toBeCalledWith(course.id);
+		});
+
+		it('should call copy service', async () => {
+			const { course, user, courseCopySpy, board } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(courseCopySpy).toBeCalledWith({ originalCourse: course, originalBoard: board, user });
 		});
 
 		it('should persist copy', async () => {
