@@ -63,8 +63,9 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		return this.app
 			.service('ldap')
 			.searchCollection(this.config, searchString, options)
-			.then((data) =>
-				data.map((obj) => {
+			.then((data) => {
+				const results = [];
+				data.forEach((obj) => {
 					const roles = [];
 					if (obj.SchulCloudAdmin === 'TRUE') {
 						roles.push('administrator');
@@ -75,21 +76,21 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 					if (obj.objectClass.includes('ucsschoolStudent')) {
 						roles.push('student');
 					}
-					if (obj.objectClass.includes('ucsschoolStaff')) {
-						// toDo
-					}
 
-					return {
-						email: obj.mailPrimaryAddress || obj.mail,
-						firstName: obj.givenName,
-						lastName: obj.sn,
-						roles,
-						ldapDn: obj.dn,
-						ldapUUID: obj.entryUUID,
-						ldapUID: obj.uid,
-					};
-				})
-			);
+					if (roles.length > 0) {
+						results.push({
+							email: obj.mailPrimaryAddress || obj.mail,
+							firstName: obj.givenName,
+							lastName: obj.sn,
+							roles,
+							ldapDn: obj.dn,
+							ldapUUID: obj.entryUUID,
+							ldapUID: obj.uid,
+						});
+					}
+				});
+				return results;
+			});
 	}
 
 	/**
