@@ -14,7 +14,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { BoardResponse, CourseCopyApiResponse } from '@src/modules/learnroom/controller/dto';
+import { BoardResponse, CopyApiResponse } from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/server.module';
 import { Request } from 'express';
 import request from 'supertest';
@@ -184,7 +184,7 @@ describe('Rooms Controller (e2e)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
-			const body = response.body as CourseCopyApiResponse;
+			const body = response.body as CopyApiResponse;
 			expect(body.id).toBeDefined();
 
 			expect(() => em.findOneOrFail(Course, body.id)).not.toThrow();

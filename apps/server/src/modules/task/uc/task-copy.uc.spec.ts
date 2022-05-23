@@ -78,6 +78,7 @@ describe('task copy uc', () => {
 				.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => true);
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
+				id: 'id',
 				title: 'taskCopy',
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
