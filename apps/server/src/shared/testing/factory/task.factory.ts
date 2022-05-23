@@ -29,8 +29,5 @@ export const taskFactory = TaskFactory.define(Task, ({ sequence }) => {
 		availableDate: yesterday,
 		creator,
 		school,
-		// The fileIds property is used for syncing the new filerecords collection with the old files collection.
-		// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
-		fileIds: [],
 	};
 });

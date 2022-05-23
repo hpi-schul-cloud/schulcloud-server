@@ -1614,7 +1614,8 @@ describe('TaskRepo', () => {
 		it('should return tasks with files without a corresponding filerecord', async () => {
 			const file = fileFactory.build();
 			await em.persistAndFlush(file);
-			const task = taskFactory.build({ name: 'task with file', fileIds: [file._id] });
+			const task = taskFactory.build({ name: 'task with file' });
+			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
 			const result = await repo.getTaskFilesToSync();
@@ -1631,7 +1632,8 @@ describe('TaskRepo', () => {
 			await em.persistAndFlush(filerecord);
 			const fileFilerecord = fileFilerecordFactory.build({ fileId: file._id, filerecordId: filerecord._id });
 			await em.persistAndFlush(fileFilerecord);
-			const task = taskFactory.build({ name: 'task with file', fileIds: [file._id] });
+			const task = taskFactory.build({ name: 'task with file' });
+			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
 			const result = await repo.getTaskFilesToSync();
@@ -1647,7 +1649,8 @@ describe('TaskRepo', () => {
 			await em.persistAndFlush(filerecord);
 			const fileFilerecord = fileFilerecordFactory.build({ fileId: file._id, filerecordId: filerecord._id });
 			await em.persistAndFlush(fileFilerecord);
-			const task = taskFactory.build({ name: 'task with file', fileIds: [file._id] });
+			const task = taskFactory.build({ name: 'task with file' });
+			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
 			const result = await repo.getTaskFilesToSync();

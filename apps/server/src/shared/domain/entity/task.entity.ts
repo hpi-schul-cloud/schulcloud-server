@@ -22,9 +22,6 @@ export interface ITaskProperties {
 	lesson?: Lesson;
 	submissions?: Submission[];
 	finished?: User[];
-	// The fileIds property is used for syncing the new filerecords collection with the old files collection.
-	// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
-	fileIds: ObjectId[];
 }
 
 export interface ITaskStatus {
@@ -96,8 +93,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	// The fileIds property is used for syncing the new filerecords collection with the old files collection.
 	// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
-	@Property()
-	fileIds: ObjectId[];
+	@Property({ nullable: true })
+	fileIds?: ObjectId[];
 
 	constructor(props: ITaskProperties) {
 		super();
@@ -112,7 +109,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
-		this.fileIds = props.fileIds || [];
 	}
 
 	isFinishedForUser(user: User): boolean {
