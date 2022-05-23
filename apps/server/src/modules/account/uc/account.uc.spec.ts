@@ -37,11 +37,15 @@ describe('AccountUc', () => {
 
 	let mockSchool: School;
 	let mockOtherSchool: School;
+	let mockSchoolWithStudentVisibility: School;
 
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
 	let mockOtherTeacherUser: User;
+	let mockTeacherUserNoUserNoSchoolPermission: User;
+	let mockTeacherUserNoUserPermission: User;
+	let mockStudentUserSchoolPermission: User;
 	let mockStudentUser: User;
 	let mockOtherStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
@@ -197,6 +201,8 @@ describe('AccountUc', () => {
 	beforeEach(() => {
 		mockSchool = schoolFactory.buildWithId();
 		mockOtherSchool = schoolFactory.buildWithId();
+		mockSchoolWithStudentVisibility = schoolFactory.buildWithId();
+		//mockSchoolWithStudentVisibility.permissions.push({ role: 'teacher', permissions: ['STUDENT_LIST'] });
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
@@ -237,6 +243,28 @@ describe('AccountUc', () => {
 					permissions: [Permission.STUDENT_EDIT, Permission.STUDENT_LIST, Permission.TEACHER_LIST],
 				}),
 			],
+		});
+		mockTeacherUserNoUserPermission = userFactory.buildWithId({
+			school: mockSchoolWithStudentVisibility,
+			roles: [
+				new Role({
+					name: RoleName.TEACHER,
+					permissions: [],
+				}),
+			],
+		});
+		mockTeacherUserNoUserNoSchoolPermission = userFactory.buildWithId({
+			school: mockSchool,
+			roles: [
+				new Role({
+					name: RoleName.TEACHER,
+					permissions: [],
+				}),
+			],
+		});
+		mockStudentUserSchoolPermission = userFactory.buildWithId({
+			school: mockSchoolWithStudentVisibility,
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
@@ -741,6 +769,28 @@ describe('AccountUc', () => {
 			it('teacher can not access admin of the same school via user id', async () => {
 				const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('teacher can not access any account of a foreign school via user id', async () => {
+				const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;
+
+				let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+
+				params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+			});
+			it('teacher can access student of the same school via user id if school has global permission', async () => {
+				const currentUser = { userId: mockTeacherUserNoUserPermission.id } as ICurrentUser;
+				const params = {
+					type: AccountSearchType.USER_ID,
+					value: mockStudentUserSchoolPermission.id,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+			});
+			it('teacher can not access student of the same school if school has no global permission', async () => {
+				const currentUser = { userId: mockTeacherUserNoUserNoSchoolPermission.id } as ICurrentUser;
+				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('teacher can not access any account of a foreign school via user id', async () => {
