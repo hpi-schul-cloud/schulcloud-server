@@ -13,6 +13,8 @@ import {
 	RoleName,
 	School,
 	User,
+	SchoolRoles,
+	SchoolRolePermission,
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
@@ -27,6 +29,7 @@ import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
 
 import { AccountUc } from './account.uc';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -43,9 +46,9 @@ describe('AccountUc', () => {
 	let mockAdminUser: User;
 	let mockTeacherUser: User;
 	let mockOtherTeacherUser: User;
-	let mockTeacherUserNoUserNoSchoolPermission: User;
-	let mockTeacherUserNoUserPermission: User;
-	let mockStudentUserSchoolPermission: User;
+	let mockTeacherNoUserNoSchoolPermissionUser: User;
+	let mockTeacherNoUserPermissionUser: User;
+	let mockStudentSchoolPermissionUser: User;
 	let mockStudentUser: User;
 	let mockOtherStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
@@ -59,8 +62,11 @@ describe('AccountUc', () => {
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
 	let mockOtherTeacherAccount: Account;
+	let mockTeacherNoUserPermissionAccount: Account;
+	let mockTeacherNoUserNoSchoolPermissionAccount: Account;
 	let mockAdminAccount: Account;
 	let mockStudentAccount: Account;
+	let mockStudentSchoolPermissionAccount: Account;
 	let mockDifferentSchoolAdminAccount: Account;
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
@@ -202,11 +208,18 @@ describe('AccountUc', () => {
 		mockSchool = schoolFactory.buildWithId();
 		mockOtherSchool = schoolFactory.buildWithId();
 		mockSchoolWithStudentVisibility = schoolFactory.buildWithId();
-		//mockSchoolWithStudentVisibility.permissions.push({ role: 'teacher', permissions: ['STUDENT_LIST'] });
+		mockSchoolWithStudentVisibility.permissions = new SchoolRoles();
+		mockSchoolWithStudentVisibility.permissions.teacher = new SchoolRolePermission();
+		mockSchoolWithStudentVisibility.permissions.teacher.STUDENT_LIST = true;
 
 		mockSuperheroUser = userFactory.buildWithId({
 			school: mockSchool,
-			roles: [new Role({ name: RoleName.SUPERHERO, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] })],
+			roles: [
+				new Role({
+					name: RoleName.SUPERHERO,
+					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
+				}),
+			],
 		});
 		mockAdminUser = userFactory.buildWithId({
 			school: mockSchool,
@@ -244,7 +257,7 @@ describe('AccountUc', () => {
 				}),
 			],
 		});
-		mockTeacherUserNoUserPermission = userFactory.buildWithId({
+		mockTeacherNoUserPermissionUser = userFactory.buildWithId({
 			school: mockSchoolWithStudentVisibility,
 			roles: [
 				new Role({
@@ -253,7 +266,7 @@ describe('AccountUc', () => {
 				}),
 			],
 		});
-		mockTeacherUserNoUserNoSchoolPermission = userFactory.buildWithId({
+		mockTeacherNoUserNoSchoolPermissionUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [
 				new Role({
@@ -262,7 +275,7 @@ describe('AccountUc', () => {
 				}),
 			],
 		});
-		mockStudentUserSchoolPermission = userFactory.buildWithId({
+		mockStudentSchoolPermissionUser = userFactory.buildWithId({
 			school: mockSchoolWithStudentVisibility,
 			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
@@ -285,7 +298,10 @@ describe('AccountUc', () => {
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [
-				new Role({ name: RoleName.ADMINISTRATOR, permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT] }),
+				new Role({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
+				}),
 			],
 		});
 		mockUserWithoutRole = userFactory.buildWithId({
@@ -317,12 +333,24 @@ describe('AccountUc', () => {
 			userId: mockOtherTeacherUser.id,
 			password: defaultPasswordHash,
 		});
+		mockTeacherNoUserPermissionAccount = accountFactory.buildWithId({
+			userId: mockTeacherNoUserPermissionUser.id,
+			password: defaultPasswordHash,
+		});
+		mockTeacherNoUserNoSchoolPermissionAccount = accountFactory.buildWithId({
+			userId: mockTeacherNoUserNoSchoolPermissionUser.id,
+			password: defaultPasswordHash,
+		});
 		mockAdminAccount = accountFactory.buildWithId({
 			userId: mockAdminUser.id,
 			password: defaultPasswordHash,
 		});
 		mockStudentAccount = accountFactory.buildWithId({
 			userId: mockStudentUser.id,
+			password: defaultPasswordHash,
+		});
+		mockStudentSchoolPermissionAccount = accountFactory.buildWithId({
+			userId: mockStudentSchoolPermissionUser.id,
 			password: defaultPasswordHash,
 		});
 		mockAccountWithoutRole = accountFactory.buildWithId({
@@ -353,7 +381,10 @@ describe('AccountUc', () => {
 			mockAdminUser,
 			mockTeacherUser,
 			mockOtherTeacherUser,
+			mockTeacherNoUserPermissionUser,
+			mockTeacherNoUserNoSchoolPermissionUser,
 			mockStudentUser,
+			mockStudentSchoolPermissionUser,
 			mockDifferentSchoolAdminUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
@@ -368,7 +399,10 @@ describe('AccountUc', () => {
 			mockAdminAccount,
 			mockTeacherAccount,
 			mockOtherTeacherAccount,
+			mockTeacherNoUserPermissionAccount,
+			mockTeacherNoUserNoSchoolPermissionAccount,
 			mockStudentAccount,
+			mockStudentSchoolPermissionAccount,
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
@@ -781,17 +815,21 @@ describe('AccountUc', () => {
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 			});
 			it('teacher can access student of the same school via user id if school has global permission', async () => {
-				const currentUser = { userId: mockTeacherUserNoUserPermission.id } as ICurrentUser;
+				const configSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+				const currentUser = { userId: mockTeacherNoUserPermissionUser.id } as ICurrentUser;
 				const params = {
 					type: AccountSearchType.USER_ID,
-					value: mockStudentUserSchoolPermission.id,
+					value: mockStudentSchoolPermissionUser.id,
 				} as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+				configSpy.mockRestore();
 			});
 			it('teacher can not access student of the same school if school has no global permission', async () => {
-				const currentUser = { userId: mockTeacherUserNoUserNoSchoolPermission.id } as ICurrentUser;
+				const configSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+				const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as ICurrentUser;
 				const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
-				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
+				configSpy.mockRestore();
 			});
 			it('teacher can not access any account of a foreign school via user id', async () => {
 				const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;

@@ -6,10 +6,11 @@ import {
 	ValidationError,
 } from '@shared/common/error';
 import bcrypt from 'bcryptjs';
-import { Account, EntityId, ICurrentUser, PermissionService, RoleName, User } from '@shared/domain';
+import { Account, EntityId, ICurrentUser, PermissionService, RoleName, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -364,7 +365,19 @@ export class AccountUc {
 			return false;
 		}
 
-		return this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck);
+		return (
+			this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck) ||
+			this.schoolPermissionExists(currentUser.school, permissionsToCheck)
+		);
+	}
+
+	private schoolPermissionExists(school: School, permissions: string[]): boolean {
+		if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
+			if (permissions.find((role) => role === 'STUDENT_LIST')) {
+				return school.permissions?.teacher?.STUDENT_LIST ?? false;
+			}
+		}
+		return false;
 	}
 
 	private calcPasswordHash(password: string): Promise<string> {
