@@ -17,6 +17,7 @@ import { User } from './user.entity';
 import { System } from './system.entity';
 import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { Account } from './account.entity';
+import { FileFilerecord } from './file_filerecord.entity';
 
 export const ALL_ENTITIES = [
 	Account,
@@ -47,4 +48,7 @@ export const ALL_ENTITIES = [
 	ImportUser,
 	FileRecord,
 	FileSecurityCheck,
+	// The FileFilerecord entity is used for syncing the new filerecords collection with the old files collection.
+	// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
+	FileFilerecord,
 ];

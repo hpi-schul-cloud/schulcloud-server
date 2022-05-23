@@ -1,4 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { School } from '@shared/domain/entity/school.entity';
 import { IEntityWithSchool } from '../interface';
 import { ILearnroomElement } from '../interface/learnroom';
@@ -21,6 +22,9 @@ export interface ITaskProperties {
 	lesson?: Lesson;
 	submissions?: Submission[];
 	finished?: User[];
+	// The fileIds property is used for syncing the new filerecords collection with the old files collection.
+	// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
+	fileIds: ObjectId[];
 }
 
 export interface ITaskStatus {
@@ -90,6 +94,11 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
+	// The fileIds property is used for syncing the new filerecords collection with the old files collection.
+	// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
+	@Property()
+	fileIds: ObjectId[];
+
 	constructor(props: ITaskProperties) {
 		super();
 		this.name = props.name;
@@ -103,6 +112,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
+		this.fileIds = props.fileIds || [];
 	}
 
 	isFinishedForUser(user: User): boolean {
