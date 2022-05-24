@@ -52,7 +52,6 @@
 		"nest:docs:build": "npx @compodoc/compodoc -p tsconfig.json -w -a apps/assets --includes apps/server/doc -d docs",
 		"nest:start": "nest start server",
 		"nest:start:dev": "nest start server --watch",
-		"nest:start:dev:docs": "npm run nest:docs:serve & nest:start:dev",
 		"nest:start:debug": "nest start server --debug --watch",
 		"nest:start:prod": "node dist/apps/server/main",
 		"nest:start:management": "nest start management",
