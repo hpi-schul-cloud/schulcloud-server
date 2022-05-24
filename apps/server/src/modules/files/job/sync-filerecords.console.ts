@@ -46,6 +46,7 @@ export class SyncFilerecordsConsole {
 			creatorId: file.creator?._id || new ObjectId(),
 			schoolId: task.schoolId,
 		});
+		filerecord._id = new ObjectId();
 		this.em.persist(filerecord);
 		return filerecord;
 	}
