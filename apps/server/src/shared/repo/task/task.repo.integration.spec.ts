@@ -1606,7 +1606,7 @@ describe('TaskRepo', () => {
 			const task = taskFactory.build({ name: 'task with file' });
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTaskFilesToSync();
+			const result = await repo.getTasksToSync();
 
 			expect(result).toHaveLength(0);
 		});
@@ -1618,7 +1618,7 @@ describe('TaskRepo', () => {
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTaskFilesToSync();
+			const result = await repo.getTasksToSync();
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ _id: task._id });
@@ -1636,7 +1636,7 @@ describe('TaskRepo', () => {
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTaskFilesToSync();
+			const result = await repo.getTasksToSync();
 
 			expect(result).toHaveLength(0);
 		});
@@ -1653,7 +1653,7 @@ describe('TaskRepo', () => {
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTaskFilesToSync();
+			const result = await repo.getTasksToSync();
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ _id: task._id });
