@@ -1170,5 +1170,16 @@
 			"$date": "2022-05-09T12:43:16.529Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6287989eafaf6045788f578e"
+		},
+		"state": "up",
+		"name": "add-nextcloud-permission-to-users",
+		"createdAt": {
+			"$date": "2022-05-20T13:32:06.402Z"
+		},
+		"__v": 0
 	}
 ]
