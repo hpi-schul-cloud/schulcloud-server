@@ -1,44 +1,28 @@
 import { Module } from '@nestjs/common';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { LoggerModule } from '@src/core/logger';
 import { KeycloakConsole } from './console/keycloak-management.console';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { IKeycloakSettings, KeycloakSettings } from './interface/keycloak-settings.interface';
+import { KeycloakSettings } from './interface/keycloak-settings.interface';
 import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 import { KeycloakManagementController } from './controller/keycloak-management.controller';
-import { IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from './interface';
-
-const keycloakConfiguration = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
-	? ({
-			baseUrl: Configuration.get('IDENTITY_MANAGEMENT__URI') as string,
-			realmName: Configuration.get('IDENTITY_MANAGEMENT__TENANT') as string,
-			clientId: Configuration.get('IDENTITY_MANAGEMENT__CLIENTID') as string,
-			credentials: {
-				grantType: 'password',
-				username: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_USER') as string,
-				password: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_PASSWORD') as string,
-				clientId: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_CLIENTID') as string,
-			},
-	  } as IKeycloakSettings)
-	: ({} as IKeycloakSettings);
+import { KeycloakManagementInputFiles } from './interface';
+import KeycloakConfiguration from './keycloak-config';
 
 @Module({
-	imports: [ConsoleWriterModule],
+	imports: [ConsoleWriterModule, LoggerModule],
 	controllers: [KeycloakManagementController],
 	providers: [
 		KeycloakAdminClient,
 		KeycloakAdministrationService,
 		{
 			provide: KeycloakSettings,
-			useValue: keycloakConfiguration,
+			useValue: KeycloakConfiguration.keycloakSettings,
 		},
 		{
 			provide: KeycloakManagementInputFiles,
-			useValue: {
-				accountsFile: './backup/setup/accounts.json',
-				usersFile: './backup/setup/users.json',
-			} as IKeycloakManagementInputFiles,
+			useValue: KeycloakConfiguration.keycloakInputFiles,
 		},
 		KeycloakManagementUc,
 		KeycloakConsole,
