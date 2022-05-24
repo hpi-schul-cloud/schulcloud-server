@@ -22,7 +22,8 @@ export class AccountController {
 
 	@Get()
 	@ApiOperation({
-		summary: 'Returns all accounts which satisfies the given criteria. Superhero or administrator role is REQUIRED.',
+		summary:
+			'Returns all accounts which satisfies the given criteria. For unlimited access Superhero role is REQUIRED.',
 	})
 	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
