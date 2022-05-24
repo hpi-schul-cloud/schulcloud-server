@@ -18,6 +18,7 @@ import {
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -29,7 +30,6 @@ import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper
 import { AccountResponseMapper } from '../mapper/account-response.mapper';
 
 import { AccountUc } from './account.uc';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
