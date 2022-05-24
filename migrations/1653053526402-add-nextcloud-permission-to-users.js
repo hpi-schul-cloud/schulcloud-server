@@ -21,7 +21,7 @@ const Roles = mongoose.model(
 module.exports = {
 	up: async function up() {
 		// eslint-disable-next-line no-process-env
-		if (['brb', 'thr'].includes(process.env.SC_THEME)) {
+		if (process.env.SC_THEME !== 'n21') {
 			info('Migration does not add the NEXTCLOUD_USER permission for this instance.');
 			return;
 		}
@@ -53,7 +53,7 @@ module.exports = {
 	},
 	down: async function down() {
 		// eslint-disable-next-line no-process-env
-		if (['brb', 'thr'].includes(process.env.SC_THEME)) {
+		if (process.env.SC_THEME !== 'n21') {
 			info('Migration does not add the NEXTCLOUD_USER permission for this instance.');
 			return;
 		}
