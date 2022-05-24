@@ -18,7 +18,8 @@ const getProductionFormat = () =>
 	format.combine(
 		format.errors({ stack: true }),
 		format.timestamp(),
-		addType
+		addType,
+		format.json()
 	);
 
 const getDevelopFormat = () =>
