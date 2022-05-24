@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceUnavailableException } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
 import { KeycloakManagementController } from './keycloak-management.controller';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
@@ -11,6 +12,13 @@ describe('KeycloakManagementController', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [KeycloakManagementController],
 			providers: [
+				{
+					provide: Logger,
+					useValue: {
+						setContext: jest.fn(),
+						error: jest.fn(),
+					},
+				},
 				{
 					provide: KeycloakManagementUc,
 					useValue: {

@@ -1,9 +1,12 @@
 import { Controller, ServiceUnavailableException, Post } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
-	constructor(private keycloakManagementUc: KeycloakManagementUc) {}
+	constructor(private keycloakManagementUc: KeycloakManagementUc, private logger: Logger) {
+		this.logger.setContext(KeycloakManagementController.name);
+	}
 
 	/**
 	 * This connects to IDM and seeds the test users.
@@ -17,6 +20,7 @@ export class KeycloakManagementController {
 			try {
 				return await this.keycloakManagementUc.seed();
 			} catch (err) {
+				this.logger.error(err);
 				return -1;
 			}
 		}
