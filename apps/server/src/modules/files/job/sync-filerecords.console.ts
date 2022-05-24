@@ -9,10 +9,10 @@ import { Command, Console } from 'nestjs-console';
 export class SyncFilerecordsConsole {
 	constructor(private taskRepo: TaskRepo, private em: EntityManager, private logger: Logger) {}
 
-	@Command({ command: 'tasks' })
-	async syncFilerecordsForTasks() {
+	@Command({ command: 'tasks [batchSize]' })
+	async syncFilerecordsForTasks(batchSize = 50) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const tasksToSync: TaskToSync[] = await this.taskRepo.getTasksToSync();
+		const tasksToSync: TaskToSync[] = await this.taskRepo.getTasksToSync(Number(batchSize));
 
 		tasksToSync.forEach((task) => {
 			if (task.filerecord) {

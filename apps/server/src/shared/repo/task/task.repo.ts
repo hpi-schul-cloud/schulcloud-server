@@ -196,7 +196,7 @@ export class TaskRepo extends BaseRepo<Task> {
 
 	// This method is used for syncing the new filerecords collection with the old files collection.
 	// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
-	async getTasksToSync() {
+	async getTasksToSync(batchSize = 50) {
 		const tasksToSync = await this._em.aggregate(Task, [
 			{
 				$match: { fileIds: { $exists: true, $ne: [] } },
@@ -261,7 +261,7 @@ export class TaskRepo extends BaseRepo<Task> {
 				},
 			},
 			{
-				$limit: 50,
+				$limit: batchSize,
 			},
 		]);
 
