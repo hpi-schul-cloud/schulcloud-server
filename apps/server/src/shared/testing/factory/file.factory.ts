@@ -1,7 +1,7 @@
-import { File, Directory, IFileProperties } from '@shared/domain';
+import { Directory, File, IFileProperties } from '@shared/domain';
+import { BaseFactory } from './base.factory';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
-import { BaseFactory } from './base.factory';
 
 export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
 	return {
@@ -9,6 +9,7 @@ export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ se
 		bucket: 'test-bucket',
 		storageProvider: storageProviderFactory.build(),
 		creator: userFactory.build(),
+		name: `file-${sequence}`,
 	};
 });
 
@@ -19,5 +20,6 @@ export const directoryFactory = BaseFactory.define<Directory, IFileProperties>(D
 		bucket: 'test-bucket',
 		storageProvider: storageProviderFactory.build(),
 		creator: userFactory.build(),
+		name: `directory-${sequence}`,
 	};
 });

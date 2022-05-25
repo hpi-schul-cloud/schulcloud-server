@@ -22,7 +22,7 @@ export interface ITaskProperties {
 	lesson?: Lesson;
 	submissions?: Submission[];
 	finished?: User[];
-	fileIds?: File[];
+	files?: File[];
 }
 
 export interface ITaskStatus {
@@ -92,8 +92,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
-	@ManyToOne('File', { fieldName: 'fileIds', nullable: true })
-	fileIds?: File[];
+	@ManyToMany('File', undefined, { fieldName: 'fileIds', nullable: true })
+	files = new Collection<File>(this);
 
 	constructor(props: ITaskProperties) {
 		super();
@@ -108,7 +108,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
-		this.fileIds = props.fileIds;
+		this.files.set(props.files || []);
 	}
 
 	isFinishedForUser(user: User): boolean {
@@ -266,8 +266,16 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return descriptions;
 	}
 
-	getFiles(): EntityId[] {
-		const attachedFileIds = this.fileIds ? this.fileIds?.map((file) => file.id) : [];
+	private getFileItems(): File[] {
+		if (!this.files.isInitialized(true)) {
+			throw new Error('File items are not loaded.');
+		}
+		const files = this.files.getItems();
+		return files;
+	}
+
+	getFileNames(): string[] {
+		const attachedFileIds = this.getFileItems().map((file) => file.storageFileName);
 		return attachedFileIds;
 	}
 

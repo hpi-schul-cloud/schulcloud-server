@@ -644,25 +644,24 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getFiles', () => {
-		it('should return empty array if property fileIds does not exist', () => {
+	describe('getFileNames', () => {
+		it('should return empty array if property files does not exist', () => {
 			const user = userFactory.buildWithId({});
 			const task = taskFactory.build({ creator: user });
-			expect(task.fileIds).toBeUndefined();
-			expect(task.getFiles()).toEqual([]);
+			expect(task.getFileNames()).toEqual([]);
 		});
 
-		it('should return empty array if filesIds array is empty', () => {
+		it('should return empty array if files array is empty', () => {
 			const user = userFactory.buildWithId({});
-			const task = taskFactory.build({ creator: user, fileIds: [] });
-			expect(task.getFiles()).toEqual([]);
+			const task = taskFactory.build({ creator: user, files: [] });
+			expect(task.getFileNames()).toEqual([]);
 		});
 
-		it('should return array with correct file ID', () => {
+		it('should return array with correct file name', () => {
 			const user = userFactory.buildWithId({});
 			const file = fileFactory.buildWithId({ creator: user });
-			const task = taskFactory.build({ creator: user, fileIds: [file] });
-			expect(task.getFiles()).toEqual([file.id]);
+			const task = taskFactory.build({ creator: user, files: [file] });
+			expect(task.getFileNames()).toEqual([file.storageFileName]);
 		});
 	});
 
