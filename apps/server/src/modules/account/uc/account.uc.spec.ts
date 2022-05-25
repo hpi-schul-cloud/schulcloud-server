@@ -58,6 +58,7 @@ describe('AccountUc', () => {
 	let mockUserWithoutAccount: User;
 	let mockUserWithoutRole: User;
 	let mockStudentUserWithoutAccount: User;
+	let mockOtherStudentSchoolPermissionUser: User;
 
 	let mockSuperheroAccount: Account;
 	let mockTeacherAccount: Account;
@@ -279,6 +280,10 @@ describe('AccountUc', () => {
 			school: mockSchoolWithStudentVisibility,
 			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 		});
+		mockOtherStudentSchoolPermissionUser = userFactory.buildWithId({
+			school: mockSchoolWithStudentVisibility,
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
+		});
 		mockStudentUser = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
@@ -392,6 +397,7 @@ describe('AccountUc', () => {
 			mockUserWithoutAccount,
 			mockStudentUserWithoutAccount,
 			mockOtherStudentUser,
+			mockOtherStudentSchoolPermissionUser,
 		];
 
 		mockAccounts = [
@@ -831,6 +837,18 @@ describe('AccountUc', () => {
 				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
 				configSpy.mockRestore();
 			});
+
+			it('student can not access student of the same school if school has global permission', async () => {
+				const configSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+				const currentUser = { userId: mockStudentSchoolPermissionUser.id } as ICurrentUser;
+				const params = {
+					type: AccountSearchType.USER_ID,
+					value: mockOtherStudentSchoolPermissionUser.id,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
+				configSpy.mockRestore();
+			});
+
 			it('teacher can not access any account of a foreign school via user id', async () => {
 				const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;
 

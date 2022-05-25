@@ -6,7 +6,17 @@ import {
 	ValidationError,
 } from '@shared/common/error';
 import bcrypt from 'bcryptjs';
-import { Account, EntityId, ICurrentUser, PermissionService, RoleName, School, User } from '@shared/domain';
+import {
+	Account,
+	EntityId,
+	ICurrentUser,
+	Permission,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	User,
+} from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
@@ -297,9 +307,9 @@ export class AccountUc {
 
 	private hasPermissionsToChangeOwnName(currentUser: User) {
 		return (
-			this.hasRole(currentUser, 'superhero') ||
-			this.hasRole(currentUser, 'teacher') ||
-			this.hasRole(currentUser, 'administrator')
+			this.hasRole(currentUser, RoleName.SUPERHERO) ||
+			this.hasRole(currentUser, RoleName.TEACHER) ||
+			this.hasRole(currentUser, RoleName.ADMINISTRATOR)
 		);
 	}
 
@@ -320,10 +330,10 @@ export class AccountUc {
 			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'READ':
-					permissionsToCheck.push('STUDENT_LIST');
+					permissionsToCheck.push(Permission.STUDENT_LIST);
 					break;
 				case 'UPDATE':
-					permissionsToCheck.push('STUDENT_EDIT');
+					permissionsToCheck.push(Permission.STUDENT_EDIT);
 					break;
 				// for future endpoints
 				/* case 'CREATE':
@@ -339,10 +349,10 @@ export class AccountUc {
 			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'READ':
-					permissionsToCheck.push('TEACHER_LIST');
+					permissionsToCheck.push(Permission.TEACHER_LIST);
 					break;
 				case 'UPDATE':
-					permissionsToCheck.push('TEACHER_EDIT');
+					permissionsToCheck.push(Permission.TEACHER_EDIT);
 					break;
 				// for future endpoints
 				/* case 'CREATE':
@@ -361,17 +371,37 @@ export class AccountUc {
 
 		return (
 			this.permissionService.hasUserAllSchoolPermissions(currentUser, permissionsToCheck) ||
-			this.schoolPermissionExists(currentUser.school, permissionsToCheck)
+			this.schoolPermissionExists(
+				this.extractRoles(currentUser.roles.getItems()),
+				currentUser.school,
+				permissionsToCheck
+			)
 		);
 	}
 
-	private schoolPermissionExists(school: School, permissions: string[]): boolean {
+	private schoolPermissionExists(roles: string[], school: School, permissions: string[]): boolean {
 		if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
-			if (permissions.find((role) => role === 'STUDENT_LIST')) {
+			if (
+				roles.find((role) => role === RoleName.TEACHER) &&
+				permissions.find((permission) => permission === Permission.STUDENT_LIST)
+			) {
 				return school.permissions?.teacher?.STUDENT_LIST ?? false;
 			}
 		}
 		return false;
+	}
+
+	private extractRoles(inputRoles: Role[]): string[] {
+		const roles: string[] = [];
+
+		for (let i = 0; i < inputRoles.length; i += 1) {
+			const role = inputRoles[i];
+			roles.push(role.name);
+			const innerRoles = role.roles.getItems().map((x) => x.name);
+			roles.push(...innerRoles);
+		}
+
+		return roles;
 	}
 
 	private calcPasswordHash(password: string): Promise<string> {
