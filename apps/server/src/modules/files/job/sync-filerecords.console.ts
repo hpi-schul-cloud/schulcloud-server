@@ -37,9 +37,15 @@ export class SyncFilerecordsConsole {
 	public async updateFilerecordForTask(task: TaskToSync) {
 		const { file } = task;
 		const filerecord = await this.em.findOneOrFail(FileRecord, task.filerecord?._id);
+		// TODO: Does deletedSince information exist on file? Same for creation below.
+		// filerecord.deletedSince = file.
 		filerecord.name = file.name;
 		filerecord.size = file.size;
 		filerecord.mimeType = file.type;
+		filerecord.securityCheck = file.securityCheck;
+		filerecord._creatorId = file.creator?._id;
+		filerecord._lockedForUserId = file.lockId;
+		filerecord.createdAt = file.createdAt;
 		filerecord.updatedAt = file.updatedAt;
 	}
 
@@ -56,6 +62,7 @@ export class SyncFilerecordsConsole {
 		});
 		filerecord._id = new ObjectId();
 		filerecord.securityCheck = file.securityCheck;
+		filerecord._lockedForUserId = file.lockId;
 		filerecord.createdAt = file.createdAt;
 		filerecord.updatedAt = file.updatedAt;
 		this.em.persist(filerecord);
