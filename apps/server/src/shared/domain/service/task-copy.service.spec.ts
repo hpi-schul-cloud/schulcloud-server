@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
+import { courseFactory, fileFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
@@ -144,7 +144,7 @@ describe('task copy service', () => {
 			expect(result.status.copyEntity).toEqual(result.copy);
 		});
 
-		it('should set status to partial, as long as file is not-implemented', () => {
+		it('should set status to success', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const originalTask = taskFactory.buildWithId({});
@@ -155,12 +155,7 @@ describe('task copy service', () => {
 				user,
 			});
 
-			expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
-
-			// TODO once files status is no longer NOT_IMPLEMENTED, task status should change.
-			const fileStatus = result.status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-			expect(fileStatus).toBeDefined();
-			expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+			expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
 		it('should set status title to title of the copy', () => {
@@ -245,22 +240,119 @@ describe('task copy service', () => {
 			expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
 
-		it('should set status of files', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId({});
+		describe('when task contains a single file', () => {
+			it('should set task status to partial', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const file = fileFactory.buildWithId();
+				const originalTask = taskFactory.buildWithId({ files: [file] });
 
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
+				const result = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse: course,
+					user,
+				});
+
+				expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 
-			const filesStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
-			);
-			expect(filesStatus).toBeDefined();
-			expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
+			it('should add file with status not implemented', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const file = fileFactory.buildWithId();
+				const originalTask = taskFactory.buildWithId({ files: [file] });
+
+				const result = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse: course,
+					user,
+				});
+
+				const filestatus = result.status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === file.name
+				);
+				expect(filestatus).toBeDefined();
+				expect(filestatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+			});
+		});
+
+		describe('when task contains multiple files', () => {
+			it('should set task status to partial', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const files = [fileFactory.buildWithId(), fileFactory.buildWithId()];
+				const originalTask = taskFactory.buildWithId({ files });
+
+				const result = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse: course,
+					user,
+				});
+
+				expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
+			});
+
+			it('should add a status for files', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const files = [fileFactory.buildWithId(), fileFactory.buildWithId()];
+				const originalTask = taskFactory.buildWithId({ files });
+
+				const result = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse: course,
+					user,
+				});
+
+				const filestatus = result.status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
+				);
+				expect(filestatus).toBeDefined();
+				expect(filestatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+			});
+
+			it('should add a status for each file under files', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const files = [fileFactory.buildWithId(), fileFactory.buildWithId()];
+				const originalTask = taskFactory.buildWithId({ files });
+
+				const result = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse: course,
+					user,
+				});
+
+				const filestatus = result.status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
+				);
+
+				const fileStatusNames = filestatus?.elements?.map((el) => el.title);
+				const fileNames = files.map((file) => file.name as string);
+
+				expect(fileStatusNames?.sort()).toEqual(fileNames.sort());
+			});
+
+			it('should set "not implemented" as the status of every file', () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const files = [fileFactory.buildWithId(), fileFactory.buildWithId()];
+				const originalTask = taskFactory.buildWithId({ files });
+
+				const result = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse: course,
+					user,
+				});
+
+				const fileStatus = result.status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
+				);
+
+				fileStatus?.elements?.forEach((el) => {
+					expect(el.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				});
+			});
 		});
 	});
 });

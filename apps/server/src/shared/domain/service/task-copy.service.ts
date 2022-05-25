@@ -24,34 +24,72 @@ export class TaskCopyService {
 			creator: params.user,
 			course: params.destinationCourse,
 		});
-		const status = {
+
+		const elements = [...this.defaultTaskStatusElements(), ...this.copyTaskFiles(params.originalTask)];
+
+		const status: CopyStatusDTO = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			status: CopyStatusEnum.PARTIAL,
+			status: this.inferStatusFromElements(elements),
 			copyEntity: copy,
-			elements: [
+			elements,
+		};
+
+		return { copy, status };
+	}
+
+	private defaultTaskStatusElements(): CopyStatusDTO[] {
+		return [
+			{
+				title: 'metadata',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				title: 'description',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				title: 'submissions',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+		];
+	}
+
+	private copyTaskFiles(task: Task): CopyStatusDTO[] {
+		const fileNames = task.getFileNames();
+		if (fileNames.length === 1) {
+			return [
 				{
-					title: 'metadata',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
-				},
-				{
-					title: 'description',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
-				},
-				{
-					title: 'submissions',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'files',
+					title: fileNames[0],
 					type: CopyElementType.LEAF,
 					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
-			],
-		};
-		return { copy, status };
+			];
+		}
+		if (fileNames.length > 1) {
+			const elements = fileNames.map((title) => ({
+				title,
+				type: CopyElementType.FILE,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			}));
+			const fileStatus = {
+				title: 'files',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+				elements,
+			};
+			return [fileStatus];
+		}
+		return [];
+	}
+
+	private inferStatusFromElements(elements: CopyStatusDTO[]): CopyStatusEnum {
+		const childrenStatusArray = elements.map((el) => el.status);
+		if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL;
+		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) return CopyStatusEnum.PARTIAL;
+		return CopyStatusEnum.SUCCESS;
 	}
 }

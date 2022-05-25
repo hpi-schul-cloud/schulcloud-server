@@ -275,7 +275,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	}
 
 	getFileNames(): string[] {
-		const attachedFileIds = this.getFileItems().map((file) => file.storageFileName);
+		const attachedFileIds = this.getFileItems().map((file) => file.name);
 		return attachedFileIds;
 	}
 

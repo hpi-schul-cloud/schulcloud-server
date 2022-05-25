@@ -661,7 +661,7 @@ describe('Task Entity', () => {
 			const user = userFactory.buildWithId({});
 			const file = fileFactory.buildWithId({ creator: user });
 			const task = taskFactory.build({ creator: user, files: [file] });
-			expect(task.getFileNames()).toEqual([file.storageFileName]);
+			expect(task.getFileNames()).toEqual([file.name]);
 		});
 	});
 
