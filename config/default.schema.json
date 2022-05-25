@@ -22,15 +22,10 @@
 				"TIMEOUT_MS": {
 					"type": "integer",
 					"description": "Outgoing request timeout in milliseconds."
-				},
-				"CLIENT_API_KEY": {
-					"type": "string",
-					"description": "The API Key of the Client for authentication towards the server. required for sending mails."
 				}
 			},
 			"default": {
 				"TIMEOUT_MS": 5000,
-				"CLIENT_API_KEY": "example",
 				"KEEP_ALIVE": true
 			}
 		},
