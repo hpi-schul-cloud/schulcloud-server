@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { File, FileRecord, FileRecordParentType } from '@shared/domain';
+import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { Command, Console } from 'nestjs-console';
 import { FileFilerecord } from './sync-filerecords-utils/file_filerecord.entity';
@@ -14,49 +17,51 @@ export class SyncFilerecordsConsole {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const tasksToSync: TaskToSync[] = await this.syncTaskRepo.getTasksToSync(Number(batchSize));
 
-		tasksToSync.forEach((task) => {
-			if (task.filerecord) {
-				this.updateFilerecordForTask(task);
-			} else {
-				const filerecord = this.createFilerecordForTask(task);
-				this.createFileFilerecord(task.file._id, filerecord._id);
-			}
-		});
-
-		await this.em.flush();
+		await this.syncMetaData(tasksToSync);
 	}
 
-	public updateFilerecordForTask(task: TaskToSync) {
-		const { filerecord } = task;
-		if (filerecord) {
-			filerecord.updatedAt = task.file.updatedAt;
-			this.em.persist(filerecord);
+	private async syncMetaData(tasks: TaskToSync[]) {
+		const promises = tasks.map((task) => {
+			if (task.filerecord) {
+				return this.updateFilerecordForTask(task);
+			}
+
+			return this.createFilerecordForTask(task);
+		});
+
+		if (await Promise.all(promises)) {
+			await this.em.flush();
 		}
+	}
+
+	public async updateFilerecordForTask(task: TaskToSync) {
+		const { file } = task;
+		const filerecord = await this.em.findOneOrFail(FileRecord, task.filerecord?._id);
+		filerecord.name = file.name;
+		filerecord.size = file.size;
+		filerecord.mimeType = file.type;
+		filerecord.updatedAt = file.updatedAt;
 	}
 
 	private createFilerecordForTask(task: TaskToSync) {
 		const { file } = task;
 		const filerecord = new FileRecord({
-			size: file.size || 0,
-			name: file.storageFileName,
-			mimeType: file.type || '',
+			size: file.size,
+			name: file.name,
+			mimeType: file.type,
 			parentType: FileRecordParentType.Task,
 			parentId: task._id,
-			// TODO: What shall happen when file.creator is undefined?
-			creatorId: file.creator?._id || new ObjectId(),
+			creatorId: file.creator?._id,
 			schoolId: task.schoolId,
 		});
 		filerecord._id = new ObjectId();
+		filerecord.securityCheck = file.securityCheck;
 		this.em.persist(filerecord);
-		return filerecord;
-	}
-
-	private createFileFilerecord(fileId: ObjectId, filerecordId: ObjectId) {
-		const fileFilerecord = new FileFilerecord({ fileId, filerecordId });
+		const fileFilerecord = new FileFilerecord({ fileId: file._id, filerecordId: filerecord._id });
 		this.em.persist(fileFilerecord);
 	}
 }
 
 export class TaskToSync {
-	constructor(public _id: ObjectId, public schoolId: ObjectId, public file: File, public filerecord?: FileRecord) {}
+	constructor(public _id: ObjectId, public schoolId: ObjectId, public file: any, public filerecord?: FileRecord) {}
 }
