@@ -255,6 +255,8 @@ describe(`${baseRouteName} (api)`, () => {
 					parentId: targetParentId,
 					parentType: FileRecordParentType.Course,
 					type: 'text/plain',
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
 				});
 			});
 
@@ -374,6 +376,8 @@ describe(`${baseRouteName} (api)`, () => {
 					parentId: targetParentId,
 					parentType: FileRecordParentType.Course,
 					type: 'text/plain',
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
 				});
 			});
 

@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecord, FileRecordParentType } from '@shared/domain/'; // we do not want entity on this place in future or?
+import { FileRecord, FileRecordParentType, ScanStatus } from '@shared/domain/'; // we do not want entity on this place in future or?
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
+		this.size = fileRecord.size;
+		this.securityCheckStatus = fileRecord.securityCheck.status;
 		this.parentId = fileRecord.parentId;
 		this.creatorId = fileRecord.creatorId;
 		this.type = fileRecord.mimeType;
@@ -22,6 +24,12 @@ export class FileRecordResponse {
 
 	@ApiProperty()
 	parentId: string;
+
+	@ApiProperty()
+	securityCheckStatus: ScanStatus;
+
+	@ApiProperty()
+	size: number;
 
 	@ApiProperty()
 	creatorId: string;
