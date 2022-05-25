@@ -1,6 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '../../../../shared/domain/entity/base.entity';
 
 // This entity is used for syncing the new filerecords collection with the old files collection.
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.

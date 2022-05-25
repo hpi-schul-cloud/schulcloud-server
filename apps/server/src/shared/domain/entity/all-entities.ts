@@ -17,7 +17,7 @@ import { User } from './user.entity';
 import { System } from './system.entity';
 import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { Account } from './account.entity';
-import { FileFilerecord } from './file_filerecord.entity';
+import { FileFilerecord } from '../../../modules/files/job/sync-filerecords-utils/file_filerecord.entity';
 
 export const ALL_ENTITIES = [
 	Account,

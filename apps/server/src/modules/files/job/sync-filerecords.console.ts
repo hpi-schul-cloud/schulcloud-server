@@ -1,18 +1,18 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { File, FileRecord, FileRecordParentType } from '@shared/domain';
-import { FileFilerecord } from '@shared/domain/entity/file_filerecord.entity';
-import { TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { Command, Console } from 'nestjs-console';
+import { FileFilerecord } from './sync-filerecords-utils/file_filerecord.entity';
+import { SyncTaskRepo } from './sync-filerecords-utils/sync-task.repo';
 
 @Console({ command: 'sync-filerecords' })
 export class SyncFilerecordsConsole {
-	constructor(private taskRepo: TaskRepo, private em: EntityManager, private logger: Logger) {}
+	constructor(private syncTaskRepo: SyncTaskRepo, private em: EntityManager, private logger: Logger) {}
 
 	@Command({ command: 'tasks [batchSize]' })
 	async syncFilerecordsForTasks(batchSize = 50) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const tasksToSync: TaskToSync[] = await this.taskRepo.getTasksToSync(Number(batchSize));
+		const tasksToSync: TaskToSync[] = await this.syncTaskRepo.getTasksToSync(Number(batchSize));
 
 		tasksToSync.forEach((task) => {
 			if (task.filerecord) {
