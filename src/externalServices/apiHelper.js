@@ -25,7 +25,7 @@ module.exports = class ApiHelper {
 				const serializedParams = qs.stringify(paramsObj);
 				return serializedParams;
 			},
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 	}
 

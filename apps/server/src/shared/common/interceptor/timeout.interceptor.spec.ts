@@ -28,7 +28,7 @@ describe('TimeoutInterceptor', () => {
 
 			const response = await request(app.getHttpServer()).get('/');
 
-			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
+			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT_MS);
 		});
 
 		it('should pass if request does not run into timeout', async () => {

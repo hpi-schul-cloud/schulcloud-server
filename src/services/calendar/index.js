@@ -183,7 +183,7 @@ class Service {
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((events) => {
@@ -209,7 +209,7 @@ class Service {
 				Authorization: userId,
 			},
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((events) => {
@@ -239,7 +239,7 @@ class Service {
 			},
 			json: true,
 			method: 'DELETE',
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 			body: { data: [{ type: 'event' }] },
 		};
 
@@ -262,7 +262,7 @@ class Service {
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((events) => {
