@@ -769,7 +769,7 @@ const newFileService = {
 			)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
-				if (Configuration.get('KEEP_ALIVE')) {
+				if (Configuration.get('REQUEST_OPTION__KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
 				return rp({

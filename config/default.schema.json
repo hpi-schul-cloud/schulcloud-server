@@ -11,15 +11,15 @@
 			"enum": ["development", "test", "production", "migration"],
 			"default": "production"
 		},
-		"API": {
+		"REQUEST_OPTION": {
 			"type": "object",
-			"description": "API helper settings.",
+			"description": "Request helper options for internal requests.",
 			"properties": {
 				"KEEP_ALIVE": {
 					"type": "boolean",
 					"description": "Add Keep-Alive header to the request connection."
 				},
-				"REQUEST_TIMEOUT_MS": {
+				"TIMEOUT_MS": {
 					"type": "integer",
 					"description": "Outgoing request timeout in milliseconds."
 				},
@@ -29,7 +29,7 @@
 				}
 			},
 			"default": {
-				"REQUEST_TIMEOUT_MS": 5000,
+				"TIMEOUT_MS": 5000,
 				"CLIENT_API_KEY": "example",
 				"KEEP_ALIVE": true
 			}
