@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	courseFactory,
+	fileFactory,
 	lessonFactory,
 	setupEntities,
 	submissionFactory,
@@ -640,6 +641,28 @@ describe('Task Entity', () => {
 				expect(task.getParentData().courseName).toEqual('');
 				expect(task.getParentData().color).toEqual('#ACACAC');
 			});
+		});
+	});
+
+	describe('getFiles', () => {
+		it('should return empty array if property fileIds does not exist', () => {
+			const user = userFactory.buildWithId({});
+			const task = taskFactory.build({ creator: user });
+			expect(task.fileIds).toBeUndefined();
+			expect(task.getFiles()).toEqual([]);
+		});
+
+		it('should return empty array if filesIds array is empty', () => {
+			const user = userFactory.buildWithId({});
+			const task = taskFactory.build({ creator: user, fileIds: [] });
+			expect(task.getFiles()).toEqual([]);
+		});
+
+		it('should return array with correct file ID', () => {
+			const user = userFactory.buildWithId({});
+			const file = fileFactory.buildWithId({ creator: user });
+			const task = taskFactory.build({ creator: user, fileIds: [file] });
+			expect(task.getFiles()).toEqual([file.id]);
 		});
 	});
 
