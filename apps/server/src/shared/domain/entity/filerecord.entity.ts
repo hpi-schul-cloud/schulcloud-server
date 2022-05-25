@@ -1,8 +1,8 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseEntityForSyncing } from '@src/modules/files/job/sync-filerecords-utils/sync-base.entity';
 import { v4 as uuid } from 'uuid';
 import type { EntityId } from '../types/entity-id';
-import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -74,7 +74,9 @@ export interface IFileRecordProperties {
 @Index({ properties: ['_schoolId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
-export class FileRecord extends BaseEntityWithTimestamps {
+// FileRecord must inherit from BaseEntityForSyncing while the syncing of files and filerecords goes on,
+// because with BaseEntityWithTimestamps it is not possible to set updatedAt manually.
+export class FileRecord extends BaseEntityForSyncing {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
 	deletedSince?: Date;

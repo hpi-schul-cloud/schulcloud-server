@@ -56,6 +56,8 @@ export class SyncFilerecordsConsole {
 		});
 		filerecord._id = new ObjectId();
 		filerecord.securityCheck = file.securityCheck;
+		filerecord.createdAt = file.createdAt;
+		filerecord.updatedAt = file.updatedAt;
 		this.em.persist(filerecord);
 		const fileFilerecord = new FileFilerecord({ fileId: file._id, filerecordId: filerecord._id });
 		this.em.persist(fileFilerecord);
