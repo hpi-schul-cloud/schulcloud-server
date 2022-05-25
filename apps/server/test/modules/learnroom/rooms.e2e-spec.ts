@@ -1,23 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@src/server.module';
-import { BoardResponse } from '@src/modules/learnroom/controller/dto';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Course, ICurrentUser, Permission, Task } from '@shared/domain';
 import {
-	userFactory,
-	courseFactory,
-	taskFactory,
-	cleanupCollections,
-	roleFactory,
 	boardFactory,
+	cleanupCollections,
+	courseFactory,
 	lessonFactory,
 	mapUserToCurrentUser,
+	roleFactory,
+	taskFactory,
+	userFactory,
 } from '@shared/testing';
-import { ICurrentUser, Task } from '@shared/domain';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { BoardResponse, CopyApiResponse } from '@src/modules/learnroom/controller/dto';
+import { ServerTestModule } from '@src/server.module';
+import { Request } from 'express';
+import request from 'supertest';
 
 describe('Rooms Controller (e2e)', () => {
 	let app: INestApplication;
@@ -154,6 +154,40 @@ describe('Rooms Controller (e2e)', () => {
 			const response = await request(app.getHttpServer()).patch(`/rooms/${course.id}/board/order`).send(params);
 
 			expect(response.status).toEqual(200);
+		});
+	});
+
+	describe('[POST] copy', () => {
+		it('should return 201', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+
+			expect(response.status).toEqual(201);
+		});
+
+		it('should return id of copied element', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+			const body = response.body as CopyApiResponse;
+			expect(body.id).toBeDefined();
+
+			expect(() => em.findOneOrFail(Course, body.id)).not.toThrow();
 		});
 	});
 });

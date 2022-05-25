@@ -1,15 +1,18 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, ICurrentUser } from '@shared/domain';
+import { CopyElementType, CopyStatusDTO, CopyStatusEnum, EntityId, ICurrentUser } from '@shared/domain';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
+import { CourseCopyUC } from '../uc/course-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
-import { BoardResponse } from './dto';
+import { BoardResponse, CopyApiResponse } from './dto';
 import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {
 	let controller: RoomsController;
 	let mapper: RoomBoardResponseMapper;
 	let uc: RoomsUc;
+	let copyUc: CourseCopyUC;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +41,10 @@ describe('rooms controller', () => {
 					},
 				},
 				{
+					provide: CourseCopyUC,
+					useValue: createMock<CourseCopyUC>(),
+				},
+				{
 					provide: RoomBoardResponseMapper,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -51,6 +58,7 @@ describe('rooms controller', () => {
 		controller = module.get(RoomsController);
 		mapper = module.get(RoomBoardResponseMapper);
 		uc = module.get(RoomsUc);
+		copyUc = module.get(CourseCopyUC);
 	});
 
 	describe('getRoomBoard', () => {
@@ -115,6 +123,35 @@ describe('rooms controller', () => {
 			});
 			await controller.patchOrderingOfElements('roomid', { elements: ['id', 'id', 'id'] }, currentUser);
 			expect(ucSpy).toHaveBeenCalledWith('roomid', 'userId', ['id', 'id', 'id']);
+		});
+	});
+
+	describe('copyCourse', () => {
+		describe('when course should be copied via API call', () => {
+			const setup = () => {
+				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const ucResult = {
+					title: 'example title',
+					type: 'COURSE' as CopyElementType,
+					status: 'SUCCESS' as CopyStatusEnum,
+					elements: [],
+				} as CopyStatusDTO;
+				const ucSpy = jest.spyOn(copyUc, 'copyCourse').mockImplementation(() => {
+					return Promise.resolve(ucResult);
+				});
+				return { currentUser, ucSpy };
+			};
+			it('should call uc', async () => {
+				const { currentUser, ucSpy } = setup();
+				await controller.copyCourse(currentUser, 'courseId');
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'courseId');
+			});
+
+			it('should return result of correct type', async () => {
+				const { currentUser } = setup();
+				const result = await controller.copyCourse(currentUser, 'courseId');
+				expect(result).toBeInstanceOf(CopyApiResponse);
+			});
 		});
 	});
 });
