@@ -171,6 +171,23 @@ describe('Account Controller (e2e)', () => {
 				.send()
 				.expect(200);
 		});
+		// If skip is too big, just return an empty list.
+		// We testing it here, because we are mocking the database in the use case unit tests
+		// and for realistic behavior we need database.
+		it('should search for user id with large skip', async () => {
+			currentUser = mapUserToCurrentUser(superheroUser);
+			const query: AccountSearchQueryParams = {
+				type: AccountSearchType.USER_ID,
+				value: studentUser.id,
+				skip: 50000,
+				limit: 5,
+			};
+			await request(app.getHttpServer()) //
+				.get(`${basePath}`)
+				.query(query)
+				.send()
+				.expect(200);
+		});
 		it('should search for user name', async () => {
 			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
 			const query: AccountSearchQueryParams = {
