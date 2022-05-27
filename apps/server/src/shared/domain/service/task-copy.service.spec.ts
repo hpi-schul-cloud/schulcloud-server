@@ -144,20 +144,6 @@ describe('task copy service', () => {
 			expect(result.status.copyEntity).toEqual(result.copy);
 		});
 
-		it('should set status to success', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId({});
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
-			});
-
-			expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
-		});
-
 		it('should set status title to title of the copy', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
@@ -240,6 +226,67 @@ describe('task copy service', () => {
 			expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
 
+		it('should set status to success in absence of attached files', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({});
+
+			const result = copyService.copyTaskMetadata({
+				originalTask,
+				destinationCourse: course,
+				user,
+			});
+
+			expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should not set files leaf in absence of attached files', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({});
+
+			const result = copyService.copyTaskMetadata({
+				originalTask,
+				destinationCourse: course,
+				user,
+			});
+
+			const filesStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'files'
+			);
+			expect(filesStatus).not.toBeDefined();
+		});
+
+		it('should only set default task status elements in absence of attached files', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({});
+
+			const result = copyService.copyTaskMetadata({
+				originalTask,
+				destinationCourse: course,
+				user,
+			});
+
+			const metadataStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
+			);
+			const descriptionStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'description'
+			);
+			const submissionsStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
+			);
+			const filesStatus = result.status.elements?.find(
+				(el) => el.type === CopyElementType.LEAF && el.title === 'files'
+			);
+			expect(result.status.elements).toHaveLength(3);
+			expect(metadataStatus).toBeDefined();
+			expect(descriptionStatus).toBeDefined();
+			expect(submissionsStatus).toBeDefined();
+			expect(filesStatus).not.toBeDefined();
+		});
+
 		describe('when task contains a single file', () => {
 			it('should set task status to partial', () => {
 				const user = userFactory.buildWithId();
@@ -256,7 +303,7 @@ describe('task copy service', () => {
 				expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 
-			it('should add file with status not implemented', () => {
+			it('should add file leaf with status "not implemented"', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const file = fileFactory.buildWithId();
@@ -268,11 +315,11 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const filestatus = result.status.elements?.find(
+				const fileStatus = result.status.elements?.find(
 					(el) => el.type === CopyElementType.LEAF && el.title === file.name
 				);
-				expect(filestatus).toBeDefined();
-				expect(filestatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				expect(fileStatus).toBeDefined();
+				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 		});
 
@@ -292,7 +339,7 @@ describe('task copy service', () => {
 				expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 
-			it('should add a status for files', () => {
+			it('should add a status for files leaf', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const files = [fileFactory.buildWithId(), fileFactory.buildWithId()];
@@ -304,11 +351,11 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const filestatus = result.status.elements?.find(
+				const fileStatus = result.status.elements?.find(
 					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
 				);
-				expect(filestatus).toBeDefined();
-				expect(filestatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				expect(fileStatus).toBeDefined();
+				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should add a status for each file under files', () => {
@@ -328,7 +375,7 @@ describe('task copy service', () => {
 				);
 
 				const fileStatusNames = filestatus?.elements?.map((el) => el.title);
-				const fileNames = files.map((file) => file.name as string);
+				const fileNames = files.map((file) => file.name);
 
 				expect(fileStatusNames?.sort()).toEqual(fileNames.sort());
 			});
