@@ -54,8 +54,8 @@ export class School extends BaseEntity {
 		if (props.systems) this.systems.set(props.systems);
 		if (props.features) this.features = props.features;
 	}
-  
-  @Property({ nullable: true })
+
+	@Property({ nullable: true })
 	features?: SchoolFeatures[];
 
 	@Property({ nullable: true })
