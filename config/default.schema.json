@@ -289,6 +289,7 @@
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
+			"required": ["URI", "TENANT", "CLIENTID", "ADMIN_CLIENTID", "ADMIN_USER", "ADMIN_PASSWORD"],
 			"properties": {
 				"URI": {
 					"type": "string",
@@ -299,6 +300,11 @@
 					"type": "string",
 					"default": null,
 					"description": "The ErWIn IDM tenant."
+				},
+				"CLIENTID": {
+					"type": "string",
+					"default": null,
+					"description": "The ErWIn IDM tenant client."
 				},
 				"ADMIN_CLIENTID": {
 					"type": "string",
