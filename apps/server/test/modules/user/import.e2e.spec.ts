@@ -117,7 +117,11 @@ describe('ImportUser Controller (e2e)', () => {
 			describe('When feature is not enabled', () => {
 				let user: User;
 				beforeEach(async () => {
-					({ user } = await authenticatedUser());
+					({ user } = await authenticatedUser([
+						Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+						Permission.SCHOOL_IMPORT_USERS_UPDATE,
+						Permission.SCHOOL_IMPORT_USERS_VIEW,
+					]));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', '');

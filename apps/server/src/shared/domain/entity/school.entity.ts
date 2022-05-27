@@ -55,6 +55,6 @@ export class School extends BaseEntity {
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
 	systems = new Collection<System>(this);
 
-	@Property()
+	@Property({ nullable: true })
 	features?: SchoolFeatures[];
 }

@@ -48,7 +48,7 @@ export class UserImportUc {
 		}
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
-			throw new BadRequestException('User Migration not enabled');
+			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
 
