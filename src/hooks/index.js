@@ -202,6 +202,8 @@ exports.hasPermissionNoHook = (context, userId, permissionName) => {
 exports.hasRoleNoHook = (context, userId, roleName, account = false) => {
 	const userService = context.app.service('/users/');
 	const accountService = context.app.service('/accounts/');
+	// What is the account flag for?
+	// if statement can be remove because it has no effect?!
 	if (account) {
 		return accountService.get(userId).then((_account) =>
 			userService.find({ query: { _id: _account.userId || '', $populate: 'roles' } }).then((user) => {
@@ -527,45 +529,45 @@ exports.mapPayload = (context) => {
 };
 
 // meant to be used as an after context
-exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) => (
-	context
-) =>
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, 'superhero')) {
+exports.denyIfNotCurrentSchool =
+	({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) =>
+	(context) =>
+		getUser(context).then((user) => {
+			if (testIfRoleNameExist(user, 'superhero')) {
+				return context;
+			}
+			const requesterSchoolId = user.schoolId;
+			const requestedUserSchoolId = (context.result || {}).schoolId;
+			if (!requesterSchoolId.equals(requestedUserSchoolId)) {
+				throw new Forbidden(errorMessage);
+			}
+			return context;
+		});
+
+// meant to be used as an after context
+exports.denyIfNotCurrentSchoolOrEmpty =
+	({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) =>
+	(context) => {
+		if (!(context.result || {}).schoolId) {
 			return context;
 		}
-		const requesterSchoolId = user.schoolId;
-		const requestedUserSchoolId = (context.result || {}).schoolId;
-		if (!requesterSchoolId.equals(requestedUserSchoolId)) {
+		return this.denyIfNotCurrentSchool(errorMessage)(context);
+	};
+
+exports.denyIfStudentTeamCreationNotAllowed =
+	({ errorMessage = 'The current user is not allowed to list other users!' }) =>
+	async (context) => {
+		const currentUser = await getUser(context);
+		if (!testIfRoleNameExist(currentUser, 'student')) {
+			return context;
+		}
+		const currentUserSchoolId = currentUser.schoolId;
+		const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
+		if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
 			throw new Forbidden(errorMessage);
 		}
 		return context;
-	});
-
-// meant to be used as an after context
-exports.denyIfNotCurrentSchoolOrEmpty = ({
-	errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!',
-}) => (context) => {
-	if (!(context.result || {}).schoolId) {
-		return context;
-	}
-	return this.denyIfNotCurrentSchool(errorMessage)(context);
-};
-
-exports.denyIfStudentTeamCreationNotAllowed = ({
-	errorMessage = 'The current user is not allowed to list other users!',
-}) => async (context) => {
-	const currentUser = await getUser(context);
-	if (!testIfRoleNameExist(currentUser, 'student')) {
-		return context;
-	}
-	const currentUserSchoolId = currentUser.schoolId;
-	const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
-	if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
-		throw new Forbidden(errorMessage);
-	}
-	return context;
-};
+	};
 
 exports.checkSchoolOwnership = (context) => {
 	const { userId } = context.params.account;
@@ -804,25 +806,27 @@ exports.addCollation = (context) => {
  * @param optional the email has not to be present
  * @returns {*} context
  */
-exports.blockDisposableEmail = (property, optional = true) => async (context) => {
-	// available
-	if (!Object.prototype.hasOwnProperty.call(context.data, property)) {
-		if (!optional) {
-			throw new BadRequest(`Property ${property} is required`);
+exports.blockDisposableEmail =
+	(property, optional = true) =>
+	async (context) => {
+		// available
+		if (!Object.prototype.hasOwnProperty.call(context.data, property)) {
+			if (!optional) {
+				throw new BadRequest(`Property ${property} is required`);
+			}
+
+			return context;
+		}
+
+		// blacklisted
+		if (Configuration.get('BLOCK_DISPOSABLE_EMAIL_DOMAINS') === true) {
+			if (isDisposableEmail(context.data[property])) {
+				throw new BadRequest('EMAIL_DOMAIN_BLOCKED');
+			}
 		}
 
 		return context;
-	}
-
-	// blacklisted
-	if (Configuration.get('BLOCK_DISPOSABLE_EMAIL_DOMAINS') === true) {
-		if (isDisposableEmail(context.data[property])) {
-			throw new BadRequest('EMAIL_DOMAIN_BLOCKED');
-		}
-	}
-
-	return context;
-};
+	};
 
 exports.authenticateWhenJWTExist = (context) => {
 	if ((context.params.headers || {}).authorization) {
