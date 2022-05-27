@@ -1,4 +1,4 @@
-import { Collection, Entity, Property, ManyToMany, Index } from '@mikro-orm/core';
+import { Collection, Entity, Property, ManyToMany, Index, Embedded, Embeddable } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { System } from './system.entity';
 
@@ -9,6 +9,24 @@ export interface ISchoolProperties {
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
+}
+
+@Embeddable()
+export class SchoolRolePermission {
+	@Property({ nullable: true })
+	STUDENT_LIST?: boolean;
+
+	@Property({ nullable: true })
+	LERNSTORE_VIEW?: boolean;
+}
+
+@Embeddable()
+export class SchoolRoles {
+	@Property({ nullable: true, fieldName: 'student' })
+	student?: SchoolRolePermission;
+
+	@Property({ nullable: true, fieldName: 'teacher' })
+	teacher?: SchoolRolePermission;
 }
 
 @Entity({ tableName: 'schools' })
@@ -41,4 +59,7 @@ export class School extends BaseEntity {
 
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
 	systems = new Collection<System>(this);
+
+	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
+	permissions?: SchoolRoles;
 }

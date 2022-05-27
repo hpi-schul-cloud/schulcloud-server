@@ -8,7 +8,7 @@ import { BaseFile, Directory, File } from './file.entity';
 import { Lesson } from './lesson.entity';
 import { CourseNews, News, TeamNews, SchoolNews } from './news.entity';
 import { Role } from './role.entity';
-import { School } from './school.entity';
+import { School, SchoolRoles, SchoolRolePermission } from './school.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
@@ -35,6 +35,8 @@ export const ALL_ENTITIES = [
 	Lesson,
 	Role,
 	School,
+	SchoolRoles,
+	SchoolRolePermission,
 	Submission,
 	Task,
 	Team,
