@@ -9,6 +9,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { File } from './file.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
@@ -137,7 +138,7 @@ describe('Task Entity', () => {
 	});
 
 	describe('getSubmittedUserIds', () => {
-		it('should use save private getSubmissionItems methode to fetch submissions', () => {
+		it('should use save private getSubmissionItems method to fetch submissions', () => {
 			const task = taskFactory.build();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionItems');
@@ -645,23 +646,42 @@ describe('Task Entity', () => {
 	});
 
 	describe('getFileNames', () => {
-		it('should return empty array if property files does not exist', () => {
-			const user = userFactory.buildWithId({});
-			const task = taskFactory.build({ creator: user });
-			expect(task.getFileNames()).toEqual([]);
+		it('should use save private getFileItems method to fetch files', () => {
+			const task = taskFactory.build();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const spy = jest.spyOn(Task.prototype as any, 'getFileItems');
+
+			task.getFileNames();
+
+			expect(spy).toHaveBeenCalled();
 		});
 
-		it('should return empty array if files array is empty', () => {
-			const user = userFactory.buildWithId({});
-			const task = taskFactory.build({ creator: user, files: [] });
-			expect(task.getFileNames()).toEqual([]);
+		it('should throw if files are not loaded', () => {
+			const task = taskFactory.build();
+			task.files.set([orm.em.getReference(File, new ObjectId().toHexString())]);
+
+			expect(() => task.getFileNames()).toThrowError();
 		});
 
-		it('should return array with correct file name', () => {
-			const user = userFactory.buildWithId({});
-			const file = fileFactory.buildWithId({ creator: user });
-			const task = taskFactory.build({ creator: user, files: [file] });
-			expect(task.getFileNames()).toEqual([file.name]);
+		describe('when files are loaded', () => {
+			it('should return empty array if property files does not exist', () => {
+				const user = userFactory.buildWithId({});
+				const task = taskFactory.build({ creator: user });
+				expect(task.getFileNames()).toEqual([]);
+			});
+
+			it('should return empty array if files array is empty', () => {
+				const user = userFactory.buildWithId({});
+				const task = taskFactory.build({ creator: user, files: [] });
+				expect(task.getFileNames()).toEqual([]);
+			});
+
+			it('should return array with correct file name', () => {
+				const user = userFactory.buildWithId({});
+				const file = fileFactory.buildWithId({ creator: user });
+				const task = taskFactory.build({ creator: user, files: [file] });
+				expect(task.getFileNames()).toEqual([file.name]);
+			});
 		});
 	});
 
