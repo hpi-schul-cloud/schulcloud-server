@@ -58,11 +58,10 @@ export class AccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 		}
-		await this.accountRepo.save(account);
-		return Promise.resolve();
+		return this.accountRepo.save(account);
 	}
 
-	async delete(account: AccountDto): Promise<void> {
+	delete(account: AccountDto): Promise<void> {
 		return this.accountRepo.deleteById(account.id);
 	}
 
