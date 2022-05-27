@@ -130,7 +130,7 @@ describe('UniventionLDAPStrategy', () => {
 						uid: '00001',
 						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ea',
 						mail: 'student1@testschule.de',
-						objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+						objectClass: ['staff'],
 					},
 					{
 						dn: 'uid=marla1,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
@@ -139,7 +139,7 @@ describe('UniventionLDAPStrategy', () => {
 						uid: '00002',
 						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5eb',
 						mail: 'student2@testschule.de',
-						objectClass: ['person', 'posixAccount', 'ucsschoolStudent'],
+						objectClass: ['ucsschoolStudent'],
 					},
 					{
 						dn: 'uid=herr.lempel,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
@@ -148,7 +148,7 @@ describe('UniventionLDAPStrategy', () => {
 						uid: '00003',
 						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ec',
 						mail: 'teacher@testschule.de',
-						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+						objectClass: ['ucsschoolTeacher'],
 					},
 					{
 						dn: 'uid=thorsten.test,cn=lehrer,cn=users,ou=100000,dc=training,dc=ucs',
@@ -157,7 +157,7 @@ describe('UniventionLDAPStrategy', () => {
 						uid: '00004',
 						entryUUID: 'c1872a82-cab3-103b-93e2-4b049df6c5ed',
 						mail: 'admin@testschule.de',
-						objectClass: ['person', 'posixAccount', 'ucsschoolTeacher'],
+						objectClass: ['ucsschoolTeacher'],
 						SchulCloudAdmin: 'TRUE',
 					},
 				]),
@@ -169,10 +169,10 @@ describe('UniventionLDAPStrategy', () => {
 			app.use('/ldap', ldapServiceMock);
 		});
 
-		it('should return all users', async () => {
+		it('should return all users having mapped roles', async () => {
 			const school = { ldapSchoolIdentifier: 'o=Testschule,dc=de' };
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers(school);
-			expect(users.length).to.equal(4);
+			expect(users.length).to.equal(3);
 		});
 
 		it('should follow the internal interface', async () => {
@@ -213,9 +213,8 @@ describe('UniventionLDAPStrategy', () => {
 		it('should assign roles based on specific group memberships', async () => {
 			const users = await new UniventionLDAPStrategy(app, mockLDAPConfig).getUsers({});
 			expect(users[0].roles).to.deep.equal(['student']);
-			expect(users[1].roles).to.deep.equal(['student']);
-			expect(users[2].roles).to.deep.equal(['teacher']);
-			expect(users[3].roles).to.deep.equal(['administrator', 'teacher']);
+			expect(users[1].roles).to.deep.equal(['teacher']);
+			expect(users[2].roles).to.deep.equal(['administrator', 'teacher']);
 		});
 	});
 
