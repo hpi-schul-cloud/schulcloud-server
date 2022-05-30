@@ -21,6 +21,7 @@ const SCHOOL_FEATURES = {
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
 	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
+	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
 };
 
 const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
