@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-
+import { File } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { BaseFile, File } from '@shared/domain';
-import { fileFactory } from '@shared/testing';
 import { FileStorageAdapter } from '@shared/infra/filestorage/filestorage.adapter';
-
+import { directoryFactory, fileFactory } from '@shared/testing';
 import { FilesRepo } from './files.repo';
 
 describe('FilesRepo', () => {
@@ -34,7 +32,7 @@ describe('FilesRepo', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(BaseFile, {});
+		await em.nativeDelete(File, {});
 	});
 
 	afterAll(async () => {
@@ -58,7 +56,7 @@ describe('FilesRepo', () => {
 		});
 
 		it('should implement entityName getter', () => {
-			expect(repo.entityName).toBe(BaseFile);
+			expect(repo.entityName).toBe(File);
 		});
 	});
 
@@ -158,6 +156,21 @@ describe('FilesRepo', () => {
 
 			expect(fileStorageAdapterSpy).toBeCalledTimes(1);
 			expect(fileStorageAdapterSpy).toBeCalledWith(file);
+
+			spy.mockRestore();
+		});
+
+		it('should not delete directories in the storage provider', async () => {
+			const spy = setFileStorageAdapterMock.deleteFile();
+
+			const fileStorageAdapterSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
+
+			const directory = directoryFactory.build();
+			await em.persistAndFlush(directory);
+
+			await repo.deleteFile(directory);
+
+			expect(fileStorageAdapterSpy).not.toHaveBeenCalled();
 
 			spy.mockRestore();
 		});
