@@ -12,7 +12,7 @@ export interface IFileProperties {
 	name: string;
 }
 
-@Entity({ collection: 'files', discriminatorColumn: 'isDirectory', abstract: true })
+@Entity({ collection: 'files', discriminatorColumn: 'directoryDiscriminator', abstract: true })
 export abstract class BaseFile extends BaseEntityWithTimestamps {
 	constructor(props: IFileProperties) {
 		super();
@@ -27,6 +27,14 @@ export abstract class BaseFile extends BaseEntityWithTimestamps {
 
 	@Property()
 	name: string;
+
+	@Property({ persist: false })
+	get directoryDiscriminator() {
+		if (this.isDirectory) {
+			return 'true';
+		}
+		return 'false';
+	}
 
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
