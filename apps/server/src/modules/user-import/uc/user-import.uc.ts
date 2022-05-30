@@ -185,10 +185,10 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
-		const migrationSystem = await this.getMigrationSystem();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		this.featureEnabled(currentUser.school);
 		const { school } = currentUser;
+		this.featureEnabled(school);
+		const migrationSystem = await this.getMigrationSystem();
 		if (!school.officialSchoolNumber || (school.inUserMigration !== undefined && school.inUserMigration !== null)) {
 			throw new BadRequestException('School cannot be set in user migration');
 		}
