@@ -115,8 +115,6 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 */
 
 userSchema.index({ importHash: 1 }); // ok = 1
-userSchema.index({ ldapDn: 1 }); // ?
-userSchema.index({ schoolId: 1, ldapDn: 1 }); // LDAP
 userSchema.index(
 	{
 		firstName: 'text',

@@ -4,11 +4,12 @@ import { PaginationParams } from '@shared/controller/';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { TaskCopyMapper } from '../mapper/task-copy.mapper';
+import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
+import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
 import { TaskMapper } from '../mapper/task.mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskCopyApiResponse, TaskListResponse, TaskResponse } from './dto';
+import { TaskListResponse, TaskResponse } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -86,13 +87,13 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) taskId: string,
 		@Body() params: TaskCopyApiParams
-	): Promise<TaskCopyApiResponse> {
+	): Promise<CopyApiResponse> {
 		const copyStatus = await this.taskCopyUc.copyTask(
 			currentUser.userId,
 			taskId,
-			TaskCopyMapper.mapTaskCopyToDomain(params)
+			CopyMapper.mapTaskCopyToDomain(params)
 		);
-		const dto = TaskCopyMapper.mapToResponse(copyStatus);
+		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
 }
