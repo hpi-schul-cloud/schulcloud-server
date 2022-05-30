@@ -1,3 +1,6 @@
+// account model is mirrored in account entity in the NestJS stack
+// file: apps/server/src/shared/domain/entity/account.entity.ts
+
 const mongoose = require('mongoose');
 const { enableAuditLog } = require('../../utils/database');
 
