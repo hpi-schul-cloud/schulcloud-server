@@ -1,6 +1,6 @@
 import { IAccount, IAccountUpdate } from '@shared/domain';
 
-export abstract class IdentityManagement {
+export abstract class IdentityManagementService {
 	/**
 	 * Create a new account in the identity management.
 	 *

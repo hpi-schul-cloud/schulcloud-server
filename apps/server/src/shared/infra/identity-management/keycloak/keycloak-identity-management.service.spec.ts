@@ -1,16 +1,48 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IdentityManagement } from './identity-management';
-import { KeycloakIdentityManagement } from './keycloak-identity-management';
+import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
+import { IdentityManagementService } from '../identity-management.service';
+import { KeycloakSettings } from './interface/keycloak-settings.interface';
+import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 describe('KeycloakIdentityManagement', () => {
-	let idm: IdentityManagement;
+	let idm: IdentityManagementService;
 	let kcAdminClient: KeycloakAdminClient;
+
+	type MockUser = {
+		id: string;
+		username: string;
+		email?: string;
+		firstName?: string;
+		lastName?: string;
+	};
+
+	const mockedAdminAccount: MockUser = {
+		id: '000',
+		username: 'admin',
+	};
+
+	const mockedAccount1: MockUser = {
+		id: 'user-1-id',
+		username: 'user-1',
+		email: 'user@mail',
+		firstName: 'user',
+		lastName: '1',
+	};
+
+	const mockedAccount2: MockUser = {
+		id: 'user-2-id',
+		username: 'user-2',
+		email: 'another@mail',
+		firstName: 'other',
+		lastName: '2',
+	};
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				{ provide: IdentityManagement, useClass: KeycloakIdentityManagement },
+				KeycloakAdministrationService,
+				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
 					provide: KeycloakAdminClient,
 					useValue: {
@@ -27,12 +59,16 @@ describe('KeycloakIdentityManagement', () => {
 					},
 				},
 				{
-					provide: 'KeycloakSettings',
-					useValue: 'empty',
+					provide: KeycloakSettings,
+					useValue: {
+						credentials: {
+							username: mockedAdminAccount.username,
+						},
+					},
 				},
 			],
 		}).compile();
-		idm = module.get<IdentityManagement>(IdentityManagement);
+		idm = module.get<IdentityManagementService>(IdentityManagementService);
 		kcAdminClient = module.get(KeycloakAdminClient);
 	});
 
@@ -85,30 +121,18 @@ describe('KeycloakIdentityManagement', () => {
 
 	describe('findAccountById', () => {
 		it('should find an existing account', async () => {
-			const accountId = 'user-1-id';
-			const accountUserName = 'user-1';
-			const accountEmail = 'user@mail';
-			const accountFirstName = 'user';
-			const accountLastName = '1';
+			jest.spyOn(kcAdminClient.users, 'findOne').mockResolvedValue(mockedAccount1);
 
-			jest.spyOn(kcAdminClient.users, 'findOne').mockResolvedValue({
-				id: accountId,
-				username: accountUserName,
-				email: accountEmail,
-				firstName: accountFirstName,
-				lastName: accountLastName,
-			});
-
-			const ret = await idm.findAccountById(accountId);
+			const ret = await idm.findAccountById(mockedAccount1.id);
 
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
 				expect.objectContaining({
-					id: accountId,
-					userName: accountUserName,
-					email: accountEmail,
-					firstName: accountFirstName,
-					lastName: accountLastName,
+					id: mockedAccount1.id,
+					userName: mockedAccount1.username,
+					email: mockedAccount1.email,
+					firstName: mockedAccount1.firstName,
+					lastName: mockedAccount1.lastName,
 				})
 			);
 		});
@@ -124,33 +148,28 @@ describe('KeycloakIdentityManagement', () => {
 
 	describe('getAllAccounts', () => {
 		it('should find all existing accounts', async () => {
-			const accountId = 'user-1-id';
-			const accountUserName = 'user-1';
-			const accountEmail = 'user@mail';
-			const accountFirstName = 'user';
-			const accountLastName = '1';
-
-			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([
-				{
-					id: accountId,
-					username: accountUserName,
-					email: accountEmail,
-					firstName: accountFirstName,
-					lastName: accountLastName,
-				},
-			]);
+			jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([mockedAccount1, mockedAccount2]);
 
 			const ret = await idm.getAllAccounts();
 
 			expect(ret).not.toBeNull();
-			expect(ret).toHaveLength(1);
+			expect(ret).toHaveLength(2);
 			expect(ret).toContainEqual(
 				expect.objectContaining({
-					id: accountId,
-					userName: accountUserName,
-					email: accountEmail,
-					firstName: accountFirstName,
-					lastName: accountLastName,
+					id: mockedAccount1.id,
+					userName: mockedAccount1.username,
+					email: mockedAccount1.email,
+					firstName: mockedAccount1.firstName,
+					lastName: mockedAccount1.lastName,
+				})
+			);
+			expect(ret).toContainEqual(
+				expect.objectContaining({
+					id: mockedAccount2.id,
+					userName: mockedAccount2.username,
+					email: mockedAccount2.email,
+					firstName: mockedAccount2.firstName,
+					lastName: mockedAccount2.lastName,
 				})
 			);
 		});
@@ -231,25 +250,5 @@ describe('KeycloakIdentityManagement', () => {
 
 			await expect(idm.updateAccountPassword(accountId, testAccountPassword)).rejects.toBeTruthy();
 		});
-	});
-
-	it('should authorize only once per minute', async () => {
-		jest.useFakeTimers();
-		jest.spyOn(kcAdminClient.users, 'find').mockResolvedValue([]);
-		const authSpy = jest.spyOn(kcAdminClient, 'auth');
-
-		// set timer
-		jest.setSystemTime(new Date(2020, 1, 1, 0, 0, 0));
-		await idm.getAllAccounts();
-		authSpy.mockClear();
-
-		await idm.getAllAccounts();
-		expect(authSpy).not.toHaveBeenCalled();
-
-		jest.setSystemTime(new Date(2020, 1, 1, 0, 1, 0));
-		await idm.getAllAccounts();
-		expect(authSpy).toHaveBeenCalled();
-
-		jest.useRealTimers();
 	});
 });

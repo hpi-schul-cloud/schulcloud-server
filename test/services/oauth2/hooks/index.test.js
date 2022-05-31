@@ -107,7 +107,7 @@ describe('oauth2 token test', () => {
 			// Assert
 			expect(result).to.not.equal(undefined); // returned hook confirms the check passed
 		});
-		it.only('user has role without permission', async () => {
+		it('user has role without permission', async () => {
 			// Arrange
 			const testUser = await testObjects.createTestUser();
 			const testTool = await testObjects.createTestLtiTool({ name: 'SchulcloudNextcloud', oAuthClientId: 'Nextcloud' });

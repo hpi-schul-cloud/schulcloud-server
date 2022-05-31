@@ -29,6 +29,8 @@ components:
       description: TODO
     loginRequest:
       description: TODO
+    logoutResponse:
+      description: TODO
     consentRequest:
       description: TODO
     introspect:
@@ -289,6 +291,39 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/loginRequest'
+  '/oauth2/logoutRequest/':
+    patch:
+      parameters:
+        - in: path
+          name: challenge
+          description: ID of Logout Challenge to verify
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/logoutResponse'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - oauth2
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginRequest'              
   '/oauth2/consentRequest/{id}':
     get:
       parameters:

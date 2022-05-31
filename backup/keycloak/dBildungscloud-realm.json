@@ -325,23 +325,6 @@
       } ]
     }
   },
-  "groups" : [ {
-    "id" : "fc2b447d-c7ad-4ecc-a23a-6f2cf6e4add2",
-    "name" : "schulcloud-server",
-    "path" : "/schulcloud-server",
-    "attributes" : { },
-    "realmRoles" : [ ],
-    "clientRoles" : { },
-    "subGroups" : [ ]
-  }, {
-    "id" : "a70102e4-2843-4371-a620-26ca20666f82",
-    "name" : "superhero-dashboard",
-    "path" : "/superhero-dashboard",
-    "attributes" : { },
-    "realmRoles" : [ ],
-    "clientRoles" : { },
-    "subGroups" : [ ]
-  } ],
   "defaultRole" : {
     "id" : "1a4f9536-2180-41b1-9815-08d01d456270",
     "name" : "default-roles-dbildungscloud",
