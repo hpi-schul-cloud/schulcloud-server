@@ -6,7 +6,7 @@
 		"name": "user",
 		"roles": [],
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.085Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -61,7 +61,8 @@
 			"TEAM_EDIT",
 			"TEAM_VIEW",
 			"TOOL_VIEW",
-			"TOPIC_VIEW"
+			"TOPIC_VIEW",
+			"NEXTCLOUD_USER"
 		],
 		"__v": 0
 	},
@@ -71,7 +72,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2020-06-05T10:58:29.308Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -140,7 +141,7 @@
 		},
 		"name": "superhero",
 		"updatedAt": {
-			"$date": "2019-12-03T16:35:35.238Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -193,7 +194,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2019-12-03T15:47:27.302Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -244,7 +245,7 @@
 		},
 		"name": "student",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -265,7 +266,7 @@
 		},
 		"name": "helpdesk",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -287,7 +288,7 @@
 		},
 		"name": "teammember",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -309,7 +310,7 @@
 		},
 		"name": "teamexpert",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -331,7 +332,7 @@
 		},
 		"name": "teamleader",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -359,7 +360,7 @@
 		},
 		"name": "teamadministrator",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -385,7 +386,7 @@
 		},
 		"name": "teamowner",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -406,7 +407,7 @@
 		},
 		"name": "courseStudent",
 		"updatedAt": {
-			"$date": "2019-09-09T12:00:00Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2019-09-09T12:00:00Z"
@@ -446,7 +447,7 @@
 		},
 		"name": "courseTeacher",
 		"updatedAt": {
-			"$date": "2019-09-09T12:00:00Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2019-09-09T12:00:00Z"
@@ -484,7 +485,7 @@
 		},
 		"name": "courseSubstitutionTeacher",
 		"updatedAt": {
-			"$date": "2019-09-09T12:00:00Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2019-09-09T12:00:00Z"
@@ -519,7 +520,7 @@
 		},
 		"name": "courseAdministrator",
 		"updatedAt": {
-			"$date": "2019-09-09T12:00:00Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2019-09-09T12:00:00Z"
@@ -538,7 +539,7 @@
 		},
 		"name": "expert",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-05-20T13:33:18.077Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"

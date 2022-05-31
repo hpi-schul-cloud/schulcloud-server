@@ -12,6 +12,7 @@ import {
 	MatchCreatorScope,
 	PermissionService,
 	School,
+	SchoolFeatures,
 	System,
 	User,
 	Permission,
@@ -39,11 +40,15 @@ export class UserImportUc {
 		private readonly userRepo: UserRepo
 	) {}
 
-	private featureEnabled() {
+	private featureEnabled(school: School) {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
-		if (!enabled || !ObjectId.isValid(systemId)) {
+		if (!ObjectId.isValid(systemId)) {
 			throw new InternalServerErrorException('User Migration not configured');
+		}
+		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
+		if (!enabled && !isLdapPilotSchool) {
+			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
 
@@ -59,8 +64,8 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		this.featureEnabled(currentUser.school);
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
 	}
@@ -73,8 +78,8 @@ export class UserImportUc {
 	 * @returns importuser and matched user
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId) {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		this.featureEnabled(currentUser.school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
 
@@ -98,8 +103,8 @@ export class UserImportUc {
 	}
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId) {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		this.featureEnabled(currentUser.school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (currentUser.school.id !== importUser.school.id) {
@@ -113,8 +118,8 @@ export class UserImportUc {
 	}
 
 	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean) {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		this.featureEnabled(currentUser.school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
@@ -142,15 +147,15 @@ export class UserImportUc {
 		query: INameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		this.featureEnabled(currentUser.school);
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
 
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		this.featureEnabled(currentUser.school);
 		const { school } = currentUser;
 
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
@@ -169,8 +174,8 @@ export class UserImportUc {
 	}
 
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		this.featureEnabled(currentUser.school);
 		const { school } = currentUser;
 		if (!school.ldapSchoolIdentifier || school.inUserMigration !== true || !school.inMaintenanceSince) {
 			throw new BadRequestException('School cannot exit from user migration mode');
@@ -180,10 +185,10 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
-		this.featureEnabled();
-		const migrationSystem = await this.getMigrationSystem();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const { school } = currentUser;
+		this.featureEnabled(school);
+		const migrationSystem = await this.getMigrationSystem();
 		if (!school.officialSchoolNumber || (school.inUserMigration !== undefined && school.inUserMigration !== null)) {
 			throw new BadRequestException('School cannot be set in user migration');
 		}
@@ -199,8 +204,8 @@ export class UserImportUc {
 	}
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
-		this.featureEnabled();
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		this.featureEnabled(currentUser.school);
 		const { school } = currentUser;
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.ldapSchoolIdentifier) {
 			throw new BadRequestException('Sync cannot be activated for school');

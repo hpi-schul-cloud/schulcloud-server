@@ -103,7 +103,8 @@
 		"purpose": "demo",
 		"features": [
 			"rocketChat",
-			"messenger"
+			"messenger",
+			"ldapUniventionMigrationSchool"
 		],
 		"enableStudentTeamCreation": false,
 		"permissions": {

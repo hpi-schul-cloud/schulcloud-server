@@ -18,29 +18,30 @@ import {
 	ICurrentUser,
 	ImportUser,
 	MatchCreator,
-	School,
-	System,
-	SortOrder,
-	User,
-	RoleName,
 	Permission,
+	RoleName,
+	School,
+	SchoolFeatures,
+	SortOrder,
+	System,
+	User,
 } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import {
 	FilterImportUserParams,
+	FilterMatchType,
+	FilterRoleType,
+	FilterUserParams,
 	ImportUserListResponse,
 	ImportUserResponse,
 	ImportUserSortOrder,
-	SortImportUserParams,
 	MatchType,
-	FilterMatchType,
-	FilterRoleType,
-	UserRole,
+	SortImportUserParams,
+	UpdateFlagParams,
 	UpdateMatchParams,
 	UserMatchListResponse,
 	UserMatchResponse,
-	FilterUserParams,
-	UpdateFlagParams,
+	UserRole,
 } from '@src/modules/user-import/controller/dto';
 import { PaginationParams } from '@shared/controller';
 import { Configuration } from '@hpi-schul-cloud/commons';
@@ -51,9 +52,9 @@ describe('ImportUser Controller (e2e)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	const authenticatedUser = async (permissions: Permission[] = []) => {
+	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
 		const system = systemFactory.buildWithId(); // TODO no id?
-		const school = schoolFactory.build({ officialSchoolNumber: 'foo' });
+		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);
 		const user = userFactory.build({
@@ -117,13 +118,20 @@ describe('ImportUser Controller (e2e)', () => {
 			describe('When feature is not enabled', () => {
 				let user: User;
 				beforeEach(async () => {
-					({ user } = await authenticatedUser());
+					({ user } = await authenticatedUser([
+						Permission.SCHOOL_IMPORT_USERS_MIGRATE,
+						Permission.SCHOOL_IMPORT_USERS_UPDATE,
+						Permission.SCHOOL_IMPORT_USERS_VIEW,
+					]));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
-					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', '');
 				});
 				afterEach(() => {
 					setConfig();
+				});
+				it('System is not set', async () => {
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', '');
+					await request(app.getHttpServer()).get('/user/import').expect(500);
 				});
 				it('GET /user/import is UNAUTHORIZED', async () => {
 					await request(app.getHttpServer()).get('/user/import').expect(500);
@@ -194,6 +202,27 @@ describe('ImportUser Controller (e2e)', () => {
 				});
 			});
 
+			describe('When school is LDAP Migration Pilot School', () => {
+				let user: User;
+				let school: School;
+				let system: System;
+				beforeEach(async () => {
+					({ school, system, user } = await authenticatedUser(
+						[Permission.SCHOOL_IMPORT_USERS_VIEW],
+						[SchoolFeatures.LDAP_UNIVENTION_MIGRATION]
+					));
+					currentUser = mapUserToCurrentUser(user);
+					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
+					Configuration.set('FEATURE_USER_MIGRATION_ENABLED', false);
+				});
+				it('GET user/import is authorized, despite feature not enabled', async () => {
+					const usermatch = userFactory.build({ school });
+					const importuser = importUserFactory.build({ school });
+					await em.persistAndFlush([usermatch, importuser]);
+					await request(app.getHttpServer()).get('/user/import').expect(200);
+				});
+			});
+
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_VIEW', () => {
 				let user: User;
 				let school: School;
@@ -203,6 +232,7 @@ describe('ImportUser Controller (e2e)', () => {
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
 				});
+
 				it('GET /user/import responds with importusers', async () => {
 					const usermatch = userFactory.build({ school });
 					const importuser = importUserFactory.build({ school });
