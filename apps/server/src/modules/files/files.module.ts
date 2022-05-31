@@ -9,6 +9,7 @@ import { SyncFilesService } from './job/sync-filerecords-utils/sync-files.servic
 import { SyncTaskRepo } from './job/sync-filerecords-utils/sync-task.repo';
 import { SyncFilerecordsConsole } from './job/sync-filerecords.console';
 import { DeleteFilesUc } from './uc';
+import { SyncFilesUc } from './uc/sync-files.uc';
 
 export const config: S3Config = {
 	endpoint: Configuration.get('FILES_STORAGE__S3_ENDPOINT') as string,
@@ -24,6 +25,7 @@ export const config: S3Config = {
 		DeleteFilesConsole,
 		SyncFilerecordsConsole,
 		DeleteFilesUc,
+		SyncFilesUc,
 		FilesRepo,
 		FileRecordRepo,
 		SyncTaskRepo,

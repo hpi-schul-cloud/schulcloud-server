@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { S3Client } from '@aws-sdk/client-s3';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
-import { EntityId, File, FileRecord } from '@shared/domain';
+import { EntityId, File, FileRecord, FileRecordParentType } from '@shared/domain';
 import { FileRecordRepo, StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { S3Config } from '@src/modules/files-storage/interface';
@@ -88,8 +90,8 @@ export class SyncFilesUc implements OnModuleInit {
 			size: file.size,
 			name: file.name,
 			mimeType: file.type,
-			parentType: item.parentType,
-			parentId: item.parentId,
+			parentType: FileRecordParentType.Task, //"item.parentType",
+			parentId: item._id, //'item.parentId',
 			creatorId: file.creator?._id,
 			schoolId: item.schoolId,
 		});
@@ -110,7 +112,7 @@ export class SyncFilesUc implements OnModuleInit {
 		const res: { source: ISyncData; target: ISyncData }[] = [];
 
 		data.forEach((item) => {
-			const client = this.sourceClients.get((item.file as File).storageProvider.id);
+			const client = this.sourceClients.get(((item.file as any).storageProviderId as ObjectId).toString());
 			if (client) {
 				const source: ISyncData = {
 					client,
