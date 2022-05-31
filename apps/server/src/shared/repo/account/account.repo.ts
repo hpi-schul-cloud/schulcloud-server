@@ -11,6 +11,10 @@ export class AccountRepo extends BaseRepo<Account> {
 		return Account;
 	}
 
+	/**
+	 * Finds an account by user id.
+	 * @param userId the user id
+	 */
 	async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
 		return this._em.findOne(Account, { userId: new ObjectId(userId) });
 	}

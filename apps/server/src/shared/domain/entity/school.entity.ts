@@ -1,6 +1,17 @@
-import { Collection, Entity, Property, ManyToMany, Index } from '@mikro-orm/core';
+import { Collection, Entity, Property, ManyToMany, Index, Embedded, Embeddable } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { System } from './system.entity';
+
+export enum SchoolFeatures {
+	ROCKET_CHAT = 'rocketChat',
+	VIDEOCONFERENCE = 'videoconference',
+	NEXTCLOUD = 'nextcloud',
+	MESSENGER = 'messenger',
+	STUDENTVISIBILITY = 'studentVisibility', // deprecated
+	MESSENGER_SCHOOL_ROOM = 'messengerSchoolRoom',
+	MESSENGER_STUDENT_ROOM_CREATE = 'messengerStudentRoomCreate',
+	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
+}
 
 export interface ISchoolProperties {
 	ldapSchoolIdentifier?: string;
@@ -9,6 +20,25 @@ export interface ISchoolProperties {
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
+	features?: SchoolFeatures[];
+}
+
+@Embeddable()
+export class SchoolRolePermission {
+	@Property({ nullable: true })
+	STUDENT_LIST?: boolean;
+
+	@Property({ nullable: true })
+	LERNSTORE_VIEW?: boolean;
+}
+
+@Embeddable()
+export class SchoolRoles {
+	@Property({ nullable: true, fieldName: 'student' })
+	student?: SchoolRolePermission;
+
+	@Property({ nullable: true, fieldName: 'teacher' })
+	teacher?: SchoolRolePermission;
 }
 
 @Entity({ tableName: 'schools' })
@@ -22,7 +52,11 @@ export class School extends BaseEntity {
 		this.name = props.name;
 		if (props.officialSchoolNumber) this.officialSchoolNumber = props.officialSchoolNumber;
 		if (props.systems) this.systems.set(props.systems);
+		if (props.features) this.features = props.features;
 	}
+
+	@Property({ nullable: true })
+	features?: SchoolFeatures[];
 
 	@Property({ nullable: true })
 	inMaintenanceSince?: Date;
@@ -41,4 +75,7 @@ export class School extends BaseEntity {
 
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
 	systems = new Collection<System>(this);
+
+	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
+	permissions?: SchoolRoles;
 }

@@ -54,15 +54,6 @@ module.exports = (hydraUrl) => {
 		rejectConsentRequest(challenge, body) {
 			return put('consent', 'reject', challenge, body);
 		},
-		// Fetches information on a logout request.
-		getLogoutRequest: () =>
-			request({
-				uri: `${hydraUrl}/oauth2/sessions/logout`,
-				method: 'GET',
-				headers: {
-					...mockTlsTermination,
-				},
-			}),
 		// Accepts a logout request.
 		acceptLogoutRequest(challenge, body) {
 			return put('logout', 'accept', challenge, body);
@@ -147,14 +138,6 @@ module.exports = (hydraUrl) => {
 			request({
 				uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`,
 				method: 'DELETE',
-				headers: {
-					...mockTlsTermination,
-				},
-			}),
-		logoutOauth2Clients: () =>
-			request({
-				uri: `${hydraUrl}/oauth2/sessions/logout`,
-				method: 'GET',
 				headers: {
 					...mockTlsTermination,
 				},
