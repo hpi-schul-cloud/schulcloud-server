@@ -1,13 +1,13 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
-import { EntityId, FileRecord } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { FileRecordRepo, StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { S3Config } from '@src/modules/files-storage/interface';
-import { ISyncData, SyncFilesStorageService } from './sync-files-storage.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
-import { SyncFileItem, SyncTargetFile } from '../types';
+import { SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
+import { ISyncData, SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class SyncFilesUc implements OnModuleInit {
