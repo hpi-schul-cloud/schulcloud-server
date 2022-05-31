@@ -1,15 +1,18 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain';
+import { BaseRepo } from '@shared/repo';
+import { FileFilerecord } from './file_filerecord.entity';
 
 // This repo is used for syncing the new filerecords collection with the old files collection.
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 @Injectable()
-export class SyncTaskRepo {
-	constructor(private em: EntityManager) {}
+export class SyncTaskRepo extends BaseRepo<FileFilerecord> {
+	get entityName() {
+		return FileFilerecord;
+	}
 
 	async getTasksToSync(batchSize = 50) {
-		const tasksToSync = await this.em.aggregate(Task, [
+		const tasksToSync = await this._em.aggregate(Task, [
 			{
 				$match: { fileIds: { $exists: true, $ne: [] } },
 			},

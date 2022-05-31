@@ -1,9 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { EntityId, File } from '@shared/domain';
-import { StorageProviderRepo } from '@shared/repo';
+import { EntityId, File, FileRecord } from '@shared/domain';
+import { FileRecordRepo, StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { S3Config } from '@src/modules/files-storage/interface';
+import { FileFilerecord } from '../job/sync-filerecords-utils/file_filerecord.entity';
 import { ISyncData, SyncFilesService } from '../job/sync-filerecords-utils/sync-files.service';
 import { SyncTaskRepo } from '../job/sync-filerecords-utils/sync-task.repo';
 import { TaskToSync } from '../job/sync-filerecords.console';
@@ -18,6 +19,7 @@ export class SyncFilesUc implements OnModuleInit {
 
 	constructor(
 		private syncFilesRepo: SyncTaskRepo,
+		private fileRecordRepo: FileRecordRepo,
 		private storageProviderRepo: StorageProviderRepo,
 		private syncFilesService: SyncFilesService,
 		private logger: Logger,
@@ -36,6 +38,68 @@ export class SyncFilesUc implements OnModuleInit {
 
 	async onModuleInit() {
 		await this.loadProviders();
+	}
+
+	async syncFilerecordsForTasks(batchSize = 50) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const tasksToSync: TaskToSync[] = await this.syncFilesRepo.getTasksToSync(Number(batchSize));
+
+		await this.syncMetaData(tasksToSync);
+	}
+
+	private async syncMetaData(tasks: TaskToSync[]) {
+		const promises = tasks.map((task) => {
+			if (task.filerecord) {
+				return this.updateFilerecord(task);
+			}
+
+			return this.createFilerecord(task);
+		});
+		const newTasks = await Promise.all(promises);
+		await this.syncFiles(newTasks);
+	}
+
+	private async updateFilerecord(task: TaskToSync) {
+		const { file } = task;
+		const filerecord = await this.fileRecordRepo.findOneById(FileRecord, task.filerecord?._id);
+		// TODO: Does deletedSince information exist on file? Same for creation below.
+		// filerecord.deletedSince = file.
+		filerecord.name = file.name;
+		filerecord.size = file.size;
+		filerecord.mimeType = file.type;
+		filerecord.securityCheck = file.securityCheck;
+		filerecord._creatorId = file.creator?._id;
+		filerecord._lockedForUserId = file.lockId;
+		filerecord.createdAt = file.createdAt;
+		filerecord.updatedAt = file.updatedAt;
+
+		await this.fileRecordRepo.save(filerecord);
+		task.filerecord = filerecord;
+		return task;
+	}
+
+	private async createFilerecord(item: TaskToSync) {
+		const { file } = item;
+		const filerecord = new FileRecord({
+			size: file.size,
+			name: file.name,
+			mimeType: file.type,
+			parentType: item.parentType,
+			parentId: item.parentId,
+			creatorId: file.creator?._id,
+			schoolId: item.schoolId,
+		});
+
+		filerecord.securityCheck = file.securityCheck;
+		filerecord._lockedForUserId = file.lockId;
+		filerecord.createdAt = file.createdAt;
+		filerecord.updatedAt = file.updatedAt;
+		await this.fileRecordRepo.save(filerecord);
+		item.filerecord = fileFilerecord;
+
+		const fileFilerecord = new FileFilerecord({ fileId: file._id, filerecordId: filerecord._id });
+		await this.syncFilesRepo.save(fileFilerecord);
+		return item;
 	}
 
 	public async syncFiles(data: TaskToSync[]) {
