@@ -2,24 +2,23 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
-import { fileFilerecordFactory } from './file_filerecord.factory';
-import { SyncTaskRepo } from './sync-task.repo';
+import { SyncFilesRepo } from './sync-files.repo';
 
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 // This repo is used for syncing the new filerecords collection with the old files collection.
 
 describe('SyncTaskRepo', () => {
 	let module: TestingModule;
-	let repo: SyncTaskRepo;
+	let repo: SyncFilesRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SyncTaskRepo],
+			providers: [SyncFilesRepo],
 		}).compile();
 
-		repo = module.get(SyncTaskRepo);
+		repo = module.get(SyncFilesRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -32,7 +31,7 @@ describe('SyncTaskRepo', () => {
 			const task = taskFactory.build({ name: 'task with file' });
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTasksToSync();
+			const result = await repo.findTaskFilesToSync();
 
 			expect(result).toHaveLength(0);
 		});
@@ -44,7 +43,7 @@ describe('SyncTaskRepo', () => {
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTasksToSync();
+			const result = await repo.findTaskFilesToSync();
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ _id: task._id });
@@ -62,7 +61,7 @@ describe('SyncTaskRepo', () => {
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTasksToSync();
+			const result = await repo.findTaskFilesToSync();
 
 			expect(result).toHaveLength(0);
 		});
@@ -79,7 +78,7 @@ describe('SyncTaskRepo', () => {
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
 
-			const result = await repo.getTasksToSync();
+			const result = await repo.findTaskFilesToSync();
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ _id: task._id });

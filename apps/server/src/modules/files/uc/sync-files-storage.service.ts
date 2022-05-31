@@ -10,7 +10,7 @@ export interface ISyncData {
 }
 
 @Injectable()
-export class SyncFilesService {
+export class SyncFilesStorageService {
 	public async syncFile(source: ISyncData, target: ISyncData) {
 		try {
 			const sourceReq = new GetObjectCommand({
@@ -39,7 +39,7 @@ export class SyncFilesService {
 		}
 	}
 
-	createStorageProviderClient(storageProvider: S3Config): S3Client {
+	public createStorageProviderClient(storageProvider: S3Config): S3Client {
 		return new S3Client({
 			endpoint: storageProvider.endpoint,
 			forcePathStyle: true,

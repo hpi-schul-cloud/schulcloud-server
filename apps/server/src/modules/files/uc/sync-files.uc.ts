@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { S3Client } from '@aws-sdk/client-s3';
 import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
-import { EntityId, File, FileRecord } from '@shared/domain';
+import { EntityId, FileRecord } from '@shared/domain';
 import { FileRecordRepo, StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { S3Config } from '@src/modules/files-storage/interface';
-import { FileFilerecord } from '../job/sync-filerecords-utils/file_filerecord.entity';
-import { ISyncData, SyncFilesService } from '../job/sync-filerecords-utils/sync-files.service';
-import { SyncTaskRepo } from '../job/sync-filerecords-utils/sync-task.repo';
-import { TaskToSync } from '../job/sync-filerecords.console';
+import { ISyncData, SyncFilesStorageService } from './sync-files-storage.service';
+import { SyncFilesRepo } from '../repo/sync-files.repo';
+import { SyncFileItem, SyncTargetFile } from '../types';
+import { SyncFilesMetadataService } from './sync-files-metadata.service';
 
 @Injectable()
 export class SyncFilesUc implements OnModuleInit {
@@ -20,14 +18,15 @@ export class SyncFilesUc implements OnModuleInit {
 	private sourceClients: Map<EntityId, S3Client> = new Map();
 
 	constructor(
-		private syncFilesRepo: SyncTaskRepo,
+		private readonly metadataService: SyncFilesMetadataService,
+		private syncFilesRepo: SyncFilesRepo,
 		private fileRecordRepo: FileRecordRepo,
 		private storageProviderRepo: StorageProviderRepo,
-		private syncFilesService: SyncFilesService,
+		private storageService: SyncFilesStorageService,
 		private logger: Logger,
 		@Inject('Destination_S3_Config') readonly config: S3Config
 	) {
-		this.destinationClient = this.syncFilesService.createStorageProviderClient({
+		this.destinationClient = this.storageService.createStorageProviderClient({
 			endpoint: config.endpoint,
 			bucket: config.bucket,
 			region: config.region,
@@ -43,97 +42,44 @@ export class SyncFilesUc implements OnModuleInit {
 	}
 
 	async syncFilerecordsForTasks(batchSize = 50) {
-		const tasksToSync: TaskToSync[] = await this.syncFilesRepo.getTasksToSync(Number(batchSize));
+		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(batchSize));
 
-		await this.syncMetaData(tasksToSync);
+		await Promise.all(
+			itemsToSync.map(async (item) => {
+				await this.metadataService.syncMetaData(item);
+				await this.syncFile(item);
+			})
+		);
 	}
 
-	private async syncMetaData(tasks: TaskToSync[]) {
-		const promises = tasks.map((task) => {
-			if (task.filerecord) {
-				return this.updateFilerecord(task);
-			}
-
-			return this.createFilerecord(task);
-		});
-		const newTasks = await Promise.all(promises);
-		await this.syncFiles(newTasks);
-	}
-
-	private async updateFilerecord(task: TaskToSync) {
-		if (!task.filerecord) {
-			throw new InternalServerErrorException();
+	public async syncFile(item: SyncFileItem): Promise<void> {
+		if (!item.target) {
+			throw new InternalServerErrorException('Cannot update non-existing target file record', 'SyncFiles:file');
 		}
-		const { file } = task;
-		const filerecord = await this.fileRecordRepo.findOneById(task.filerecord?.id);
-		// TODO: Does deletedSince information exist on file? Same for creation below.
-		// filerecord.deletedSince = file.
-		filerecord.name = file.name;
-		filerecord.size = file.size;
-		filerecord.mimeType = file.type;
-		filerecord.securityCheck = file.securityCheck;
-		filerecord._creatorId = file.creator?._id;
-		filerecord._lockedForUserId = file.lockId;
-		filerecord.createdAt = file.createdAt;
-		filerecord.updatedAt = file.updatedAt;
+		const client = this.sourceClients.get(item.source.storageProviderId);
+		if (client) {
+			const source: ISyncData = {
+				client,
+				bucket: item.source.bucket,
+				objectPath: item.source.storageFileName,
+			};
+			const target: ISyncData = {
+				client: this.destinationClient,
+				bucket: this.destinationBucket,
+				objectPath: [item.schoolId, item.target.id].join('/'),
+			};
 
-		await this.fileRecordRepo.save(filerecord);
-		task.filerecord = filerecord;
-		return task;
-	}
-
-	private async createFilerecord(item: TaskToSync) {
-		const { file } = item;
-		const filerecord = new FileRecord({
-			size: file.size,
-			name: file.name,
-			mimeType: file.type,
-			parentType: item.parentType,
-			parentId: item.parentId,
-			creatorId: file.creator?._id,
-			schoolId: item.schoolId,
-		});
-
-		filerecord.securityCheck = file.securityCheck;
-		filerecord._lockedForUserId = file.lockId;
-		filerecord.createdAt = file.createdAt;
-		filerecord.updatedAt = file.updatedAt;
-		await this.fileRecordRepo.save(filerecord);
-		item.filerecord = filerecord;
-
-		const fileFilerecord = new FileFilerecord({ fileId: file._id, filerecordId: filerecord._id });
-		await this.syncFilesRepo.save(fileFilerecord);
-		return item;
-	}
-
-	public async syncFiles(data: TaskToSync[]) {
-		const res: { source: ISyncData; target: ISyncData }[] = [];
-
-		data.forEach((item) => {
-			const client = this.sourceClients.get((item.file as File).storageProvider.id);
-			if (client) {
-				const source: ISyncData = {
-					client,
-					bucket: (item.file as File).bucket,
-					objectPath: (item.file as File).storageFileName,
-				};
-				const target: ISyncData = {
-					client: this.destinationClient,
-					bucket: this.destinationBucket,
-					objectPath: [item.schoolId, item.filerecord?.id].join('/'),
-				};
-
-				res.push({ source, target });
-			}
-		});
-		await Promise.all(res.map((item) => this.syncFilesService.syncFile(item.source, item.target)));
+			await this.storageService.syncFile(source, target);
+		} else {
+			this.logger.error(`Unable to find storage provider with id ${item.source.storageProviderId}`);
+		}
 	}
 
 	private async loadProviders() {
 		const providers = await this.storageProviderRepo.findAll();
 
 		providers.forEach((item) => {
-			const client = this.syncFilesService.createStorageProviderClient({
+			const client = this.storageService.createStorageProviderClient({
 				endpoint: item.endpointUrl,
 				region: item.region || 'eu-central-1',
 				accessKeyId: item.accessKeyId,

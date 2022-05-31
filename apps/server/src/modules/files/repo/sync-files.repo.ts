@@ -1,18 +1,18 @@
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Task } from '@shared/domain';
-import { BaseRepo } from '@shared/repo';
-import { FileFilerecord } from './file_filerecord.entity';
+import { EntityId, FileRecordParentType, Task } from '@shared/domain';
+import { SyncFileItemMapper } from '../mapper';
+import { SyncFileItem, SyncFileItemData } from '../types';
 
 // This repo is used for syncing the new filerecords collection with the old files collection.
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 @Injectable()
-export class SyncTaskRepo extends BaseRepo<FileFilerecord> {
-	get entityName() {
-		return FileFilerecord;
-	}
+export class SyncFilesRepo {
+	constructor(protected readonly _em: EntityManager) {}
 
-	async getTasksToSync(batchSize = 50) {
-		const tasksToSync = await this._em.aggregate(Task, [
+	async findTaskFilesToSync(batchSize = 50): Promise<SyncFileItem[]> {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const itemDataList: SyncFileItemData[] = await this._em.aggregate(Task, [
 			{
 				$match: { fileIds: { $exists: true, $ne: [] } },
 			},
@@ -80,6 +80,14 @@ export class SyncTaskRepo extends BaseRepo<FileFilerecord> {
 			},
 		]);
 
-		return tasksToSync;
+		const items = itemDataList.map((itemData) => SyncFileItemMapper.mapToDomain(itemData, FileRecordParentType.Task));
+
+		return items;
+	}
+
+	async saveAssociation(sourceId: EntityId, targetId: EntityId): Promise<void> {
+		await this._em
+			.getConnection()
+			.insertOne('files_filerecords', { fileId: new ObjectId(sourceId), filerecordId: new ObjectId(targetId) });
 	}
 }

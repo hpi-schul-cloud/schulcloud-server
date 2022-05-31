@@ -1,8 +1,8 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityForSyncing } from '@src/modules/files/job/sync-filerecords-utils/sync-base.entity';
 import { v4 as uuid } from 'uuid';
 import type { EntityId } from '../types/entity-id';
+import { BaseEntity } from './base.entity';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -74,9 +74,11 @@ export interface IFileRecordProperties {
 @Index({ properties: ['_schoolId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
-// FileRecord must inherit from BaseEntityForSyncing while the syncing of files and filerecords goes on,
-// because with BaseEntityWithTimestamps it is not possible to set updatedAt manually.
-export class FileRecord extends BaseEntityForSyncing {
+// FileRecord must inherit from BaseEntity and we have to take care of the timestamps manually.
+// This is necessary while the syncing of files and filerecords goes on,
+// because with BaseEntityWithTimestamps it is not possible to override the updatedAt hook.
+// TODO revert to BaseEntityWithTimestamps when file migration is done.
+export class FileRecord extends BaseEntity {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
 	deletedSince?: Date;
@@ -126,6 +128,12 @@ export class FileRecord extends BaseEntityForSyncing {
 	get schoolId(): EntityId {
 		return this._schoolId.toHexString();
 	}
+
+	@Property()
+	createdAt = new Date();
+
+	@Property()
+	updatedAt = new Date();
 
 	constructor(props: IFileRecordProperties) {
 		super();
