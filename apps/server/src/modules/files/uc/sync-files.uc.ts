@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { S3Client } from '@aws-sdk/client-s3';
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
 import { EntityId, File, FileRecord } from '@shared/domain';
 import { FileRecordRepo, StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
@@ -41,7 +43,6 @@ export class SyncFilesUc implements OnModuleInit {
 	}
 
 	async syncFilerecordsForTasks(batchSize = 50) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const tasksToSync: TaskToSync[] = await this.syncFilesRepo.getTasksToSync(Number(batchSize));
 
 		await this.syncMetaData(tasksToSync);
@@ -60,8 +61,11 @@ export class SyncFilesUc implements OnModuleInit {
 	}
 
 	private async updateFilerecord(task: TaskToSync) {
+		if (!task.filerecord) {
+			throw new InternalServerErrorException();
+		}
 		const { file } = task;
-		const filerecord = await this.fileRecordRepo.findOneById(FileRecord, task.filerecord?._id);
+		const filerecord = await this.fileRecordRepo.findOneById(task.filerecord?.id);
 		// TODO: Does deletedSince information exist on file? Same for creation below.
 		// filerecord.deletedSince = file.
 		filerecord.name = file.name;
@@ -95,7 +99,7 @@ export class SyncFilesUc implements OnModuleInit {
 		filerecord.createdAt = file.createdAt;
 		filerecord.updatedAt = file.updatedAt;
 		await this.fileRecordRepo.save(filerecord);
-		item.filerecord = fileFilerecord;
+		item.filerecord = filerecord;
 
 		const fileFilerecord = new FileFilerecord({ fileId: file._id, filerecordId: filerecord._id });
 		await this.syncFilesRepo.save(fileFilerecord);
