@@ -1,7 +1,7 @@
 const { program } = require('commander');
 const appPromise = require('../src/app');
 const { alert, error } = require('../src/logger');
-const { schoolModel } = require('../src/services/school/model');
+const { schoolModel, SCHOOL_FEATURES } = require('../src/services/school/model');
 const systemModel = require('../src/services/system/model');
 
 program
@@ -9,6 +9,10 @@ program
 	.option(
 		'-o, --officialSchoolNumbers <value...>',
 		'Official school numbers of the schools that should be migrated (space seperated values). If not given, all schools having an official school number will be migrated.'
+	)
+	.option(
+		'-p, --pilotSchools',
+		'Set this flag, to mark schools as pilot schools / overwrite feature flag false for this schools.'
 	);
 
 program.parse();
@@ -40,6 +44,9 @@ const startUserMigration = async () => {
 	}
 	for await (const school of schools) {
 		try {
+			if (options.pilotSchools && !school.features.includes(SCHOOL_FEATURES.LDAP_UNIVENTION_MIGRATION)) {
+				school.features.push(SCHOOL_FEATURES.LDAP_UNIVENTION_MIGRATION);
+			}
 			school.ldapSchoolIdentifier = school.officialSchoolNumber;
 			if (!school.systems.includes(systemId)) school.systems.push(systemId);
 			school.inUserMigration = true;
