@@ -35,8 +35,8 @@ export class SyncFilesStorageService {
 			return a;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.Code && err.Code === 'NoSuchKey') {
-				throw new Error(`${source.bucket} / ${source.objectPath}`);
+			if (err.name && err.name === 'NoSuchKey') {
+				throw new Error(`S3 file not found: bucket = ${source.bucket}, objectPath = ${source.objectPath}`);
 			}
 			throw err;
 		}
