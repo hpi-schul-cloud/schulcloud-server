@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
@@ -17,24 +17,24 @@ export class SyncFilesMetadataService {
 	}
 
 	public async updateFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
-		if (!item.target) {
-			throw new InternalServerErrorException('Cannot update non-existing target file record', 'SyncFiles:meta');
-		}
 		const { source } = item;
-		const fileRecord = await this.fileRecordRepo.findOneById(item.target.id);
-		fileRecord.deletedSince = source.deletedAt;
-		fileRecord.name = source.name;
-		fileRecord.size = source.size;
-		fileRecord.mimeType = source.type;
-		if (source.securityCheck) {
-			fileRecord.securityCheck = source.securityCheck;
+
+		if (item.target) {
+			const fileRecord = await this.fileRecordRepo.findOneById(item.target.id);
+			fileRecord.deletedSince = source.deletedAt;
+			fileRecord.name = source.name;
+			fileRecord.size = source.size;
+			fileRecord.mimeType = source.type;
+			if (source.securityCheck) {
+				fileRecord.securityCheck = source.securityCheck;
+			}
+			fileRecord.updatedAt = source.updatedAt;
+
+			await this.fileRecordRepo.save(fileRecord);
+
+			item.target.id = fileRecord.id;
+			item.target.updatedAt = fileRecord.updatedAt;
 		}
-		fileRecord.updatedAt = source.updatedAt;
-
-		await this.fileRecordRepo.save(fileRecord);
-
-		item.target.id = fileRecord.id;
-		item.target.updatedAt = fileRecord.updatedAt;
 
 		return item;
 	}

@@ -12,31 +12,27 @@ export interface ISyncData {
 @Injectable()
 export class SyncFilesStorageService {
 	public async syncFile(source: ISyncData, target: ISyncData) {
-		try {
-			const sourceReq = new GetObjectCommand({
-				Bucket: source.bucket,
-				Key: source.objectPath,
-			});
+		const sourceReq = new GetObjectCommand({
+			Bucket: source.bucket,
+			Key: source.objectPath,
+		});
 
-			const data = await source.client.send(sourceReq);
+		const data = await source.client.send(sourceReq);
 
-			const targetReq = {
-				Body: data.Body,
-				Bucket: target.bucket,
-				Key: target.objectPath,
-				ContentType: data.ContentType,
-			};
-			const res = new Upload({
-				client: target.client,
-				params: targetReq,
-			});
+		const targetReq = {
+			Body: data.Body,
+			Bucket: target.bucket,
+			Key: target.objectPath,
+			ContentType: data.ContentType,
+		};
+		const res = new Upload({
+			client: target.client,
+			params: targetReq,
+		});
 
-			const a = await res.done();
+		const a = await res.done();
 
-			return a;
-		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
-		}
+		return a;
 	}
 
 	public createStorageProviderClient(storageProvider: S3Config): S3Client {

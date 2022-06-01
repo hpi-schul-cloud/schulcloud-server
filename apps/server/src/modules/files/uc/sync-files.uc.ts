@@ -5,7 +5,7 @@ import { StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { S3Config } from '@src/modules/files-storage/interface';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
-import { SyncFileItem } from '../types';
+import { SyncFileItem, SyncSourceFile } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { ISyncData, SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -45,16 +45,19 @@ export class SyncFilesUc implements OnModuleInit {
 
 		await Promise.all(
 			itemsToSync.map(async (item) => {
-				await this.metadataService.syncMetaData(item);
-				await this.syncFile(item);
+				try {
+					await this.metadataService.syncMetaData(item);
+					await this.syncFile(item);
+					this.logger.log(`Successfully synced source file id = ${item.source.id}`);
+				} catch (error) {
+					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
+					this.logger.error(error);
+				}
 			})
 		);
 	}
 
 	private async syncFile(item: SyncFileItem): Promise<void> {
-		if (!item.target) {
-			throw new InternalServerErrorException('Cannot update non-existing target file record', 'SyncFiles:file');
-		}
 		const client = this.sourceClients.get(item.source.storageProviderId);
 		if (client) {
 			const source: ISyncData = {
@@ -65,12 +68,12 @@ export class SyncFilesUc implements OnModuleInit {
 			const target: ISyncData = {
 				client: this.destinationClient,
 				bucket: this.destinationBucket,
-				objectPath: [item.schoolId, item.target.id].join('/'),
+				objectPath: [item.schoolId, item.target?.id].join('/'),
 			};
 
 			await this.storageService.syncFile(source, target);
 		} else {
-			this.logger.error(`Unable to find storage provider with id ${item.source.storageProviderId}`);
+			throw new Error(`Unable to find storage provider with id ${item.source.storageProviderId}`);
 		}
 	}
 
