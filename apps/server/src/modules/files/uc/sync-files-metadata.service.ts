@@ -1,8 +1,8 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { FileRecord } from "@shared/domain";
-import { FileRecordRepo } from "@shared/repo";
-import { SyncFilesRepo } from "../repo/sync-files.repo";
-import { SyncFileItem, SyncTargetFile } from "../types";
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { FileRecord } from '@shared/domain';
+import { FileRecordRepo } from '@shared/repo';
+import { SyncFilesRepo } from '../repo/sync-files.repo';
+import { SyncFileItem, SyncTargetFile } from '../types';
 
 @Injectable()
 export class SyncFilesMetadataService {
@@ -10,37 +10,37 @@ export class SyncFilesMetadataService {
 
 	public async syncMetaData(item: SyncFileItem): Promise<SyncFileItem> {
 		if (item.target) {
-			return this.updateFilerecord(item);
+			return this.updateFileRecord(item);
 		}
 
-		return this.createFilerecord(item);
+		return this.createFileRecord(item);
 	}
 
-	public async updateFilerecord(item: SyncFileItem): Promise<SyncFileItem> {
+	public async updateFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
 		if (!item.target) {
 			throw new InternalServerErrorException('Cannot update non-existing target file record', 'SyncFiles:meta');
 		}
 		const { source } = item;
-		const filerecord = await this.fileRecordRepo.findOneById(item.target.id);
+		const fileRecord = await this.fileRecordRepo.findOneById(item.target.id);
 		// TODO: Does deletedSince information exist on file? Same for creation below.
-		// filerecord.deletedSince = file.
-		filerecord.name = source.name;
-		filerecord.size = source.size;
-		filerecord.mimeType = source.type;
-		filerecord.securityCheck = source.securityCheck;
-		filerecord.updatedAt = source.updatedAt;
+		// fileRecord.deletedSince = file.
+		fileRecord.name = source.name;
+		fileRecord.size = source.size;
+		fileRecord.mimeType = source.type;
+		fileRecord.securityCheck = source.securityCheck;
+		fileRecord.updatedAt = source.updatedAt;
 
-		await this.fileRecordRepo.save(filerecord);
+		await this.fileRecordRepo.save(fileRecord);
 
-		item.target.id = filerecord.id;
-		item.target.updatedAt = filerecord.updatedAt;
+		item.target.id = fileRecord.id;
+		item.target.updatedAt = fileRecord.updatedAt;
 
 		return item;
 	}
 
-	public async createFilerecord(item: SyncFileItem): Promise<SyncFileItem> {
+	public async createFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
 		const { source } = item;
-		const filerecord = new FileRecord({
+		const fileRecord = new FileRecord({
 			size: source.size,
 			name: source.name,
 			mimeType: source.type,
@@ -50,17 +50,17 @@ export class SyncFilesMetadataService {
 			schoolId: item.schoolId,
 		});
 
-		filerecord.securityCheck = source.securityCheck;
-		filerecord.createdAt = source.createdAt;
-		filerecord.updatedAt = source.updatedAt;
+		fileRecord.securityCheck = source.securityCheck;
+		fileRecord.createdAt = source.createdAt;
+		fileRecord.updatedAt = source.updatedAt;
 
-		await this.fileRecordRepo.save(filerecord);
-		await this.syncFilesRepo.saveAssociation(source.id, filerecord.id);
+		await this.fileRecordRepo.save(fileRecord);
+		await this.syncFilesRepo.saveAssociation(source.id, fileRecord.id);
 
 		item.target = new SyncTargetFile({
-			id: filerecord.id,
-			createdAt: filerecord.createdAt,
-			updatedAt: filerecord.updatedAt,
+			id: fileRecord.id,
+			createdAt: fileRecord.createdAt,
+			updatedAt: fileRecord.updatedAt,
 		});
 
 		return item;

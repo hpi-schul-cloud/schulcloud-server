@@ -24,7 +24,7 @@ export class SyncFilesUc implements OnModuleInit {
 		private storageProviderRepo: StorageProviderRepo,
 		private storageService: SyncFilesStorageService,
 		private logger: Logger,
-		@Inject('Destination_S3_Config') readonly config: S3Config
+		@Inject('DESTINATION_S3_CONFIG') readonly config: S3Config
 	) {
 		this.destinationClient = this.storageService.createStorageProviderClient({
 			endpoint: config.endpoint,
@@ -41,7 +41,7 @@ export class SyncFilesUc implements OnModuleInit {
 		await this.loadProviders();
 	}
 
-	async syncFilerecordsForTasks(batchSize = 50) {
+	async syncFilesForTasks(batchSize = 50) {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(batchSize));
 
 		await Promise.all(

@@ -9,7 +9,7 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { S3Config } from '../files-storage/interface';
 import { DeleteFilesConsole } from './job/delete-files.console';
-import { SyncFilerecordsConsole } from './job/sync-filerecords.console';
+import { SyncFilesConsole } from './job/sync-filerecords.console';
 import { SyncFilesRepo } from './repo/sync-files.repo';
 import { DeleteFilesUc, SyncFilesUc } from './uc';
 import { SyncFilesMetadataService } from './uc/sync-files-metadata.service';
@@ -50,7 +50,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	],
 	providers: [
 		DeleteFilesConsole,
-		SyncFilerecordsConsole,
+		SyncFilesConsole,
 		DeleteFilesUc,
 		SyncFilesUc,
 		FilesRepo,
@@ -61,7 +61,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		SyncFilesMetadataService,
 		SyncFilesStorageService,
 		{
-			provide: 'Destination_S3_Config',
+			provide: 'DESTINATION_S3_CONFIG',
 			useValue: config,
 		},
 	],

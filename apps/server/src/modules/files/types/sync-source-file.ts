@@ -1,5 +1,4 @@
 import { EntityId, ScanStatus } from '@shared/domain';
-import { timeStamp } from 'console';
 
 export class SyncSourceFile {
 	id: EntityId;
