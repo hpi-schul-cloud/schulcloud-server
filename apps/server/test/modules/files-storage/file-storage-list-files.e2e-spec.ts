@@ -186,6 +186,8 @@ describe(`${baseRouteName} (api)`, () => {
 				parentId: expect.any(String) as string,
 				parentType: 'schools',
 				type: 'application/octet-stream',
+				securityCheckStatus: 'pending',
+				size: expect.any(Number) as number,
 			});
 		});
 
