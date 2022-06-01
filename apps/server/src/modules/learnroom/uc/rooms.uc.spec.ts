@@ -253,13 +253,11 @@ describe('rooms usecase', () => {
 			const board = boardFactory.buildWithId({ course: room });
 			board.syncTasksFromList(tasks);
 			const reorderSpy = jest.spyOn(board, 'reorderElements');
-			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
-			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
-			const authorisationSpy = jest
-				.spyOn(authorisation, 'hasCourseWritePermission')
-				.mockImplementation(() => shouldAuthorize);
-			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			const userSpy = userRepo.findById.mockResolvedValue(user);
+			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const boardSpy = boardRepo.findByCourseId.mockResolvedValue(board);
+			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
+			const saveSpy = boardRepo.save.mockResolvedValue();
 			return { user, room, tasks, board, reorderSpy, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
 		};
 
