@@ -19,7 +19,7 @@ class CourseCalendarService {
 			},
 			json: true,
 			method: 'DELETE',
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
+			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 			body: { data: [{ type: 'event' }] },
 		};
 
