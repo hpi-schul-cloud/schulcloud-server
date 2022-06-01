@@ -31,6 +31,9 @@ export class Logger extends ConsoleLogger implements ILogger {
 	}
 
 	error(message: unknown, trace?: unknown, context?: string): void {
-		this.printMessages([JSON.stringify(message), JSON.stringify(trace)], context || this.context, 'HTTP Request' as LogLevel);
+		this.printMessages(
+			[JSON.stringify(message), JSON.stringify(trace)],
+			context || this.context,
+			'HTTP Request' as LogLevel);
 	}
 }
