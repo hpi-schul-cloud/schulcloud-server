@@ -22,8 +22,7 @@ export class SyncFilesMetadataService {
 		}
 		const { source } = item;
 		const fileRecord = await this.fileRecordRepo.findOneById(item.target.id);
-		// TODO: Does deletedSince information exist on file? Same for creation below.
-		// fileRecord.deletedSince = file.
+		fileRecord.deletedSince = source.deletedAt;
 		fileRecord.name = source.name;
 		fileRecord.size = source.size;
 		fileRecord.mimeType = source.type;
@@ -55,6 +54,7 @@ export class SyncFilesMetadataService {
 		if (source.securityCheck) {
 			fileRecord.securityCheck = source.securityCheck;
 		}
+		fileRecord.deletedSince = source.deletedAt;
 		fileRecord.createdAt = source.createdAt;
 		fileRecord.updatedAt = source.updatedAt;
 
