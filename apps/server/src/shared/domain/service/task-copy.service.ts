@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course, Task, User } from '@shared/domain/entity';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '@shared/domain/types';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 
 export type TaskCopyParams = {
 	originalTask: Task;
@@ -11,7 +11,7 @@ export type TaskCopyParams = {
 
 export type TaskCopyResponse = {
 	copy: Task;
-	status: CopyStatusDTO;
+	status: CopyStatus;
 };
 
 @Injectable()
@@ -27,7 +27,7 @@ export class TaskCopyService {
 
 		const elements = [...this.defaultTaskStatusElements(), ...this.copyTaskFiles(params.originalTask)];
 
-		const status: CopyStatusDTO = {
+		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.TASK,
 			status: this.inferStatusFromElements(elements),
@@ -38,7 +38,7 @@ export class TaskCopyService {
 		return { copy, status };
 	}
 
-	private defaultTaskStatusElements(): CopyStatusDTO[] {
+	private defaultTaskStatusElements(): CopyStatus[] {
 		return [
 			{
 				title: 'metadata',
@@ -58,7 +58,7 @@ export class TaskCopyService {
 		];
 	}
 
-	private copyTaskFiles(task: Task): CopyStatusDTO[] {
+	private copyTaskFiles(task: Task): CopyStatus[] {
 		const fileNames = task.getFileNames();
 		if (fileNames.length === 1) {
 			return [
@@ -86,7 +86,7 @@ export class TaskCopyService {
 		return [];
 	}
 
-	private inferStatusFromElements(elements: CopyStatusDTO[]): CopyStatusEnum {
+	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
 		const childrenStatusArray = elements.map((el) => el.status);
 		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
 		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) return CopyStatusEnum.PARTIAL;
