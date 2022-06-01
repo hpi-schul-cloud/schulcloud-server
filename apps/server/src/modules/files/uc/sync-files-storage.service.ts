@@ -16,23 +16,30 @@ export class SyncFilesStorageService {
 			Bucket: source.bucket,
 			Key: source.objectPath,
 		});
+		try {
+			const data = await source.client.send(sourceReq);
 
-		const data = await source.client.send(sourceReq);
+			const targetReq = {
+				Body: data.Body,
+				Bucket: target.bucket,
+				Key: target.objectPath,
+				ContentType: data.ContentType,
+			};
+			const res = new Upload({
+				client: target.client,
+				params: targetReq,
+			});
 
-		const targetReq = {
-			Body: data.Body,
-			Bucket: target.bucket,
-			Key: target.objectPath,
-			ContentType: data.ContentType,
-		};
-		const res = new Upload({
-			client: target.client,
-			params: targetReq,
-		});
+			const a = await res.done();
 
-		const a = await res.done();
-
-		return a;
+			return a;
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.Code && err.Code === 'NoSuchKey') {
+				throw new Error(`${source.bucket} / ${source.objectPath}`);
+			}
+			throw err;
+		}
 	}
 
 	public createStorageProviderClient(storageProvider: S3Config): S3Client {
