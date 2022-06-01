@@ -8,6 +8,11 @@ export class SyncFilesConsole {
 
 	@Command({ command: 'tasks [batchSize]' })
 	async syncFilesForTasks(batchSize = 50) {
-		await this.syncFilesUc.syncFilesForTasks(batchSize);
+		let itemsFound: number;
+		do {
+			this.logger.log(`Starting file sync batch of size = ${batchSize}`);
+			// eslint-disable-next-line no-await-in-loop
+			itemsFound = await this.syncFilesUc.syncFilesForTasks(batchSize);
+		} while (itemsFound > 0);
 	}
 }
