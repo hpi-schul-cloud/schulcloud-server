@@ -32,7 +32,7 @@ export class Logger extends ConsoleLogger implements ILogger {
 
 	error(message: unknown, trace?: unknown, context?: string): void {
 		this.printMessages(
-			[JSON.stringify({message, trace: trace})],
+			[JSON.stringify({message, trace: trace || null})],
 			context || this.context,
 			'HTTP Request' as LogLevel
 		);
