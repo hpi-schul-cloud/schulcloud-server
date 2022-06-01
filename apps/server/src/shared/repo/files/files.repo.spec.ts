@@ -147,15 +147,13 @@ describe('FilesRepo', () => {
 		it('should delete the file in the storage provider', async () => {
 			const spy = setFileStorageAdapterMock.deleteFile();
 
-			const fileStorageAdapterSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
-
 			const file = fileFactory.build();
 			await em.persistAndFlush(file);
 
 			await repo.deleteFile(file);
 
-			expect(fileStorageAdapterSpy).toBeCalledTimes(1);
-			expect(fileStorageAdapterSpy).toBeCalledWith(file);
+			expect(spy).toBeCalledTimes(1);
+			expect(spy).toBeCalledWith(file);
 
 			spy.mockRestore();
 		});
@@ -163,14 +161,12 @@ describe('FilesRepo', () => {
 		it('should not delete directories in the storage provider', async () => {
 			const spy = setFileStorageAdapterMock.deleteFile();
 
-			const fileStorageAdapterSpy = jest.spyOn(fileStorageAdapter, 'deleteFile');
-
 			const directory = directoryFactory.build();
 			await em.persistAndFlush(directory);
 
 			await repo.deleteFile(directory);
 
-			expect(fileStorageAdapterSpy).not.toHaveBeenCalled();
+			expect(spy).not.toHaveBeenCalled();
 
 			spy.mockRestore();
 		});

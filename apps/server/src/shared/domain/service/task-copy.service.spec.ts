@@ -257,36 +257,6 @@ describe('task copy service', () => {
 			expect(filesStatus).not.toBeDefined();
 		});
 
-		it('should only set default task status elements in absence of attached files', () => {
-			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
-			const originalTask = taskFactory.buildWithId({});
-
-			const result = copyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: course,
-				user,
-			});
-
-			const metadataStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-			);
-			const descriptionStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'description'
-			);
-			const submissionsStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
-			);
-			const filesStatus = result.status.elements?.find(
-				(el) => el.type === CopyElementType.LEAF && el.title === 'files'
-			);
-			expect(result.status.elements).toHaveLength(3);
-			expect(metadataStatus).toBeDefined();
-			expect(descriptionStatus).toBeDefined();
-			expect(submissionsStatus).toBeDefined();
-			expect(filesStatus).not.toBeDefined();
-		});
-
 		describe('when task contains a single file', () => {
 			it('should set task status to partial', () => {
 				const user = userFactory.buildWithId();

@@ -138,16 +138,6 @@ describe('Task Entity', () => {
 	});
 
 	describe('getSubmittedUserIds', () => {
-		it('should use save private getSubmissionItems method to fetch submissions', () => {
-			const task = taskFactory.build();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const spy = jest.spyOn(Task.prototype as any, 'getSubmissionItems');
-
-			task.getSubmittedUserIds();
-
-			expect(spy).toHaveBeenCalled();
-		});
-
 		it('should throw if submissions are not loaded', () => {
 			const task = taskFactory.build();
 			task.submissions.set([orm.em.getReference(Submission, new ObjectId().toHexString())]);
@@ -646,16 +636,6 @@ describe('Task Entity', () => {
 	});
 
 	describe('getFileNames', () => {
-		it('should use save private getFileItems method to fetch files', () => {
-			const task = taskFactory.build();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const spy = jest.spyOn(Task.prototype as any, 'getFileItems');
-
-			task.getFileNames();
-
-			expect(spy).toHaveBeenCalled();
-		});
-
 		it('should throw if files are not loaded', () => {
 			const task = taskFactory.build();
 			task.files.set([orm.em.getReference(File, new ObjectId().toHexString())]);

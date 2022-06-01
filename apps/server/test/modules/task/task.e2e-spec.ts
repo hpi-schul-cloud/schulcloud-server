@@ -529,15 +529,16 @@ describe('Task Controller (e2e)', () => {
 				expect(response.status).toEqual(201);
 			});
 
-			it('should duplicate a task with legacy file', async () => {
+			it('should duplicate a task with legacy files in it', async () => {
 				const teacher = setup();
 				const course = courseFactory.build({
 					teachers: [teacher],
 				});
-				const file = fileFactory.build({ creator: teacher });
-				const task = taskFactory.build({ creator: teacher, course, files: [file] });
+				const fileOne = fileFactory.build({ creator: teacher });
+				const fileTwo = fileFactory.build({ creator: teacher });
+				const task = taskFactory.build({ creator: teacher, course, files: [fileOne, fileTwo] });
 
-				await em.persistAndFlush([teacher, task, file]);
+				await em.persistAndFlush([teacher, task, fileOne, fileTwo]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(teacher);
