@@ -34,6 +34,7 @@ export class Logger extends ConsoleLogger implements ILogger {
 		this.printMessages(
 			[JSON.stringify(message), JSON.stringify(trace)],
 			context || this.context,
-			'HTTP Request' as LogLevel);
+			'HTTP Request' as LogLevel
+		);
 	}
 }
