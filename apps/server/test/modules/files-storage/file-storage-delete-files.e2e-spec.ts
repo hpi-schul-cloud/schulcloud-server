@@ -219,6 +219,8 @@ describe(`${baseRouteName} (api)`, () => {
 					parentType: 'schools',
 					type: 'text/plain',
 					deletedSince: expect.any(String) as string,
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
 				});
 			});
 
@@ -310,6 +312,8 @@ describe(`${baseRouteName} (api)`, () => {
 					parentType: 'schools',
 					type: 'text/plain',
 					deletedSince: expect.any(String) as string,
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
 				});
 			});
 

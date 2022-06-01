@@ -1,20 +1,10 @@
-/* eslint-disable global-require */
-const { verifyApiKeyIfProviderIsExternal } = require('../../hooks/authentication');
+const setupMailService = require('./service');
+const setupHashService = require('./hash');
 
-module.exports = function setup() {
-	const app = this;
-
-	const MailService = require('./service')(app);
-	const HashService = require('./hash')(app);
+module.exports = function setup(app) {
+	const MailService = setupMailService(app);
+	const HashService = setupHashService(app);
 
 	app.use('/mails', new MailService());
 	app.use('/hash', new HashService());
-
-	const mailHooks = {
-		before: {
-			all: [verifyApiKeyIfProviderIsExternal],
-		},
-	};
-
-	app.service('/mails').hooks(mailHooks);
 };
