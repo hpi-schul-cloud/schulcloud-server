@@ -243,6 +243,8 @@ describe(`${baseRouteName} (api)`, () => {
 					parentId: expect.any(String) as string,
 					parentType: 'schools',
 					type: 'text/plain',
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
 				});
 			});
 
@@ -334,6 +336,8 @@ describe(`${baseRouteName} (api)`, () => {
 					parentId: expect.any(String) as string,
 					parentType: 'schools',
 					type: 'text/plain',
+					securityCheckStatus: 'pending',
+					size: expect.any(Number) as number,
 				});
 			});
 

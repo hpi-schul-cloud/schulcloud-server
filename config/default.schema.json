@@ -11,10 +11,23 @@
 			"enum": ["development", "test", "production", "migration"],
 			"default": "production"
 		},
-		"CLIENT_API_KEY": {
-			"type": "string",
-			"default": "example",
-			"description": "The API Key that the Client uses to send emails. This should be removed with SC-3387"
+		"REQUEST_OPTION": {
+			"type": "object",
+			"description": "Request helper options for internal requests.",
+			"properties": {
+				"KEEP_ALIVE": {
+					"type": "boolean",
+					"description": "Add Keep-Alive header to the request connection."
+				},
+				"TIMEOUT_MS": {
+					"type": "integer",
+					"description": "Outgoing request timeout in milliseconds."
+				}
+			},
+			"default": {
+				"TIMEOUT_MS": 5000,
+				"KEEP_ALIVE": true
+			}
 		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
@@ -700,12 +713,6 @@
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
-		"REQUEST_TIMEOUT": {
-			"type": "integer",
-			"minimum": 0,
-			"default": 8000,
-			"description": "Timeout for outgoing requests from server to external systems in milliseconds."
-		},
 		"INCOMING_REQUEST_TIMEOUT_API": {
 			"type": "integer",
 			"minimum": 0,
@@ -780,11 +787,6 @@
 			"type": "string",
 			"default": "https://dbildungscloud.de",
 			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
-		},
-		"KEEP_ALIVE": {
-			"type": "boolean",
-			"default": false,
-			"description": "For external request it can set the keep alive header to let open the connection for short period."
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
