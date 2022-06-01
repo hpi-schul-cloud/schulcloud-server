@@ -55,8 +55,7 @@ describe('SyncTaskRepo', () => {
 			const filerecord = fileRecordFactory.build();
 			filerecord.updatedAt = file.updatedAt;
 			await em.persistAndFlush(filerecord);
-			const fileFilerecord = fileFilerecordFactory.build({ fileId: file._id, filerecordId: filerecord._id });
-			await em.persistAndFlush(fileFilerecord);
+			await repo.saveAssociation(file._id.toHexString(), filerecord._id.toHexString());
 			const task = taskFactory.build({ name: 'task with file' });
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
@@ -72,8 +71,7 @@ describe('SyncTaskRepo', () => {
 			const filerecord = fileRecordFactory.build();
 			filerecord.updatedAt = new Date('2022-01-01T00:00:00.000Z');
 			await em.persistAndFlush(filerecord);
-			const fileFilerecord = fileFilerecordFactory.build({ fileId: file._id, filerecordId: filerecord._id });
-			await em.persistAndFlush(fileFilerecord);
+			await repo.saveAssociation(file._id.toHexString(), filerecord._id.toHexString());
 			const task = taskFactory.build({ name: 'task with file' });
 			task.fileIds = [file._id];
 			await em.persistAndFlush(task);
