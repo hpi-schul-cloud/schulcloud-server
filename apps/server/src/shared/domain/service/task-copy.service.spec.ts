@@ -89,7 +89,7 @@ describe('task copy service', () => {
 				expect(result.copy.name).toEqual(originalTask.name);
 			});
 
-			it('should set destination course as course of the copy', () => {
+			it('should set course of the copy', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
 				const result = copyService.copyTaskMetadata({
@@ -111,18 +111,6 @@ describe('task copy service', () => {
 				});
 
 				expect(result.copy.description).toEqual(originalTask.description);
-			});
-
-			it('should set course', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				const result = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-
-				expect(result.copy.course).toEqual(destinationCourse);
 			});
 
 			it('should set copy to status', () => {
@@ -290,18 +278,18 @@ describe('task copy service', () => {
 		describe('when task contains a single file', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const destinationCourse = courseFactory.buildWithId();
 				const file = fileFactory.buildWithId();
-				const originalTask = taskFactory.buildWithId({ course, files: [file] });
-				return { user, course, file, originalTask };
+				const originalTask = taskFactory.buildWithId({ course: destinationCourse, files: [file] });
+				return { user, destinationCourse, file, originalTask };
 			};
 
 			it('should set task status to partial', () => {
-				const { user, course, originalTask } = setup();
+				const { user, destinationCourse, originalTask } = setup();
 
 				const result = copyService.copyTaskMetadata({
 					originalTask,
-					destinationCourse: course,
+					destinationCourse,
 					user,
 				});
 
@@ -309,11 +297,11 @@ describe('task copy service', () => {
 			});
 
 			it('should add file leaf with status "not implemented"', () => {
-				const { user, file, course, originalTask } = setup();
+				const { user, file, destinationCourse, originalTask } = setup();
 
 				const result = copyService.copyTaskMetadata({
 					originalTask,
-					destinationCourse: course,
+					destinationCourse,
 					user,
 				});
 
