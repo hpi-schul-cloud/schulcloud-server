@@ -14,7 +14,7 @@ export class SyncFileItemMapper {
 		const item = new SyncFileItem({
 			parentType,
 			parentId: (data._id as ObjectId).toHexString(),
-			creatorId: (file.creator as ObjectId).toHexString(),
+			creatorId: (file.creator as ObjectId)?.toHexString(),
 			schoolId: (data.schoolId as ObjectId).toHexString(),
 			source,
 			target,
