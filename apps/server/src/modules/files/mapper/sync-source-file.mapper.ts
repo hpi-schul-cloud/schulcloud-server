@@ -13,10 +13,12 @@ export class SyncSourceFileMapper {
 			storageFileName: file.storageFileName as string,
 			bucket: file.bucket as string,
 			storageProviderId: (file.storageProviderId as ObjectId).toHexString(),
-			securityCheck: FileSecurityCheckMapper.mapToDomain(file.securityCheck as FileSecurityCheckData),
-			permissions: (file.permissions as FilePermissionData[]).map((fpData) =>
-				FilePermissionSchemaMapper.mapToDomain(fpData)
-			),
+			securityCheck: file.securityCheck
+				? FileSecurityCheckMapper.mapToDomain(file.securityCheck as FileSecurityCheckData)
+				: undefined,
+			permissions: file.permissions
+				? (file.permissions as FilePermissionData[]).map((fpData) => FilePermissionSchemaMapper.mapToDomain(fpData))
+				: undefined,
 			createdAt: file.createdAt as Date,
 			updatedAt: file.updatedAt as Date,
 			deletedAt: file.deletedAt as Date,

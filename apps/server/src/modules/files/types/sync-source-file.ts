@@ -15,9 +15,9 @@ export class SyncSourceFile {
 
 	storageProviderId: EntityId;
 
-	securityCheck: SyncSourceFileSecurityCheck;
+	securityCheck?: SyncSourceFileSecurityCheck;
 
-	permissions: SyncSourceFilePermission[];
+	permissions?: SyncSourceFilePermission[];
 
 	createdAt: Date;
 
