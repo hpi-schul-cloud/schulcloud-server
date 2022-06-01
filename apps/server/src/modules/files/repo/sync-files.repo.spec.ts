@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
+import { cleanupCollections, fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
 import { SyncFilesRepo } from './sync-files.repo';
 
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
@@ -20,6 +20,10 @@ describe('SyncTaskRepo', () => {
 
 		repo = module.get(SyncFilesRepo);
 		em = module.get(EntityManager);
+	});
+
+	afterEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
@@ -46,7 +50,7 @@ describe('SyncTaskRepo', () => {
 			const result = await repo.findTaskFilesToSync();
 
 			expect(result).toHaveLength(1);
-			expect(result[0]).toMatchObject({ _id: task._id });
+			expect(result[0]).toMatchObject({ parentId: task._id });
 		});
 
 		it('should not return tasks with files that have corresponding filerecords with same updatedAt', async () => {
@@ -79,7 +83,7 @@ describe('SyncTaskRepo', () => {
 			const result = await repo.findTaskFilesToSync();
 
 			expect(result).toHaveLength(1);
-			expect(result[0]).toMatchObject({ _id: task._id });
+			expect(result[0]).toMatchObject({ parentId: task._id });
 		});
 	});
 });
