@@ -40,7 +40,7 @@ export class SyncFilesUc implements OnModuleInit {
 		await this.loadProviders();
 	}
 
-	async syncFilesForTasks(batchSize = 50) {
+	async syncFilesForTasks(batchSize = 50): Promise<number> {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(batchSize));
 
 		await Promise.all(
@@ -48,13 +48,17 @@ export class SyncFilesUc implements OnModuleInit {
 				try {
 					await this.metadataService.syncMetaData(item);
 					await this.syncFile(item);
-					this.logger.log(`Successfully synced source file id = ${item.source.id}`);
+					this.logger.log(
+						`Successfully synced source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`
+					);
 				} catch (error) {
 					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
 					this.logger.error(error);
 				}
 			})
 		);
+
+		return itemsToSync.length;
 	}
 
 	private async syncFile(item: SyncFileItem): Promise<void> {
