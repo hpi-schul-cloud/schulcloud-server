@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
+import bcrypt from 'bcryptjs';
 import { Account, EntityId } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
@@ -42,7 +43,7 @@ export class AccountService {
 			account.activated = accountDto.activated;
 			account.expiresAt = accountDto.expiresAt;
 			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			account.password = accountDto.password;
+			account.password = accountDto.password ? await this.encryptPassword(accountDto.password) : undefined;
 			account.credentialHash = accountDto.credentialHash;
 			account.token = accountDto.token;
 		} else {
@@ -53,7 +54,7 @@ export class AccountService {
 				activated: accountDto.activated,
 				expiresAt: accountDto.expiresAt,
 				lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
-				password: accountDto.password,
+				password: accountDto.password ? await this.encryptPassword(accountDto.password) : undefined,
 				token: accountDto.token,
 				credentialHash: accountDto.credentialHash,
 			});
@@ -85,5 +86,9 @@ export class AccountService {
 			AccountEntityToDtoMapper.mapToDto(accountEntity)
 		);
 		return { accounts: accountDtos, total: accountEntities[1] };
+	}
+
+	private encryptPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, 10);
 	}
 }

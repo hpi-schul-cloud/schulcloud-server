@@ -126,7 +126,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
 		}
 		if (body.password !== undefined) {
-			targetAccount.password = await this.calcPasswordHash(body.password);
+			targetAccount.password = body.password;
 			targetUser.forcePasswordChange = true;
 			updateUser = true;
 			updateAccount = true;
@@ -199,7 +199,7 @@ export class AccountUc {
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
-			account.password = await this.calcPasswordHash(params.passwordNew);
+			account.password = params.passwordNew;
 			updateAccount = true;
 		}
 		if (params.email && user.email !== params.email) {
@@ -281,7 +281,7 @@ export class AccountUc {
 		}
 
 		try {
-			account.password = await this.calcPasswordHash(password);
+			account.password = password;
 			await this.accountService.save(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
@@ -402,10 +402,6 @@ export class AccountUc {
 		}
 
 		return roles;
-	}
-
-	private calcPasswordHash(password: string): Promise<string> {
-		return bcrypt.hash(password, 10);
 	}
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
