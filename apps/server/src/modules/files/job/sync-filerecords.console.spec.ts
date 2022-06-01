@@ -1,34 +1,24 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TaskRepo } from '@shared/repo';
-import { fileFactory, fileRecordFactory, setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { SyncFilerecordsConsole, TaskToSync } from './sync-filerecords.console';
+import { SyncFilesUc } from '../uc';
+import { SyncFilesConsole } from './sync-filerecords.console';
 
-describe('SyncFilerecordsConsole', () => {
+describe('SyncFilesConsole', () => {
 	let module: TestingModule;
 	let orm: MikroORM;
-	let console: SyncFilerecordsConsole;
-	let taskRepo: TaskRepo;
+	let console: SyncFilesConsole;
+	let uc: SyncFilesUc;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			controllers: [SyncFilerecordsConsole],
+			controllers: [SyncFilesConsole],
 			providers: [
 				{
-					provide: TaskRepo,
-					useValue: {
-						getTasksToSync: jest.fn,
-					},
-				},
-				{
-					provide: EntityManager,
-					useValue: {
-						persist: jest.fn,
-						flush: jest.fn,
-					},
+					provide: SyncFilesUc,
+					useValue: createMock<SyncFilesUc>(),
 				},
 				{
 					provide: Logger,
@@ -37,8 +27,8 @@ describe('SyncFilerecordsConsole', () => {
 			],
 		}).compile();
 
-		console = module.get(SyncFilerecordsConsole);
-		taskRepo = module.get(TaskRepo);
+		console = module.get(SyncFilesConsole);
+		uc = module.get(SyncFilesUc);
 
 		orm = await setupEntities();
 	});
@@ -52,28 +42,10 @@ describe('SyncFilerecordsConsole', () => {
 		expect(console).toBeDefined();
 	});
 
-	describe('syncFilerecordsForTasks', () => {
-		it('should call getTasksToSync', async () => {
-			const spy = jest.spyOn(taskRepo, 'getTasksToSync');
-			spy.mockResolvedValue([]);
-
-			await console.syncFilerecordsForTasks();
-
-			expect(spy).toHaveBeenCalledTimes(1);
-		});
-
-		it('should call updateFilerecordForTask for a task with an existing filerecord', async () => {
-			const getTasksToSyncSpy = jest.spyOn(taskRepo, 'getTasksToSync');
-			const file = fileFactory.build();
-			const filerecord = fileRecordFactory.build();
-			const taskToSync = new TaskToSync(new ObjectId(), new ObjectId(), file, filerecord);
-			getTasksToSyncSpy.mockResolvedValue([taskToSync]);
-
-			const updateFilerecordsSpy = jest.spyOn(console, 'updateFilerecordForTask');
-
-			await console.syncFilerecordsForTasks();
-
-			expect(updateFilerecordsSpy).toHaveBeenCalledTimes(1);
+	describe('syncFilesForTasks', () => {
+		it('should call syncFilesForTasks', async () => {
+			await console.syncFilesForTasks();
+			expect(uc.syncFilesForTasks).toHaveBeenCalledTimes(1);
 		});
 	});
 });

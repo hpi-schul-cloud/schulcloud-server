@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { FileRecordRepo, StorageProviderRepo } from '@shared/repo';
+import { StorageProviderRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { S3Config } from '@src/modules/files-storage/interface';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
@@ -20,7 +20,6 @@ export class SyncFilesUc implements OnModuleInit {
 	constructor(
 		private readonly metadataService: SyncFilesMetadataService,
 		private syncFilesRepo: SyncFilesRepo,
-		private fileRecordRepo: FileRecordRepo,
 		private storageProviderRepo: StorageProviderRepo,
 		private storageService: SyncFilesStorageService,
 		private logger: Logger,
@@ -52,7 +51,7 @@ export class SyncFilesUc implements OnModuleInit {
 		);
 	}
 
-	public async syncFile(item: SyncFileItem): Promise<void> {
+	private async syncFile(item: SyncFileItem): Promise<void> {
 		if (!item.target) {
 			throw new InternalServerErrorException('Cannot update non-existing target file record', 'SyncFiles:file');
 		}
