@@ -30,6 +30,11 @@ export class SyncFilesRepo {
 				},
 			},
 			{
+				$match: {
+					'files.storageProviderId': { $exists: true },
+				},
+			},
+			{
 				$lookup: {
 					from: 'files_filerecords',
 					localField: 'files._id',
