@@ -5,9 +5,9 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountService } from './account.service';
-import { AccountDto } from './dto/account.dto';
+import { AccountDto, AccountCreateDto } from './dto';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -137,6 +137,28 @@ describe('AccountService', () => {
 		});
 		it('should throw EntityNotFoundError', async () => {
 			await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
+		});
+	});
+
+	describe('create', () => {
+		it('should set id, createdAt and modifiedAt', async () => {
+			const createDto = new AccountCreateDto({
+				username: 'john.doe@domain.tld',
+				userId: new ObjectId().toString(),
+			});
+			const accountDto = await accountService.create(createDto);
+			expect(accountDto.id).toBeDefined();
+			expect(accountDto.createdAt).toBeDefined();
+			expect(accountDto.updatedAt).toBeDefined();
+		});
+		it('should encrypt password', async () => {
+			const createDto = new AccountCreateDto({
+				username: 'john.doe@domain.tld',
+				userId: new ObjectId().toString(),
+				password: 'Schulcloud1!',
+			});
+			const accountDto = await accountService.create(createDto);
+			expect(accountDto.password).not.toBe(createDto.password);
 		});
 	});
 
