@@ -27,7 +27,9 @@ export class SyncFilesMetadataService {
 		fileRecord.name = source.name;
 		fileRecord.size = source.size;
 		fileRecord.mimeType = source.type;
-		fileRecord.securityCheck = source.securityCheck;
+		if (source.securityCheck) {
+			fileRecord.securityCheck = source.securityCheck;
+		}
 		fileRecord.updatedAt = source.updatedAt;
 
 		await this.fileRecordRepo.save(fileRecord);
@@ -50,7 +52,9 @@ export class SyncFilesMetadataService {
 			schoolId: item.schoolId,
 		});
 
-		fileRecord.securityCheck = source.securityCheck;
+		if (source.securityCheck) {
+			fileRecord.securityCheck = source.securityCheck;
+		}
 		fileRecord.createdAt = source.createdAt;
 		fileRecord.updatedAt = source.updatedAt;
 
