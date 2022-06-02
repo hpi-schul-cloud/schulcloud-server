@@ -44,12 +44,15 @@ export class SyncFilesUc implements OnModuleInit {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(batchSize));
 
 		await Promise.all(
-			itemsToSync.map(async (item) => {
+			itemsToSync.map(async (item, counter) => {
 				try {
 					await this.metadataService.syncMetaData(item);
 					await this.syncFile(item);
+					const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
 					this.logger.log(
-						`Successfully synced source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`
+						`${progress} Successfully synced source file id = ${item.source.id}, target file id = ${
+							item.target?.id || 'undefined'
+						}`
 					);
 				} catch (error) {
 					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
