@@ -45,6 +45,7 @@ export class SyncFilesUc implements OnModuleInit {
 
 		for (let i = 0; i < itemsToSync.length; i += batchSize) {
 			const batch = itemsToSync.slice(i, i + batchSize);
+			this.logger.log(`Starting batch with items ${i} to ${i + batchSize}`);
 
 			// eslint-disable-next-line no-await-in-loop
 			await Promise.all(
