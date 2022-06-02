@@ -2,7 +2,7 @@ import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ILoggerConfig, RequestLoggingBody } from './interfaces';
 import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
@@ -32,7 +32,7 @@ export class Logger extends ConsoleLogger implements ILogger {
 	}
 
 	error(message: unknown, trace?: unknown, context?: string): void {
-		if (NODE_ENV === ENVIRONMENTS.PRODUCTION) {
+		if (Configuration.get("NODE_ENV") === "prod") {
 			this.printMessages(
 				[JSON.stringify({message, trace: trace || null})],
 				context || this.context
