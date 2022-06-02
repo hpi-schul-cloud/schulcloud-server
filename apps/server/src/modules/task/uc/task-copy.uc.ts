@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Actions, CopyStatusDTO, EntityId } from '@shared/domain';
+import { Actions, CopyStatus, EntityId } from '@shared/domain';
 import { TaskCopyService } from '../../../shared/domain/service/task-copy.service';
 import { CourseRepo, TaskRepo } from '../../../shared/repo';
 import { AuthorizationService } from '../../authorization';
@@ -18,7 +18,7 @@ export class TaskCopyUC {
 		private readonly taskCopyService: TaskCopyService
 	) {}
 
-	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatusDTO> {
+	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
 		if (
