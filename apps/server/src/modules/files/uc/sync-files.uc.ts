@@ -53,7 +53,7 @@ export class SyncFilesUc implements OnModuleInit {
 					);
 				} catch (error) {
 					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
-					this.logger.error(error);
+					this.logger.error('stack' in error ? (error as Error).stack : error);
 				}
 			})
 		);
