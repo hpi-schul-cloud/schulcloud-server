@@ -47,7 +47,7 @@ export class SyncFilesUc implements OnModuleInit {
 			const item = itemsToSync[counter - 1];
 			try {
 				const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
-				const fileInfo1 = `source file id = ${item.source.id}`;
+				const fileInfo1 = `source file id = ${item.source.id}, size = ${item.source.size}`;
 				this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
 				// eslint-disable-next-line no-await-in-loop
 				await this.metadataService.syncMetaData(item);
