@@ -50,14 +50,13 @@ export class SyncFilesUc implements OnModuleInit {
 			await Promise.all(
 				batch.map(async (item, counter) => {
 					try {
+						const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
+						const fileInfo1 = `source file id = ${item.source.id}, size = ${item.source.size}`;
+						this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
 						await this.metadataService.syncMetaData(item);
 						await this.syncFile(item);
-						const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
-						this.logger.log(
-							`${progress} Successfully synced source file id = ${item.source.id}, target file id = ${
-								item.target?.id || 'undefined'
-							}`
-						);
+						const fileInfo2 = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
+						this.logger.log(`${progress} Successfully synced ${fileInfo2}`);
 					} catch (error) {
 						this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
 						this.logger.error('stack' in error ? (error as Error).stack : error);
@@ -65,24 +64,6 @@ export class SyncFilesUc implements OnModuleInit {
 				})
 			);
 		}
-
-		await Promise.all(
-			itemsToSync.map(async (item, counter) => {
-				try {
-					await this.metadataService.syncMetaData(item);
-					await this.syncFile(item);
-					const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
-					this.logger.log(
-						`${progress} Successfully synced source file id = ${item.source.id}, target file id = ${
-							item.target?.id || 'undefined'
-						}`
-					);
-				} catch (error) {
-					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
-					this.logger.error('stack' in error ? (error as Error).stack : error);
-				}
-			})
-		);
 
 		return itemsToSync.length;
 	}
