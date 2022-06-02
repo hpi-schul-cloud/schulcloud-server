@@ -43,23 +43,24 @@ export class SyncFilesUc implements OnModuleInit {
 	async syncFilesForTasks(batchSize = 50): Promise<number> {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(batchSize));
 
-		await Promise.all(
-			itemsToSync.map(async (item, counter) => {
-				try {
-					await this.metadataService.syncMetaData(item);
-					await this.syncFile(item);
-					const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
-					this.logger.log(
-						`${progress} Successfully synced source file id = ${item.source.id}, target file id = ${
-							item.target?.id || 'undefined'
-						}`
-					);
-				} catch (error) {
-					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
-					this.logger.error('stack' in error ? (error as Error).stack : error);
-				}
-			})
-		);
+		for (let counter = 1; counter < itemsToSync.length + 1; counter += 1) {
+			const item = itemsToSync[counter - 1];
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				await this.metadataService.syncMetaData(item);
+				// eslint-disable-next-line no-await-in-loop
+				await this.syncFile(item);
+				const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
+				this.logger.log(
+					`${progress} Successfully synced source file id = ${item.source.id}, target file id = ${
+						item.target?.id || 'undefined'
+					}`
+				);
+			} catch (error) {
+				this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
+				this.logger.error('stack' in error ? (error as Error).stack : error);
+			}
+		}
 
 		return itemsToSync.length;
 	}
