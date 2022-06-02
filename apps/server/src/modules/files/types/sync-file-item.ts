@@ -1,4 +1,4 @@
-import { EntityId, FileRecordParentType } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
 import { SyncSourceFile } from './sync-source-file';
 import { SyncTargetFile } from './sync-target-file';
 
@@ -15,6 +15,10 @@ export class SyncFileItem {
 
 	target?: SyncTargetFile;
 
+	fileRecord: FileRecord;
+
+	created = false;
+
 	constructor(props: SyncFileItem) {
 		this.parentType = props.parentType;
 		this.parentId = props.parentId;
@@ -22,6 +26,8 @@ export class SyncFileItem {
 		this.schoolId = props.schoolId;
 		this.target = props.target;
 		this.source = props.source;
+		this.fileRecord = props.fileRecord;
+		this.created = props.created;
 	}
 }
 

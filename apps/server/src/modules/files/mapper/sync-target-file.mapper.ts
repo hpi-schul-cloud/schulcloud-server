@@ -1,12 +1,12 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { SyncTargetFile, SyncTargetFileData } from '../types';
+import { FileRecord } from '@shared/domain';
+import { SyncTargetFile } from '../types';
 
 export class SyncTargetFileMapper {
-	static mapToDomain(filerecord: SyncTargetFileData): SyncTargetFile {
+	static mapToDomain(filerecord: FileRecord): SyncTargetFile {
 		const target = new SyncTargetFile({
-			id: (filerecord._id as ObjectId).toHexString(),
-			createdAt: filerecord.createdAt as Date,
-			updatedAt: filerecord.updatedAt as Date,
+			id: filerecord._id.toHexString(),
+			createdAt: filerecord.createdAt,
+			updatedAt: filerecord.updatedAt,
 		});
 
 		return target;

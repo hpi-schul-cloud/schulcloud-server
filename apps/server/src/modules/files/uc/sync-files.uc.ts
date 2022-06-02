@@ -56,11 +56,14 @@ export class SyncFilesUc implements OnModuleInit {
 						this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
 						await this.metadataService.syncMetaData(item);
 						await this.syncFile(item);
+						await this.metadataService.persist(item);
 						const fileInfo2 = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
 						this.logger.log(`${progress} Successfully synced ${fileInfo2}`);
 					} catch (error) {
 						this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
 						this.logger.error('stack' in error ? (error as Error).stack : error);
+
+						//	batch.splice(i, 1);
 					}
 				})
 			);

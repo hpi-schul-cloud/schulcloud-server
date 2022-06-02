@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { FileRecord } from '@shared/domain';
 import { FileRecordRepo } from '@shared/repo';
@@ -30,7 +31,8 @@ export class SyncFilesMetadataService {
 			}
 			fileRecord.updatedAt = source.updatedAt;
 
-			await this.fileRecordRepo.save(fileRecord);
+			item.fileRecord = fileRecord;
+			//await this.fileRecordRepo.save(fileRecord);
 
 			item.target.id = fileRecord.id;
 			item.target.updatedAt = fileRecord.updatedAt;
@@ -39,7 +41,7 @@ export class SyncFilesMetadataService {
 		return item;
 	}
 
-	public async createFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
+	public createFileRecord(item: SyncFileItem): SyncFileItem {
 		const { source } = item;
 		const fileRecord = new FileRecord({
 			size: source.size,
@@ -51,6 +53,7 @@ export class SyncFilesMetadataService {
 			schoolId: item.schoolId,
 		});
 
+		fileRecord._id = new ObjectId();
 		if (source.securityCheck) {
 			fileRecord.securityCheck = source.securityCheck;
 		}
@@ -58,8 +61,11 @@ export class SyncFilesMetadataService {
 		fileRecord.createdAt = source.createdAt;
 		fileRecord.updatedAt = source.updatedAt;
 
-		await this.fileRecordRepo.save(fileRecord);
-		await this.syncFilesRepo.saveAssociation(source.id, fileRecord.id);
+		item.fileRecord = fileRecord;
+		item.created = true;
+
+		//await this.fileRecordRepo.save(fileRecord);
+		//await this.syncFilesRepo.saveAssociation(source.id, fileRecord.id);
 
 		item.target = new SyncTargetFile({
 			id: fileRecord.id,
@@ -68,5 +74,12 @@ export class SyncFilesMetadataService {
 		});
 
 		return item;
+	}
+
+	async persist(item: SyncFileItem) {
+		await this.fileRecordRepo.save(item.fileRecord);
+		if (item.created && item.target) {
+			await this.syncFilesRepo.saveAssociation(item.source.id, item.target?.id);
+		}
 	}
 }
