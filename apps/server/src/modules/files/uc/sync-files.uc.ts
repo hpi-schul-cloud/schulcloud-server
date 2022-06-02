@@ -47,13 +47,14 @@ export class SyncFilesUc implements OnModuleInit {
 			const item = itemsToSync[counter - 1];
 			try {
 				const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
-				const fileInfo = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
-				this.logger.log(`${progress} Starting file sync ${fileInfo}`);
+				const fileInfo1 = `source file id = ${item.source.id}`;
+				this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
 				// eslint-disable-next-line no-await-in-loop
 				await this.metadataService.syncMetaData(item);
 				// eslint-disable-next-line no-await-in-loop
 				await this.syncFile(item);
-				this.logger.log(`${progress} Successfully synced ${fileInfo}`);
+				const fileInfo2 = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
+				this.logger.log(`${progress} Successfully synced ${fileInfo2}`);
 			} catch (error) {
 				this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
 				this.logger.error('stack' in error ? (error as Error).stack : error);
