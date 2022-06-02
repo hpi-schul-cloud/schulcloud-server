@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Actions, CopyStatusDTO, EntityId, Permission } from '@shared/domain';
+import { Actions, CopyStatus, EntityId, Permission } from '@shared/domain';
 import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { CourseRepo } from '../../../shared/repo';
@@ -12,7 +12,7 @@ export class CourseCopyUC {
 		private readonly courseCopyService: CourseCopyService
 	) {}
 
-	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatusDTO> {
+	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalCourse = await this.courseRepo.findById(courseId);
 		if (
@@ -28,7 +28,6 @@ export class CourseCopyUC {
 			user,
 		});
 		await this.courseRepo.save(copy);
-		status.id = copy.id;
 		return status;
 	}
 }

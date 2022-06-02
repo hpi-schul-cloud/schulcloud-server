@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '@shared/domain/types';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 
 export type CourseCopyParams = {
 	originalCourse: Course;
@@ -9,7 +9,7 @@ export type CourseCopyParams = {
 
 export type CourseCopyResponse = {
 	copy: Course;
-	status: CopyStatusDTO;
+	status: CopyStatus;
 };
 
 @Injectable()
@@ -24,8 +24,19 @@ export class CourseCopyService {
 		const status = {
 			title: copy.name,
 			type: CopyElementType.COURSE,
-			status: CopyStatusEnum.SUCCESS,
+			status: CopyStatusEnum.PARTIAL,
+			copyEntity: copy,
 			elements: [
+				{
+					title: 'metadata',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.SUCCESS,
+				},
+				{
+					title: 'teachers',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.NOT_DOING,
+				},
 				{
 					title: 'substitutionTeachers',
 					type: CopyElementType.LEAF,

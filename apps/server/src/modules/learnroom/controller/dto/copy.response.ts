@@ -2,10 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types/copy.types';
 
 /**
- * DTO for returning a course copy status document via api.
+ * DTO for returning a copy status document via api.
  */
-export class CourseCopyApiResponse {
-	constructor({ title, type, status }: CourseCopyApiResponse) {
+export class CopyApiResponse {
+	constructor({ title, type, status }: CopyApiResponse) {
 		this.title = title;
 		this.type = type;
 		this.status = status;
@@ -36,7 +36,7 @@ export class CourseCopyApiResponse {
 	status: CopyStatusEnum;
 
 	@ApiPropertyOptional({
-		description: 'List of included sub elements',
+		description: 'List of included sub elements with recursive type structure',
 	})
-	elements?: CourseCopyApiResponse[];
+	elements?: CopyApiResponse[];
 }

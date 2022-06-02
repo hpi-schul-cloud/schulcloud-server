@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum, EntityId, ICurrentUser } from '@shared/domain';
+import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId, ICurrentUser } from '@shared/domain';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
-import { BoardResponse, CourseCopyApiResponse } from './dto';
+import { BoardResponse, CopyApiResponse } from './dto';
 import { RoomsController } from './rooms.controller';
 
 describe('rooms controller', () => {
@@ -131,12 +131,11 @@ describe('rooms controller', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 				const ucResult = {
-					id: 'id',
 					title: 'example title',
 					type: 'COURSE' as CopyElementType,
 					status: 'SUCCESS' as CopyStatusEnum,
 					elements: [],
-				} as CopyStatusDTO;
+				} as CopyStatus;
 				const ucSpy = jest.spyOn(copyUc, 'copyCourse').mockImplementation(() => {
 					return Promise.resolve(ucResult);
 				});
@@ -151,7 +150,7 @@ describe('rooms controller', () => {
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
 				const result = await controller.copyCourse(currentUser, 'courseId');
-				expect(result).toBeInstanceOf(CourseCopyApiResponse);
+				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
 	});

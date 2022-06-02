@@ -1,31 +1,31 @@
-import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { BaseFile, File } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { File } from '@shared/domain';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
-export class FilesRepo extends BaseRepo<BaseFile> {
+export class FilesRepo extends BaseRepo<File> {
 	constructor(private fileStorageAdapter: FileStorageAdapter, protected readonly _em: EntityManager) {
 		super(_em);
 	}
 
 	get entityName() {
-		return BaseFile;
+		return File;
 	}
 
 	propertiesToPopulate = ['storageProvider'];
 
-	async findAllFilesForCleanup(cleanupThreshold: Date): Promise<BaseFile[]> {
+	async findAllFilesForCleanup(cleanupThreshold: Date): Promise<File[]> {
 		const filesForCleanupQuery = { deletedAt: { $lte: cleanupThreshold } };
-		const files = await this._em.find(BaseFile, filesForCleanupQuery);
-		const regularFiles = files.filter((file) => file instanceof File);
+		const files = await this._em.find(File, filesForCleanupQuery);
+		const regularFiles = files.filter((file) => file.isDirectory === false);
 		await this._em.populate(regularFiles, this.propertiesToPopulate as never[]);
 		return files;
 	}
 
-	async deleteFile(file: BaseFile): Promise<void> {
-		if (file instanceof File) await this.fileStorageAdapter.deleteFile(file);
+	async deleteFile(file: File): Promise<void> {
+		if (file.isDirectory === false) await this.fileStorageAdapter.deleteFile(file);
 		await this.delete(file);
 	}
 }

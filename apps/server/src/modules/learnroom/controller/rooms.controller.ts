@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CourseCopyMapper } from '../mapper/course-copy.mapper';
+import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
 import { BoardResponse, PatchOrderParams, PatchVisibilityParams } from './dto';
-import { CourseCopyApiResponse } from './dto/course-copy.response';
+import { CopyApiResponse } from './dto/copy.response';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
@@ -53,9 +53,9 @@ export class RoomsController {
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('roomid', ParseObjectIdPipe) courseId: string
-	): Promise<CourseCopyApiResponse> {
+	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, courseId);
-		const dto = CourseCopyMapper.mapToResponse(copyStatus);
+		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
 }

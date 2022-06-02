@@ -5,6 +5,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
 	courseFactory,
+	fileFactory,
 	lessonFactory,
 	submissionFactory,
 	taskFactory,
@@ -529,6 +530,22 @@ describe('TaskRepo', () => {
 				expect(result[1].id).toEqual(task1.id);
 				expect(result[2].id).toEqual(task3.id);
 				expect(result[3].id).toEqual(task4.id);
+			});
+
+			it('should order by id asc when no dueDate is set', async () => {
+				const teacher = userFactory.build();
+				const tasks: Task[] = taskFactory.buildList(30, { creator: teacher, dueDate: undefined });
+				await em.persistAndFlush(tasks);
+				em.clear();
+
+				const [result] = await repo.findAllByParentIds({ creatorId: teacher.id }, undefined, {
+					order: { dueDate: SortOrder.asc },
+				});
+
+				const resultIds = result.map((task) => task.id);
+				const taskIds = tasks.map((task) => task.id).sort();
+
+				expect(resultIds).toEqual(taskIds);
 			});
 		});
 
@@ -1286,13 +1303,16 @@ describe('TaskRepo', () => {
 			await em.persistAndFlush([task1, task2, task3, task4]);
 			em.clear();
 
-			const [tasks] = await repo.findAllFinishedByParentIds({
-				creatorId: user.id,
-				openCourseIds: [course.id],
-				lessonIdsOfOpenCourses: [],
-				finishedCourseIds: [],
-				lessonIdsOfFinishedCourses: [],
-			});
+			const [tasks] = await repo.findAllFinishedByParentIds(
+				{
+					creatorId: user.id,
+					openCourseIds: [course.id],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				},
+				{ order: { dueDate: SortOrder.desc } }
+			);
 
 			expect(tasks.map((t) => t.id)).toEqual([task4.id, task1.id, task2.id, task3.id]);
 		});
@@ -1593,6 +1613,18 @@ describe('TaskRepo', () => {
 			await expect(async () => {
 				await repo.findById(unknownId);
 			}).rejects.toThrow();
+		});
+
+		it('should populate files', async () => {
+			const file = fileFactory.buildWithId({});
+			const task = taskFactory.build({ files: [file] });
+
+			await em.persistAndFlush([task, file]);
+			em.clear();
+
+			const foundTask = await repo.findById(task.id);
+			expect(foundTask.files.isInitialized()).toEqual(true);
+			expect(foundTask.files[0].name).toEqual(file.name);
 		});
 	});
 });

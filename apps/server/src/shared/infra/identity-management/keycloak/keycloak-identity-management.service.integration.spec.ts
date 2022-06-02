@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IdentityManagement } from './identity-management';
-import { KeycloakIdentityManagement } from './keycloak-identity-management';
+import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
+import { IdentityManagementService } from '../identity-management.service';
+import { KeycloakSettings } from './interface/keycloak-settings.interface';
 
 /**
  * This test does not run on CI!
@@ -14,7 +15,7 @@ import { KeycloakIdentityManagement } from './keycloak-identity-management';
  *
  */
 xdescribe('KeycloakIdentityManagement', () => {
-	let idm: IdentityManagement;
+	let idm: IdentityManagementService;
 
 	// This is the GIVEN data of the integration test.
 	// TODO This MUST to be replaced by a proper data seeding (GitHub Action?) to be running in the CI
@@ -30,13 +31,14 @@ xdescribe('KeycloakIdentityManagement', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				{ provide: 'IdentityManagement', useClass: KeycloakIdentityManagement },
-				{ provide: 'KeycloakAdminClient', useClass: KeycloakAdminClient },
+				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
+				{ provide: KeycloakAdminClient, useClass: KeycloakAdminClient },
 				{
-					provide: 'KeycloakSettings',
+					provide: KeycloakSettings,
 					useValue: {
 						baseUrl: Configuration.get('IDENTITY_MANAGEMENT__URI') as string,
 						realmName: Configuration.get('IDENTITY_MANAGEMENT__TENANT') as string,
+						clientId: Configuration.get('IDENTITY_MANAGEMENT__CLIENTID') as string,
 						credentials: {
 							grantType: 'password',
 							username: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_USER') as string,
@@ -47,7 +49,7 @@ xdescribe('KeycloakIdentityManagement', () => {
 				},
 			],
 		}).compile();
-		idm = module.get(IdentityManagement);
+		idm = module.get(IdentityManagementService);
 
 		// This sets the GIVEN part of the integration test.
 		// TODO To be used in the CI, this MUST to be replaced by a proper data seeding (GitHub Action?)

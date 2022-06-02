@@ -1,9 +1,12 @@
-export type CopyStatusDTO = {
+import { BaseEntity } from '../entity/base.entity';
+
+export type CopyStatus = {
 	id?: string;
 	title: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
-	elements?: CopyStatusDTO[];
+	elements?: CopyStatus[];
+	copyEntity?: BaseEntity;
 };
 
 export enum CopyElementType {
@@ -18,4 +21,5 @@ export enum CopyStatusEnum {
 	'FAIL' = 'failure', // but tried
 	'NOT_DOING' = 'not-doing', // for functional reasons
 	'NOT_IMPLEMENTED' = 'not-implemented', // might be implemented in the future
+	'PARTIAL' = 'partial', // parent is partial successful
 }
