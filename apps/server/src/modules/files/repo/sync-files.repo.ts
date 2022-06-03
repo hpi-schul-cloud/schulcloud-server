@@ -43,8 +43,15 @@ export class SyncFilesRepo {
 				},
 			},
 			{
+				$unwind: {
+					path: '$file_filerecords',
+					includeArrayIndex: '0',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
 				$match: {
-					'file_filerecords.error': { $exists: false },
+					$or: [{ 'file_filerecords.error': { $exists: false } }, { 'file_filerecords.error': { $eq: null } }],
 				},
 			},
 			{
@@ -102,7 +109,11 @@ export class SyncFilesRepo {
 			.insertOne('files_filerecords', { fileId: new ObjectId(sourceId), filerecordId, error });
 	}
 
-	async saveFileRecord(entity: FileRecord): Promise<void> {
+	async insertFileRecord(entity: FileRecord): Promise<void> {
 		await this._em.nativeInsert(entity);
+	}
+
+	async updateFileRecord(entity: FileRecord): Promise<void> {
+		await this._em.nativeUpdate(FileRecord, { _id: entity._id }, entity);
 	}
 }

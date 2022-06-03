@@ -33,8 +33,6 @@ export class SyncFilesMetadataService {
 
 			item.fileRecord = fileRecord;
 			item.created = false;
-			//await this.fileRecordRepo.save(fileRecord);
-
 			item.target.id = fileRecord.id;
 			item.target.updatedAt = fileRecord.updatedAt;
 		}
@@ -64,10 +62,6 @@ export class SyncFilesMetadataService {
 
 		item.fileRecord = fileRecord;
 		item.created = true;
-
-		//await this.fileRecordRepo.save(fileRecord);
-		//await this.syncFilesRepo.saveAssociation(source.id, fileRecord.id);
-
 		item.target = new SyncTargetFile({
 			id: fileRecord.id,
 			createdAt: fileRecord.createdAt,
@@ -79,7 +73,11 @@ export class SyncFilesMetadataService {
 
 	async persist(item: SyncFileItem) {
 		const { fileRecord } = item;
-		await this.syncFilesRepo.saveFileRecord(fileRecord);
+		if (item.created) {
+			await this.syncFilesRepo.insertFileRecord(fileRecord);
+		} else {
+			await this.syncFilesRepo.updateFileRecord(fileRecord);
+		}
 
 		if (item.created && item.target) {
 			await this.syncFilesRepo.saveAssociation(item.source.id, item.target?.id);
