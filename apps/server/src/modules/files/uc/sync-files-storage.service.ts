@@ -1,7 +1,10 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
+import { StorageProviderRepo } from '@shared/repo';
 import { S3Config } from '@src/modules/files-storage/interface';
+import { SyncFileItem } from '../types';
 
 export interface ISyncData {
 	client: S3Client;
@@ -10,8 +13,83 @@ export interface ISyncData {
 }
 
 @Injectable()
-export class SyncFilesStorageService {
-	public async syncFile(source: ISyncData, target: ISyncData) {
+export class SyncFilesStorageService implements OnModuleInit {
+	private destinationClient: S3Client;
+
+	private sourceClients: Map<EntityId, S3Client> = new Map();
+
+	constructor(
+		private storageProviderRepo: StorageProviderRepo,
+		@Inject('DESTINATION_S3_CONFIG') readonly config: S3Config
+	) {
+		this.destinationClient = this.createDestinationProvider(config);
+	}
+
+	async onModuleInit() {
+		await this.setSourceProviders();
+	}
+
+	async syncS3File(item: SyncFileItem): Promise<void> {
+		const client = this.sourceClients.get(item.source.storageProviderId);
+		if (client) {
+			const source: ISyncData = {
+				client,
+				bucket: item.source.bucket,
+				objectPath: item.source.storageFileName,
+			};
+			const target: ISyncData = {
+				client: this.destinationClient,
+				bucket: this.config.bucket,
+				objectPath: [item.schoolId, item.target?.id].join('/'),
+			};
+
+			await this.syncFile(source, target);
+		} else {
+			throw new Error(`Unable to find storage provider with id ${item.source.storageProviderId}`);
+		}
+	}
+
+	private createDestinationProvider(config: S3Config) {
+		const provider = this.createStorageProviderClient({
+			endpoint: config.endpoint,
+			bucket: config.bucket,
+			region: config.region,
+			accessKeyId: config.accessKeyId,
+			secretAccessKey: config.secretAccessKey,
+		});
+
+		return provider;
+	}
+
+	private async setSourceProviders() {
+		const providers = await this.storageProviderRepo.findAll();
+
+		providers.forEach((item) => {
+			const client = this.createStorageProviderClient({
+				endpoint: item.endpointUrl,
+				region: item.region || 'eu-central-1',
+				accessKeyId: item.accessKeyId,
+				secretAccessKey: item.secretAccessKey,
+				bucket: '',
+			});
+			this.sourceClients.set(item.id, client);
+		});
+	}
+
+	private createStorageProviderClient(storageProvider: S3Config): S3Client {
+		return new S3Client({
+			endpoint: storageProvider.endpoint,
+			forcePathStyle: true,
+			region: storageProvider.region,
+			tls: true,
+			credentials: {
+				accessKeyId: storageProvider.accessKeyId,
+				secretAccessKey: storageProvider.secretAccessKey,
+			},
+		});
+	}
+
+	private async syncFile(source: ISyncData, target: ISyncData) {
 		const sourceReq = new GetObjectCommand({
 			Bucket: source.bucket,
 			Key: source.objectPath,
@@ -40,18 +118,5 @@ export class SyncFilesStorageService {
 			}
 			throw err;
 		}
-	}
-
-	public createStorageProviderClient(storageProvider: S3Config): S3Client {
-		return new S3Client({
-			endpoint: storageProvider.endpoint,
-			forcePathStyle: true,
-			region: storageProvider.region,
-			tls: true,
-			credentials: {
-				accessKeyId: storageProvider.accessKeyId,
-				secretAccessKey: storageProvider.secretAccessKey,
-			},
-		});
 	}
 }
