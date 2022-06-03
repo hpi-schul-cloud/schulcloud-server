@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
-import { SyncFileItem } from '../types';
+import { BatchContext, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -16,24 +16,28 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
-	async syncFilesForTasks(aggregationSize = 5000, batchSize = 50): Promise<number> {
-		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(aggregationSize));
-
-		for (let i = 0; i < itemsToSync.length; i += batchSize) {
-			const batch = itemsToSync.slice(i, i + batchSize);
-			this.logger.log(`Starting batch with items ${i} to ${i + batchSize - 1}`);
-
-			const promises = batch.map((item, counter) => this.syncFile(item, counter, batchSize));
-			// eslint-disable-next-line no-await-in-loop
-			await Promise.all(promises);
-		}
-
+	async syncFilesForTasks(context: BatchContext): Promise<number> {
+		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(context.aggregationSize));
+		await this.syncFiles(itemsToSync, context);
 		return itemsToSync.length;
 	}
 
-	private async syncFile(item: SyncFileItem, counter: number, batchSize: number) {
+	private async syncFiles(itemsToSync: SyncFileItem[], context: BatchContext) {
+		for (let i = 0; i < itemsToSync.length; i += context.batchSize) {
+			const batch = itemsToSync.slice(i, i + context.batchSize);
+			this.logger.log(`Starting batch with items ${i} to ${i + context.batchSize - 1}`);
+
+			const promises = batch.map((item, counter) => this.syncFile(item, counter, context));
+			// eslint-disable-next-line no-await-in-loop
+			await Promise.all(promises);
+		}
+	}
+
+	private async syncFile(item: SyncFileItem, counter: number, context: BatchContext) {
 		try {
-			const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
+			const progress = `${(context.aggregationsCounter - 1) * context.aggregationSize + counter + 1} ${counter + 1}/${
+				context.batchSize
+			}`;
 			const fileInfo1 = `source file id = ${item.source.id}, size = ${item.source.size}`;
 			this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
 			await this.metadataService.syncMetaData(item);
