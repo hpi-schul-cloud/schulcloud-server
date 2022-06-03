@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum, EntityId, ICurrentUser } from '@shared/domain';
+import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId, ICurrentUser } from '@shared/domain';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -135,7 +135,7 @@ describe('rooms controller', () => {
 					type: 'COURSE' as CopyElementType,
 					status: 'SUCCESS' as CopyStatusEnum,
 					elements: [],
-				} as CopyStatusDTO;
+				} as CopyStatus;
 				const ucSpy = jest.spyOn(copyUc, 'copyCourse').mockImplementation(() => {
 					return Promise.resolve(ucResult);
 				});

@@ -17,8 +17,18 @@ describe('DeleteFileUC', () => {
 	});
 
 	const exampleFiles = [
-		new File({ storageProvider: exampleStorageProvider, storageFileName: 'file1', bucket: 'bucket' }),
-		new File({ storageProvider: exampleStorageProvider, storageFileName: 'file1', bucket: 'bucket' }),
+		new File({
+			storageProvider: exampleStorageProvider,
+			storageFileName: 'file1',
+			bucket: 'bucket',
+			name: 'filename1',
+		}),
+		new File({
+			storageProvider: exampleStorageProvider,
+			storageFileName: 'file2',
+			bucket: 'bucket',
+			name: 'filename2',
+		}),
 	];
 
 	beforeEach(async () => {

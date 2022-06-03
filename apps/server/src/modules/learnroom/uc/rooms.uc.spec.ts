@@ -1,24 +1,23 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, taskFactory, userFactory, boardFactory, setupEntities } from '@shared/testing';
-import { Course, EntityId, User, Board } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo, BoardRepo } from '@shared/repo';
-import { MikroORM } from '@mikro-orm/core';
-import { RoomBoardDTO } from '../types';
-import { RoomsUc } from './rooms.uc';
+import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { RoomsUc } from './rooms.uc';
 
 describe('rooms usecase', () => {
 	let uc: RoomsUc;
-	let courseRepo: CourseRepo;
-	let lessonRepo: LessonRepo;
-	let taskRepo: TaskRepo;
-	let userRepo: UserRepo;
-	let boardRepo: BoardRepo;
+	let courseRepo: DeepMocked<CourseRepo>;
+	let lessonRepo: DeepMocked<LessonRepo>;
+	let taskRepo: DeepMocked<TaskRepo>;
+	let userRepo: DeepMocked<UserRepo>;
+	let boardRepo: DeepMocked<BoardRepo>;
 	let orm: MikroORM;
-	let factory: RoomBoardDTOFactory;
-	let authorisation: RoomsAuthorisationService;
+	let factory: DeepMocked<RoomBoardDTOFactory>;
+	let authorisation: DeepMocked<RoomsAuthorisationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -35,70 +34,31 @@ describe('rooms usecase', () => {
 				RoomsUc,
 				{
 					provide: CourseRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findOne(courseId: EntityId, userId?: EntityId): Promise<Course> {
-							throw new Error('Please write a mock for CourseRepo.findOne');
-						},
-					},
+					useValue: createMock<CourseRepo>(),
 				},
 				{
 					provide: LessonRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findAllByCourseIds(courseIds: EntityId[]) {
-							throw new Error('Please write a mock for LessonRepo.findAllByCourseIds');
-						},
-					},
+					useValue: createMock<LessonRepo>(),
 				},
 				{
 					provide: TaskRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findBySingleParent(creatorId: EntityId, courseId: EntityId) {
-							throw new Error('Please write a mock for TaskRepo.findBySingleParent');
-						},
-					},
+					useValue: createMock<TaskRepo>(),
 				},
 				{
 					provide: UserRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findById(id: EntityId, populateRoles?: boolean) {
-							throw new Error('Please write a mock for UserRepo.findById');
-						},
-					},
+					useValue: createMock<UserRepo>(),
 				},
 				{
 					provide: BoardRepo,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						findByCourseId(courseId: EntityId): Promise<Board> {
-							throw new Error('Please write a mock for BoardRepo.findByCourseId');
-						},
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						save(board: Board): Promise<void> {
-							throw new Error('Please write a mock for BoardRepo.save');
-						},
-					},
+					useValue: createMock<BoardRepo>(),
 				},
 				{
 					provide: RoomBoardDTOFactory,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
-							throw new Error('Please write a mock for RoomBoardDTOMapper.mapDTO');
-						},
-					},
+					useValue: createMock<RoomBoardDTOFactory>(),
 				},
 				{
 					provide: RoomsAuthorisationService,
-					useValue: {
-						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						hasCourseWritePermission(user: User, course: Course): boolean {
-							throw new Error('Please write a mock for RoomsAuthorisationService.hasCourseWritePermission');
-						},
-					},
+					useValue: createMock<RoomsAuthorisationService>(),
 				},
 			],
 		}).compile();
@@ -126,19 +86,19 @@ describe('rooms usecase', () => {
 				title: room.name,
 				elements: [],
 			};
+
 			board.syncLessonsFromList(lessons);
 			board.syncTasksFromList(tasks);
-			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
-			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
-			const tasksSpy = jest.spyOn(taskRepo, 'findBySingleParent').mockImplementation(() => Promise.resolve([tasks, 3]));
-			const lessonsSpy = jest
-				.spyOn(lessonRepo, 'findAllByCourseIds')
-				.mockImplementation(() => Promise.resolve([lessons, 3]));
+
+			const userSpy = userRepo.findById.mockResolvedValue(user);
+			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const boardSpy = boardRepo.findByCourseId.mockResolvedValue(board);
+			const tasksSpy = taskRepo.findBySingleParent.mockResolvedValue([tasks, 3]);
+			const lessonsSpy = lessonRepo.findAllByCourseIds.mockResolvedValue([lessons, 3]);
 			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
 			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
-			const mapperSpy = jest.spyOn(factory, 'createDTO').mockImplementation(() => dto);
-			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			const mapperSpy = factory.createDTO.mockReturnValue(dto);
+			const saveSpy = boardRepo.save.mockResolvedValue();
 
 			return {
 				user,
@@ -228,13 +188,11 @@ describe('rooms usecase', () => {
 			const visibleTask = taskFactory.buildWithId({ course: room });
 			const board = boardFactory.buildWithId({ course: room });
 			board.syncTasksFromList([hiddenTask, visibleTask]);
-			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
-			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
-			const authorisationSpy = jest
-				.spyOn(authorisation, 'hasCourseWritePermission')
-				.mockImplementation(() => shouldAuthorize);
-			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			const userSpy = userRepo.findById.mockResolvedValue(user);
+			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const boardSpy = boardRepo.findByCourseId.mockResolvedValue(board);
+			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
+			const saveSpy = boardRepo.save.mockResolvedValue();
 			return { user, room, hiddenTask, visibleTask, board, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
 		};
 
@@ -295,13 +253,11 @@ describe('rooms usecase', () => {
 			const board = boardFactory.buildWithId({ course: room });
 			board.syncTasksFromList(tasks);
 			const reorderSpy = jest.spyOn(board, 'reorderElements');
-			const userSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-			const roomSpy = jest.spyOn(courseRepo, 'findOne').mockImplementation(() => Promise.resolve(room));
-			const boardSpy = jest.spyOn(boardRepo, 'findByCourseId').mockImplementation(() => Promise.resolve(board));
-			const authorisationSpy = jest
-				.spyOn(authorisation, 'hasCourseWritePermission')
-				.mockImplementation(() => shouldAuthorize);
-			const saveSpy = jest.spyOn(boardRepo, 'save').mockImplementation(() => Promise.resolve());
+			const userSpy = userRepo.findById.mockResolvedValue(user);
+			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const boardSpy = boardRepo.findByCourseId.mockResolvedValue(board);
+			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
+			const saveSpy = boardRepo.save.mockResolvedValue();
 			return { user, room, tasks, board, reorderSpy, userSpy, roomSpy, boardSpy, authorisationSpy, saveSpy };
 		};
 
