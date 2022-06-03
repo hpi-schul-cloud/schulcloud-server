@@ -19,6 +19,7 @@ enum IsModified {
 	mustDeleted,
 	createNew,
 	isUpdated,
+	nothingIsChanged,
 }
 
 type Files = {
@@ -149,11 +150,14 @@ export class SyncFilesUc implements OnModuleInit {
 
 			this.checkModified(parents);
 
-			// execute delete only
-			// execute create only
-			// execute updates include delete/create
-			// --> each must also update the jump/ref tabel ..this table need sourceFileId -> destinationFileId[]
-			// --> each of them handle fileRecord and S3 operations
+			// create array of job from parents and sub files, multiple destination files
+
+			// execute jobs for example 10-20 to same time
+				// execute delete only see enum
+				// execute create only see enum
+				// execute updates include delete/create see enum
+				// --> each must also update the jump/ref tabel ..this table need sourceFileId -> destinationFileId[]
+				// --> each of them handle fileRecord and S3 operations
 		}
 	}
 
