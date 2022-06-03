@@ -120,6 +120,7 @@ export class SyncFilesUc implements OnModuleInit {
 	private checkModified(parents: Parent[]) {
 		// for...
 		// this.checkIfFilesOfParentIsChanged
+		// set IsModified enum based on what must we do
 	}
 
 	private checkIfFilesOfParentIsChanged(parent: Parent) {
