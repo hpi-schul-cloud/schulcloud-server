@@ -13,8 +13,6 @@ import { ISyncData, SyncFilesStorageService } from './sync-files-storage.service
 export class SyncFilesUc implements OnModuleInit {
 	private destinationClient: S3Client;
 
-	private destinationBucket: string;
-
 	private sourceClients: Map<EntityId, S3Client> = new Map();
 
 	constructor(
@@ -25,19 +23,12 @@ export class SyncFilesUc implements OnModuleInit {
 		private logger: Logger,
 		@Inject('DESTINATION_S3_CONFIG') readonly config: S3Config
 	) {
-		this.destinationClient = this.storageService.createStorageProviderClient({
-			endpoint: config.endpoint,
-			bucket: config.bucket,
-			region: config.region,
-			accessKeyId: config.accessKeyId,
-			secretAccessKey: config.secretAccessKey,
-		});
-		this.destinationBucket = config.bucket;
 		this.logger.setContext(SyncFilesUc.name);
+		this.destinationClient = this.createDestinationProvider(config);
 	}
 
 	async onModuleInit() {
-		await this.loadProviders();
+		await this.setSourceProviders();
 	}
 
 	async syncFilesForTasks(aggregationSize = 5000, batchSize = 50): Promise<number> {
@@ -82,7 +73,7 @@ export class SyncFilesUc implements OnModuleInit {
 			};
 			const target: ISyncData = {
 				client: this.destinationClient,
-				bucket: this.destinationBucket,
+				bucket: this.config.bucket,
 				objectPath: [item.schoolId, item.target?.id].join('/'),
 			};
 
@@ -92,7 +83,19 @@ export class SyncFilesUc implements OnModuleInit {
 		}
 	}
 
-	private async loadProviders() {
+	private createDestinationProvider(config: S3Config) {
+		const provider = this.storageService.createStorageProviderClient({
+			endpoint: config.endpoint,
+			bucket: config.bucket,
+			region: config.region,
+			accessKeyId: config.accessKeyId,
+			secretAccessKey: config.secretAccessKey,
+		});
+
+		return provider;
+	}
+
+	private async setSourceProviders() {
 		const providers = await this.storageProviderRepo.findAll();
 
 		providers.forEach((item) => {

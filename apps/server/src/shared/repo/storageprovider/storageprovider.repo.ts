@@ -8,6 +8,7 @@ export class StorageProviderRepo extends BaseRepo<StorageProvider> {
 		return StorageProvider;
 	}
 
+	// BC-1777 - temporary method for file sync job
 	public async findAll() {
 		const result = await this._em.find(this.entityName, {});
 		return result;
