@@ -1,14 +1,54 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, FileRecordParentType, Task } from '@shared/domain';
+import { PaginationParams } from '@shared/controller';
+import { Counted, EntityId, FileRecordParentType, Task } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem, SyncFileItemData } from '../types';
+
+type Parent = {
+	_id: EntityId;
+	schoolId: EntityId;
+	filesId: EntityId;
+};
 
 // This repo is used for syncing the new filerecords collection with the old files collection.
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 @Injectable()
 export class SyncFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
+
+	async loadParent(pagination: PaginationParams, timestamp: Date): Promise<Parent[]> {
+		const result = await this._em.aggregate(Task, [
+			{
+				$match: { fileIds: { $exists: true, $ne: [] } },
+			},
+			{
+				$expr: {
+					$gt: ['updatedAt', timestamp],
+				},
+			},
+			{
+				$sort: {
+					// 	updatedAt: 1,
+					_id: 1,
+				},
+			},
+			{
+				$select: {
+					_id: 1,
+					schoolId: 1,
+					filesIds: 1,
+				},
+			},
+			{
+				$skip: pagination?.skip,
+				$limit: pagination?.limit,
+			},
+		]);
+
+
+		return result as Parent[];
+	}
 
 	async findTaskFilesToSync(batchSize = 50): Promise<SyncFileItem[]> {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
