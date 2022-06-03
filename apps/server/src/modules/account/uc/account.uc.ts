@@ -32,7 +32,7 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../mapper/account-response.mapper';
+import { AccountResponseMapper } from '../mapper';
 
 type UserPreferences = {
 	// first login completed
@@ -154,6 +154,11 @@ export class AccountUc {
 	): Promise<AccountResponse> {
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
 		const targetAccount = await this.accountService.findById(params.id);
+
+		if (!targetAccount.userId) {
+			throw new EntityNotFoundError(User.name);
+		}
+
 		const targetUser = await this.userRepo.findById(targetAccount.userId, true);
 
 		let updateUser = false;

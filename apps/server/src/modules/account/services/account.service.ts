@@ -4,9 +4,8 @@ import { EntityNotFoundError } from '@shared/common';
 import bcrypt from 'bcryptjs';
 import { Account, EntityId } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
-import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
-import { AccountDto } from './dto/account.dto';
-import { AccountSaveDto } from './dto/account.save.dto';
+import { AccountDtoToEntityMapper, AccountEntityToDtoMapper } from '../mapper';
+import { AccountDto, AccountCreateDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountService {
@@ -30,8 +29,11 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	create(accountDto: any): Promise<void> {
-		throw new Error('Method not implemented');
+	async create(accountDto: AccountCreateDto): Promise<AccountDto> {
+		const account = AccountDtoToEntityMapper.mapToEntity(accountDto);
+		account.password = account.password ? await this.encryptPassword(account.password) : undefined;
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<void> {

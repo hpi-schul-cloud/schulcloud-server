@@ -5,9 +5,9 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountDto, AccountCreateDto } from '@src/modules/account/services/dto';
+import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountService } from './account.service';
-import { AccountDto } from './dto/account.dto';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -54,14 +54,14 @@ describe('AccountService', () => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 							if (account) {
 								return Promise.resolve(account);
 							}
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -293,6 +293,34 @@ describe('AccountService', () => {
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(foundAccounts.total).toBe(1);
 			expect(foundAccounts.accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+		});
+	});
+
+	describe('create', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		it('should create and save an account', async () => {
+			const dto = new AccountCreateDto({
+				username: 'john.doe@domain.tld',
+			});
+			const account = await accountService.create(dto);
+			expect(account.id).toBeDefined();
+			expect(account.createdAt).toBeDefined();
+			expect(account.updatedAt).toBeDefined();
+		});
+		it('should encrypt password on save', async () => {
+			const spy = jest.spyOn(accountRepo, 'save');
+			const dto = new AccountCreateDto({
+				username: 'john.doe@domain.tld',
+				password: 'Schulcloud1!',
+			});
+			await expect(accountService.create(dto)).resolves.not.toThrow();
+			expect(spy).not.toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: dto.password,
+				})
+			);
 		});
 	});
 });
