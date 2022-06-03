@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, FileRecordParentType, Task } from '@shared/domain';
+import { EntityId, FileRecord, FileRecordParentType, Task } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem, SyncFileItemData } from '../types';
 
@@ -40,6 +40,11 @@ export class SyncFilesRepo {
 					localField: 'files._id',
 					foreignField: 'fileId',
 					as: 'file_filerecords',
+				},
+			},
+			{
+				$match: {
+					'file_filerecords.error': { $exists: false },
 				},
 			},
 			{
@@ -90,9 +95,14 @@ export class SyncFilesRepo {
 		return items;
 	}
 
-	async saveAssociation(sourceId: EntityId, targetId: EntityId): Promise<void> {
+	async saveAssociation(sourceId: EntityId, targetId?: EntityId, error?: string): Promise<void> {
+		const filerecordId = targetId ? new ObjectId(targetId) : undefined;
 		await this._em
 			.getConnection()
-			.insertOne('files_filerecords', { fileId: new ObjectId(sourceId), filerecordId: new ObjectId(targetId) });
+			.insertOne('files_filerecords', { fileId: new ObjectId(sourceId), filerecordId, error });
+	}
+
+	async saveFileRecord(entity: FileRecord): Promise<void> {
+		await this._em.nativeInsert(entity);
 	}
 }
