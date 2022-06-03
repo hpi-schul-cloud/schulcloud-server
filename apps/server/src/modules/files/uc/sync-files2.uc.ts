@@ -151,6 +151,7 @@ export class SyncFilesUc implements OnModuleInit {
 			// execute delete only
 			// execute create only
 			// execute updates include delete/update
+			// --> each must also update the jump/ref tabel ..this table need sourceFileId -> destinationFileId[]
 		}
 	}
 
