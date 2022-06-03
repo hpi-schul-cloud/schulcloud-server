@@ -151,8 +151,9 @@ export class SyncFilesUc implements OnModuleInit {
 
 			// execute delete only
 			// execute create only
-			// execute updates include delete/update
+			// execute updates include delete/create
 			// --> each must also update the jump/ref tabel ..this table need sourceFileId -> destinationFileId[]
+			// --> each of them handle fileRecord and S3 operations
 		}
 	}
 
