@@ -34,29 +34,11 @@ export class SyncFilesUc implements OnModuleInit {
 	async syncFilesForTasks(aggregationSize = 5000, batchSize = 50): Promise<number> {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(aggregationSize));
 
-		for (let i = 0; i <= itemsToSync.length; i += batchSize) {
+		for (let i = 0; i < itemsToSync.length; i += batchSize) {
 			const batch = itemsToSync.slice(i, i + batchSize);
 			this.logger.log(`Starting batch with items ${i} to ${i + batchSize - 1}`);
 
-			const promises = batch.map(async (item, counter) => {
-				try {
-					const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
-					const fileInfo1 = `source file id = ${item.source.id}, size = ${item.source.size}`;
-					this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
-					await this.metadataService.syncMetaData(item);
-					await this.syncFile(item);
-					await this.metadataService.persist(item);
-					const fileInfo2 = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
-					this.logger.log(`${progress} Successfully synced ${fileInfo2}`);
-				} catch (error) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					const stack: string = 'stack' in error ? (error as Error).stack : error;
-
-					this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
-					this.logger.error(stack);
-					await this.metadataService.persistError(item, stack);
-				}
-			});
+			const promises = batch.map((item, counter) => this.syncFile(item, counter, batchSize));
 			// eslint-disable-next-line no-await-in-loop
 			await Promise.all(promises);
 		}
@@ -64,7 +46,27 @@ export class SyncFilesUc implements OnModuleInit {
 		return itemsToSync.length;
 	}
 
-	private async syncFile(item: SyncFileItem): Promise<void> {
+	private async syncFile(item: SyncFileItem, counter: number, batchSize: number) {
+		try {
+			const progress = `${Number(counter).toString().padStart(Number(batchSize).toString().length)}/${batchSize}`;
+			const fileInfo1 = `source file id = ${item.source.id}, size = ${item.source.size}`;
+			this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
+			await this.metadataService.syncMetaData(item);
+			await this.syncS3File(item);
+			await this.metadataService.persist(item);
+			const fileInfo2 = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
+			this.logger.log(`${progress} Successfully synced ${fileInfo2}`);
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const stack: string = 'stack' in error ? (error as Error).stack : error;
+
+			this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
+			this.logger.error(stack);
+			await this.metadataService.persistError(item, stack);
+		}
+	}
+
+	private async syncS3File(item: SyncFileItem): Promise<void> {
 		const client = this.sourceClients.get(item.source.storageProviderId);
 		if (client) {
 			const source: ISyncData = {
