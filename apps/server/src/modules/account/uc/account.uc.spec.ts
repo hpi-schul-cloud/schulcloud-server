@@ -22,6 +22,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
+	AccountCreateParams,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
@@ -103,6 +104,9 @@ describe('AccountUc', () => {
 						}),
 						delete: (account: AccountDto): Promise<AccountDto> => {
 							return Promise.resolve(account);
+						},
+						create: (): Promise<void> => {
+							return Promise.resolve();
 						},
 						findByUserId: (userId: EntityId): Promise<AccountDto | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
@@ -912,6 +916,77 @@ describe('AccountUc', () => {
 			await expect(
 				accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, { id: 'xxx' } as AccountByIdParams)
 			).rejects.toThrow(EntityNotFoundError);
+		});
+	});
+
+	describe('createAccount', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it('should sanitize username for local user', async () => {
+			const spy = jest.spyOn(accountService, 'create');
+			const params: AccountCreateParams = {
+				username: ' John.Doe@domain.tld ',
+			};
+			await accountUc.createAccount(params);
+			expect(spy).toHaveBeenCalledWith({
+				username: 'john.doe@domain.tld',
+			});
+		});
+		it('should not sanitize username for external user', async () => {
+			const spy = jest.spyOn(accountService, 'create');
+			const params: AccountCreateParams = {
+				username: ' John.Doe@domain.tld ',
+				systemId: 'ABC123',
+			};
+			await accountUc.createAccount(params);
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					username: ' John.Doe@domain.tld ',
+				})
+			);
+		});
+		it('should throw if username for a local user is not an email', async () => {
+			const params: AccountCreateParams = {
+				username: 'John Doe',
+			};
+			await expect(accountUc.createAccount(params)).rejects.toThrow('Username is not an email');
+		});
+		it('should not throw if username for an external user is not an email', async () => {
+			const params: AccountCreateParams = {
+				username: 'John Doe',
+				systemId: 'ABC123',
+			};
+			await expect(accountUc.createAccount(params)).resolves.not.toThrow();
+		});
+		it('should throw if account already exists', async () => {
+			const params: AccountCreateParams = {
+				username: mockStudentUser.email,
+				userId: mockStudentUser.id,
+			};
+			await expect(accountUc.createAccount(params)).rejects.toThrow('Account already exists');
+		});
+		it('should throw if username already exists', async () => {
+			mockStudentAccount.username = 'john.doe@domain.tld';
+			const params: AccountCreateParams = {
+				username: mockStudentAccount.username,
+			};
+			await expect(accountUc.createAccount(params)).rejects.toThrow('Username already exists');
+		});
+		it('should remove password for external systems', async () => {
+			const spy = jest.spyOn(accountService, 'create');
+			const params: AccountCreateParams = {
+				username: 'john.doe@domain.tld',
+				password: 'Schulcloud1!',
+				passwordStrategy: 'ldap',
+			};
+			await accountUc.createAccount(params);
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: undefined,
+				})
+			);
 		});
 	});
 

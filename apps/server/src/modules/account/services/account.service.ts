@@ -30,6 +30,10 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
+	create(accountDto: any): Promise<void> {
+		throw new Error('Method not implemented');
+	}
+
 	async save(accountDto: AccountSaveDto): Promise<void> {
 		// Check if the ID is correct?
 		// const user = await this.userRepo.findById(accountDto.userId);
