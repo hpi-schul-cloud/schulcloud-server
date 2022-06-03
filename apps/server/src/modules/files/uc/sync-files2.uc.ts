@@ -127,7 +127,8 @@ export class SyncFilesUc implements OnModuleInit {
 	}
 
 	private async populateExistingFileRecords(parents: Parent[]) {
-		//
+		// load from jump tabel
+		// load from fileRecords
 	}
 
 	async loop(options: Options) {
@@ -147,7 +148,9 @@ export class SyncFilesUc implements OnModuleInit {
 
 			this.checkModified(parents);
 
-			// delete file, create files
+			// execute delete only
+			// execute create only
+			// execute updates include delete/update
 		}
 	}
 
