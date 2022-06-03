@@ -15,7 +15,7 @@ export class AccountSaveDto {
 
 	credentialHash?: string;
 
-	userId: EntityId;
+	userId?: EntityId;
 
 	systemId?: EntityId;
 

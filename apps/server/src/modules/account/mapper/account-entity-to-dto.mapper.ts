@@ -7,7 +7,7 @@ export class AccountEntityToDtoMapper {
 			id: account.id,
 			createdAt: account.createdAt,
 			updatedAt: account.updatedAt,
-			userId: account.userId.toString(),
+			userId: account.userId?.toString(),
 			username: account.username,
 			activated: account.activated,
 			credentialHash: account.credentialHash,
