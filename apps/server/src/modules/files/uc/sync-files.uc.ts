@@ -24,6 +24,7 @@ export class SyncFilesUc {
 
 	private async syncFiles(itemsToSync: SyncFileItem[], context: BatchContext) {
 		for (let i = 0; i < itemsToSync.length; i += context.batchSize) {
+			context.batchCounter = i / context.batchSize;
 			const batch = itemsToSync.slice(i, i + context.batchSize);
 			this.logger.log(`Starting batch with items ${i} to ${i + context.batchSize - 1}`);
 
@@ -35,21 +36,23 @@ export class SyncFilesUc {
 
 	private async syncFile(item: SyncFileItem, counter: number, context: BatchContext) {
 		try {
-			const progress = `${(context.aggregationsCounter - 1) * context.aggregationSize + counter + 1} ${counter + 1}/${
-				context.batchSize
-			}`;
-			const fileInfo1 = `source file id = ${item.source.id}, size = ${item.source.size}`;
-			this.logger.log(`${progress} Starting file sync ${fileInfo1}`);
+			const progress = `total: ${
+				context.aggregationsCounter * context.aggregationSize + context.batchCounter * context.batchSize + counter + 1
+			}, batch: ${counter + 1}/${context.batchSize}`;
+			const fileInfo1 = `source file with id = ${item.source.id}, size = ${item.source.size}`;
+			this.logger.log(`${progress}, Start syncing ${fileInfo1}`);
+
 			await this.metadataService.syncMetaData(item);
 			await this.storageService.syncS3File(item);
 			await this.metadataService.persist(item);
-			const fileInfo2 = `source file id = ${item.source.id}, target file id = ${item.target?.id || 'undefined'}`;
-			this.logger.log(`${progress} Successfully synced ${fileInfo2}`);
+
+			const fileInfo2 = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
+			this.logger.log(`${progress}, Successfully synced ${fileInfo2}`);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 
-			this.logger.error(`Error syncing source file id = ${item.source.id}, parentId = ${item.parentId}`);
+			this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
 			this.logger.error(stack);
 			await this.metadataService.persistError(item, stack);
 		}
