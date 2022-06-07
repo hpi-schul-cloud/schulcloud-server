@@ -1,21 +1,35 @@
 const { expect } = require('chai');
+const { MikroORM } = require('@mikro-orm/core');
+const { Test } = require('@nestjs/testing');
 
+const { ServerTestModule } = require('../../../../dist/apps/server/server.module');
+const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
+const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
 const appPromise = require('../../../../src/app');
-
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
 describe('SkipRegistration integration', () => {
 	let app;
 	let server;
+	let nestApp;
+	let orm;
 
 	before(async () => {
+		const module = await Test.createTestingModule({
+			imports: [ServerTestModule, AccountModule],
+		}).compile();
 		app = await appPromise;
 		server = await app.listen(0);
+		nestApp = await module.createNestApplication().init();
+		orm = nestApp.get(MikroORM);
+		app.services['nest-account-uc'] = nestApp.get(AccountUc);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await nestApp.close();
+		await orm.close();
 	});
 
 	describe('route for single user', () => {

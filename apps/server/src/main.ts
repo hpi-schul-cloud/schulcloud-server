@@ -17,7 +17,12 @@ import legacyAppPromise = require('../../../src/app');
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
 
-async function bootstrap() {
+// eslint-disable-next-line import/no-mutable-exports
+export let nestServer: unknown;
+// eslint-disable-next-line import/no-mutable-exports
+export let feathersServer: unknown;
+
+export async function bootstrap() {
 	sourceMapInstall();
 
 	// load the legacy feathers/express server
@@ -87,5 +92,8 @@ async function bootstrap() {
 	console.log(`### /api    --> feathers      ###`);
 	console.log(`### /       --> feathers      ###`);
 	console.log('#################################');
+
+	feathersServer = feathersExpress;
+	nestServer = nestApp;
 }
 void bootstrap();

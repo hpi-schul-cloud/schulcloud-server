@@ -1,4 +1,11 @@
 const { expect } = require('chai');
+const { MikroORM } = require('@mikro-orm/core');
+const { Test } = require('@nestjs/testing');
+
+const { ServerTestModule } = require('../../../../dist/apps/server/server.module');
+const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
+const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
+const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
@@ -6,15 +13,26 @@ describe('skipRegistration service', () => {
 	let skipRegistrationService;
 	let app;
 	let server;
+	let nestApp;
+	let orm;
 
 	before(async () => {
+		const module = await Test.createTestingModule({
+			imports: [ServerTestModule, AccountModule],
+		}).compile();
 		app = await appPromise;
 		skipRegistrationService = app.service('/users/:userId/skipregistration');
 		server = await app.listen(0);
+		nestApp = await module.createNestApplication().init();
+		orm = nestApp.get(MikroORM);
+		app.services['nest-account-uc'] = nestApp.get(AccountUc);
+		app.services['nest-account-service'] = nestApp.get(AccountService);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await nestApp.close();
+		await orm.close();
 	});
 
 	it('registered the users service', () => {
@@ -148,10 +166,8 @@ describe('skipRegistration service', () => {
 			},
 			{ route: { userId: user._id } }
 		);
-		const accountResult = await app.service('accounts').find({ query: { userId: user._id } });
-		expect(accountResult).to.not.equal(undefined);
-		expect(accountResult.length).to.equal(1);
-		const account = accountResult[0];
+		const account = await app.service('nest-account-service').findByUserId(user._id.toString());
+		expect(account).to.not.equal(null);
 		expect(account.activated).to.equal(true);
 		expect(account.password).to.not.equal(undefined);
 	});

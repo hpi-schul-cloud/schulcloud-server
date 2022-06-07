@@ -25,7 +25,7 @@
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
-		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run coverage",
+		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run nest:build && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup && npm run mocha-inspect",
 		"setup": "npm run setup:db",
 		"setup:db": "npm run nest:start:console -- database seed",
