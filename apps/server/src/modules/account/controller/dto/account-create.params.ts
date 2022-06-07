@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { IsNotEmpty, IsString, IsMongoId, IsOptional, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, IsMongoId, IsOptional, Matches, IsBoolean } from 'class-validator';
 import { passwordPattern } from './password-pattern';
 
 export class AccountCreateParams {
@@ -23,5 +23,7 @@ export class AccountCreateParams {
 	@IsString()
 	passwordStrategy?: string;
 
+	@IsOptional()
+	@IsBoolean()
 	activated?: boolean;
 }
