@@ -1,9 +1,8 @@
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
-
-import { fileFactory } from '@shared/testing';
+import { directoryFactory, fileFactory } from '@shared/testing';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { FileStorageAdapter } from '.';
 
 describe('FileStorageAdapter', () => {
@@ -46,6 +45,12 @@ describe('FileStorageAdapter', () => {
 			const callArg = callArgs[0] as DeleteObjectCommand;
 			expect(callArg.input.Bucket).toEqual(bucket);
 			expect(callArg.input.Key).toEqual(storageFileName);
+		});
+
+		it('should fail for directories', async () => {
+			const file = directoryFactory.build();
+
+			await expect(adapter.deleteFile(file)).rejects.toThrow();
 		});
 	});
 });

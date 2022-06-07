@@ -6,6 +6,7 @@ import { ICurrentUser, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
+	fileFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	submissionFactory,
@@ -518,6 +519,26 @@ describe('Task Controller (e2e)', () => {
 				const task = taskFactory.build({ creator: teacher, course });
 
 				await em.persistAndFlush([teacher, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+				const params = { courseId: course.id };
+
+				const response = await request(app.getHttpServer()).post(`/tasks/${task.id}/copy`).send(params);
+
+				expect(response.status).toEqual(201);
+			});
+
+			it('should duplicate a task with legacy files in it', async () => {
+				const teacher = setup();
+				const course = courseFactory.build({
+					teachers: [teacher],
+				});
+				const fileOne = fileFactory.build({ creator: teacher });
+				const fileTwo = fileFactory.build({ creator: teacher });
+				const task = taskFactory.build({ creator: teacher, course, files: [fileOne, fileTwo] });
+
+				await em.persistAndFlush([teacher, task, fileOne, fileTwo]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(teacher);
