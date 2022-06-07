@@ -21,8 +21,8 @@ export class SyncFilesConsole {
 			);
 			// eslint-disable-next-line no-await-in-loop
 			itemsFound = await this.syncFilesUc.syncFilesForTasks({
-				aggregationSize,
-				batchSize,
+				aggregationSize: Number(aggregationSize),
+				batchSize: Number(batchSize),
 				aggregationsCounter,
 				batchCounter: 0,
 			});

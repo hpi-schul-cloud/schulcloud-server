@@ -17,7 +17,7 @@ export class SyncFilesUc {
 	}
 
 	async syncFilesForTasks(context: BatchContext): Promise<number> {
-		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(Number(context.aggregationSize));
+		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(context.aggregationSize);
 		await this.syncFiles(itemsToSync, context);
 		return itemsToSync.length;
 	}
