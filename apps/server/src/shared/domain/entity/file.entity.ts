@@ -47,24 +47,6 @@ export class File extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
 
-
-@Entity({ collection: 'files', discriminatorValue: 'true' })
-export class Directory extends BaseFile {}
-
-@Entity({ collection: 'files', discriminatorValue: 'false' })
-export class File extends BaseFile {
-	@Property({ nullable: true })
-	size?: number;
-
-	@Property({ nullable: true })
-	name?: string;
-
-	@Property({ nullable: true })
-	type?: string;
-
-	@Property()
-	bucket: string;
-
 	@Property({ nullable: true })
 	storageFileName?: string; // not for directories
 
