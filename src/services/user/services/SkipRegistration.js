@@ -28,8 +28,8 @@ const validateRequest = (data, targetUser) => {
  * @param {App} app the app object.
  */
 const createAccount = async function createAccount(data, targetUser, app) {
-	const existingAccount = await app.service('accounts').find({ query: { userId: targetUser._id } });
-	if (existingAccount.length === 0) {
+	const existingAccount = await app.service('nest-account-service').findByUserId(targetUser._id.toString());
+	if (existingAccount) {
 		return app.service('nest-account-uc').createAccount({
 			userId: targetUser._id,
 			password: data.password,

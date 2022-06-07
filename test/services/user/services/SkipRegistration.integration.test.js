@@ -5,6 +5,7 @@ const { Test } = require('@nestjs/testing');
 const { ServerTestModule } = require('../../../../dist/apps/server/server.module');
 const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
 const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
+const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
@@ -24,6 +25,7 @@ describe('SkipRegistration integration', () => {
 		nestApp = await module.createNestApplication().init();
 		orm = nestApp.get(MikroORM);
 		app.services['nest-account-uc'] = nestApp.get(AccountUc);
+		app.services['nest-account-service'] = nestApp.get(AccountService);
 	});
 
 	after(async () => {
