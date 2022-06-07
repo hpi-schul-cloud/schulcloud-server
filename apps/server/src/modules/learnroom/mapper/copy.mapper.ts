@@ -1,10 +1,10 @@
-import { CopyStatusDTO } from '@shared/domain';
+import { CopyStatus } from '@shared/domain';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { CopyApiResponse } from '../controller/dto/copy.response';
 
 export class CopyMapper {
-	static mapToResponse(copyStatus: CopyStatusDTO): CopyApiResponse {
+	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
 		const dto = new CopyApiResponse({
 			title: copyStatus.title,
 			type: copyStatus.type,

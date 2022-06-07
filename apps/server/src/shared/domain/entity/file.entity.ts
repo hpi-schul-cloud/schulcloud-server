@@ -1,27 +1,52 @@
-import { Entity, Property, ManyToOne } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { User } from './user.entity';
 
 export interface IFileProperties {
 	deletedAt?: Date;
-	storageFileName: string;
-	bucket: string;
-	storageProvider: StorageProvider;
+	storageFileName?: string;
+	bucket?: string;
+	storageProvider?: StorageProvider;
 	creator?: User;
+	name: string;
+	isDirectory?: boolean;
 }
 
-@Entity({ collection: 'files', discriminatorColumn: 'isDirectory', abstract: true })
-export abstract class BaseFile extends BaseEntityWithTimestamps {
+@Entity({ collection: 'files' })
+export class File extends BaseEntityWithTimestamps {
+	constructor(props: IFileProperties) {
+		super();
+		this.validate(props);
+
+		this.isDirectory = props.isDirectory || false;
+		this.deletedAt = props.deletedAt;
+		this.storageFileName = props.storageFileName;
+		this.bucket = props.bucket;
+		this.storageProvider = props.storageProvider;
+		this.creator = props.creator;
+		this.name = props.name;
+	}
+
+	private validate(props: IFileProperties) {
+		if (props.isDirectory) return;
+		if (!props.bucket || !props.storageFileName || !props.storageProvider) {
+			throw new Error('files that are not directories always need a bucket, a storageFilename, and a storageProvider.');
+		}
+	}
+
 	@Property({ nullable: true })
 	deletedAt?: Date;
 
 	@Property()
-	isDirectory!: boolean;
+	isDirectory: boolean;
+
+	@Property()
+	name: string;
 
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
-}
+
 
 @Entity({ collection: 'files', discriminatorValue: 'true' })
 export class Directory extends BaseFile {}
@@ -38,21 +63,14 @@ export class File extends BaseFile {
 	type?: string;
 
 	@Property()
-	storageFileName: string;
-
-	@Property()
 	bucket: string;
 
-	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId' })
-	storageProvider: StorageProvider;
+	@Property({ nullable: true })
+	storageFileName?: string; // not for directories
 
-	constructor(props: IFileProperties) {
-		super();
-		this.isDirectory = false;
-		this.deletedAt = props.deletedAt;
-		this.storageFileName = props.storageFileName;
-		this.bucket = props.bucket;
-		this.storageProvider = props.storageProvider;
-		this.creator = props.creator;
-	}
+	@Property({ nullable: true })
+	bucket?: string; // not for directories
+
+	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId', nullable: true })
+	storageProvider?: StorageProvider; // not for directories
 }
