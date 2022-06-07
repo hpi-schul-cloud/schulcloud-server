@@ -18,37 +18,39 @@ export class SyncFilesUc {
 
 	async syncFilesForTasks(context: BatchContext): Promise<number> {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(context.aggregationSize);
-		await this.syncFiles(itemsToSync, context);
-		return itemsToSync.length;
+		const numFound = itemsToSync.length;
+
+		await Promise.all(
+			Array.from({ length: context.batchSize }).map(async (o, i) => {
+				await this.syncBatch(i, itemsToSync);
+			})
+		);
+
+		return numFound;
 	}
 
-	private async syncFiles(itemsToSync: SyncFileItem[], context: BatchContext) {
-		for (let i = 0; i < itemsToSync.length; i += context.batchSize) {
-			context.batchCounter = i / context.batchSize;
-			const batch = itemsToSync.slice(i, i + context.batchSize);
-			this.logger.log(`Starting batch with items ${i + 1} to ${i + context.batchSize}`);
-			this.logger.debug(`batch size: ${batch.length}`);
-
-			const promises = batch.map((item, counter) => this.syncFile(item, counter, context));
-			// eslint-disable-next-line no-await-in-loop
-			await Promise.all(promises);
-		}
+	private async syncBatch(i: number, itemsToSync: SyncFileItem[]): Promise<void> {
+		let item: SyncFileItem | undefined;
+		do {
+			item = itemsToSync.shift();
+			if (item) {
+				// eslint-disable-next-line no-await-in-loop
+				await this.syncFile(item);
+			}
+		} while (item);
 	}
 
-	private async syncFile(item: SyncFileItem, counter: number, context: BatchContext) {
+	private async syncFile(item: SyncFileItem) {
 		try {
-			const progress = `total: ${
-				context.aggregationsCounter * context.aggregationSize + context.batchCounter * context.batchSize + counter + 1
-			}, batch: ${counter + 1}/${context.batchSize}`;
 			const fileInfo1 = `source file with id = ${item.source.id}, size = ${item.source.size}`;
-			this.logger.log(`${progress}, Start syncing ${fileInfo1}`);
+			this.logger.log(`Start syncing ${fileInfo1}`);
 
 			await this.metadataService.syncMetaData(item);
-			await this.storageService.syncS3File(item);
+			// await this.storageService.syncS3File(item);
 			await this.metadataService.persist(item);
 
 			const fileInfo2 = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
-			this.logger.log(`${progress}, Successfully synced ${fileInfo2}`);
+			this.logger.log(`Successfully synced ${fileInfo2}`);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
