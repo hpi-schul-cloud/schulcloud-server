@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '@shared/domain/types';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 
 export type CourseCopyParams = {
 	originalCourse: Course;
@@ -9,7 +9,7 @@ export type CourseCopyParams = {
 
 export type CourseCopyResponse = {
 	copy: Course;
-	status: CopyStatusDTO;
+	status: CopyStatus;
 };
 
 @Injectable()

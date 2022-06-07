@@ -1,15 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse, DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
 import { TaskStatusResponse } from './task-status.response';
 
 /**
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
-	constructor({ id, name, courseName, createdAt, updatedAt, status }: TaskResponse) {
+	constructor({ id, name, courseName, courseId, createdAt, updatedAt, status }: TaskResponse) {
 		this.id = id;
 		this.name = name;
 		this.courseName = courseName;
+		this.courseId = courseId;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.status = status;
@@ -31,6 +32,9 @@ export class TaskResponse {
 	@ApiProperty()
 	@DecodeHtmlEntities()
 	courseName: string = '' as string;
+
+	@ApiProperty()
+	courseId: string = '' as string;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()

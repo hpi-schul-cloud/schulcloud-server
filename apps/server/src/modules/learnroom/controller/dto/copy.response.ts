@@ -36,7 +36,7 @@ export class CopyApiResponse {
 	status: CopyStatusEnum;
 
 	@ApiPropertyOptional({
-		description: 'List of included sub elements',
+		description: 'List of included sub elements with recursive type structure',
 	})
 	elements?: CopyApiResponse[];
 }
