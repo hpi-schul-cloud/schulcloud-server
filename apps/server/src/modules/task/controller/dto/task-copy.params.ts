@@ -5,6 +5,7 @@ import { IsMongoId, IsOptional } from 'class-validator';
  * DTO for creating a task copy.
  */
 export class TaskCopyApiParams {
+	@IsOptional()
 	@IsMongoId()
 	@ApiPropertyOptional({
 		pattern: '[a-f0-9]{24}',
