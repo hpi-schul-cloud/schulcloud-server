@@ -8,8 +8,8 @@ export class SyncFilesConsole {
 		this.logger.setContext(SyncFilesConsole.name);
 	}
 
-	@Command({ command: 'tasks [aggregationSize] [batchSize]' })
-	async syncFilesForTasks(aggregationSize = 5000, batchSize = 50) {
+	@Command({ command: 'tasks [aggregationSize] [numParallelPromises]' })
+	async syncFilesForTasks(aggregationSize = 5000, numParallelPromises = 50) {
 		let itemsFound: number;
 		let aggregationsCounter = 0;
 
@@ -17,14 +17,14 @@ export class SyncFilesConsole {
 			this.logger.log(
 				`Starting file sync: aggregation #${
 					aggregationsCounter + 1
-				} with aggregationSize = ${aggregationSize} and batchSize = ${batchSize}`
+				} with aggregationSize = ${aggregationSize} and numParallelPromises = ${numParallelPromises}`
 			);
 			// eslint-disable-next-line no-await-in-loop
 			itemsFound = await this.syncFilesUc.syncFilesForTasks({
 				aggregationSize: Number(aggregationSize),
-				batchSize: Number(batchSize),
+				numParallelPromises: Number(numParallelPromises),
 				aggregationsCounter,
-				batchCounter: 0,
+				fileCounter: 0,
 			});
 			aggregationsCounter += 1;
 		} while (itemsFound > 0);
