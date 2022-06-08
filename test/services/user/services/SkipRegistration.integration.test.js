@@ -3,7 +3,7 @@ const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
 
 // this is a workaround to make TypeScript modules available in JavaScript
-const { ServerModule } = require('../../../../dist/apps/server/server.module');
+const { ServerTestModule } = require('../../../../dist/apps/server/server.module');
 const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
 const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
 const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
@@ -20,7 +20,7 @@ describe('SkipRegistration integration', () => {
 
 	before(async () => {
 		const module = await Test.createTestingModule({
-			imports: [ServerModule, AccountModule],
+			imports: [ServerTestModule, AccountModule],
 		}).compile();
 		app = await appPromise;
 		server = await app.listen(0);

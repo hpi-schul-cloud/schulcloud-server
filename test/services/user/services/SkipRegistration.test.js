@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
 
-const { ServerModule } = require('../../../../dist/apps/server/server.module');
+const { ServerTestModule } = require('../../../../dist/apps/server/server.module');
 const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
 const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
 const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
@@ -18,7 +18,7 @@ describe('skipRegistration service', () => {
 
 	before(async () => {
 		const module = await Test.createTestingModule({
-			imports: [ServerModule, AccountModule],
+			imports: [ServerTestModule, AccountModule],
 		}).compile();
 		app = await appPromise;
 		skipRegistrationService = app.service('/users/:userId/skipregistration');
@@ -151,10 +151,10 @@ describe('skipRegistration service', () => {
 	});
 
 	it('correctly creates an account', async () => {
-		let user = await testObjects.createTestUser({
+		const user = await testObjects.createTestUser({
 			roles: ['student'],
 		});
-		user = await app.service('users').patch(user._id, { importHash: 'someHash' });
+		await app.service('users').patch(user._id, { importHash: 'someHash' });
 		await skipRegistrationService.create(
 			{
 				parent_privacyConsent: true,
