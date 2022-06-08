@@ -27,7 +27,6 @@ export class SyncFilesUc {
 			context.batchCounter = i / context.batchSize;
 			const batch = itemsToSync.slice(i, i + context.batchSize);
 			this.logger.log(`Starting batch with items ${i + 1} to ${i + context.batchSize}`);
-			this.logger.debug(`batch size: ${batch.length}`);
 
 			const promises = batch.map((item, counter) => this.syncFile(item, counter, context));
 			// eslint-disable-next-line no-await-in-loop
