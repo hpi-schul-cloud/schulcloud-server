@@ -74,7 +74,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: ALL_ENTITIES,
 
 			// debug: true, // use it for locally debugging of querys
-			// allowGlobalContext: true,
+			allowGlobalContext: true,
 		}),
 	],
 	controllers: [ServerController],
