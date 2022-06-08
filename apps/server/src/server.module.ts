@@ -9,12 +9,12 @@ import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { CoreModule } from '@src/core';
+import { UserModule, FileStorageClientModule } from '@src/modules';
 import { FilesModule } from '@src/modules/files';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { NewsModule } from '@src/modules/news';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { TaskModule } from '@src/modules/task';
-import { UserModule } from '@src/modules/user';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { OauthModule } from './modules/oauth';
@@ -36,6 +36,7 @@ const serverModules = [
 	UserModule,
 	ImportUserModule,
 	LearnroomModule,
+	FileStorageClientModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
