@@ -20,4 +20,9 @@ export class OAuthResponse {
 	@IsString()
 	@IsNotEmpty()
 	logoutEndpoint?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	provider?: string;
 }

@@ -30,7 +30,11 @@ export class OauthSSOController {
 				res.cookie('jwt', oauthResponse.jwt);
 				const idToken = oauthResponse.idToken as string;
 				const logoutEndpoint = oauthResponse.logoutEndpoint as string;
-				return res.redirect(`${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`);
+				const provider = oauthResponse.provider as string;
+				if (provider === 'iserv') {
+					return res.redirect(`${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`);
+				}
+				return res.redirect(`${HOST}/dashboard`);
 			}
 		} catch (error) {
 			this.logger.error(error);
