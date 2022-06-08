@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Task, User } from '../entity';
-import { IEntity, PermissionLayer } from '../interface';
+import { IEntity, PermissionPublisher } from '../interface';
 import { IPermissionContext } from '../interface/permission';
 import { AuthorisationUtils } from './base.rule';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class TaskRule extends AuthorisationUtils implements PermissionLayer {
+export class TaskRule extends AuthorisationUtils implements PermissionPublisher {
 	constructor(private readonly courseRule: CourseRule) {
 		super();
 	}

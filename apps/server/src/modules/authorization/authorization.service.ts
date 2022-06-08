@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { AuthorisationUtils, CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule } from '@shared/domain';
-import { IEntity, IPermissionContext, PermissionLayer, PermissionLayerResolver } from '@shared/domain/interface';
+import { IEntity, IPermissionContext, PermissionPublisher, PermissionAdapter } from '@shared/domain/interface';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -10,8 +10,8 @@ enum ErrorMessages {
 }
 
 @Injectable()
-export class AuthorizationService extends AuthorisationUtils implements PermissionLayerResolver, PermissionLayer {
-	permissionLayers: PermissionLayer[];
+export class AuthorizationService extends AuthorisationUtils implements PermissionAdapter {
+	permissionLayers: PermissionPublisher[];
 
 	constructor(
 		private readonly courseRule: CourseRule,
@@ -25,7 +25,7 @@ export class AuthorizationService extends AuthorisationUtils implements Permissi
 		this.permissionLayers = [this.courseRule, this.taskRule, this.userRule, this.schoolRule];
 	}
 
-	private interpretLayerMatches(layers: PermissionLayer[]): PermissionLayer {
+	private interpretLayerMatches(layers: PermissionPublisher[]): PermissionPublisher {
 		if (layers.length === 0) {
 			throw new NotImplementedException(ErrorMessages.RULE_NOT_IMPLEMENT);
 		}
@@ -35,7 +35,7 @@ export class AuthorizationService extends AuthorisationUtils implements Permissi
 		return layers[0];
 	}
 
-	resolveLayer(user: User, entity: IEntity, context?: IPermissionContext): PermissionLayer {
+	resolveLayer(user: User, entity: IEntity, context?: IPermissionContext): PermissionPublisher {
 		const layers = this.permissionLayers.filter((rule) => rule.checkCondition(user, entity, context));
 
 		const layer = this.interpretLayerMatches(layers);

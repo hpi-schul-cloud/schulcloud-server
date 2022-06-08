@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entity';
-import { IEntity, PermissionLayer } from '../interface';
+import { IEntity, PermissionPublisher } from '../interface';
 import { IPermissionContext } from '../interface/permission';
 import { AuthorisationUtils } from './base.rule';
 
 @Injectable()
-export class UserRule extends AuthorisationUtils implements PermissionLayer {
+export class UserRule extends AuthorisationUtils implements PermissionPublisher {
 	hasPermission(user: User, entity: User, context: IPermissionContext): boolean {
 		const hasPermission = this.hasAllPermissions(user, context.requiredPermissions);
 		const isOwner = user === entity;
