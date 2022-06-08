@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import type { Task, User } from '../entity';
+import { Task, User } from '../entity';
+import { IEntity, PermissionLayer } from '../interface';
 import { IPermissionContext } from '../interface/permission';
-import { BaseRule } from './base.rule';
+import { AuthorisationUtils } from './base.rule';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class TaskRule extends BaseRule {
+export class TaskRule extends AuthorisationUtils implements PermissionLayer {
 	constructor(private readonly courseRule: CourseRule) {
 		super();
 	}
@@ -21,5 +22,11 @@ export class TaskRule extends BaseRule {
 		const result = hasPermission && (isCreator || hasCoursePermission);
 
 		return result;
+	}
+
+	checkCondition(user: User, entity: IEntity): boolean {
+		const match = entity instanceof Task;
+
+		return match;
 	}
 }

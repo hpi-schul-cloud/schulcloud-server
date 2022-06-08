@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import type { Course, User } from '../entity';
+import { Course, User } from '../entity';
+import { IEntity, PermissionLayer } from '../interface';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BaseRule } from './base.rule';
+import { AuthorisationUtils } from './base.rule';
 
 @Injectable()
-export class CourseRule extends BaseRule {
+export class CourseRule extends AuthorisationUtils implements PermissionLayer {
 	hasPermission(user: User, entity: Course, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission =
@@ -19,5 +20,11 @@ export class CourseRule extends BaseRule {
 			);
 
 		return hasPermission;
+	}
+
+	checkCondition(user: User, entity: IEntity): boolean {
+		const match = entity instanceof Course;
+
+		return match;
 	}
 }

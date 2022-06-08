@@ -1,13 +1,17 @@
-import { ForbiddenException, Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseRule, Course, CourseRule, EntityId, School, Task, TaskRule, User, UserRule } from '@shared/domain';
-import { IPermissionContext } from '@shared/domain/interface/permission';
-import { SchoolRule } from '@shared/domain/rules/school.rule';
-import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { AuthorisationUtils, CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule } from '@shared/domain';
+import { IEntity, IPermissionContext, PermissionLayer, PermissionLayerResolver } from '@shared/domain/interface';
+import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
+enum ErrorMessages {
+	RULE_NOT_IMPLEMENT = 'RULE_NOT_IMPLEMENT',
+	MULTIPLE_MATCHES_ARE_NOT_ALLOWED = 'MULTIPLE_MATCHES_ARE_NOT_ALLOWED',
+}
+
 @Injectable()
-export class AuthorizationService extends BaseRule {
-	private rules: Map<string, TaskRule | CourseRule | UserRule | SchoolRule> = new Map();
+export class AuthorizationService extends AuthorisationUtils implements PermissionLayerResolver, PermissionLayer {
+	permissionLayers: PermissionLayer[];
 
 	constructor(
 		private readonly courseRule: CourseRule,
@@ -17,25 +21,46 @@ export class AuthorizationService extends BaseRule {
 		private readonly service: ReferenceLoader
 	) {
 		super();
-		this.rules.set(Task.name, this.taskRule);
-		this.rules.set(Course.name, this.courseRule);
-		this.rules.set(User.name, this.userRule);
-		this.rules.set(School.name, this.schoolRule);
+
+		this.permissionLayers = [this.courseRule, this.taskRule, this.userRule, this.schoolRule];
 	}
 
-	private resolveRule(entity: AllowedEntity) {
-		const rule = this.rules.get(entity.constructor.name);
-		if (rule) {
-			return rule;
+	private interpretLayerMatches(layers: PermissionLayer[]): PermissionLayer {
+		if (layers.length === 0) {
+			throw new NotImplementedException(ErrorMessages.RULE_NOT_IMPLEMENT);
 		}
-		throw new NotImplementedException('RULE_NOT_IMPLEMENT');
+		if (layers.length > 1) {
+			throw new InternalServerErrorException(ErrorMessages.MULTIPLE_MATCHES_ARE_NOT_ALLOWED);
+		}
+		return layers[0];
 	}
 
-	hasPermission(user: User, entity: AllowedEntity, context: IPermissionContext): boolean {
-		const rule = this.resolveRule(entity);
-		const permission = rule.hasPermission(user, entity as Task & Course & User & School, context);
+	resolveLayer(user: User, entity: IEntity, context?: IPermissionContext): PermissionLayer {
+		const layers = this.permissionLayers.filter((rule) => rule.checkCondition(user, entity, context));
 
-		return permission;
+		const layer = this.interpretLayerMatches(layers);
+
+		return layer;
+	}
+
+	checkCondition(user: User, entity: IEntity, context: IPermissionContext): boolean {
+		this.resolveLayer(user, entity, context);
+
+		return true;
+	}
+
+	hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean {
+		const layer = this.resolveLayer(user, entity, context);
+
+		const hasPermission = layer.hasPermission(user, entity, context);
+
+		return hasPermission;
+	}
+
+	checkPermission(user: User, entity: IEntity, context: IPermissionContext) {
+		if (!this.hasPermission(user, entity, context)) {
+			throw new ForbiddenException();
+		}
 	}
 
 	async hasPermissionByReferences(

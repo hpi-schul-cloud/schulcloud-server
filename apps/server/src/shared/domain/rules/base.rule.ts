@@ -1,18 +1,10 @@
 import { Collection } from '@mikro-orm/core';
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import type { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
-import { IEntity, IEntityWithSchool, IPermissionContext } from '../interface';
+import { IEntity, IEntityWithSchool } from '../interface';
 
-export abstract class BaseRule {
-	abstract hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean;
-
-	checkPermission(user: User, entity: IEntity, context: IPermissionContext) {
-		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
-		}
-	}
-
+export class AuthorisationUtils {
 	/**
 	 * Recursively resolve all roles and permissions of a user.
 	 * IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.

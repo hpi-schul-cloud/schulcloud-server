@@ -1,24 +1,17 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { BaseRule } from '.';
-import { User } from '../entity';
+import { AuthorisationUtils } from '.';
 import { Role } from '../entity/role.entity';
-import { IEntity, IPermissionContext, Permission, RoleName } from '../interface';
-import { Actions } from './actions.enum';
+import { Permission, RoleName } from '../interface';
 
-class TestRule extends BaseRule {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean {
-		return true;
-	}
-}
+class TestRule extends AuthorisationUtils {}
 
 describe('base.rule', () => {
 	let orm: MikroORM;
-	let service: BaseRule;
+	let service: AuthorisationUtils;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -356,24 +349,6 @@ describe('base.rule', () => {
 			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
 			expect(() => service.hasRole(user, permissionC)).toThrowError();
-		});
-	});
-
-	describe('[checkPermission]', () => {
-		it('should throw when hasPermission is false', () => {
-			const user = userFactory.build();
-			const spy = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
-			expect(() => service.checkPermission(user, user, { action: Actions.read, requiredPermissions: [] })).toThrowError(
-				ForbiddenException
-			);
-			spy.mockRestore();
-		});
-	});
-
-	describe('[hasPermission]', () => {
-		it('should return boolean', () => {
-			const user = userFactory.build();
-			expect(service.hasPermission(user, user, { action: Actions.read, requiredPermissions: [] })).toBe(true);
 		});
 	});
 });
