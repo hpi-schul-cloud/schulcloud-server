@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
+import { HttpService } from '@nestjs/axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { System, User } from '@shared/domain';
-import { HttpService, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { UserRepo } from '@shared/repo';
@@ -81,6 +82,15 @@ export class OAuthService {
 		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
 		return verifiedJWT as IJWT;
+	}
+
+	async findUser(decodedJwt: IJWT, systemId: string): Promise<User> {
+		// if iserv strategy:
+		const uuid = this.extractUUID(decodedJwt);
+		const user = this.findUserById(uuid, systemId);
+		// TODO in general
+
+		return user;
 	}
 
 	extractUUID(decodedJwt: IJWT): string {

@@ -34,9 +34,11 @@ export class OauthUc {
 
 		const decodedToken: IJWT = await this.oauthService.validateToken(queryToken.id_token, system);
 
-		const uuid: string = this.oauthService.extractUUID(decodedToken);
+		const user: User = await this.oauthService.findUser(decodedToken, systemId);
 
-		const user: User = await this.oauthService.findUserById(uuid, systemId);
+		// const uuid: string = this.oauthService.extractUUID(decodedToken);
+
+		// const user: User = await this.oauthService.findUserById(uuid, systemId);
 
 		const jwtResponse: string = await this.oauthService.getJWTForUser(user);
 
