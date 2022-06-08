@@ -42,7 +42,7 @@ const rndChar = () => {
 	return chars[getRandomInt(chars.length - 1)];
 };
 
-module.exports = function setup(app) {
+module.exports = function setup() {
 	const genSaltAsync = promisify(bcrypt.genSalt);
 	const genHashAsync = promisify(bcrypt.hash);
 	class HashService {

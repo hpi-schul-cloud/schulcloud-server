@@ -1,8 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
-import { Task, ITaskStatus, TaskParentDescriptions } from '@shared/domain';
-import { taskFactory, setupEntities } from '@shared/testing';
+import { ITaskStatus, Task, TaskParentDescriptions } from '@shared/domain';
+import { setupEntities, taskFactory } from '@shared/testing';
 import { TaskResponse, TaskStatusResponse } from '../controller/dto';
-
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -28,6 +27,7 @@ const createExpectedResponse = (
 	expected.status = expectedStatus;
 
 	expected.courseName = descriptions.courseName;
+	expected.courseId = descriptions.courseId;
 	expected.displayColor = descriptions.color;
 	expected.description = descriptions.lessonName;
 
@@ -51,6 +51,7 @@ describe('task.mapper', () => {
 
 			const descriptions: TaskParentDescriptions = {
 				courseName: 'course #1',
+				courseId: 'course ID #1',
 				color: '#F0F0F0',
 				lessonName: 'a task description',
 			};

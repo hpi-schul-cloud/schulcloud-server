@@ -286,7 +286,7 @@ class EduSharingConnector {
 					criterias,
 					facettes,
 				}),
-				timeout: Configuration.get('REQUEST_TIMEOUT'),
+				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 			};
 
 			const response = await this.eduSharingRequest(options);

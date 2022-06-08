@@ -1,11 +1,11 @@
 import { BaseEntity } from '../entity/base.entity';
 
-export type CopyStatusDTO = {
+export type CopyStatus = {
 	id?: string;
 	title: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
-	elements?: CopyStatusDTO[];
+	elements?: CopyStatus[];
 	copyEntity?: BaseEntity;
 };
 

@@ -292,21 +292,6 @@ paths:
             schema:
               $ref: '#/components/schemas/loginRequest'
   '/oauth2/logoutRequest/':
-    get:
-      responses:
-        '302':
-          description: success
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a logout challenge from the service.
-      summary: ''
-      tags:
-        - oauth2
-      security: []
     patch:
       parameters:
         - in: path

@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "27.17.0",
+	"version": "28.0.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -27,7 +27,9 @@
 		"test": "npm run nest:test && npm run feathers:test",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup && npm run mocha-inspect",
-		"setup": "npm run nest:start:console -- database seed",
+		"setup": "npm run setup:db",
+		"setup:db": "npm run nest:start:console -- database seed",
+		"setup:idm": "npm run nest:start:console -- idm seed",
 		"build": "npm run nest:build",
 		"copy-files": "copyfiles src/**/*.yaml build",
 		"inspect": "npm run build && node --inspect=5959 build/src/",
@@ -42,7 +44,7 @@
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
-		"migration-prune": "migrate prune --config ./config/migrate.js",
+		"migration-prune": "migrate prune --autosync --config ./config/migrate.js",
 		"migration-persist": "npm run nest:start:console -- database export --collection migrations --override",
 		"migrate-etherpads": "node ./migrate-etherpads.js",
 		"nest:prebuild": "rimraf dist",
