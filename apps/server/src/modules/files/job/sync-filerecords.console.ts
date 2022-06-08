@@ -24,7 +24,7 @@ export class SyncFilesConsole {
 				aggregationSize: Number(aggregationSize),
 				numParallelPromises: Number(numParallelPromises),
 				aggregationsCounter,
-				fileCounter: 0,
+				fileCounter: aggregationsCounter * Number(aggregationSize),
 			});
 			aggregationsCounter += 1;
 		} while (itemsFound > 0);

@@ -42,7 +42,8 @@ export class SyncFilesUc {
 
 	private async syncFile(item: SyncFileItem, context: SyncContext) {
 		try {
-			const countInfo = context.aggregationsCounter * context.aggregationSize + context.fileCounter + 1;
+			context.fileCounter += 1;
+			const countInfo = context.fileCounter;
 			const fileInfo1 = `source file with id = ${item.source.id}, size = ${item.source.size}`;
 			this.logger.log(`#${countInfo} Start syncing ${fileInfo1}`);
 
@@ -59,8 +60,6 @@ export class SyncFilesUc {
 			this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
 			this.logger.error(stack);
 			await this.metadataService.persistError(item, stack);
-		} finally {
-			context.fileCounter += 1;
 		}
 	}
 }
