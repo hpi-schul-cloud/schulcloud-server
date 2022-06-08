@@ -9,7 +9,7 @@ export interface PermissionPublisher {
 }
 
 export interface PermissionConsumer {
-	permissionLayers: PermissionPublisher[];
+	permissionPublisher: PermissionPublisher[];
 
 	resolveLayer(user: User, entity: IEntity, context?: IPermissionContext): PermissionPublisher;
 }

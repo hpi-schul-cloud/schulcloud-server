@@ -4,14 +4,14 @@ import { IEntity, IPermissionContext, PermissionPublisher, PermissionAdapter } f
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
-enum ErrorMessages {
+export enum ErrorMessages {
 	RULE_NOT_IMPLEMENT = 'RULE_NOT_IMPLEMENT',
 	MULTIPLE_MATCHES_ARE_NOT_ALLOWED = 'MULTIPLE_MATCHES_ARE_NOT_ALLOWED',
 }
 
 @Injectable()
 export class AuthorizationService extends AuthorisationUtils implements PermissionAdapter {
-	permissionLayers: PermissionPublisher[];
+	permissionPublisher: PermissionPublisher[];
 
 	constructor(
 		private readonly courseRule: CourseRule,
@@ -22,7 +22,7 @@ export class AuthorizationService extends AuthorisationUtils implements Permissi
 	) {
 		super();
 
-		this.permissionLayers = [this.courseRule, this.taskRule, this.userRule, this.schoolRule];
+		this.permissionPublisher = [this.courseRule, this.taskRule, this.userRule, this.schoolRule];
 	}
 
 	private interpretLayerMatches(layers: PermissionPublisher[]): PermissionPublisher {
@@ -36,7 +36,7 @@ export class AuthorizationService extends AuthorisationUtils implements Permissi
 	}
 
 	resolveLayer(user: User, entity: IEntity, context?: IPermissionContext): PermissionPublisher {
-		const layers = this.permissionLayers.filter((rule) => rule.checkCondition(user, entity, context));
+		const layers = this.permissionPublisher.filter((rule) => rule.checkCondition(user, entity, context));
 
 		const layer = this.interpretLayerMatches(layers);
 
