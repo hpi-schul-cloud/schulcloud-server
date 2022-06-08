@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Board, Course } from '../entity';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '../types';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 
 export type BoardCopyParams = {
 	originalBoard: Board;
@@ -9,7 +9,7 @@ export type BoardCopyParams = {
 
 @Injectable()
 export class BoardCopyService {
-	copyBoard(params: BoardCopyParams): CopyStatusDTO {
+	copyBoard(params: BoardCopyParams): CopyStatus {
 		return {
 			title: 'board',
 			type: CopyElementType.BOARD,
