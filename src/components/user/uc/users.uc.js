@@ -82,7 +82,6 @@ const replaceUserWithTombstone = async (user) => {
 		deletedAt: new Date(),
 		schoolId,
 	});
-	// TODO EW-252
 	await this.app.service('nest-account-service').deleteByUserId(_id);
 	return { success: true };
 };

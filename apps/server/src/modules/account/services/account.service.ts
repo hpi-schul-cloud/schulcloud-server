@@ -70,6 +70,10 @@ export class AccountService {
 		return this.accountRepo.deleteById(account.id);
 	}
 
+	deleteByUserId(userId: EntityId): Promise<void> {
+		return this.accountRepo.deleteByUserId(userId);
+	}
+
 	async searchByUsernamePartialMatch(
 		userName: string,
 		skip: number,

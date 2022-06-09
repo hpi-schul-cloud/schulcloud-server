@@ -291,6 +291,9 @@ class AdminUsers {
 			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
+			// TODO check if this is used if so use
+			// await this.app.service('nest-account-service').deleteByUserId(id);
+			// otherwise remove
 			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
@@ -300,6 +303,9 @@ class AdminUsers {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
+		// TODO check if this is used if so use and implement
+		// await this.app.service('nest-account-service').deleteMultipleByUserId(id);
+		// otherwise remove
 		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
