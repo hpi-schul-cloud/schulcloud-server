@@ -1,6 +1,5 @@
 import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ILoggerConfig, RequestLoggingBody } from './interfaces';
 import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
 
