@@ -32,6 +32,7 @@ export class SyncFilesRepo {
 			{
 				$match: {
 					'files.storageProviderId': { $exists: true },
+					'files.size': { $ne: 0 },
 				},
 			},
 			{
