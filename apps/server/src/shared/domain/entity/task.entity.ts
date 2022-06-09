@@ -45,7 +45,7 @@ export class TaskWithStatusVo {
 	}
 }
 
-export type TaskParentDescriptions = { courseName: string; lessonName: string; color: string };
+export type TaskParentDescriptions = { courseName: string; courseId: string; lessonName: string; color: string };
 
 @Entity({ tableName: 'homeworks' })
 @Index({ properties: ['private', 'dueDate', 'finished'] })
@@ -252,12 +252,14 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		if (this.course) {
 			descriptions = {
 				courseName: this.course.name,
+				courseId: this.course.id,
 				lessonName: this.lesson ? this.lesson.name : '',
 				color: this.course.color,
 			};
 		} else {
 			descriptions = {
 				courseName: '',
+				courseId: '',
 				lessonName: '',
 				color: '#ACACAC',
 			};
