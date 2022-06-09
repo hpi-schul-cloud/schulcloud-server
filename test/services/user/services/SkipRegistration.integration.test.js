@@ -2,8 +2,9 @@ const { expect } = require('chai');
 const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
 
+// run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
-const { ServerTestModule } = require('../../../../dist/apps/server/server.module');
+const { ServerFeathersTestModule } = require('../../../../dist/apps/server/server.module');
 const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
 const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
 const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
@@ -20,7 +21,7 @@ describe('SkipRegistration integration', () => {
 
 	before(async () => {
 		const module = await Test.createTestingModule({
-			imports: [ServerTestModule, AccountModule],
+			imports: [ServerFeathersTestModule, AccountModule],
 		}).compile();
 		app = await appPromise;
 		server = await app.listen(0);
