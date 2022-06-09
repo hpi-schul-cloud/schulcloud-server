@@ -104,11 +104,7 @@ class QrRegistrationLinks {
 	}
 
 	async getUsersIdsWithoutAccount(userIds) {
-		const accounts = await this.accountService.find({
-			query: {
-				userId: userIds,
-			},
-		});
+		const accounts = await this.app.service('nest-account-service').findMultipleByUserId(userIds);
 		const accountsIds = accounts.map((account) => String(account.userId));
 		return userIds.reduce((ids, id) => {
 			if (!accountsIds.includes(id)) {
@@ -124,7 +120,6 @@ class QrRegistrationLinks {
 
 	setup(app) {
 		this.app = app;
-		this.accountService = app.service('/accounts');
 		this.registrationLinkService = app.service('/registrationlink');
 		this.userModelService = app.service('usersModel');
 	}

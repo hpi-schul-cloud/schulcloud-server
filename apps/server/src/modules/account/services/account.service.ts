@@ -16,6 +16,11 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
+	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
+		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
+		return this.mapAccountToDto(accountEntities);
+	}
+
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
@@ -81,13 +86,15 @@ export class AccountService {
 
 	private mapSearchResult(accountEntities: [Account[], number]) {
 		const foundAccounts = accountEntities[0];
-		const accountDtos: AccountDto[] = foundAccounts.map((accountEntity) =>
-			AccountEntityToDtoMapper.mapToDto(accountEntity)
-		);
+		const accountDtos: AccountDto[] = this.mapAccountToDto(foundAccounts);
 		return { accounts: accountDtos, total: accountEntities[1] };
 	}
 
 	private encryptPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, 10);
+	}
+
+	private mapAccountToDto(accounts: Account[]): AccountDto[] {
+		return accounts.map((accountEntity) => AccountEntityToDtoMapper.mapToDto(accountEntity));
 	}
 }

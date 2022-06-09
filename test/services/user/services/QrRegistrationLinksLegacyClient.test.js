@@ -1,21 +1,42 @@
 const { expect } = require('chai');
+const { MikroORM } = require('@mikro-orm/core');
+const { Test } = require('@nestjs/testing');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
+
+const { ServerFeathersTestModule } = require('../../../../dist/apps/server/server.module');
+const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
+const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
 
 describe('qrRegistrationLinksLegacyClient service tests', () => {
 	let app;
 	let qrRegistrationLinksLegacyService;
 	let server;
 
+	let nestApp;
+	let orm;
+
 	before(async () => {
 		app = await appPromise();
 		qrRegistrationLinksLegacyService = app.service('/users/qrRegistrationLinkLegacy');
 		server = await app.listen(0);
+
+		const module = await Test.createTestingModule({
+			imports: [ServerFeathersTestModule, AccountModule],
+		}).compile();
+		app = await appPromise;
+		server = await app.listen(0);
+		nestApp = await module.createNestApplication().init();
+		orm = nestApp.get(MikroORM);
+
+		app.services['nest-account-service'] = nestApp.get(AccountService);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await nestApp.close();
+		await orm.close();
 	});
 
 	const createRegistrationLinks = (requestParams, classId, role) =>

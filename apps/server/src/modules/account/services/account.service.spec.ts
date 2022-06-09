@@ -53,6 +53,12 @@ describe('AccountService', () => {
 						deleteById: jest.fn().mockImplementation((): Promise<void> => {
 							return Promise.resolve();
 						}),
+						findMultipleByUserId: (userIds: EntityId[]): Promise<Account[]> => {
+							const accounts = mockAccounts.filter((tempAccount) =>
+								userIds.find((userId) => tempAccount.userId?.toString() === userId)
+							);
+							return Promise.resolve(accounts);
+						},
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 							if (account) {
@@ -130,6 +136,19 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('findMultipleByUserId', () => {
+		it('should return multiple accountDtos', async () => {
+			const resultAccounts = await accountService.findMultipleByUserId([mockTeacherUser.id, mockStudentUser.id]);
+			expect(resultAccounts).toContainEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(resultAccounts).toContainEqual(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+			expect(resultAccounts).toHaveLength(2);
+		});
+		it('should return empty array on mismatch', async () => {
+			const resultAccount = await accountService.findMultipleByUserId(['nonExistentId1']);
+			expect(resultAccount).toHaveLength(0);
+		});
+	});
+
 	describe('findByUserIdOrFail', () => {
 		it('should return accountDto', async () => {
 			const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
@@ -141,12 +160,13 @@ describe('AccountService', () => {
 	});
 
 	describe('save', () => {
-		beforeAll(() => {
+		beforeEach(() => {
 			jest.useFakeTimers('modern');
 			jest.setSystemTime(new Date(2020, 1, 1));
 		});
 
-		afterAll(() => {
+		afterEach(() => {
+			jest.runOnlyPendingTimers();
 			jest.useRealTimers();
 		});
 

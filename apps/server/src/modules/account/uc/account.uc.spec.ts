@@ -519,31 +519,6 @@ describe('AccountUc', () => {
 					email: mockAdminUser.email,
 				})
 			).rejects.toThrow(ValidationError);
-			// other criteria branching
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'multiple@user.email',
-				})
-			).rejects.toThrow(ValidationError);
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'multiple@account.username',
-				})
-			).rejects.toThrow(ValidationError);
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'not@available.email',
-				})
-			).rejects.toThrow(ValidationError);
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'not@available.username',
-				})
-			).rejects.toThrow(ValidationError);
 		});
 		it('should throw if new email already in use ignore case', async () => {
 			await expect(
@@ -618,6 +593,43 @@ describe('AccountUc', () => {
 					email: 'fail@to.update',
 				})
 			).rejects.toThrow(EntityNotFoundError);
+		});
+	});
+
+	describe('isUniqueEmail', () => {
+		it('should return true if new email is available', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'an@available.email');
+			expect(res).toBe(true);
+		});
+
+		it('should return true if new email is available and ignore current user', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, mockStudentUser.email);
+			expect(res).toBe(true);
+		});
+		it('should return true if new email is available and ignore current users account', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, mockStudentAccount.username);
+			expect(res).toBe(true);
+		});
+
+		it('should return false if new email already in use', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, mockAdminUser.email);
+			expect(res).toBe(false);
+		});
+		it('should return false if new email already in use by another user', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'not@available.email');
+			expect(res).toBe(false);
+		});
+		it('should return false if new email already in use by another account', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'not@available.username');
+			expect(res).toBe(false);
+		});
+		it('should return false if new email already in use by multiple users', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'multiple@user.email');
+			expect(res).toBe(false);
+		});
+		it('should return false if new email already in use by multiple accounts', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'multiple@account.username');
+			expect(res).toBe(false);
 		});
 	});
 
@@ -1043,6 +1055,12 @@ describe('AccountUc', () => {
 					{ username: 'user-fail@to.update' } as AccountByIdBodyParams
 				)
 			).rejects.toThrow(EntityNotFoundError);
+		});
+		it('should throw if new username already in use', async () => {
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockStudentAccount.id } as AccountByIdParams;
+			const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ValidationError);
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {

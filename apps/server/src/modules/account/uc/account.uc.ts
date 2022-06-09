@@ -335,6 +335,31 @@ export class AccountUc {
 		}
 	}
 
+	async isUniqueEmail(userId: EntityId, email: string): Promise<boolean> {
+		return this.isUniqueEmailInternal(userId, email);
+	}
+
+	private async isUniqueEmailInternal(userId: EntityId, email: string, accountId?: EntityId): Promise<boolean> {
+		const [usersAccountId, foundUsers, { accounts: foundAccounts }] = await Promise.all([
+			accountId ?? this.accountService.findByUserId(userId).then((accountDto) => accountDto?.id),
+			this.userRepo.findByEmail(email),
+			this.accountService.searchByUsernameExactMatch(email),
+		]);
+
+		return !(
+			foundUsers.length > 1 ||
+			foundAccounts.length > 1 ||
+			(foundUsers.length === 1 && foundUsers[0].id !== userId) ||
+			(foundAccounts.length === 1 && foundAccounts[0].id !== usersAccountId)
+		);
+	}
+
+	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
+		if (!(await this.isUniqueEmailInternal(user.id, email, account.id))) {
+			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
+		}
+	}
+
 	private hasRole(user: User, roleName: string) {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;
@@ -447,21 +472,5 @@ export class AccountUc {
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
-	}
-
-	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
-		const [foundUsers, { accounts: foundAccounts }] = await Promise.all([
-			this.userRepo.findByEmail(email),
-			this.accountService.searchByUsernameExactMatch(email),
-		]);
-
-		if (
-			foundUsers.length > 1 ||
-			foundAccounts.length > 1 ||
-			(foundUsers.length === 1 && foundUsers[0].id !== user.id) ||
-			(foundAccounts.length === 1 && foundAccounts[0].id !== account.id)
-		) {
-			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-		}
 	}
 }

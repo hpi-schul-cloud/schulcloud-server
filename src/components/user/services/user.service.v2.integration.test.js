@@ -1,8 +1,14 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
+const { MikroORM } = require('@mikro-orm/core');
+const { Test } = require('@nestjs/testing');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
+
+const { ServerFeathersTestModule } = require('../../../../dist/apps/server/server.module');
+const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
+const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -10,18 +16,31 @@ const { expect } = chai;
 describe('user service v2', () => {
 	let app;
 	let server;
-	let accountModelService;
 	let usersModelService;
+
+	let nestApp;
+	let orm;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
-		accountModelService = app.service('accountModel');
 		usersModelService = app.service('usersModel');
+
+		const module = await Test.createTestingModule({
+			imports: [ServerFeathersTestModule, AccountModule],
+		}).compile();
+		app = await appPromise;
+		server = await app.listen(0);
+		nestApp = await module.createNestApplication().init();
+		orm = nestApp.get(MikroORM);
+
+		app.services['nest-account-service'] = nestApp.get(AccountService);
 	});
 
 	after(async () => {
 		await server.close();
+		await nestApp.close();
+		await orm.close();
 	});
 
 	const getAuthToken = async (schoolId = undefined, role = 'administrator') => {
@@ -211,8 +230,8 @@ describe('user service v2', () => {
 					const checkUser = await usersModelService.get(deleteUser._id);
 					expect(checkUser.fullName).to.equal('DELETED USER');
 
-					const checkAccount = await accountModelService.find({ query: { userId: deleteUser._id }, paginate: false });
-					expect(checkAccount.length).to.equal(0);
+					const checkAccount = await app.service('nest-account-service').findByUserId(deleteUser._id);
+					expect(checkAccount).to.be.null;
 				});
 
 				it('when a user with STUDENT_DELETE permission deletes a teacher, then it throws Forbidden', async () => {
@@ -343,8 +362,8 @@ describe('user service v2', () => {
 						const checkUser = await usersModelService.get(user._id);
 						expect(checkUser.fullName).to.equal('DELETED USER');
 
-						const checkAccount = await accountModelService.find({ query: { userId: user._id }, paginate: false });
-						expect(checkAccount.length).to.equal(0);
+						const checkAccount = await app.service('nest-account-service').findByUserId(user._id);
+						expect(checkAccount).to.be.null;
 					});
 				});
 
