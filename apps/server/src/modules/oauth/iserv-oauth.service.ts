@@ -6,7 +6,6 @@ import { Logger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
 import { FeathersJwtProvider } from '../authorization';
 import { OAuthSSOError } from './error/oauth-sso.error';
-import { OAuthService, IJWT } from './oauth.service';
 
 @Injectable()
 export class IservOAuthService {
@@ -17,7 +16,7 @@ export class IservOAuthService {
 		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private logger: Logger
 	) {
-		this.logger.setContext(OAuthService.name);
+		this.logger.setContext(IservOAuthService.name);
 	}
 
 	extractUUID(decodedJwt: IJWT): string {
@@ -35,4 +34,7 @@ export class IservOAuthService {
 		}
 		return user;
 	}
+}
+export interface IJWT {
+	uuid: string;
 }

@@ -9,14 +9,13 @@ import { Inject } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
-import x509 from 'x509';
 import { TokenRequestPayloadMapper } from './mapper/token-request-payload.mapper';
 import { TokenRequestPayload } from './controller/dto/token-request.payload';
 import { OAuthSSOError } from './error/oauth-sso.error';
 import { AuthorizationParams } from './controller/dto/authorization.params';
 import { OauthTokenResponse } from './controller/dto/oauth-token.response';
 import { FeathersJwtProvider } from '../authorization';
-import { IservOAuthService } from './iserv-oauth.service';
+import { IJWT, IservOAuthService } from './iserv-oauth.service';
 
 @Injectable()
 export class OAuthService {
@@ -106,7 +105,4 @@ export class OAuthService {
 		const jwtResponse: string = await this.jwtService.generateJwt(user.id);
 		return jwtResponse;
 	}
-}
-export interface IJWT {
-	uuid: string;
 }
