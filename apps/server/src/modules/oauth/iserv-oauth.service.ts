@@ -1,11 +1,11 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
 import { FeathersJwtProvider } from '../authorization';
 import { OAuthSSOError } from './error/oauth-sso.error';
+import { IJWT } from './interface/jwt.base.interface';
 
 @Injectable()
 export class IservOAuthService {
@@ -13,7 +13,6 @@ export class IservOAuthService {
 		private readonly userRepo: UserRepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private httpService: HttpService,
-		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private logger: Logger
 	) {
 		this.logger.setContext(IservOAuthService.name);
@@ -34,7 +33,4 @@ export class IservOAuthService {
 		}
 		return user;
 	}
-}
-export interface IJWT {
-	uuid: string;
 }

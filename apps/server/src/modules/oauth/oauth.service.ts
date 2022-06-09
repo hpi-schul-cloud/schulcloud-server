@@ -15,7 +15,8 @@ import { OAuthSSOError } from './error/oauth-sso.error';
 import { AuthorizationParams } from './controller/dto/authorization.params';
 import { OauthTokenResponse } from './controller/dto/oauth-token.response';
 import { FeathersJwtProvider } from '../authorization';
-import { IJWT, IservOAuthService } from './iserv-oauth.service';
+import { IservOAuthService } from './iserv-oauth.service';
+import { IJWT } from './interface/jwt.base.interface';
 
 @Injectable()
 export class OAuthService {
@@ -98,6 +99,7 @@ export class OAuthService {
 			return user;
 		}
 		// TODO in general
+
 		return user;
 	}
 
