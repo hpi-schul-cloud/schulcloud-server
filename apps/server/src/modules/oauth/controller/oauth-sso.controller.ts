@@ -28,10 +28,9 @@ export class OauthSSOController {
 			oauthResponse = await this.oauthUc.startOauth(query, systemid);
 			if (oauthResponse.jwt) {
 				res.cookie('jwt', oauthResponse.jwt);
-				const idToken = oauthResponse.idToken as string;
-				const logoutEndpoint = oauthResponse.logoutEndpoint as string;
-				const provider = oauthResponse.provider as string;
-				if (provider === 'iserv') {
+				if (oauthResponse.provider === 'iserv') {
+					const idToken = oauthResponse.idToken as string;
+					const logoutEndpoint = oauthResponse.logoutEndpoint as string;
 					return res.redirect(`${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`);
 				}
 				return res.redirect(`${HOST}/dashboard`);
