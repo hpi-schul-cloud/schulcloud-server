@@ -118,7 +118,6 @@ export class ServerTestModule {
 
 @Module({
 	imports: [
-		...serverModules,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -130,7 +129,6 @@ export class ServerTestModule {
 			allowGlobalContext: true,
 			// debug: true, // use it for locally debugging of querys
 		}),
-		RabbitMQWrapperTestModule,
 	],
 	controllers: [ServerController],
 })
