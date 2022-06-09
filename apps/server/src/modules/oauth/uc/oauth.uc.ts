@@ -9,7 +9,8 @@ import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from '../controller/dto/oauth.response';
-import { IJWT, OAuthService } from '../oauth.service';
+import { IJWT } from '../iserv-oauth.service';
+import { OAuthService } from '../oauth.service';
 
 @Injectable()
 export class OauthUc {
