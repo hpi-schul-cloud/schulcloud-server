@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Course, Task, User } from '@shared/domain/entity';
-import { CopyElementType, CopyStatusDTO, CopyStatusEnum } from '@shared/domain/types';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 
 export type TaskCopyParams = {
 	originalTask: Task;
-	destinationCourse: Course;
+	destinationCourse?: Course;
 	// destinationLesson?: Lesson;
 	user: User;
 };
 
 export type TaskCopyResponse = {
 	copy: Task;
-	status: CopyStatusDTO;
+	status: CopyStatus;
 };
 
 @Injectable()
@@ -24,34 +24,72 @@ export class TaskCopyService {
 			creator: params.user,
 			course: params.destinationCourse,
 		});
-		const status = {
+
+		const elements = [...this.defaultTaskStatusElements(), ...this.copyTaskFiles(params.originalTask)];
+
+		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			status: CopyStatusEnum.PARTIAL,
+			status: this.inferStatusFromElements(elements),
 			copyEntity: copy,
-			elements: [
+			elements,
+		};
+
+		return { copy, status };
+	}
+
+	private defaultTaskStatusElements(): CopyStatus[] {
+		return [
+			{
+				title: 'metadata',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				title: 'description',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				title: 'submissions',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+		];
+	}
+
+	private copyTaskFiles(task: Task): CopyStatus[] {
+		const fileNames = task.getFileNames();
+		if (fileNames.length === 1) {
+			return [
 				{
-					title: 'metadata',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
-				},
-				{
-					title: 'description',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
-				},
-				{
-					title: 'submissions',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'files',
+					title: fileNames[0],
 					type: CopyElementType.LEAF,
 					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
-			],
-		};
-		return { copy, status };
+			];
+		}
+		if (fileNames.length > 1) {
+			const elements = fileNames.map((title) => ({
+				title,
+				type: CopyElementType.FILE,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			}));
+			const fileStatus = {
+				title: 'files',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+				elements,
+			};
+			return [fileStatus];
+		}
+		return [];
+	}
+
+	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+		const childrenStatusArray = elements.map((el) => el.status);
+		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
+		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) return CopyStatusEnum.PARTIAL;
+		return CopyStatusEnum.SUCCESS;
 	}
 }

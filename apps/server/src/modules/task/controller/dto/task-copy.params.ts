@@ -1,16 +1,17 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsMongoId, IsOptional } from 'class-validator';
 
 /**
  * DTO for creating a task copy.
  */
 export class TaskCopyApiParams {
+	@IsOptional()
 	@IsMongoId()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		pattern: '[a-f0-9]{24}',
 		description: 'Destination course parent Id the task is copied to',
 	})
-	courseId!: string;
+	courseId?: string;
 
 	@IsOptional()
 	@IsMongoId()

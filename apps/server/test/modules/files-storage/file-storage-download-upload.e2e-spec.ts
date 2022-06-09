@@ -167,6 +167,8 @@ describe('file-storage controller (e2e)', () => {
 						creatorId: currentUser.userId,
 						type: 'text/plain',
 						parentType: 'schools',
+						securityCheckStatus: 'pending',
+						size: expect.any(Number) as number,
 					})
 				);
 			});

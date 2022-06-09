@@ -12,7 +12,7 @@ export class TaskRepo extends BaseRepo<Task> {
 
 	async findById(id: EntityId): Promise<Task> {
 		const task = await super.findById(id);
-		await this._em.populate(task, ['course', 'lesson', 'submissions']);
+		await this._em.populate(task, ['course', 'lesson', 'submissions', 'files']);
 		return task;
 	}
 

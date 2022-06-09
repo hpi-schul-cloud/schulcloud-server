@@ -78,7 +78,6 @@ describe('task copy uc', () => {
 				.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => true);
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
-				id: 'id',
 				title: 'taskCopy',
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
@@ -112,6 +111,12 @@ describe('task copy uc', () => {
 			expect(courseSpy).toBeCalledWith(course.id);
 		});
 
+		it('should pass without destination course', async () => {
+			const { user, task, courseSpy } = setup();
+			await uc.copyTask(user.id, task.id, {});
+			expect(courseSpy).not.toHaveBeenCalled();
+		});
+
 		it('should check authorisation for task', async () => {
 			const { course, user, task, authSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
@@ -125,6 +130,15 @@ describe('task copy uc', () => {
 			const { course, user, task, authSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
 			expect(authSpy).toBeCalledWith(user, course, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
+
+		it('should pass authorisation check without destination course', async () => {
+			const { course, user, task, authSpy } = setup();
+			await uc.copyTask(user.id, task.id, {});
+			expect(authSpy).not.toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
@@ -155,9 +169,9 @@ describe('task copy uc', () => {
 				const task = taskFactory.buildWithId();
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				jest
 					.spyOn(authorisation, 'hasPermission')
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => {
 						if (e === task) return false;
 						return true;
@@ -185,9 +199,9 @@ describe('task copy uc', () => {
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				jest
 					.spyOn(authorisation, 'hasPermission')
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => {
 						if (e === course) return false;
 						return true;
