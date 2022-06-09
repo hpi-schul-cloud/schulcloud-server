@@ -4,7 +4,7 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/type
 
 export type TaskCopyParams = {
 	originalTask: Task;
-	destinationCourse: Course;
+	destinationCourse?: Course;
 	// destinationLesson?: Lesson;
 	user: User;
 };
