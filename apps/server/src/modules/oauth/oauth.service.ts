@@ -8,21 +8,25 @@ import { System, User } from '@shared/domain';
 import { Inject } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { UserRepo } from '@shared/repo';
+import { SystemRepo, UserRepo } from '@shared/repo';
+import x509 from 'x509';
 import { TokenRequestPayloadMapper } from './mapper/token-request-payload.mapper';
 import { TokenRequestPayload } from './controller/dto/token-request.payload';
 import { OAuthSSOError } from './error/oauth-sso.error';
 import { AuthorizationParams } from './controller/dto/authorization.params';
 import { OauthTokenResponse } from './controller/dto/oauth-token.response';
 import { FeathersJwtProvider } from '../authorization';
+import { IservOAuthService } from './iserv-oauth.service';
 
 @Injectable()
 export class OAuthService {
 	constructor(
 		private readonly userRepo: UserRepo,
+		private readonly systemRepo: SystemRepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private httpService: HttpService,
 		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
+		private iservOauthService: IservOAuthService,
 		private logger: Logger
 	) {
 		this.logger.setContext(OAuthService.name);
@@ -74,6 +78,7 @@ export class OAuthService {
 
 	async validateToken(idToken: string, system: System): Promise<IJWT> {
 		const publicKey = await this._getPublicKey(system);
+		// if validation by cert, then publicKey = cert
 		const verifiedJWT = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: system.oauthConfig.issuer,
@@ -85,27 +90,15 @@ export class OAuthService {
 	}
 
 	async findUser(decodedJwt: IJWT, systemId: string): Promise<User> {
-		// if iserv strategy:
-		const uuid = this.extractUUID(decodedJwt);
-		const user = this.findUserById(uuid, systemId);
-		// TODO in general
-
-		return user;
-	}
-
-	extractUUID(decodedJwt: IJWT): string {
-		if (!decodedJwt || !decodedJwt.uuid) throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
-		const { uuid } = decodedJwt;
-		return uuid;
-	}
-
-	async findUserById(uuid: string, systemId: string): Promise<User> {
 		let user: User;
-		try {
-			user = await this.userRepo.findByLdapId(uuid, systemId);
-		} catch (error) {
-			throw new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound');
+		// if iserv strategy:
+		const system: System = await this.systemRepo.findById(systemId);
+		if (system.oauthConfig.provider === 'iserv') {
+			const uuid = this.iservOauthService.extractUUID(decodedJwt);
+			user = await this.iservOauthService.findUserById(uuid, systemId);
+			return user;
 		}
+		// TODO in general
 		return user;
 	}
 
