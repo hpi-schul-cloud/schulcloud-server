@@ -17,7 +17,14 @@ const config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
+	coveragePathIgnorePatterns: [
+		'.module.ts$',
+		'index.ts$',
+		'spec.ts$',
+		// The two paths below regarding the file-sync-job are added because istanbul-ignore-file is somehow not working on them. They can be removed when the job is done.
+		'apps/server/src/modules/files/mapper',
+		'apps/server/src/modules/files/types',
+	],
 	coverageThreshold: {
 		global: {
 			branches: 80,
