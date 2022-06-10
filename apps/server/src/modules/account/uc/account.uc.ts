@@ -25,7 +25,6 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
-	AccountCreateParams,
 	AccountResponse,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
@@ -33,6 +32,7 @@ import {
 	PatchMyAccountParams,
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper';
+import { AccountSaveDto } from '../services/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -103,39 +103,39 @@ export class AccountUc {
 		return AccountResponseMapper.mapToResponse(account);
 	}
 
-	async createAccount(params: AccountCreateParams): Promise<void> {
-		await validateOrReject(params);
+	async saveAccount(dto: AccountSaveDto): Promise<void> {
+		await validateOrReject(dto);
 		// sanatizeUsername ✔
-		if (!params.systemId) {
-			params.username = params.username.trim().toLowerCase();
+		if (!dto.systemId) {
+			dto.username = dto.username.trim().toLowerCase();
 		}
 		// validateUserName ✔
 		// usernames must be an email address, if they are not from an external system
-		if (!params.systemId && !isEmail(params.username)) {
+		if (!dto.systemId && !isEmail(dto.username)) {
 			throw new Error('Username is not an email');
 		}
 		// checkExistence ✔
 		// we will not create accounts for users from external systems
-		if (params.userId && (await this.accountService.findByUserId(params.userId))) {
+		if (dto.userId && (await this.accountService.findByUserId(dto.userId))) {
 			throw new Error('Account already exists');
 		}
 		// validateCredentials will not be ported ✔
 		// trimPassword, will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		const { accounts } = await this.accountService.searchByUsernameExactMatch(params.username);
+		const { accounts } = await this.accountService.searchByUsernameExactMatch(dto.username);
 		// usernames are only unique within a system
-		const filteredAccounts = accounts.filter((account) => account.systemId?.toString() === params.systemId);
+		const filteredAccounts = accounts.filter((account) => account.systemId?.toString() === dto.systemId);
 		if (filteredAccounts.length > 0) {
 			throw new Error('Username already exists');
 		}
 		// removePassword ✔
-		const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
-		if (params.passwordStrategy && noPasswordStrategies.includes(params.passwordStrategy)) {
-			params.password = undefined;
-		}
+		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
+		// 	dto.password = undefined;
+		// }
 
-		await this.accountService.create(params);
+		await this.accountService.save(dto);
 	}
 
 	/**

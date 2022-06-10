@@ -5,7 +5,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountDto, AccountCreateDto } from '@src/modules/account/services/dto';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountService } from './account.service';
 
@@ -293,34 +293,6 @@ describe('AccountService', () => {
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(foundAccounts.total).toBe(1);
 			expect(foundAccounts.accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
-		});
-	});
-
-	describe('create', () => {
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-		it('should create and save an account', async () => {
-			const dto = new AccountCreateDto({
-				username: 'john.doe@domain.tld',
-			});
-			const account = await accountService.create(dto);
-			expect(account.id).toBeDefined();
-			expect(account.createdAt).toBeDefined();
-			expect(account.updatedAt).toBeDefined();
-		});
-		it('should encrypt password on save', async () => {
-			const spy = jest.spyOn(accountRepo, 'save');
-			const dto = new AccountCreateDto({
-				username: 'john.doe@domain.tld',
-				password: 'Schulcloud1!',
-			});
-			await expect(accountService.create(dto)).resolves.not.toThrow();
-			expect(spy).not.toHaveBeenCalledWith(
-				expect.objectContaining({
-					password: dto.password,
-				})
-			);
 		});
 	});
 });
