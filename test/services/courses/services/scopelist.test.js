@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
-
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const oneHour = 600000;
 const twoDays = 172800000;
@@ -10,9 +10,15 @@ const twoDays = 172800000;
 describe('courses scopelist service', () => {
 	let app;
 	let courseScopeListService;
+	let nestServices;
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		courseScopeListService = app.service('/users/:scopeId/courses');
+	});
+
+	after(async () => {
+		await closeNestServices(nestServices);
 	});
 
 	it('is properly registered', () => {
@@ -289,15 +295,18 @@ describe('courses scopelist service integration', () => {
 	let app;
 	let courseScopeListService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		courseScopeListService = app.service('/users/:scopeId/courses');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('fails without authorization', async () => {

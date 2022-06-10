@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const assert = require('assert');
 
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
 const { generateRequestParams } = require('../../helpers/services/login')(appPromise());
@@ -17,14 +18,17 @@ const {
 describe('removeStudentFromCourses', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {
@@ -72,14 +76,17 @@ describe('removeStudentFromCourses', () => {
 describe('removeStudentFromClasses', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {
@@ -127,14 +134,17 @@ describe('removeStudentFromClasses', () => {
 describe('generateRegistrationLink', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
-		app = await appPromise();
+		app = await appPromise;
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {
@@ -410,14 +420,17 @@ describe('enforceRoleHierarchyOnCreate', () => {
 describe('checkUniqueEmail', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {

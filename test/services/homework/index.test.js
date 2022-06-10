@@ -8,11 +8,14 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+
 describe('homework service', () => {
 	let app;
 	let homeworkService;
 	let homeworkCopyService;
 	let server;
+	let nestServices;
 
 	const setupPrivateHomework = async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -66,11 +69,13 @@ describe('homework service', () => {
 		homeworkService = app.service('homework');
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the homework service', () => {

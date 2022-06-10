@@ -4,6 +4,8 @@ const commons = require('@hpi-schul-cloud/commons');
 const redisMock = require('./utils/redis/redisMock');
 const whitelist = require('../src/services/authentication/logic/whitelist');
 
+const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
+
 const { Configuration } = commons; // separated from require, mocked in tests
 
 describe('handleAutoLogout hook', () => {
@@ -13,6 +15,7 @@ describe('handleAutoLogout hook', () => {
 	let app;
 	let server;
 	let testObjects;
+	let nestServices;
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
@@ -39,6 +42,7 @@ describe('handleAutoLogout hook', () => {
 		/* eslint-enable global-require */
 		redisHelper.initializeRedisClient();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
@@ -51,6 +55,7 @@ describe('handleAutoLogout hook', () => {
 		delete require.cache[require.resolve('../src/app.hooks')];
 		Configuration.reset(configBefore);
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('whitelisted JWT is accepted and extended', async () => {

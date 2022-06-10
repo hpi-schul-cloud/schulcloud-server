@@ -4,12 +4,14 @@ const { ObjectId } = require('mongoose').Types;
 const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('./rabbitmqMock');
 const { ACTIONS } = require('../../../src/services/messengerSync/producer');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { Configuration } = commons;
 
 describe('service', () => {
 	let configBefore;
 	let server;
+	let nestServices;
 	let app;
 	let testObjects;
 
@@ -32,6 +34,7 @@ describe('service', () => {
 		// eslint-disable-next-line global-require
 		testObjects = require('../helpers/testObjects')(app);
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
@@ -43,6 +46,7 @@ describe('service', () => {
 
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('reject invalid messages', async () => {

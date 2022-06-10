@@ -12,7 +12,9 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Account Service', () => {
+// TODO Account is deprecated and replaced with nest account service or uc
+// About to be removed with completion of EW-214
+xdescribe('Account Service', () => {
 	let app;
 	let userService;
 	let registrationPinsService;

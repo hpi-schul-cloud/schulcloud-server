@@ -5,6 +5,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const SchoolYearFacade = require('../../../src/services/school/logic/year');
 
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { SchoolRepo, UserRepo, ClassRepo } = require('../../../src/services/sync/repo');
 
 const { userModel } = require('../../../src/services/user/model');
@@ -160,6 +161,7 @@ const isRabbitMqAvailable = (result) => {
 describe('Ldap Sync Integration', function testSuite() {
 	this.timeout(20000);
 	let app;
+	let nestServices;
 	let server;
 	let system;
 
@@ -190,6 +192,7 @@ describe('Ldap Sync Integration', function testSuite() {
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		await cleanupAll();
 	});
 
@@ -207,6 +210,7 @@ describe('Ldap Sync Integration', function testSuite() {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	async function executeLdapSync(testFuncContext, options) {

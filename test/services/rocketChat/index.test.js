@@ -5,6 +5,7 @@ const chai = require('chai');
 const mockery = require('mockery');
 
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
@@ -14,6 +15,7 @@ describe('rocket.chat user service', () => {
 
 	let app;
 	let server;
+	let nestServices;
 	let rocketChatUserService;
 
 	before(async () => {
@@ -40,11 +42,13 @@ describe('rocket.chat user service', () => {
 		rocketChatUserService = app.service('/rocketChat/user');
 
 		server = app.listen(0);
+		nestServices = await setupNestServices(app);
 		return server;
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the RC user service', () => {

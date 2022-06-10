@@ -2,7 +2,9 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
-describe('account model service', () => {
+// TODO Account is deprecated and replaced with nest account service or uc
+// About to be removed with completion of EW-214
+xdescribe('account model service', () => {
 	let app;
 	let server;
 

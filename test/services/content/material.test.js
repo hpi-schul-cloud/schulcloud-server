@@ -1,29 +1,27 @@
 const assert = require('assert');
 const { expect } = require('chai');
-
 const { Forbidden } = require('../../../src/errors');
-
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const Material = require('../../../src/services/content/material-model');
-
-const {
-	cleanup,
-	createTestCourse,
-	createTestUser,
-	createTestLesson,
-	generateRequestParamsFromUser,
-} = require('../helpers/testObjects')(appPromise());
+const { cleanup, createTestCourse, createTestUser, createTestLesson, generateRequestParamsFromUser } =
+	require('../helpers/testObjects')(appPromise());
 
 describe('material service', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after(() => server.close());
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
+	});
 
 	it('registered the material service', () => {
 		assert.ok(app.service('materials'));

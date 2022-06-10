@@ -5,12 +5,20 @@ const { lookupSchool } = require('../../src/hooks');
 
 const appPromise = require('../../src/app');
 const { createTestUser, cleanup } = require('../services/helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../utils/setup.nest.services');
 
 describe('#lookupSchool', () => {
 	let app;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
+	});
+
+	after(async () => {
+		await cleanup();
+		await closeNestServices(nestServices);
 	});
 
 	it('should require authentication to provide a user', async () => {
@@ -44,6 +52,4 @@ describe('#lookupSchool', () => {
 		});
 		expect(context.params.account.schoolId.toString()).to.equal(user.schoolId.toString());
 	});
-
-	after(cleanup);
 });

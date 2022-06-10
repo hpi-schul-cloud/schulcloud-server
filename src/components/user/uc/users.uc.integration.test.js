@@ -1,46 +1,32 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
-const { MikroORM } = require('@mikro-orm/core');
-const { Test } = require('@nestjs/testing');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-
-const { ServerFeathersTestModule } = require('../../../../dist/apps/server/server.module');
-const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
-const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
-const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
 
 const { initialize, getOrCreateTombstoneUserId, replaceUserWithTombstone, deleteUser } = require('./users.uc');
 const userRepo = require('../repo/user.repo');
 const registrationPinRepo = require('../repo/registrationPin.repo');
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 describe('user use case', () => {
 	let app;
 	let server;
-	let nestApp;
-	let orm;
+	let nestServices;
 
 	before(async () => {
-		const module = await Test.createTestingModule({
-			imports: [ServerFeathersTestModule, AccountModule],
-		}).compile();
 		delete require.cache[require.resolve('../../../../src/app')];
 		app = await appPromise();
 		server = await app.listen(0);
 
-		nestApp = await module.createNestApplication().init();
-		orm = nestApp.get(MikroORM);
-		const accountService = nestApp.get(AccountService);
-		app.services['nest-account-service'] = accountService;
-		app.services['nest-account-uc'] = nestApp.get(AccountUc);
-		initialize(accountService);
+		nestServices = await setupNestServices(app);
+		initialize(app.services['nest-account-service']);
 	});
 
 	after(async () => {
 		await server.close();
-		await nestApp.close();
-		await orm.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('getOrCreateTombstoneUserId', () => {

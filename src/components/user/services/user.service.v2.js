@@ -18,7 +18,7 @@ const validateIds = (ids) => {
 		const error = new ValidationError(API_VALIDATION_ERROR_TYPE, arrayShouldNotExceedLength({ ids }));
 		throw error;
 	}
-}
+};
 
 class UserServiceV2 {
 	constructor(roleNameSubject) {

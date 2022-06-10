@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setIdToken, validatePermissionForNextcloud } = require('../../../../src/services/oauth2/hooks/index');
@@ -8,10 +9,12 @@ describe('oauth2 token test', () => {
 	let app;
 	let server;
 	let createHook;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = app.listen(0);
+		nestServices = await setupNestServices(app);
 		createHook = (clientId, userId, scopes) => ({
 			app,
 			params: {
@@ -42,8 +45,9 @@ describe('oauth2 token test', () => {
 		});
 	});
 
-	after(() => {
-		server.close();
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('when scope groups is set', () => {

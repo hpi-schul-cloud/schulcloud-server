@@ -3,27 +3,32 @@ const assert = require('assert');
 const moment = require('moment');
 
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { userModel } = require('../../../src/services/user/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('registration service', () => {
+	let app;
 	let server;
 	let registrationService;
 	let registrationPinService;
 	let hashService;
+	let nestServices;
 
 	before(async () => {
 		const app = await appPromise();
 		registrationService = app.service('registration');
 		registrationPinService = app.service('registrationPins');
 		hashService = app.service('hash');
-		server = app.listen(0);
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
 		await testObjects.cleanup();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the registration service', () => {

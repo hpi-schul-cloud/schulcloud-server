@@ -289,7 +289,7 @@ describe('AccountService', () => {
 
 	describe('delete', () => {
 		it('should delete account via repo', async () => {
-			await accountService.delete(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			await accountService.delete(mockTeacherAccount.id);
 			expect(accountRepo.deleteById).toHaveBeenCalledWith(mockTeacherAccount.id);
 		});
 	});

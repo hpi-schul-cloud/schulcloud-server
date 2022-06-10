@@ -5,20 +5,24 @@ const { Forbidden } = require('../../../../src/errors');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('course scope members service', () => {
 	let app;
 	let courseMembersService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		courseMembersService = app.service('/courses/:scopeId/members');
 		server = app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('is properly registered', () => {

@@ -6,8 +6,9 @@ const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
-
 const redisMock = require('../../../utils/redis/redisMock');
+
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('jwtTimer service', () => {
 	it('registered the supportJWT service', async () => {
@@ -18,6 +19,7 @@ describe('jwtTimer service', () => {
 	describe('redis mocked', () => {
 		let testObjects;
 		let app;
+		let nestServices;
 		let redisHelper;
 		let configBefore = null;
 
@@ -48,6 +50,7 @@ describe('jwtTimer service', () => {
 				Configuration.set('REDIS_URI', '//validHost:4444');
 				redisHelper.initializeRedisClient();
 				server = await app.listen(0);
+				nestServices = await setupNestServices(app);
 			});
 
 			after(async () => {
@@ -60,6 +63,7 @@ describe('jwtTimer service', () => {
 				delete require.cache[require.resolve('../../../../src/app')];
 				Configuration.reset(configBefore);
 				await server.close();
+				await closeNestServices(nestServices);
 			});
 
 			it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
@@ -107,6 +111,7 @@ describe('jwtTimer service', () => {
 
 				redisHelper.initializeRedisClient();
 				server = await app.listen(0);
+				nestServices = await setupNestServices(app);
 			});
 
 			after(async () => {
@@ -114,6 +119,7 @@ describe('jwtTimer service', () => {
 				mockery.disable();
 				await testObjects.cleanup();
 				await server.close();
+				await closeNestServices(nestServices);
 			});
 
 			it('FIND fails without redis server.', async () => {

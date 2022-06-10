@@ -11,22 +11,27 @@ const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
+
 describe('EduSharing FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {

@@ -1,6 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const moodleMockServer = require('./moodleMockServer');
 
 const testObjects = require('../../helpers/testObjects')(appPromise());
@@ -10,6 +11,7 @@ chai.use(chaiHttp);
 
 describe('Moodle single-sign-on', () => {
 	let app;
+	let nestServices;
 	let testSystem = null;
 
 	const newTestAccount = { username: 'testMoodleLoginUser1', password: 'testPassword' };
@@ -32,6 +34,7 @@ describe('Moodle single-sign-on', () => {
 	before(async () => {
 		app = await appPromise();
 		server = app.listen(0);
+		nestServices = await setupNestServices(app);
 		const moodle = await createMoodleTestServer();
 		const [system, testUser] = await Promise.all([
 			testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
@@ -45,6 +48,7 @@ describe('Moodle single-sign-on', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('should create an account for a new user who logs in with moodle', () =>

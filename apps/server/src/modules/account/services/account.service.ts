@@ -66,8 +66,8 @@ export class AccountService {
 		return this.accountRepo.save(account);
 	}
 
-	delete(account: AccountDto): Promise<void> {
-		return this.accountRepo.deleteById(account.id);
+	delete(id: EntityId): Promise<void> {
+		return this.accountRepo.deleteById(id);
 	}
 
 	deleteByUserId(userId: EntityId): Promise<void> {

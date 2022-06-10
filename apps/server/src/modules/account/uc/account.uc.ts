@@ -215,7 +215,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
 		const account: AccountDto = await this.accountService.findById(params.id);
-		await this.accountService.delete(account);
+		await this.accountService.delete(account.id);
 		return AccountResponseMapper.mapToResponse(account);
 	}
 

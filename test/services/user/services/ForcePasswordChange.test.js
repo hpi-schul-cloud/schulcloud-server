@@ -1,13 +1,14 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 describe('forcePasswordChange service tests', () => {
 	let app;
-	let accountService;
 	let forcePasswordChangeService;
 	let server;
+	let nestServices;
 	const newPassword = 'SomePassword1!';
 	const newPasswordConfirmation = 'SomePassword1!';
 	const newPasswordThatDoesNotMatch = 'SomePassword2!';
@@ -15,13 +16,14 @@ describe('forcePasswordChange service tests', () => {
 
 	before(async () => {
 		app = await appPromise();
-		accountService = app.service('accounts');
 		forcePasswordChangeService = app.service('forcePasswordChange');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	const postChangePassword = (requestParams, password, password2) =>
@@ -68,16 +70,14 @@ describe('forcePasswordChange service tests', () => {
 				forcePasswordChange: true,
 			};
 			const savedUser = await testObjects.createTestUser();
-			const account = await testObjects.createTestAccount(newAccount, null, savedUser);
+			await testObjects.createTestAccount(newAccount, null, savedUser);
 			const requestParams = userRequestAuthentication;
 			requestParams.authentication.payload = {
 				accountId: newAccount.accountId,
 			};
 
-			return postChangePassword(requestParams, newPassword, newPasswordConfirmation).then((resp) => {
-				expect(resp.forcePasswordChange).to.equal(false);
-				accountService.remove(account._id);
-			});
+			const resp = await postChangePassword(requestParams, newPassword, newPasswordConfirmation);
+			expect(resp.forcePasswordChange).to.equal(false);
 		});
 		// eslint-disable-next-line max-len
 		it('when the the user sets the password the same as the one specified by the admin, the proper error message will be shown', async () => {

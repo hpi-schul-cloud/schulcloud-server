@@ -8,6 +8,7 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
 const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 /**
  * will always run successfully
@@ -41,6 +42,8 @@ describe('datasourceRuns service', () => {
 	let app;
 	let datasourceRunsService;
 	let server;
+	let nestServices;
+
 	before(async () => {
 		mockery.enable({
 			useCleanCache: true,
@@ -53,12 +56,14 @@ describe('datasourceRuns service', () => {
 		const sync = require('../../../src/services/sync');
 		app.configure(sync);
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the datasourceRuns service', () => {

@@ -2,10 +2,22 @@ const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { updatedBy, createdBy, protectFields, validateParams } = require('../../../src/services/datasources/hooks');
 
 describe('datasources hooks', () => {
-	after(testObjects.cleanup);
+	let app;
+	let nestServices;
+
+	before(async () => {
+		app = await appPromise;
+		nestServices = await setupNestServices(app);
+	});
+
+	after(async () => {
+		testObjects.cleanup;
+		await closeNestServices(nestServices);
+	});
 
 	describe('updatedBy', () => {
 		const fut = updatedBy;

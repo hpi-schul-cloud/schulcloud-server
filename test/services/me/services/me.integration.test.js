@@ -1,6 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const commons = require('@hpi-schul-cloud/commons');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { Configuration } = commons;
 
@@ -10,6 +11,7 @@ const { expect } = chai;
 describe('me service integration tests', function test() {
 	let app;
 	let server;
+	let nestServices;
 	let configBefore;
 	let testObjects;
 	this.timeout(10000);
@@ -25,10 +27,12 @@ describe('me service integration tests', function test() {
 		testObjects = require('../../helpers/testObjects')(appPromise);
 		app = await appPromise;
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 		Configuration.reset(configBefore);
 	});
 

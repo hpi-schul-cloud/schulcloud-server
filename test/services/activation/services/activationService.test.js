@@ -13,6 +13,7 @@ const { createTestUser, createTestAccount, createTestActivation, cleanup } =
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { customErrorMessages } = util;
 
@@ -31,16 +32,19 @@ describe('activation/services activationService', () => {
 	let app;
 	let server;
 	let activationService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
 		activationService = app.service('activation');
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the activation service', () => {

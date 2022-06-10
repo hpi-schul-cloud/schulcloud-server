@@ -1,8 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const accountModel = require('../../../../src/services/account/model');
-
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
@@ -10,20 +9,23 @@ const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_
 describe('AdminUsersService', () => {
 	let app;
 	let server;
+	let nestServices;
 	let accountService;
 	let adminStudentsService;
 	let adminTeachersService;
 
 	before(async () => {
 		app = await appPromise();
-		accountService = app.service('/accounts');
 		adminStudentsService = app.service('/users/admin/students');
 		adminTeachersService = app.service('/users/admin/teachers');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+		accountService = app.service('nest-account-service');
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {
@@ -946,7 +948,7 @@ describe('AdminUsersService', () => {
 			await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params);
 
 			// then
-			const updatedAccount = await accountService.get(account._id);
+			const updatedAccount = await accountService.findById(account._id);
 			expect(updatedAccount.username).equals('foo@bar.baz');
 		});
 
@@ -964,31 +966,25 @@ describe('AdminUsersService', () => {
 				userId: user._id,
 				systemId: system._id,
 			};
-			const account = await accountModel.create(accountDetails);
+			const account = await testObjects.createTestAccount(accountDetails);
 
-			try {
-				// when
-				const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-				const params = await testObjects.generateRequestParamsFromUser(admin);
-				params.query = {};
-				await service[type](
-					user._id.toString(),
-					{
-						firstName: 'golf',
-						lastName: 'monk',
-						email: 'foo@bar.baz',
-					},
-					params
-				);
+			// when
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+			params.query = {};
+			await service[type](
+				user._id.toString(),
+				{
+					firstName: 'golf',
+					lastName: 'monk',
+					email: 'foo@bar.baz',
+				},
+				params
+			);
 
-				// then
-				const notUpdatedAccount = await accountService.get(account._id);
-				expect(notUpdatedAccount.username).equals(username);
-				await accountModel.remove({ _id: account._id });
-			} catch (err) {
-				await accountModel.remove({ _id: account._id });
-				throw err;
-			}
+			// then
+			const notUpdatedAccount = await accountService.findById(account._id);
+			expect(notUpdatedAccount.username).equals(username);
 		};
 
 		it('do not update account if from external system (student, patch)', () =>
@@ -1123,7 +1119,7 @@ describe('AdminUsersService', () => {
 				expect(err.code).to.be.equal(400);
 			}
 
-			const notUpdatedAccount = await accountService.get(account._id);
+			const notUpdatedAccount = await accountService.findById(account._id);
 			const notUpdatedUser = await service.get(user._id, params);
 			expect(notUpdatedAccount.username).equal(userMail);
 			expect(notUpdatedUser.email).to.be.equal(userMail);
@@ -1292,16 +1288,19 @@ describe('AdminTeachersService', () => {
 	let adminTeachersService;
 	let consentService;
 	let server;
+	let nestServices;
 
 	before(async () => {
-		app = await appPromise();
+		app = await appPromise;
 		adminTeachersService = app.service('/users/admin/teachers');
 		consentService = app.service('consents');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {

@@ -1,15 +1,14 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-
 const { BadRequest, Forbidden } = require('../../../../src/errors');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(
-	appPromise()
-);
+const { createTestUser, createTestAccount, createTestSystem, cleanup } =
+	require('../../helpers/testObjects')(appPromise());
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');
@@ -25,15 +24,18 @@ const existingTestAccountParameters = {
 describe('activation/hooks utils', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	function createMoodleTestServer() {

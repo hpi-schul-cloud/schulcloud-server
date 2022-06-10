@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('../rabbitmqMock');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { Configuration } = commons;
 
@@ -10,6 +11,7 @@ describe('service', () => {
 	let server;
 	let app;
 	let testObjects;
+	let nestServices;
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
@@ -26,6 +28,7 @@ describe('service', () => {
 		// eslint-disable-next-line global-require
 		app = await require('../../../../src/app')();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);
 		rabbitmqMock.reset();
@@ -37,6 +40,7 @@ describe('service', () => {
 		mockery.disable();
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('admin can trigger a schoolSync', async () => {

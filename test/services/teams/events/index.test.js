@@ -5,6 +5,7 @@ const { expect } = require('chai');
 const sleep = require('util').promisify(setTimeout);
 
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
@@ -13,14 +14,17 @@ const DELAY_TIME = 250;
 describe('Test user remove events for teams.', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('Test if own of the users is removed.', () => {

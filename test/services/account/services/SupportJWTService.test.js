@@ -6,6 +6,7 @@ const { expect } = chai;
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('supportJWTService', () => {
 	let app;
@@ -14,17 +15,20 @@ describe('supportJWTService', () => {
 	const testedPermission = 'CREATE_SUPPORT_JWT';
 
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		supportJWTService = app.service('accounts/supportJWT');
 		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the supportJWT service', () => {

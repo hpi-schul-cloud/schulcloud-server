@@ -3,12 +3,14 @@ const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
 const PORT = 0;
 
 describe('passwordRecovery service', () => {
 	let app;
+	let nestServices;
 	let passwordRecoveryService;
 
 	let server;
@@ -27,6 +29,7 @@ describe('passwordRecovery service', () => {
 		app = await appPromise();
 		passwordRecoveryService = app.service('passwordRecovery');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		savedUser = await testObjects.createTestUser();
 		savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
 		await passwordRecoveryService.create({ username: recoveryUsername });
@@ -35,6 +38,7 @@ describe('passwordRecovery service', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it.skip('should work for existing email addresses', async () => {

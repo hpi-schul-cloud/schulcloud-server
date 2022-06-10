@@ -1,14 +1,10 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
-const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
-
-const { ServerFeathersTestModule } = require('../../../../dist/apps/server/server.module');
-const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
-const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -18,29 +14,21 @@ describe('user service v2', () => {
 	let server;
 	let usersModelService;
 
-	let nestApp;
-	let orm;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
 		usersModelService = app.service('usersModel');
 
-		const module = await Test.createTestingModule({
-			imports: [ServerFeathersTestModule, AccountModule],
-		}).compile();
 		app = await appPromise;
 		server = await app.listen(0);
-		nestApp = await module.createNestApplication().init();
-		orm = nestApp.get(MikroORM);
-
-		app.services['nest-account-service'] = nestApp.get(AccountService);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
-		await nestApp.close();
-		await orm.close();
+		await closeNestServices(nestServices);
 	});
 
 	const getAuthToken = async (schoolId = undefined, role = 'administrator') => {

@@ -1,19 +1,21 @@
 const mockery = require('mockery');
 const { expect } = require('chai');
 const commons = require('@hpi-schul-cloud/commons');
-
-const { Configuration } = commons;
+const redisHelper = require('../../../../src/utils/redis');
+const { addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const redisMock = require('../../../utils/redis/redisMock');
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 
+const { Configuration } = commons;
+
 describe('authentication hooks', () => {
-	let redisHelper;
-	let addJwtToWhitelist;
-	let removeJwtFromWhitelist;
 	let configBefore = null;
 	let app;
 	let server;
-	let testObjects;
+	let nestServices;
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
@@ -33,12 +35,9 @@ describe('authentication hooks', () => {
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 		/* eslint-disable global-require */
 
-		redisHelper = require('../../../../src/utils/redis');
-		app = await require('../../../../src/app')();
+		app = await appPromise();
 		server = await app.listen(0);
-		testObjects = require('../../helpers/testObjects')(app);
-		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
-		/* eslint-enable global-require */
+		nestServices = await setupNestServices(app);
 
 		Configuration.set('REDIS_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
@@ -58,6 +57,7 @@ describe('authentication hooks', () => {
 
 		Configuration.reset(configBefore);
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('addJwtToWhitelist', async () => {

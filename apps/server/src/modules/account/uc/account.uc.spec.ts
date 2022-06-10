@@ -102,8 +102,13 @@ describe('AccountUc', () => {
 
 							return Promise.resolve();
 						}),
-						delete: (account: AccountDto): Promise<AccountDto> => {
-							return Promise.resolve(account);
+						delete: (id: EntityId): Promise<AccountDto> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.id?.toString() === id);
+
+							if (account) {
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
+							}
+							throw new EntityNotFoundError(Account.name);
 						},
 						create: (): Promise<void> => {
 							return Promise.resolve();

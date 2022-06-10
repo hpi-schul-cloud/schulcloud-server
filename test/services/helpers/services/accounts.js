@@ -7,13 +7,23 @@ const createTestAccount = (appPromise) => async (accountParameters, system, user
 		accountParameters.systemId = system._id;
 	}
 	accountParameters.userId = user._id;
-	return app
-		.service('accounts')
-		.create(accountParameters)
-		.then((account) => {
-			createdaccountsIds.push(account._id.toString());
-			return account;
-		});
+
+	const accountService = await app.service('nest-account-service');
+
+	const accountDto = {
+		username: accountParameters.username,
+		password: accountParameters.password,
+		token: accountParameters.token,
+		credentialHash: accountParameters.credentialHash,
+		userId: accountParameters.userId,
+		systemId: accountParameters.systemId,
+		lasttriedFailedLogin: accountParameters.lasttriedFailedLogin,
+		expiresAt: accountParameters.expiresAt,
+		activated: accountParameters.activated,
+	};
+	const createdAccount = await accountService.create(accountDto);
+	createdaccountsIds.push(createdAccount.id.toString());
+	return createdAccount;
 };
 
 const cleanup = (appPromise) => async () => {
@@ -23,7 +33,8 @@ const cleanup = (appPromise) => async () => {
 	}
 	const ids = createdaccountsIds;
 	createdaccountsIds = [];
-	return ids.map((id) => app.service('accounts').remove(id));
+	const accountService = await app.service('nest-account-service');
+	return ids.map((id) => accountService.delete(id));
 };
 
 module.exports = (app, opt) => ({
