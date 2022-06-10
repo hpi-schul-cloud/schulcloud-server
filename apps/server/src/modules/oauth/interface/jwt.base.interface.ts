@@ -1,5 +1,5 @@
 export interface IJWT {
-	sub?: string;
+	sub: string;
 	iat?: bigint;
 	exp?: bigint;
 	iss?: string;

@@ -93,15 +93,16 @@ export class OAuthService {
 
 	async findUser(decodedJwt: IJWT, systemId: string): Promise<User> {
 		let user: User;
-		// if iserv strategy:
 		const system: System = await this.systemRepo.findById(systemId);
+		// iserv strategy
 		if (system.oauthConfig.provider === 'iserv') {
 			const uuid = this.iservOauthService.extractUUID(decodedJwt);
 			user = await this.iservOauthService.findUserById(uuid, systemId);
 			return user;
 		}
 		// TODO in general
-		user = await this.userRepo.findById(decodedJwt.uuid);
+		// not working
+		user = await this.userRepo.findById(decodedJwt.sub);
 		return user;
 	}
 
@@ -110,25 +111,28 @@ export class OAuthService {
 		return jwtResponse;
 	}
 
-	// buildRedirect(response: OAuthResponse): string {
-	// 	const HOST = Configuration.get('HOST') as string;
-	// 	let redirect: string;
-	// 	let oauthResponse: OAuthResponse;
-	// 	try {
-	// 		if (response.provider === 'iserv') {
-	// 			const idToken = response.idToken as string;
-	// 			const logoutEndpoint = response.logoutEndpoint as string;
-	// 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
-	// 		} else {
-	// 			redirect = `${HOST}/dashboard`;
-	// 		}
-	// 		return redirect;
-	// 	} catch (error) {
-	// 		this.logger.error(error);
-	// 		oauthResponse = new OAuthResponse();
-	// 		if (error instanceof OAuthSSOError) oauthResponse.errorcode = error.errorcode;
-	// 		else oauthResponse.errorcode = 'oauth_login_failed';
-	// 	}
-	// 	return `${HOST}/login?error=${oauthResponse.errorcode}`;
-	// }
+	getRedirect(response: OAuthResponse): OAuthResponse {
+		const HOST = Configuration.get('HOST') as string;
+		let redirect: string;
+		let oauthResponse: OAuthResponse = new OAuthResponse();
+		try {
+			// iserv strategy
+			if (response.provider === 'iserv') {
+				const idToken = response.idToken as string;
+				const logoutEndpoint = response.logoutEndpoint as string;
+				redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
+			} else {
+				redirect = `${HOST}/dashboard`;
+			}
+			oauthResponse.redirect = redirect;
+			return oauthResponse;
+		} catch (error) {
+			this.logger.error(error);
+			oauthResponse = new OAuthResponse();
+			if (error instanceof OAuthSSOError) oauthResponse.errorcode = error.errorcode;
+			else oauthResponse.errorcode = 'oauth_login_failed';
+		}
+		oauthResponse.redirect = `${HOST}/login?error=${oauthResponse.errorcode}`;
+		return oauthResponse;
+	}
 }

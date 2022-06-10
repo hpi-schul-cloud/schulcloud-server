@@ -37,21 +37,16 @@ export class OauthUc {
 
 		const user: User = await this.oauthService.findUser(decodedToken, systemId);
 
-		// const uuid: string = this.oauthService.extractUUID(decodedToken);
-
-		// const user: User = await this.oauthService.findUserById(uuid, systemId);
-
 		const jwtResponse: string = await this.oauthService.getJWTForUser(user);
 
 		const response: OAuthResponse = new OAuthResponse();
-		response.jwt = jwtResponse;
 		response.idToken = queryToken.id_token;
 		response.logoutEndpoint = system.oauthConfig.logoutEndpoint;
 		response.provider = system.oauthConfig.provider;
 
-		return response;
+		const oauthResponse = this.oauthService.getRedirect(response);
+		oauthResponse.jwt = jwtResponse;
 
-		// const ooauthRedirect = this.oauthService.buildRedirect(response);
-		// return oauthRedirect;
+		return oauthResponse;
 	}
 }
