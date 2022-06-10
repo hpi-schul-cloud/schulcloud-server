@@ -1,5 +1,4 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { School } from '@shared/domain/entity/school.entity';
 import { IEntityWithSchool } from '../interface';
 import { ILearnroomElement } from '../interface/learnroom';
