@@ -115,7 +115,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const response = await api.patch(`${fileRecord.id}`, { fileName: undefined });
 			expect(response.error.validationErrors).toEqual([
 				{
-					errors: ['fileName must be a string'],
+					errors: ['fileName should not be empty', 'fileName must be a string'],
 					field: 'fileName',
 				},
 			]);
