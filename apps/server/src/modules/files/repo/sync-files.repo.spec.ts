@@ -4,8 +4,8 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
 import { SyncFilesRepo } from './sync-files.repo';
 
-// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 // This repo is used for syncing the new filerecords collection with the old files collection.
+// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 
 describe('SyncTaskRepo', () => {
 	let module: TestingModule;
@@ -44,7 +44,7 @@ describe('SyncTaskRepo', () => {
 			const file = fileFactory.build();
 			await em.persistAndFlush(file);
 			const task = taskFactory.build({ name: 'task with file' });
-			task.fileIds = [file._id];
+			task.files.add(file);
 			await em.persistAndFlush(task);
 
 			const result = await repo.findTaskFilesToSync();
@@ -61,7 +61,7 @@ describe('SyncTaskRepo', () => {
 			await em.persistAndFlush(filerecord);
 			await repo.saveAssociation(file._id.toHexString(), filerecord._id.toHexString());
 			const task = taskFactory.build({ name: 'task with file' });
-			task.fileIds = [file._id];
+			task.files.add(file);
 			await em.persistAndFlush(task);
 
 			const result = await repo.findTaskFilesToSync();
@@ -77,7 +77,7 @@ describe('SyncTaskRepo', () => {
 			await em.persistAndFlush(filerecord);
 			await repo.saveAssociation(file._id.toHexString(), filerecord._id.toHexString());
 			const task = taskFactory.build({ name: 'task with file' });
-			task.fileIds = [file._id];
+			task.files.add(file);
 			await em.persistAndFlush(task);
 
 			const result = await repo.findTaskFilesToSync();
