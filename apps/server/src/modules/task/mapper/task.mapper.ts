@@ -12,6 +12,7 @@ export class TaskMapper {
 			id: task.id,
 			name: task.name,
 			courseName: taskDesc.courseName,
+			courseId: taskDesc.courseId,
 			createdAt: task.createdAt,
 			updatedAt: task.updatedAt,
 			status: statusDto,

@@ -31,8 +31,10 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Make changes to the database here.
-		// Hint: Access models via this('modelName'), not an imported model to have
-		// access to the correct database connection. Otherwise Mongoose calls never return.
+		// - Only use models declared in the migration.
+		// - Make sure your migration is idempotent. It is not guaranteed to run only once!
+		// - Avoid any unnecessary references, including environment variables. If you have to run the migration on a single instance, use SC_THEME.
+
 		await User.findOneAndUpdate(
 			{
 				firstName: 'Marla',
