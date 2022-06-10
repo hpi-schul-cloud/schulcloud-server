@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { FileRecord } from '@shared/domain';

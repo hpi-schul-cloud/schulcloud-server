@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';

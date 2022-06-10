@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ScanStatus } from '@shared/domain';
 import { FileSecurityCheckData, SyncSourceFileSecurityCheck } from '../types';
 

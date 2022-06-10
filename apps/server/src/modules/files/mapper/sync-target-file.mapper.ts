@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { FileRecord } from '@shared/domain';
 import { SyncTargetFile } from '../types';
 

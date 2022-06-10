@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FilePermissionData, FileSecurityCheckData, SyncSourceFile, SyncSourceFileData } from '../types';
 import { FileSecurityCheckMapper } from './file-security-check.mapper';

@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Logger } from '@src/core/logger';
 import { Command, Console } from 'nestjs-console';
 import { SyncFilesUc } from '../uc/sync-files.uc';

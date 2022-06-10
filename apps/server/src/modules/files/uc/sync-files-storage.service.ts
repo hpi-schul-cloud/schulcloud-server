@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';

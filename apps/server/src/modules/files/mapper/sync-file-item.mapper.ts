@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { SyncFileItem, SyncFileItemData, SyncSourceFileData } from '../types';
