@@ -20,12 +20,13 @@ export class SyncFilesConsole {
 				} with aggregationSize = ${aggregationSize} and numParallelPromises = ${numParallelPromises}`
 			);
 			// eslint-disable-next-line no-await-in-loop
-			itemsFound = await this.syncFilesUc.syncFilesForTasks({
-				aggregationSize: Number(aggregationSize),
-				numParallelPromises: Number(numParallelPromises),
-				aggregationsCounter,
-				fileCounter: aggregationsCounter * Number(aggregationSize),
-			});
+			itemsFound = await this.syncFilesUc.syncFilesForTasks(
+				{
+					aggregationSize: Number(aggregationSize),
+					numParallelPromises: Number(numParallelPromises),
+				},
+				{ fileCounter: aggregationsCounter * Number(aggregationSize) }
+			);
 			aggregationsCounter += 1;
 		} while (itemsFound > 0);
 	}

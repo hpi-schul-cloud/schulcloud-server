@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
-import { SyncContext, SyncFileItem } from '../types';
+import { SyncContext, SyncOptions, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -16,20 +16,20 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
-	async syncFilesForTasks(context: SyncContext): Promise<number> {
-		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(context.aggregationSize);
+	async syncFilesForTasks(options: SyncOptions, context: SyncContext): Promise<number> {
+		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(options.aggregationSize);
 		const numFound = itemsToSync.length;
 
 		await Promise.all(
-			Array.from({ length: context.numParallelPromises }).map(async (o, i) => {
-				await this.syncBatch(i, itemsToSync, context);
+			Array.from({ length: options.numParallelPromises }).map(async () => {
+				await this.syncBatch(itemsToSync, context);
 			})
 		);
 
 		return numFound;
 	}
 
-	private async syncBatch(i: number, itemsToSync: SyncFileItem[], context: SyncContext): Promise<void> {
+	private async syncBatch(itemsToSync: SyncFileItem[], context: SyncContext): Promise<void> {
 		let item: SyncFileItem | undefined;
 		do {
 			item = itemsToSync.shift();
