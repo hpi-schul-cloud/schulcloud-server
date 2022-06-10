@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { EntityId, ScanStatus } from '@shared/domain';
 
 export class SyncSourceFile {

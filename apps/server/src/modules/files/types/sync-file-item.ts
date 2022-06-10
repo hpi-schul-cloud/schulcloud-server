@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
 import { SyncSourceFile } from './sync-source-file';
 import { SyncTargetFile } from './sync-target-file';

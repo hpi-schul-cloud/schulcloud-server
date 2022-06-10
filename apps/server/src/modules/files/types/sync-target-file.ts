@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { EntityId } from '@shared/domain';
 
 export class SyncTargetFile {
