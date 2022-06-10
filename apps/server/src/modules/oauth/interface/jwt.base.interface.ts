@@ -10,5 +10,5 @@ export interface IJWT {
 	gender?: string;
 	birthdate?: string;
 	email?: string;
-	uuid?: string;
+	uuid: string;
 }

@@ -26,6 +26,10 @@ export class OauthSSOController {
 		const HOST = Configuration.get('HOST') as string;
 		try {
 			oauthResponse = await this.oauthUc.startOauth(query, systemid);
+			// oauthResponse = await this.oauthUc.startOauth(query, systemid);
+			// if (oauthResponse.jwt && oauthResonse.redirect) {
+			// res.cookie('jwt', oauthResponse.jwt);
+			// return res.redirect(oauthResponse.redirect);
 			if (oauthResponse.jwt) {
 				res.cookie('jwt', oauthResponse.jwt);
 				if (oauthResponse.provider === 'iserv') {

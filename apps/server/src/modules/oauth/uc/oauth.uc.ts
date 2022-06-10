@@ -50,5 +50,8 @@ export class OauthUc {
 		response.provider = system.oauthConfig.provider;
 
 		return response;
+
+		// const ooauthRedirect = this.oauthService.buildRedirect(response);
+		// return oauthRedirect;
 	}
 }

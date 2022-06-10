@@ -25,4 +25,9 @@ export class OAuthResponse {
 	@IsString()
 	@IsNotEmpty()
 	provider?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	redirect?: string;
 }

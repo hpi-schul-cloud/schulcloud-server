@@ -9,6 +9,7 @@ import { Inject } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { TokenRequestPayloadMapper } from './mapper/token-request-payload.mapper';
 import { TokenRequestPayload } from './controller/dto/token-request.payload';
 import { OAuthSSOError } from './error/oauth-sso.error';
@@ -17,6 +18,7 @@ import { OauthTokenResponse } from './controller/dto/oauth-token.response';
 import { FeathersJwtProvider } from '../authorization';
 import { IservOAuthService } from './iserv-oauth.service';
 import { IJWT } from './interface/jwt.base.interface';
+import { OAuthResponse } from './controller/dto/oauth.response';
 
 @Injectable()
 export class OAuthService {
@@ -99,7 +101,7 @@ export class OAuthService {
 			return user;
 		}
 		// TODO in general
-
+		user = await this.userRepo.findById(decodedJwt.uuid);
 		return user;
 	}
 
@@ -107,4 +109,26 @@ export class OAuthService {
 		const jwtResponse: string = await this.jwtService.generateJwt(user.id);
 		return jwtResponse;
 	}
+
+	// buildRedirect(response: OAuthResponse): string {
+	// 	const HOST = Configuration.get('HOST') as string;
+	// 	let redirect: string;
+	// 	let oauthResponse: OAuthResponse;
+	// 	try {
+	// 		if (response.provider === 'iserv') {
+	// 			const idToken = response.idToken as string;
+	// 			const logoutEndpoint = response.logoutEndpoint as string;
+	// 			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
+	// 		} else {
+	// 			redirect = `${HOST}/dashboard`;
+	// 		}
+	// 		return redirect;
+	// 	} catch (error) {
+	// 		this.logger.error(error);
+	// 		oauthResponse = new OAuthResponse();
+	// 		if (error instanceof OAuthSSOError) oauthResponse.errorcode = error.errorcode;
+	// 		else oauthResponse.errorcode = 'oauth_login_failed';
+	// 	}
+	// 	return `${HOST}/login?error=${oauthResponse.errorcode}`;
+	// }
 }
