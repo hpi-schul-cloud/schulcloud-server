@@ -5,7 +5,7 @@ const chaiAsPromised = require('chai-as-promised');
 const sinonChai = require('sinon-chai');
 const userUC = require('./users.uc');
 
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { userRepo, trashbinRepo } = require('../repo/index');
 const errorUtils = require('../../../errors/utils');
 const { facadeLocator } = require('../../../utils/facadeLocator');
 const { trashBinResult } = require('../../helper/uc.helper');
@@ -103,10 +103,10 @@ describe('users usecase', () => {
 
 		sinon.stub(userRepo, 'replaceUserWithTombstone');
 
-		getUserAccountStub = sinon.stub(accountRepo, 'getUserAccount');
-		getUserAccountStub.callsFake((userId = USER_ID) => createTestAccount(userId));
-
-		sinon.stub(accountRepo, 'deleteAccountForUserId');
+		const accountService = { findByUserId() {}, deleteByUserId() {} };
+		sinon.stub(accountService, 'findByUserId').callsFake((userId = USER_ID) => createTestAccount(userId));
+		sinon.stub(accountService, 'deleteByUserId');
+		userUC.initialize(accountService);
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));

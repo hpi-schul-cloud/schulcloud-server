@@ -6,6 +6,10 @@ const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 const { trashBinResult, grantPermissionsForSchool } = require('../../helper/uc.helper');
 
+const initialize = async (service) => {
+	this.accountService = service;
+};
+
 const getSchoolIdOfUser = async (userId) => {
 	const user = await userRepo.getUser(userId);
 	return user.schoolId;
@@ -33,7 +37,7 @@ const getUserData = async (id) => {
 		data: user,
 	});
 
-	const account = await this.app.service('nest-account-service').findByUserId(id);
+	const account = await this.accountService.findByUserId(id);
 	returnArray.push({
 		scope: 'account',
 		data: account,
@@ -82,7 +86,7 @@ const replaceUserWithTombstone = async (user) => {
 		deletedAt: new Date(),
 		schoolId,
 	});
-	await this.app.service('nest-account-service').deleteByUserId(_id);
+	await this.accountService.deleteByUserId(_id);
 	return { success: true };
 };
 
@@ -190,4 +194,5 @@ module.exports = {
 	replaceUserWithTombstone,
 	userHaveSameSchool,
 	getOrCreateTombstoneUserId,
+	initialize,
 };

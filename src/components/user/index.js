@@ -3,6 +3,7 @@ const path = require('path');
 const serviceLayer = require('./services');
 const setupUserFacade = require('./uc/users.facade');
 const setupRegistrationPinFacade = require('./uc/registrationPin.facade');
+const userUc = require('./uc/users.uc');
 
 const { registerApiValidation } = require('../../utils/apiValidation');
 
@@ -12,4 +13,5 @@ module.exports = (app) => {
 	app.configure(serviceLayer);
 	setupUserFacade(app);
 	setupRegistrationPinFacade(app);
+	userUc.initialize(app.service('nest-account-service'));
 };

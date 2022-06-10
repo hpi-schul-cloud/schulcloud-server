@@ -120,6 +120,7 @@ const updateAccountUsername = async (context) => {
 		return context;
 	}
 
+	// TODO ES-256
 	await app
 		.service('/accounts')
 		// set account in params to context.parmas.account to reference the current user
