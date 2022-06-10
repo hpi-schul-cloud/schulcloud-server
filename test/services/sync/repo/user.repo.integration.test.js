@@ -184,8 +184,10 @@ describe('user repo', () => {
 				ldapDns.map((ldapDn) => testObjects.createTestUser({ ldapDn, schoolId: school._id }))
 			);
 			const res = await UserRepo.findByLdapDnsAndSchool(ldapDns, school._id);
-			expect(res[0]._id.toString()).to.be.equal(createdUsers[0]._id.toString());
-			expect(res[1]._id.toString()).to.be.equal(createdUsers[1]._id.toString());
+			const user1 = res.filter((user) => createdUsers[0]._id.toString() === user._id.toString());
+			const user2 = res.filter((user) => createdUsers[1]._id.toString() === user._id.toString());
+			expect(user1).not.to.be.undefined;
+			expect(user2).not.to.be.undefined;
 		});
 	});
 

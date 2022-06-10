@@ -1,16 +1,7 @@
 const { expect } = require('chai');
-const { MikroORM } = require('@mikro-orm/core');
-const { Test } = require('@nestjs/testing');
-
-// run 'npm run nest:build' for the following imports to work,
-// this is a workaround to make TypeScript modules available in JavaScript
-const { ServerFeathersTestModule } = require('../../../../dist/apps/server/server.module');
-const { AccountModule } = require('../../../../dist/apps/server/modules/account/account.module');
-const { AccountUc } = require('../../../../dist/apps/server/modules/account/uc/account.uc');
-const { AccountService } = require('../../../../dist/apps/server/modules/account/services/account.service');
-
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
+const { setupNestServices } = require('../../../utils/setup.nest.services');
 
 describe('skipRegistration service', () => {
 	let skipRegistrationService;
@@ -20,22 +11,16 @@ describe('skipRegistration service', () => {
 	let orm;
 
 	before(async () => {
-		const module = await Test.createTestingModule({
-			imports: [ServerFeathersTestModule, AccountModule],
-		}).compile();
 		app = await appPromise;
 		skipRegistrationService = app.service('/users/:userId/skipregistration');
 		server = await app.listen(0);
-		nestApp = await module.createNestApplication().init();
-		orm = nestApp.get(MikroORM);
-		app.services['nest-account-uc'] = nestApp.get(AccountUc);
-		app.services['nest-account-service'] = nestApp.get(AccountService);
+		({ nestApp, orm } = await setupNestServices(app));
 	});
 
 	after(async () => {
 		await server.close();
-		await nestApp.close();
 		await orm.close();
+		await nestApp.close();
 	});
 
 	it('registered the users service', () => {
