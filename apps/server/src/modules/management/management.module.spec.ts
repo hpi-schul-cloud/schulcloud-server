@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DatabaseManagementController } from './controller/database-management.controller';
-import { ManagementServerTestModule } from './management-server.module';
-import { ManagementModule } from './management.module';
+import { ManagementServerTestModule, ManagementServerModule } from './management-server.module';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
 describe('ManagementModule', () => {
@@ -12,7 +11,7 @@ describe('ManagementModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ManagementModule],
+			imports: [ManagementServerModule],
 		}).compile();
 
 		service = module.get(DatabaseManagementUc);
