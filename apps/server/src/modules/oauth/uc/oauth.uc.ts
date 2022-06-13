@@ -1,52 +1,22 @@
-import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
-import { System, User } from '@shared/domain';
-import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
-import { UserRepo } from '@shared/repo';
-import { SystemRepo } from '@shared/repo/system';
+import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
-import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
-import { OAuthResponse } from '../controller/dto/oauth.response';
-import { IJWT } from '../interface/jwt.base.interface';
-import { OAuthService } from '../oauth.service';
+import { OAuthResponse } from '../service/dto/oauth.response';
+import { OAuthService } from '../service/oauth.service';
 
 @Injectable()
 export class OauthUc {
-	constructor(
-		private readonly systemRepo: SystemRepo,
-		private readonly userRepo: UserRepo,
-		private readonly jwtService: FeathersJwtProvider,
-		private httpService: HttpService,
-		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
-		private readonly oauthService: OAuthService,
-		private logger: Logger
-	) {
+	constructor(private readonly oauthService: OAuthService, private logger: Logger) {
 		this.logger.setContext(OauthUc.name);
 	}
 
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		const code: string = this.oauthService.checkAuthorizationCode(query);
-
-		const system: System = await this.systemRepo.findById(systemId);
-
-		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(code, system);
-
-		const decodedToken: IJWT = await this.oauthService.validateToken(queryToken.id_token, system);
-
-		const user: User = await this.oauthService.findUser(decodedToken, systemId);
-
-		const jwtResponse: string = await this.oauthService.getJWTForUser(user);
-
-		const response: OAuthResponse = new OAuthResponse();
-		response.idToken = queryToken.id_token;
-		response.logoutEndpoint = system.oauthConfig.logoutEndpoint;
-		response.provider = system.oauthConfig.provider;
-
-		const oauthResponse = this.oauthService.getRedirect(response);
-		oauthResponse.jwt = jwtResponse;
-
+		let oauthResponse: OAuthResponse;
+		try {
+			oauthResponse = await this.oauthService.processOauth(query.code as string, query.error as string, systemId);
+		} catch (error) {
+			oauthResponse = this.oauthService.getOAuthError(error);
+		}
 		return oauthResponse;
 	}
 }

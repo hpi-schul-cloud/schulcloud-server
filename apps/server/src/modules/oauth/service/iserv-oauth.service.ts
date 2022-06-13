@@ -2,19 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { HttpService } from '@nestjs/axios';
-import { FeathersJwtProvider } from '../authorization';
-import { OAuthSSOError } from './error/oauth-sso.error';
-import { IJWT } from './interface/jwt.base.interface';
+import { OAuthSSOError } from '../error/oauth-sso.error';
+import { IJWT } from '../interface/jwt.base.interface';
 
 @Injectable()
 export class IservOAuthService {
-	constructor(
-		private readonly userRepo: UserRepo,
-		private readonly jwtService: FeathersJwtProvider,
-		private httpService: HttpService,
-		private logger: Logger
-	) {
+	constructor(private readonly userRepo: UserRepo, private logger: Logger) {
 		this.logger.setContext(IservOAuthService.name);
 	}
 
