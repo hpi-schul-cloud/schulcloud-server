@@ -23,6 +23,7 @@ export class OauthConfig {
 		this.logoutEndpoint = system.oauthConfig.logoutEndpoint;
 		this.issuer = system.oauthConfig.issuer;
 		this.jwksEndpoint = system.oauthConfig.jwksEndpoint;
+		this.codeRedirectUri = system.oauthConfig.codeRedirectUri;
 	}
 
 	@Property()
@@ -60,6 +61,9 @@ export class OauthConfig {
 
 	@Property()
 	jwksEndpoint: string;
+
+	@Property()
+	codeRedirectUri: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
