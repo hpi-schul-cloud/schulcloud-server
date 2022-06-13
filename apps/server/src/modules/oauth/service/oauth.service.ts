@@ -18,6 +18,7 @@ import { FeathersJwtProvider } from '../../authorization';
 import { IservOAuthService } from './iserv-oauth.service';
 import { IJWT } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
+import { AuthorizationParams } from '../controller/dto/authorization.params';
 
 @Injectable()
 export class OAuthService {
@@ -37,12 +38,12 @@ export class OAuthService {
 	 * @query query input that has either a code or an error
 	 * @return authorization code or throws an error
 	 */
-	checkAuthorizationCode(code: string, error: string): string {
-		if (code) return code;
+	checkAuthorizationCode(query: AuthorizationParams): string {
+		if (query.code) return query.code;
 		let errorCode = 'sso_auth_code_step';
-		if (error) {
-			errorCode = `sso_oauth_${error}`;
-			this.logger.error(`SSO Oauth authorization code request return with an error: ${code}`);
+		if (query.error) {
+			errorCode = `sso_oauth_${query.error}`;
+			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.error}`);
 		}
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
