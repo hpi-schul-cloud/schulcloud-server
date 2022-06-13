@@ -108,6 +108,12 @@ describe('task copy uc', () => {
 			expect(courseSpy).toBeCalledWith(course.id);
 		});
 
+		it('should pass without destination course', async () => {
+			const { user, task, courseSpy } = setup();
+			await uc.copyTask(user.id, task.id, {});
+			expect(courseSpy).not.toHaveBeenCalled();
+		});
+
 		it('should check authorisation for task', async () => {
 			const { course, user, task, authSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
@@ -121,6 +127,15 @@ describe('task copy uc', () => {
 			const { course, user, task, authSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
 			expect(authSpy).toBeCalledWith(user, course, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
+
+		it('should pass authorisation check without destination course', async () => {
+			const { course, user, task, authSpy } = setup();
+			await uc.copyTask(user.id, task.id, {});
+			expect(authSpy).not.toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
