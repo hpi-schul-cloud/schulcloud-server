@@ -1,8 +1,5 @@
 import { Collection } from '@mikro-orm/core';
-import {
-	Injectable,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
 import { IEntity, IEntityWithSchool } from '../interface';

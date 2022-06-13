@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { PermissionService } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { jwtConstants } from './constants';
 import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
