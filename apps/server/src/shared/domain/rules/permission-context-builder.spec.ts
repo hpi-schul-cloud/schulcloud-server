@@ -37,7 +37,7 @@ describe('PermissionContextBuilder', () => {
 	});
 
 	it('Should have a shorthand for permission only.', () => {
-		const context = PermissionContextBuilder.permission([]);
+		const context = PermissionContextBuilder.permissionOnly([]);
 
 		expect(context.action).toBeUndefined();
 	});

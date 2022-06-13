@@ -21,7 +21,7 @@ class Builder {
 		return context;
 	}
 
-	permission(requiredPermissions: Permission[]): IPermissionContext {
+	permissionOnly(requiredPermissions: Permission[]): IPermissionContext {
 		const context = this.build(requiredPermissions, undefined);
 
 		return context;
