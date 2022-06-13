@@ -19,7 +19,7 @@ const getProductionFormat = () =>
 		format.errors({ stack: true }),
 		format.timestamp(),
 		addType,
-		format.prettyPrint({ depth: 3, colorize: false })
+		format.json()
 	);
 
 const getDevelopFormat = () =>
