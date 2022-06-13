@@ -114,6 +114,8 @@ export class AuthorisationUtils {
 		return res;
 	}
 
+	// todo: hasAccessToDomainObject
+
 	isSameSchool(user: User, entity: IEntityWithSchool) {
 		return user.school === entity.school;
 	}
@@ -146,7 +148,7 @@ enum ErrorMessage {
 	MULTIPLE_MATCHES_ARE_NOT_ALLOWED = 'MULTIPLE_MATCHES_ARE_NOT_ALLOWED',
 }
 
-export class SingleMatchStrategie {
+export class SingleSelectStrategie {
 	errorMessage = ErrorMessage;
 
 	match(layers: BasePermission[]): BasePermission {
@@ -160,28 +162,20 @@ export class SingleMatchStrategie {
 	}
 }
 
-type PermissionTypes = BaseDomainObject | BaseEntity;
+export type PermissionTypes = BaseDomainObject | BaseEntity;
 
 export abstract class BasePermission<T = PermissionTypes> implements IPermission<T> {
 	public utils = new AuthorisationUtils();
 
 	public abstract isApplicable(user: User, entity: T, context?: IPermissionContext): boolean;
 
-	/*
-	public isApplicable(user: User, entity: permissionTypes, context?: IPermissionContext): boolean {
-		const isMatched = this.instance.constructor.name === entity.constructor.name;
-
-		return isMatched;
-	} */
-
-	public abstract hasPermission(user: User, entity: T, context?: IPermissionContext): boolean;
+	public abstract hasPermission(user: User, entity: T, context: IPermissionContext): boolean;
 }
 
-// I like public this.utils = new AuthorisationUtils
 export abstract class BasePermissionManager extends AuthorisationUtils implements IPermission {
 	protected permissions: BasePermission[] = [];
 
-	protected matchStrategie = new SingleMatchStrategie();
+	protected selectStrategie = new SingleSelectStrategie();
 
 	private selectPermissions(user: User, entity: PermissionTypes, context?: IPermissionContext): BasePermission[] {
 		const permissions = this.permissions.filter((publisher) => publisher.isApplicable(user, entity, context));
@@ -193,9 +187,9 @@ export abstract class BasePermissionManager extends AuthorisationUtils implement
 		this.permissions = [...this.permissions, ...permissions];
 	}
 
-	hasPermission(user: User, entity: PermissionTypes, context?: IPermissionContext) {
+	hasPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		const permissions = this.selectPermissions(user, entity, context);
-		const permission = this.matchStrategie.match(permissions);
+		const permission = this.selectStrategie.match(permissions);
 
 		const hasPermission = permission.hasPermission(user, entity, context);
 
