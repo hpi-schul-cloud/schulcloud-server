@@ -4,7 +4,11 @@ enum ErrorMessage {
 	MULTIPLE_MATCHES_ARE_NOT_ALLOWED = 'MULTIPLE_MATCHES_ARE_NOT_ALLOWED',
 }
 
-export class SingleSelectStrategie<T> {
+export interface ISelectStrategie<T> {
+	match(layers: T[]);
+}
+
+export class SingleSelectStrategie<T> implements ISelectStrategie<T> {
 	errorMessage = ErrorMessage;
 
 	match(layers: T[]): T {
