@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, ALL_RULES, BaseEntity, UserRule } from '@shared/domain';
+import { Actions, ALL_RULES, BaseEntity } from '@shared/domain';
 import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { AuthorizationService, ErrorMessages } from './authorization.service';
+import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -39,61 +39,6 @@ describe('authorization.service', () => {
 		await orm.close();
 	});
 
-	describe('checkCondition', () => {
-		it('throw an error if no rule exist', () => {
-			const user = userFactory.build();
-			const entity = new TestEntity();
-
-			const exec = () => {
-				service.checkCondition(user, entity, context);
-			};
-			expect(exec).toThrowError(new NotImplementedException(ErrorMessages.RULE_NOT_IMPLEMENT));
-		});
-
-		it('throw an error by multiple matches ', () => {
-			const user = userFactory.build();
-			service.permissionPublisher.push(new UserRule());
-
-			const exec = () => {
-				service.checkCondition(user, user, context);
-			};
-			expect(exec).toThrowError(new InternalServerErrorException(ErrorMessages.MULTIPLE_MATCHES_ARE_NOT_ALLOWED));
-
-			service.permissionPublisher.pop();
-		});
-
-		it('can resolve tasks', () => {
-			const user = userFactory.build();
-			const task = taskFactory.build({ creator: user });
-
-			const response = service.checkCondition(user, task, context);
-			expect(response).toBe(true);
-		});
-
-		it('can resolve courses', () => {
-			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
-
-			const response = service.checkCondition(user, course, context);
-			expect(response).toBe(true);
-		});
-
-		it('can resolve school', () => {
-			const school = schoolFactory.build();
-			const user = userFactory.build({ school });
-
-			const response = service.checkCondition(user, school, context);
-			expect(response).toBe(true);
-		});
-
-		it('can resolve user', () => {
-			const user = userFactory.build();
-
-			const response = service.checkCondition(user, user, context);
-			expect(response).toBe(true);
-		});
-	});
-
 	describe('hasPermission', () => {
 		it('throw an error if no rule exist', () => {
 			const user = userFactory.build();
@@ -103,18 +48,6 @@ describe('authorization.service', () => {
 				service.hasPermission(user, entity, context);
 			};
 			expect(exec).toThrowError(NotImplementedException);
-		});
-
-		it('throw an error by multiple matches ', () => {
-			const user = userFactory.build();
-			service.permissionPublisher.push(new UserRule());
-
-			const exec = () => {
-				service.hasPermission(user, user, context);
-			};
-			expect(exec).toThrowError(new InternalServerErrorException(ErrorMessages.MULTIPLE_MATCHES_ARE_NOT_ALLOWED));
-
-			service.permissionPublisher.pop();
 		});
 
 		it('can resolve tasks', () => {

@@ -1,63 +1,26 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { AuthorisationUtils, CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule } from '@shared/domain';
-import { IEntity, IPermissionContext, PermissionPublisher, PermissionAdapter } from '@shared/domain/interface';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule, BasePermissionManager } from '@shared/domain';
+import { IEntity, IPermissionContext } from '@shared/domain/interface';
+import { BaseDomainObject } from '@shared/domain/interface/domain-object';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
-export enum ErrorMessages {
-	RULE_NOT_IMPLEMENT = 'RULE_NOT_IMPLEMENT',
-	MULTIPLE_MATCHES_ARE_NOT_ALLOWED = 'MULTIPLE_MATCHES_ARE_NOT_ALLOWED',
-}
+type PermissionRelations = IEntity | BaseDomainObject;
 
 @Injectable()
-export class AuthorizationService extends AuthorisationUtils implements PermissionAdapter {
-	permissionPublisher: PermissionPublisher[];
-
+export class AuthorizationService extends BasePermissionManager {
 	constructor(
 		private readonly courseRule: CourseRule,
 		private readonly taskRule: TaskRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly userRule: UserRule,
-		private readonly service: ReferenceLoader
+		private readonly loader: ReferenceLoader
 	) {
 		super();
-
-		this.permissionPublisher = [this.courseRule, this.taskRule, this.userRule, this.schoolRule];
+		this.registerPermissions([this.courseRule, this.taskRule, this.userRule, this.schoolRule]);
 	}
 
-	private interpretLayerMatches(layers: PermissionPublisher[]): PermissionPublisher {
-		if (layers.length === 0) {
-			throw new NotImplementedException(ErrorMessages.RULE_NOT_IMPLEMENT);
-		}
-		if (layers.length > 1) {
-			throw new InternalServerErrorException(ErrorMessages.MULTIPLE_MATCHES_ARE_NOT_ALLOWED);
-		}
-		return layers[0];
-	}
-
-	resolveLayer(user: User, entity: IEntity, context?: IPermissionContext): PermissionPublisher {
-		const layers = this.permissionPublisher.filter((rule) => rule.checkCondition(user, entity, context));
-
-		const layer = this.interpretLayerMatches(layers);
-
-		return layer;
-	}
-
-	checkCondition(user: User, entity: IEntity, context: IPermissionContext): boolean {
-		this.resolveLayer(user, entity, context);
-
-		return true;
-	}
-
-	hasPermission(user: User, entity: IEntity, context: IPermissionContext): boolean {
-		const layer = this.resolveLayer(user, entity, context);
-
-		const hasPermission = layer.hasPermission(user, entity, context);
-
-		return hasPermission;
-	}
-
-	checkPermission(user: User, entity: IEntity, context: IPermissionContext) {
+	checkPermission(user: User, entity: PermissionRelations, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}
@@ -70,8 +33,8 @@ export class AuthorizationService extends AuthorisationUtils implements Permissi
 		context: IPermissionContext
 	): Promise<boolean> {
 		const [user, entity] = await Promise.all([
-			this.service.getUserWithPermissions(userId),
-			this.service.loadEntity(entityName, entityId),
+			this.loader.getUserWithPermissions(userId),
+			this.loader.loadEntity(entityName, entityId),
 		]);
 		const permission = this.hasPermission(user, entity, context);
 
@@ -90,6 +53,6 @@ export class AuthorizationService extends AuthorisationUtils implements Permissi
 	}
 
 	async getUserWithPermissions(userId: EntityId) {
-		return this.service.getUserWithPermissions(userId);
+		return this.loader.getUserWithPermissions(userId);
 	}
 }

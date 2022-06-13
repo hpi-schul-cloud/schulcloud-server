@@ -1,17 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '../entity';
-import { IEntity, PermissionPublisher } from '../interface';
+import type { User } from '../entity';
+import { Course } from '../entity';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { AuthorisationUtils } from './base.rule';
+import { BasePermission } from './base.rule';
 
 @Injectable()
-export class CourseRule extends AuthorisationUtils implements PermissionPublisher {
-	hasPermission(user: User, entity: Course, context: IPermissionContext): boolean {
+export class CourseRule extends BasePermission<Course> {
+	public isApplicable(user: User, entity: Course): boolean {
+		const isMatched = entity instanceof Course;
+
+		return isMatched;
+	}
+
+	public hasPermission(user: User, entity: Course, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission =
-			this.hasAllPermissions(user, requiredPermissions) &&
-			this.hasAccessToEntity(
+			this.utils.hasAllPermissions(user, requiredPermissions) &&
+			this.utils.hasAccessToEntity(
 				user,
 				entity,
 				action === Actions.read
@@ -20,11 +26,5 @@ export class CourseRule extends AuthorisationUtils implements PermissionPublishe
 			);
 
 		return hasPermission;
-	}
-
-	checkCondition(user: User, entity: IEntity): boolean {
-		const match = entity instanceof Course;
-
-		return match;
 	}
 }

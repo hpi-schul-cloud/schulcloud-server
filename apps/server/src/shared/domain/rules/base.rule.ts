@@ -1,9 +1,17 @@
 import { Collection } from '@mikro-orm/core';
-import { UnauthorizedException } from '@nestjs/common';
+import {
+	Injectable,
+	InternalServerErrorException,
+	NotImplementedException,
+	UnauthorizedException,
+} from '@nestjs/common';
+import { BaseEntity } from '../entity';
 import type { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
-import { IEntity, IEntityWithSchool } from '../interface';
+import { IEntity, IEntityWithSchool, IPermission, IPermissionContext } from '../interface';
+import { BaseDomainObject } from '../interface/domain-object';
 
+@Injectable()
 export class AuthorisationUtils {
 	/**
 	 * Recursively resolve all roles and permissions of a user.
@@ -131,5 +139,66 @@ export class AuthorisationUtils {
 		return user.roles.getItems().some((role) => {
 			return role.name === roleName;
 		});
+	}
+}
+
+enum ErrorMessage {
+	MULTIPLE_MATCHES_ARE_NOT_ALLOWED = 'MULTIPLE_MATCHES_ARE_NOT_ALLOWED',
+}
+
+export class SingleMatchStrategie {
+	errorMessage = ErrorMessage;
+
+	match(layers: BasePermission[]): BasePermission {
+		if (layers.length === 0) {
+			throw new NotImplementedException();
+		}
+		if (layers.length > 1) {
+			throw new InternalServerErrorException(this.errorMessage.MULTIPLE_MATCHES_ARE_NOT_ALLOWED);
+		}
+		return layers[0];
+	}
+}
+
+type PermissionTypes = BaseDomainObject | BaseEntity;
+
+export abstract class BasePermission<T = PermissionTypes> implements IPermission<T> {
+	public utils = new AuthorisationUtils();
+
+	public abstract isApplicable(user: User, entity: T, context?: IPermissionContext): boolean;
+
+	/*
+	public isApplicable(user: User, entity: permissionTypes, context?: IPermissionContext): boolean {
+		const isMatched = this.instance.constructor.name === entity.constructor.name;
+
+		return isMatched;
+	} */
+
+	public abstract hasPermission(user: User, entity: T, context?: IPermissionContext): boolean;
+}
+
+// I like public this.utils = new AuthorisationUtils
+export abstract class BasePermissionManager extends AuthorisationUtils implements IPermission {
+	protected permissions: BasePermission[] = [];
+
+	protected matchStrategie = new SingleMatchStrategie();
+
+	private selectPermissions(user: User, entity: PermissionTypes, context?: IPermissionContext): BasePermission[] {
+		const permissions = this.permissions.filter((publisher) => publisher.isApplicable(user, entity, context));
+
+		return permissions;
+	}
+
+	protected registerPermissions(permissions: BasePermission[]): void {
+		this.permissions = [...this.permissions, ...permissions];
+	}
+
+	hasPermission(user: User, entity: PermissionTypes, context?: IPermissionContext) {
+		const permissions = this.selectPermissions(user, entity, context);
+		const permission = this.matchStrategie.match(permissions);
+
+		const hasPermission = permission.hasPermission(user, entity, context);
+
+		return hasPermission;
 	}
 }
