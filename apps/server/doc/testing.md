@@ -3,22 +3,6 @@
 Automated testing is the essential part of the software development process.
 It improves the code quality and ensure that the code operates correctly especially after refactoring.
 
-## The Different Tests
-
-<img src="../../assets/testing-hierarchy.png" alt="Testing Hierarchy" style="float:right;width:300px;">
-
-Our goal is to test each application layer mostly independent of others.
-
-- **Repo tests** operate on data access layer.
-  They prove that the database queries are executed correctly.
-- **Use case tests** operate on logic layer.
-  They verify the correct implementation of the business requirements.
-- **Mapper tests** operate between logic and service layer.
-  They verify the correct mapping between domain objects and objects delivered to the clients via REST API.
-- **End-to-end tests** operate on all layers of the application.
-  The testing endpoint is the service layer. These tests verify the availability of the expected endpoints and checks
-  the expected status codes and the structure of the received objects.
-
 ## General Test Conventions
 
 ### Lean Tests
@@ -170,8 +154,8 @@ Every provider can be overwritten with custom provider implementation for testin
 
 ## Unit Tests vs Integration Tests
 
-In Unit Tests we access directly only the layer which is currently testing.
-Other layers should be mocked or are replaced with default testing implementation.
+In Unit Tests we access directly only the component which is currently testing.
+Any dependencies should be mocked or are replaced with default testing implementation.
 Especially the database access and database calls should be mocked.
 
 In contrast to unit tests the integration tests use access to the database and execute
@@ -254,80 +238,13 @@ These tests should not have any external dependencies to other layers like datab
 
 ### Use Case Tests
 
-Use case tests are Unit Tests which verify the business logic of the application.
-The database calls are mocked and spyied. So we can check how and with which parameters the repo functions are called.
+Since a [usecase](./architecture.md#domain-layer) only contains orchestration, its tests should be decoupled from the components it depends on. We thus use unittests to verify the orchestration where necessary
 
-> Use unit-tests to ensure a use-cases logic matches the given requirements (from a [user-]story).
+> All Dependencies should be mocked.
 
-> A unit test should cover preconditions, allowed input, the result, and expected exceptions defined by the story, and roughly what happens on malformed input (the execution should stop).
+> Use Spies to verify necessary steps, such as authorisation checks.
 
-#### Preconditions
-
-1. Create `Nest JS testing module`
-2. Use `Repo` as provider reimplement the repo functions with some default implementations
-3. Provide other dependencies like `AuthorizationService` and provide default implementation for the function, which are called.
-4. Get repo and uc from testing module
-
-```TypeScript
-      const module: TestingModule = await Test.createTestingModule({ (1)
-			imports: [LoggerModule],
-			providers: [
-				NewsUc,
-				{
-					provide: NewsRepo,                                  (2)
-					useValue: {
-						save() {
-							...
-						},
-						findAll() {
-							...
-						},
-					},
-				},
-				{
-					provide: AuthorizationService,                      (3)
-					useValue: {
-						getPermittedEntities(userId, targetModel, permissions) {
-							...
-						},
-					},
-				},
-			],
-		}).compile();
-
-		service = module.get(NewsUc);                                    (4)
-		repo = module.get(NewsRepo);
-```
-
-#### Test
-
-1. Spy repo function which is called inside the tested use case
-2. Call the tested function
-3. Verify that the repo spy is called with the expected functions
-
-```Typescript
-		it('should search for news by empty scope ', async () => {
-			const findAllSpy = jest.spyOn(repo, 'findAll');             (1)
-			await service.findAllForUser(userId, scope, pagination);    (2)
-			const expectedParams = [targets, false, pagination];
-			expect(findAllSpy).toHaveBeenCalledWith(...expectedParams); (3)
-		});
-```
-
-#### Testing expected error
-
-1. Execute the function with the expected exception in expect context than define how and with which exception
-   the function should be rejected
-
-> Don't forget to add 'await' before expect, otherwise the test will be executed successfully regardless assertions
-and throw an error in log after the test execution.
-
-```Typescript
-		it('should throw not found exception if news was not found', async () => {
-			const anotherNewsId = new ObjectId().toHexString();
-			await expect(service.findOneByIdForUser(anotherNewsId, userId)).rejects.toThrow(NotFoundException);  (1)
-		});
-```
+to be documented
 
 ## E2E Tests
 
@@ -336,110 +253,8 @@ modules at a more aggregate level. Automated end-to-end tests help us to ensure 
 
 ### Controller Tests
 
-To test the setup behind a controller, use e2e-tests to ensure, use cases and repositories below
-are correctly mounted and available at a specific path.
-
-> A controller unit test should ensure it responds with the correct data-format and a referenced use-case is called correctly.
-
-> Authentication and response codes can be unit tested.
-
-> Do not test logic (from the business layer or repository) in e2e-tests, this must be done where the logic is defined within of a unit test. A e2e test should only ensure everything is correctly initialized.
-
-> Do not put logic (beside statements, transactions, mapping) inside a controller, use the logic layer instead.
-
-> Mappers must be unit tested.
-
-#### Preconditions
-
-1. Create Nest testing module
-2. Import `ServerModule` as the whole
-3. Override authentication using `JwAuthGuard`
-   3.1 Override authorized user with the mocked user data
-4. Override other services for example for authorization
-5. Create and initialize the whole Nest Application using `createNestApplication()`
-6. Get Orm and Entity Manager from module
-
-```Typescript
-
-	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({  (1)
-			imports: [ServerModule],                                    (2)
-		})
-			.overrideGuard(JwtAuthGuard)                                (3)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = {                                        (3.1)
-                            userId: '0000d224816abba584714c9c',
-                            roles: [],
-                            schoolId: '5f2987e020834114b8efd6f8',
-                            accountId: '0000d225816abba584714c9d',
-                    };
-					return true;
-				},
-			})
-			.overrideProvider(AuthorizationService)                     (4)
-			.useValue({
-				checkEntityPermissions() {},
-				getEntityPermissions() {
-					return ['NEWS_VIEW', 'NEWS_EDIT'];
-				},
-			})
-			.compile();
-
-		app = module.createNestApplication();                           (5)
-		await app.init();
-		orm = module.get(MikroORM);                                     (6)
-		em = module.get(EntityManager);
-	});
-```
-
-#### Clean up
-
-After Each test delete the created data in test to have a clean database for the next test.
-
-```Typescript
-	afterEach(async () => {
-		await em.nativeDelete(News, {});
-	});
-```
-
-#### Post Conditions
-
-After all tests are executed close the app and orm to release the resources
-
-```Typescript
-	afterAll(async () => {
-		await app.close();
-		await orm.close();
-	});
-```
-
-#### Test
-
-An example e2e test uses app http server to call the tested url.
-The `request()` function from the `supertest` library simulates HTTP request.
-The response can be verified by checking the response code or by applying some verification to the result object.
-
-```Typescript
-	describe('GET /news', () => {
-      it('should get empty response if there is no news', async () => {
-        const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-        const {data, total} = response.body as NewsListResponse;
-        expect(total).toBe(0);
-        expect(data.length).toBe(0);
-      });
-    });
-```
-
-> Don't forget to test HTTP error codes as well
+to be documented
 
 ## References
 
 This guide is inspired by https://github.com/goldbergyoni/javascript-testing-best-practices/
-```Typescript
-		it('should throw not found error, if news doesnt exists', async () => {
-			const newsId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(404);
-		});
-```

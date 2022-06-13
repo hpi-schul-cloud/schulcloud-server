@@ -8,12 +8,12 @@
 				"file": "architecture.md"
 			},
 			{
-				"title": "Architecture Mapping to Code",
-				"file": "architecture-mapping.md"
+				"title": "File Structure",
+				"file": "file-structure.md"
 			},
 			{
-				"title": "Domain driven design",
-				"file": "domain-driven-design.md"
+				"title": "API Design",
+				"file": "api-design.md"
 			},
 			{
 				"title": "Cross-cutting concerns",
@@ -22,10 +22,6 @@
 			{
 				"title": "Testing",
 				"file": "testing.md"
-			},
-			{
-				"title": "Decisions",
-				"file": "decisions.md"
 			},
 			{
 				"title": "VSCode",
