@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Task, User } from '../entity';
 import { IPermissionContext } from '../interface/permission';
-import { BasePermission } from './base.rule';
+import { BasePermission } from './base-permission';
 import { CourseRule } from './course.rule';
 
 @Injectable()

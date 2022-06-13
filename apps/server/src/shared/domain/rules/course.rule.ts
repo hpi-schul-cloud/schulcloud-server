@@ -3,7 +3,7 @@ import type { User } from '../entity';
 import { Course } from '../entity';
 import { IPermissionContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base.rule';
+import { BasePermission } from './base-permission';
 
 @Injectable()
 export class CourseRule extends BasePermission<Course> {

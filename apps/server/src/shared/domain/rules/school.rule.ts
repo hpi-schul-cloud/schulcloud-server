@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { School, User } from '../entity';
 import { IPermissionContext } from '../interface/permission';
-import { BasePermission } from './base.rule';
+import { BasePermission } from './base-permission';
 
 @Injectable()
 export class SchoolRule extends BasePermission<School> {

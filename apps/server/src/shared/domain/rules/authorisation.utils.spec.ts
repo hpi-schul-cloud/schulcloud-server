@@ -3,13 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { AuthorisationUtils } from '.';
+import { AuthorisationUtils } from './authorisation.utils';
 import { Role } from '../entity/role.entity';
 import { Permission, RoleName } from '../interface';
 
 class TestRule extends AuthorisationUtils {}
 
-describe('base.rule', () => {
+describe('permission.utils', () => {
 	let orm: MikroORM;
 	let service: AuthorisationUtils;
 	const permissionA = 'a' as Permission;

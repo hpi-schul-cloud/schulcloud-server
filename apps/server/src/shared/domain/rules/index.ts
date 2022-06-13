@@ -4,7 +4,8 @@ import { TaskRule } from './task.rule';
 import { UserRule } from './user.rule';
 
 export * from './actions.enum';
-export * from './base.rule';
+export * from './base-permission';
+export * from './base-permission-manager';
 export * from './course.rule';
 export * from './school.rule';
 export * from './task.rule';
