@@ -110,8 +110,8 @@ export class OAuthService {
 		return jwtResponse;
 	}
 
-	async processOauth(code: string, error: string, systemId: string): Promise<OAuthResponse> {
-		const authCode = this.checkAuthorizationCode(code, error);
+	async processOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+		const authCode = this.checkAuthorizationCode(query);
 		const system = await this.systemRepo.findById(systemId);
 		const queryToken = await this.requestToken(authCode, system);
 		const decodedToken = await this.validateToken(queryToken.id_token, system);

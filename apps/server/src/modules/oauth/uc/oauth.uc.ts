@@ -13,7 +13,7 @@ export class OauthUc {
 	async startOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		let oauthResponse: OAuthResponse;
 		try {
-			oauthResponse = await this.oauthService.processOauth(query.code as string, query.error as string, systemId);
+			oauthResponse = await this.oauthService.processOauth(query, systemId);
 		} catch (error) {
 			oauthResponse = this.oauthService.getOAuthError(error);
 		}
