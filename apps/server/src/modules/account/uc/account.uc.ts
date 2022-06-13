@@ -115,21 +115,20 @@ export class AccountUc {
 			throw new Error('Username is not an email');
 		}
 		// checkExistence ✔
-		// we will not create accounts for users from external systems
 		if (dto.userId && (await this.accountService.findByUserId(dto.userId))) {
 			throw new Error('Account already exists');
 		}
-		// validateCredentials will not be ported ✔
-		// trimPassword, will be done by class-validator ✔
+		// validateCredentials hook will not be ported ✔
+		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
 		const { accounts } = await this.accountService.searchByUsernameExactMatch(dto.username);
 		// usernames are only unique within a system
-		const filteredAccounts = accounts.filter((account) => account.systemId?.toString() === dto.systemId);
+		const filteredAccounts = accounts.filter((account) => account.systemId === dto.systemId);
 		if (filteredAccounts.length > 0) {
 			throw new Error('Username already exists');
 		}
-		// removePassword ✔
+		// removePassword hook is not implemented
 		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
 		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
 		// 	dto.password = undefined;

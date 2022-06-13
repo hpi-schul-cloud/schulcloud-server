@@ -997,20 +997,6 @@ describe('AccountUc', () => {
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
 		});
-		it.skip('should remove password for external systems', async () => {
-			const spy = jest.spyOn(accountService, 'save');
-			const params: AccountSaveDto = {
-				username: 'john.doe@domain.tld',
-				password: 'Schulcloud1!',
-				// passwordStrategy: 'ldap',
-			};
-			await accountUc.saveAccount(params);
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					password: undefined,
-				})
-			);
-		});
 	});
 
 	describe('updateAccountById', () => {
