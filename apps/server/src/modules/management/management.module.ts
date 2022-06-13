@@ -42,46 +42,9 @@ const providers = [
 
 const controllers = [DatabaseManagementController];
 
-export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-	},
-};
-
 @Module({
-	imports: [
-		...imports,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			// TODO repeats server module definitions
-			type: 'mongo',
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
-			allowGlobalContext: true,
-			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
-			},
-		}),
-	],
+	imports: [...imports],
 	providers,
 	controllers,
 })
 export class ManagementModule {}
-
-@Module({
-	imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
-	providers,
-	controllers,
-})
-export class ManagementTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: ManagementModule,
-			imports: [MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
-		};
-	}
-}
