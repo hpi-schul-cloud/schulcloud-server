@@ -7,8 +7,8 @@ import { SystemRepo } from '@shared/repo/system';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { OauthSSOController } from './controller/oauth-sso.controller';
-import { IservOAuthService } from './iserv-oauth.service';
-import { OAuthService } from './oauth.service';
+import { IservOAuthService } from './service/iserv-oauth.service';
+import { OAuthService } from './service/oauth.service';
 import { OauthUc } from './uc/oauth.uc';
 
 const key = Configuration.get('AES_KEY') as string;
