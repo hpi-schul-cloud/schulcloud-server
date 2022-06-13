@@ -150,9 +150,9 @@ The different layers use separately defined objects that must be mapped when cro
 
 Further reading: https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/
 
-### Service Layer
+### Controller
 
-A modules service layer is defined within of [controllers](https://docs.nestjs.com/controllers).
+A modules api layer is defined within of [controllers](https://docs.nestjs.com/controllers).
 
 The main responsibilities of a controller is to define the REST API interface as openAPI specification and map DTO's to match the logic layers interfaces.
 
@@ -199,21 +199,3 @@ The use of a mapper gives us the guarantee, that
   - A plain object might contain more properties than defined in TS-interfaces.
     Sample: All school properties are published while only name & id are intended to be published.
 - the API definition is complete
-
-### Logic (Domain-) Layer
-
-The domain layer assumes a kind of higher-level policy that everything else relies on ([Source](https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/)).
-
-> This means, a controller or a repository must fit this layer.
-> Specific goals of a repository, like query optimization must not be a transparent part of the repository only.
-
-
-### Data access Layer
-
-The data access layer consists of repositories. A repository takes care to persist domain entities defined in the business layer. As we use decorators in entities to define how they are persisted, they are used in this layer too. The repository does not need to map entities like in the presentation layer as it maps data from/to an external system into the domain and to be used from/in the business layer.
-
-> It's not the task of the business layer to fit a repository. A respository should give the logic layer the ability to persist/make available what is defined in the logic layer. The domain model must be independent from a repository (See Clean Architecture).
-
-Specific concepts from within of this layer must be hidden for the business layer like database queries, protocol specifics, mapping to data layer. Others like putting multiple persistence rules into transactions is part of the domain layer (while how a transaction is implemented, then is part of the data access layer).
-
-Logic should not be part of a repository, use logic layer instead.
