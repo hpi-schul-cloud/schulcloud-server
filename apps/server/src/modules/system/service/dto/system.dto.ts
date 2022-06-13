@@ -15,5 +15,5 @@ export class SystemDto {
 
     alias?: string;
 
-    oauthConfig?: OauthConfigDto;
+    oauthConfig: OauthConfigDto[] = [];
 }
