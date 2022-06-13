@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule, BasePermissionManager } from '@shared/domain';
 import { IEntity, IPermissionContext } from '@shared/domain/interface';
-import { BaseDomainObject } from '@shared/domain/interface/domain-object';
+import { BaseDomainObject } from '@shared/domain/interface/base-domain-object';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
