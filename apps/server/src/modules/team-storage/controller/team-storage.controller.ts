@@ -1,9 +1,9 @@
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
 import { TeamStorageUc } from '../uc/team-storage.uc';
-import { TeamPermissions } from './dto/team-permissions.body.params';
+import { TeamPermissionsBody } from './dto/team-permissions.body.params';
 import { TeamRoleDto } from './dto/team-role.params';
 
 @ApiTags('team-storage')
@@ -12,15 +12,16 @@ import { TeamRoleDto } from './dto/team-role.params';
 export class TeamStorageController {
 	constructor(private readonly teamStorageUc: TeamStorageUc) {}
 
-	@Patch('permissions')
+	@Patch(':team/role/:role/permissions')
 	@ApiResponse({ status: 200, description: 'Updates the permissions for a team in the external teamstorage' })
 	@ApiResponse({ status: 400, description: 'An error occured while processing the request' })
 	@ApiResponse({ status: 403, description: 'User does not have the correct permission' })
-	updateTeamPermissions(
+	@ApiResponse({ status: 404, description: 'Team or Role not found!' })
+	updateTeamPermissionsForRole(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() teamRole: TeamRoleDto,
-		@Body() permissionsBody: TeamPermissions
+		@Param() teamRole: TeamRoleDto,
+		@Body() permissionsBody: TeamPermissionsBody
 	): Promise<void> {
-		return this.teamStorageUc.setUserPermissions(teamRole, permissionsBody);
+		return this.teamStorageUc.updateUserPermissionsForRole(currentUser, teamRole, permissionsBody);
 	}
 }

@@ -592,6 +592,21 @@
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
 		},
+		"NEXTCLOUD_API_PATH": {
+			"type": "string",
+			"default": "http://localhost:8080/",
+			"description": "API URI for Nextcloud"
+		},
+		"NEXTCLOUD_ADMIN_USER": {
+			"type": "string",
+			"default": "admin",
+			"description": "Admin-user for Nextcloud-API"
+		},
+		"NEXTCLOUD_ADMIN_PASS": {
+			"type:": "string",
+			"default": "admin",
+			"description": "Admin-password for Nextcloud-API"
+		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",

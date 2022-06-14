@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role, Team } from '@shared/domain';
 import { IsMongoId } from 'class-validator';
 
 export class TeamRoleDto {
 	@IsMongoId()
 	@ApiProperty()
-	team!: Team;
+	team!: string;
 
 	@IsMongoId()
 	@ApiProperty()
-	role!: Role;
+	role!: string;
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean } from 'class-validator';
 
-export class TeamPermissions {
+export class TeamPermissionsBody {
 	@IsBoolean()
 	@ApiProperty()
 	read!: boolean;

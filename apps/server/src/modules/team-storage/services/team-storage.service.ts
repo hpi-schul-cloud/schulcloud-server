@@ -1,0 +1,55 @@
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { EntityId, ICurrentUser, RoleName } from '@shared/domain';
+import { RoleRepo, TeamsRepo } from '@shared/repo';
+import { RoleMapper } from '../mapper/role.mapper';
+import { TeamMapper } from '../mapper/team.mapper';
+import { RoleDto } from './dto/role.dto';
+import { TeamPermissionsDto } from './dto/team-permissions.dto';
+import { TeamDto, TeamUserDto } from './dto/team.dto';
+import {TeamStorageAdapter} from "@shared/infra/team-storage";
+
+@Injectable()
+export class TeamStorageService {
+	constructor(
+		private adapter: TeamStorageAdapter,
+		private roleRepo: RoleRepo,
+		private teamsMapper: TeamMapper,
+		private roleMapper: RoleMapper,
+		private teamsRepo: TeamsRepo,
+	) {}
+
+	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
+		return this.teamsMapper.mapEntityToDto(await this.teamsRepo.findById(teamId, populate));
+	}
+
+	async findRoleById(roleId: EntityId): Promise<RoleDto> {
+		return this.roleMapper.mapEntityToDto(await this.roleRepo.findById(roleId));
+	}
+
+	async isUserAuthorized(currentUser: ICurrentUser, teamId: string): Promise<boolean> {
+		const team: TeamDto = await this.findTeamById(teamId, true);
+		return new Promise<boolean>((resolve) => {
+			team.userIds.forEach((teamIdDto: TeamUserDto) => {
+				if (currentUser.userId === teamIdDto.userId) {
+					resolve(
+						this.findRoleById(teamIdDto.role).then((roleDto) => {
+							return roleDto.name === RoleName.TEAMADMINISTRATOR || roleDto.name === RoleName.TEAMOWNER;
+						})
+					);
+				}
+			});
+		});
+	}
+
+	async updateTeamPermissionsForRole(
+		currentUser: ICurrentUser,
+		teamId: string,
+		roleId: string,
+		teamPermissions: TeamPermissionsDto
+	):Promise<void> {
+		if (!(await this.isUserAuthorized(currentUser, teamId))) {
+			throw new ForbiddenException({ description: 'User is not Teamadmin or Teamowner' });
+		}
+		this.adapter.updateTeamPermissionsForRole(await this.findTeamById(teamId, true), await this.findRoleById(roleId), teamPermissions);
+	}
+}
