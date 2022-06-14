@@ -14,7 +14,7 @@ describe('ISelectStrategies', () => {
 		});
 
 		it('Should throw with InternalServerErrorException if mutliple elements match.', () => {
-			expect(() => strategie.match(['a', 'b'])).toThrowError(new InternalServerErrorException());
+			expect(() => strategie.match(['a', 'b'])).toThrowError(InternalServerErrorException);
 		});
 
 		it('Should return a single match element if only one exist', () => {
