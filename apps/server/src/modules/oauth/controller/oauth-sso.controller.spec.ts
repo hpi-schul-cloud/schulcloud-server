@@ -72,5 +72,19 @@ describe('OAuthController', () => {
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
 			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
+		it('should redirect to empty string', async () => {
+			const { res } = getMockRes();
+			await generateMock({
+				startOauth: jest.fn(() => ({
+					// jwt: '',
+					idToken: '2222',
+					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
+					// redirect: '',
+				})),
+			});
+			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			expect(res.cookie).toBeCalledWith('jwt', '');
+			expect(res.redirect).toBeCalledWith('');
+		});
 	});
 });
