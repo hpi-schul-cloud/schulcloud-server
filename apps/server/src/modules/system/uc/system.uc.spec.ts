@@ -36,8 +36,8 @@ describe('SystemUc', () => {
 
 	describe('findOauthConfigs', () => {
 		it('should return oauthResponse with data', async () => {
-			mockConfigs.push(systemFactory.build().oauthConfig);
-			mockConfigs.push(systemFactory.build().oauthConfig);
+			mockConfigs.push(systemFactory.build().oauthConfig!);
+			mockConfigs.push(systemFactory.build().oauthConfig!);
 
 			const resultResponse = await systemUc.findOauthConfigs();
 

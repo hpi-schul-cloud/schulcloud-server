@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { systemFactory } from '@shared/testing';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { OauthResponseMapper } from '@src/modules/system/mapper/oauth-response.mapper';
 import { OauthResponse } from '@src/modules/system/controller/dto/oauth.response';
@@ -39,10 +38,22 @@ describe('oauth-response mapper', () => {
 	describe('mapFromDtoToResponse', () => {
 		it('should map all given dtos', () => {
 			// Arrange
-			const oauthConfigs: OauthConfigDto[] = [
-				systemFactory.build(),
-				systemFactory.build({ oauthConfig: { clientId: '22333' } }),
-			].flatMap((system) => system.oauthConfig);
+			const defaultOauthConfigDto = new OauthConfigDto({
+				clientId: '12345',
+				clientSecret: 'mocksecret',
+				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				grantType: 'authorization_code',
+				tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'mock_authEndpoint',
+				provider: 'mock_provider',
+				logoutEndpoint: 'mock_logoutEndpoint',
+				issuer: 'mock_issuer',
+				jwksEndpoint: 'mock_jwksEndpoint',
+				codeRedirectUri: 'mock_codeRedirectUri',
+			});
+			const oauthConfigs: OauthConfigDto[] = [defaultOauthConfigDto, defaultOauthConfigDto];
 
 			// Act
 			const result: OauthResponse = OauthResponseMapper.mapFromDtoToResponse(oauthConfigs);
