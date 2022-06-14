@@ -13,17 +13,16 @@ class SchoolsListService {
 		const systemsQuery = {
 			path: 'systems',
 			select:
-				'_id type alias oauthConfig.clientId oauthConfig.authEndpoint oauthConfig.codeRedirectUri oauthConfig.responseType oauthConfig.scope oauthConfig.provider oauthConfig.logoutEndpoint',
+				'_id type alias',
 			match: { $or: [{ type: { $ne: 'ldap' } }, { 'ldapConfig.active': { $eq: true } }] },
 		};
-		const schools = await schoolModel
+		return schoolModel
 			.find(schoolQuery)
 			.populate(systemsQuery)
 			.select(['name', 'systems'])
 			.sort('name')
 			.lean()
 			.exec();
-		return schools;
 	}
 
 	setup(app) {
