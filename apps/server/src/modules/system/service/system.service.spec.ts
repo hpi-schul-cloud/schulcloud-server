@@ -34,7 +34,7 @@ describe('SystemService', () => {
 		orm = await setupEntities();
 	});
 
-	beforeEach(async () => {
+	beforeEach(() => {
 		mockSystems = [];
 	});
 
