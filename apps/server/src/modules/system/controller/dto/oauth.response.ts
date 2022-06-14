@@ -1,11 +1,11 @@
-import {ApiProperty} from "@nestjs/swagger";
-import {OauthConfigDto} from "@src/modules/system/service/dto/oauth-config.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-config.response';
 
 export class OauthResponse {
-    constructor({data}: OauthResponse) {
-        this.data = data;
-    }
+	constructor(oauthConfigResponses: OauthConfigResponse[]) {
+		this.data = oauthConfigResponses;
+	}
 
-    @ApiProperty()
-    data: OauthConfigDto[];
+	@ApiProperty()
+	data: OauthConfigResponse[];
 }

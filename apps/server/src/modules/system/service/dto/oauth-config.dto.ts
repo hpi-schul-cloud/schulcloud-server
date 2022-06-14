@@ -1,29 +1,28 @@
-
 export class OauthConfigDto {
 
-    clientId!: string;
+	clientId!: string;
 
-    clientSecret?: string;
+	clientSecret?: string;
 
-    tokenRedirectUri?: string;
+	tokenRedirectUri?: string;
 
-    grantType?: string;
+	grantType?: string;
 
-    tokenEndpoint?: string;
+	tokenEndpoint?: string;
 
-    authEndpoint!: string;
+	authEndpoint!: string;
 
-    responseType!: string;
+	responseType!: string;
 
-    scope!: string;
+	scope!: string;
 
-    provider!: string;
-    
-    logoutEndpoint!: string;
+	provider!: string;
 
-    issuer?: string;
+	logoutEndpoint!: string;
 
-    jwksEndpoint?: string;
+	issuer?: string;
 
-    codeRedirectUri!: string;
+	jwksEndpoint?: string;
+
+	codeRedirectUri!: string;
 }

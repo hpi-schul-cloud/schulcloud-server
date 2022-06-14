@@ -1,19 +1,19 @@
-import {OauthConfigDto} from "@src/modules/system/service/dto/oauth-config.dto";
+import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 
 export class SystemDto {
 
-    constructor(system: SystemDto) {
-        this.type = system.type;
-        this.url = system.url;
-        this.alias = system.alias;
-        this.oauthConfig = system.oauthConfig;
-    }
+	constructor(system: SystemDto) {
+		this.type = system.type;
+		this.url = system.url;
+		this.alias = system.alias;
+		this.oauthConfig = system.oauthConfig;
+	}
 
-    type!: string;
+	type!: string;
 
-    url?: string;
+	url?: string;
 
-    alias?: string;
+	alias?: string;
 
-    oauthConfig?: OauthConfigDto;
+	oauthConfig?: OauthConfigDto;
 }
