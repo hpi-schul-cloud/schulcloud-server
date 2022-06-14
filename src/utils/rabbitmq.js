@@ -90,7 +90,7 @@ class Channel {
 				// try to reconnect consumer if channel was closed for some reason
 				setTimeout(() => {
 					this.consumeQueue(consumer, options);
-				}, 15000);
+				}, 5000);
 			});
 		} catch (err) {
 			logger.error('RabbitMQ unable to consume queue, retry.', err);
@@ -98,7 +98,7 @@ class Channel {
 			// try again to reconnect consumer
 			setTimeout(() => {
 				this.consumeQueue(consumer, options);
-			}, 15000);
+			}, 5000);
 		}
 	}
 
@@ -116,7 +116,7 @@ class Channel {
 			const ch = await this.getChannel();
 			ch.reject(message, requeue);
 		} catch (err) {
-			logger.error('RabbitMQ unable to reject message.', err);
+			logger.errwor('RabbitMQ unable to reject message.', err);
 		}
 	}
 }
