@@ -6,7 +6,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
-import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthUc } from '../uc/oauth.uc';
 import { AuthorizationParams } from './dto/authorization.params';
 import { OauthSSOController } from './oauth-sso.controller';
@@ -16,6 +15,11 @@ describe('OAuthController', () => {
 	let controller: OauthSSOController;
 	let oauthUc: OauthUc;
 	const idToken = 'mockToken';
+	const defaultJWT =
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
+	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
+		Configuration.get('HOST') as string
+	}/dashboard`;
 
 	const generateMock = async (oauthUcMock) => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -57,55 +61,16 @@ describe('OAuthController', () => {
 					jwt: '1111',
 					idToken: '2222',
 					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
+					redirect: `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
+						Configuration.get('HOST') as string
+					}/dashboard`,
 				})),
 			});
 			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
-			expect(res.redirect).toBeCalledWith(
-				'https://iserv.n21.dbildungscloud.de/iserv/auth/logout?id_token_hint=2222&post_logout_redirect_uri=https://mock.de/dashboard'
-			);
-		});
-
-		it('should handle errorcode', async () => {
-			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => ({ errorcode: 'some-error-happend' })),
-			});
-			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
-			const expected = [query, system.id];
-			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
-			expect(res.cookie).not.toHaveBeenCalled();
-			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=some-error-happend');
-		});
-
-		it('should handle thrown OAuthSSOError', async () => {
-			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => {
-					throw new OAuthSSOError('something bad happened', 'oauth_login_failed');
-				}),
-			});
-			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
-			const expected = [query, system.id];
-			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
-			expect(res.cookie).not.toHaveBeenCalled();
-			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=oauth_login_failed');
-		});
-
-		it('should handle any thrown error', async () => {
-			const { res } = getMockRes();
-			await generateMock({
-				startOauth: jest.fn(() => {
-					throw new Error('something bad happened');
-				}),
-			});
-			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
-			const expected = [query, system.id];
-			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
-			expect(res.cookie).not.toHaveBeenCalled();
-			expect(res.redirect).toBeCalledWith('https://mock.de/login?error=oauth_login_failed');
+			expect(res.redirect).toBeCalledWith(iservRedirectMock);
 		});
 	});
 });
