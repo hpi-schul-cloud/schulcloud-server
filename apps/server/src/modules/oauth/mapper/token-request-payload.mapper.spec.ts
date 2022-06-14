@@ -27,6 +27,7 @@ const defaultOauthConfig: OauthConfig = {
 	logoutEndpoint: 'mock_logoutEndpoint',
 	issuer: 'mock_issuer',
 	jwksEndpoint: 'mock_jwksEndpoint',
+	codeRedirectUri: 'mock_codeRedirectUri',
 };
 const defaultSystem: System = {
 	type: 'iserv',
