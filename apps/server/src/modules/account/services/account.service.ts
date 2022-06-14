@@ -34,7 +34,7 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<void> {
+	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		// Check if the ID is correct?
 		// const user = await this.userRepo.findById(accountDto.userId);
 		// const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
@@ -63,7 +63,8 @@ export class AccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 		}
-		return this.accountRepo.save(account);
+		await this.accountRepo.save(account);
+		return this.mapAccountToDto([account])[0];
 	}
 
 	delete(id: EntityId): Promise<void> {

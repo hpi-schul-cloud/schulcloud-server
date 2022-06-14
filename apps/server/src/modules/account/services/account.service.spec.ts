@@ -16,7 +16,7 @@ describe('AccountService', () => {
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
 
-	const defaultPassword = 'Schucloud1!';
+	const defaultPassword = 'DummyPasswd!1';
 
 	let mockSchool: School;
 
@@ -174,36 +174,43 @@ describe('AccountService', () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.activated = false;
-			await accountService.save(mockTeacherAccountDto);
-			expect(accountRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					...mockTeacherAccount,
-					username: mockTeacherAccountDto.username,
-					activated: mockTeacherAccountDto.activated,
-				})
-			);
+			const ret = await accountService.save(mockTeacherAccountDto);
+
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				id: mockTeacherAccount.id,
+				username: mockTeacherAccountDto.username,
+				activated: mockTeacherAccountDto.activated,
+				systemId: mockTeacherAccount.systemId,
+				userId: mockTeacherAccount.userId,
+			});
 		});
 
 		it("should update an existing account's system", async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.systemId = '123456789012';
-			await accountService.save(mockTeacherAccountDto);
-			expect(accountRepo.save).toHaveBeenCalledWith({
-				...mockTeacherAccount,
+			const ret = await accountService.save(mockTeacherAccountDto);
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				id: mockTeacherAccount.id,
 				username: mockTeacherAccountDto.username,
+				activated: mockTeacherAccount.activated,
 				systemId: new ObjectId(mockTeacherAccountDto.systemId),
+				userId: mockTeacherAccount.userId,
 			});
 		});
 		it("should update an existing account's user", async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.userId = mockStudentUser.id;
-			await accountService.save(mockTeacherAccountDto);
-			expect(accountRepo.save).toHaveBeenCalledWith({
-				...mockTeacherAccount,
+			const ret = await accountService.save(mockTeacherAccountDto);
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				id: mockTeacherAccount.id,
 				username: mockTeacherAccountDto.username,
-				activated: mockTeacherAccountDto.activated,
+				activated: mockTeacherAccount.activated,
+				systemId: mockTeacherAccount.systemId,
 				userId: new ObjectId(mockStudentUser.id),
 			});
 		});
@@ -211,11 +218,14 @@ describe('AccountService', () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
 			mockTeacherAccountDto.systemId = undefined;
-			await accountService.save(mockTeacherAccountDto);
-			expect(accountRepo.save).toHaveBeenCalledWith({
-				...mockTeacherAccount,
+			const ret = await accountService.save(mockTeacherAccountDto);
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				id: mockTeacherAccount.id,
 				username: mockTeacherAccountDto.username,
+				activated: mockTeacherAccount.activated,
 				systemId: mockTeacherAccountDto.systemId,
+				userId: mockTeacherAccount.userId,
 			});
 		});
 		it('should save a new account', async () => {
@@ -229,18 +239,15 @@ describe('AccountService', () => {
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
-			await accountService.save(accountToSave);
-			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(accountRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					id: null,
-					username: accountToSave.username,
-					userId: new ObjectId(accountToSave.userId),
-					systemId: new ObjectId(accountToSave.systemId),
-					createdAt: accountToSave.createdAt,
-					updatedAt: accountToSave.updatedAt,
-				})
-			);
+			const ret = await accountService.save(accountToSave);
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				username: accountToSave.username,
+				userId: new ObjectId(accountToSave.userId),
+				systemId: new ObjectId(accountToSave.systemId),
+				createdAt: accountToSave.createdAt,
+				updatedAt: accountToSave.updatedAt,
+			});
 		});
 
 		it("should keep account's system undefined on save", async () => {
@@ -253,17 +260,11 @@ describe('AccountService', () => {
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
-			await accountService.save(accountToSave);
-			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(accountRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					id: null,
-					createdAt: accountToSave.createdAt,
-					updatedAt: accountToSave.updatedAt,
-					username: accountToSave.username,
-					userId: new ObjectId(accountToSave.userId),
-				})
-			);
+			const ret = await accountService.save(accountToSave);
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				systemId: undefined,
+			});
 		});
 
 		it('should encrypt password', async () => {
@@ -278,12 +279,11 @@ describe('AccountService', () => {
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
 			await accountService.save(accountToSave);
-			expect(accountRepo.findById).not.toHaveBeenCalled();
-			expect(accountRepo.save).not.toHaveBeenCalledWith(
-				expect.objectContaining({
-					password: defaultPassword,
-				})
-			);
+			const ret = await accountService.save(accountToSave);
+			expect(ret).toBeDefined();
+			expect(ret).not.toMatchObject({
+				password: defaultPassword,
+			});
 		});
 	});
 

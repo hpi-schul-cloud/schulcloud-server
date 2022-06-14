@@ -21,7 +21,7 @@ const createTestAccount = (appPromise) => async (accountParameters, system, user
 		expiresAt: accountParameters.expiresAt,
 		activated: accountParameters.activated,
 	};
-	const createdAccount = await accountService.create(accountDto);
+	const createdAccount = await accountService.save(accountDto);
 	createdaccountsIds.push(createdAccount.id.toString());
 	return createdAccount;
 };
