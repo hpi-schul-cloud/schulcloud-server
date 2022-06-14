@@ -12,7 +12,7 @@ describe('system mapper', () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
-			providers: [SystemMapper]
+			providers: [SystemMapper],
 		}).compile();
 	});
 
@@ -35,10 +35,7 @@ describe('system mapper', () => {
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
 			// Arrange
-			let systemEntities: System[] = [
-				systemFactory.build(),
-				systemFactory.build({ oauthConfig: undefined })
-			];
+			let systemEntities: System[] = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
 
 			// Act
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);

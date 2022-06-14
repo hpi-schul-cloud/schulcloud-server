@@ -7,7 +7,7 @@ export class SystemMapper {
 			type: entity.type,
 			url: entity.url,
 			alias: entity.alias,
-			oauthConfig: entity.oauthConfig
+			oauthConfig: entity.oauthConfig,
 		});
 	}
 

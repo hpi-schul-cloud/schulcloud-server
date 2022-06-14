@@ -11,9 +11,9 @@ describe('system.controller', () => {
 				SystemController,
 				{
 					provide: SystemUc,
-					useValue: {}
-				}
-			]
+					useValue: {},
+				},
+			],
 		}).compile();
 		controller = module.get(SystemController);
 	});

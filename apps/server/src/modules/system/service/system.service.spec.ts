@@ -24,10 +24,10 @@ describe('SystemService', () => {
 				{
 					provide: SystemRepo,
 					useValue: {
-						findOauthSystems: jest.fn().mockImplementation(() => Promise.resolve(mockSystems))
-					}
-				}
-			]
+						findOauthSystems: jest.fn().mockImplementation(() => Promise.resolve(mockSystems)),
+					},
+				},
+			],
 		}).compile();
 		systemRepo = module.get(SystemRepo);
 		systemService = module.get(SystemService);

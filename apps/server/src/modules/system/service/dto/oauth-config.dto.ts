@@ -1,5 +1,4 @@
 export class OauthConfigDto {
-
 	clientId!: string;
 
 	clientSecret?: string;

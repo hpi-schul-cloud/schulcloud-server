@@ -1,5 +1,4 @@
 export class OauthConfigResponse {
-
 	constructor(oauthConfigResponse: OauthConfigResponse) {
 		this.clientId = oauthConfigResponse.clientId;
 		this.clientSecret = oauthConfigResponse.clientSecret;

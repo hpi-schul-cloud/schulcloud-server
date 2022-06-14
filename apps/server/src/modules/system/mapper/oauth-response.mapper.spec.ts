@@ -15,7 +15,7 @@ describe('oauth-response mapper', () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [],
-			providers: [OauthResponseMapper]
+			providers: [OauthResponseMapper],
 		}).compile();
 	});
 
@@ -24,8 +24,8 @@ describe('oauth-response mapper', () => {
 			// Arrange
 			let oauthConfigs: OauthConfigDto[] = [
 				systemFactory.build(),
-				systemFactory.build({ oauthConfig: { clientId: '22333' } })
-			].flatMap(system => system.oauthConfig);
+				systemFactory.build({ oauthConfig: { clientId: '22333' } }),
+			].flatMap((system) => system.oauthConfig);
 
 			// Act
 			const result: OauthResponse = OauthResponseMapper.mapFromDtoToResponse(oauthConfigs);

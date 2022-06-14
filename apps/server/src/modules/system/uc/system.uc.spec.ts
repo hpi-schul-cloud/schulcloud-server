@@ -21,10 +21,10 @@ describe('SystemUc', () => {
 				{
 					provide: SystemService,
 					useValue: {
-						findOauthConfigs: jest.fn().mockImplementation(() => Promise.resolve(mockConfigs))
-					}
-				}
-			]
+						findOauthConfigs: jest.fn().mockImplementation(() => Promise.resolve(mockConfigs)),
+					},
+				},
+			],
 		}).compile();
 		systemUc = module.get(SystemUc);
 		systemService = module.get(SystemService);

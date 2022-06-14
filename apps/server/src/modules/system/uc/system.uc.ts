@@ -6,8 +6,7 @@ import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto
 
 @Injectable()
 export class SystemUc {
-	constructor(private readonly systemService: SystemService) {
-	}
+	constructor(private readonly systemService: SystemService) {}
 
 	async findOauthConfigs(): Promise<OauthResponse> {
 		const configs: OauthConfigDto[] = await this.systemService.findOauthConfigs();

@@ -6,8 +6,7 @@ import { OauthResponse } from '@src/modules/system/controller/dto/oauth.response
 @ApiTags('System')
 @Controller('system')
 export class SystemController {
-	constructor(private readonly systemUc: SystemUc) {
-	}
+	constructor(private readonly systemUc: SystemUc) {}
 
 	@Get('oauth')
 	async findOauthConfigs(): Promise<OauthResponse> {
