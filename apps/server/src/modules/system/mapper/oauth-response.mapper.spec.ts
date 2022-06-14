@@ -5,6 +5,23 @@ import { OauthResponseMapper } from '@src/modules/system/mapper/oauth-response.m
 import { OauthResponse } from '@src/modules/system/controller/dto/oauth.response';
 import { OauthConfigResponse } from '../controller/dto/oauth-config.response';
 
+function assertOauthConfig(expected: OauthConfigDto, actual: OauthConfigResponse): boolean {
+	expect(expected.clientId).toBe(actual.clientId);
+	expect(expected.clientSecret).toBe(actual.clientSecret);
+	expect(expected.tokenRedirectUri).toBe(actual.tokenRedirectUri);
+	expect(expected.grantType).toBe(actual.grantType);
+	expect(expected.tokenEndpoint).toBe(actual.tokenEndpoint);
+	expect(expected.authEndpoint).toBe(actual.authEndpoint);
+	expect(expected.responseType).toBe(actual.responseType);
+	expect(expected.scope).toBe(actual.scope);
+	expect(expected.provider).toBe(actual.provider);
+	expect(expected.logoutEndpoint).toBe(actual.logoutEndpoint);
+	expect(expected.issuer).toBe(actual.issuer);
+	expect(expected.jwksEndpoint).toBe(actual.jwksEndpoint);
+	expect(expected.codeRedirectUri).toBe(actual.codeRedirectUri);
+	return true;
+}
+
 describe('oauth-response mapper', () => {
 	let module: TestingModule;
 
@@ -22,7 +39,7 @@ describe('oauth-response mapper', () => {
 	describe('mapFromDtoToResponse', () => {
 		it('should map all given dtos', () => {
 			// Arrange
-			let oauthConfigs: OauthConfigDto[] = [
+			const oauthConfigs: OauthConfigDto[] = [
 				systemFactory.build(),
 				systemFactory.build({ oauthConfig: { clientId: '22333' } }),
 			].flatMap((system) => system.oauthConfig);
@@ -32,26 +49,9 @@ describe('oauth-response mapper', () => {
 
 			// Assert
 			expect(result.data.length).toEqual(oauthConfigs.length);
-			for (let i = 0; i < result.data.length; i++) {
+			for (let i = 0; i < result.data.length; i += 1) {
 				assertOauthConfig(oauthConfigs[i], result.data[i]);
 			}
 		});
 	});
-
-	function assertOauthConfig(expected: OauthConfigDto, actual: OauthConfigResponse): boolean {
-		expect(expected.clientId).toBe(actual.clientId);
-		expect(expected.clientSecret).toBe(actual.clientSecret);
-		expect(expected.tokenRedirectUri).toBe(actual.tokenRedirectUri);
-		expect(expected.grantType).toBe(actual.grantType);
-		expect(expected.tokenEndpoint).toBe(actual.tokenEndpoint);
-		expect(expected.authEndpoint).toBe(actual.authEndpoint);
-		expect(expected.responseType).toBe(actual.responseType);
-		expect(expected.scope).toBe(actual.scope);
-		expect(expected.provider).toBe(actual.provider);
-		expect(expected.logoutEndpoint).toBe(actual.logoutEndpoint);
-		expect(expected.issuer).toBe(actual.issuer);
-		expect(expected.jwksEndpoint).toBe(actual.jwksEndpoint);
-		expect(expected.codeRedirectUri).toBe(actual.codeRedirectUri);
-		return true;
-	}
 });

@@ -4,7 +4,7 @@ import { OauthConfigResponse } from '@src/modules/system/controller/dto/oauth-co
 
 export class OauthResponseMapper {
 	static mapFromDtoToResponse(oauthConfigs: OauthConfigDto[]): OauthResponse {
-		let oauthConfigResponses: OauthConfigResponse[] = [];
+		const oauthConfigResponses: OauthConfigResponse[] = [];
 		oauthConfigs.forEach((oauthConfigDto) =>
 			oauthConfigResponses.push(
 				new OauthConfigResponse({

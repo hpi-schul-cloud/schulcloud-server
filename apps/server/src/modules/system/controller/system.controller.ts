@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { SystemUc } from '../uc/system.uc';
 import { OauthResponse } from '@src/modules/system/controller/dto/oauth.response';
+import { SystemUc } from '../uc/system.uc';
 
 @ApiTags('System')
 @Controller('system')

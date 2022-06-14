@@ -11,7 +11,7 @@ export class SystemService {
 		const oauthSystems = await this.systemRepo.findOauthSystems();
 		const dtos = SystemMapper.mapFromEntitiesToDtos(oauthSystems);
 
-		let oauthConfigs: OauthConfigDto[] = [];
+		const oauthConfigs: OauthConfigDto[] = [];
 		dtos.forEach((system) => {
 			if (system.oauthConfig != null) {
 				oauthConfigs.push(system.oauthConfig);

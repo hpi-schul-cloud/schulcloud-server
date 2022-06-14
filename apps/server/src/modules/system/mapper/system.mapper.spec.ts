@@ -19,7 +19,7 @@ describe('system mapper', () => {
 	describe('mapFromEntityToDto', () => {
 		it('should map all fields', () => {
 			// Arrange
-			let systemEntity = systemFactory.build();
+			const systemEntity = systemFactory.build();
 
 			// Act
 			const result = SystemMapper.mapFromEntityToDto(systemEntity);
@@ -35,7 +35,7 @@ describe('system mapper', () => {
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
 			// Arrange
-			let systemEntities: System[] = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
+			const systemEntities: System[] = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
 
 			// Act
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);

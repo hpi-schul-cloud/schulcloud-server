@@ -30,7 +30,7 @@ describe('SystemUc', () => {
 		systemService = module.get(SystemService);
 	});
 
-	beforeEach(async () => {
+	beforeEach(() => {
 		mockConfigs = [];
 	});
 
