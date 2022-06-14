@@ -32,6 +32,9 @@ describe('SystemService', () => {
         systemRepo = module.get(SystemRepo);
         systemService = module.get(SystemService);
         orm = await setupEntities();
+    });
+
+    beforeEach(async () => {
         mockSystems = [];
     });
 
@@ -49,7 +52,6 @@ describe('SystemService', () => {
         });
 
         it('should return no systemDtos', async () => {
-            mockSystems = [];
             const resultSystems = await systemService.findOauthConfigs();
             expect(resultSystems).toEqual([]);
         });

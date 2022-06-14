@@ -1,12 +1,14 @@
 import {Test, TestingModule} from "@nestjs/testing";
-import {SystemRepo} from "@shared/repo";
-import {setupEntities, systemFactory} from "@shared/testing";
+import {systemFactory} from "@shared/testing";
 import {SystemUc} from "@src/modules/system/uc/system.uc";
 import {SystemService} from "@src/modules/system/service/system.service";
+import {OauthConfigDto} from "@src/modules/system/service/dto/oauth-config.dto";
 
 describe('SystemUc', () => {
     let module: TestingModule;
     let systemUc: SystemUc;
+    let systemService: SystemService;
+    let mockConfigs: OauthConfigDto[];
 
     afterAll(async () => {
         await module.close();
@@ -19,30 +21,34 @@ describe('SystemUc', () => {
                 {
                     provide: SystemService,
                     useValue: {
-                        findOauthConfigs: jest.fn().mockImplementation(() => Promise.resolve(mockSystems))
+                        findOauthConfigs: jest.fn().mockImplementation(() => Promise.resolve(mockConfigs))
                     },
                 }
             ],
         }).compile();
+        systemUc = module.get(SystemUc);
+        systemService = module.get(SystemService);
     });
 
-    describe('findOauthSystems', () => {
-        it('should return systemDtos', async () => {
-            mockSystems.push(systemFactory.build());
-            mockSystems.push(systemFactory.build({oauthConfig: undefined}));
-            mockSystems.push(systemFactory.build());
+    beforeEach(async () => {
+        mockConfigs = [];
+    });
 
-            const resultSystems = await systemService.findOauthConfigs();
+    describe('findOauthConfigs', () => {
+        it('should return oauthResponse with data', async () => {
+            mockConfigs.push(systemFactory.build().oauthConfig);
+            mockConfigs.push(systemFactory.build().oauthConfig);
 
-            expect(resultSystems.length).toEqual(2);
-            expect(resultSystems[0]).toEqual(mockSystems[0].oauthConfig);
-            expect(resultSystems[1]).toEqual(mockSystems[2].oauthConfig);
+            const resultResponse = await systemUc.findOauthConfigs();
+
+            expect(resultResponse.data.length).toEqual(mockConfigs.length);
+            expect(resultResponse.data[0]).toEqual(mockConfigs[0]);
+            expect(resultResponse.data[1]).toEqual(mockConfigs[1]);
         });
 
-        it('should return no systemDtos', async () => {
-            mockSystems = [];
-            const resultSystems = await systemService.findOauthConfigs();
-            expect(resultSystems).toEqual([]);
+        it('should return empty oauthResponse', async () => {
+            const resultResponse = await systemUc.findOauthConfigs();
+            expect(resultResponse.data).toEqual([]);
         });
     });
 });

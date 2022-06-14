@@ -9,7 +9,7 @@ export class SystemUc {
     constructor(private readonly systemService: SystemService) {
     }
 
-    async getOauthConfigs(): Promise<OauthResponse> {
+    async findOauthConfigs(): Promise<OauthResponse> {
         const configs: OauthConfigDto[] = await this.systemService.findOauthConfigs();
         return OauthResponseMapper.mapFromDtoToResponse(configs);
     }

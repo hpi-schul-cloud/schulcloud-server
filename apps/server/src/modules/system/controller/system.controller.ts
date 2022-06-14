@@ -10,7 +10,7 @@ export class SystemController {
     }
 
     @Get('oauth')
-    async getOauthConfigs(): Promise<OauthResponse> {
-        return this.systemUc.getOauthConfigs();
+    async findOauthConfigs(): Promise<OauthResponse> {
+        return this.systemUc.findOauthConfigs();
     }
 }
