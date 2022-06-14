@@ -1,11 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule, BasePermissionManager } from '@shared/domain';
-import { IEntity, IPermissionContext } from '@shared/domain/interface';
-import { BaseDomainObject } from '@shared/domain/interface/base-domain-object';
+import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
-
-type PermissionRelations = IEntity | BaseDomainObject;
 
 @Injectable()
 export class AuthorizationService extends BasePermissionManager {
@@ -20,7 +17,7 @@ export class AuthorizationService extends BasePermissionManager {
 		this.registerPermissions([this.courseRule, this.taskRule, this.userRule, this.schoolRule]);
 	}
 
-	checkPermission(user: User, entity: PermissionRelations, context: IPermissionContext) {
+	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}

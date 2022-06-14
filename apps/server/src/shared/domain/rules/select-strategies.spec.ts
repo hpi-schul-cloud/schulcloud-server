@@ -14,9 +14,7 @@ describe('ISelectStrategies', () => {
 		});
 
 		it('Should throw with InternalServerErrorException if mutliple elements match.', () => {
-			expect(() => strategie.match(['a', 'b'])).toThrowError(
-				new InternalServerErrorException(strategie.errorMessage.MULTIPLE_MATCHES_ARE_NOT_ALLOWED)
-			);
+			expect(() => strategie.match(['a', 'b'])).toThrowError(new InternalServerErrorException());
 		});
 
 		it('Should return a single match element if only one exist', () => {
