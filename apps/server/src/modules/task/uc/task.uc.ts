@@ -8,6 +8,7 @@ import {
 	ITaskStatus,
 	Lesson,
 	Permission,
+	PermissionContextBuilder,
 	SortOrder,
 	TaskWithStatusVo,
 	User,
@@ -54,12 +55,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (
-				this.authorizationService.hasPermission(user, task, {
-					action: Actions.write,
-					requiredPermissions: [],
-				})
-			) {
+			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
 				// TaskParentPermission.read check is not needed on this place
@@ -94,10 +90,7 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		this.authorizationService.checkPermission(user, task, {
-			action: Actions.read,
-			requiredPermissions: [],
-		});
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
 
 		if (isFinished) {
 			task.finishForUser(user);
@@ -189,10 +182,7 @@ export class TaskUC {
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
 		const writeCourses = courses.filter((c) =>
-			this.authorizationService.hasPermission(user, c, {
-				action: Actions.write,
-				requiredPermissions: [],
-			})
+			this.authorizationService.hasPermission(user, c, PermissionContextBuilder.write([]))
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 
@@ -224,7 +214,7 @@ export class TaskUC {
 			this.taskRepo.findById(taskId),
 		]);
 
-		this.authorizationService.checkPermission(user, task, { action: Actions.write, requiredPermissions: [] });
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 		await this.taskRepo.delete(task);
 		return true;
 	}
