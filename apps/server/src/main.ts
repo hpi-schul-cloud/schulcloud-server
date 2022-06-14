@@ -17,7 +17,7 @@ import legacyAppPromise = require('../../../src/app');
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
 
-export async function bootstrap() {
+async function bootstrap() {
 	sourceMapInstall();
 
 	// load the legacy feathers/express server

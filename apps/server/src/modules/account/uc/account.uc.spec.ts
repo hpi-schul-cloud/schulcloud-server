@@ -76,6 +76,7 @@ describe('AccountUc', () => {
 	let mockUsers: User[];
 
 	const defaultPassword = 'DummyPasswd!1';
+	const otherPassword = 'DummyPasswd!2';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	afterAll(async () => {
@@ -556,7 +557,7 @@ describe('AccountUc', () => {
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
 					passwordOld: defaultPassword,
-					passwordNew: 'DummyPasswd!2',
+					passwordNew: otherPassword,
 				})
 			).resolves.not.toThrow();
 		});
@@ -688,22 +689,14 @@ describe('AccountUc', () => {
 			mockStudentUser.forcePasswordChange = true;
 			mockStudentUser.preferences = { firstLogin: true };
 			await expect(
-				accountUc.replaceMyTemporaryPassword(
-					mockStudentAccount.userId?.toString() ?? '',
-					'DummyPasswd!2',
-					'DummyPasswd!2'
-				)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
 		});
 		it('should allow to set strong password, if this is the users first login', async () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = { firstLogin: false };
 			await expect(
-				accountUc.replaceMyTemporaryPassword(
-					mockStudentAccount.userId?.toString() ?? '',
-					'DummyPasswd!2',
-					'DummyPasswd!2'
-				)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
 		});
 		it('should throw if user can not be updated', async () => {
@@ -711,11 +704,7 @@ describe('AccountUc', () => {
 			mockStudentUser.preferences = { firstLogin: false };
 			mockStudentUser.firstName = 'failToUpdate';
 			await expect(
-				accountUc.replaceMyTemporaryPassword(
-					mockStudentAccount.userId?.toString() ?? '',
-					'DummyPasswd!2',
-					'DummyPasswd!2'
-				)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if account can not be updated', async () => {
@@ -723,11 +712,7 @@ describe('AccountUc', () => {
 			mockStudentUser.preferences = { firstLogin: false };
 			mockStudentAccount.username = 'fail@to.update';
 			await expect(
-				accountUc.replaceMyTemporaryPassword(
-					mockStudentAccount.userId?.toString() ?? '',
-					'DummyPasswd!2',
-					'DummyPasswd!2'
-				)
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).rejects.toThrow(EntityNotFoundError);
 		});
 	});
