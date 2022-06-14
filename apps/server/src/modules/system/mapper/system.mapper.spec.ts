@@ -1,24 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities, systemFactory } from '@shared/testing';
+import { systemFactory } from '@shared/testing';
 import { System } from '@shared/domain';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 describe('system mapper', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
-
-	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterEach(async () => {
-		await module.close();
-	});
-
 	afterAll(async () => {
-		await orm.close();
+		await module.close();
 	});
 
 	beforeEach(async () => {
@@ -37,7 +25,6 @@ describe('system mapper', () => {
 			const result = SystemMapper.mapFromEntityToDto(systemEntity);
 
 			// Assert
-			expect(result instanceof SystemDto).toEqual(true);
 			expect(result.url).toEqual(systemEntity.url);
 			expect(result.alias).toEqual(systemEntity.alias);
 			expect(result.type).toEqual(systemEntity.type);
