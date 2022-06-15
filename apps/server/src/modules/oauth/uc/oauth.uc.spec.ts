@@ -76,10 +76,12 @@ describe('OAuthUc', () => {
 		headers: {},
 		config: {},
 	};
+	let systemMock: System;
 
 	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
 
 	beforeEach(async () => {
+		systemMock = systemFactory.build();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [HttpModule],
 			providers: [
@@ -107,9 +109,7 @@ describe('OAuthUc', () => {
 				{
 					provide: SystemRepo,
 					useValue: {
-						findById: jest.fn(() => {
-							return systemFactory.build();
-						}),
+						findById: jest.fn(() => systemMock),
 					},
 				},
 				{
@@ -153,6 +153,11 @@ describe('OAuthUc', () => {
 			const response = await service.startOauth(defaultQuery, defaultSystemId);
 			expect(response).toEqual({ jwt: defaultJWT, idToken: defaultJWT, logoutEndpoint: 'mock_logoutEndpoint' });
 		});
+
+		it('should throw error if oauthconfig is missing', async () => {
+			systemMock.oauthConfig = undefined;
+			await expect(service.startOauth(defaultQuery, defaultSystemId)).rejects.toThrow(OAuthSSOError);
+		});
 	});
 
 	describe('checkAuthorizationCode', () => {
@@ -180,7 +185,7 @@ describe('OAuthUc', () => {
 	describe('requestToken', () => {
 		it('should get token from the external server', async () => {
 			const defaultSystem = systemFactory.build();
-			const responseToken = await service.requestToken(defaultAuthCode, defaultSystem);
+			const responseToken = await service.requestToken(defaultAuthCode, defaultSystem.oauthConfig!);
 			expect(responseToken).toStrictEqual(defaultTokenResponse);
 		});
 	});
@@ -188,7 +193,7 @@ describe('OAuthUc', () => {
 	describe('_getPublicKey', () => {
 		it('should get public key from the external server', async () => {
 			const defaultSystem = systemFactory.build();
-			const publicKey = await service._getPublicKey(defaultSystem);
+			const publicKey = await service._getPublicKey(defaultSystem.oauthConfig!);
 			expect(publicKey).toStrictEqual('publicKey');
 		});
 	});
@@ -200,7 +205,7 @@ describe('OAuthUc', () => {
 			});
 			const defaultSystem = systemFactory.build();
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
-			const decodedJwt = await service.validateToken(defaultJWT, defaultSystem);
+			const decodedJwt = await service.validateToken(defaultJWT, defaultSystem.oauthConfig!);
 			expect(decodedJwt.uuid).toStrictEqual('123456');
 		});
 		it('should throw an error', async () => {
@@ -209,7 +214,7 @@ describe('OAuthUc', () => {
 			});
 			const defaultSystem = systemFactory.build();
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
-			await expect(service.validateToken(defaultJWT, defaultSystem)).rejects.toEqual(
+			await expect(service.validateToken(defaultJWT, defaultSystem.oauthConfig!)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
 			);
 		});

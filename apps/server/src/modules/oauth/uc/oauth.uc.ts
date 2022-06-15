@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
-import { System, User } from '@shared/domain';
+import { OauthConfig, System, User } from '@shared/domain';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption/encryption.service';
 import { UserRepo } from '@shared/repo';
 import { SystemRepo } from '@shared/repo/system';
@@ -35,9 +35,16 @@ export class OauthUc {
 
 		const system: System = await this.systemRepo.findById(systemId);
 
-		const queryToken: OauthTokenResponse = await this.requestToken(code, system);
+		if (system.oauthConfig == null) {
+			this.logger.error(
+				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
+			);
+			throw new OAuthSSOError('Requested system has no oauth configured');
+		}
 
-		const decodedToken: IJWT = await this.validateToken(queryToken.id_token, system);
+		const queryToken: OauthTokenResponse = await this.requestToken(code, system.oauthConfig);
+
+		const decodedToken: IJWT = await this.validateToken(queryToken.id_token, system.oauthConfig);
 
 		const uuid: string = this.extractUUID(decodedToken);
 
@@ -67,10 +74,10 @@ export class OauthUc {
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
-	async requestToken(code: string, system: System): Promise<OauthTokenResponse> {
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
+	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
-			system,
+			oauthConfig,
 			decryptedClientSecret,
 			code
 		);
@@ -88,21 +95,21 @@ export class OauthUc {
 		return responseToken.data;
 	}
 
-	async _getPublicKey(system: System): Promise<string> {
+	async _getPublicKey(oauthConfig: OauthConfig): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
 			cache: true,
-			jwksUri: system.oauthConfig.jwksEndpoint,
+			jwksUri: oauthConfig.jwksEndpoint,
 		});
 		const key: JwksRsa.SigningKey = await client.getSigningKey();
 		return key.getPublicKey();
 	}
 
-	async validateToken(idToken: string, system: System): Promise<IJWT> {
-		const publicKey = await this._getPublicKey(system);
+	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJWT> {
+		const publicKey = await this._getPublicKey(oauthConfig);
 		const verifiedJWT = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
-			issuer: system.oauthConfig.issuer,
-			audience: system.oauthConfig.clientId,
+			issuer: oauthConfig.issuer,
+			audience: oauthConfig.clientId,
 		});
 		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
