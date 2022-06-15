@@ -124,8 +124,8 @@ export class OAuthService {
 
 		const oauthResponse = this.getRedirect(response);
 		oauthResponse.jwt = jwtResponse;
-		return new Promise<OAuthResponse>(() => {
-			return oauthResponse;
+		return new Promise<OAuthResponse>((resolve) => {
+			resolve(oauthResponse);
 		});
 	}
 
