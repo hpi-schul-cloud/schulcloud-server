@@ -2,12 +2,10 @@ import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { CourseCopyService } from '@shared/domain/service/course-copy.service';
-import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
+import { Actions, CopyElementType, CopyStatusEnum, CourseCopyService, Permission } from '@shared/domain';
+import { CourseRepo, UserRepo } from '@shared/repo';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { Actions, Permission } from '../../../shared/domain';
-import { CourseRepo, UserRepo } from '../../../shared/repo';
-import { courseFactory, setupEntities, userFactory } from '../../../shared/testing';
 import { CourseCopyUC } from './course-copy.uc';
 
 describe('course copy uc', () => {
