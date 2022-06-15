@@ -80,7 +80,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			// throw an error if there is no request context. This check is enforced since
 			// version 5.X an has to be explicitly turned of.
 			// For more informatin look here: https://mikro-orm.io/docs/identity-map#global-identity-map
-			// allowGlobalContext: true,
+			allowGlobalContext: true,
 		}),
 	],
 	controllers: [ServerController],
