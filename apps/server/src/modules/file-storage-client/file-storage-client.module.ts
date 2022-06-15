@@ -1,12 +1,28 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { Logger } from '@src/core/logger';
-import { FileStorageClientUC } from './uc';
+import { FileStorageClientService } from './uc';
 import { FileStorageClientRepo } from './repo';
 
+// https://docs.nestjs.com/techniques/http-module
+/*
+HttpModule.registerAsync({
+  imports: [ConfigModule],
+  useFactory: async (configService: ConfigService) => ({
+    timeout: configService.get('HTTP_TIMEOUT'),
+    maxRedirects: configService.get('HTTP_MAX_REDIRECTS'),
+  }),
+  inject: [ConfigService],
+});
+
+HttpModule.registerAsync({
+  useClass: HttpConfigService,
+});
+*/
 @Module({
-	imports: [],
+	imports: [HttpModule.register({ timeout: 600000 })], // todo: add config
 	controllers: [],
-	providers: [FileStorageClientUC, Logger, FileStorageClientRepo],
-	exports: [FileStorageClientUC],
+	providers: [FileStorageClientService, Logger, FileStorageClientRepo],
+	exports: [FileStorageClientService],
 })
 export class FileStorageClientModule {}

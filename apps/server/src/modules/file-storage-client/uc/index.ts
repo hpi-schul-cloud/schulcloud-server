@@ -1,1 +1,1 @@
-export * from './file-storage-client.uc';
+export * from './file-storage-client.service';

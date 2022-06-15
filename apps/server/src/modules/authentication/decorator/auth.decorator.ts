@@ -9,6 +9,7 @@ import {
 import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ICurrentUser } from '@shared/domain';
+import { ExtractJwt } from 'passport-jwt';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 
 const STRATEGIES = ['jwt'] as const;
@@ -45,4 +46,21 @@ export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: u
 			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
 		);
 	return user as ICurrentUser;
+});
+
+/**
+ * Returns the current authenticated user.
+ * @requires Authenticated
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const JWT = createParamDecorator<any, any, string>((data: unknown, ctx: ExecutionContext) => {
+	const getJWT = ExtractJwt.fromAuthHeaderAsBearerToken();
+	const req: Request = ctx.switchToHttp().getRequest();
+	const jwt = getJWT(req);
+
+	if (!jwt) {
+		throw new UnauthorizedException('Authentication is required.');
+	}
+
+	return jwt;
 });
