@@ -23,7 +23,7 @@ export class CourseCopyUC {
 		) {
 			throw new ForbiddenException();
 		}
-		const { copy, status } = this.courseCopyService.copyCourseMetadata({
+		const { copy, status } = this.courseCopyService.copyCourse({
 			originalCourse,
 			user,
 		});

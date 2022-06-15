@@ -14,7 +14,7 @@ export type CourseCopyResponse = {
 
 @Injectable()
 export class CourseCopyService {
-	copyCourseMetadata(params: CourseCopyParams): CourseCopyResponse {
+	copyCourse(params: CourseCopyParams): CourseCopyResponse {
 		const copy = new Course({
 			school: params.user.school,
 			name: params.originalCourse.name,

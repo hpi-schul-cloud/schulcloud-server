@@ -31,7 +31,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -45,7 +45,7 @@ describe('course copy service', () => {
 			const originalCourse = courseFactory.build({ school: originalSchool });
 			const user = userFactory.build({ school: destinationSchool });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -57,7 +57,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -69,7 +69,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -82,7 +82,7 @@ describe('course copy service', () => {
 			const studentUser = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId({ students: [studentUser] });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -95,7 +95,7 @@ describe('course copy service', () => {
 			const secondUser = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId({ teachers: [secondUser] });
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -107,7 +107,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -119,7 +119,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -131,7 +131,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -143,7 +143,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -155,7 +155,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -171,7 +171,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -187,7 +187,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -203,7 +203,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -219,7 +219,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -235,7 +235,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -251,7 +251,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -267,7 +267,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -283,7 +283,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -299,7 +299,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});
@@ -315,7 +315,7 @@ describe('course copy service', () => {
 			const user = userFactory.buildWithId();
 			const originalCourse = courseFactory.buildWithId();
 
-			const result = copyService.copyCourseMetadata({
+			const result = copyService.copyCourse({
 				originalCourse,
 				user,
 			});

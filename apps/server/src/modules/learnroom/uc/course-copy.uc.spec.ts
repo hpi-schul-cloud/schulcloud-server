@@ -72,7 +72,7 @@ describe('course copy uc', () => {
 				status: CopyStatusEnum.SUCCESS,
 			};
 			const courseCopySpy = jest
-				.spyOn(courseCopyService, 'copyCourseMetadata')
+				.spyOn(courseCopyService, 'copyCourse')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation(() => ({
 					copy,
