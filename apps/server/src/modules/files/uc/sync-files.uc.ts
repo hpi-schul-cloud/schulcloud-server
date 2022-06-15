@@ -22,11 +22,15 @@ export class SyncFilesUc {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(options.aggregationSize);
 		const numFound = itemsToSync.length;
 
-		await Promise.all(
-			Array.from({ length: options.numParallelPromises }).map(async () => {
-				await this.syncBatch(itemsToSync, context);
-			})
-		);
+		if (numFound > 0) {
+			await Promise.all(
+				Array.from({ length: options.numParallelPromises }).map(async () => {
+					await this.syncBatch(itemsToSync, context);
+				})
+			);
+		} else {
+			this.logger.log('Not items found. Nothing to do.');
+		}
 
 		return numFound;
 	}
