@@ -948,7 +948,7 @@ describe('AdminUsersService', () => {
 			await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params);
 
 			// then
-			const updatedAccount = await accountService.findById(account._id);
+			const updatedAccount = await accountService.findById(account.id);
 			expect(updatedAccount.username).equals('foo@bar.baz');
 		});
 

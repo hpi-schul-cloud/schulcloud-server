@@ -130,7 +130,7 @@ describe('qrRegistrationLinks service tests', () => {
 
 			const resp = await postRegistrationLinks(params, [String(user._id)]);
 			expect(resp.length).to.equal(0);
-			await accountService.remove(testAccount._id);
+			await accountService.remove(testAccount.id);
 		});
 
 		it('should return registration link for all users (from the caller school) with a role given (stundent)', async () => {
