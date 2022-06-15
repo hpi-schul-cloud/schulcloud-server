@@ -5,7 +5,7 @@ import { FileRecordRepo, FilesRepo, StorageProviderRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { S3Config } from '../files-storage/interface';
 import { DeleteFilesConsole } from './job/delete-files.console';
-import { SyncFilesConsole } from './job/sync-filerecords.console';
+import { SyncFilesConsole } from './job/sync-files.console';
 import { SyncFilesRepo } from './repo/sync-files.repo';
 import { DeleteFilesUc, SyncFilesUc } from './uc';
 import { SyncFilesMetadataService } from './uc/sync-files-metadata.service';
