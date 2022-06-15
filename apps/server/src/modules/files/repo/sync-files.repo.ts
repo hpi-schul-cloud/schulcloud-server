@@ -48,7 +48,6 @@ export class SyncFilesRepo {
 			{
 				$unwind: {
 					path: '$file_filerecords',
-					includeArrayIndex: '0',
 					preserveNullAndEmptyArrays: true,
 				},
 			},
