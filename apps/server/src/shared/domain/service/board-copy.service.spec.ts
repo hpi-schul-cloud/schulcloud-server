@@ -4,6 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	boardFactory,
 	courseFactory,
+	lessonBoardElementFactory,
+	lessonFactory,
 	setupEntities,
 	taskBoardElementFactory,
 	taskFactory,
@@ -12,11 +14,13 @@ import {
 import { TaskCopyService } from '..';
 import { CopyElementType, CopyStatusEnum } from '../types';
 import { BoardCopyService } from './board-copy.service';
+import { LessonCopyService } from './lesson-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;
 	let copyService: BoardCopyService;
 	let taskCopyService: DeepMocked<TaskCopyService>;
+	let lessonCopyService: DeepMocked<LessonCopyService>;
 
 	let orm: MikroORM;
 
@@ -36,11 +40,16 @@ describe('board copy service', () => {
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
 				},
+				{
+					provide: LessonCopyService,
+					useValue: createMock<LessonCopyService>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(BoardCopyService);
 		taskCopyService = module.get(TaskCopyService);
+		lessonCopyService = module.get(LessonCopyService);
 	});
 
 	describe('copyBoard', () => {
@@ -48,7 +57,7 @@ describe('board copy service', () => {
 			const setup = () => {
 				const destinationCourse = courseFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({ references: [], course: destinationCourse });
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 
 				return { destinationCourse, originalBoard, user };
 			};
@@ -84,12 +93,12 @@ describe('board copy service', () => {
 
 		describe('when board contains a task', () => {
 			const setup = () => {
-				const originalTask = taskFactory.buildWithId();
-				const taskElement = taskBoardElementFactory.buildWithId({ target: originalTask });
-				const destinationCourse = courseFactory.buildWithId();
-				const originalBoard = boardFactory.buildWithId({ references: [taskElement], course: destinationCourse });
-				const user = userFactory.buildWithId();
-				const taskCopy = taskFactory.buildWithId();
+				const originalTask = taskFactory.build();
+				const taskElement = taskBoardElementFactory.build({ target: originalTask });
+				const destinationCourse = courseFactory.build();
+				const originalBoard = boardFactory.build({ references: [taskElement], course: destinationCourse });
+				const user = userFactory.build();
+				const taskCopy = taskFactory.build({ name: originalTask.name });
 
 				taskCopyService.copyTaskMetadata.mockReturnValue({
 					copy: taskCopy,
@@ -111,6 +120,49 @@ describe('board copy service', () => {
 
 				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
 				expect(result.copy.getElements().length).toEqual(1);
+			});
+
+			it('should add status of copying task to board copy status', () => {
+				const { destinationCourse, originalBoard, user, originalTask } = setup();
+
+				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const taskStatus = result.status.elements?.find(
+					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name
+				);
+				expect(taskStatus).toBeDefined();
+			});
+		});
+
+		describe('when board contains a lesson', () => {
+			const setup = () => {
+				const originalLesson = lessonFactory.build();
+				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
+				const destinationCourse = courseFactory.build();
+				const originalBoard = boardFactory.build({ references: [lessonElement], course: destinationCourse });
+				const user = userFactory.build();
+
+				lessonCopyService.copyLesson.mockReturnValue({
+					status: { title: originalLesson.name, type: CopyElementType.LESSON, status: CopyStatusEnum.NOT_IMPLEMENTED },
+				});
+
+				return { destinationCourse, originalBoard, user, originalLesson };
+			};
+
+			it('should call lessonCopyService with original lesson', () => {
+				const { destinationCourse, originalBoard, user, originalLesson } = setup();
+
+				copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({ originalLesson, destinationCourse, user });
+			});
+
+			it('should add status of copying lesson to board copy status', () => {
+				const { destinationCourse, originalBoard, user, originalLesson } = setup();
+
+				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const lessonStatus = result.status.elements?.find(
+					(el) => el.type === CopyElementType.LESSON && el.title === originalLesson.name
+				);
+				expect(lessonStatus).toBeDefined();
 			});
 		});
 	});
