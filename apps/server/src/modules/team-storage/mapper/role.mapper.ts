@@ -4,7 +4,7 @@ import {Injectable} from "@nestjs/common";
 
 @Injectable()
 export class RoleMapper {
-	public mapEntityToDto(RoleEntity: Role): RoleDto {
-		return new RoleDto({ id: RoleEntity.id, name: RoleEntity.name });
+	public mapEntityToDto(roleEntity: Role): RoleDto {
+		return new RoleDto({ id: roleEntity.id, name: roleEntity.name });
 	}
 }

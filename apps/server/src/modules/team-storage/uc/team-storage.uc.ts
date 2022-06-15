@@ -14,7 +14,7 @@ export class TeamStorageUc {
 	 * Sets a users permissions according to the dBildungscloud Configuration
 	 *
 	 */
-	async updateUserPermissionsForRole(currentUser: ICurrentUser, teamRole: TeamRoleDto, permissionsDto: TeamPermissionsBody): Promise<void> {
-		return this.service.updateTeamPermissionsForRole(currentUser,teamRole.team,teamRole.team, this.permissionMapper.mapBodyToDto(permissionsDto))
+	async updateUserPermissionsForRole(currentUserId: string, teamRole: TeamRoleDto, permissionsDto: TeamPermissionsBody): Promise<void> {
+		return this.service.updateTeamPermissionsForRole(currentUserId,teamRole.team,teamRole.team, this.permissionMapper.mapBodyToDto(permissionsDto))
 	}
 }

@@ -22,6 +22,6 @@ export class TeamStorageController {
 		@Param() teamRole: TeamRoleDto,
 		@Body() permissionsBody: TeamPermissionsBody
 	): Promise<void> {
-		return this.teamStorageUc.updateUserPermissionsForRole(currentUser, teamRole, permissionsBody);
+		return this.teamStorageUc.updateUserPermissionsForRole(currentUser.userId, teamRole, permissionsBody);
 	}
 }

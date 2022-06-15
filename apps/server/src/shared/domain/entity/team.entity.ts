@@ -1,5 +1,5 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from './base.entity';
+import {BaseEntity, BaseEntityWithTimestamps} from './base.entity';
 import { Role } from './role.entity';
 import { School } from '@shared/domain';
 import { User } from './user.entity';
@@ -10,9 +10,8 @@ export interface ITeamProperties {
 }
 
 @Embeddable()
-export class TeamUser extends BaseEntityWithTimestamps {
+export class TeamUser {
 	constructor(teamUser: TeamUser) {
-		super();
 		this.userId = teamUser.userId;
 		this.role = teamUser.role;
 		this.schoolId = teamUser.schoolId;

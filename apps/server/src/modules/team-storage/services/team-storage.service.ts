@@ -26,11 +26,11 @@ export class TeamStorageService {
 		return this.roleMapper.mapEntityToDto(await this.roleRepo.findById(roleId));
 	}
 
-	async isUserAuthorized(currentUser: ICurrentUser, teamId: string): Promise<boolean> {
+	async isUserAuthorized(currentUserId: string, teamId: string): Promise<boolean> {
 		const team: TeamDto = await this.findTeamById(teamId, true);
 		return new Promise<boolean>((resolve) => {
 			team.userIds.forEach((teamIdDto: TeamUserDto) => {
-				if (currentUser.userId === teamIdDto.userId) {
+				if (currentUserId === teamIdDto.userId) {
 					resolve(
 						this.findRoleById(teamIdDto.role).then((roleDto) => {
 							return roleDto.name === RoleName.TEAMADMINISTRATOR || roleDto.name === RoleName.TEAMOWNER;
@@ -42,12 +42,12 @@ export class TeamStorageService {
 	}
 
 	async updateTeamPermissionsForRole(
-		currentUser: ICurrentUser,
+		currentUserId: string,
 		teamId: string,
 		roleId: string,
 		teamPermissions: TeamPermissionsDto
 	):Promise<void> {
-		if (!(await this.isUserAuthorized(currentUser, teamId))) {
+		if (!(await this.isUserAuthorized(currentUserId, teamId))) {
 			throw new ForbiddenException({ description: 'User is not Teamadmin or Teamowner' });
 		}
 		this.adapter.updateTeamPermissionsForRole(await this.findTeamById(teamId, true), await this.findRoleById(roleId), teamPermissions);
