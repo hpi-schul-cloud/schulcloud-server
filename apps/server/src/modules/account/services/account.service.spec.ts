@@ -88,6 +88,9 @@ describe('AccountService', () => {
 						searchByUsernamePartialMatch: jest.fn().mockImplementation((): Promise<[Account[], number]> => {
 							return Promise.resolve([mockAccounts, mockAccounts.length]);
 						}),
+						deleteByUserId: jest.fn().mockImplementation((): Promise<void> => {
+							return Promise.resolve();
+						}),
 					},
 				},
 			],
@@ -285,12 +288,54 @@ describe('AccountService', () => {
 				password: defaultPassword,
 			});
 		});
+
+		it('should not encrypt password on save if no accountDTO id is given', async () => {
+			const spy = jest.spyOn(accountRepo, 'save');
+			const dto = {
+				username: 'john.doe@domain.tld',
+				password: '',
+			} as AccountDto;
+			(accountRepo.findById as jest.Mock).mockClear();
+			(accountRepo.save as jest.Mock).mockClear();
+			await expect(accountService.save(dto)).resolves.not.toThrow();
+			expect(accountRepo.findById).not.toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: undefined,
+				})
+			);
+		});
+
+		it('should not encrypt password on save if accountDTO id is given', async () => {
+			const spy = jest.spyOn(accountRepo, 'save');
+			const dto = {
+				id: mockTeacherAccount.id,
+				// username: 'john.doe@domain.tld',
+				password: '',
+			} as AccountDto;
+			(accountRepo.findById as jest.Mock).mockClear();
+			(accountRepo.save as jest.Mock).mockClear();
+			await expect(accountService.save(dto)).resolves.not.toThrow();
+			expect(accountRepo.findById).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: undefined,
+				})
+			);
+		});
 	});
 
 	describe('delete', () => {
 		it('should delete account via repo', async () => {
 			await accountService.delete(mockTeacherAccount.id);
 			expect(accountRepo.deleteById).toHaveBeenCalledWith(mockTeacherAccount.id);
+		});
+	});
+
+	describe('deleteByUserId', () => {
+		it('should delete the account with given user id via repo', async () => {
+			await accountService.deleteByUserId(mockTeacherAccount.userId?.toString() ?? '');
+			expect(accountRepo.deleteByUserId).toHaveBeenCalledWith(mockTeacherAccount.userId);
 		});
 	});
 

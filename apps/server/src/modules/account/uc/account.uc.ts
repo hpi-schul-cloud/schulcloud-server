@@ -341,6 +341,7 @@ export class AccountUc {
 
 	private async isUniqueEmailInternal(userId: EntityId, email: string, accountId?: EntityId): Promise<boolean> {
 		const [usersAccountId, foundUsers, { accounts: foundAccounts }] = await Promise.all([
+			// Test coverage: Missing branch null check; unreachable
 			accountId ?? this.accountService.findByUserId(userId).then((accountDto) => accountDto?.id),
 			this.userRepo.findByEmail(email),
 			this.accountService.searchByUsernameExactMatch(email),

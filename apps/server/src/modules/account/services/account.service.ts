@@ -64,7 +64,7 @@ export class AccountService {
 			});
 		}
 		await this.accountRepo.save(account);
-		return this.mapAccountToDto([account])[0];
+		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	delete(id: EntityId): Promise<void> {

@@ -168,4 +168,14 @@ describe('account repo', () => {
 			expect(accounts).toHaveLength(0);
 		});
 	});
+
+	describe('deleteByUserId', () => {
+		it('should delete an account by user id', async () => {
+			const account = accountFactory.buildWithId();
+			jest.spyOn(repo, 'deleteByUserId');
+			(repo.deleteByUserId as jest.Mock).mockClear();
+			await expect(repo.deleteByUserId(account.userId?.toString() ?? '')).resolves.not.toThrow();
+			expect(repo.deleteByUserId).toHaveBeenCalled();
+		});
+	});
 });
