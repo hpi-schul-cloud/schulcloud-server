@@ -38,7 +38,7 @@ describe('SchoolRule', () => {
 	it('should call baseRule.hasAllPermissions', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const spy = jest.spyOn(service, 'hasAllPermissions');
+		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
