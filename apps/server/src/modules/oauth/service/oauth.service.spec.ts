@@ -130,7 +130,7 @@ describe('OAuthService', () => {
 			responseType: 'code',
 			authEndpoint: 'mock_authEndpoint',
 			provider: 'iserv',
-			logoutEndpoint: 'mock_logoutEndpoint',
+			logoutEndpoint: 'logoutEndpointMock',
 			issuer: 'mock_issuer',
 			jwksEndpoint: 'mock_jwksEndpoint',
 		},
@@ -307,7 +307,8 @@ describe('OAuthService', () => {
 		it('should do the process successfully', async () => {
 			jest.spyOn(service, 'validateToken').mockResolvedValue(decodedJWTMock);
 			const response = await service.processOauth(defaultQuery, defaultIservSystemId);
-			expect(response.idToken).toEqual(defaultResponse.idToken);
+			expect(response.redirect).toStrictEqual(iservRedirectMock);
+			expect(response.jwt).toStrictEqual(defaultJWT);
 		});
 	});
 
