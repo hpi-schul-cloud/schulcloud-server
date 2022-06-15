@@ -12,17 +12,10 @@ class SchoolsListService {
 		};
 		const systemsQuery = {
 			path: 'systems',
-			select:
-				'_id type alias',
+			select: '_id type alias',
 			match: { $or: [{ type: { $ne: 'ldap' } }, { 'ldapConfig.active': { $eq: true } }] },
 		};
-		return schoolModel
-			.find(schoolQuery)
-			.populate(systemsQuery)
-			.select(['name', 'systems'])
-			.sort('name')
-			.lean()
-			.exec();
+		return schoolModel.find(schoolQuery).populate(systemsQuery).select(['name', 'systems']).sort('name').lean().exec();
 	}
 
 	setup(app) {
