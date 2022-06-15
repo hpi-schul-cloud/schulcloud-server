@@ -89,7 +89,7 @@ describe('reference.loader', () => {
 
 		it('should call ReferenceLoader.getUserWithPermissions', () => {
 			void expect(async () =>
-				service.loadEntity('AllowedEntityType.User' as AllowedAuthorizationEntityType.User, entityId)
+				service.loadEntity('NotAllowedEntityType' as AllowedAuthorizationEntityType.User, entityId)
 			).rejects.toThrow();
 		});
 	});

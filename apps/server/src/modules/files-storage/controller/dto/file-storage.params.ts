@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
 import { FileRecordParentType } from '@shared/domain/entity/filerecord.entity';
-import { Allow, IsEnum, IsMongoId, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class FileRecordParams {
 	@ApiProperty()
@@ -51,6 +51,7 @@ export class SingleFileParams {
 export class RenameFileParams {
 	@ApiProperty()
 	@IsString()
+	@IsNotEmpty()
 	fileName!: string;
 }
 

@@ -41,14 +41,12 @@ describe('DatabaseManagementConsole', () => {
 				}
 				return Promise.resolve(['singleCollection:4']);
 			});
-			databaseManagementUc.exportCollectionsToFileSystem.mockImplementation(
-				(collections?: string[], _toSeedFolder?: boolean) => {
-					if (collections === undefined) {
-						return Promise.resolve(['someCollection:1', 'otherCollection:2']);
-					}
-					return Promise.resolve(['singleCollection:4']);
+			databaseManagementUc.exportCollectionsToFileSystem.mockImplementation((collections?: string[]) => {
+				if (collections === undefined) {
+					return Promise.resolve(['someCollection:1', 'otherCollection:2']);
 				}
-			);
+				return Promise.resolve(['singleCollection:4']);
+			});
 		});
 
 		it('should export existing collections', async () => {
