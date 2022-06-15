@@ -5,9 +5,11 @@ import { System } from './system.entity';
 
 describe('System Entity', () => {
 	let orm: MikroORM;
+
 	beforeAll(async () => {
 		orm = await setupEntities();
 	});
+
 	afterAll(async () => {
 		await orm.close();
 	});

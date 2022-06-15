@@ -36,21 +36,21 @@ describe('CourseRule', () => {
 
 	it('should call baseRule.hasAllPermissions', () => {
 		entity = courseFactory.build({ teachers: [user] });
-		const spy = jest.spyOn(service, 'hasAllPermissions');
+		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should call baseRule.hasAccessToEntity if action = "read"', () => {
 		entity = courseFactory.build({ teachers: [user] });
-		const spy = jest.spyOn(service, 'hasAccessToEntity');
+		const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['teachers', 'substitutionTeachers', 'students']);
 	});
 
 	it('should call baseRule.hasAccessToEntity if action = "write"', () => {
 		entity = courseFactory.build({ teachers: [user] });
-		const spy = jest.spyOn(service, 'hasAccessToEntity');
+		const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
 		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['teachers', 'substitutionTeachers']);
 	});

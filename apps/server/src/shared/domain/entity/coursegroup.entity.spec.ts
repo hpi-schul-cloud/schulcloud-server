@@ -1,10 +1,17 @@
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseEntity', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('constructor', () => {
