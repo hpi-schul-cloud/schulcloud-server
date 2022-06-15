@@ -33,7 +33,7 @@ const setupNestServices = async (app) => {
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
 
-	return { nestApp, orm };
+	return { nestApp, orm, accountUc, accountService };
 };
 
 module.exports = {
