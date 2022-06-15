@@ -5,7 +5,7 @@ on: [push]
 jobs:
   migration:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
     - uses: actions/checkout@v2
     - name: check all migrations are up in database seed

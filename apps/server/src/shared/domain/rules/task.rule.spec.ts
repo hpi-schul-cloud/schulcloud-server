@@ -39,14 +39,14 @@ describe('TaskRule', () => {
 
 	it('should call baseRule.hasAllPermissions', () => {
 		entity = taskFactory.build({ creator: user });
-		const spy = jest.spyOn(service, 'hasAllPermissions');
+		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should call baseRule.hasAccessToEntity', () => {
 		entity = taskFactory.build({ creator: user });
-		const spy = jest.spyOn(service, 'hasAccessToEntity');
+		const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['creator']);
 	});

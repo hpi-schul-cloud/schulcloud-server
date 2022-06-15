@@ -1,3 +1,4 @@
+import { MikroORM } from '@mikro-orm/core';
 import { userFactory, courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import { Course } from './course.entity';
 
@@ -8,8 +9,14 @@ const DEFAULT = {
 };
 
 describe('CourseEntity', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('constructor', () => {
