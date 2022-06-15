@@ -58,7 +58,11 @@ export class SyncFilesUc {
 			await this.metadataService.persist(item);
 
 			const fileInfo2 = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
-			this.logger.log(`#${countInfo} Successfully synced ${fileInfo2}`);
+			if (item.created) {
+				this.logger.log(`#${countInfo} Successfully synced ${fileInfo2} (created)`);
+			} else {
+				this.logger.log(`#${countInfo} Successfully synced ${fileInfo2} (updated)`);
+			}
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
