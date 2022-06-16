@@ -72,7 +72,7 @@ async function bootstrap() {
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	const port = 3031;
+	const port = 3030;
 	rootExpress.listen(port);
 
 	console.log('#################################');
