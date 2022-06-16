@@ -3,7 +3,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
-import { SyncContext, SyncOptions, SyncFileItem } from '../types';
+import { SyncContext, FileSyncOptions, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -18,7 +18,7 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
-	async syncFilesForTasks(options: SyncOptions, context: SyncContext): Promise<number> {
+	async syncFilesForTasks(options: FileSyncOptions, context: SyncContext): Promise<number> {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(options.aggregationSize);
 		const numFound = itemsToSync.length;
 

@@ -19,7 +19,7 @@ export class SyncFilesMetadataService {
 		return this.createFileRecord(item);
 	}
 
-	public async updateFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
+	private async updateFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
 		const { source } = item;
 
 		if (item.target) {
@@ -42,7 +42,7 @@ export class SyncFilesMetadataService {
 		return item;
 	}
 
-	public createFileRecord(item: SyncFileItem): SyncFileItem {
+	private createFileRecord(item: SyncFileItem): SyncFileItem {
 		const { source } = item;
 		const fileRecord = new FileRecord({
 			size: source.size,
