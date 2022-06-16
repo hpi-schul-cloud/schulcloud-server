@@ -74,13 +74,6 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			entities: ALL_ENTITIES,
 
 			// debug: true, // use it for locally debugging of queries
-
-			// The "allowGlobalContext" option might be necessary in the future, if we call Nest services
-			// from Feathers, because Mikro ORM will check for a request context and will
-			// throw an error if there is no request context. This check is enforced since
-			// version 5.X an has to be explicitly turned of.
-			// For more informatin look here: https://mikro-orm.io/docs/identity-map#global-identity-map
-			allowGlobalContext: true,
 		}),
 	],
 	controllers: [ServerController],

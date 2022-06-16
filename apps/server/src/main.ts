@@ -12,6 +12,7 @@ import { Logger } from '@nestjs/common';
 import { MailService, Mail } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { AccountUc } from './modules/account/uc/account.uc';
@@ -34,6 +35,13 @@ async function bootstrap() {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
+	const orm = nestApp.get(MikroORM);
+
+	// creates a request context for all requests on feathers endpoints
+	// TODO remove if not needed anymore
+	feathersExpress.use((req, res, next) => {
+		RequestContext.create(orm.em, next);
+	});
 
 	// customize nest app settings
 	nestApp.enableCors();
