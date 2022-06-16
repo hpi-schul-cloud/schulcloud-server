@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { systemFactory } from '@shared/testing';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 describe('SystemUc', () => {
 	let module: TestingModule;
 	let systemUc: SystemUc;
 	let systemService: SystemService;
-	let mockConfigs: OauthConfigDto[];
+	let mockSystems: SystemDto[];
 
 	afterAll(async () => {
 		await module.close();
@@ -21,7 +21,7 @@ describe('SystemUc', () => {
 				{
 					provide: SystemService,
 					useValue: {
-						findOauthConfigs: jest.fn().mockImplementation(() => Promise.resolve(mockConfigs)),
+						find: jest.fn().mockImplementation(() => Promise.resolve(mockSystems)),
 					},
 				},
 			],
@@ -31,19 +31,19 @@ describe('SystemUc', () => {
 	});
 
 	beforeEach(() => {
-		mockConfigs = [];
+		mockSystems = [];
 	});
 
-	describe('findOauthConfigs', () => {
+	describe('findByFilter', () => {
 		it('should return oauthResponse with data', async () => {
-			mockConfigs.push(systemFactory.build().oauthConfig!);
-			mockConfigs.push(systemFactory.build().oauthConfig!);
+			mockSystems.push(systemFactory.build());
+			mockSystems.push(systemFactory.build());
 
 			const resultResponse = await systemUc.findByFilter();
 
-			expect(resultResponse.data.length).toEqual(mockConfigs.length);
-			expect(resultResponse.data[0]).toEqual(mockConfigs[0]);
-			expect(resultResponse.data[1]).toEqual(mockConfigs[1]);
+			expect(resultResponse.data.length).toEqual(mockSystems.length);
+			expect(resultResponse.data[0].oauthConfig!.clientId).toEqual(mockSystems[0].oauthConfig!.clientId);
+			expect(resultResponse.data[1].oauthConfig!.clientId).toEqual(mockSystems[1].oauthConfig!.clientId);
 		});
 
 		it('should return empty oauthResponse', async () => {

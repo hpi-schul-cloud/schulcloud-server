@@ -10,7 +10,7 @@ export class SystemService {
 
 	async find(type: string | undefined, onlyOauth = false): Promise<SystemDto[]> {
 		let systemEntities: System[];
-		if (type === undefined && !onlyOauth) {
+		if (type === '' && !onlyOauth) {
 			systemEntities = await this.systemRepo.findAll();
 		} else {
 			systemEntities = await this.systemRepo.findByFilter(type, onlyOauth);

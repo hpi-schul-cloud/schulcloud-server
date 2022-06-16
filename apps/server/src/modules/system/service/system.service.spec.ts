@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { systemFactory } from '@shared/testing';
+import { setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { SystemService } from './system.service';
 
@@ -31,6 +31,7 @@ describe('SystemService', () => {
 				},
 			],
 		}).compile();
+		orm = await setupEntities();
 		systemRepo = module.get(SystemRepo);
 		systemService = module.get(SystemService);
 	});

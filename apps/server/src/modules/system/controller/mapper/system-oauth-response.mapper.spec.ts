@@ -8,7 +8,6 @@ import { OauthConfigResponse } from '../dto/oauth-config.response';
 function assertOauthConfig(expected: OauthConfigDto | undefined, actual: OauthConfigResponse | undefined): boolean {
 	if (expected != null && actual != null) {
 		expect(actual.clientId).toBe(expected.clientId);
-		expect(actual.clientSecret).toBeUndefined();
 		expect(actual.tokenRedirectUri).toBe(expected.tokenRedirectUri);
 		expect(actual.grantType).toBe(expected.grantType);
 		expect(actual.tokenEndpoint).toBe(expected.tokenEndpoint);

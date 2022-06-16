@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemController } from '@src/modules/system/controller/system.controller';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
+import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
 
 describe('system.controller', () => {
 	let module: TestingModule;
@@ -29,7 +30,7 @@ describe('system.controller', () => {
 
 	describe('find', () => {
 		it('should return oauthresponse', async () => {
-			const resultConfigs = await controller.find('');
+			const resultConfigs = await controller.find(new SystemFilterParams());
 			expect(resultConfigs).toBe(mockResponse);
 		});
 	});

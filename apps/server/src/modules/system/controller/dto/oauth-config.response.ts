@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class OauthConfigResponse {
 	constructor(oauthConfigResponse: OauthConfigResponse) {
 		this.clientId = oauthConfigResponse.clientId;
-		this.clientSecret = oauthConfigResponse.clientSecret;
 		this.tokenRedirectUri = oauthConfigResponse.tokenRedirectUri;
 		this.grantType = oauthConfigResponse.grantType;
 		this.tokenEndpoint = oauthConfigResponse.tokenEndpoint;
@@ -23,13 +22,6 @@ export class OauthConfigResponse {
 		nullable: false,
 	})
 	clientId!: string;
-
-	@ApiProperty({
-		description: 'Client secret',
-		required: true,
-		nullable: false,
-	})
-	clientSecret!: string;
 
 	@ApiProperty({
 		description: 'Token redirect uri',
