@@ -9,6 +9,10 @@ import {TeamStorageAdapterMapper} from "@shared/infra/team-storage/mapper/team-s
 export class TeamStorageAdapter {
     constructor(private strategy: IFileStorageStrategy, private mapper: TeamStorageAdapterMapper) {};
 
+    public setStrategy(strategy: IFileStorageStrategy) {
+        this.strategy = strategy;
+    }
+
 	updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto) {
         this.strategy.updateTeamPermissionsForRole(this.mapper.mapDomainToAdapter(team, role, permissions))
     }

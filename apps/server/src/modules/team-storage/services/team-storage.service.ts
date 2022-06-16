@@ -7,6 +7,8 @@ import { RoleDto } from './dto/role.dto';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
 import { TeamDto, TeamUserDto } from './dto/team.dto';
 import {TeamStorageAdapter} from "@shared/infra/team-storage";
+import {NextcloudStrategy} from "@shared/infra/team-storage/strategy/nextcloud.strategy";
+import {HttpService} from "@nestjs/axios";
 
 @Injectable()
 export class TeamStorageService {
@@ -16,7 +18,9 @@ export class TeamStorageService {
 		private teamsMapper: TeamMapper,
 		private roleMapper: RoleMapper,
 		private teamsRepo: TeamsRepo,
-	) {}
+	) {
+		this.adapter.setStrategy(new NextcloudStrategy(new HttpService()));
+	}
 
 	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
 		return this.teamsMapper.mapEntityToDto(await this.teamsRepo.findById(teamId, populate));
