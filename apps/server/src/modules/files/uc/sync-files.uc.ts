@@ -18,6 +18,10 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
+	private logItemNotFound() {
+		this.logger.log('Not items found. Nothing to do.');
+	}
+
 	async syncFilesForTasks(options: FileSyncOptions, context: SyncContext): Promise<number> {
 		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(options.aggregationSize);
 		const numFound = itemsToSync.length;
@@ -27,7 +31,7 @@ export class SyncFilesUc {
 			const promises = initilizedArray.map(() => this.syncBatch(itemsToSync, context));
 			await Promise.all(promises);
 		} else {
-			this.logger.log('Not items found. Nothing to do.');
+			this.logItemNotFound();
 		}
 
 		return numFound;
