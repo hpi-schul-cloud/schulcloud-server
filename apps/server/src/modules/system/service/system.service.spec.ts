@@ -58,7 +58,7 @@ describe('SystemService', () => {
 
 		it('should return all systems', async () => {
 			// Act
-			const resultSystems = await systemService.find(undefined);
+			const resultSystems = await systemService.find('');
 
 			// Assert
 			expect(resultSystems.length).toEqual(allSystems.length);
