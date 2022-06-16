@@ -1,20 +1,21 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyElementType, CopyStatusEnum, CourseCopyService, Permission } from '@shared/domain';
-import { CourseRepo, UserRepo } from '@shared/repo';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { CourseCopyUC } from './course-copy.uc';
 
 describe('course copy uc', () => {
 	let orm: MikroORM;
 	let uc: CourseCopyUC;
-	let userRepo: UserRepo;
-	let courseRepo: CourseRepo;
-	let authorisation: AuthorizationService;
-	let courseCopyService: CourseCopyService;
+	let userRepo: DeepMocked<UserRepo>;
+	let courseRepo: DeepMocked<CourseRepo>;
+	let boardRepo: DeepMocked<BoardRepo>;
+	let authorisation: DeepMocked<AuthorizationService>;
+	let courseCopyService: DeepMocked<CourseCopyService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -37,6 +38,10 @@ describe('course copy uc', () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
+					provide: BoardRepo,
+					useValue: createMock<BoardRepo>(),
+				},
+				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
@@ -52,65 +57,71 @@ describe('course copy uc', () => {
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		courseCopyService = module.get(CourseCopyService);
+		boardRepo = module.get(BoardRepo);
 	});
 
 	describe('copy course', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			const userSpy = jest
-				.spyOn(authorisation, 'getUserWithPermissions')
-				.mockImplementation(() => Promise.resolve(user));
-			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
+			const originalBoard = boardFactory.build({ course });
+
+			authorisation.getUserWithPermissions.mockResolvedValue(user);
+			courseRepo.findById.mockResolvedValue(course);
+			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
+			authorisation.checkPermission.mockReturnValue();
+
 			const copy = courseFactory.buildWithId({ teachers: [user] });
 			const status = {
 				title: 'courseCopy',
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
 			};
-			const courseCopySpy = jest
-				.spyOn(courseCopyService, 'copyCourse')
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation(() => ({
-					copy,
-					status,
-				}));
-			const coursePersistSpy = jest.spyOn(courseRepo, 'save');
-			return { user, course, userSpy, courseSpy, authSpy, copy, status, courseCopySpy, coursePersistSpy };
+			courseCopyService.copyCourse.mockReturnValue({
+				copy,
+				status,
+			});
+
+			return { user, course, originalBoard, copy, status };
 		};
 
 		it('should fetch correct user', async () => {
-			const { course, user, userSpy } = setup();
+			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(userSpy).toBeCalledWith(user.id);
+			expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 		});
 
 		it('should fetch original course', async () => {
-			const { course, user, courseSpy } = setup();
+			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(courseSpy).toBeCalledWith(course.id);
+			expect(courseRepo.findById).toBeCalledWith(course.id);
+		});
+
+		it('should fetch original board', async () => {
+			const { course, user } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(boardRepo.findByCourseId).toBeCalledWith(course.id);
 		});
 
 		it('should check authorisation for course', async () => {
-			const { course, user, authSpy } = setup();
+			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(authSpy).toBeCalledWith(user, course, {
+			expect(authorisation.checkPermission).toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [Permission.COURSE_CREATE],
 			});
 		});
 
 		it('should call copy service', async () => {
-			const { course, user, courseCopySpy } = setup();
+			const { course, user, originalBoard } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(courseCopySpy).toBeCalledWith({ originalCourse: course, user });
+			expect(courseCopyService.copyCourse).toBeCalledWith({ originalCourse: course, originalBoard, user });
 		});
 
 		it('should persist copy', async () => {
-			const { course, user, coursePersistSpy, copy } = setup();
+			const { course, user, copy } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(coursePersistSpy).toBeCalledWith(copy);
+			expect(courseRepo.save).toBeCalledWith(copy);
 		});
 
 		it('should return status', async () => {
@@ -123,13 +134,15 @@ describe('course copy uc', () => {
 			const setupWithCourseForbidden = () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
-				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => false);
+				userRepo.findById.mockResolvedValue(user);
+				courseRepo.findById.mockResolvedValue(course);
+				authorisation.checkPermission.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
 				return { user, course };
 			};
 
-			it('should throw NotFoundException', async () => {
+			it('should throw ForbiddenException', async () => {
 				const { course, user } = setupWithCourseForbidden();
 
 				try {
