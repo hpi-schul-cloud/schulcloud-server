@@ -16,7 +16,7 @@ import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { FeathersJwtProvider } from '../../authorization';
 import { IservOAuthService } from './iserv-oauth.service';
-import { IJWT } from '../interface/jwt.base.interface';
+import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthResponse } from './dto/oauth.response';
 import { AuthorizationParams } from '../controller/dto/authorization.params';
 
@@ -78,7 +78,7 @@ export class OAuthService {
 		return key.getPublicKey();
 	}
 
-	async validateToken(idToken: string, system: System): Promise<IJWT> {
+	async validateToken(idToken: string, system: System): Promise<IJwt> {
 		const publicKey = await this._getPublicKey(system);
 		const verifiedJWT = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
@@ -87,10 +87,10 @@ export class OAuthService {
 		});
 		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
-		return verifiedJWT as IJWT;
+		return verifiedJWT as IJwt;
 	}
 
-	async findUser(decodedJwt: IJWT, systemId: string): Promise<User> {
+	async findUser(decodedJwt: IJwt, systemId: string): Promise<User> {
 		let user: User;
 		const system: System = await this.systemRepo.findById(systemId);
 		// iserv strategy

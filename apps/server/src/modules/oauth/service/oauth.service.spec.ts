@@ -17,7 +17,7 @@ import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
 import { OAuthResponse } from './dto/oauth.response';
-import { IJWT } from '../interface/jwt.base.interface';
+import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 
 jest.mock('jwks-rsa', () => {
@@ -101,7 +101,7 @@ describe('OAuthService', () => {
 	};
 
 	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
-	const decodedJWTMock: IJWT = {
+	const decodedJWTMock: IJwt = {
 		uuid: '1111',
 		sub: ' ',
 	};
@@ -195,7 +195,7 @@ describe('OAuthService', () => {
 				{
 					provide: IservOAuthService,
 					useValue: {
-						extractUUID(decodedJwt: IJWT) {
+						extractUUID(decodedJwt: IJwt) {
 							return defaultDecodedJWT.uuid;
 						},
 						findUserById(uuid: string, systemId: string) {
@@ -266,7 +266,7 @@ describe('OAuthService', () => {
 			});
 			const defaultSystem = systemFactory.build();
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
-			const decodedJwt = await service.validateToken(defaultJWT, defaultSystem);
+			const decodedJwt: IJwt = await service.validateToken(defaultJWT, defaultSystem);
 			expect(decodedJwt.uuid).toStrictEqual('123456');
 		});
 		it('should throw an error', async () => {

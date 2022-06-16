@@ -3,7 +3,7 @@ import { User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { IJWT } from '../interface/jwt.base.interface';
+import { IJwt } from '../interface/jwt.base.interface';
 
 @Injectable()
 export class IservOAuthService {
@@ -11,7 +11,7 @@ export class IservOAuthService {
 		this.logger.setContext(IservOAuthService.name);
 	}
 
-	extractUUID(decodedJwt: IJWT): string {
+	extractUUID(decodedJwt: IJwt): string {
 		if (!decodedJwt || !decodedJwt.uuid) throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
 		const { uuid } = decodedJwt;
 		return uuid;

@@ -1,4 +1,4 @@
-export interface IJWT {
+export interface IJwt {
 	sub: string;
 	iat?: bigint;
 	exp?: bigint;
