@@ -76,11 +76,9 @@ describe('course copy uc', () => {
 				title: 'courseCopy',
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
+				copyEntity: copy,
 			};
-			courseCopyService.copyCourse.mockReturnValue({
-				copy,
-				status,
-			});
+			courseCopyService.copyCourse.mockReturnValue(status);
 
 			return { user, course, originalBoard, copy, status };
 		};

@@ -9,16 +9,11 @@ export type CourseCopyParams = {
 	user: User;
 };
 
-export type CourseCopyResponse = {
-	copy: Course;
-	status: CopyStatus;
-};
-
 @Injectable()
 export class CourseCopyService {
 	constructor(private readonly boardCopyService: BoardCopyService) {}
 
-	copyCourse(params: CourseCopyParams): CourseCopyResponse {
+	copyCourse(params: CourseCopyParams): CopyStatus {
 		const copy = new Course({
 			school: params.user.school,
 			name: params.originalCourse.name,
@@ -95,6 +90,6 @@ export class CourseCopyService {
 				user: params.user,
 			}).status
 		);
-		return { copy, status };
+		return status;
 	}
 }
