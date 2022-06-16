@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Actions, CopyStatus, Course, EntityId, Permission } from '@shared/domain';
 import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { BoardRepo, CourseRepo } from '../../../shared/repo';
+import { BoardRepo, CourseRepo } from '@shared/repo';
 
 @Injectable()
 export class CourseCopyUC {

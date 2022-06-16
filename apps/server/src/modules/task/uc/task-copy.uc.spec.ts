@@ -3,11 +3,10 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { Actions, PermissionTypes, User } from '../../../shared/domain';
-import { TaskCopyParams, TaskCopyService } from '../../../shared/domain/service/task-copy.service';
-import { CourseRepo, TaskRepo, UserRepo } from '../../../shared/repo';
-import { courseFactory, setupEntities, taskFactory, userFactory } from '../../../shared/testing';
-import { AuthorizationService } from '../../authorization';
+import { Actions, PermissionTypes, User, TaskCopyParams, TaskCopyService } from '@shared/domain';
+import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
