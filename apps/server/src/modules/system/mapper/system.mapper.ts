@@ -1,4 +1,4 @@
-import { System } from '@shared/domain';
+import { OauthConfig, System } from '@shared/domain';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 
@@ -8,23 +8,28 @@ export class SystemMapper {
 			type: entity.type,
 			url: entity.url,
 			alias: entity.alias,
-			oauthConfig: entity.oauthConfig
-				? new OauthConfigDto({
-						clientId: entity.oauthConfig.clientId,
-						clientSecret: entity.oauthConfig.clientSecret,
-						tokenRedirectUri: entity.oauthConfig.tokenRedirectUri,
-						grantType: entity.oauthConfig.grantType,
-						tokenEndpoint: entity.oauthConfig.tokenEndpoint,
-						authEndpoint: entity.oauthConfig.authEndpoint,
-						responseType: entity.oauthConfig.responseType,
-						scope: entity.oauthConfig.scope,
-						provider: entity.oauthConfig.provider,
-						logoutEndpoint: entity.oauthConfig.logoutEndpoint,
-						issuer: entity.oauthConfig.issuer,
-						jwksEndpoint: entity.oauthConfig.jwksEndpoint,
-						codeRedirectUri: entity.oauthConfig.codeRedirectUri,
-				  })
-				: undefined,
+			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
+		});
+	}
+
+	static mapFromOauthConfigEntityToDto(oauthConfig: OauthConfig | undefined): OauthConfigDto | undefined {
+		if (oauthConfig == null) {
+			return undefined;
+		}
+		return new OauthConfigDto({
+			clientId: oauthConfig.clientId,
+			clientSecret: oauthConfig.clientSecret,
+			tokenRedirectUri: oauthConfig.tokenRedirectUri,
+			grantType: oauthConfig.grantType,
+			tokenEndpoint: oauthConfig.tokenEndpoint,
+			authEndpoint: oauthConfig.authEndpoint,
+			responseType: oauthConfig.responseType,
+			scope: oauthConfig.scope,
+			provider: oauthConfig.provider,
+			logoutEndpoint: oauthConfig.logoutEndpoint,
+			issuer: oauthConfig.issuer,
+			jwksEndpoint: oauthConfig.jwksEndpoint,
+			codeRedirectUri: oauthConfig.codeRedirectUri,
 		});
 	}
 

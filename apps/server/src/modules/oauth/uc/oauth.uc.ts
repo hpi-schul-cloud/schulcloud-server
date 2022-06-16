@@ -39,7 +39,7 @@ export class OauthUc {
 			this.logger.error(
 				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
 			);
-			throw new OAuthSSOError('Requested system has no oauth configured');
+			throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
 		}
 
 		const queryToken: OauthTokenResponse = await this.requestToken(code, system.oauthConfig);

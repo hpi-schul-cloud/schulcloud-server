@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemController } from '@src/modules/system/controller/system.controller';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
-import { OauthResponse } from '@src/modules/system/controller/dto/oauth.response';
+import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
 
 describe('system.controller', () => {
 	let module: TestingModule;
 	let controller: SystemController;
-	const mockResponse: OauthResponse = new OauthResponse([]);
+	const mockResponse: SystemOauthResponse = new SystemOauthResponse([]);
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -15,7 +15,7 @@ describe('system.controller', () => {
 				{
 					provide: SystemUc,
 					useValue: {
-						findOauthConfigs: jest.fn().mockImplementation(() => Promise.resolve(mockResponse)),
+						findByFilter: jest.fn().mockImplementation(() => Promise.resolve(mockResponse)),
 					},
 				},
 			],
@@ -27,9 +27,9 @@ describe('system.controller', () => {
 		expect(controller).toBeDefined();
 	});
 
-	describe('findOauthConfigs', () => {
+	describe('find', () => {
 		it('should return oauthresponse', async () => {
-			const resultConfigs = await controller.findOauthConfigs();
+			const resultConfigs = await controller.find('');
 			expect(resultConfigs).toBe(mockResponse);
 		});
 	});

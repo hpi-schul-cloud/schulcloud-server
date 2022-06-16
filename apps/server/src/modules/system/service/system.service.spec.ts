@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { setupEntities, systemFactory } from '@shared/testing';
+import { systemFactory } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
 import { SystemService } from './system.service';
 
 describe('SystemService', () => {
 	let module: TestingModule;
 	let systemService: SystemService;
 	let orm: MikroORM;
-	let mockSystems: System[];
+	let oauthSystems: System[] = [];
+	const allSystems: System[] = [];
 	let systemRepo: SystemRepo;
 
 	afterAll(async () => {
@@ -24,36 +25,42 @@ describe('SystemService', () => {
 				{
 					provide: SystemRepo,
 					useValue: {
-						findOauthSystems: jest.fn().mockImplementation(() => Promise.resolve(mockSystems)),
+						findByFilter: jest.fn().mockImplementation(() => Promise.resolve(oauthSystems)),
+						findAll: jest.fn().mockImplementation(() => Promise.resolve(allSystems)),
 					},
 				},
 			],
 		}).compile();
 		systemRepo = module.get(SystemRepo);
 		systemService = module.get(SystemService);
-		orm = await setupEntities();
 	});
 
 	beforeEach(() => {
-		mockSystems = [];
+		oauthSystems = [];
+		const iserv = systemFactory.build();
+		oauthSystems.push(iserv);
+		allSystems.push(iserv);
+		allSystems.push(systemFactory.build({ oauthConfig: undefined }));
+		const moodle = systemFactory.build();
+		moodle.type = 'moodle';
+		allSystems.push(moodle);
 	});
 
-	describe('findOauthSystems', () => {
-		it('should return systemDtos', async () => {
-			mockSystems.push(systemFactory.build());
-			mockSystems.push(systemFactory.build({ oauthConfig: undefined }));
-			mockSystems.push(systemFactory.build());
+	describe('findByFilter', () => {
+		it('should return oauth system iserv', async () => {
+			// Act
+			const resultSystems = await systemService.find(oauthSystems[0].type);
 
-			const resultSystems = await systemService.findOauthConfigs();
-
-			expect(resultSystems.length).toEqual(2);
-			expect(resultSystems[0]).toEqual(mockSystems[0].oauthConfig);
-			expect(resultSystems[1]).toEqual(mockSystems[2].oauthConfig);
+			// Assert
+			expect(resultSystems.length).toEqual(oauthSystems.length);
 		});
 
-		it('should return no systemDtos', async () => {
-			const resultSystems = await systemService.findOauthConfigs();
-			expect(resultSystems).toEqual([]);
+		it('should return all systems', async () => {
+			// Act
+			const resultSystems = await systemService.find(undefined);
+
+			// Assert
+			expect(resultSystems.length).toEqual(allSystems.length);
 		});
 	});
 });

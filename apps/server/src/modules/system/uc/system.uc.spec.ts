@@ -39,7 +39,7 @@ describe('SystemUc', () => {
 			mockConfigs.push(systemFactory.build().oauthConfig!);
 			mockConfigs.push(systemFactory.build().oauthConfig!);
 
-			const resultResponse = await systemUc.findOauthConfigs();
+			const resultResponse = await systemUc.findByFilter();
 
 			expect(resultResponse.data.length).toEqual(mockConfigs.length);
 			expect(resultResponse.data[0]).toEqual(mockConfigs[0]);
@@ -47,7 +47,7 @@ describe('SystemUc', () => {
 		});
 
 		it('should return empty oauthResponse', async () => {
-			const resultResponse = await systemUc.findOauthConfigs();
+			const resultResponse = await systemUc.findByFilter();
 			expect(resultResponse.data).toEqual([]);
 		});
 	});

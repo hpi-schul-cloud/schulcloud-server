@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { SystemService } from '@src/modules/system/service/system.service';
-import { OauthResponse } from '@src/modules/system/controller/dto/oauth.response';
-import { OauthResponseMapper } from '@src/modules/system/mapper/oauth-response.mapper';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
+import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
+import { SystemOauthResponseMapper } from '@src/modules/system/controller/mapper/system-oauth-response.mapper';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 @Injectable()
 export class SystemUc {
 	constructor(private readonly systemService: SystemService) {}
 
-	async findOauthConfigs(): Promise<OauthResponse> {
-		const configs: OauthConfigDto[] = await this.systemService.findOauthConfigs();
-		return OauthResponseMapper.mapFromDtoToResponse(configs);
+	async findByFilter(type: string | undefined, onlyOauth = false): Promise<SystemOauthResponse> {
+		const systemDtos: SystemDto[] = await this.systemService.find(type, onlyOauth);
+		return SystemOauthResponseMapper.mapFromDtoToResponse(systemDtos);
 	}
 }
