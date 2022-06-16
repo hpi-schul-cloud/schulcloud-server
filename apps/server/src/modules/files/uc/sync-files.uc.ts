@@ -23,11 +23,9 @@ export class SyncFilesUc {
 		const numFound = itemsToSync.length;
 
 		if (numFound > 0) {
-			await Promise.all(
-				Array.from({ length: options.numParallelPromises }).map(async () => {
-					await this.syncBatch(itemsToSync, context);
-				})
-			);
+			const initilizedArray = Array.from({ length: options.numParallelPromises });
+			const promises = initilizedArray.map(() => this.syncBatch(itemsToSync, context));
+			await Promise.all(promises);
 		} else {
 			this.logger.log('Not items found. Nothing to do.');
 		}
@@ -46,29 +44,37 @@ export class SyncFilesUc {
 		} while (item);
 	}
 
+	private logStartSyncing(item: SyncFileItem, context: SyncContext): void {
+		const fileInfo = `source file with id = ${item.source.id}, size = ${item.source.size}`;
+		this.logger.log(`#${context.fileCounter} Start syncing ${fileInfo}`);
+	}
+
+	private logSuccessfullySynced(item: SyncFileItem, context: SyncContext): void {
+		const fileInfo = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
+		const operation = item.created ? 'created' : 'updated';
+		this.logger.log(`#${context.fileCounter} Successfully synced ${fileInfo} (${operation})`);
+	}
+
+	private logError(item: SyncFileItem, stack: string) {
+		this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
+		this.logger.error(stack);
+	}
+
 	private async syncFile(item: SyncFileItem, context: SyncContext) {
 		try {
 			context.fileCounter += 1;
-			const countInfo = context.fileCounter;
-			const fileInfo1 = `source file with id = ${item.source.id}, size = ${item.source.size}`;
-			this.logger.log(`#${countInfo} Start syncing ${fileInfo1}`);
+			this.logStartSyncing(item, context);
 
 			await this.metadataService.syncMetaData(item);
 			await this.storageService.syncS3File(item);
 			await this.metadataService.persist(item);
 
-			const fileInfo2 = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
-			if (item.created) {
-				this.logger.log(`#${countInfo} Successfully synced ${fileInfo2} (created)`);
-			} else {
-				this.logger.log(`#${countInfo} Successfully synced ${fileInfo2} (updated)`);
-			}
+			this.logSuccessfullySynced(item, context);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
 
-			this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
-			this.logger.error(stack);
+			this.logError(item, stack);
 			await this.metadataService.persistError(item, stack);
 		}
 	}
