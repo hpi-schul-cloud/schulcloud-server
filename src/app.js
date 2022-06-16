@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
+const { RequestContext } = require('@mikro-orm/core');
 const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
@@ -32,7 +33,7 @@ const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 
-const setupApp = async () => {
+const setupApp = async (orm) => {
 	const app = express(feathers());
 	app.disable('x-powered-by');
 
@@ -65,6 +66,13 @@ const setupApp = async () => {
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 		.use(defaultHeaders)
+		.use((req, res, next) => {
+			if (orm) {
+				RequestContext.create(orm.em, next);
+			} else {
+				next();
+			}
+		})
 		.get('/system_info/haproxy', (req, res) => {
 			res.send({ timestamp: new Date().getTime() });
 		})
@@ -102,4 +110,4 @@ const setupApp = async () => {
 	return app;
 };
 
-module.exports = setupApp();
+module.exports = (orm) => setupApp(orm);
