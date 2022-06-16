@@ -25,12 +25,12 @@ describe('DatabaseManagementService', () => {
 							const adapter = new FileSystemAdapter();
 							return adapter.joinPath(...paths);
 						},
-						createDir(_path: string) {},
-						readDir(_path: string) {
+						createDir() {},
+						readDir() {
 							// expect json files in folder
 							return collectionNames.map((name) => `${name}.json`);
 						},
-						writeFile(_path: string, _text: string) {},
+						writeFile() {},
 						readFile(fileName: string) {
 							if (fileName === 'collectionName1.json') {
 								return '[{"foo":"bar1"},{"foo":"bar2"}]';
@@ -64,8 +64,8 @@ describe('DatabaseManagementService', () => {
 						collectionExists() {
 							return true;
 						},
-						clearCollection(_collectionName: string) {},
-						createCollection(_collectionName: string) {},
+						clearCollection() {},
+						createCollection() {},
 						importCollection(_collectionName: string, jsonDocuments: unknown[]) {
 							return jsonDocuments.length;
 						},

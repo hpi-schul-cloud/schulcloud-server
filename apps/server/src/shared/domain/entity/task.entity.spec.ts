@@ -602,10 +602,11 @@ describe('Task Entity', () => {
 
 	describe('getParentData', () => {
 		describe('when a course is set', () => {
-			it('should return the name and color of the course', () => {
+			it('should return the name, id and color of the course', () => {
 				const course = courseFactory.build();
 				const task = taskFactory.build({ course });
 				expect(task.getParentData().courseName).toEqual(course.name);
+				expect(task.getParentData().courseId).toEqual(course.id);
 				expect(task.getParentData().color).toEqual(course.color);
 			});
 
