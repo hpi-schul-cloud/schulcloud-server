@@ -71,12 +71,12 @@ const checkUniqueEmail = async (hook) => {
 
 	// get userId of user entry to edit
 	const editUserId = hook.id;
-	const unique = hook.app.service('nest-account-uc').checkUniqueEmail(editUserId, email);
+	const unique = await hook.app.service('nest-account-uc').isUniqueEmail(email, editUserId);
 
 	if (unique) {
-		return Promise.resolve(hook);
+		return hook;
 	}
-	return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
+	throw new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`);
 };
 
 const checkUniqueAccount = (hook) => {

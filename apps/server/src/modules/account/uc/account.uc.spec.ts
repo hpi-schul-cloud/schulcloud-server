@@ -603,37 +603,40 @@ describe('AccountUc', () => {
 
 	describe('isUniqueEmail', () => {
 		it('should return true if new email is available', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'an@available.email');
+			const res = await accountUc.isUniqueEmail('an@available.email', mockStudentUser.id);
 			expect(res).toBe(true);
 		});
 
 		it('should return true if new email is available and ignore current user', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, mockStudentUser.email);
+			const res = await accountUc.isUniqueEmail(mockStudentUser.email, mockStudentUser.id);
 			expect(res).toBe(true);
 		});
 		it('should return true if new email is available and ignore current users account', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, mockStudentAccount.username);
+			const res = await accountUc.isUniqueEmail(mockStudentAccount.username, mockStudentUser.id);
 			expect(res).toBe(true);
 		});
-
-		it('should return false if new email already in use', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, mockAdminUser.email);
+		it('should return false if new email already in use by another user', async () => {
+			const res = await accountUc.isUniqueEmail(mockAdminUser.email, mockStudentUser.id);
+			expect(res).toBe(false);
+		});
+		it('should return false if new email is already in use by any user', async () => {
+			const res = await accountUc.isUniqueEmail(mockStudentAccount.username);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email already in use by another user', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'not@available.email');
+			const res = await accountUc.isUniqueEmail('not@available.email', mockStudentUser.id);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email already in use by another account', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'not@available.username');
+			const res = await accountUc.isUniqueEmail('not@available.username', mockStudentUser.id);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email already in use by multiple users', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'multiple@user.email');
+			const res = await accountUc.isUniqueEmail('multiple@user.email', mockStudentUser.id);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email already in use by multiple accounts', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.id, 'multiple@account.username');
+			const res = await accountUc.isUniqueEmail('multiple@account.username', mockStudentUser.id);
 			expect(res).toBe(false);
 		});
 	});

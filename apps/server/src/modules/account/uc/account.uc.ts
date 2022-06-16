@@ -335,14 +335,14 @@ export class AccountUc {
 		}
 	}
 
-	async isUniqueEmail(userId: EntityId, email: string): Promise<boolean> {
-		return this.isUniqueEmailInternal(userId, email);
+	async isUniqueEmail(email: string, userId?: EntityId): Promise<boolean> {
+		return this.isUniqueEmailInternal(email, userId);
 	}
 
-	private async isUniqueEmailInternal(userId: EntityId, email: string, accountId?: EntityId): Promise<boolean> {
+	private async isUniqueEmailInternal(email: string, userId?: EntityId, accountId?: EntityId): Promise<boolean> {
 		const [usersAccountId, foundUsers, { accounts: foundAccounts }] = await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
-			accountId ?? this.accountService.findByUserId(userId).then((accountDto) => accountDto?.id),
+			accountId ?? (userId ? this.accountService.findByUserId(userId).then((accountDto) => accountDto?.id) : undefined),
 			this.userRepo.findByEmail(email),
 			this.accountService.searchByUsernameExactMatch(email),
 		]);
@@ -356,7 +356,7 @@ export class AccountUc {
 	}
 
 	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
-		if (!(await this.isUniqueEmailInternal(user.id, email, account.id))) {
+		if (!(await this.isUniqueEmailInternal(email, user.id, account.id))) {
 			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
 		}
 	}
