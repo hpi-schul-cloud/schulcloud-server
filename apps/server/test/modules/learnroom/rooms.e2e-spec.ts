@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, ICurrentUser, Permission, Task } from '@shared/domain';
+import { Board, Course, ICurrentUser, Permission, Task } from '@shared/domain';
 import {
 	boardFactory,
 	cleanupCollections,
@@ -188,6 +188,24 @@ describe('Rooms Controller (e2e)', () => {
 			expect(body.id).toBeDefined();
 
 			expect(() => em.findOneOrFail(Course, body.id)).not.toThrow();
+		});
+
+		it('should persist board of room copy', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+			const board = boardFactory.build({ course });
+
+			await em.persistAndFlush([course, board]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+			const body = response.body as CopyApiResponse;
+			expect(body.id).toBeDefined();
+
+			expect(() => em.findOneOrFail(Board, { course: body.id as string })).not.toThrow();
 		});
 	});
 });

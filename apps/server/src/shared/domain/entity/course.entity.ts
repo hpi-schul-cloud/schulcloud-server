@@ -1,9 +1,20 @@
-import { Entity, Property, Index, ManyToOne, ManyToMany, Collection, Unique } from '@mikro-orm/core';
+import {
+	Collection,
+	Entity,
+	IdentifiedReference,
+	Index,
+	ManyToMany,
+	ManyToOne,
+	OneToOne,
+	Property,
+	Unique,
+} from '@mikro-orm/core';
 
-import { ILearnroom, IEntityWithSchool } from '@shared/domain/interface';
+import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
 
 import { BaseEntityWithTimestamps } from './base.entity';
+import { Board } from './board.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
 
@@ -66,6 +77,13 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	@Property({ nullable: true })
 	@Unique({ options: { sparse: true } })
 	shareToken?: string;
+
+	@OneToOne('Board', 'course', {
+		wrappedReference: true,
+		fieldName: 'courseId',
+		unique: false,
+	})
+	board?: IdentifiedReference<Board>;
 
 	constructor(props: ICourseProperties) {
 		super();
