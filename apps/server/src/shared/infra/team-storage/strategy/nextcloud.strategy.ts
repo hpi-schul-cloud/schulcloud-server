@@ -1,13 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
-import { IFileStorageStrategy } from './base.interface.strategy';
+import { ITeamStorageStrategy } from './base.interface.strategy';
 import { NotFoundException } from "@nestjs/common";
 import {Configuration} from "@hpi-schul-cloud/commons/lib";
-import {integer} from "aws-sdk/clients/backup";
 import {AxiosRequestConfig, AxiosResponse} from "axios";
 import {firstValueFrom, Observable} from "rxjs";
 
-export class NextcloudStrategy implements IFileStorageStrategy {
+export class NextcloudStrategy implements ITeamStorageStrategy {
     baseURL: string;
     config: AxiosRequestConfig;
 
