@@ -1,12 +1,12 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CopyStatus, EntityId, PermissionContextBuilder, User } from '@shared/domain';
-import { TaskCopyService } from '../../../shared/domain/service/task-copy.service';
-import { CourseRepo, TaskRepo } from '../../../shared/repo';
-import { AuthorizationService } from '../../authorization';
+import { CopyStatus, EntityId, PermissionContextBuilder, User, TaskCopyService } from '@shared/domain';
+import { CourseRepo, TaskRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization';
 
 export type TaskCopyParentParams = {
 	courseId?: EntityId;
 	lessonId?: EntityId;
+	jwt?: string;
 };
 
 @Injectable()

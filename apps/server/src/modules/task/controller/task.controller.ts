@@ -3,7 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
+// @src/modules/learnroom/* must be replaced
 import { CopyApiResponse } from '@src/modules/learnroom/controller/dto/copy.response';
 import { CopyMapper } from '@src/modules/learnroom/mapper/copy.mapper';
 import { TaskMapper } from '../mapper/task.mapper';
@@ -86,12 +87,13 @@ export class TaskController {
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('id', ParseObjectIdPipe) taskId: string,
-		@Body() params: TaskCopyApiParams
+		@Body() params: TaskCopyApiParams,
+		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.taskCopyUc.copyTask(
 			currentUser.userId,
 			taskId,
-			CopyMapper.mapTaskCopyToDomain(params)
+			CopyMapper.mapTaskCopyToDomain(params, jwt)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;

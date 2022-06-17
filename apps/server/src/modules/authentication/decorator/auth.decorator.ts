@@ -56,7 +56,7 @@ export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: u
 export const JWT = createParamDecorator<any, any, string>((data: unknown, ctx: ExecutionContext) => {
 	const getJWT = ExtractJwt.fromAuthHeaderAsBearerToken();
 	const req: Request = ctx.switchToHttp().getRequest();
-	const jwt = getJWT(req);
+	const jwt = getJWT(req) || req.headers.authorization;
 
 	if (!jwt) {
 		throw new UnauthorizedException('Authentication is required.');

@@ -20,10 +20,11 @@ export class CopyMapper {
 		return dto;
 	}
 
-	static mapTaskCopyToDomain(params: TaskCopyApiParams): TaskCopyParentParams {
+	static mapTaskCopyToDomain(params: TaskCopyApiParams, jwt: string): TaskCopyParentParams {
 		const dto = {
 			courseId: params.courseId,
 			lessonId: params.lessonId,
+			jwt,
 		};
 
 		return dto;
