@@ -7,6 +7,7 @@ import {
 	boardFactory,
 	cleanupCollections,
 	courseFactory,
+	fileFactory,
 	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -206,6 +207,27 @@ describe('Rooms Controller (e2e)', () => {
 			expect(body.id).toBeDefined();
 
 			expect(() => em.findOneOrFail(Board, { course: body.id as string })).not.toThrow();
+		});
+
+		it('complete example', async () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_CREATE] });
+			const teacher = userFactory.build({ roles });
+			const course = courseFactory.build({ teachers: [teacher] });
+
+			const board = boardFactory.buildWithId({ course });
+			const tasks = taskFactory.buildList(3, { course, files: fileFactory.buildList(3) });
+			const lessons = lessonFactory.buildList(3, { course });
+			board.syncTasksFromList(tasks);
+			board.syncLessonsFromList(lessons);
+
+			await em.persistAndFlush([course, board, ...tasks, ...lessons]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+
+			const response = await request(app.getHttpServer()).post(`/rooms/${course.id}/copy`).send();
+
+			expect(response.status).toEqual(201);
 		});
 	});
 });
