@@ -1,6 +1,5 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {TeamMapper} from "@src/modules/team-storage/mapper/team.mapper";
-import {teamFactory} from "@shared/testing/factory/team.factory";
 import {TeamPermissionsMapper} from "@src/modules/team-storage/mapper/team-permissions.mapper";
 import {TeamPermissionsBody} from "@src/modules/team-storage/controller/dto/team-permissions.body.params";
 
@@ -10,7 +9,6 @@ describe('TeamMapper', () => {
 
     beforeEach(async () => {
         module = await Test.createTestingModule({
-            imports: [],
             providers: [
                 TeamPermissionsMapper,
             ],

@@ -3,8 +3,6 @@ import {createMock} from "@golevelup/ts-jest";
 import {TeamStorageUc} from "@src/modules/team-storage/uc/team-storage.uc";
 import {TeamStorageService} from "@src/modules/team-storage/services/team-storage.service";
 import {TeamPermissionsMapper} from "@src/modules/team-storage/mapper/team-permissions.mapper";
-import {User} from "@shared/domain";
-import {userFactory} from "@shared/testing";
 import {TeamRoleDto} from "@src/modules/team-storage/controller/dto/team-role.params";
 import {TeamPermissionsBody} from "@src/modules/team-storage/controller/dto/team-permissions.body.params";
 
@@ -16,7 +14,6 @@ describe('TeamStorageUc',() => {
 
     beforeEach(async () => {
         module = await Test.createTestingModule({
-            imports: [],
             providers: [
                 TeamStorageUc,
                 {

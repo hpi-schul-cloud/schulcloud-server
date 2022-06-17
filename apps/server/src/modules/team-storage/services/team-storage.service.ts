@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, ICurrentUser, RoleName } from '@shared/domain';
+import { EntityId, RoleName } from '@shared/domain';
 import { RoleRepo, TeamsRepo } from '@shared/repo';
 import { RoleMapper } from '../mapper/role.mapper';
 import { TeamMapper } from '../mapper/team.mapper';
