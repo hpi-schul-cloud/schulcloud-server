@@ -24,7 +24,7 @@ export class BoardCopyService {
 		params.originalBoard.getElements().forEach((element) => {
 			if (element.boardElementType === BoardElementType.Task) {
 				const originalTask = element.target as Task;
-				const { status } = this.taskCopyService.copyTaskMetadata({
+				const status = this.taskCopyService.copyTaskMetadata({
 					originalTask,
 					user: params.user,
 					destinationCourse: params.destinationCourse,

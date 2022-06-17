@@ -101,8 +101,10 @@ describe('board copy service', () => {
 				const taskCopy = taskFactory.build({ name: originalTask.name });
 
 				taskCopyService.copyTaskMetadata.mockReturnValue({
-					copy: taskCopy,
-					status: { title: taskCopy.name, type: CopyElementType.TASK, status: CopyStatusEnum.SUCCESS },
+					title: taskCopy.name,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: taskCopy,
 				});
 
 				return { destinationCourse, originalBoard, user, originalTask };

@@ -2,8 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { Actions, PermissionTypes, TaskCopyParams, TaskCopyService, User } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { Actions, PermissionTypes, User, TaskCopyParams, TaskCopyService } from '@shared/domain';
 import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -77,14 +77,12 @@ describe('task copy uc', () => {
 				title: 'taskCopy',
 				type: CopyElementType.TASK,
 				status: CopyStatusEnum.SUCCESS,
+				copyEntity: copy,
 			};
 			const taskCopySpy = jest
 				.spyOn(taskCopyService, 'copyTaskMetadata')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((params: TaskCopyParams) => ({
-					copy,
-					status,
-				}));
+				.mockImplementation((params: TaskCopyParams) => status);
 			const taskPersistSpy = jest.spyOn(taskRepo, 'save');
 			return { user, course, task, userSpy, taskSpy, courseSpy, authSpy, copy, status, taskCopySpy, taskPersistSpy };
 		};
