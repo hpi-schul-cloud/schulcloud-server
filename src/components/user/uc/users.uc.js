@@ -6,8 +6,8 @@ const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 const { trashBinResult, grantPermissionsForSchool } = require('../../helper/uc.helper');
 
-const initialize = async (service) => {
-	this.accountService = service;
+const initialize = (app) => {
+	this.app = app;
 };
 
 const getSchoolIdOfUser = async (userId) => {
@@ -36,8 +36,7 @@ const getUserData = async (id) => {
 		scope: 'user',
 		data: user,
 	});
-
-	const account = await this.accountService.findByUserId(id);
+	const account = await this.app.service('nest-account-service').findByUserId(id);
 	returnArray.push({
 		scope: 'account',
 		data: account,
@@ -86,7 +85,7 @@ const replaceUserWithTombstone = async (user) => {
 		deletedAt: new Date(),
 		schoolId,
 	});
-	await this.accountService.deleteByUserId(_id);
+	await this.app.service('nest-account-service').deleteByUserId(_id);
 	return { success: true };
 };
 

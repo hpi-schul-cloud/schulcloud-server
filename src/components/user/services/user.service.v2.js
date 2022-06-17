@@ -42,6 +42,7 @@ class UserServiceV2 {
 
 	async setup(app) {
 		this.app = app;
+		userUC.initialize(app);
 	}
 }
 
