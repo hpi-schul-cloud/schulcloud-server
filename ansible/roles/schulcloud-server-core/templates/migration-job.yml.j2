@@ -21,6 +21,6 @@ spec:
         - secretRef:
             name: api-secret
         command: ['/bin/sh','-c']
-        args: ['npm run ensureIndexes; npm run migration-sync; npm run migration up']
+        args: ['npm run ensureIndexes; npm run migration-sync && npm run migration-prune && npm run migration up']
       restartPolicy: Never
   backoffLimit: 3

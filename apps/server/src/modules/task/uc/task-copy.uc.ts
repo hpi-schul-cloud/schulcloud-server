@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Actions, CopyStatus, EntityId } from '@shared/domain';
+import { CopyStatus, EntityId, PermissionContextBuilder, User } from '@shared/domain';
 import { TaskCopyService } from '../../../shared/domain/service/task-copy.service';
 import { CourseRepo, TaskRepo } from '../../../shared/repo';
 import { AuthorizationService } from '../../authorization';
 
 export type TaskCopyParentParams = {
-	courseId: EntityId;
+	courseId?: EntityId;
 	lessonId?: EntityId;
 };
 
@@ -21,23 +21,10 @@ export class TaskCopyUC {
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
-		if (
-			!this.authorisation.hasPermission(user, originalTask, {
-				action: Actions.read,
-				requiredPermissions: [],
-			})
-		) {
+		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
-		const destinationCourse = await this.courseRepo.findById(parentParams.courseId);
-		if (
-			!this.authorisation.hasPermission(user, destinationCourse, {
-				action: Actions.write,
-				requiredPermissions: [],
-			})
-		) {
-			throw new ForbiddenException('you dont have permission to add to this course');
-		}
+		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
 		const { copy, status } = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
@@ -45,5 +32,16 @@ export class TaskCopyUC {
 		});
 		await this.taskRepo.save(copy);
 		return status;
+	}
+
+	private async getDestinationCourse(courseId: string | undefined, user: User) {
+		if (courseId) {
+			const destinationCourse = await this.courseRepo.findById(courseId);
+			if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
+				throw new ForbiddenException('you dont have permission to add to this course');
+			}
+			return destinationCourse;
+		}
+		return undefined;
 	}
 }

@@ -1,4 +1,4 @@
-import { Actions, Permission } from '@shared/domain';
+import { Permission, PermissionContextBuilder } from '@shared/domain';
 
 export enum FilesStorageInternalActions {
 	downloadBySecurityToken = '/file-security/download/:token',
@@ -12,20 +12,8 @@ export enum ErrorType {
 }
 
 export const PermissionContexts = {
-	create: {
-		action: Actions.write,
-		requiredPermissions: [Permission.FILESTORAGE_CREATE],
-	},
-	read: {
-		action: Actions.read,
-		requiredPermissions: [Permission.FILESTORAGE_VIEW],
-	},
-	update: {
-		action: Actions.write,
-		requiredPermissions: [Permission.FILESTORAGE_EDIT],
-	},
-	delete: {
-		action: Actions.write,
-		requiredPermissions: [Permission.FILESTORAGE_REMOVE],
-	},
+	create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+	read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+	update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+	delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };

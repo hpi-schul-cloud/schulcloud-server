@@ -2,10 +2,10 @@ import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { CourseCopyParams, CourseCopyService } from '@shared/domain/service/course-copy.service';
+import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { Actions, IEntity, IPermissionContext, Permission, User } from '../../../shared/domain';
+import { Actions, Permission } from '../../../shared/domain';
 import { CourseRepo, UserRepo } from '../../../shared/repo';
 import { courseFactory, setupEntities, userFactory } from '../../../shared/testing';
 import { CourseCopyUC } from './course-copy.uc';
@@ -64,10 +64,7 @@ describe('course copy uc', () => {
 				.spyOn(authorisation, 'getUserWithPermissions')
 				.mockImplementation(() => Promise.resolve(user));
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-			const authSpy = jest
-				.spyOn(authorisation, 'hasPermission')
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => true);
+			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
 			const copy = courseFactory.buildWithId({ teachers: [user] });
 			const status = {
 				title: 'courseCopy',
@@ -77,7 +74,7 @@ describe('course copy uc', () => {
 			const courseCopySpy = jest
 				.spyOn(courseCopyService, 'copyCourseMetadata')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((params: CourseCopyParams) => ({
+				.mockImplementation(() => ({
 					copy,
 					status,
 				}));
@@ -130,12 +127,7 @@ describe('course copy uc', () => {
 				const course = courseFactory.buildWithId();
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-				jest
-					.spyOn(authorisation, 'hasPermission')
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					.mockImplementation((u: User, e: IEntity, context: IPermissionContext) => {
-						return false;
-					});
+				jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => false);
 				return { user, course };
 			};
 
