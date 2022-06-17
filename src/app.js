@@ -33,6 +33,8 @@ const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 
+let feathersApp;
+
 const setupApp = async (orm) => {
 	const app = express(feathers());
 	app.disable('x-powered-by');
@@ -110,4 +112,8 @@ const setupApp = async (orm) => {
 	return app;
 };
 
-module.exports = (orm) => setupApp(orm);
+module.exports = async (orm) => {
+	if (feathersApp) return feathersApp;
+	feathersApp = await setupApp(orm);
+	return feathersApp;
+};
