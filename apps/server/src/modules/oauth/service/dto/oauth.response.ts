@@ -24,10 +24,10 @@ export class OAuthResponse {
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
-	provider?: string;
+	provider!: string;
 
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
-	redirect?: string;
+	redirect!: string;
 }
