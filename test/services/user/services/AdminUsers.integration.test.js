@@ -18,10 +18,10 @@ describe('admin users integration tests', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		// eslint-disable-next-line global-require
-		const appPromise = require('../../../../src/app');
+		const appPromise = require('../../../../src/app')();
 		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(appPromise());
-		app = await appPromise();
+		testObjects = require('../../helpers/testObjects')(appPromise);
+		app = await appPromise;
 		server = await app.listen(0);
 	});
 
