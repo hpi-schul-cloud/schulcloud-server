@@ -56,17 +56,7 @@ export class CourseCopyService {
 					status: CopyStatusEnum.NOT_DOING,
 				},
 				{
-					title: 'tasks',
-					type: CopyElementType.TASK,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
 					title: 'times',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
-					title: 'lessons',
 					type: CopyElementType.LEAF,
 					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},

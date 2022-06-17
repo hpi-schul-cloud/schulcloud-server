@@ -226,19 +226,6 @@ describe('course copy service', () => {
 				expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
-			it('should set status of tasks', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const tasksStatus = status.elements?.find((el) => el.type === CopyElementType.TASK && el.title === 'tasks');
-				expect(tasksStatus).toBeDefined();
-				expect(tasksStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-			});
-
 			it('should set status of times', () => {
 				const { originalCourse, user } = setup();
 
@@ -250,19 +237,6 @@ describe('course copy service', () => {
 				const timesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'times');
 				expect(timesStatus).toBeDefined();
 				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-			});
-
-			it('should set status of lessons', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const lessonsStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'lessons');
-				expect(lessonsStatus).toBeDefined();
-				expect(lessonsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should set status of files', () => {
