@@ -1,1 +1,1 @@
-export * from './team-storage.adapter'
+export * from './team-storage.adapter';

@@ -1,8 +1,8 @@
 import { RoleDto } from '@src/modules/team-storage/services/dto/Role.dto';
 import { TeamPermissionsDto } from '@src/modules/team-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@src/modules/team-storage/services/dto/team.dto';
+import { Injectable } from '@nestjs/common';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
-import {Injectable} from "@nestjs/common";
 
 @Injectable()
 export class TeamStorageAdapterMapper {

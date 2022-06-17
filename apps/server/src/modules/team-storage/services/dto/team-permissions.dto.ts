@@ -10,10 +10,10 @@ export class TeamPermissionsDto {
 	share?: boolean;
 
 	constructor(props: TeamPermissionsDto) {
-		this.read   = !!props.read;
-		this.write  = !!props.write;
+		this.read = !!props.read;
+		this.write = !!props.write;
 		this.create = !!props.create;
 		this.delete = !!props.delete;
-		this.share  = !!props.share;
+		this.share = !!props.share;
 	}
 }

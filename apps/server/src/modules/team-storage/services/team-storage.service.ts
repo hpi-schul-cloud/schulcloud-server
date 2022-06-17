@@ -1,14 +1,14 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, RoleName } from '@shared/domain';
 import { RoleRepo, TeamsRepo } from '@shared/repo';
+import { TeamStorageAdapter } from '@shared/infra/team-storage';
+import { NextcloudStrategy } from '@shared/infra/team-storage/strategy/nextcloud.strategy';
+import { HttpService } from '@nestjs/axios';
 import { RoleMapper } from '../mapper/role.mapper';
 import { TeamMapper } from '../mapper/team.mapper';
 import { RoleDto } from './dto/role.dto';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
 import { TeamDto, TeamUserDto } from './dto/team.dto';
-import {TeamStorageAdapter} from "@shared/infra/team-storage";
-import {NextcloudStrategy} from "@shared/infra/team-storage/strategy/nextcloud.strategy";
-import {HttpService} from "@nestjs/axios";
 
 @Injectable()
 export class TeamStorageService {
@@ -17,7 +17,7 @@ export class TeamStorageService {
 		private roleRepo: RoleRepo,
 		private teamsMapper: TeamMapper,
 		private roleMapper: RoleMapper,
-		private teamsRepo: TeamsRepo,
+		private teamsRepo: TeamsRepo
 	) {
 		this.adapter.setStrategy(new NextcloudStrategy(new HttpService()));
 	}
@@ -50,10 +50,14 @@ export class TeamStorageService {
 		teamId: string,
 		roleId: string,
 		teamPermissions: TeamPermissionsDto
-	):Promise<void> {
+	): Promise<void> {
 		if (!(await this.isUserAuthorized(currentUserId, teamId))) {
 			throw new ForbiddenException({ description: 'User is not Teamadmin or Teamowner' });
 		}
-		this.adapter.updateTeamPermissionsForRole(await this.findTeamById(teamId, true), await this.findRoleById(roleId), teamPermissions);
+		this.adapter.updateTeamPermissionsForRole(
+			await this.findTeamById(teamId, true),
+			await this.findRoleById(roleId),
+			teamPermissions
+		);
 	}
 }

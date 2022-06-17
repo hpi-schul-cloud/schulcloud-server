@@ -1,6 +1,6 @@
+import { Injectable } from '@nestjs/common';
 import { TeamPermissionsBody } from '../controller/dto/team-permissions.body.params';
 import { TeamPermissionsDto } from '../services/dto/team-permissions.dto';
-import {Injectable} from "@nestjs/common";
 
 @Injectable()
 export class TeamPermissionsMapper {

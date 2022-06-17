@@ -1,30 +1,25 @@
-import {Test, TestingModule} from "@nestjs/testing";
-import {Role, RoleName, School, Team, TeamUser, User} from "@shared/domain";
-import {TeamMapper} from "@src/modules/team-storage/mapper/team.mapper";
-import {ObjectId} from "@mikro-orm/mongodb";
-import {teamFactory} from "@shared/testing/factory/team.factory";
+import { Test, TestingModule } from '@nestjs/testing';
+import { TeamMapper } from '@src/modules/team-storage/mapper/team.mapper';
+import { teamFactory } from '@shared/testing/factory/team.factory';
 
 describe('TeamMapper', () => {
-    let module: TestingModule;
-    let mapper: TeamMapper;
+	let module: TestingModule;
+	let mapper: TeamMapper;
 
-    beforeEach(async () => {
-        module = await Test.createTestingModule({
-            imports: [],
-            providers: [
-                TeamMapper,
-            ],
-        }).compile();
-        mapper = module.get(TeamMapper);
-    });
+	beforeEach(async () => {
+		module = await Test.createTestingModule({
+			imports: [],
+			providers: [TeamMapper],
+		}).compile();
+		mapper = module.get(TeamMapper);
+	});
 
-    describe('Map Team', () => {
-
-        it('should map entity to dto', () => {
-            const teamEntity = teamFactory.build();
-            const ret = mapper.mapEntityToDto(teamEntity);
-            expect(ret.id).toEqual(teamEntity.id);
-            expect(ret.userIds.length).toEqual(1);
-        })
-    })
+	describe('Map Team', () => {
+		it('should map entity to dto', () => {
+			const teamEntity = teamFactory.build();
+			const ret = mapper.mapEntityToDto(teamEntity);
+			expect(ret.id).toEqual(teamEntity.id);
+			expect(ret.userIds.length).toEqual(1);
+		});
+	});
 });

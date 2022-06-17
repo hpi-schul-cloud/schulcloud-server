@@ -1,6 +1,6 @@
 import { Role } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
 import { RoleDto } from '../services/dto/Role.dto';
-import {Injectable} from "@nestjs/common";
 
 @Injectable()
 export class RoleMapper {
