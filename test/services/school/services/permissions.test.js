@@ -16,13 +16,13 @@ describe('permissons service', () => {
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		testHelper = testObjects(appPromise());
 		server = await app.listen(0);
 		testSchool = await testHelper.createTestSchool();
 		testUser = await testHelper.createTestUser({ schoolId: testSchool._id, roles: ['administrator'] });
 		testParams = await testHelper.generateRequestParamsFromUser(testUser);
 		testParams.query = {};
-		nestServices = await setupNestServices(app);
 	});
 
 	beforeEach(() => {
