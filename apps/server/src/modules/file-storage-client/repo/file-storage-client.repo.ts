@@ -29,7 +29,6 @@ export class FileStorageClientRepo {
 		const url = this.getUrl(URI.copy, fileRequestInfo);
 		const result = await lastValueFrom(this.httpService.get<AxiosResponse>(url));
 
-		console.log(result);
 		// const response = FileStorageClientMapper.mapAxiosToDomainObject(result);
 		return Promise.resolve([]);
 	}

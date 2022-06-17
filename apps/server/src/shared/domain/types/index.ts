@@ -5,4 +5,3 @@ export * from './learnroom.types';
 export * from './news.types';
 export * from './importuser.types';
 export * from './value-of';
-export * from './jwt';

@@ -45,79 +45,47 @@ export class TestDecoratorJWTController {
 }
 
 describe('auth.decorator', () => {
-	/*	describe('JWT', () => {
-		let app: INestApplication;
-		let module: TestingModule;
-		let orm: MikroORM;
+	let app: INestApplication;
+	let currentUser: ICurrentUser;
+	let module: TestingModule;
+	let orm: MikroORM;
 
-		beforeAll(async () => {
-			module = await Test.createTestingModule({
-				imports: [ServerTestModule],
-				controllers: [TestDecoratorJWTController],
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [ServerTestModule],
+			controllers: [TestDecoratorCurrentUserController, TestDecoratorJWTController],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					// @ts-expect-error Testcase
+					req.user = currentUser;
+					return true;
+				},
 			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						// @ts-expect-error Testcase
-						req.user = undefined;
-						return true;
-					},
-				})
-				.compile();
+			.compile();
 
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-		});
+		app = module.createNestApplication();
+		await app.init();
+		orm = app.get(MikroORM);
+	});
 
-		afterAll(async () => {
-			await app.close();
-			await orm.close();
-			await module.close();
-		});
+	afterAll(async () => {
+		await orm.close();
+		await app.close();
+		await module.close();
+	});
 
+	describe('JWT', () => {
 		it('should throw with UnauthorizedException if no jwt can be extracted from request context', async () => {
-			const response = await request(app.getHttpServer()).get('test_decorator_JWT/test');
+			const response = await request(app.getHttpServer()).get('/test_decorator_JWT/test');
 
 			expect(response.statusCode).toEqual(401);
 		});
 	});
-*/
 
 	describe('CurrentUser', () => {
-		let app: INestApplication;
-		let currentUser: ICurrentUser;
-		let module: TestingModule;
-		let orm: MikroORM;
-
-		beforeAll(async () => {
-			module = await Test.createTestingModule({
-				imports: [ServerTestModule],
-				controllers: [TestDecoratorCurrentUserController],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						// @ts-expect-error Testcase
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			orm = app.get(MikroORM);
-		});
-
-		afterAll(async () => {
-			await orm.close();
-			await app.close();
-			await module.close();
-		});
-
 		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', async () => {
 			// @ts-expect-error Testcase
 			currentUser = undefined;

@@ -1,15 +1,7 @@
 import { EntityId, FileRecordParentType } from '@shared/domain';
+import { IFileDomainObjectProps } from '../interfaces';
 
-export interface IFileDomainObjectProps {
-	id: EntityId;
-	name: string;
-	parentType: FileRecordParentType;
-	parentId: EntityId;
-	schoolId: EntityId;
-}
-
-// todo: Extends BaseDomainObject
-export class FileDomainObject {
+export class FileDto {
 	id: EntityId;
 
 	name: string;
