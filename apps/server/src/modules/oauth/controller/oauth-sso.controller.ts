@@ -20,7 +20,7 @@ export class OauthSSOController {
 		@Param('systemid', ParseObjectIdPipe) systemid: string
 	): Promise<unknown> {
 		const oauthResponse = await this.oauthUc.startOauth(query, systemid);
-		res.cookie('jwt', oauthResponse.jwt);
-		return res.redirect(oauthResponse.redirect);
+		res.cookie('jwt', oauthResponse.jwt ? oauthResponse.jwt : '');
+		return res.redirect(oauthResponse.redirect ? oauthResponse.redirect : '');
 	}
 }
