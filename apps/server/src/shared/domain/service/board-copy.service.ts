@@ -10,11 +10,6 @@ export type BoardCopyParams = {
 	user: User;
 };
 
-export type BoardCopyResponse = {
-	copy: Board;
-	status: CopyStatus;
-};
-
 @Injectable()
 export class BoardCopyService {
 	constructor(
@@ -22,7 +17,7 @@ export class BoardCopyService {
 		private readonly lessonCopyService: LessonCopyService
 	) {}
 
-	copyBoard(params: BoardCopyParams): BoardCopyResponse {
+	copyBoard(params: BoardCopyParams): CopyStatus {
 		const elementStatuses: CopyStatus[] = [];
 		const references: BoardElement[] = [];
 
@@ -49,16 +44,15 @@ export class BoardCopyService {
 			}
 		});
 
-		const result = {
-			copy: new Board({ references, course: params.destinationCourse }),
-			status: {
-				title: 'board',
-				type: CopyElementType.BOARD,
-				status: CopyStatusEnum.FAIL,
-				elements: elementStatuses,
-			},
+		const copy = new Board({ references, course: params.destinationCourse });
+		const status = {
+			title: 'board',
+			type: CopyElementType.BOARD,
+			status: CopyStatusEnum.FAIL,
+			elements: elementStatuses,
+			copyEntity: copy,
 		};
 
-		return result;
+		return status;
 	}
 }

@@ -46,8 +46,10 @@ describe('course copy service', () => {
 
 				const boardCopy = boardFactory.build();
 				const boardCopyStatus = {
-					copy: boardCopy,
-					status: { title: 'board', type: CopyElementType.BOARD, status: CopyStatusEnum.SUCCESS },
+					title: 'board',
+					type: CopyElementType.BOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: boardCopy,
 				};
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
 
@@ -320,7 +322,7 @@ describe('course copy service', () => {
 				});
 
 				const coursegroupsStatus = status.elements?.find(
-					(el) => el.type === boardCopyStatus.status.type && el.title === boardCopyStatus.status.title
+					(el) => el.type === boardCopyStatus.type && el.title === boardCopyStatus.title
 				);
 				expect(coursegroupsStatus).toBeDefined();
 			});

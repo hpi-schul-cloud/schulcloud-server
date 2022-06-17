@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Board, BoardCopyService, LessonCopyService, TaskCopyService } from '@shared/domain';
 import {
 	boardFactory,
 	courseFactory,
@@ -11,10 +12,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { TaskCopyService } from '..';
 import { CopyElementType, CopyStatusEnum } from '../types';
-import { BoardCopyService } from './board-copy.service';
-import { LessonCopyService } from './lesson-copy.service';
 
 describe('board copy service', () => {
 	let module: TestingModule;
@@ -65,29 +63,31 @@ describe('board copy service', () => {
 			it('should return copy type "board"', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(result.status.type).toEqual(CopyElementType.BOARD);
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(status.type).toEqual(CopyElementType.BOARD);
 			});
 
 			it('should set title copy status to "board"', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(result.status.title).toEqual('board');
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(status.title).toEqual('board');
 			});
 
 			it('should create a copy', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(result.copy.id).not.toEqual(originalBoard.id);
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const board = status.copyEntity as Board;
+				expect(board.id).not.toEqual(originalBoard.id);
 			});
 
 			it('should set destination course of copy', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(result.copy.course.id).toEqual(destinationCourse.id);
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const board = status.copyEntity as Board;
+				expect(board.course.id).toEqual(destinationCourse.id);
 			});
 		});
 
@@ -118,15 +118,16 @@ describe('board copy service', () => {
 			it('should add copy of task to board copy', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(result.copy.getElements().length).toEqual(1);
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const board = status.copyEntity as Board;
+				expect(board.getElements().length).toEqual(1);
 			});
 
 			it('should add status of copying task to board copy status', () => {
 				const { destinationCourse, originalBoard, user, originalTask } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const taskStatus = result.status.elements?.find(
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const taskStatus = status.elements?.find(
 					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name
 				);
 				expect(taskStatus).toBeDefined();
@@ -158,8 +159,8 @@ describe('board copy service', () => {
 			it('should add status of copying lesson to board copy status', () => {
 				const { destinationCourse, originalBoard, user, originalLesson } = setup();
 
-				const result = copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const lessonStatus = result.status.elements?.find(
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const lessonStatus = status.elements?.find(
 					(el) => el.type === CopyElementType.LESSON && el.title === originalLesson.name
 				);
 				expect(lessonStatus).toBeDefined();

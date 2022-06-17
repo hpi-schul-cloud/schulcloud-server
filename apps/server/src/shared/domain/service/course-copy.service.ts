@@ -88,7 +88,7 @@ export class CourseCopyService {
 				originalBoard: params.originalBoard,
 				destinationCourse: copy,
 				user: params.user,
-			}).status
+			})
 		);
 		return status;
 	}
