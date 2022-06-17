@@ -18,6 +18,13 @@ describe('handleAutoLogout hook', () => {
 	let nestServices;
 
 	before(async () => {
+		/* eslint-disable global-require */
+		app = await require('../src/app');
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+		testObjects = require('./services/helpers/testObjects')(app);
+		/* eslint-enable global-require */
+
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
@@ -36,13 +43,9 @@ describe('handleAutoLogout hook', () => {
 		delete require.cache[require.resolve('../src/app.hooks')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
-		app = await require('../src/app')();
-		testObjects = require('./services/helpers/testObjects')(app);
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */
 		redisHelper.initializeRedisClient();
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
