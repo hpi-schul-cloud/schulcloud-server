@@ -42,7 +42,6 @@ describe('course copy service', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const originalCourse = courseFactory.build();
-				const originalBoard = boardFactory.build({ course: originalCourse });
 
 				const boardCopy = boardFactory.build();
 				const boardCopyStatus = {
@@ -53,15 +52,14 @@ describe('course copy service', () => {
 				};
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
 
-				return { user, originalBoard, originalCourse, boardCopyStatus };
+				return { user, originalCourse, boardCopyStatus };
 			};
 
 			it('should assign user as teacher', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -69,14 +67,13 @@ describe('course copy service', () => {
 			});
 
 			it('should set school of user', () => {
-				const { originalBoard, originalCourse } = setup();
+				const { originalCourse } = setup();
 
 				const destinationSchool = schoolFactory.buildWithId();
 				const user = userFactory.build({ school: destinationSchool });
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -85,11 +82,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set name of course', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -98,11 +94,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set color of course', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -111,11 +106,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status type to course', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -123,11 +117,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status to partial', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -135,11 +128,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status title to title of the copy', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -147,11 +139,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of metadata', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -163,11 +154,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of teachers', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -179,11 +169,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of substitutionTeachers', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -195,11 +184,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of students', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -211,11 +199,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of classes', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -225,11 +212,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of ltiTools', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -241,11 +227,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of tasks', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -255,11 +240,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of times', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -269,11 +253,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of lessons', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -283,11 +266,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of files', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -297,11 +279,10 @@ describe('course copy service', () => {
 			});
 
 			it('should set status of coursegroups', () => {
-				const { originalBoard, originalCourse, user } = setup();
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -310,21 +291,6 @@ describe('course copy service', () => {
 				);
 				expect(coursegroupsStatus).toBeDefined();
 				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
-			});
-
-			it('should add status of board to copy status', () => {
-				const { originalBoard, originalCourse, user, boardCopyStatus } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					originalBoard,
-					user,
-				});
-
-				const coursegroupsStatus = status.elements?.find(
-					(el) => el.type === boardCopyStatus.type && el.title === boardCopyStatus.title
-				);
-				expect(coursegroupsStatus).toBeDefined();
 			});
 		});
 
@@ -343,11 +309,10 @@ describe('course copy service', () => {
 			};
 
 			it('should not set any students in the copy', () => {
-				const { originalBoard, originalCourse, user } = setupWithAdditionalUsers();
+				const { originalCourse, user } = setupWithAdditionalUsers();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -357,11 +322,10 @@ describe('course copy service', () => {
 			});
 
 			it('should not set any additional teachers', () => {
-				const { originalBoard, originalCourse, user } = setupWithAdditionalUsers();
+				const { originalCourse, user } = setupWithAdditionalUsers();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 
@@ -370,11 +334,10 @@ describe('course copy service', () => {
 			});
 
 			it('should not set any substitution Teachers in the copy', () => {
-				const { originalBoard, originalCourse, user } = setupWithAdditionalUsers();
+				const { originalCourse, user } = setupWithAdditionalUsers();
 
 				const status = copyService.copyCourse({
 					originalCourse,
-					originalBoard,
 					user,
 				});
 

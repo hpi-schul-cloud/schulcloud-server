@@ -2,7 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, CopyElementType, CopyStatusEnum, CourseCopyService, Permission } from '@shared/domain';
+import {
+	Actions,
+	BoardCopyService,
+	CopyElementType,
+	CopyStatusEnum,
+	CourseCopyService,
+	Permission,
+} from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -11,11 +18,11 @@ import { CourseCopyUC } from './course-copy.uc';
 describe('course copy uc', () => {
 	let orm: MikroORM;
 	let uc: CourseCopyUC;
-	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let boardRepo: DeepMocked<BoardRepo>;
 	let authorisation: DeepMocked<AuthorizationService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
+	let boardCopyService: DeepMocked<BoardCopyService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -49,15 +56,19 @@ describe('course copy uc', () => {
 					provide: CourseCopyService,
 					useValue: createMock<CourseCopyService>(),
 				},
+				{
+					provide: BoardCopyService,
+					useValue: createMock<BoardCopyService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(CourseCopyUC);
-		userRepo = module.get(UserRepo);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		courseCopyService = module.get(CourseCopyService);
 		boardRepo = module.get(BoardRepo);
+		boardCopyService = module.get(BoardCopyService);
 	});
 
 	describe('copy course', () => {
@@ -65,22 +76,31 @@ describe('course copy uc', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const originalBoard = boardFactory.build({ course });
+			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
+			const boardCopy = boardFactory.build({ course: courseCopy });
 
 			authorisation.getUserWithPermissions.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			authorisation.checkPermission.mockReturnValue();
 
-			const copy = courseFactory.buildWithId({ teachers: [user] });
+			const boardCopyStatus = {
+				title: 'boardCopy',
+				type: CopyElementType.BOARD,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: boardCopy,
+			};
+			boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
+
 			const status = {
 				title: 'courseCopy',
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
-				copyEntity: copy,
+				copyEntity: courseCopy,
 			};
 			courseCopyService.copyCourse.mockReturnValue(status);
 
-			return { user, course, originalBoard, copy, status };
+			return { user, course, originalBoard, courseCopy, boardCopy, status };
 		};
 
 		it('should fetch correct user', async () => {
@@ -110,16 +130,28 @@ describe('course copy uc', () => {
 			});
 		});
 
-		it('should call copy service', async () => {
-			const { course, user, originalBoard } = setup();
+		it('should call course copy service', async () => {
+			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(courseCopyService.copyCourse).toBeCalledWith({ originalCourse: course, originalBoard, user });
+			expect(courseCopyService.copyCourse).toBeCalledWith({ originalCourse: course, user });
 		});
 
-		it('should persist copy', async () => {
-			const { course, user, copy } = setup();
+		it('should persist course copy', async () => {
+			const { course, user, courseCopy } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(courseRepo.save).toBeCalledWith(copy);
+			expect(courseRepo.save).toBeCalledWith(courseCopy);
+		});
+
+		it('should call board copy service', async () => {
+			const { course, courseCopy, originalBoard, user } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(boardCopyService.copyBoard).toBeCalledWith({ originalBoard, destinationCourse: courseCopy, user });
+		});
+
+		it('should persist board copy', async () => {
+			const { course, user, boardCopy } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(boardRepo.save).toBeCalledWith(boardCopy);
 		});
 
 		it('should return status', async () => {
@@ -132,7 +164,6 @@ describe('course copy uc', () => {
 			const setupWithCourseForbidden = () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
-				userRepo.findById.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
 				authorisation.checkPermission.mockImplementation(() => {
 					throw new ForbiddenException();

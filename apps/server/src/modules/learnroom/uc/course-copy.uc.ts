@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, CopyStatus, Course, EntityId, Permission } from '@shared/domain';
+import { Actions, Board, BoardCopyService, CopyStatus, Course, EntityId, Permission } from '@shared/domain';
 import { CourseCopyService } from '@shared/domain/service/course-copy.service';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -10,7 +10,8 @@ export class CourseCopyUC {
 		private readonly courseRepo: CourseRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly authorisation: AuthorizationService,
-		private readonly courseCopyService: CourseCopyService
+		private readonly courseCopyService: CourseCopyService,
+		private readonly boardCopyService: BoardCopyService
 	) {}
 
 	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
@@ -23,16 +24,18 @@ export class CourseCopyUC {
 			requiredPermissions: [Permission.COURSE_CREATE],
 		});
 
-		const status = this.courseCopyService.copyCourse({
-			originalCourse,
-			originalBoard,
-			user,
-		});
+		const statusCourse = this.courseCopyService.copyCourse({ originalCourse, user });
+		const courseCopy = statusCourse.copyEntity as Course;
 
-		if (status.copyEntity) {
-			const course = status.copyEntity as Course;
-			await this.courseRepo.save(course);
-		}
-		return status;
+		const statusBoard = this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		const boardCopy = statusBoard.copyEntity as Board;
+
+		await this.courseRepo.save(courseCopy);
+		await this.boardRepo.save(boardCopy);
+
+		statusCourse.elements ||= [];
+		statusCourse.elements.push(statusBoard);
+
+		return statusCourse;
 	}
 }

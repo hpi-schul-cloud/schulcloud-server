@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Board, Course, User } from '@shared/domain/entity';
+import { Course, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 import { BoardCopyService } from './board-copy.service';
 
 export type CourseCopyParams = {
 	originalCourse: Course;
-	originalBoard: Board;
 	user: User;
 };
 
@@ -83,13 +82,7 @@ export class CourseCopyService {
 				},
 			],
 		};
-		status.elements.push(
-			this.boardCopyService.copyBoard({
-				originalBoard: params.originalBoard,
-				destinationCourse: copy,
-				user: params.user,
-			})
-		);
+
 		return status;
 	}
 }
