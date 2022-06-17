@@ -6,99 +6,109 @@ import { EntityId, FileRecord, FileRecordParentType, Task } from '@shared/domain
 import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem, SyncFileItemData } from '../types';
 
+const query = (batchSize: number) => [
+	{
+		$match: { fileIds: { $exists: true, $ne: [] } },
+	},
+	{
+		$lookup: {
+			from: 'files',
+			localField: 'fileIds',
+			foreignField: '_id',
+			as: 'files',
+		},
+	},
+	{
+		$unwind: {
+			path: '$files',
+		},
+	},
+	{
+		$match: {
+			'files.storageProviderId': { $exists: true },
+			'files.size': { $ne: 0 },
+		},
+	},
+	{
+		$lookup: {
+			from: 'files_filerecords',
+			localField: 'files._id',
+			foreignField: 'fileId',
+			as: 'file_filerecords',
+		},
+	},
+	{
+		$unwind: {
+			path: '$file_filerecords',
+			preserveNullAndEmptyArrays: true,
+		},
+	},
+	{
+		$match: {
+			$or: [{ 'file_filerecords.error': { $exists: false } }, { 'file_filerecords.error': { $eq: null } }],
+		},
+	},
+	{
+		$lookup: {
+			from: 'filerecords',
+			localField: 'file_filerecords.filerecordId',
+			foreignField: '_id',
+			as: 'filerecords',
+		},
+	},
+	{
+		$set: {
+			filerecord: { $arrayElemAt: ['$filerecords', 0] },
+		},
+	},
+	{
+		$match: {
+			$or: [
+				{ filerecord: { $exists: false } },
+				{
+					$expr: {
+						$gt: ['$files.updatedAt', '$filerecord.updatedAt'],
+					},
+				},
+			],
+		},
+	},
+	{
+		$project: {
+			schoolId: '$schoolId',
+			file: '$files',
+			filerecord: '$filerecord',
+		},
+	},
+	{
+		$sort: {
+			'file.updatedAt': 1,
+			'file._id': 1,
+		},
+	},
+	{
+		$limit: batchSize,
+	},
+];
 // This repo is used for syncing the new filerecords collection with the old files collection.
 // It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
 @Injectable()
 export class SyncFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findTaskFilesToSync(batchSize = 50): Promise<SyncFileItem[]> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const itemDataList: SyncFileItemData[] = await this._em.aggregate(Task, [
-			{
-				$match: { fileIds: { $exists: true, $ne: [] } },
-			},
-			{
-				$lookup: {
-					from: 'files',
-					localField: 'fileIds',
-					foreignField: '_id',
-					as: 'files',
-				},
-			},
-			{
-				$unwind: {
-					path: '$files',
-				},
-			},
-			{
-				$match: {
-					'files.storageProviderId': { $exists: true },
-					'files.size': { $ne: 0 },
-				},
-			},
-			{
-				$lookup: {
-					from: 'files_filerecords',
-					localField: 'files._id',
-					foreignField: 'fileId',
-					as: 'file_filerecords',
-				},
-			},
-			{
-				$unwind: {
-					path: '$file_filerecords',
-					preserveNullAndEmptyArrays: true,
-				},
-			},
-			{
-				$match: {
-					$or: [{ 'file_filerecords.error': { $exists: false } }, { 'file_filerecords.error': { $eq: null } }],
-				},
-			},
-			{
-				$lookup: {
-					from: 'filerecords',
-					localField: 'file_filerecords.filerecordId',
-					foreignField: '_id',
-					as: 'filerecords',
-				},
-			},
-			{
-				$set: {
-					filerecord: { $arrayElemAt: ['$filerecords', 0] },
-				},
-			},
-			{
-				$match: {
-					$or: [
-						{ filerecord: { $exists: false } },
-						{
-							$expr: {
-								$gt: ['$files.updatedAt', '$filerecord.updatedAt'],
-							},
-						},
-					],
-				},
-			},
-			{
-				$project: {
-					schoolId: '$schoolId',
-					file: '$files',
-					filerecord: '$filerecord',
-				},
-			},
-			{
-				$sort: {
-					'file.updatedAt': 1,
-					'file._id': 1,
-				},
-			},
-			{
-				$limit: batchSize,
-			},
-		]);
+	async findFilesToSync(type: FileRecordParentType, batchSize = 50): Promise<SyncFileItem[]> {
+		let itemDataList: SyncFileItemData[] = [];
 
+		if (type === FileRecordParentType.Task) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			itemDataList = await this._em.aggregate(Task, query(batchSize));
+		}
+		const items = this.mapResults(itemDataList);
+
+		return items;
+	}
+
+	private mapResults(itemDataList: SyncFileItemData[]): SyncFileItem[] {
 		const items = itemDataList.map((itemData) => SyncFileItemMapper.mapToDomain(itemData, FileRecordParentType.Task));
 
 		return items;

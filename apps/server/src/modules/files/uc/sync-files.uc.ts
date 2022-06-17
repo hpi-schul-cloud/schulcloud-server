@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 
 import { Injectable } from '@nestjs/common';
+import { FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
-import { SyncContext, FileSyncOptions, SyncFileItem } from '../types';
+import { FileSyncOptions, SyncContext, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
@@ -18,12 +19,24 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
-	private logItemNotFound() {
-		this.logger.log('Not items found. Nothing to do.');
+	async syncFilesForParentType(type: FileRecordParentType, aggregationSize = 5000, numParallelPromises = 50) {
+		let itemsFound: number;
+		let aggregationsCounter = 0;
+		const options = new FileSyncOptions(aggregationSize, numParallelPromises);
+
+		do {
+			this.logStartingAggregation(aggregationsCounter, options);
+			const context = { fileCounter: aggregationsCounter * Number(aggregationSize) };
+			// eslint-disable-next-line no-await-in-loop
+			const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findFilesToSync(type, options.aggregationSize);
+			// eslint-disable-next-line no-await-in-loop
+			itemsFound = await this.syncFilesForType(itemsToSync, options, context);
+
+			aggregationsCounter += 1;
+		} while (itemsFound > 0);
 	}
 
-	async syncFilesForTasks(options: FileSyncOptions, context: SyncContext): Promise<number> {
-		const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findTaskFilesToSync(options.aggregationSize);
+	async syncFilesForType(itemsToSync: SyncFileItem[], options: FileSyncOptions, context: SyncContext): Promise<number> {
 		const numFound = itemsToSync.length;
 
 		if (numFound > 0) {
@@ -48,22 +61,6 @@ export class SyncFilesUc {
 		} while (item);
 	}
 
-	private logStartSyncing(item: SyncFileItem, context: SyncContext): void {
-		const fileInfo = `source file with id = ${item.source.id}, size = ${item.source.size}`;
-		this.logger.log(`#${context.fileCounter} Start syncing ${fileInfo}`);
-	}
-
-	private logSuccessfullySynced(item: SyncFileItem, context: SyncContext): void {
-		const fileInfo = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
-		const operation = item.created ? 'created' : 'updated';
-		this.logger.log(`#${context.fileCounter} Successfully synced ${fileInfo} (${operation})`);
-	}
-
-	private logError(item: SyncFileItem, stack: string) {
-		this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
-		this.logger.error(stack);
-	}
-
 	private async syncFile(item: SyncFileItem, context: SyncContext) {
 		try {
 			context.fileCounter += 1;
@@ -81,5 +78,33 @@ export class SyncFilesUc {
 			this.logError(item, stack);
 			await this.metadataService.persistError(item, stack);
 		}
+	}
+
+	private logStartingAggregation(aggregationsCounter: number, options: FileSyncOptions) {
+		this.logger.log(
+			`Starting file sync: aggregation #${aggregationsCounter + 1} with aggregationSize = ${
+				options.aggregationSize
+			} and numParallelPromises = ${options.numParallelPromises}`
+		);
+	}
+
+	private logStartSyncing(item: SyncFileItem, context: SyncContext): void {
+		const fileInfo = `source file with id = ${item.source.id}, size = ${item.source.size}`;
+		this.logger.log(`#${context.fileCounter} Start syncing ${fileInfo}`);
+	}
+
+	private logSuccessfullySynced(item: SyncFileItem, context: SyncContext): void {
+		const fileInfo = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
+		const operation = item.created ? 'created' : 'updated';
+		this.logger.log(`#${context.fileCounter} Successfully synced ${fileInfo} (${operation})`);
+	}
+
+	private logError(item: SyncFileItem, stack: string) {
+		this.logger.error(`Error syncing source file with id = ${item.source.id}, parentId = ${item.parentId}`);
+		this.logger.error(stack);
+	}
+
+	private logItemNotFound() {
+		this.logger.log('Not items found. Nothing to do.');
 	}
 }
