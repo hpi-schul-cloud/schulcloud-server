@@ -12,7 +12,7 @@ const redisMock = require('../../../utils/redis/redisMock');
 describe('jwtTimer service', () => {
 	it('registered the supportJWT service', async () => {
 		// eslint-disable-next-line global-require
-		const defaultapp = await require('../../../../src/app')();
+		const defaultApp = await require('../../../../src/app')();
 		assert.ok(defaultApp.service('accounts/jwtTimer'));
 	});
 	describe('redis mocked', () => {

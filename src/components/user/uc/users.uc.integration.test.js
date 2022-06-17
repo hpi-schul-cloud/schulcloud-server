@@ -1,7 +1,7 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const { getOrCreateTombstoneUserId, replaceUserWithTombstone, deleteUser } = require('./users.uc');
@@ -14,7 +14,7 @@ describe('user use case', () => {
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

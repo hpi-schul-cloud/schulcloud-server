@@ -18,7 +18,7 @@ describe('calendar service', () => {
 		});
 		mockery.registerMock('request-promise-native', requestMock);
 		// eslint-disable-next-line global-require
-		app = await require('../../../src/app');
+		app = await require('../../../src/app')();
 		app.setup();
 		calendarService = await app.service('calendar');
 	});
