@@ -26,7 +26,7 @@ class RocketChatLogin {
 			// user already logged in
 			if (authToken !== '' && authToken !== undefined) {
 				try {
-					const res = service.me(authToken, rcAccount.rcId);
+					const res = await service.me(authToken, rcAccount.rcId);
 					await service.setUserStatus(authToken, rcAccount.rcId, 'offline');
 					if (res.success) return { authToken };
 				} catch (err) {
