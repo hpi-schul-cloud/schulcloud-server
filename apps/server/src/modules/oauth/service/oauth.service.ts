@@ -43,7 +43,7 @@ export class OAuthService {
 		let errorCode = 'sso_auth_code_step';
 		if (query.error) {
 			errorCode = `sso_oauth_${query.error}`;
-			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.error}`);
+			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
 		}
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
