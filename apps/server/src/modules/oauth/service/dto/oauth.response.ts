@@ -21,12 +21,10 @@ export class OAuthResponse {
 	@IsNotEmpty()
 	logoutEndpoint?: string;
 
-	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
 	provider!: string;
 
-	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
 	redirect!: string;
