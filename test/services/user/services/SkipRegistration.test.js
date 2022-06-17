@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices } = require('../../../utils/setup.nest.services');
 
 describe('skipRegistration service', () => {
@@ -11,7 +11,7 @@ describe('skipRegistration service', () => {
 	let orm;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		skipRegistrationService = app.service('/users/:userId/skipregistration');
 		server = await app.listen(0);
 		({ nestApp, orm } = await setupNestServices(app));

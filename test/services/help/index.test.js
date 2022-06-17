@@ -4,7 +4,7 @@ const appPromise = require('../../../src/app');
 const { createTestSchoolGroup, createTestSchool, createTestUser, cleanup } = require('../helpers/testObjects')(
 	appPromise
 );
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
 const { helpDocumentsModel } = require('../../../src/services/help/model');
 
 const { expect } = chai;
@@ -16,7 +16,7 @@ describe('help documents service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		helpDocumentService = app.service('/help/documents');
 		server = await app.listen(0);
 	});

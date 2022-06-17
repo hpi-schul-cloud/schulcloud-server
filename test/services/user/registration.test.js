@@ -5,7 +5,7 @@ const moment = require('moment');
 const appPromise = require('../../../src/app');
 const { userModel } = require('../../../src/services/user/model');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('registration service', () => {
 	let server;

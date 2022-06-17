@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const accountModel = require('../../../../src/services/account/model');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
@@ -15,7 +15,7 @@ describe('AdminUsersService', () => {
 	let adminTeachersService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		accountService = app.service('/accounts');
 		adminStudentsService = app.service('/users/admin/students');
 		adminTeachersService = app.service('/users/admin/teachers');
@@ -1294,7 +1294,7 @@ describe('AdminTeachersService', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		adminTeachersService = app.service('/users/admin/teachers');
 		consentService = app.service('consents');
 		server = await app.listen(0);

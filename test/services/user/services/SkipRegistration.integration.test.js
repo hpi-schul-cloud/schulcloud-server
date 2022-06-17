@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 const { setupNestServices } = require('../../../utils/setup.nest.services');
 
 describe('SkipRegistration integration', () => {
@@ -11,7 +11,7 @@ describe('SkipRegistration integration', () => {
 	let orm;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		({ nestApp, orm } = await setupNestServices(app));
 	});

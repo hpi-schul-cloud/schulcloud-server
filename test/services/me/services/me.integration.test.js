@@ -22,8 +22,8 @@ describe('me service integration tests', function test() {
 		// eslint-disable-next-line global-require
 		const appPromise = require('../../../../src/app');
 		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(appPromise);
-		app = await appPromise;
+		testObjects = require('../../helpers/testObjects')(appPromise());
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

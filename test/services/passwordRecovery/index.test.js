@@ -2,7 +2,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
 const PORT = 0;
@@ -24,7 +24,7 @@ describe('passwordRecovery service', () => {
 	};
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		passwordRecoveryService = app.service('passwordRecovery');
 		server = await app.listen(0);
 		savedUser = await testObjects.createTestUser();

@@ -10,7 +10,7 @@ describe('registrationSchool service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		registrationSchoolService = app.service('/registrationSchool');
 		server = await app.listen();
 	});

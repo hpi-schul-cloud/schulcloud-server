@@ -12,7 +12,7 @@ const redisMock = require('../../../utils/redis/redisMock');
 describe('jwtTimer service', () => {
 	it('registered the supportJWT service', async () => {
 		// eslint-disable-next-line global-require
-		const defaultApp = await require('../../../../src/app');
+		const defaultapp = await require('../../../../src/app')();
 		assert.ok(defaultApp.service('accounts/jwtTimer'));
 	});
 	describe('redis mocked', () => {
@@ -39,7 +39,7 @@ describe('jwtTimer service', () => {
 				mockery.registerMock('@hpi-schul-cloud/commons', commons);
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
-				app = await require('../../../../src/app');
+				app = await require('../../../../src/app')();
 				testObjects = require('../../helpers/testObjects')(app);
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
 				app.configure(jwtTimerServiceSetup);
@@ -100,7 +100,7 @@ describe('jwtTimer service', () => {
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
-				app = await require('../../../../src/app');
+				app = await require('../../../../src/app')();
 				testObjects = require('../../helpers/testObjects')(app);
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */

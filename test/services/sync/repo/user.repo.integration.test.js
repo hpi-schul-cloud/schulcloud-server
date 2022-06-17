@@ -10,7 +10,7 @@ const { importUserModel } = require('../../../../src/services/sync/model/importU
 
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { BadRequest } = require('../../../../src/errors');
 
 chai.use(chaiAsPromised);
@@ -21,7 +21,7 @@ describe('user repo', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
