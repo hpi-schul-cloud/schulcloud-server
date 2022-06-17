@@ -15,6 +15,7 @@ export class OauthUc {
 		try {
 			oauthResponse = await this.oauthService.processOauth(query, systemId);
 		} catch (error) {
+			this.logger.log(query);
 			oauthResponse = this.oauthService.getOAuthError(error as string);
 		}
 		return oauthResponse;

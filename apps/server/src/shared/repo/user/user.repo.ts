@@ -29,10 +29,7 @@ export class UserRepo extends BaseRepo<User> {
 			const { systems } = user.school;
 			return systems && systems.getItems().find((system) => system.id === systemId);
 		});
-		if (resultUser) {
-			return resultUser;
-		}
-		throw new NotFoundException('No user for this ldapId found');
+		return resultUser ?? Promise.reject();
 	}
 
 	/**

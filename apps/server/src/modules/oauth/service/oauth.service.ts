@@ -42,6 +42,7 @@ export class OAuthService {
 		if (query.code) return query.code;
 		let errorCode = 'sso_auth_code_step';
 		if (query.error) {
+			this.logger.log(query.error);
 			errorCode = `sso_oauth_${query.error}`;
 			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
 		}
