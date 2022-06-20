@@ -19,6 +19,7 @@ import { CourseUc } from './uc/course.uc';
 import { DashboardUc } from './uc/dashboard.uc';
 import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
+import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
@@ -46,6 +47,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		TaskCopyService,
 		CourseCopyService,
 		CourseCopyUC,
+		RoomsService,
 	],
 })
 export class LearnroomModule {}

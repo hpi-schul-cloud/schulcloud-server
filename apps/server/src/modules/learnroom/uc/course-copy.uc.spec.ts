@@ -14,6 +14,7 @@ import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { CourseCopyUC } from './course-copy.uc';
+import { RoomsService } from './rooms.service';
 
 describe('course copy uc', () => {
 	let orm: MikroORM;
@@ -23,6 +24,7 @@ describe('course copy uc', () => {
 	let authorisation: DeepMocked<AuthorizationService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let boardCopyService: DeepMocked<BoardCopyService>;
+	let roomsService: DeepMocked<RoomsService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -60,6 +62,10 @@ describe('course copy uc', () => {
 					provide: BoardCopyService,
 					useValue: createMock<BoardCopyService>(),
 				},
+				{
+					provide: RoomsService,
+					useValue: createMock<RoomsService>(),
+				},
 			],
 		}).compile();
 
@@ -69,6 +75,7 @@ describe('course copy uc', () => {
 		courseCopyService = module.get(CourseCopyService);
 		boardRepo = module.get(BoardRepo);
 		boardCopyService = module.get(BoardCopyService);
+		roomsService = module.get(RoomsService);
 	});
 
 	describe('copy course', () => {
@@ -83,6 +90,7 @@ describe('course copy uc', () => {
 			courseRepo.findById.mockResolvedValue(course);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			authorisation.checkPermission.mockReturnValue();
+			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const boardCopyStatus = {
 				title: 'boardCopy',
@@ -158,6 +166,12 @@ describe('course copy uc', () => {
 			const { course, user, status } = setup();
 			const result = await uc.copyCourse(user.id, course.id);
 			expect(result).toEqual(status);
+		});
+
+		it('should ensure course has uptodate board', async () => {
+			const { course, user, originalBoard } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(roomsService.updateBoard).toHaveBeenCalledWith(originalBoard, course.id, user.id);
 		});
 
 		describe('when access to course is forbidden', () => {
