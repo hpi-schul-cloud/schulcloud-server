@@ -100,9 +100,7 @@ describe('oauth2 token test', () => {
 				name: 'testRole',
 				permissions: ['NEXTCLOUD_USER'],
 			});
-			const testUser = await testObjects.createTestUser();
-			testUser.roles = [testRole._id];
-			await app.service('users').patch(testUser._id, testUser);
+			const testUser = await testObjects.createTestUser({ roles: [testRole._id] });
 			const testTool = await testObjects.createTestLtiTool({ name: 'SchulcloudNextcloud', oAuthClientId: 'Nextcloud' });
 
 			// Act

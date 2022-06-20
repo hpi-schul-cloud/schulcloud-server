@@ -94,7 +94,7 @@ const insertUserToDB = async (app, data, user) => {
 		];
 		return app
 			.service('users')
-			.update(user._id, user)
+			.update(user.id, user)
 			.catch((err) => {
 				logger.warning(err);
 				throw new BadRequest('Fehler beim Updaten der Nutzerdaten.');

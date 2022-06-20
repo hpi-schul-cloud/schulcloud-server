@@ -3,6 +3,8 @@ const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('../rabbitmqMock');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { Configuration } = commons;
 
@@ -10,16 +12,12 @@ describe('service', () => {
 	let configBefore;
 	let server;
 	let app;
-	let testObjects;
 	let nestServices;
 
 	before(async () => {
-		// eslint-disable-next-line global-require
-		app = await require('../../../../src/app')();
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
-		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(app);
 
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
