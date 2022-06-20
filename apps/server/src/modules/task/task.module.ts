@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TaskCopyService } from '@shared/domain/service/task-copy.service';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationModule, FileStorageClientModule } from '@src/modules';
+import { AuthorizationModule } from '../authorization';
+import { FileStorageClientModule } from '../file-storage-client';
 import { TaskController } from './controller';
 import { TaskUC, TaskCopyUC } from './uc';
 

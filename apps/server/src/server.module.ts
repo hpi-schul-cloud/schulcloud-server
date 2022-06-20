@@ -4,21 +4,23 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
-import { UserModule, FileStorageClientModule } from '@src/modules';
+import {
+	UserModule,
+	FileStorageClientModule,
+	LearnroomModule,
+	NewsModule,
+	RocketChatModule,
+	TaskModule,
+	AuthModule,
+	OauthModule,
+	ImportUserModule,
+} from '@src/modules';
 import { FilesModule } from '@src/modules/files';
-import { LearnroomModule } from '@src/modules/learnroom';
-import { NewsModule } from '@src/modules/news';
-import { RocketChatModule } from '@src/modules/rocketchat';
-import { TaskModule } from '@src/modules/task';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
-import { AuthModule } from './modules/authentication/auth.module';
-import { OauthModule } from './modules/oauth';
-import { ImportUserModule } from './modules/user-import/user-import.module';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
 

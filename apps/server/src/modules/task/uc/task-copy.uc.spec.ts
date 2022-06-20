@@ -3,11 +3,11 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { Actions, PermissionTypes, User } from '../../../shared/domain';
-import { TaskCopyParams, TaskCopyService } from '../../../shared/domain/service/task-copy.service';
-import { CourseRepo, TaskRepo, UserRepo } from '../../../shared/repo';
-import { courseFactory, setupEntities, taskFactory, userFactory } from '../../../shared/testing';
-import { AuthorizationService } from '../../authorization';
+import { AuthorizationService } from '@src/modules/authorization';
+import { FileStorageClientAdapterService, FileRequestInfoBuilder, FileDto } from '@src/modules/file-storage-client';
+import { Actions, PermissionTypes, User, TaskCopyParams, TaskCopyService } from '@shared/domain';
+import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
@@ -50,6 +50,10 @@ describe('task copy uc', () => {
 				{
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
+				},
+				{
+					provide: FileStorageClientAdapterService,
+					useValue: createMock<FileStorageClientAdapterService>(),
 				},
 			],
 		}).compile();
