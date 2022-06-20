@@ -17,7 +17,7 @@ export class FileStorageClientAdapterService {
 
 		this.timeout = this.configService.get<number>('INCOMING_REQUEST_TIMEOUT');
 
-		const apiURI = '/api/v3';
+		const apiURI = '/api/v3'; // == API_VERSION_PATH
 		const baseUrl = this.configService.get<string>('FILE_STORAGE_BASE_URL');
 
 		this.fileStorageClient = FileApiFactory(undefined, baseUrl + apiURI);

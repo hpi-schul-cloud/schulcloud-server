@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-	Controller,
-	DynamicModule,
-	ExecutionContext,
-	ForbiddenException,
-	Get,
-	INestApplication,
-	Module,
-} from '@nestjs/common';
+import { Controller, ExecutionContext, Get, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';

@@ -1,9 +1,10 @@
-import { EntityId, FileRecordParentType } from '@shared/domain';
+import { EntityId } from '@shared/domain';
+import { FileRecordParamsParentTypeEnum } from '../fileStorageApi/v3';
 
 export interface IFileDomainObjectProps {
 	id: EntityId;
 	name: string;
-	parentType: FileRecordParentType;
+	parentType: FileRecordParamsParentTypeEnum;
 	parentId: EntityId;
 	schoolId: EntityId;
 }

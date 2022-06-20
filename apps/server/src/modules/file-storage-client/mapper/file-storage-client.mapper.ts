@@ -1,6 +1,6 @@
 import { EntityId, FileRecordParentType } from '@shared/domain';
 import { AxiosResponse } from 'axios';
-import { FileRecordListResponse, FileRecordResponse } from '../fileStorageApi/v3';
+import { FileRecordListResponse, FileRecordParamsParentTypeEnum, FileRecordResponse } from '../fileStorageApi/v3';
 import { FileDto } from '../dto';
 
 export class FileStorageClientMapper {
@@ -36,33 +36,12 @@ export class FileStorageClientMapper {
 		return fileDto;
 	}
 
-	static mapParentTypeToString(input: FileRecordParentType): string {
-		let response: string;
+	static mapStringToPartenType(input: string): FileRecordParamsParentTypeEnum {
+		let response: FileRecordParamsParentTypeEnum;
+		const allowedStrings = ['users', 'courses', 'tasks', 'schools'];
 
-		if (input === FileRecordParentType.School) {
-			response = 'schools';
-		} else if (input === FileRecordParentType.Course) {
-			response = 'courses';
-		} else if (input === FileRecordParentType.Task) {
-			response = 'courses';
-		} else {
-			response = 'users';
-		}
-
-		return response;
-	}
-
-	static mapStringToPartenType(input: string): FileRecordParentType {
-		let response: FileRecordParentType;
-
-		if (input === 'users') {
-			response = FileRecordParentType.User;
-		} else if (input === 'courses') {
-			response = FileRecordParentType.Course;
-		} else if (input === 'schools') {
-			response = FileRecordParentType.School;
-		} else if (input === 'tasks') {
-			response = FileRecordParentType.Task;
+		if (allowedStrings.includes(input)) {
+			response = input as FileRecordParamsParentTypeEnum;
 		} else {
 			throw new Error(`Mapping type is not supported. ${input}`);
 		}
