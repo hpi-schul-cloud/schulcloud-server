@@ -6,6 +6,7 @@ import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/r
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { RoomsService } from './rooms.service';
 import { RoomsUc } from './rooms.uc';
 
 describe('rooms usecase', () => {
@@ -18,6 +19,7 @@ describe('rooms usecase', () => {
 	let orm: MikroORM;
 	let factory: DeepMocked<RoomBoardDTOFactory>;
 	let authorisation: DeepMocked<RoomsAuthorisationService>;
+	let roomsService: DeepMocked<RoomsService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -60,6 +62,10 @@ describe('rooms usecase', () => {
 					provide: RoomsAuthorisationService,
 					useValue: createMock<RoomsAuthorisationService>(),
 				},
+				{
+					provide: RoomsService,
+					useValue: createMock<RoomsService>(),
+				},
 			],
 		}).compile();
 
@@ -71,6 +77,7 @@ describe('rooms usecase', () => {
 		boardRepo = module.get(BoardRepo);
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(RoomsAuthorisationService);
+		roomsService = module.get(RoomsService);
 	});
 
 	describe('getBoard', () => {
@@ -99,6 +106,7 @@ describe('rooms usecase', () => {
 			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
 			const mapperSpy = factory.createDTO.mockReturnValue(dto);
 			const saveSpy = boardRepo.save.mockResolvedValue();
+			roomsService.updateBoard.mockResolvedValue(board);
 
 			return {
 				user,
@@ -131,40 +139,10 @@ describe('rooms usecase', () => {
 			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
 		});
 
-		it('should fetch all lessons of room', async () => {
-			const { room, user, lessonsSpy } = setup();
-			await uc.getBoard(room.id, user.id);
-			expect(lessonsSpy).toHaveBeenCalledWith([room.id]);
-		});
-
-		it('should fetch all tasks of room', async () => {
-			const { room, user, tasksSpy } = setup();
-			await uc.getBoard(room.id, user.id);
-			expect(tasksSpy).toHaveBeenCalledWith(user.id, room.id);
-		});
-
 		it('should access primary board of room', async () => {
 			const { room, user, boardSpy } = setup();
 			await uc.getBoard(room.id, user.id);
 			expect(boardSpy).toHaveBeenCalled();
-		});
-
-		it('should sync boards lessons with fetched lessons', async () => {
-			const { room, user, lessons, syncLessonsSpy } = setup();
-			await uc.getBoard(room.id, user.id);
-			expect(syncLessonsSpy).toHaveBeenCalledWith(lessons);
-		});
-
-		it('should sync boards tasks with fetched tasks', async () => {
-			const { room, user, tasks, syncTasksSpy } = setup();
-			await uc.getBoard(room.id, user.id);
-			expect(syncTasksSpy).toHaveBeenCalledWith(tasks);
-		});
-
-		it('should persist board', async () => {
-			const { room, user, saveSpy, board } = setup();
-			await uc.getBoard(room.id, user.id);
-			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
 
 		it('should call to construct result dto from room, board, and user', async () => {
@@ -177,6 +155,12 @@ describe('rooms usecase', () => {
 			const { room, user, dto } = setup();
 			const result = await uc.getBoard(room.id, user.id);
 			expect(result).toEqual(dto);
+		});
+
+		it('should ensure course has uptodate board', async () => {
+			const { board, room, user } = setup();
+			await uc.getBoard(room.id, user.id);
+			expect(roomsService.updateBoard).toHaveBeenCalledWith(board, room.id, user.id);
 		});
 	});
 
