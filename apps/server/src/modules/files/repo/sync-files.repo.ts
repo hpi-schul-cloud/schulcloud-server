@@ -103,13 +103,8 @@ export class SyncFilesRepo {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			itemDataList = await this._em.aggregate(Task, query(batchSize));
 		}
-		const items = this.mapResults(itemDataList, parentType);
 
-		return items;
-	}
-
-	private mapResults(itemDataList: SyncFileItemData[], parentType: FileRecordParentType): SyncFileItem[] {
-		const items = itemDataList.map((itemData) => SyncFileItemMapper.mapToDomain(itemData, parentType));
+		const items = SyncFileItemMapper.mapResults(itemDataList, parentType);
 
 		return items;
 	}

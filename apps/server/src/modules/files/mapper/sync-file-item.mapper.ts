@@ -7,7 +7,13 @@ import { SyncSourceFileMapper } from './sync-source-file.mapper';
 import { SyncTargetFileMapper } from './sync-target-file.mapper';
 
 export class SyncFileItemMapper {
-	static mapToDomain(data: SyncFileItemData, parentType: FileRecordParentType): SyncFileItem {
+	static mapResults(itemDataList: SyncFileItemData[], parentType: FileRecordParentType): SyncFileItem[] {
+		const items = itemDataList.map((itemData) => this.mapToDomain(itemData, parentType));
+
+		return items;
+	}
+
+	private static mapToDomain(data: SyncFileItemData, parentType: FileRecordParentType): SyncFileItem {
 		const file = data.file as SyncSourceFileData;
 		const fileRecord = data.filerecord as FileRecord;
 		const source = SyncSourceFileMapper.mapToDomain(file);
