@@ -22,22 +22,25 @@ export class SyncFilesMetadataService {
 	private async updateFileRecord(item: SyncFileItem): Promise<SyncFileItem> {
 		const { source } = item;
 
-		if (item.target) {
-			const fileRecord = await this.fileRecordRepo.findOneById(item.target.id);
-			fileRecord.deletedSince = source.deletedAt;
-			fileRecord.name = source.name;
-			fileRecord.size = source.size;
-			fileRecord.mimeType = source.type;
-			if (source.securityCheck) {
-				fileRecord.securityCheck = source.securityCheck;
-			}
-			fileRecord.updatedAt = source.updatedAt;
-
-			item.fileRecord = fileRecord;
-			item.created = false;
-			item.target.id = fileRecord.id;
-			item.target.updatedAt = fileRecord.updatedAt;
+		// This double check is only here to avoid a typescript error.
+		if (!item.target) {
+			throw new Error('item.target must be defined when updating filerecord');
 		}
+
+		const fileRecord = await this.fileRecordRepo.findOneById(item.target.id);
+		fileRecord.deletedSince = source.deletedAt;
+		fileRecord.name = source.name;
+		fileRecord.size = source.size;
+		fileRecord.mimeType = source.type;
+		if (source.securityCheck) {
+			fileRecord.securityCheck = source.securityCheck;
+		}
+		fileRecord.updatedAt = source.updatedAt;
+
+		item.fileRecord = fileRecord;
+		item.created = false;
+		item.target.id = fileRecord.id;
+		item.target.updatedAt = fileRecord.updatedAt;
 
 		return item;
 	}
