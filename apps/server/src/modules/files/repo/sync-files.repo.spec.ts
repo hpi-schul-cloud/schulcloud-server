@@ -42,10 +42,8 @@ describe('SyncTaskRepo', () => {
 		});
 
 		it('should return tasks with files without a corresponding filerecord', async () => {
-			const file = fileFactory.build();
-			await em.persistAndFlush(file);
-			const task = taskFactory.build({ name: 'task with file' });
-			task.files.add(file);
+			const files = fileFactory.buildList(1);
+			const task = taskFactory.build({ name: 'task with file', files });
 			await em.persistAndFlush(task);
 
 			const result = await repo.findFilesToSync(FileRecordParentType.Task);
