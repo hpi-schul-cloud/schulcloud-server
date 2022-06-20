@@ -49,7 +49,7 @@ const query = (batchSize: number) => [
 	},
 	{
 		$match: {
-			$or: [{ 'file_filerecords.error': { $exists: false } }, { 'file_filerecords.error': { $eq: null } }],
+			'file_filerecords.error': null,
 		},
 	},
 	{
