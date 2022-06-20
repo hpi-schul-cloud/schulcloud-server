@@ -36,6 +36,6 @@ export class Logger extends ConsoleLogger implements ILogger {
 			Configuration.get('NODE_ENV') === 'production'
 				? [JSON.stringify({ message, trace: trace || null })]
 				: [message, trace];
-		this.printMessages(messages, context || this.context);
+		this.printMessages(messages, context || this.context, 'error');
 	}
 }
