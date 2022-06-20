@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleMapper } from '@src/modules/team-storage/mapper/role.mapper';
+import { RoleMapper } from '@src/modules/collaborative-storage/mapper/role.mapper';
 import { roleFactory } from '@shared/testing';
+import { Role } from '@shared/domain';
+import { RoleDto } from '@src/modules/collaborative-storage/services/dto/role.dto';
 
 describe('RoleMapper', () => {
 	let module: TestingModule;
@@ -16,8 +18,8 @@ describe('RoleMapper', () => {
 
 	describe('Map Role', () => {
 		it('should map entity to dto', () => {
-			const roleEntity = roleFactory.build();
-			const ret = mapper.mapEntityToDto(roleEntity);
+			const roleEntity: Role = roleFactory.build();
+			const ret: RoleDto = mapper.mapEntityToDto(roleEntity);
 			expect(ret.name).toEqual(roleEntity.name);
 		});
 	});

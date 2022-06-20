@@ -4,9 +4,9 @@ import { IsMongoId } from 'class-validator';
 export class TeamRoleDto {
 	@IsMongoId()
 	@ApiProperty()
-	team!: string;
+	teamId!: string;
 
 	@IsMongoId()
 	@ApiProperty()
-	role!: string;
+	roleId!: string;
 }

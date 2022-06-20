@@ -1,31 +1,31 @@
-import { TeamStorageController } from '@src/modules/team-storage/controller/team-storage.controller';
+import { CollaborativeStorageController } from '@src/modules/collaborative-storage/controller/collaborative-storage.controller';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamStorageUc } from '@src/modules/team-storage/uc/team-storage.uc';
+import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { createMock } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@shared/domain';
 
-describe('TeamStorage Controller', () => {
+describe('CollaborativeStorage Controller', () => {
 	let module: TestingModule;
-	let controller: TeamStorageController;
+	let controller: CollaborativeStorageController;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				TeamStorageController,
+				CollaborativeStorageController,
 				{
-					provide: TeamStorageUc,
-					useValue: createMock<TeamStorageUc>(),
+					provide: CollaborativeStorageUc,
+					useValue: createMock<CollaborativeStorageUc>(),
 				},
 			],
 		}).compile();
-		controller = module.get(TeamStorageController);
+		controller = module.get(CollaborativeStorageController);
 	});
 
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the UC', async () => {
 			await controller.updateTeamPermissionsForRole(
 				{ userId: 'userId' } as ICurrentUser,
-				{ team: 'testTeam', role: 'testRole' },
+				{ teamId: 'testTeam', roleId: 'testRole' },
 				{ read: false, write: false, create: false, delete: false, share: false }
 			);
 		});

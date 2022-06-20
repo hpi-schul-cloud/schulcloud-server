@@ -31,11 +31,13 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 	}
 
 	public async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
-		const groupId = await this.findGroupId(
-			`${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`
-		);
+		const groupId = await this.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		const folderId = await this.findFolderIdForGroupId(groupId);
 		this.setGroupPermissions(groupId, folderId, dto.permissions);
+	}
+
+	private static generateGroupId(dto: TeamRolePermissionsDto): string {
+		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
 	}
 
 	private async findGroupId(groupName: string): Promise<string> {

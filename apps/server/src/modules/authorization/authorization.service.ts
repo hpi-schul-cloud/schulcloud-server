@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule, BasePermissionManager } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
+import { TeamRule } from '@shared/domain/rules/team.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -11,10 +12,11 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly taskRule: TaskRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly userRule: UserRule,
+		private readonly teamRule: TeamRule,
 		private readonly loader: ReferenceLoader
 	) {
 		super();
-		this.registerPermissions([this.courseRule, this.taskRule, this.userRule, this.schoolRule]);
+		this.registerPermissions([this.courseRule, this.taskRule, this.userRule, this.schoolRule, this.teamRule]);
 	}
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {

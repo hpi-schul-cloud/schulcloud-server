@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamMapper } from '@src/modules/team-storage/mapper/team.mapper';
+import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 
 describe('TeamMapper', () => {

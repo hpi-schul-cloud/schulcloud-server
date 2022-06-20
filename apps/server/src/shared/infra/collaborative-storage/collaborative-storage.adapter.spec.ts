@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamStorageAdapter } from '@shared/infra/team-storage/team-storage.adapter';
-import { ITeamStorageStrategy } from '@shared/infra/team-storage/strategy/base.interface.strategy';
-import { TeamStorageAdapterMapper } from '@shared/infra/team-storage/mapper/team-storage-adapter.mapper';
+import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage/collaborative-storage.adapter';
+import { ITeamStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
+import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
+import { RoleName } from '@shared/domain';
 
 class TestStrategy implements ITeamStorageStrategy {
 	baseURL: string;
@@ -15,20 +16,20 @@ class TestStrategy implements ITeamStorageStrategy {
 
 describe('TeamStorage Adapter', () => {
 	let module: TestingModule;
-	let adapter: TeamStorageAdapter;
+	let adapter: CollaborativeStorageAdapter;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				TeamStorageAdapter,
-				TeamStorageAdapterMapper,
+				CollaborativeStorageAdapter,
+				CollaborativeStorageAdapterMapper,
 				{
 					provide: 'ITeamStorageStrategy',
 					useValue: TestStrategy,
 				},
 			],
 		}).compile();
-		adapter = module.get(TeamStorageAdapter);
+		adapter = module.get(CollaborativeStorageAdapter);
 	});
 
 	describe('Set Strategy', () => {
@@ -47,7 +48,7 @@ describe('TeamStorage Adapter', () => {
 					name: 'teamName',
 					userIds: [{ userId: 'testUser', role: 'testRole', schoolId: 'testschool' }],
 				},
-				{ id: 'testRole', name: 'testRoleName' },
+				{ id: 'testRole', name: RoleName.DEMO },
 				{
 					read: false,
 					write: false,

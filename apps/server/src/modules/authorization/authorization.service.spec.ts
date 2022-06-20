@@ -5,6 +5,7 @@ import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, ALL_RULES, BaseEntity, PermissionContextBuilder } from '@shared/domain';
 import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -79,6 +80,14 @@ describe('authorization.service', () => {
 			const user = userFactory.build();
 
 			const response = service.hasPermission(user, user, context);
+			expect(response).toBe(true);
+		});
+
+		it('can resolve team', () => {
+			const user = userFactory.build();
+			const team = teamFactory.build();
+
+			const response = service.hasPermission(user, team, context);
 			expect(response).toBe(true);
 		});
 	});

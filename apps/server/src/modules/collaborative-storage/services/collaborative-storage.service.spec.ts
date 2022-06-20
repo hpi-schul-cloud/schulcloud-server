@@ -1,26 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamStorageService } from '@src/modules/team-storage/services/team-storage.service';
+import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
 import { RoleRepo, TeamsRepo } from '@shared/repo';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { EntityId, Role, RoleName, Team } from '@shared/domain';
 import { roleFactory } from '@shared/testing';
-import { TeamStorageAdapter } from '@shared/infra/team-storage';
-import { TeamMapper } from '@src/modules/team-storage/mapper/team.mapper';
-import { RoleMapper } from '@src/modules/team-storage/mapper/role.mapper';
+import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
+import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
+import { RoleMapper } from '@src/modules/collaborative-storage/mapper/role.mapper';
 import { ForbiddenException } from '@nestjs/common';
+import { AuthorizationService } from '@src/modules/authorization';
 
-describe('Team Storage Service', () => {
+describe('Collaborative Storage Service', () => {
 	let module: TestingModule;
-	let service: TeamStorageService;
-	let adapter: DeepMocked<TeamStorageAdapter>;
+	let service: CollaborativeStorageService;
+	let adapter: DeepMocked<CollaborativeStorageAdapter>;
+	let authService: DeepMocked<AuthorizationService>;
 	let mockId: string;
 
 	beforeAll(async () => {
 		[module] = await Promise.all([
 			Test.createTestingModule({
 				providers: [
-					TeamStorageService,
+					CollaborativeStorageService,
 					TeamMapper,
 					RoleMapper,
 					{
@@ -40,14 +42,19 @@ describe('Team Storage Service', () => {
 						},
 					},
 					{
-						provide: TeamStorageAdapter,
-						useValue: createMock<TeamStorageAdapter>(),
+						provide: CollaborativeStorageAdapter,
+						useValue: createMock<CollaborativeStorageAdapter>(),
+					},
+					{
+						provide: AuthorizationService,
+						useValue: createMock<AuthorizationService>(),
 					},
 				],
 			}).compile(),
 		]);
-		service = module.get(TeamStorageService);
-		adapter = module.get(TeamStorageAdapter);
+		service = module.get(CollaborativeStorageService);
+		adapter = module.get(CollaborativeStorageAdapter);
+		authService = module.get(AuthorizationService);
 		mockId = '0123456789abcdef01234567';
 	});
 
@@ -65,34 +72,10 @@ describe('Team Storage Service', () => {
 		});
 	});
 
-	describe('Is User Authorized', () => {
-		beforeAll(() => {
-			jest.spyOn(service, 'findTeamById').mockResolvedValue({
-				name: 'testTeam',
-				userIds: [{ userId: 'testUser', schoolId: 'testSchool', role: 'testRoleId' }],
-			});
-		});
-		it('should authorize the user as owner', async () => {
-			jest.spyOn(service, 'findRoleById').mockResolvedValue({ id: 'testRoleId', name: RoleName.TEAMOWNER });
-			const ret = await service.isUserAuthorized('testUser', 'testTeam');
-			expect(ret).toBeTruthy();
-		});
-		it('should authorize the user as admin', async () => {
-			jest.spyOn(service, 'findRoleById').mockResolvedValue({ id: 'testRoleId', name: RoleName.TEAMADMINISTRATOR });
-			const ret = await service.isUserAuthorized('testUser', 'testTeam');
-			expect(ret).toBeTruthy();
-		});
-		it('should not authorize the user', async () => {
-			jest.spyOn(service, 'findRoleById').mockResolvedValue({ id: 'testRoleId', name: RoleName.TEAMMEMBER });
-			const ret = await service.isUserAuthorized('testUser', 'testTeam');
-			expect(ret).toBeFalsy();
-		});
-	});
-
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the adapter', async () => {
-			jest.spyOn(service, 'isUserAuthorized').mockImplementation(() => {
-				return Promise.resolve(true);
+			authService.checkPermission.mockImplementation(() => {
+				// do nothing
 			});
 			jest.spyOn(service, 'findRoleById').mockResolvedValue({ id: 'testRoleId', name: RoleName.TEAMMEMBER });
 			jest.spyOn(service, 'findTeamById').mockResolvedValue({
@@ -113,8 +96,8 @@ describe('Team Storage Service', () => {
 		});
 
 		it('should throw a forbidden exception', async () => {
-			jest.spyOn(service, 'isUserAuthorized').mockImplementation(() => {
-				return Promise.resolve(false);
+			authService.checkPermission.mockImplementation(() => {
+				throw new ForbiddenException();
 			});
 			await expect(
 				service.updateTeamPermissionsForRole(mockId, mockId, mockId, {

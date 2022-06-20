@@ -1,9 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, RoleName } from '@shared/domain';
+import { EntityId, ICurrentUser, Permission, PermissionContextBuilder, RoleName } from '@shared/domain';
 import { RoleRepo, TeamsRepo } from '@shared/repo';
-import { TeamStorageAdapter } from '@shared/infra/team-storage';
-import { NextcloudStrategy } from '@shared/infra/team-storage/strategy/nextcloud.strategy';
+import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
+import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
 import { HttpService } from '@nestjs/axios';
+import { AuthorizationService } from '@src/modules/authorization';
 import { RoleMapper } from '../mapper/role.mapper';
 import { TeamMapper } from '../mapper/team.mapper';
 import { RoleDto } from './dto/role.dto';
@@ -11,13 +12,14 @@ import { TeamPermissionsDto } from './dto/team-permissions.dto';
 import { TeamDto, TeamUserDto } from './dto/team.dto';
 
 @Injectable()
-export class TeamStorageService {
+export class CollaborativeStorageService {
 	constructor(
-		private adapter: TeamStorageAdapter,
+		private adapter: CollaborativeStorageAdapter,
 		private roleRepo: RoleRepo,
 		private teamsMapper: TeamMapper,
 		private roleMapper: RoleMapper,
-		private teamsRepo: TeamsRepo
+		private teamsRepo: TeamsRepo,
+		private authService: AuthorizationService
 	) {
 		this.adapter.setStrategy(new NextcloudStrategy(new HttpService()));
 	}
@@ -30,30 +32,17 @@ export class TeamStorageService {
 		return this.roleMapper.mapEntityToDto(await this.roleRepo.findById(roleId));
 	}
 
-	async isUserAuthorized(currentUserId: string, teamId: string): Promise<boolean> {
-		const team: TeamDto = await this.findTeamById(teamId, true);
-		return new Promise<boolean>((resolve) => {
-			team.userIds.forEach((teamIdDto: TeamUserDto) => {
-				if (currentUserId === teamIdDto.userId) {
-					resolve(
-						this.findRoleById(teamIdDto.role).then((roleDto) => {
-							return roleDto.name === RoleName.TEAMADMINISTRATOR || roleDto.name === RoleName.TEAMOWNER;
-						})
-					);
-				}
-			});
-		});
-	}
-
 	async updateTeamPermissionsForRole(
 		currentUserId: string,
 		teamId: string,
 		roleId: string,
 		teamPermissions: TeamPermissionsDto
 	): Promise<void> {
-		if (!(await this.isUserAuthorized(currentUserId, teamId))) {
-			throw new ForbiddenException({ description: 'User is not Teamadmin or Teamowner' });
-		}
+		this.authService.checkPermission(
+			await this.authService.getUserWithPermissions(currentUserId),
+			await this.teamsRepo.findById(teamId, true),
+			PermissionContextBuilder.permissionOnly([Permission.CHANGE_TEAM_ROLES])
+		);
 		this.adapter.updateTeamPermissionsForRole(
 			await this.findTeamById(teamId, true),
 			await this.findRoleById(roleId),

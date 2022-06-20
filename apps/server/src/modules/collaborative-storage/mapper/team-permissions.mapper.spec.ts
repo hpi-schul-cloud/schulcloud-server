@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamPermissionsMapper } from '@src/modules/team-storage/mapper/team-permissions.mapper';
-import { TeamPermissionsBody } from '@src/modules/team-storage/controller/dto/team-permissions.body.params';
+import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
+import { TeamPermissionsBody } from '@src/modules/collaborative-storage/controller/dto/team-permissions.body.params';
 
 describe('TeamMapper', () => {
 	let module: TestingModule;
