@@ -29,6 +29,8 @@ const query = (batchSize: number) => [
 		$match: {
 			'files.storageProviderId': { $exists: true },
 			'files.size': { $ne: 0 },
+			'files.deleted': false,
+			'files.deletedAt': null,
 		},
 	},
 	{
