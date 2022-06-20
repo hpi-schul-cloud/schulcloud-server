@@ -96,20 +96,20 @@ const query = (batchSize: number) => [
 export class SyncFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findFilesToSync(type: FileRecordParentType, batchSize = 50): Promise<SyncFileItem[]> {
+	async findFilesToSync(parentType: FileRecordParentType, batchSize = 50): Promise<SyncFileItem[]> {
 		let itemDataList: SyncFileItemData[] = [];
 
-		if (type === FileRecordParentType.Task) {
+		if (parentType === FileRecordParentType.Task) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			itemDataList = await this._em.aggregate(Task, query(batchSize));
 		}
-		const items = this.mapResults(itemDataList);
+		const items = this.mapResults(itemDataList, parentType);
 
 		return items;
 	}
 
-	private mapResults(itemDataList: SyncFileItemData[]): SyncFileItem[] {
-		const items = itemDataList.map((itemData) => SyncFileItemMapper.mapToDomain(itemData, FileRecordParentType.Task));
+	private mapResults(itemDataList: SyncFileItemData[], parentType: FileRecordParentType): SyncFileItem[] {
+		const items = itemDataList.map((itemData) => SyncFileItemMapper.mapToDomain(itemData, parentType));
 
 		return items;
 	}

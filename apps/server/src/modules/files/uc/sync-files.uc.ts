@@ -19,7 +19,7 @@ export class SyncFilesUc {
 		this.logger.setContext(SyncFilesUc.name);
 	}
 
-	async syncFilesForParentType(type: FileRecordParentType, aggregationSize = 5000, numParallelPromises = 50) {
+	async syncFilesForParentType(parentType: FileRecordParentType, aggregationSize = 5000, numParallelPromises = 50) {
 		let itemsFound: number;
 		let aggregationsCounter = 0;
 		const options = new FileSyncOptions(aggregationSize, numParallelPromises);
@@ -28,7 +28,7 @@ export class SyncFilesUc {
 			this.logStartingAggregation(aggregationsCounter, options);
 			const context = { fileCounter: aggregationsCounter * Number(aggregationSize) };
 			// eslint-disable-next-line no-await-in-loop
-			const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findFilesToSync(type, options.aggregationSize);
+			const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findFilesToSync(parentType, options.aggregationSize);
 			// eslint-disable-next-line no-await-in-loop
 			itemsFound = await this.syncFilesForType(itemsToSync, options, context);
 
