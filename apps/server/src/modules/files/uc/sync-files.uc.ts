@@ -64,13 +64,14 @@ export class SyncFilesUc {
 	private async syncFile(item: SyncFileItem, context: SyncContext) {
 		try {
 			context.fileCounter += 1;
-			this.logStartSyncing(item, context);
+			const currentCount = context.fileCounter;
+			this.logStartSyncing(item, currentCount);
 
 			await this.metadataService.prepareMetaData(item);
 			await this.storageService.syncS3File(item);
 			await this.metadataService.persistMetaData(item);
 
-			this.logSuccessfullySynced(item, context);
+			this.logSuccessfullySynced(item, currentCount);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const stack: string = 'stack' in error ? (error as Error).stack : error;
@@ -88,15 +89,15 @@ export class SyncFilesUc {
 		);
 	}
 
-	private logStartSyncing(item: SyncFileItem, context: SyncContext): void {
+	private logStartSyncing(item: SyncFileItem, currentCount: number): void {
 		const fileInfo = `source file with id = ${item.source.id}, size = ${item.source.size}`;
-		this.logger.log(`#${context.fileCounter} Start syncing ${fileInfo}`);
+		this.logger.log(`#${currentCount} Start syncing ${fileInfo}`);
 	}
 
-	private logSuccessfullySynced(item: SyncFileItem, context: SyncContext): void {
+	private logSuccessfullySynced(item: SyncFileItem, currentCount: number): void {
 		const fileInfo = `source file id = ${item.source.id}, target file with id = ${item.target?.id || 'undefined'}`;
 		const operation = item.created ? 'created' : 'updated';
-		this.logger.log(`#${context.fileCounter} Successfully synced ${fileInfo} (${operation})`);
+		this.logger.log(`#${currentCount} Successfully synced ${fileInfo} (${operation})`);
 	}
 
 	private logError(item: SyncFileItem, stack: string) {
