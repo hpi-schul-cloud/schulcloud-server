@@ -11,7 +11,7 @@ import { SyncFileItem, SyncTargetFile } from '../types';
 export class SyncFilesMetadataService {
 	constructor(private readonly fileRecordRepo: FileRecordRepo, private readonly syncFilesRepo: SyncFilesRepo) {}
 
-	public async syncMetaData(item: SyncFileItem): Promise<SyncFileItem> {
+	public async prepareMetaData(item: SyncFileItem): Promise<SyncFileItem> {
 		if (item.target) {
 			return this.updateFileRecord(item);
 		}
@@ -76,7 +76,7 @@ export class SyncFilesMetadataService {
 		return item;
 	}
 
-	async persist(item: SyncFileItem) {
+	async persistMetaData(item: SyncFileItem) {
 		const { fileRecord } = item;
 		if (item.created) {
 			await this.syncFilesRepo.insertFileRecord(fileRecord);

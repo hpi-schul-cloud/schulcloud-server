@@ -30,13 +30,13 @@ export class SyncFilesUc {
 			// eslint-disable-next-line no-await-in-loop
 			const itemsToSync: SyncFileItem[] = await this.syncFilesRepo.findFilesToSync(parentType, options.aggregationSize);
 			// eslint-disable-next-line no-await-in-loop
-			itemsFound = await this.syncFilesForType(itemsToSync, options, context);
+			itemsFound = await this.syncFiles(itemsToSync, options, context);
 
 			aggregationsCounter += 1;
 		} while (itemsFound > 0);
 	}
 
-	async syncFilesForType(itemsToSync: SyncFileItem[], options: FileSyncOptions, context: SyncContext): Promise<number> {
+	async syncFiles(itemsToSync: SyncFileItem[], options: FileSyncOptions, context: SyncContext): Promise<number> {
 		const numFound = itemsToSync.length;
 
 		if (numFound > 0) {
@@ -66,9 +66,9 @@ export class SyncFilesUc {
 			context.fileCounter += 1;
 			this.logStartSyncing(item, context);
 
-			await this.metadataService.syncMetaData(item);
+			await this.metadataService.prepareMetaData(item);
 			await this.storageService.syncS3File(item);
-			await this.metadataService.persist(item);
+			await this.metadataService.persistMetaData(item);
 
 			this.logSuccessfullySynced(item, context);
 		} catch (error) {
