@@ -1,37 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { FileDto } from '../dto';
-import { FileRequestInfoBuilder } from '../mapper';
-import { FileStorageClientRepo } from '../repo';
+import { FileStorageClientMapper } from '../mapper';
+import { FileApiFactory } from '../fileStorageApi/v3';
+import { FileRequestInfo } from '../interfaces';
+
+const fileStorageClient = FileApiFactory(undefined, 'http://localhost:4444/api/v3/');
 
 @Injectable()
-export class FileStorageClientService {
-	constructor(private readonly fileStorageClientRepo: FileStorageClientRepo, private logger: Logger) {
-		this.logger.setContext(FileStorageClientService.name);
+export class FileStorageClientAdapterService {
+	constructor(private logger: Logger) {
+		this.logger.setContext(FileStorageClientAdapterService.name);
 	}
 
-	async copyFilesOfParent(
-		userId: EntityId,
-		schoolId: EntityId,
-		parentType: FileRecordParentType,
-		parentId: EntityId
-	): Promise<FileDto[]> {
-		const fileRequestInfo = FileRequestInfoBuilder.build(userId, schoolId, parentType, parentId);
-		const files = await this.fileStorageClientRepo.copyFilesOfParent(fileRequestInfo);
+	async copyFilesOfParent(param: FileRequestInfo, target: FileRequestInfo): Promise<FileDto[]> {
+		const response = await fileStorageClient.filesStorageControllerCopy(
+			param.schoolId,
+			param.parentId,
+			param.parentType,
+			{
+				target,
+			}
+		);
+		const fileInfos = FileStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
 
-		return files;
+		return fileInfos;
 	}
 
-	async listFilesOfParent(
-		userId: EntityId,
-		schoolId: EntityId,
-		parentType: FileRecordParentType,
-		parentId: EntityId
-	): Promise<FileDto[]> {
-		const fileRequestInfo = FileRequestInfoBuilder.build(userId, schoolId, parentType, parentId);
-		const files = await this.fileStorageClientRepo.listFilesOfParent(fileRequestInfo);
+	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
+		const response = await fileStorageClient.filesStorageControllerList(
+			param.schoolId,
+			param.parentId,
+			param.parentType
+		);
+		const fileInfos = FileStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
 
-		return files;
+		return fileInfos;
 	}
 }

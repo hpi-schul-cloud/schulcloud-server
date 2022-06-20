@@ -79,7 +79,8 @@
 		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
-		"schoolImport": "node ./scripts/schoolImport.js"
+		"schoolImport": "node ./scripts/schoolImport.js",
+		"generate-client:filestorage": "node scripts/generate-open-api-client.js -- -u http://localhost:4444/api/v3/docs-json/ -p apps/server/src/modules/file-storage-client/fileStorageApi/v3"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.50.0",
@@ -105,6 +106,7 @@
 		"@nestjs/passport": "^8.0.1",
 		"@nestjs/platform-express": "^8.2.6",
 		"@nestjs/swagger": "^5.1.0",
+		"@openapitools/openapi-generator-cli": "^2.5.1",
 		"ajv": "^8.8.2",
 		"amqp-connection-manager": "^3.2.2",
 		"amqplib": "^0.8.0",
