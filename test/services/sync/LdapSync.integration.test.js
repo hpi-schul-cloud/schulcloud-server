@@ -300,11 +300,11 @@ describe('Ldap Sync Integration', function testSuite() {
 
 			const actualStudentIds = foundClass.userIds.map((id) => id.toString());
 			expect(actualStudentIds.length).to.be.eql(exampleLdapStudents.length);
-			expect(actualStudentIds).to.be.eql(expectedStudentIds);
+			expect(actualStudentIds).to.have.members(expectedStudentIds);
 
 			const actualTeacherIds = foundClass.teacherIds.map((id) => id.toString());
 			expect(actualTeacherIds.length).to.be.eql(exampleLdapTeachers.length);
-			expect(actualTeacherIds).to.be.eql(expectedTeacherIds);
+			expect(actualTeacherIds).to.have.members(expectedTeacherIds);
 		}
 	});
 });
