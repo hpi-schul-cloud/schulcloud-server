@@ -3,6 +3,8 @@
 import { ScanStatus } from '@shared/domain';
 import { FileSecurityCheckData, SyncSourceFileSecurityCheck } from '../types';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 export class FileSecurityCheckMapper {
 	static mapToDomain(fsData: FileSecurityCheckData): SyncSourceFileSecurityCheck {
 		const securityCheck = new SyncSourceFileSecurityCheck({

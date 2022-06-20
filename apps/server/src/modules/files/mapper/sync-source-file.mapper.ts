@@ -5,6 +5,8 @@ import { FilePermissionData, FileSecurityCheckData, SyncSourceFile, SyncSourceFi
 import { FileSecurityCheckMapper } from './file-security-check.mapper';
 import { FilePermissionSchemaMapper } from './file-permission-mapper';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 export class SyncSourceFileMapper {
 	static mapToDomain(file: SyncSourceFileData): SyncSourceFile {
 		const source = new SyncSourceFile({

@@ -8,6 +8,9 @@ import { StorageProviderRepo } from '@shared/repo';
 import { S3Config } from '@src/modules/files-storage/interface';
 import { SyncFileItem } from '../types';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
+
 export interface ISyncData {
 	client: S3Client;
 	bucket: string;

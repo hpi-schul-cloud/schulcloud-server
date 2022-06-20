@@ -6,6 +6,8 @@ import { SyncFileItem, SyncFileItemData, SyncSourceFileData } from '../types';
 import { SyncSourceFileMapper } from './sync-source-file.mapper';
 import { SyncTargetFileMapper } from './sync-target-file.mapper';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 export class SyncFileItemMapper {
 	static mapResults(itemDataList: SyncFileItemData[], parentType: FileRecordParentType): SyncFileItem[] {
 		const items = itemDataList.map((itemData) => this.mapToDomain(itemData, parentType));

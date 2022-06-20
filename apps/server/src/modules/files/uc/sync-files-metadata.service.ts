@@ -7,6 +7,9 @@ import { FileRecordRepo } from '@shared/repo';
 import { SyncFilesRepo } from '../repo/sync-files.repo';
 import { SyncFileItem, SyncTargetFile } from '../types';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
+
 @Injectable()
 export class SyncFilesMetadataService {
 	constructor(private readonly fileRecordRepo: FileRecordRepo, private readonly syncFilesRepo: SyncFilesRepo) {}

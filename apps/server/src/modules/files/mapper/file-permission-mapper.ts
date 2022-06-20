@@ -3,6 +3,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FilePermissionData, SyncSourceFilePermission } from '../types';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 export class FilePermissionSchemaMapper {
 	static mapToDomain(fpData: FilePermissionData): SyncSourceFilePermission {
 		const permission = new SyncSourceFilePermission({

@@ -6,6 +6,8 @@ import { EntityId, FileRecord, FileRecordParentType, Task } from '@shared/domain
 import { SyncFileItemMapper } from '../mapper';
 import { SyncFileItem, SyncFileItemData } from '../types';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 const query = (batchSize: number) => [
 	{
 		$match: { fileIds: { $exists: true, $ne: [] } },
@@ -90,8 +92,7 @@ const query = (batchSize: number) => [
 		$limit: batchSize,
 	},
 ];
-// This repo is used for syncing the new filerecords collection with the old files collection.
-// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
+
 @Injectable()
 export class SyncFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}

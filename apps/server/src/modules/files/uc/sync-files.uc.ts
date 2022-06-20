@@ -8,6 +8,8 @@ import { FileSyncOptions, SyncContext, SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 @Injectable()
 export class SyncFilesUc {
 	constructor(

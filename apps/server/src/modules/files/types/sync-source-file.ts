@@ -2,6 +2,8 @@
 
 import { EntityId, ScanStatus } from '@shared/domain';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 export class SyncSourceFile {
 	id: EntityId;
 

@@ -4,6 +4,8 @@ import { EntityId, FileRecord, FileRecordParentType } from '@shared/domain';
 import { SyncSourceFile } from './sync-source-file';
 import { SyncTargetFile } from './sync-target-file';
 
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 export class SyncFileItem {
 	parentType: FileRecordParentType;
 

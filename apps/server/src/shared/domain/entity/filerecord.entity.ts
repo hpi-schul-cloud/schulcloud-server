@@ -74,10 +74,11 @@ export interface IFileRecordProperties {
 @Index({ properties: ['_schoolId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
+// Temporary functionality for migration to new fileservice
+// TODO: Adjust when BC-1496 is done!
 // FileRecord must inherit from BaseEntity and we have to take care of the timestamps manually.
 // This is necessary while the syncing of files and filerecords goes on,
 // because with BaseEntityWithTimestamps it is not possible to override the updatedAt hook.
-// TODO revert to BaseEntityWithTimestamps when file migration is done.
 export class FileRecord extends BaseEntity {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
@@ -129,6 +130,8 @@ export class FileRecord extends BaseEntity {
 		return this._schoolId.toHexString();
 	}
 
+	// Temporary functionality for migration to new fileservice
+	// TODO: Remove when BC-1496 is done!
 	@Property()
 	createdAt = new Date();
 

@@ -5,8 +5,8 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, fileFactory, fileRecordFactory, taskFactory } from '@shared/testing';
 import { SyncFilesRepo } from './sync-files.repo';
 
-// This repo is used for syncing the new filerecords collection with the old files collection.
-// It can be removed after transitioning file-handling to the new files-storage-microservice is completed.
+// Temporary functionality for migration to new fileservice
+// TODO: Remove when BC-1496 is done!
 
 describe('SyncTaskRepo', () => {
 	let module: TestingModule;

@@ -23,16 +23,18 @@ export const config: S3Config = {
 	imports: [LoggerModule],
 	providers: [
 		DeleteFilesConsole,
-		SyncFilesConsole,
 		DeleteFilesUc,
-		SyncFilesUc,
 		FilesRepo,
-		FileRecordRepo,
-		SyncFilesRepo,
-		StorageProviderRepo,
 		FileStorageAdapter,
+		// Temporary functionality for migration to new fileservice
+		// TODO: Remove when BC-1496 is done!
+		SyncFilesConsole,
+		SyncFilesUc,
+		SyncFilesRepo,
 		SyncFilesMetadataService,
 		SyncFilesStorageService,
+		FileRecordRepo,
+		StorageProviderRepo,
 		{
 			provide: 'DESTINATION_S3_CONFIG',
 			useValue: config,
