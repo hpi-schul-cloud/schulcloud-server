@@ -10,6 +10,6 @@ export * from './course.rule';
 export * from './school.rule';
 export * from './task.rule';
 export * from './user.rule';
-export { default as PermissionContextBuilder } from './permission-context-builder';
+export { default as PermissionContextBuilder } from './permission-context.builder';
 
 export const ALL_RULES = [TaskRule, CourseRule, SchoolRule, UserRule];
