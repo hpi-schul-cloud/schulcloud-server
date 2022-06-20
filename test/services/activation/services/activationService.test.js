@@ -8,8 +8,9 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestActivation, cleanup } =
-	require('../../helpers/testObjects')(appPromise());
+const { createTestUser, createTestAccount, createTestActivation, cleanup } = require('../../helpers/testObjects')(
+	appPromise()
+);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -82,13 +83,7 @@ describe('activation/services activationService', () => {
 		expect(res.success).to.be.true;
 
 		const changedUser = await util.getUser(app, user._id);
-		const changedAccounts = await app.service('/accounts').find({
-			query: {
-				userId: user._id,
-			},
-		});
-		expect(changedAccounts).to.have.lengthOf(1);
-		const changedAccount = changedAccounts[0];
+		const changedAccount = await app.service('nest-account-service').findByUserId(user._id.toString());
 
 		expect(user.email).to.not.be.equal(changedUser.email);
 		expect(changedUser.email).to.be.equal(entry.quarantinedObject);
@@ -106,13 +101,7 @@ describe('activation/services activationService', () => {
 		).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
-		const changedAccounts = await app.service('/accounts').find({
-			query: {
-				userId: user._id,
-			},
-		});
-		expect(changedAccounts).to.have.lengthOf(1);
-		const changedAccount = changedAccounts[0];
+		const changedAccount = await app.service('nest-account-service').findByUserId(user._id.toString());
 
 		expect(user.email).to.be.equal(changedUser.email);
 		expect(changedUser.email).to.not.equal(entry.quarantinedObject);
@@ -132,13 +121,7 @@ describe('activation/services activationService', () => {
 		).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
-		const changedAccounts = await app.service('/accounts').find({
-			query: {
-				userId: user._id,
-			},
-		});
-		expect(changedAccounts).to.have.lengthOf(1);
-		const changedAccount = changedAccounts[0];
+		const changedAccount = await app.service('nest-account-service').findByUserId(user._id.toString());
 
 		expect(user.email).to.be.equal(changedUser.email);
 		expect(changedUser.email).to.not.equal(entry.quarantinedObject);

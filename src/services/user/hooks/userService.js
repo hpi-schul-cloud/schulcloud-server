@@ -124,7 +124,7 @@ const updateAccountUsername = async (context) => {
 	await app
 		.service('/accounts')
 		// set account in params to context.parmas.account to reference the current user
-		.patch(account._id, { username: email }, { account: context.params.account })
+		.patch(account.id, { username: email }, { account: context.params.account })
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
 		});

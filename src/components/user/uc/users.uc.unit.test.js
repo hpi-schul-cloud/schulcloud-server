@@ -103,10 +103,12 @@ describe('users usecase', () => {
 
 		sinon.stub(userRepo, 'replaceUserWithTombstone');
 
+		const app = { service() {} };
 		const accountService = { findByUserId() {}, deleteByUserId() {} };
+		sinon.stub(app, 'service').returns(accountService);
 		sinon.stub(accountService, 'findByUserId').callsFake((userId = USER_ID) => createTestAccount(userId));
 		sinon.stub(accountService, 'deleteByUserId');
-		userUC.initialize(accountService);
+		userUC.initialize(app);
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));

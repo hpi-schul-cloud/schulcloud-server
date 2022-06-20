@@ -5,7 +5,9 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const decode = require('jwt-decode');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
-const testObjects = require('../helpers/testObjects');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { expect } = chai;
 
@@ -28,7 +30,7 @@ describe('Etherpad Permission Check: Students', () => {
 	let mockServer;
 	let server;
 	let app;
-	let testHelpers;
+	let nestServices;
 	let configBefore;
 
 	before((done) => {
@@ -43,10 +45,9 @@ describe('Etherpad Permission Check: Students', () => {
 			Configuration.set('ETHERPAD_URI', mockUrl);
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
-			// eslint-disable-next-line global-require
-			app = await require('../../../src/app')();
-			server = app.listen(0);
-			testHelpers = testObjects(app);
+			app = await appPromise();
+			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 
 			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
 			mockServer = mock.server;
@@ -56,6 +57,8 @@ describe('Etherpad Permission Check: Students', () => {
 	after(async () => {
 		await mockServer.close();
 		await server.close();
+		await testObjects.cleanup();
+		await closeNestServices(nestServices);
 		Configuration.reset(configBefore);
 	});
 
@@ -66,9 +69,9 @@ describe('Etherpad Permission Check: Students', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['student'] });
+		} = await testObjects.setupUser({ roles: ['student'] });
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({
+		const course = await testObjects.createTestCourse({
 			userIds: [jwt.userId],
 		});
 
@@ -90,7 +93,7 @@ describe('Etherpad Permission Check: Students', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['student'] });
+		} = await testObjects.setupUser({ roles: ['student'] });
 
 		const { body } = await request({
 			server: app,
@@ -108,7 +111,7 @@ describe('Etherpad Permission Check: Students', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['student'] });
+		} = await testObjects.setupUser({ roles: ['student'] });
 
 		const data = {
 			courseId: globalStorage.couseId,

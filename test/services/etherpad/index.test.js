@@ -7,6 +7,7 @@ const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { expect } = chai;
 
@@ -37,6 +38,7 @@ describe('Etherpad services', () => {
 	let mockServer;
 	let server;
 	let app;
+	let nestServices;
 	let configBefore;
 
 	before(() => {
@@ -53,7 +55,7 @@ describe('Etherpad services', () => {
 
 			app = await appPromise();
 			server = await app.listen(0);
-			// nestServices = await setupNestServices(app);
+			nestServices = await setupNestServices(app);
 
 			const mock = await MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'));
 			mockServer = mock.server;
@@ -64,6 +66,7 @@ describe('Etherpad services', () => {
 		await mockServer.close();
 		await server.close();
 		await testObjects.cleanup();
+		await closeNestServices(nestServices);
 		Configuration.reset(configBefore);
 	});
 

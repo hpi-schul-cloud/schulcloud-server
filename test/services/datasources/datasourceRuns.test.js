@@ -45,18 +45,18 @@ describe('datasourceRuns service', () => {
 	let nestServices;
 
 	before(async () => {
+		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		mockery.enable({
 			useCleanCache: true,
 			warnOnUnregistered: false,
 		});
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
-		app = await appPromise();
 		datasourceRunsService = app.service('datasourceRuns');
 		// eslint-disable-next-line global-require
 		const sync = require('../../../src/services/sync');
 		app.configure(sync);
 		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
