@@ -1291,7 +1291,7 @@ describe('AdminTeachersService', () => {
 	let nestServices;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		adminTeachersService = app.service('/users/admin/teachers');
 		consentService = app.service('consents');
 		server = await app.listen(0);
