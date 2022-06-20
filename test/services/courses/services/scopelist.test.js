@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const oneHour = 600000;
@@ -9,15 +9,19 @@ const twoDays = 172800000;
 
 describe('courses scopelist service', () => {
 	let app;
+	let server;
 	let courseScopeListService;
 	let nestServices;
+
 	before(async () => {
 		app = await appPromise();
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 		courseScopeListService = app.service('/users/:scopeId/courses');
 	});
 
 	after(async () => {
+		await server.close();
 		await closeNestServices(nestServices);
 	});
 

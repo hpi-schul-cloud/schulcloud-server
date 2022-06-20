@@ -14,9 +14,17 @@ describe('service', () => {
 	let nestServices;
 
 	before(async () => {
+		// eslint-disable-next-line global-require
+		app = await require('../../../../src/app')();
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+		// eslint-disable-next-line global-require
+		testObjects = require('../../helpers/testObjects')(app);
+
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
+
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
@@ -25,12 +33,6 @@ describe('service', () => {
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
-		// eslint-disable-next-line global-require
-		app = await require('../../../../src/app')();
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
-		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(app);
 		rabbitmqMock.reset();
 	});
 

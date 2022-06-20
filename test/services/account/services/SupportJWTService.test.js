@@ -93,7 +93,7 @@ describe('supportJWTService', () => {
 
 		const { accountId, userId, roles, schoolId } = decode(jwt);
 
-		expect(accountId).to.be.equal(student.account._id.toString());
+		expect(accountId).to.be.equal(student.account.id.toString());
 		expect(userId).to.be.equal(student.user._id.toString());
 		expect(roles[0]).to.be.equal(student.user.roles[0].toString());
 		expect(schoolId).to.be.equal(student.user.schoolId.toString());

@@ -60,8 +60,7 @@ describe('start server', () => {
 			decodedToken.should.have.property('roles');
 			decodedToken.should.have.property('schoolId');
 
-
-			const account = await accountService.get(decodedToken.accountId);
+			const account = await accountService.findById(decodedToken.accountId);
 			account.username.should.equal(testAccount.username);
 		});
 
@@ -83,7 +82,7 @@ describe('start server', () => {
 			// get the account id from JWT
 			decodedToken.should.have.property('accountId');
 
-			const account = await accountService.get(decodedToken.accountId);
+			const account = await accountService.findById(decodedToken.accountId);
 			account.username.should.equal(testAccount.username);
 		});
 

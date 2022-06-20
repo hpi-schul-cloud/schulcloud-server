@@ -4,7 +4,7 @@ const commons = require('@hpi-schul-cloud/commons');
 const redisHelper = require('../../../../src/utils/redis');
 const { addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const redisMock = require('../../../utils/redis/redisMock');
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
@@ -18,6 +18,10 @@ describe('authentication hooks', () => {
 	let nestServices;
 
 	before(async () => {
+		app = await appPromise();
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+
 		configBefore = Configuration.toObject({ plainSecrets: true });
 
 		mockery.enable({
@@ -28,17 +32,6 @@ describe('authentication hooks', () => {
 		mockery.registerMock('redis', redisMock);
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
-		delete require.cache[require.resolve('../../../../src/app')];
-		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
-		/* eslint-disable global-require */
-
-		app = await appPromise();
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
-
 		Configuration.set('REDIS_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 		redisHelper.initializeRedisClient();
@@ -48,12 +41,6 @@ describe('authentication hooks', () => {
 		mockery.deregisterAll();
 		mockery.disable();
 		await testObjects.cleanup();
-
-		delete require.cache[require.resolve('../../../../src/app')];
-		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 
 		Configuration.reset(configBefore);
 		await server.close();

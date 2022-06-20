@@ -16,12 +16,11 @@ describe('user use case', () => {
 	let nestServices;
 
 	before(async () => {
-		delete require.cache[require.resolve('../../../../src/app')];
 		app = await appPromise();
 		server = await app.listen(0);
 
 		nestServices = await setupNestServices(app);
-		initialize(app.services['nest-account-service']);
+		initialize(app);
 	});
 
 	after(async () => {

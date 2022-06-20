@@ -202,6 +202,7 @@ describe('EduSharing config flags', () => {
 	let app;
 	let eduSharingService;
 	let server;
+	let nestServices;
 	let originalConfiguration;
 
 	before(async () => {
@@ -209,12 +210,14 @@ describe('EduSharing config flags', () => {
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', originalConfiguration);
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {

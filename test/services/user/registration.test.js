@@ -9,7 +9,6 @@ const { userModel } = require('../../../src/services/user/model');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('registration service', () => {
-	let app;
 	let server;
 	let registrationService;
 	let registrationPinService;

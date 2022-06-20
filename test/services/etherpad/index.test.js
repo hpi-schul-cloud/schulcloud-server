@@ -5,7 +5,8 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const decode = require('jwt-decode');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
-const testObjects = require('../helpers/testObjects');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
 
@@ -36,7 +37,6 @@ describe('Etherpad services', () => {
 	let mockServer;
 	let server;
 	let app;
-	let testHelpers;
 	let configBefore;
 
 	before(() => {
@@ -51,10 +51,9 @@ describe('Etherpad services', () => {
 			Configuration.set('ETHERPAD_URI', mockUrl);
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
-			// eslint-disable-next-line global-require
-			app = await require('../../../src/app')();
-			server = app.listen(0);
-			testHelpers = testObjects(app);
+			app = await appPromise();
+			server = await app.listen(0);
+			// nestServices = await setupNestServices(app);
 
 			const mock = await MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'));
 			mockServer = mock.server;
@@ -64,6 +63,7 @@ describe('Etherpad services', () => {
 	after(async () => {
 		await mockServer.close();
 		await server.close();
+		await testObjects.cleanup();
 		Configuration.reset(configBefore);
 	});
 
@@ -72,7 +72,7 @@ describe('Etherpad services', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['teacher'] });
+		} = await testObjects.setupUser({ roles: ['teacher'] });
 
 		const data = {};
 		const { body } = await request({
@@ -91,13 +91,13 @@ describe('Etherpad services', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({
+		} = await testObjects.setupUser({
 			roles: ['teacher'],
 			permissions: ['COURSE_VIEW'],
 		});
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ teacherIds: [jwt.userId] });
+		const course = await testObjects.createTestCourse({ teacherIds: [jwt.userId] });
 
 		const data = { courseId: course.id };
 
@@ -117,10 +117,10 @@ describe('Etherpad services', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['teacher'] });
+		} = await testObjects.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testObjects.createTestCourse({ userIds: [jwt.userId] });
 
 		const data = {
 			courseId: course.id,
@@ -144,10 +144,10 @@ describe('Etherpad services', () => {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['teacher'] });
+		} = await testObjects.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testObjects.createTestCourse({ userIds: [jwt.userId] });
 
 		const data = {
 			courseId: course.id,

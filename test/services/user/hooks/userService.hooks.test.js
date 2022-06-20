@@ -137,7 +137,7 @@ describe('generateRegistrationLink', () => {
 	let nestServices;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});

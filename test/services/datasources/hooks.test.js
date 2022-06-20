@@ -7,15 +7,18 @@ const { updatedBy, createdBy, protectFields, validateParams } = require('../../.
 
 describe('datasources hooks', () => {
 	let app;
+	let server;
 	let nestServices;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
-		testObjects.cleanup;
+		await testObjects.cleanup();
+		await server.close();
 		await closeNestServices(nestServices);
 	});
 

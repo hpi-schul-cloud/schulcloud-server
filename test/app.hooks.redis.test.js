@@ -3,6 +3,8 @@ const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
 const redisMock = require('./utils/redis/redisMock');
 const whitelist = require('../src/services/authentication/logic/whitelist');
+const appPromise = require('../src/app');
+const testObjects = require('./services/helpers/testObjects')(appPromise());
 
 const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
 
@@ -14,16 +16,12 @@ describe('handleAutoLogout hook', () => {
 	let configBefore;
 	let app;
 	let server;
-	let testObjects;
 	let nestServices;
 
 	before(async () => {
-		/* eslint-disable global-require */
-		app = await require('../src/app');
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
-		testObjects = require('./services/helpers/testObjects')(app);
-		/* eslint-enable global-require */
 
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
@@ -38,9 +36,6 @@ describe('handleAutoLogout hook', () => {
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../src/utils/redis')];
-		delete require.cache[require.resolve('../src/app')];
-		delete require.cache[require.resolve('./services/helpers/testObjects')];
-		delete require.cache[require.resolve('../src/app.hooks')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
 		fut = require('../src/app.hooks').handleAutoLogout;

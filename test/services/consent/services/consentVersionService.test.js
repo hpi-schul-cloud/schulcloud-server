@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('consentVersionService tests', () => {

@@ -7,8 +7,9 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestSystem, cleanup } =
-	require('../../helpers/testObjects')(appPromise());
+const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(
+	appPromise()
+);
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');

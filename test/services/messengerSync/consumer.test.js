@@ -4,6 +4,8 @@ const { ObjectId } = require('mongoose').Types;
 const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('./rabbitmqMock');
 const { ACTIONS } = require('../../../src/services/messengerSync/producer');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { Configuration } = commons;
@@ -13,7 +15,6 @@ describe('service', () => {
 	let server;
 	let nestServices;
 	let app;
-	let testObjects;
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
@@ -29,10 +30,7 @@ describe('service', () => {
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
-		// eslint-disable-next-line global-require
-		app = await require('../../../src/app')();
-		// eslint-disable-next-line global-require
-		testObjects = require('../helpers/testObjects')(app);
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
