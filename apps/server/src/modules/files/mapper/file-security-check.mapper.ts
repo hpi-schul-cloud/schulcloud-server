@@ -6,7 +6,7 @@ import { FileSecurityCheckData, SyncSourceFileSecurityCheck } from '../types';
 export class FileSecurityCheckMapper {
 	static mapToDomain(fsData: FileSecurityCheckData): SyncSourceFileSecurityCheck {
 		const securityCheck = new SyncSourceFileSecurityCheck({
-			status: fsData.status as ScanStatus,
+			status: fsData.status === 'wont-check' ? ScanStatus.PENDING : (fsData.status as ScanStatus),
 			reason: fsData.reason as string,
 			requestToken: fsData.requestToken as string,
 			createdAt: fsData.createdAt as Date,
