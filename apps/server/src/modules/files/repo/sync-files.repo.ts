@@ -29,7 +29,7 @@ const query = (aggregationSize: number) => [
 		$match: {
 			'files.storageProviderId': { $exists: true },
 			'files.size': { $ne: 0 },
-			'files.deleted': false,
+			'files.deleted': { $ne: true },
 			'files.deletedAt': null,
 		},
 	},
