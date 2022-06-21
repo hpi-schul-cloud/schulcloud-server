@@ -8,21 +8,30 @@ export type LessonCopyParams = {
 	user: User;
 };
 
-export type LessonCopyResponse = {
-	// copy: Lesson;
-	status: CopyStatus;
-};
-
 @Injectable()
 export class LessonCopyService {
-	copyLesson(params: LessonCopyParams): LessonCopyResponse {
-		const result = {
-			status: {
-				title: params.originalLesson.name,
-				type: CopyElementType.LESSON,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			},
+	copyLesson(params: LessonCopyParams): CopyStatus {
+		const copy = new Lesson({
+			course: params.destinationCourse,
+			hidden: params.originalLesson.hidden,
+			name: `${params.originalLesson.name} (copy)`, // TODO remove/translate (copy)?
+			position: params.originalLesson.position,
+		});
+
+		const status: CopyStatus = {
+			title: copy.name,
+			type: CopyElementType.LESSON,
+			status: CopyStatusEnum.PARTIAL,
+			copyEntity: copy,
+			elements: [
+				{
+					title: 'metadata',
+					type: CopyElementType.LEAF,
+					status: CopyStatusEnum.SUCCESS,
+				},
+			],
 		};
-		return result;
+
+		return status;
 	}
 }

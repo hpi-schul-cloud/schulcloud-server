@@ -35,7 +35,7 @@ export class BoardCopyService {
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
 				const originalLesson = element.target as Lesson;
-				const { status } = this.lessonCopyService.copyLesson({
+				const status = this.lessonCopyService.copyLesson({
 					originalLesson,
 					user: params.user,
 					destinationCourse: params.destinationCourse,

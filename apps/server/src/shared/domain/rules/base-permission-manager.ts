@@ -23,8 +23,8 @@ export abstract class BasePermissionManager extends AuthorisationUtils implement
 		const permissions = this.selectPermissions(user, entity, context);
 		const permission = this.selectStrategie.match(permissions);
 
-		const hasPermission = permission.hasPermission(user, entity, context);
+		const checkPermission = permission.hasPermission(user, entity, context);
 
-		return hasPermission;
+		return checkPermission;
 	}
 }
