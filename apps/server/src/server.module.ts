@@ -9,7 +9,6 @@ import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { CoreModule } from '@src/core';
-import { FilesModule } from '@src/modules/files';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { NewsModule } from '@src/modules/news';
 import { RocketChatModule } from '@src/modules/rocketchat';
@@ -42,7 +41,6 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
-	FilesModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
