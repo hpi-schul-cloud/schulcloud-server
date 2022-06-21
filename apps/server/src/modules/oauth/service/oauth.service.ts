@@ -98,14 +98,12 @@ export class OAuthService {
 		}
 		// TODO in general
 
-		return this.userRepo
-			.findById(decodedJwt.sub)
-			.then((user) => {
-				return user;
-			})
-			.catch(() => {
-				throw new OAuthSSOError('Failed to find user with this System', 'sso_user_notfound');
-			});
+		try {
+			const user = await this.userRepo.findById(decodedJwt.sub);
+			return user;
+		} catch (error) {
+			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+		}
 	}
 
 	async getJWTForUser(user: User): Promise<string> {

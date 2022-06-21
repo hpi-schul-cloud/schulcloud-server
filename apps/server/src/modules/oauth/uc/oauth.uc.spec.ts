@@ -24,6 +24,7 @@ jest.mock('jwks-rsa', () => {
 
 describe('OAuthUc', () => {
 	let service: OauthUc;
+	let oauthService: OAuthService;
 
 	const defaultAuthCode = '43534543jnj543342jn2';
 	const defaultQuery = { code: defaultAuthCode };
@@ -36,6 +37,7 @@ describe('OAuthUc', () => {
 		Configuration.get('HOST') as string
 	}/dashboard`;
 	const redirectErrorMock = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`;
+	const defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`;
 
 	const defaultIservResponse: OAuthResponse = {
 		idToken: defaultJWT,
@@ -49,8 +51,10 @@ describe('OAuthUc', () => {
 		provider: 'providerMock',
 		redirect: iservRedirectMock,
 	};
-
-	const defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`;
+	const defaultErrorResponse: OAuthResponse = {
+		provider: 'providerMock',
+		redirect: redirectErrorMock,
+	};
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -64,27 +68,14 @@ describe('OAuthUc', () => {
 				{
 					provide: OAuthService,
 					useValue: {
-						processOAuth(query: AuthorizationParams, systemId: string) {
-							try {
-								return new Promise<OAuthResponse>(() => {
-									return defaultIservResponse;
-								});
-							} catch (error) {
-								return new Promise<OAuthResponse>(() => {
-									const defaultErrorResponse = {
-										redirect: redirectErrorMock,
-									};
-									return defaultErrorResponse;
-								});
-							}
-						},
-
+						processOAuth(query: AuthorizationParams, systemId: string) {},
 					},
 				},
 			],
 		}).compile();
 
 		service = await module.resolve<OauthUc>(OauthUc);
+		oauthService = await module.resolve<OAuthService>(OAuthService);
 	});
 
 	it('should be defined', () => {
@@ -92,11 +83,19 @@ describe('OAuthUc', () => {
 	});
 
 	describe('startOauth', () => {
-		it.skip('should start the OAuth2.0 process and get a redirect ', async () => {
+		it('should start the OAuth2.0 process and get a redirect ', async () => {
+			jest.spyOn(oauthService, 'processOAuth').mockResolvedValue(defaultIservResponse);
 			const response = await service.startOauth(defaultQuery, defaultIservSystemId);
 			expect(response).toEqual(defaultIservResponse);
 		});
-		it.skip('should throw an error ', async () => {
+		it('should start the OAuth2.0 process and get a redirect ', async () => {
+			jest.spyOn(oauthService, 'processOAuth').mockResolvedValue(defaultResponse);
+			const response = await service.startOauth(defaultQuery, defaultSystemId);
+			expect(response).toEqual(defaultIservResponse);
+		});
+
+		it('should return a redirect with an error ', async () => {
+			jest.spyOn(oauthService, 'processOAuth').mockResolvedValue(defaultErrorResponse);
 			const response = await service.startOauth(defaultQuery, '');
 			expect(response.redirect).toEqual(defaultErrorRedirect);
 		});
