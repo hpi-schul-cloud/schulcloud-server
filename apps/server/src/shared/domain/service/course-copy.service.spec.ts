@@ -81,7 +81,7 @@ describe('course copy service', () => {
 				expect(course.school).toEqual(destinationSchool);
 			});
 
-			it('should set name of course', () => {
+			it('should set name of course and extend it by number in brackets', () => {
 				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
@@ -90,7 +90,21 @@ describe('course copy service', () => {
 				});
 
 				const course = status.copyEntity as Course;
-				expect(course.name).toEqual(originalCourse.name);
+				expect(course.name).toEqual(`${originalCourse.name} (1)`);
+			});
+
+			it('should set name of course and increase an existing number in brackets', () => {
+				const { originalCourse, user } = setup();
+				const basename = originalCourse.name;
+				originalCourse.name += ' (12)';
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status?.copyEntity as Course;
+				expect(course.name).toEqual(`${basename} (13)`);
 			});
 
 			it('should set color of course', () => {

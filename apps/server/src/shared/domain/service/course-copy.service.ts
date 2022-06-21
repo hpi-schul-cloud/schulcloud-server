@@ -12,10 +12,20 @@ export type CourseCopyParams = {
 export class CourseCopyService {
 	constructor(private readonly boardCopyService: BoardCopyService) {}
 
+	private deriveNewCourseName(name: string): string {
+		let number = 1;
+		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
+		if (matches && matches.groups) {
+			name = matches.groups.name;
+			number = Number(matches.groups.number) + 1;
+		}
+		return `${name} (${number})`;
+	}
+
 	copyCourse(params: CourseCopyParams): CopyStatus {
 		const copy = new Course({
 			school: params.user.school,
-			name: params.originalCourse.name,
+			name: this.deriveNewCourseName(params.originalCourse.name),
 			color: params.originalCourse.color,
 			teachers: [params.user],
 		});
