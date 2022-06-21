@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
+import { RoleName } from '@shared/domain';
 
 describe('TeamStorage Mapper', () => {
 	let module: TestingModule;
@@ -20,7 +21,7 @@ describe('TeamStorage Mapper', () => {
 					name: 'teamName',
 					userIds: [{ userId: 'testUser', role: 'testRole', schoolId: 'testschool' }],
 				},
-				{ id: 'testRole', name: 'testRoleName' },
+				{ id: 'testRole', name: RoleName.DEMO },
 				{
 					read: false,
 					write: false,

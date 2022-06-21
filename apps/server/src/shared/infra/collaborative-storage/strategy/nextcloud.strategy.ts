@@ -14,20 +14,31 @@ interface NextcloudGroupfolders {
 	groups: Map<string, number>;
 }
 
+interface OcsResponse<T> {
+	ocs: { data: T };
+}
+
 export class NextcloudStrategy implements ITeamStorageStrategy {
-	baseURL: string;
+	readonly baseURL: string;
+
+	readonly httpService: HttpService;
 
 	config: AxiosRequestConfig;
 
-	constructor(private readonly httpService: HttpService) {
+	constructor() {
+		this.httpService = new HttpService();
 		this.baseURL = Configuration.get('NEXTCLOUD_API_PATH') as string;
 		this.config = {
 			auth: {
 				username: Configuration.get('NEXTCLOUD_ADMIN_USER') as string,
 				password: Configuration.get('NEXTCLOUD_ADMIN_PASS') as string,
 			},
-			headers: { 'OCS-APIRequest': true },
+			headers: { 'OCS-APIRequest': true, Accept: 'Application/json' },
 		};
+	}
+
+	private static generateGroupId(dto: TeamRolePermissionsDto): string {
+		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
 	}
 
 	public async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
@@ -36,13 +47,9 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 		this.setGroupPermissions(groupId, folderId, dto.permissions);
 	}
 
-	private static generateGroupId(dto: TeamRolePermissionsDto): string {
-		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
-	}
-
 	private async findGroupId(groupName: string): Promise<string> {
 		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${groupName}&format=json`))
-			.then((resp: AxiosResponse<NextcloudGroups>) => resp.data.groups[0])
+			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0])
 			.catch((error) => {
 				throw new NotFoundException(error, `Group ${groupName} not found in Nextcloud!`);
 			});
@@ -50,10 +57,12 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
 		return firstValueFrom(this.get(`/apps/groupfolders/folders&format=json`))
-			.then((resp: AxiosResponse<Map<string, NextcloudGroupfolders>>) => {
-				const filtered = Array.from(resp.data.values())
-					.filter((folder: NextcloudGroupfolders) => folder.groups.has(groupId))
-					.flatMap((folder) => Array.from(folder.groups.keys()));
+			.then((resp: AxiosResponse<OcsResponse<Map<string, NextcloudGroupfolders>>>) => {
+				const filtered = Object.entries(resp.data.ocs.data)
+					.filter(([k, v]) => {
+						return Object.entries((v as NextcloudGroupfolders).groups).filter(([k]) => k === groupId);
+					})
+					.flatMap(([k]) => k);
 				if (filtered.length < 1) {
 					throw new NotFoundException();
 				}
