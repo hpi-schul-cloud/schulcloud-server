@@ -1,6 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchCreator, SortOrder, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -102,7 +101,7 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('findByLdapId', () => {
+	describe('findByLdapIdorFail', () => {
 		let sys: System;
 		let userA: User;
 		let userB: User;
@@ -117,7 +116,7 @@ describe('user repo', () => {
 			await em.persistAndFlush([userA, userB]);
 		});
 		it('should return right keys', async () => {
-			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
+			const result = await repo.findByLdapIdorFail(userA.ldapId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
 				[
 					'createdAt',
@@ -139,16 +138,14 @@ describe('user repo', () => {
 
 		it('should return user matched by id', async () => {
 			await em.persistAndFlush([userA, userB]);
-			const result = await repo.findByLdapId(userA.ldapId as string, sys.id);
+			const result = await repo.findByLdapIdorFail(userA.ldapId as string, sys.id);
 			expect(result).toEqual(userA);
 		});
 
 		it('should throw an error if user by ldapid doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
-
-			// await expect(repo.findByLdapId(idA, idB)).rejects.toThrow(NotFoundException);
-			await expect(repo.findByLdapId(idA, idB)).rejects.toEqual(undefined);
+			await expect(repo.findByLdapIdorFail(idA, idB)).rejects.toEqual(undefined);
 		});
 	});
 

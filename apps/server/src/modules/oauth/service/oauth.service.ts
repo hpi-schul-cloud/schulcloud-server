@@ -26,7 +26,7 @@ export class OAuthService {
 		private readonly userRepo: UserRepo,
 		private readonly systemRepo: SystemRepo,
 		private readonly jwtService: FeathersJwtProvider,
-		private httpService: HttpService,
+		private readonly httpService: HttpService,
 		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private iservOauthService: IservOAuthService,
 		private logger: Logger
@@ -42,7 +42,6 @@ export class OAuthService {
 		if (query.code) return query.code;
 		let errorCode = 'sso_auth_code_step';
 		if (query.error) {
-			this.logger.log(query.error);
 			errorCode = `sso_oauth_${query.error}`;
 			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
 		}
@@ -92,18 +91,21 @@ export class OAuthService {
 	}
 
 	async findUser(decodedJwt: IJwt, systemId: string): Promise<User> {
-		let user: User;
 		const system: System = await this.systemRepo.findById(systemId);
 		// iserv strategy
 		if (system.oauthConfig.provider === 'iserv') {
-			const uuid = this.iservOauthService.extractUUID(decodedJwt);
-			user = await this.iservOauthService.findUserById(uuid, systemId);
-			return user;
+			return this.iservOauthService.findUserById(systemId, decodedJwt);
 		}
 		// TODO in general
-		// not working
-		user = await this.userRepo.findById(decodedJwt.sub);
-		return user;
+
+		return this.userRepo
+			.findById(decodedJwt.sub)
+			.then((user) => {
+				return user;
+			})
+			.catch(() => {
+				throw new OAuthSSOError('Failed to find user with this System', 'sso_user_notfound');
+			});
 	}
 
 	async getJWTForUser(user: User): Promise<string> {
@@ -111,23 +113,32 @@ export class OAuthService {
 		return jwtResponse;
 	}
 
-	async processOauth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
-		const authCode = this.checkAuthorizationCode(query);
-		const system = await this.systemRepo.findById(systemId);
-		const queryToken = await this.requestToken(authCode, system);
-		const decodedToken = await this.validateToken(queryToken.id_token, system);
-		const user = await this.findUser(decodedToken, systemId);
-		const jwtResponse = await this.getJWTForUser(user);
+	buildResponse(system: System, queryToken: OauthTokenResponse) {
 		const response: OAuthResponse = new OAuthResponse();
 		response.idToken = queryToken.id_token;
 		response.logoutEndpoint = system.oauthConfig.logoutEndpoint;
 		response.provider = system.oauthConfig.provider;
+		return response;
+	}
 
-		const oauthResponse = this.getRedirect(response);
-		oauthResponse.jwt = jwtResponse;
-		return new Promise<OAuthResponse>((resolve) => {
-			resolve(oauthResponse);
-		});
+	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
+		try {
+			const authCode = this.checkAuthorizationCode(query);
+			const system = await this.systemRepo.findById(systemId);
+			const queryToken = await this.requestToken(authCode, system);
+			const decodedToken = await this.validateToken(queryToken.id_token, system);
+			const user = await this.findUser(decodedToken, systemId);
+			const jwtResponse = await this.getJWTForUser(user);
+			const response = this.buildResponse(system, queryToken);
+			const oauthResponse = this.getRedirect(response);
+			oauthResponse.jwt = jwtResponse;
+			return await new Promise<OAuthResponse>((resolve) => {
+				resolve(oauthResponse);
+			});
+		} catch (error) {
+			this.logger.log(error);
+			return this.getOAuthError(error as string);
+		}
 	}
 
 	getRedirect(response: OAuthResponse): OAuthResponse {

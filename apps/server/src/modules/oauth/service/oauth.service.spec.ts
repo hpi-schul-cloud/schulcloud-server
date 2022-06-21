@@ -13,6 +13,7 @@ import { ObjectId } from 'bson';
 import jwt from 'jsonwebtoken';
 import { of } from 'rxjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { schoolFactory } from '@shared/testing';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
@@ -38,21 +39,15 @@ describe('OAuthService', () => {
 	let userRepo: UserRepo;
 	let systemRepo: SystemRepo;
 	let jwtService: FeathersJwtProvider;
-	let iservOAuthService: IservOAuthService;
 	Configuration.set('HOST', 'https://mock.de');
 
 	const defaultAuthCode = '43534543jnj543342jn2';
 	const defaultQuery = { code: defaultAuthCode };
 	const defaultErrorQuery = { error: 'oauth_login_failed' };
 	const defaultUserId = '123456789';
-	const defaultScool: School = {
-		name: '',
-		_id: new ObjectId(),
-		id: '',
-		systems: new Collection<System>([]),
-	};
-	const defaultDecodedJWT = {
-		sub: '',
+	const defaultScool: School = schoolFactory.build();
+	const defaultDecodedJWT: IJwt = {
+		sub: '4444',
 		uuid: '1111',
 	};
 
@@ -61,7 +56,7 @@ describe('OAuthService', () => {
 		roles: new Collection<Role>([]),
 		school: defaultScool,
 		_id: new ObjectId(),
-		id: defaultUserId,
+		id: '4444',
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		ldapId: '1111',
@@ -101,10 +96,6 @@ describe('OAuthService', () => {
 	};
 
 	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
-	const decodedJWTMock: IJwt = {
-		uuid: '1111',
-		sub: ' ',
-	};
 
 	const defaultResponse: OAuthResponse = {
 		idToken: defaultJWT,
@@ -284,9 +275,7 @@ describe('OAuthService', () => {
 	describe('findUser', () => {
 		it('should return the user according to the id', async () => {
 			const resolveUserSpy = jest.spyOn(userRepo, 'findById');
-			const user: User = await service.findUser(defaultDecodedJWT, defaultSystemId);
-			expect(resolveUserSpy).toHaveBeenCalled();
-			expect(user).toBe(defaultUser);
+			await expect(service.findUser(defaultDecodedJWT, defaultSystemId)).resolves.toBe(defaultUser);
 		});
 		it('should return the user according to the uuid(LdapId)', async () => {
 			const user: User = await service.findUser(defaultDecodedJWT, defaultIservSystemId);
@@ -303,10 +292,10 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('processOauth', () => {
+	describe('processOAuth', () => {
 		it('should do the process successfully', async () => {
-			jest.spyOn(service, 'validateToken').mockResolvedValue(decodedJWTMock);
-			const response = await service.processOauth(defaultQuery, defaultIservSystemId);
+			jest.spyOn(service, 'validateToken').mockResolvedValue(defaultDecodedJWT);
+			const response = await service.processOAuth(defaultQuery, defaultIservSystemId);
 			expect(response.redirect).toStrictEqual(iservRedirectMock);
 			expect(response.jwt).toStrictEqual(defaultJWT);
 		});

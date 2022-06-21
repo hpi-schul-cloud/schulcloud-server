@@ -1,6 +1,5 @@
 import { Collection } from '@mikro-orm/core';
 import { HttpModule } from '@nestjs/axios';
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, School, System, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo/user/user.repo';
@@ -34,6 +33,10 @@ describe('IservOAuthService', () => {
 		firstName: '',
 		lastName: '',
 	};
+	const defaultDecodedJWT = {
+		sub: '',
+		uuid: '1111',
+	};
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -47,8 +50,8 @@ describe('IservOAuthService', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findByLdapId(userId, systemId) {
-							if (userId === '') throw new NotFoundException();
+						findByLdapIdorFail(userId, systemId) {
+							if (userId === '') throw new OAuthSSOError();
 							return defaultUser;
 						},
 					},
@@ -82,15 +85,19 @@ describe('IservOAuthService', () => {
 
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
-			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapId');
-			const user: User = await service.findUserById(defaultUserId, defaultSystemId);
+			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapIdorFail');
+			const user: User = await service.findUserById(defaultUserId, defaultDecodedJWT);
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
-		it('should return an error', async () => {
-			await expect(service.findUserById('', '')).rejects.toEqual(
-				new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound')
-			);
+
+		it('should return an error if no User is found by this ldapId', async () => {
+			return expect(
+				service.findUserById('', {
+					uuid: '',
+					sub: '',
+				})
+			).rejects.toEqual(new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound'));
 		});
 	});
 });
