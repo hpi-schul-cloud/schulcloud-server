@@ -1,20 +1,24 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const commons = require('@hpi-schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const sinon = require('sinon');
+const amqp = require('amqplib');
 const rabbitmqMock = require('./rabbitmqMock');
 const { ACTIONS } = require('../../../src/services/messengerSync/producer');
-const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
-const { Configuration } = commons;
-
-describe('service', () => {
+describe('consumerTest', () => {
 	let configBefore;
 	let server;
-	let nestServices;
 	let app;
+	let nestServices;
+	let testObjects;
+
+	function requireUncached(module) {
+		delete require.cache[require.resolve(module)];
+		// eslint-disable-next-line global-require, import/no-dynamic-require
+		return require(module);
+	}
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
@@ -22,25 +26,20 @@ describe('service', () => {
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
 		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
-		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
+		sinon.stub(amqp, 'connect').callsFake(rabbitmqMock.amqplib.connect);
+
+		// await app only after configuration was adjusted
+		const appPromise = requireUncached('../../../src/app');
 		app = await appPromise();
-		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		server = await app.listen(0);
+		testObjects = requireUncached('../helpers/testObjects')(appPromise());
 	});
 
 	after(async () => {
-		rabbitmqMock.reset();
-
 		Configuration.reset(configBefore);
-		mockery.deregisterAll();
-		mockery.disable();
+		sinon.restore();
 
 		await testObjects.cleanup();
 		await server.close();

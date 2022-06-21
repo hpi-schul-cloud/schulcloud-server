@@ -1,43 +1,43 @@
 const { expect } = require('chai');
-const mockery = require('mockery');
-const commons = require('@hpi-schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const sinon = require('sinon');
+const amqp = require('amqplib');
 const rabbitmqMock = require('../rabbitmqMock');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
-const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise());
 
-const { Configuration } = commons;
-
-describe('service', () => {
+describe('schoolSyncService', () => {
 	let configBefore;
 	let server;
 	let app;
 	let nestServices;
+	let testObjects;
+
+	function requireUncached(module) {
+		delete require.cache[require.resolve(module)];
+		// eslint-disable-next-line global-require, import/no-dynamic-require
+		return require(module);
+	}
 
 	before(async () => {
-		app = await appPromise();
-		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
-
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
-		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
+		sinon.stub(amqp, 'connect').callsFake(rabbitmqMock.amqplib.connect);
+
+		// await app only after configuration was adjusted
+		const appPromise = requireUncached('../../../../src/app');
+		app = await appPromise();
+		nestServices = await setupNestServices(app);
+		server = await app.listen(0);
+		testObjects = requireUncached('../../helpers/testObjects')(appPromise());
 
 		rabbitmqMock.reset();
 	});
 
 	after(async () => {
 		Configuration.reset(configBefore);
-		mockery.deregisterAll();
-		mockery.disable();
+		sinon.restore();
 		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
@@ -50,6 +50,7 @@ describe('service', () => {
 			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
 			testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
 		]);
+
 		const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
 		expect(testingQueue).to.not.be.undefined;
 		expect(testingQueue.length, '3 user creation events + 1 school creation event').to.equal(4);
