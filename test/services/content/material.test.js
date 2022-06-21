@@ -69,12 +69,12 @@ describe('material service', () => {
 				createTestUser({ roles: 'teacher' }),
 				createTestUser({ roles: 'teacher' }),
 			]);
-			[studentAParams, studentBParams, teacherAParams, teacherBParams] = await Promise.all([
-				generateRequestParamsFromUser(studentA),
-				generateRequestParamsFromUser(studentB),
-				generateRequestParamsFromUser(teacherA),
-				generateRequestParamsFromUser(teacherB),
-			]);
+
+			studentBParams = await generateRequestParamsFromUser(studentB);
+			studentAParams = await generateRequestParamsFromUser(studentA);
+			teacherAParams = await generateRequestParamsFromUser(teacherA);
+			teacherBParams = await generateRequestParamsFromUser(teacherB);
+
 			[courseA, courseB] = await Promise.all([
 				createTestCourse({ teacherIds: [teacherA], userIds: [studentA] }),
 				createTestCourse({ teacherIds: [teacherB], userIds: [studentB] }),
