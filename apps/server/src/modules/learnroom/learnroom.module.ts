@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CourseCopyService } from '@shared/domain/service/course-copy.service';
+import { BoardCopyService, CourseCopyService, LessonCopyService, TaskCopyService } from '@shared/domain';
 import {
 	BoardRepo,
 	CourseRepo,
@@ -19,6 +19,7 @@ import { CourseUc } from './uc/course.uc';
 import { DashboardUc } from './uc/dashboard.uc';
 import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
+import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
@@ -41,8 +42,12 @@ import { RoomsUc } from './uc/rooms.uc';
 		RoomBoardResponseMapper,
 		RoomsAuthorisationService,
 		RoomBoardDTOFactory,
+		BoardCopyService,
+		LessonCopyService,
+		TaskCopyService,
 		CourseCopyService,
 		CourseCopyUC,
+		RoomsService,
 	],
 })
 export class LearnroomModule {}

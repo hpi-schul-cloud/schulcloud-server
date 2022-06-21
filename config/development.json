@@ -30,5 +30,8 @@
 		"ADMIN_PASSWORD": "dBildungscloud"
 	},
 	"INCOMING_REQUEST_TIMEOUT_API": 60000,
-	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http"
+	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http",
+	"ROOM_VIEW_ENABLED": true,
+	"FEATURE_COURSE_COPY": true,
+	"FEATURE_TASK_COPY_ENABLED": true
 }
