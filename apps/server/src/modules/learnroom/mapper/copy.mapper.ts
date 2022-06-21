@@ -15,7 +15,7 @@ export class CopyMapper {
 			dto.id = copyStatus.copyEntity.id;
 		}
 		if (copyStatus.elements) {
-			dto.elements = copyStatus.elements;
+			dto.elements = copyStatus.elements.map((status) => CopyMapper.mapToResponse(status));
 		}
 		return dto;
 	}
