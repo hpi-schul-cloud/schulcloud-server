@@ -224,12 +224,14 @@ describe('homework service', () => {
 			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'] });
 
-			const userPromises = [otherTeacher, otherStudent].map(async (user) => {
-				const params = await testObjects.generateRequestParamsFromUser(user);
-				params.query = {};
-				expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-			});
-			await Promise.all(userPromises);
+			let params;
+			params = await testObjects.generateRequestParamsFromUser(otherTeacher);
+			params.query = {};
+			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
+
+			params = await testObjects.generateRequestParamsFromUser(otherStudent);
+			params.query = {};
+			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
 		});
 		it('should not allow homework removal by course student', async () => {
 			const { student, homework } = await setupHomeworkWithCourse();
