@@ -27,8 +27,11 @@ class RocketChatLogin {
 			if (authToken !== '' && authToken !== undefined) {
 				try {
 					const res = await service.me(authToken, rcAccount.rcId);
-					await service.setUserStatus(authToken, rcAccount.rcId, 'offline');
-					if (res.success) return { authToken };
+					if (res.success) {
+						await service.setUserStatus(authToken, rcAccount.rcId, 'offline');
+						return { authToken };
+					}
+					return Promise.reject(new BadRequest('False response data from rocketChat'));
 				} catch (err) {
 					logger.error(err);
 					authToken = '';
