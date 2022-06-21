@@ -36,7 +36,7 @@ describe('SyncTaskRepo', () => {
 			const task = taskFactory.build({ name: 'task with file' });
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task);
+			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
 
 			expect(result).toHaveLength(0);
 		});
@@ -46,7 +46,7 @@ describe('SyncTaskRepo', () => {
 			const task = taskFactory.build({ name: 'task with file', files });
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task);
+			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ parentId: task._id });
@@ -63,7 +63,7 @@ describe('SyncTaskRepo', () => {
 			task.files.add(file);
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task);
+			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
 
 			expect(result).toHaveLength(0);
 		});
@@ -79,7 +79,7 @@ describe('SyncTaskRepo', () => {
 			task.files.add(file);
 			await em.persistAndFlush(task);
 
-			const result = await repo.findFilesToSync(FileRecordParentType.Task);
+			const result = await repo.findFilesToSync(FileRecordParentType.Task, 50);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toMatchObject({ parentId: task._id });

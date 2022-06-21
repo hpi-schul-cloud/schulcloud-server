@@ -8,7 +8,7 @@ import { SyncFileItem, SyncFileItemData } from '../types';
 
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!
-const query = (batchSize: number) => [
+const query = (aggregationSize: number) => [
 	{
 		$match: { fileIds: { $exists: true, $ne: [] } },
 	},
@@ -91,7 +91,7 @@ const query = (batchSize: number) => [
 		},
 	},
 	{
-		$limit: batchSize,
+		$limit: aggregationSize,
 	},
 ];
 
@@ -99,12 +99,12 @@ const query = (batchSize: number) => [
 export class SyncFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findFilesToSync(parentType: FileRecordParentType, batchSize = 50): Promise<SyncFileItem[]> {
+	async findFilesToSync(parentType: FileRecordParentType, aggregationSize: number): Promise<SyncFileItem[]> {
 		let itemDataList: SyncFileItemData[] = [];
 
 		if (parentType === FileRecordParentType.Task) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			itemDataList = await this._em.aggregate(Task, query(batchSize));
+			itemDataList = await this._em.aggregate(Task, query(aggregationSize));
 		}
 
 		const items = SyncFileItemMapper.mapResults(itemDataList, parentType);
