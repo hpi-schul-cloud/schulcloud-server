@@ -7,7 +7,7 @@ import moment from 'moment';
 import { DeleteFilesUc } from '../uc';
 import { DeleteFilesConsole } from './delete-files.console';
 
-describe('DeleteFilesController', () => {
+describe('DeleteFilesConsole', () => {
 	let console: DeleteFilesConsole;
 	let deleteFilesUc: DeleteFilesUc;
 
