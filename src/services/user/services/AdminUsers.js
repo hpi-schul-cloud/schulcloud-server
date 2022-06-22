@@ -246,17 +246,11 @@ class AdminUsers {
 	async updateAccount(email, userId) {
 		if (email) {
 			email = email.toLowerCase();
-			await this.app.service('accountModel').patch(
-				null,
-				{ username: email },
-				{
-					query: {
-						userId,
-						username: { $ne: email },
-						systemId: { $exists: false },
-					},
-				}
-			);
+			const account = await this.app.service('nest-account-service').findByUserIdOrFail(userId.toString());
+			await this.app.service('nest-account-service').save({
+				id: account.id,
+				username: email,
+			});
 		}
 	}
 
@@ -266,16 +260,11 @@ class AdminUsers {
 		} catch (err) {
 			if (email) {
 				const { email: oldMail } = await this.app.service('usersModel').get(userId);
-				await this.app.service('accountModel').patch(
-					null,
-					{ username: oldMail },
-					{
-						query: {
-							userId,
-							systemId: { $exists: false },
-						},
-					}
-				);
+				const account = await this.app.service('nest-account-service').findByUserIdOrFail(userId.toString());
+				await this.app.service('nest-account-service').save({
+					id: account.id,
+					username: oldMail,
+				});
 			}
 			throw err;
 		}

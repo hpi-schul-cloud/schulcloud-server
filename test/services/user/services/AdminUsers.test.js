@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const accountModel = require('../../../../src/services/account/model');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
@@ -13,9 +14,11 @@ describe('AdminUsersService', () => {
 	let accountService;
 	let adminStudentsService;
 	let adminTeachersService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		accountService = app.service('/accounts');
 		adminStudentsService = app.service('/users/admin/students');
 		adminTeachersService = app.service('/users/admin/teachers');
@@ -24,6 +27,7 @@ describe('AdminUsersService', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {
