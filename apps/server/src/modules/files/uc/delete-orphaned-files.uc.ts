@@ -15,7 +15,7 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	async deleteOrphanedFilesForEntity(parentType: FileRecordParentType) {
-		const tasks = await this.deleteOrphanedFilesRepo.findAllTasks();
+		const tasks = await this.deleteOrphanedFilesRepo.findTasks();
 		const fileRecords = await this.fileRecordRepo.findByParentType(parentType);
 		const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
 
@@ -40,5 +40,7 @@ export class DeleteOrphanedFilesUc {
 
 			return false;
 		});
+
+		console.log(filteredFileRecords);
 	}
 }

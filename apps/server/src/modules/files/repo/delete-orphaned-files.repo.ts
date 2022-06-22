@@ -12,8 +12,8 @@ import { FileFilerecord } from '../types';
 export class DeleteOrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findAllTasks(): Promise<Task[]> {
-		const entities = await this._em.find(Task, {});
+	async findTasks(): Promise<Task[]> {
+		const entities = await this._em.find(Task, { files: { $ne: null } }, { fields: ['id', 'files'] });
 
 		return entities;
 	}
