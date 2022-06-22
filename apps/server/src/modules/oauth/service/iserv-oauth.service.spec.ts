@@ -14,7 +14,6 @@ describe('IservOAuthService', () => {
 	let userRepo: UserRepo;
 
 	const defaultUserId = '123456789';
-	const defaultSystemId = '987654321';
 	const defaultScool: School = {
 		name: '',
 		_id: new ObjectId(),
@@ -50,7 +49,7 @@ describe('IservOAuthService', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findByLdapIdorFail(userId, systemId) {
+						findByLdapIdorFail(userId) {
 							if (userId === '') throw new OAuthSSOError();
 							return defaultUser;
 						},

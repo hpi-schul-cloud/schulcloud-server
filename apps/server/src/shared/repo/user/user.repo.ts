@@ -1,6 +1,6 @@
 import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';

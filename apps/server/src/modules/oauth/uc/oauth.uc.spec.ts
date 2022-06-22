@@ -7,7 +7,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { OauthUc } from '.';
 import { OAuthService } from '../service/oauth.service';
 import { OAuthResponse } from '../service/dto/oauth.response';
-import { AuthorizationParams } from '../controller/dto/authorization.params';
 
 jest.mock('jwks-rsa', () => {
 	return () => ({
@@ -36,7 +35,6 @@ describe('OAuthUc', () => {
 	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
 		Configuration.get('HOST') as string
 	}/dashboard`;
-	const redirectErrorMock = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`;
 	const defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`;
 
 	const defaultIservResponse: OAuthResponse = {
@@ -53,7 +51,7 @@ describe('OAuthUc', () => {
 	};
 	const defaultErrorResponse: OAuthResponse = {
 		provider: 'providerMock',
-		redirect: redirectErrorMock,
+		redirect: defaultErrorRedirect,
 	};
 
 	beforeEach(async () => {
@@ -68,7 +66,7 @@ describe('OAuthUc', () => {
 				{
 					provide: OAuthService,
 					useValue: {
-						processOAuth(query: AuthorizationParams, systemId: string) {},
+						processOAuth() {},
 					},
 				},
 			],

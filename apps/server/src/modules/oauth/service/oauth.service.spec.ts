@@ -37,7 +37,6 @@ jest.mock('jwks-rsa', () => {
 describe('OAuthService', () => {
 	let service: OAuthService;
 	let userRepo: UserRepo;
-	let systemRepo: SystemRepo;
 	let iservOauthService: IservOAuthService;
 	let jwtService: FeathersJwtProvider;
 	Configuration.set('HOST', 'https://mock.de');
@@ -81,8 +80,6 @@ describe('OAuthService', () => {
 	const defaultIservSystemId = '2222';
 	const defaultJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
-	const wrongJWT =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 	const defaultTokenResponse: OauthTokenResponse = {
 		access_token: 'zzzz',
 		refresh_token: 'zzzz',
@@ -97,7 +94,6 @@ describe('OAuthService', () => {
 	};
 
 	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
-	const defaultQueryToken = 'IchBinEinToken';
 
 	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
 		Configuration.get('HOST') as string
@@ -203,10 +199,10 @@ describe('OAuthService', () => {
 				{
 					provide: IservOAuthService,
 					useValue: {
-						extractUUID(decodedJwt: IJwt) {
+						extractUUID() {
 							return defaultDecodedJWT.uuid;
 						},
-						findUserById(uuid: string, systemId: string) {
+						findUserById() {
 							return defaultIservUser;
 						},
 					},
@@ -221,7 +217,6 @@ describe('OAuthService', () => {
 			})
 		);
 		userRepo = await module.resolve<UserRepo>(UserRepo);
-		systemRepo = await module.resolve<SystemRepo>(SystemRepo);
 		jwtService = await module.resolve<FeathersJwtProvider>(FeathersJwtProvider);
 		iservOauthService = await module.resolve<IservOAuthService>(IservOAuthService);
 	});

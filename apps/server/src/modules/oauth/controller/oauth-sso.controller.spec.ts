@@ -14,7 +14,6 @@ describe('OAuthController', () => {
 	Configuration.set('HOST', 'https://mock.de');
 	let controller: OauthSSOController;
 	let oauthUc: OauthUc;
-	const idToken = 'mockToken';
 	const defaultJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
 	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
@@ -66,7 +65,7 @@ describe('OAuthController', () => {
 					}/dashboard`,
 				})),
 			});
-			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			const expected = [query, system.id];
 			expect(oauthUc.startOauth).toHaveBeenCalledWith(...expected);
 			expect(res.cookie).toBeCalledWith('jwt', '1111');
@@ -76,13 +75,11 @@ describe('OAuthController', () => {
 			const { res } = getMockRes();
 			await generateMock({
 				startOauth: jest.fn(() => ({
-					// jwt: '',
 					idToken: '2222',
 					logoutEndpoint: 'https://iserv.n21.dbildungscloud.de/iserv/auth/logout',
-					// redirect: '',
 				})),
 			});
-			const redirect = await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
+			await controller.startOauthAuthorizationCodeFlow(query, res, system.id);
 			expect(res.cookie).toBeCalledWith('jwt', '');
 			expect(res.redirect).toBeCalledWith('');
 		});
