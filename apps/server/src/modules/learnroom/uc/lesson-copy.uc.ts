@@ -1,26 +1,38 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { CopyStatus, Lesson, EntityId, LessonCopyService, PermissionContextBuilder } from '@shared/domain';
+import { CopyStatus, EntityId, Lesson, LessonCopyService, PermissionContextBuilder, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LessonRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo } from '@shared/repo';
+import { Permission } from '@shared/domain/interface/permission.enum';
+
+export type LessonCopyParentParams = {
+	courseId?: EntityId;
+	// courseGroupId?: EntityId;
+};
 
 @Injectable()
 export class LessonCopyUc {
 	constructor(
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,
-		private readonly lessonRepo: LessonRepo
+		private readonly lessonRepo: LessonRepo,
+		private readonly courseRepo: CourseRepo
 	) {}
 
-	async copyLesson(userId: EntityId, lessonId: EntityId): Promise<CopyStatus> {
+	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalLesson = await this.lessonRepo.findById(lessonId);
-		const context = PermissionContextBuilder.read([]);
+		const context = PermissionContextBuilder.read([Permission.LESSONS_CREATE]);
 		if (!this.authorisation.hasPermission(user, originalLesson, context)) {
 			throw new ForbiddenException('could not find lesson to copy');
 		}
+
+		let destinationCourse = originalLesson.course;
+		if (parentParams.courseId) {
+			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		}
 		const status = this.lessonCopyService.copyLesson({
 			originalLesson,
-			destinationCourse: originalLesson.course,
+			destinationCourse,
 			user,
 		});
 
@@ -30,5 +42,13 @@ export class LessonCopyUc {
 		}
 
 		return status;
+	}
+
+	private async getDestinationCourse(courseId: string, user: User) {
+		const destinationCourse = await this.courseRepo.findById(courseId);
+		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
+			throw new ForbiddenException('you dont have permission to add to this course');
+		}
+		return destinationCourse;
 	}
 }

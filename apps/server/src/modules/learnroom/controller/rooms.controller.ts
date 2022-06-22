@@ -10,6 +10,7 @@ import { CourseCopyUC } from '../uc/course-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
 import { BoardResponse, PatchOrderParams, PatchVisibilityParams } from './dto';
 import { CopyApiResponse } from './dto/copy.response';
+import { LessonCopyApiParams } from './dto/lesson/lesson-copy.params';
 
 @ApiTags('Rooms')
 @Authenticate('jwt')
@@ -64,9 +65,14 @@ export class RoomsController {
 	@Post('lessons/:lessonid/copy')
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('lessonid', ParseObjectIdPipe) lessonId: string
+		@Param('lessonid', ParseObjectIdPipe) lessonId: string,
+		@Body() params: LessonCopyApiParams
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.lessonCopyUc.copyLesson(currentUser.userId, lessonId);
+		const copyStatus = await this.lessonCopyUc.copyLesson(
+			currentUser.userId,
+			lessonId,
+			CopyMapper.mapLessonCopyToDomain(params)
+		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}

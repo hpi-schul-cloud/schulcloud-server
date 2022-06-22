@@ -14,7 +14,7 @@ export class LessonCopyService {
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: params.originalLesson.hidden,
-			name: `${params.originalLesson.name} (copy)`, // TODO remove/translate (copy)?
+			name: params.originalLesson.name,
 			position: params.originalLesson.position,
 		});
 
@@ -28,6 +28,16 @@ export class LessonCopyService {
 					title: 'metadata',
 					type: CopyElementType.LEAF,
 					status: CopyStatusEnum.SUCCESS,
+				},
+				{
+					title: 'content',
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
+				},
+				{
+					title: 'material',
+					type: CopyElementType.LESSON_MATERIAL,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
 			],
 		};
