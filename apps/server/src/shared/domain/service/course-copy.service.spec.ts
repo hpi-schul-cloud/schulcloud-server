@@ -93,13 +93,12 @@ describe('course copy service', () => {
 			it('should use nameCopyService', () => {
 				const { originalCourse, user } = setup();
 
-				const status = copyService.copyCourse({
+				copyService.copyCourse({
 					originalCourse,
 					user,
 				});
 
-				const course = status.copyEntity as Course;
-				expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(course.name);
+				expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(originalCourse.name);
 			});
 
 			it('should set name of copy', () => {
