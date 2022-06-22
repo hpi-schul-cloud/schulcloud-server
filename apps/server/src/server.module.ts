@@ -19,7 +19,8 @@ import {
 	OauthModule,
 	ImportUserModule,
 } from '@src/modules';
-import { FilesModule } from '@src/modules/files';
+// todo: MUST BE CHECKED BEFORE MERGE
+// import { FilesModule } from '@src/modules/files';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
@@ -43,7 +44,6 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
-	FilesModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
@@ -76,7 +76,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
 
-			// debug: true, // use it for locally debugging of querys
+			// debug: true, // use it for locally debugging of queries
 		}),
 	],
 	controllers: [ServerController],

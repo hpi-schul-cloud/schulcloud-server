@@ -4,7 +4,7 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 const nock = require('nock');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const {
 	messengerTokenService,
 	messengerTokenHooks,
@@ -16,7 +16,7 @@ describe('MessengerTokenService', function test() {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

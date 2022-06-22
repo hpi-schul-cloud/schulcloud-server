@@ -130,7 +130,7 @@ describe('in "task.repo" the function', () => {
 	let testHelper;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		testHelper = testObjects(app);
 		server = await app.listen(0);
 		// cleanup unexpected homework states that create from other tests and not cleanup, or added by seed

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setIdToken, validatePermissionForNextcloud } = require('../../../../src/services/oauth2/hooks/index');
 
@@ -10,7 +10,7 @@ describe('oauth2 token test', () => {
 	let createHook;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = app.listen(0);
 		createHook = (clientId, userId, scopes) => ({
 			app,

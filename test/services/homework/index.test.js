@@ -3,7 +3,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../src/app');
 const { NotAuthenticated, NotFound } = require('../../../src/errors');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -62,7 +62,7 @@ describe('homework service', () => {
 	};
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		homeworkService = app.service('homework');
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);

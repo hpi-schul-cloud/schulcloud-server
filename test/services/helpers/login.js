@@ -5,7 +5,7 @@ const appPromise = require('../../../src/app');
 chai.use(chaiHttp);
 
 const getAccessToken = async ({ username, password }) => {
-	const app = await appPromise;
+	const app = await appPromise();
 	return new Promise((resolve, reject) => {
 		chai
 			.request(app)

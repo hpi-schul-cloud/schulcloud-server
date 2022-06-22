@@ -3,9 +3,9 @@ const sinon = require('sinon');
 const assert = require('assert');
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
-const { generateRequestParams } = require('../../helpers/services/login')(appPromise);
+const { generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 const {
 	removeStudentFromCourses,
@@ -19,7 +19,7 @@ describe('removeStudentFromCourses', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
@@ -74,7 +74,7 @@ describe('removeStudentFromClasses', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
@@ -129,7 +129,7 @@ describe('generateRegistrationLink', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
@@ -264,7 +264,7 @@ describe('enforceRoleHierarchyOnCreate', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
@@ -412,7 +412,7 @@ describe('checkUniqueEmail', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { classModel } = require('../../../../src/services/user-group/model');
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
@@ -9,7 +9,7 @@ describe('classes service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

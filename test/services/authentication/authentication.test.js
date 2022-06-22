@@ -3,7 +3,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 const should = chai.should();
 
@@ -15,7 +15,7 @@ describe('start server', () => {
 
 	let server;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		accountService = app.service('accounts');
 		server = await app.listen(0);
 	});

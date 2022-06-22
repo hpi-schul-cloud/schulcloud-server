@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 
 const { createLessonContents } = testObjects.lessons;
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
@@ -30,7 +30,7 @@ describe('when removing user data in courses', async () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

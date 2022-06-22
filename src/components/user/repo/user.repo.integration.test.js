@@ -3,7 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const userRepo = require('./user.repo');
 const { NotFound } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -20,7 +20,7 @@ describe('user repository', () => {
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 
 const courseGroupsRepo = require('./courseGroups.repo');
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
@@ -22,7 +22,7 @@ describe('when having a user in courseGroup', async () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
