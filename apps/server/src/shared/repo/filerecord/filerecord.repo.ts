@@ -56,14 +56,6 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
-	async findByParentType(parentType: FileRecordParentType): Promise<FileRecord[]> {
-		const fileRecords = await this._em.find(this.entityName, {
-			parentType,
-		});
-
-		return fileRecords;
-	}
-
 	private async findAndCount(
 		scope: FileRecordScope,
 		options?: IFindOptions<FileRecord>

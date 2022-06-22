@@ -1,9 +1,7 @@
 /* istanbul ignore file */
-
-import { Connection, EntityName } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FileRecordParentType, Task } from '@shared/domain';
+import { FileRecord, FileRecordParentType, Task } from '@shared/domain';
 import { FileFilerecord } from '../types';
 
 // Temporary functionality for migration to new fileservice
@@ -22,5 +20,17 @@ export class DeleteOrphanedFilesRepo {
 		const fileFilerecords = await this._em.getConnection().find('files_filerecords', {});
 
 		return fileFilerecords as FileFilerecord[];
+	}
+
+	async findFilerecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
+		const fileRecords = await this._em.find(
+			FileRecord,
+			{
+				parentType,
+			},
+			{ fields: ['id', '_parentId'] }
+		);
+
+		return fileRecords;
 	}
 }
