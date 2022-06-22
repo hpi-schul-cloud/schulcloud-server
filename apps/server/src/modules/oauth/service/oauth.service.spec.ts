@@ -182,10 +182,12 @@ describe('OAuthService', () => {
 					provide: UserRepo,
 					useValue: {
 						findById(sub: string) {
+							if (sub === '') {
+								throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+							}
 							if (sub) {
 								return defaultUser;
 							}
-
 							return new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
 						},
 					},
@@ -302,7 +304,8 @@ describe('OAuthService', () => {
 			expect(user).toBe(defaultUser);
 		});
 		it('should return an error if no User is found by this Id', async () => {
-			return expect(service.findUser(defaultDecodedJWT, '')).toThrow(
+			defaultDecodedJWT.sub = '';
+			return expect(service.findUser(defaultDecodedJWT, '')).rejects.toEqual(
 				new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound')
 			);
 		});
@@ -324,18 +327,18 @@ describe('OAuthService', () => {
 	});
 
 	describe('processOAuth', () => {
-		it('should do the process successfully', async () => {
+		it('should do the process successfully and redirect to iserv', async () => {
 			jest.spyOn(service, 'validateToken').mockResolvedValue(defaultDecodedJWT);
 			const response = await service.processOAuth(defaultQuery, defaultIservSystemId);
 			expect(response.redirect).toStrictEqual(iservRedirectMock);
 			expect(response.jwt).toStrictEqual(defaultJWT);
 		});
-		it('should return an Error if processOAuth failed', async () => {
-			jest.spyOn(service, 'validateToken').mockResolvedValue(defaultDecodedJWT);
-			// jest.spyOn(service, 'getOAuthError').mockResolvedValue();
-			const response = await service.processOAuth(defaultQuery, '');
-			expect(response.jwt).toStrictEqual(defaultJWT);
-		});
+		// it('should return an Error if processOAuth failed', async () => {
+		// 	jest.spyOn(service, 'validateToken').mockResolvedValue(defaultDecodedJWT);
+		// 	// jest.spyOn(service, 'getOAuthError').mockResolvedValue();
+		// 	const response = await service.processOAuth(defaultQuery, '');
+		// 	expect(response.jwt).toStrictEqual(defaultJWT);
+		// });
 		it('should return an error if processOAuth failed', async () => {
 			const errorResponse = await service.processOAuth(defaultQuery, '');
 			expect(errorResponse).toEqual(defaultErrorResponse);
