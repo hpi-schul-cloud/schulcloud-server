@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const { Forbidden } = require('../../../src/errors');
 
 const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionError');
@@ -26,7 +26,7 @@ describe('LdapConfigService', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

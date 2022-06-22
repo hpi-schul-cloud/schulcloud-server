@@ -12,14 +12,14 @@ const {
 	createTestUser,
 	createTestLesson,
 	generateRequestParamsFromUser,
-} = require('../helpers/testObjects')(appPromise);
+} = require('../helpers/testObjects')(appPromise());
 
 describe('material service', () => {
 	let app;
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 
 
 const oneHour = 600000;
@@ -11,7 +11,7 @@ describe('courses scopelist service', () => {
 	let app;
 	let courseScopeListService;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		courseScopeListService = app.service('/users/:scopeId/courses');
 	});
 
@@ -291,7 +291,7 @@ describe('courses scopelist service integration', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		courseScopeListService = app.service('/users/:scopeId/courses');
 		server = await app.listen(0);
 	});

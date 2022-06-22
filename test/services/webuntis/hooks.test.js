@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const { requireDatasourceId } = require('../../../src/services/webuntis/hooks');
 
 describe('webuntis metadata hooks', () => {
@@ -9,7 +9,7 @@ describe('webuntis metadata hooks', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
