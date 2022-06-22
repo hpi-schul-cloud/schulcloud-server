@@ -28,7 +28,7 @@ describe('MessengerConfigService', () => {
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 			delete require.cache[require.resolve('../../../../src/app')];
 			// eslint-disable-next-line global-require
-			app = await require('../../../../src/app');
+			app = await require('../../../../src/app')();
 			testObjects = testHelper(app);
 			server = await app.listen(0);
 			schoolServiceListeners = app.service('schools').listeners();
@@ -132,7 +132,7 @@ describe('MessengerConfigService', () => {
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', false);
 			delete require.cache[require.resolve('../../../../src/app')];
 			// eslint-disable-next-line global-require
-			app = await require('../../../../src/app');
+			app = await require('../../../../src/app')();
 			// eslint-disable-next-line global-require
 			server = await app.listen(0);
 		});

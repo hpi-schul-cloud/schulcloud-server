@@ -15,8 +15,8 @@ export class AccountResponse {
 	username: string;
 
 	@ApiProperty()
-	userId: string;
+	userId?: string;
 
 	@ApiProperty()
-	activated: boolean;
+	activated?: boolean;
 }

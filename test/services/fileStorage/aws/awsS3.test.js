@@ -9,7 +9,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const mockAws = require('./s3.mock');
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { schoolModel } = require('../../../../src/services/school/model');
 
 chai.use(chaiHttp);

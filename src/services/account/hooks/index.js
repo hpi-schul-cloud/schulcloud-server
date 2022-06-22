@@ -23,6 +23,11 @@ const sanitizeUsername = (hook) => {
 };
 
 // This is only for SSO
+// 3 supported strategies for validation:
+// - Moodle strategy is deprecated
+// - iServ can be used
+// - LDAP is not implemented
+// This will NOT be ported to Nest, because it causes only overhead and has no benefits
 const validateCredentials = async (hook) => {
 	const { username, password, systemId } = hook.data;
 

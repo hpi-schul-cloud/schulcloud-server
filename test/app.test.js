@@ -12,7 +12,7 @@ describe('Feathers application tests', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

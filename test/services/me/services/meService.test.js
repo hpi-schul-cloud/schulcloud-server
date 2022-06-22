@@ -2,7 +2,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 describe('me service', () => {
@@ -11,7 +11,7 @@ describe('me service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);
 	});

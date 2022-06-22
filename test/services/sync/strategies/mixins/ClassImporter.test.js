@@ -4,7 +4,7 @@ const { mix } = require('mixwith');
 const ClassImporter = require('../../../../../src/services/sync/strategies/mixins/ClassImporter');
 const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const appPromise = require('../../../../../src/app');
-const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(appPromise);
+const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(appPromise());
 
 describe('Syncer Mixins', () => {
 	describe('ClassImporter', () => {
@@ -17,7 +17,7 @@ describe('Syncer Mixins', () => {
 		let server;
 
 		before(async () => {
-			app = await appPromise;
+			app = await appPromise();
 			server = await app.listen(0);
 		});
 
