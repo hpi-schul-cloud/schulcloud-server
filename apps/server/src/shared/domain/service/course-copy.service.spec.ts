@@ -6,11 +6,13 @@ import { Course } from '../entity';
 import { CopyElementType, CopyStatusEnum } from '../types';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
+import { NameCopyService } from './name-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
 	let copyService: CourseCopyService;
 	let boardCopyService: DeepMocked<BoardCopyService>;
+	let nameCopyService: DeepMocked<NameCopyService>;
 
 	let orm: MikroORM;
 
@@ -30,11 +32,16 @@ describe('course copy service', () => {
 					provide: BoardCopyService,
 					useValue: createMock<BoardCopyService>(),
 				},
+				{
+					provide: NameCopyService,
+					useValue: createMock<NameCopyService>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(CourseCopyService);
 		boardCopyService = module.get(BoardCopyService);
+		nameCopyService = module.get(NameCopyService);
 	});
 
 	describe('handleCopyCourse', () => {
@@ -50,9 +57,11 @@ describe('course copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: boardCopy,
 				};
+				const courseCopyName = 'Copy';
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
+				nameCopyService.deriveCopyName.mockReturnValue(courseCopyName);
 
-				return { user, originalCourse, boardCopyStatus };
+				return { user, originalCourse, boardCopyStatus, courseCopyName };
 			};
 
 			it('should assign user as teacher', () => {
@@ -81,7 +90,7 @@ describe('course copy service', () => {
 				expect(course.school).toEqual(destinationSchool);
 			});
 
-			it('should set name of course and extend it by number in brackets', () => {
+			it('should use nameCopyService', () => {
 				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
@@ -90,21 +99,19 @@ describe('course copy service', () => {
 				});
 
 				const course = status.copyEntity as Course;
-				expect(course.name).toEqual(`${originalCourse.name} (1)`);
+				expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(course.name);
 			});
 
-			it('should set name of course and increase an existing number in brackets', () => {
-				const { originalCourse, user } = setup();
-				const basename = originalCourse.name;
-				originalCourse.name += ' (12)';
+			it('should set name of copy', () => {
+				const { originalCourse, user, courseCopyName } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
 					user,
 				});
 
-				const course = status?.copyEntity as Course;
-				expect(course.name).toEqual(`${basename} (13)`);
+				const course = status.copyEntity as Course;
+				expect(course.name).toEqual(courseCopyName);
 			});
 
 			it('should set color of course', () => {
