@@ -4,9 +4,11 @@ import { EntityId, LanguageType, PermissionService, User } from '@shared/domain'
 import { UserRepo } from '@shared/repo';
 import { ChangeLanguageParams } from '../controller/dto';
 import { IUserConfig } from '../interfaces';
+import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 
 @Injectable()
-export class UserUC {
+export class UserUc {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
@@ -33,5 +35,9 @@ export class UserUC {
 		await this.userRepo.save(user);
 
 		return true;
+	}
+
+	async save(user: UserDto): Promise<void> {
+		return this.userRepo.save(UserMapper.mapFromDtoToEntity(user));
 	}
 }

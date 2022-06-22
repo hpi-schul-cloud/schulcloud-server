@@ -5,7 +5,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { ResolvedUserMapper } from '../mapper';
-import { UserUC } from '../uc/user.uc';
+import { UserUc } from '../uc/user-uc.service';
 
 import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
 
@@ -13,7 +13,7 @@ import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from '
 @Authenticate('jwt')
 @Controller('user')
 export class UserController {
-	constructor(private readonly userUc: UserUC) {}
+	constructor(private readonly userUc: UserUc) {}
 
 	@Get('me')
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {

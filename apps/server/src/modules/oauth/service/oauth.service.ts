@@ -99,16 +99,14 @@ export class OAuthService {
 		// TODO in general
 
 		try {
-			const user = await this.userRepo.findById(decodedJwt.sub);
-			return user;
+			return await this.userRepo.findById(decodedJwt.sub);
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
 		}
 	}
 
 	async getJWTForUser(user: User): Promise<string> {
-		const jwtResponse: string = await this.jwtService.generateJwt(user.id);
-		return jwtResponse;
+		return this.jwtService.generateJwt(user.id);
 	}
 
 	buildResponse(system: System, queryToken: OauthTokenResponse) {
@@ -130,9 +128,7 @@ export class OAuthService {
 			const response = this.buildResponse(system, queryToken);
 			const oauthResponse = this.getRedirect(response);
 			oauthResponse.jwt = jwtResponse;
-			return await new Promise<OAuthResponse>((resolve) => {
-				resolve(oauthResponse);
-			});
+			return oauthResponse;
 		} catch (error) {
 			this.logger.log(error);
 			return this.getOAuthError(error as string);

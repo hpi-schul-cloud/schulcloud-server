@@ -5,10 +5,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { UserUC } from './user.uc';
+import { UserUc } from './user-uc.service';
 
 describe('UserUc', () => {
-	let service: UserUC;
+	let service: UserUc;
 	let userRepo: DeepMocked<UserRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let orm: MikroORM;
@@ -25,7 +25,7 @@ describe('UserUc', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				UserUC,
+				UserUc,
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -41,7 +41,7 @@ describe('UserUc', () => {
 			],
 		}).compile();
 
-		service = module.get(UserUC);
+		service = module.get(UserUc);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
