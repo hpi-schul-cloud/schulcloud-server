@@ -333,12 +333,6 @@ describe('OAuthService', () => {
 			expect(response.redirect).toStrictEqual(iservRedirectMock);
 			expect(response.jwt).toStrictEqual(defaultJWT);
 		});
-		// it('should return an Error if processOAuth failed', async () => {
-		// 	jest.spyOn(service, 'validateToken').mockResolvedValue(defaultDecodedJWT);
-		// 	// jest.spyOn(service, 'getOAuthError').mockResolvedValue();
-		// 	const response = await service.processOAuth(defaultQuery, '');
-		// 	expect(response.jwt).toStrictEqual(defaultJWT);
-		// });
 		it('should return an error if processOAuth failed', async () => {
 			const errorResponse = await service.processOAuth(defaultQuery, '');
 			expect(errorResponse).toEqual(defaultErrorResponse);
