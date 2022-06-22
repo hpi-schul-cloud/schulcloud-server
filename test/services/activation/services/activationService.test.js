@@ -8,11 +8,13 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestActivation, cleanup } =
-	require('../../helpers/testObjects')(appPromise());
+const { createTestUser, createTestAccount, createTestActivation, cleanup } = require('../../helpers/testObjects')(
+	appPromise()
+);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { customErrorMessages } = util;
 
@@ -31,9 +33,11 @@ describe('activation/services activationService', () => {
 	let app;
 	let server;
 	let activationService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		server = await app.listen(0);
 		activationService = app.service('activation');
 	});
@@ -41,6 +45,8 @@ describe('activation/services activationService', () => {
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
+		await cleanup();
 	});
 
 	it('registered the activation service', () => {
@@ -65,7 +71,7 @@ describe('activation/services activationService', () => {
 		expect(entries1.entry).to.have.lengthOf(0);
 	});
 
-	it('initiate entry with valid activationCode', async () => {
+	it('initiate an entry with valid activationCode', async () => {
 		const { entry, user } = await createEntry();
 		const credentials = { username: user.email, password: user.email };
 		const account = await createTestAccount(credentials, 'local', user);
@@ -78,13 +84,7 @@ describe('activation/services activationService', () => {
 		expect(res.success).to.be.true;
 
 		const changedUser = await util.getUser(app, user._id);
-		const changedAccounts = await app.service('/accounts').find({
-			query: {
-				userId: user._id,
-			},
-		});
-		expect(changedAccounts).to.have.lengthOf(1);
-		const changedAccount = changedAccounts[0];
+		const changedAccount = await app.service('nest-account-service').findById(account._id.toString());
 
 		expect(user.email).to.not.be.equal(changedUser.email);
 		expect(changedUser.email).to.be.equal(entry.quarantinedObject);
