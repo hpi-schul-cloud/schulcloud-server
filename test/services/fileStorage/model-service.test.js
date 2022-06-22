@@ -10,7 +10,7 @@ describe('files model service', () => {
 	let modelService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		modelService = app.service('files');
 		server = await app.listen(0);
 	});
