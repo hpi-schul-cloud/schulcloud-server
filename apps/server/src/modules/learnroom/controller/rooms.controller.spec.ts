@@ -4,6 +4,7 @@ import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId, ICurrentUser } f
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
+import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
 import { BoardResponse, CopyApiResponse } from './dto';
 import { RoomsController } from './rooms.controller';
@@ -43,6 +44,10 @@ describe('rooms controller', () => {
 				{
 					provide: CourseCopyUC,
 					useValue: createMock<CourseCopyUC>(),
+				},
+				{
+					provide: LessonCopyUC,
+					useValue: createMock<LessonCopyUC>(),
 				},
 				{
 					provide: RoomBoardResponseMapper,

@@ -145,7 +145,9 @@ describe('board copy service', () => {
 				const user = userFactory.build();
 
 				lessonCopyService.copyLesson.mockReturnValue({
-					status: { title: originalLesson.name, type: CopyElementType.LESSON, status: CopyStatusEnum.NOT_IMPLEMENTED },
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				});
 
 				return { destinationCourse, originalBoard, user, originalLesson };

@@ -9,7 +9,7 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
-import { LessonCopyUc } from '@src/modules/learnroom/uc/lesson-copy.uc';
+import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { AuthorizationModule } from '../authorization';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
@@ -45,7 +45,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		RoomBoardDTOFactory,
 		BoardCopyService,
 		LessonCopyService,
-		LessonCopyUc,
+		LessonCopyUC,
 		TaskCopyService,
 		CourseCopyService,
 		CourseCopyUC,

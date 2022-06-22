@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { LessonCopyUc } from '@src/modules/learnroom/uc/lesson-copy.uc';
+import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -20,7 +20,7 @@ export class RoomsController {
 		private readonly roomsUc: RoomsUc,
 		private readonly mapper: RoomBoardResponseMapper,
 		private readonly courseCopyUc: CourseCopyUC,
-		private readonly lessonCopyUc: LessonCopyUc
+		private readonly lessonCopyUc: LessonCopyUC
 	) {}
 
 	@Get(':roomid/board')

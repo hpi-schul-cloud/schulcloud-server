@@ -10,7 +10,7 @@ export type LessonCopyParentParams = {
 };
 
 @Injectable()
-export class LessonCopyUc {
+export class LessonCopyUC {
 	constructor(
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,

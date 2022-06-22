@@ -39,9 +39,9 @@ describe('course copy service', () => {
 			it('should set status title to the name of the lesson', () => {
 				const { destinationCourse, originalLesson, user } = setup();
 
-				const result = copyService.copyLesson({ destinationCourse, originalLesson, user });
+				const result = copyService.copyLesson({ originalLesson, destinationCourse, user });
 
-				expect(result.status.title).toEqual(originalLesson.name);
+				expect(result.title).toEqual(originalLesson.name);
 			});
 		});
 	});
