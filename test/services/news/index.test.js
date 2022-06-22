@@ -10,7 +10,7 @@ describe('news service', () => {
 	let newsService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		newsService = app.service('news');
 	});
 

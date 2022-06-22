@@ -21,7 +21,7 @@ export class Account extends BaseEntityWithTimestamps {
 	credentialHash?: string;
 
 	@Property({ nullable: true, unique: false })
-	userId: ObjectId;
+	userId?: ObjectId;
 
 	@Property({ nullable: true })
 	systemId?: ObjectId;

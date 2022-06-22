@@ -2,14 +2,14 @@
 const { expect } = require('chai');
 const rp = require('request-promise-native');
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
 const getServiceRespondsDependingOnUserPermissions = async (testData) => {
-	const app = await appPromise;
+	const app = await appPromise();
 	const getService = app.service('videoconference/:scopeName');
 
 	it('test get with start or join permission works after creation', async () => {
@@ -44,7 +44,7 @@ const getServiceRespondsDependingOnUserPermissions = async (testData) => {
 };
 
 const expectNoCreatePermission = async (testData) => {
-	const app = await appPromise;
+	const app = await appPromise();
 	const createService = app.service('videoconference');
 	expect(() => createService.create(testData.serviceParams), 'no authentication should fail').to.throw;
 	expect(
@@ -54,7 +54,7 @@ const expectNoCreatePermission = async (testData) => {
 };
 
 const expectNoGetPermission = async (testData) => {
-	const app = await appPromise;
+	const app = await appPromise();
 	const getService = app.service('videoconference/:scopeName');
 	expect(() =>
 		getService.get(testData.serviceParams.scopeId, {
@@ -80,7 +80,7 @@ describe('videoconference service', function slowServiceTests() {
 	let server;
 
 	before('create test objects', async () => {
-		app = await appPromise;
+		app = await appPromise();
 		createService = app.service('videoconference');
 		getService = app.service('videoconference/:scopeName');
 		server = await app.listen();

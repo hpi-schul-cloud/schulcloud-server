@@ -8,7 +8,7 @@ chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../src/app');
 const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(
-	appPromise
+	appPromise()
 );
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
@@ -27,7 +27,7 @@ describe('activation/hooks utils', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

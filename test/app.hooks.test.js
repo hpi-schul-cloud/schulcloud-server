@@ -10,7 +10,7 @@ const {
 	createTestUser,
 	generateRequestParamsFromUser,
 	createTestSchool,
-} = require('./services/helpers/testObjects')(appPromise);
+} = require('./services/helpers/testObjects')(appPromise());
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -413,7 +413,7 @@ describe('removeObjectIdInData hook', () => {
 	let app;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		user = await createTestUser();
 	});
