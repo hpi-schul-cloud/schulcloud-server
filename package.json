@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "28.1.0",
+	"version": "28.2.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -25,7 +25,7 @@
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
-		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run coverage",
+		"feathers:test": "cross-env NODE_ENV=test npm run setup && npm run nest:build && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup && npm run mocha-inspect",
 		"setup": "npm run setup:db",
 		"setup:db": "npm run nest:start:console -- database seed",
@@ -41,6 +41,7 @@
 		"mocha-watch": "cross-env NODE_ENV=test mocha",
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect --no-timeout --exit",
 		"mocha-metrics": "cross-env NODE_ENV=test mocha \"test/routes/*.metrics.js\" --exclude \"{test,src}/**/*.test.{js,ts}\" --no-timeout --exit",
+		"mocha-suit": "cross-env NODE_ENV=test mocha --exit --timeout 15000 --grep ^PermissionService",
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
@@ -82,7 +83,7 @@
 		"schoolImport": "node ./scripts/schoolImport.js"
 	},
 	"dependencies": {
-		"@aws-sdk/lib-storage": "^3.50.0",
+		"@aws-sdk/lib-storage": "^3.100.0",
 		"@feathersjs/authentication": "^4.5.11",
 		"@feathersjs/authentication-local": "^4.5.11",
 		"@feathersjs/configuration": "^4.5.11",

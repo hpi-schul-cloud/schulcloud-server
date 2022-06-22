@@ -1,21 +1,25 @@
 const { expect } = require('chai');
-
 const appPromise = require('../../../../src/app');
-
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
+const { setupNestServices } = require('../../../utils/setup.nest.services');
 
 describe('SkipRegistration integration', () => {
 	let app;
 	let server;
+	let nestApp;
+	let orm;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
+		({ nestApp, orm } = await setupNestServices(app));
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await nestApp.close();
+		await orm.close();
 	});
 
 	describe('route for single user', () => {

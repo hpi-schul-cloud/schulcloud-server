@@ -1,28 +1,54 @@
+import { IsOptional, IsMongoId, IsString, Matches, IsNotEmpty, IsBoolean, IsDate } from 'class-validator';
 import { EntityId } from '@shared/domain';
+import { passwordPattern } from '../../controller/dto/password-pattern';
 
 export class AccountSaveDto {
+	@IsOptional()
+	@IsMongoId()
 	readonly id?: EntityId;
 
+	@IsOptional()
+	@IsDate()
 	readonly createdAt?: Date;
 
+	@IsOptional()
+	@IsDate()
 	readonly updatedAt?: Date;
 
+	@IsString()
+	@IsNotEmpty()
 	username: string;
 
+	@IsOptional()
+	@Matches(passwordPattern)
 	password?: string;
 
+	@IsOptional()
+	@IsString()
 	token?: string;
 
+	@IsOptional()
+	@IsString()
 	credentialHash?: string;
 
-	userId: EntityId;
+	@IsOptional()
+	@IsMongoId()
+	userId?: EntityId;
 
+	@IsOptional()
+	@IsMongoId()
 	systemId?: EntityId;
 
+	@IsOptional()
+	@IsDate()
 	lasttriedFailedLogin?: Date;
 
+	@IsOptional()
+	@IsDate()
 	expiresAt?: Date;
 
+	@IsOptional()
+	@IsBoolean()
 	activated?: boolean;
 
 	constructor(props: AccountSaveDto) {

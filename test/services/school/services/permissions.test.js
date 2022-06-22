@@ -13,8 +13,8 @@ describe('permissons service', () => {
 	let testParams;
 
 	before(async () => {
-		app = await appPromise;
-		testHelper = testObjects(appPromise);
+		app = await appPromise();
+		testHelper = testObjects(appPromise());
 		server = await app.listen(0);
 		testSchool = await testHelper.createTestSchool();
 		testUser = await testHelper.createTestUser({ schoolId: testSchool._id, roles: ['administrator'] });

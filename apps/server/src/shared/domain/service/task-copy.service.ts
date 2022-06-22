@@ -9,14 +9,9 @@ export type TaskCopyParams = {
 	user: User;
 };
 
-export type TaskCopyResponse = {
-	copy: Task;
-	status: CopyStatus;
-};
-
 @Injectable()
 export class TaskCopyService {
-	copyTaskMetadata(params: TaskCopyParams): TaskCopyResponse {
+	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
 			name: params.originalTask.name,
 			description: params.originalTask.description,
@@ -35,7 +30,7 @@ export class TaskCopyService {
 			elements,
 		};
 
-		return { copy, status };
+		return status;
 	}
 
 	private defaultTaskStatusElements(): CopyStatus[] {

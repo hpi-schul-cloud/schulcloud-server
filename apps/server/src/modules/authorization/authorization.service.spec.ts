@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, ALL_RULES, BaseEntity, PermissionContextBuilder } from '@shared/domain';
+import { ALL_RULES, BaseEntity, PermissionContextBuilder } from '@shared/domain';
 import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService } from './authorization.service';

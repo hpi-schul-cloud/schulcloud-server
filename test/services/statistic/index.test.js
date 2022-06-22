@@ -5,7 +5,7 @@ describe('statistic service', () => {
 	let app;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 	});
 
 	it('registered the statistics service', () => {

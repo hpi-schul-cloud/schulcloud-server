@@ -52,7 +52,7 @@ describe('Etherpad services', () => {
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
-			app = await require('../../../src/app');
+			app = await require('../../../src/app')();
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 

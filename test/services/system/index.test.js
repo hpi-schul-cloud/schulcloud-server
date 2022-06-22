@@ -1,14 +1,14 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('systemId service', () => {
 	let app;
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen();
 	});
 

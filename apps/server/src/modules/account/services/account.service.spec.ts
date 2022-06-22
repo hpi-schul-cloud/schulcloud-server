@@ -5,9 +5,9 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Role, School, User, RoleName, Permission } from '@shared/domain';
 import { AccountRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountService } from './account.service';
-import { AccountDto } from './dto/account.dto';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -16,7 +16,7 @@ describe('AccountService', () => {
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
 
-	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+	const defaultPassword = 'Schucloud1!';
 
 	let mockSchool: School;
 
@@ -54,14 +54,14 @@ describe('AccountService', () => {
 							return Promise.resolve();
 						}),
 						findByUserId: (userId: EntityId): Promise<Account | null> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 							if (account) {
 								return Promise.resolve(account);
 							}
 							return Promise.resolve(null);
 						},
 						findByUserIdOrFail: (userId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.userId.toString() === userId);
+							const account = mockAccounts.find((tempAccount) => tempAccount.userId?.toString() === userId);
 
 							if (account) {
 								return Promise.resolve(account);
@@ -106,8 +106,8 @@ describe('AccountService', () => {
 			school: mockSchool,
 			roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
 		});
-		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPasswordHash });
-		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPasswordHash });
+		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id, password: defaultPassword });
+		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
 	});
@@ -205,7 +205,7 @@ describe('AccountService', () => {
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
 				systemId: '012345678912',
-				password: defaultPasswordHash,
+				password: defaultPassword,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -217,7 +217,6 @@ describe('AccountService', () => {
 					username: accountToSave.username,
 					userId: new ObjectId(accountToSave.userId),
 					systemId: new ObjectId(accountToSave.systemId),
-					password: defaultPasswordHash,
 					createdAt: accountToSave.createdAt,
 					updatedAt: accountToSave.updatedAt,
 				})
@@ -230,7 +229,7 @@ describe('AccountService', () => {
 				updatedAt: new Date(),
 				username: 'asdf@asdf.de',
 				userId: mockUserWithoutAccount.id,
-				password: defaultPasswordHash,
+				password: defaultPassword,
 			} as AccountDto;
 			(accountRepo.findById as jest.Mock).mockClear();
 			(accountRepo.save as jest.Mock).mockClear();
@@ -243,7 +242,26 @@ describe('AccountService', () => {
 					updatedAt: accountToSave.updatedAt,
 					username: accountToSave.username,
 					userId: new ObjectId(accountToSave.userId),
-					password: defaultPasswordHash,
+				})
+			);
+		});
+
+		it('should encrypt password', async () => {
+			const accountToSave = {
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				username: 'asdf@asdf.de',
+				userId: mockUserWithoutAccount.id,
+				systemId: '012345678912',
+				password: defaultPassword,
+			} as AccountDto;
+			(accountRepo.findById as jest.Mock).mockClear();
+			(accountRepo.save as jest.Mock).mockClear();
+			await accountService.save(accountToSave);
+			expect(accountRepo.findById).not.toHaveBeenCalled();
+			expect(accountRepo.save).not.toHaveBeenCalledWith(
+				expect.objectContaining({
+					password: defaultPassword,
 				})
 			);
 		});

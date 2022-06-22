@@ -1,20 +1,26 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices } = require('../../../utils/setup.nest.services');
 
 describe('skipRegistration service', () => {
 	let skipRegistrationService;
 	let app;
 	let server;
+	let nestApp;
+	let orm;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		skipRegistrationService = app.service('/users/:userId/skipregistration');
 		server = await app.listen(0);
+		({ nestApp, orm } = await setupNestServices(app));
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await orm.close();
+		await nestApp.close();
 	});
 
 	it('registered the users service', () => {
@@ -133,10 +139,10 @@ describe('skipRegistration service', () => {
 	});
 
 	it('correctly creates an account', async () => {
-		let user = await testObjects.createTestUser({
+		const user = await testObjects.createTestUser({
 			roles: ['student'],
 		});
-		user = await app.service('users').patch(user._id, { importHash: 'someHash' });
+		await app.service('users').patch(user._id, { importHash: 'someHash' });
 		await skipRegistrationService.create(
 			{
 				parent_privacyConsent: true,
@@ -148,10 +154,8 @@ describe('skipRegistration service', () => {
 			},
 			{ route: { userId: user._id } }
 		);
-		const accountResult = await app.service('accounts').find({ query: { userId: user._id } });
-		expect(accountResult).to.not.equal(undefined);
-		expect(accountResult.length).to.equal(1);
-		const account = accountResult[0];
+		const account = await app.service('nest-account-service').findByUserId(user._id.toString());
+		expect(account).to.not.equal(null);
 		expect(account.activated).to.equal(true);
 		expect(account.password).to.not.equal(undefined);
 	});

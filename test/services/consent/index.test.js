@@ -7,7 +7,7 @@ const { BadRequest } = require('../../../src/errors');
 const appPromise = require('../../../src/app');
 const globals = require('../../../config/globals');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 let consentService;
 let consentVersionService;
@@ -18,7 +18,7 @@ describe('consent service', () => {
 	let app;
 	let server;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		consentService = app.service('/consents');
 		consentService.setup(app);
 		consentVersionService = app.service('consentVersions');

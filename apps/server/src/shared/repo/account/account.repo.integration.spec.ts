@@ -48,7 +48,7 @@ describe('account repo', () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
-			const account = await repo.findByUserId(accountToFind.userId);
+			const account = await repo.findByUserId(accountToFind.userId ?? '');
 			expect(account?.id).toEqual(accountToFind.id);
 		});
 	});
@@ -58,8 +58,8 @@ describe('account repo', () => {
 			const accountToFind = accountFactory.build();
 			await em.persistAndFlush(accountToFind);
 			em.clear();
-			const account = await repo.findByUserIdOrFail(accountToFind.userId);
-			expect(account?.id).toEqual(accountToFind.id);
+			const account = await repo.findByUserIdOrFail(accountToFind.userId ?? '');
+			expect(account.id).toEqual(accountToFind.id);
 		});
 
 		it('should throw if id does not exist', async () => {
@@ -76,7 +76,7 @@ describe('account repo', () => {
 			const account = accountFactory.build({ userId: user.id });
 			await em.persistAndFlush([user, account]);
 
-			const reference = repo.getObjectReference(User, account.userId);
+			const reference = repo.getObjectReference(User, account.userId ?? '');
 
 			expect(reference).toBe(user);
 		});

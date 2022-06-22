@@ -1,14 +1,14 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { ManagementModule } from './modules/management/management.module';
+import { ManagementServerModule } from './modules/management/management-server.module';
 import { enableOpenApiDocs } from './shared/controller/swagger';
 
 async function bootstrap() {
@@ -18,7 +18,7 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ManagementModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
 
 	// customize nest app settings
 	nestApp.enableCors();
