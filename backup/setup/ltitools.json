@@ -20,7 +20,8 @@
 		"customs": [],
 		"privacy_permission": "pseudonymous",
 		"roles": [],
-		"__v": 0
+		"__v": 0,
+		"isHidden": false
 	},
 	{
 		"_id": {
@@ -42,6 +43,7 @@
 		"updatedAt": {
 			"$date": "2020-01-27T15:42:13.633Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"isHidden": false
 	}
 ]
