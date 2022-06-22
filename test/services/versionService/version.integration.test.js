@@ -20,7 +20,7 @@ describe('version service integration tests', function test() {
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
 		// eslint-disable-next-line global-require
 		const appPromise = require('../../../src/app');
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

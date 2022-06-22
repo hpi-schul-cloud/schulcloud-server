@@ -5,7 +5,7 @@ const { decode } = require('jsonwebtoken');
 const { expect } = chai;
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('supportJWTService', () => {
 	let app;
@@ -16,7 +16,7 @@ describe('supportJWTService', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		supportJWTService = app.service('accounts/supportJWT');
 		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);

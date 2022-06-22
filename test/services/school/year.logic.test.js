@@ -3,8 +3,8 @@ const appPromise = require('../../../src/app');
 const SchoolYearFacade = require('../../../src/services/school/logic/year');
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const { cleanup } = require('../helpers/testObjects')(appPromise);
-const { create: createSchool } = require('../helpers/services/schools')(appPromise);
+const { cleanup } = require('../helpers/testObjects')(appPromise());
+const { create: createSchool } = require('../helpers/services/schools')(appPromise());
 
 const { expect } = chai;
 

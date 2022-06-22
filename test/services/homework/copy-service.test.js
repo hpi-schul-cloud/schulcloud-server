@@ -1,6 +1,6 @@
 const chai = require('chai');
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const { homeworkModel } = require('../../../src/services/homework/model');
 
 const { expect } = chai;
@@ -12,7 +12,7 @@ describe('homework copy service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
 	});

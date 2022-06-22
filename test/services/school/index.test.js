@@ -9,15 +9,15 @@ const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
-const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
+const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise());
 
 describe('school service', () => {
 	let app;
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
@@ -576,7 +576,7 @@ describe('years service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen();
 	});
 
@@ -596,7 +596,7 @@ describe('schoolsList service', () => {
 	let schoolsListService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen();
 		schoolsListService = app.service('schoolsList');
 	});

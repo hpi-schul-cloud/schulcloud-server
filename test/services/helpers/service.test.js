@@ -5,7 +5,7 @@ const appPromise = require('../../../src/app');
 const { SMTP_SENDER } = require('../../../config/globals');
 
 describe('Mail Service', async () => {
-	const app = await appPromise;
+	const app = await appPromise();
 	const mailService = app.service('/mails');
 	let nestMailService;
 
