@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
-import { FileDto } from '../dto';
-import { FileRecordListResponse, FileRecordParamsParentTypeEnum, FileRecordResponse } from '../fileStorageApi/v3';
+import { FileRecordListResponse, FileRecordResponse } from '../fileStorageApi/v3';
 import { FileStorageClientMapper } from './file-storage-client.mapper';
 
 describe('FileStorageClientMapper', () => {
 	const schoolId = 'school123';
+
 	const record: FileRecordResponse = {
 		id: 'id123',
 		name: 'name',
@@ -15,7 +15,9 @@ describe('FileStorageClientMapper', () => {
 		securityCheckStatus: 'pending',
 		parentType: 'tasks',
 	};
+
 	const list: FileRecordListResponse = { data: [record], total: 1, skip: 0, limit: 100 };
+
 	const response: AxiosResponse<FileRecordListResponse> = {
 		data: list,
 		status: 200,

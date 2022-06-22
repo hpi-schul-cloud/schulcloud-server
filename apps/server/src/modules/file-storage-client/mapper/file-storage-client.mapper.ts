@@ -1,4 +1,4 @@
-import { EntityId, FileRecordParentType } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { AxiosResponse } from 'axios';
 import { FileRecordListResponse, FileRecordParamsParentTypeEnum, FileRecordResponse } from '../fileStorageApi/v3';
 import { FileDto } from '../dto';

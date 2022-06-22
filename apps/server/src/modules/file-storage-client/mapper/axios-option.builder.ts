@@ -1,9 +1,9 @@
 import { AxiosRequestConfig } from 'axios';
-import { FileRequestInfo } from '../interfaces';
+import { FileRequestInfo, FileRequestOptions } from '../interfaces';
 
-export class AxiosOptionBuilder {
-	static build(param: FileRequestInfo, timeout: number): AxiosRequestConfig {
-		const options = { headers: { Authorization: `Bearer ${param.jwt}`, timeout } };
+export class AxiosJWTOptionBuilder {
+	static build(param: FileRequestInfo): AxiosRequestConfig<FileRequestOptions> {
+		const options = { headers: { Authorization: `Bearer ${param.jwt}` } };
 
 		return options;
 	}
