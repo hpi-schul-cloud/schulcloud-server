@@ -21,7 +21,7 @@ const REQUEST_PARAMS = {
 };
 
 const getToken = async ({ userId }) => {
-	const app = await appPromise;
+	const app = await appPromise();
 	const result = app.service('authentication').create(
 		{
 			strategy: 'local',

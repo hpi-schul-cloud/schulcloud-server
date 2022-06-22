@@ -4,13 +4,13 @@ const { BadRequest } = require('../../src/errors');
 const { lookupSchool } = require('../../src/hooks');
 
 const appPromise = require('../../src/app');
-const { createTestUser, cleanup } = require('../services/helpers/testObjects')(appPromise);
+const { createTestUser, cleanup } = require('../services/helpers/testObjects')(appPromise());
 
 describe('#lookupSchool', () => {
 	let app;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 	});
 
 	it('should require authentication to provide a user', async () => {

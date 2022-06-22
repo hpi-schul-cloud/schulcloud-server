@@ -9,8 +9,8 @@ const {
 	teams: teamsHelper,
 	generateRequestParams,
 	createTestAccount,
-} = require('../helpers/testObjects')(appPromise);
-const testHelper = require('../helpers/testObjects')(appPromise);
+} = require('../helpers/testObjects')(appPromise());
+const testHelper = require('../helpers/testObjects')(appPromise());
 
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
@@ -20,7 +20,7 @@ describe('Test team basic methods', () => {
 	let teamService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		teamService = app.service('/teams');
 		server = await app.listen(0);
 	});
@@ -129,7 +129,7 @@ describe('Test team extern add services', () => {
 	let addService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		addService = app.service('/teams/extern/add');
 		addService.setup(app);
 		server = await app.listen();

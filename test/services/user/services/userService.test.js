@@ -4,7 +4,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
@@ -17,7 +17,7 @@ describe('user service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		userService = app.service('users');
 		classesService = app.service('classes');
 		coursesService = app.service('courses');

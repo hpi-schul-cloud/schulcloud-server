@@ -7,8 +7,8 @@ const logger = require('../../../src/logger');
 const appPromise = require('../../../src/app');
 const { schoolModel: School, schoolGroupModel: SchoolGroup } = require('../../../src/services/school/model');
 
-const { cleanup } = require('../helpers/testObjects')(appPromise);
-const { create: createSchool } = require('../helpers/services/schools')(appPromise);
+const { cleanup } = require('../helpers/testObjects')(appPromise());
+const { create: createSchool } = require('../helpers/services/schools')(appPromise());
 
 const { expect } = chai;
 

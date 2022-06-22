@@ -5,7 +5,7 @@ const { expect } = require('chai');
 const sleep = require('util').promisify(setTimeout);
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const DELAY_TIME = 250;
@@ -15,7 +15,7 @@ describe('Test user remove events for teams.', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

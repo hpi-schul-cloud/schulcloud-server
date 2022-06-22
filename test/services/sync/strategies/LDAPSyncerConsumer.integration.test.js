@@ -15,7 +15,7 @@ const { schoolModel } = require('../../../../src/services/school/model');
 const appPromise = require('../../../../src/app');
 const { SyncError } = require('../../../../src/errors/applicationErrors');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -31,7 +31,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 	let ldapConsumer;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		const shouldUseFilter = true;
 		ldapConsumer = new LDAPSyncerConsumer(

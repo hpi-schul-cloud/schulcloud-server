@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const {
 	buildAddUserMessage,
 	buildDeleteCourseMessage,
@@ -16,7 +16,7 @@ describe('messenger synchronizer utils', () => {
 	let configBefore;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		configBefore = Configuration.toObject({ plainSecrets: true });
 

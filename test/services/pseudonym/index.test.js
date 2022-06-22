@@ -12,7 +12,7 @@ const {
 	createTestLtiTool,
 	createTestPseudonym,
 	generateRequestParamsFromUser,
-} = require('../helpers/testObjects')(appPromise); // todo import everything
+} = require('../helpers/testObjects')(appPromise()); // todo import everything
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -47,7 +47,7 @@ describe('pseudonym service', function pseudonymTest() {
 	};
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		pseudonymService = app.service('pseudonym');
 	});

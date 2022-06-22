@@ -3,7 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const accountRepo = require('./account.repo');
 const accountModel = require('../../../services/account/model');
 
@@ -16,7 +16,7 @@ describe('account repository', () => {
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
