@@ -7,6 +7,7 @@ import { IUserConfig } from '../interfaces';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 
+// TODO Refactoring https://ticketsystem.dbildungscloud.de/browse/N21-169 create service layer
 @Injectable()
 export class UserUc {
 	constructor(

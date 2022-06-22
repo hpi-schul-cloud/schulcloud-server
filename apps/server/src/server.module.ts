@@ -20,6 +20,8 @@ import { OauthModule } from './modules/oauth';
 import { ImportUserModule } from './modules/user-import/user-import.module';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
+import { SchoolModule } from '@src/modules/school/school.module';
+import { ProvisioningModule } from '@src/modules/provisioning';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -46,6 +48,8 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
+	SchoolModule,
+	ProvisioningModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
