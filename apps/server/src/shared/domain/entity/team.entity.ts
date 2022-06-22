@@ -1,7 +1,8 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
-import {BaseEntity, BaseEntityWithTimestamps} from './base.entity';
-import { Role } from './role.entity';
+// eslint-disable-next-line import/no-cycle
 import { School } from '@shared/domain';
+import { BaseEntityWithTimestamps } from './base.entity';
+import { Role } from './role.entity';
 import { User } from './user.entity';
 
 export interface ITeamProperties {

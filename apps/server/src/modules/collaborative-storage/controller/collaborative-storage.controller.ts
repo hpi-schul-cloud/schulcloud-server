@@ -12,7 +12,7 @@ import { TeamRoleDto } from './dto/team-role.params';
 export class CollaborativeStorageController {
 	constructor(private readonly teamStorageUc: CollaborativeStorageUc) {}
 
-	@Patch('team/:team/role/:role/permissions')
+	@Patch('team/:teamId/role/:roleId/permissions')
 	@ApiResponse({ status: 200, description: 'Updates the permissions for a team in the external collaborative storage' })
 	@ApiResponse({ status: 400, description: 'An error occurred while processing the request' })
 	@ApiResponse({ status: 403, description: 'User does not have the correct permission' })

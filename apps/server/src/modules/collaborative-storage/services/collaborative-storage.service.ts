@@ -1,15 +1,14 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, ICurrentUser, Permission, PermissionContextBuilder, RoleName } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId, Permission, PermissionContextBuilder } from '@shared/domain';
 import { RoleRepo, TeamsRepo } from '@shared/repo';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
-import { HttpService } from '@nestjs/axios';
 import { AuthorizationService } from '@src/modules/authorization';
 import { RoleMapper } from '../mapper/role.mapper';
 import { TeamMapper } from '../mapper/team.mapper';
 import { RoleDto } from './dto/role.dto';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
-import { TeamDto, TeamUserDto } from './dto/team.dto';
+import { TeamDto } from './dto/team.dto';
 
 @Injectable()
 export class CollaborativeStorageService {
@@ -21,7 +20,7 @@ export class CollaborativeStorageService {
 		private teamsRepo: TeamsRepo,
 		private authService: AuthorizationService
 	) {
-		this.adapter.setStrategy(new NextcloudStrategy(new HttpService()));
+		this.adapter.setStrategy(new NextcloudStrategy());
 	}
 
 	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {

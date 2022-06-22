@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { CourseRule, EntityId, TaskRule, User, UserRule, SchoolRule, BasePermissionManager } from '@shared/domain';
+import { BasePermissionManager, CourseRule, EntityId, SchoolRule, TaskRule, User, UserRule } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
@@ -35,9 +35,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.loader.getUserWithPermissions(userId),
 			this.loader.loadEntity(entityName, entityId),
 		]);
-		const permission = this.hasPermission(user, entity, context);
-
-		return permission;
+		return this.hasPermission(user, entity, context);
 	}
 
 	async checkPermissionByReferences(

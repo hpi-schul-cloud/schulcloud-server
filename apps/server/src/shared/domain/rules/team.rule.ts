@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { IPermissionContext, BasePermission } from '@shared/domain';
 import type { User } from '../entity';
 import { Team } from '../entity';
-import { IPermissionContext } from '../interface/permission';
-import { BasePermission } from './base-permission';
 
 @Injectable()
 export class TeamRule extends BasePermission<Team> {
-	public isApplicable(user: User, entity: Team): boolean {
-		return entity instanceof Team;
+	public isApplicable(): boolean {
+		return true;
 	}
 
 	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {

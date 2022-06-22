@@ -48,7 +48,7 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 	}
 
 	private async findGroupId(groupName: string): Promise<string> {
-		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${groupName}&format=json`))
+		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${groupName}`))
 			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0])
 			.catch((error) => {
 				throw new NotFoundException(error, `Group ${groupName} not found in Nextcloud!`);
@@ -56,10 +56,10 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 	}
 
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
-		return firstValueFrom(this.get(`/apps/groupfolders/folders&format=json`))
+		return firstValueFrom(this.get(`/apps/groupfolders/folders`))
 			.then((resp: AxiosResponse<OcsResponse<Map<string, NextcloudGroupfolders>>>) => {
 				const filtered = Object.entries(resp.data.ocs.data)
-					.filter(([k, v]) => {
+					.filter(([, v]) => {
 						return Object.entries((v as NextcloudGroupfolders).groups).filter(([k]) => k === groupId);
 					})
 					.flatMap(([k]) => k);
