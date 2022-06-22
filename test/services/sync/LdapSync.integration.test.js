@@ -190,7 +190,7 @@ describe('Ldap Sync Integration', function testSuite() {
 	};
 
 	before(async () => {
-		app = await appPromise();
+		app = await appPromise(null, true);
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 		await cleanupAll();

@@ -112,7 +112,8 @@ const setupApp = async (orm) => {
 	return app;
 };
 
-module.exports = async (orm) => {
+module.exports = async (orm, noCache) => {
+	if (noCache) return setupApp(orm);
 	if (feathersApp) return feathersApp;
 	feathersApp = await setupApp(orm);
 	return feathersApp;
