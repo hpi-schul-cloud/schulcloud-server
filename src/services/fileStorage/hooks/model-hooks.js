@@ -4,6 +4,8 @@ const { discard } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { canRead } = require('../utils/filePermissionHelper');
 
+const { Forbidden } = require('../../../errors');
+
 const restrictToCurrentUser = (hook) => {
 	const {
 		params: {
@@ -23,6 +25,13 @@ const restrictToCurrentUser = (hook) => {
 	});
 };
 
+const handleShareCode = (hook) => {
+	if (hook.params.query.shareToken && hook.result.shareToken !== hook.params.query.shareToken) {
+		throw new Forbidden('Invalid shareToken.');
+	}
+	return hook;
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
@@ -36,7 +45,7 @@ exports.before = {
 exports.after = {
 	all: [discard('securityCheck.requestToken', 'thumbnailRequestToken')],
 	find: [restrictToCurrentUser],
-	get: [],
+	get: [handleShareCode],
 	create: [],
 	update: [],
 	patch: [],
