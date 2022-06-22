@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { Counted, EntityId, FileRecord, IFindOptions, SortOrder } from '@shared/domain';
+import { Counted, EntityId, FileRecord, FileRecordParentType, IFindOptions, SortOrder } from '@shared/domain';
 
 import { FileRecordScope } from './filerecord-scope';
 import { BaseRepo } from '../base.repo';
@@ -54,6 +54,14 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
+	}
+
+	async findByParentType(parentType: FileRecordParentType): Promise<FileRecord[]> {
+		const fileRecords = await this._em.find(this.entityName, {
+			parentType,
+		});
+
+		return fileRecords;
 	}
 
 	private async findAndCount(
