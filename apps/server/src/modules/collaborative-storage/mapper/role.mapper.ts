@@ -5,6 +5,6 @@ import { RoleDto } from '../services/dto/Role.dto';
 @Injectable()
 export class RoleMapper {
 	public mapEntityToDto(roleEntity: Role): RoleDto {
-		return new RoleDto({ id: roleEntity._id.toString(), name: roleEntity.name });
+		return new RoleDto({ id: roleEntity.id, name: roleEntity.name });
 	}
 }

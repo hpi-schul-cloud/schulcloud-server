@@ -18,32 +18,36 @@ describe('NextCloud Adapter Strategy', () => {
 
 	describe('Update TeamPermissions For Role', () => {
 		beforeAll(() => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
-				let data = {};
-				if (url.endsWith('groupfolders/folders&format=json')) {
-					data = { ocs: { data: { testFolderId: { groups: { testGroupId: 0 } } } } };
-				}
-				if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName&format=json')) {
-					data = { ocs: { data: { groups: ['testGroupId'] } } };
-				}
-				const resp: AxiosResponse = {
-					data,
-					status: 0,
-					statusText: '',
-					headers: {},
-					config: {},
-				};
-				return of(resp);
-			});
-			jest.spyOn(strategy.httpService, 'post').mockImplementation((): Observable<AxiosResponse> => {
-				return of({
-					data: [],
-					status: 0,
-					statusText: '',
-					headers: {},
-					config: {},
+			jest
+				.spyOn(strategy.httpService, 'get')
+				.mockImplementation((url: string, config?: AxiosRequestConfig): Observable<AxiosResponse> => {
+					let data = {};
+					if (url.endsWith('groupfolders/folders')) {
+						data = { ocs: { data: { testFolderId: { groups: { testGroupId: 0 } } } } };
+					}
+					if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName')) {
+						data = { ocs: { data: { groups: ['testGroupId'] } } };
+					}
+					const resp: AxiosResponse = {
+						data,
+						status: 0,
+						statusText: '',
+						headers: {},
+						config: {},
+					};
+					return of(resp);
 				});
-			});
+			jest
+				.spyOn(strategy.httpService, 'post')
+				.mockImplementation((url: string, data?: any, config?: AxiosRequestConfig): Observable<AxiosResponse> => {
+					return of({
+						data: [],
+						status: 0,
+						statusText: '',
+						headers: {},
+						config: {},
+					});
+				});
 		});
 		it('should call the setGroupPermissions method', async () => {
 			await strategy.updateTeamPermissionsForRole({

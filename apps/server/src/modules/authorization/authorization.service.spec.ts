@@ -88,7 +88,7 @@ describe('authorization.service', () => {
 			const team = teamFactory.build();
 
 			const response = service.hasPermission(user, team, context);
-			expect(response).toBe(true);
+			expect(response).toBe(false);
 		});
 	});
 

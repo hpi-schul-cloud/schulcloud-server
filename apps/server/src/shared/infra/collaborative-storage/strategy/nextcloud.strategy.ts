@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
-import { ITeamStorageStrategy } from './base.interface.strategy';
+import { ICollaborativeStorageStrategy } from './base.interface.strategy';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
 interface NextcloudGroups {
@@ -18,7 +18,7 @@ interface OcsResponse<T> {
 	ocs: { data: T };
 }
 
-export class NextcloudStrategy implements ITeamStorageStrategy {
+export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	readonly baseURL: string;
 
 	readonly httpService: HttpService;

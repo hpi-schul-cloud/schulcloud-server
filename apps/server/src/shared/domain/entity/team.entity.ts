@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, ManyToMany, Property } from '@mikro-orm/core';
 // eslint-disable-next-line import/no-cycle
 import { School } from '@shared/domain';
 import { BaseEntityWithTimestamps } from './base.entity';
@@ -7,7 +7,7 @@ import { User } from './user.entity';
 
 export interface ITeamProperties {
 	name: string;
-	userIds: TeamUser[];
+	userIds?: TeamUser[];
 }
 
 @Embeddable()
@@ -18,13 +18,13 @@ export class TeamUser {
 		this.schoolId = teamUser.schoolId;
 	}
 
-	@Property()
+	@ManyToMany({ entity: () => User })
 	userId: User;
 
-	@Property()
+	@ManyToMany({ entity: () => Role })
 	role: Role;
 
-	@Property()
+	@ManyToMany({ entity: () => School })
 	schoolId: School;
 }
 
@@ -39,6 +39,6 @@ export class Team extends BaseEntityWithTimestamps {
 	constructor(props: ITeamProperties) {
 		super();
 		this.name = props.name;
-		this.userIds = props.userIds;
+		this.userIds = props.userIds ?? [];
 	}
 }

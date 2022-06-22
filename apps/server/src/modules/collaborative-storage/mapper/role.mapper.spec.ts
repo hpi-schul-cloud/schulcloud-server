@@ -21,6 +21,7 @@ describe('RoleMapper', () => {
 			const roleEntity: Role = roleFactory.build();
 			const ret: RoleDto = mapper.mapEntityToDto(roleEntity);
 			expect(ret.name).toEqual(roleEntity.name);
+			expect(ret.id).toEqual(roleEntity.id);
 		});
 	});
 });

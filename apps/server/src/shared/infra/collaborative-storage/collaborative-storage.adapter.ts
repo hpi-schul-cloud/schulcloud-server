@@ -1,22 +1,22 @@
 import { RoleDto } from '@src/modules/collaborative-storage/services/dto/Role.dto';
 import { TeamPermissionsDto } from '@src/modules/collaborative-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { ITeamStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
+import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
 import { Inject, Injectable } from '@nestjs/common';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 
 @Injectable()
 export class CollaborativeStorageAdapter {
-	strategy: ITeamStorageStrategy;
+	strategy: ICollaborativeStorageStrategy;
 
 	constructor(
-		@Inject('ITeamStorageStrategy') strategy: ITeamStorageStrategy,
+		@Inject('ICollaborativeStorageStrategy') strategy: ICollaborativeStorageStrategy,
 		private mapper: CollaborativeStorageAdapterMapper
 	) {
 		this.strategy = strategy;
 	}
 
-	public setStrategy(strategy: ITeamStorageStrategy) {
+	public setStrategy(strategy: ICollaborativeStorageStrategy) {
 		this.strategy = strategy;
 	}
 

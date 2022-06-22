@@ -1,6 +1,6 @@
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
-export interface ITeamStorageStrategy {
+export interface ICollaborativeStorageStrategy {
 	baseURL: string;
 
 	updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): void;
