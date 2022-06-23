@@ -1,6 +1,7 @@
 import { DeleteObjectOutput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { FileRecord, FileRecordParentType, Task } from '@shared/domain';
+import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { DeleteOrphanedFilesRepo } from '../repo/delete-orphaned-files.repo';
 import { FileFileRecord } from '../types';
@@ -10,6 +11,7 @@ import { SyncFilesStorageService } from './sync-files-storage.service';
 export class DeleteOrphanedFilesUc {
 	constructor(
 		private deleteOrphanedFilesRepo: DeleteOrphanedFilesRepo,
+		private fileRecordRepo: FileRecordRepo,
 		private logger: Logger,
 		private syncFilesStorageService: SyncFilesStorageService
 	) {
@@ -23,10 +25,18 @@ export class DeleteOrphanedFilesUc {
 
 		const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
 
-		await this.removeFiles(orphanedFileRecords);
+		await this.removeS3Files(orphanedFileRecords);
+
+		await this.removeMetaData(orphanedFileRecords);
+
+		console.log(orphanedFileRecords);
 	}
 
-	getOrphanedFileRecords(tasks: Task[], fileRecords: FileRecord[], fileFileRecords: FileFileRecord[]): FileRecord[] {
+	private getOrphanedFileRecords(
+		tasks: Task[],
+		fileRecords: FileRecord[],
+		fileFileRecords: FileFileRecord[]
+	): FileRecord[] {
 		return fileRecords.filter((fileRecord) => {
 			const task = tasks.find((entity) => entity.id === fileRecord.parentId);
 
@@ -49,7 +59,7 @@ export class DeleteOrphanedFilesUc {
 		});
 	}
 
-	async removeFiles(fileRecords: FileRecord[]): Promise<DeleteObjectOutput> {
+	private async removeS3Files(fileRecords: FileRecord[]): Promise<DeleteObjectOutput> {
 		const paths = fileRecords.map((fileRecord) => {
 			return [fileRecord._schoolId.toHexString(), fileRecord.id].join('/');
 		});
@@ -57,5 +67,9 @@ export class DeleteOrphanedFilesUc {
 		const deleteObjectOutput = await this.syncFilesStorageService.remove(paths);
 
 		return deleteObjectOutput;
+	}
+
+	private async removeMetaData(fileRecords: FileRecord[]) {
+		await this.fileRecordRepo.delete(fileRecords);
 	}
 }
