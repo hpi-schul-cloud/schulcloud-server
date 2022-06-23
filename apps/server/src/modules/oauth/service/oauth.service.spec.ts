@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +14,8 @@ import jwt from 'jsonwebtoken';
 import { of } from 'rxjs';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { schoolFactory } from '@shared/testing';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { IservOAuthService } from './iserv-oauth.service';
 import { OAuthService } from './oauth.service';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
@@ -36,8 +38,6 @@ jest.mock('jwks-rsa', () => {
 
 describe('OAuthService', () => {
 	let service: OAuthService;
-	let userRepo: UserRepo;
-	let iservOauthService: IservOAuthService;
 	let jwtService: FeathersJwtProvider;
 	Configuration.set('HOST', 'https://mock.de');
 
@@ -54,47 +54,12 @@ describe('OAuthService', () => {
 		uuid: '1111',
 	};
 
-	const defaultUser: User = {
-		email: '',
-		roles: new Collection<Role>([]),
-		school: defaultScool,
-		_id: new ObjectId(),
-		id: '4444',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		ldapId: '1111',
-		firstName: 'Test',
-		lastName: 'Testmann',
-	};
-	const defaultIservUser: User = {
-		email: '',
-		roles: new Collection<Role>([]),
-		school: defaultScool,
-		_id: new ObjectId(),
-		id: defaultUserId,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		ldapId: '3333',
-		firstName: 'iservTest',
-		lastName: 'Test',
-	};
-
-	const defaultSystemId = '987654321';
-	const defaultIservSystemId = '1234hasdhas8';
-	const defaultJWT =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
-	const defaultTokenResponse: OauthTokenResponse = {
-		access_token: 'zzzz',
-		refresh_token: 'zzzz',
-		id_token: defaultJWT,
-	};
-	const defaultAxiosResponse: AxiosResponse<OauthTokenResponse> = {
-		data: defaultTokenResponse,
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {},
-	};
+	let defaultUser: User;
+	let defaultIservUser: User;
+	let defaultIservSystemId: string;
+	let defaultJWT: string;
+	let defaultTokenResponse: OauthTokenResponse;
+	let defaultAxiosResponse: AxiosResponse<OauthTokenResponse>;
 
 	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
 
@@ -142,7 +107,13 @@ describe('OAuthService', () => {
 		redirect: defaultErrorRedirect,
 	};
 
-	beforeEach(async () => {
+	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let systemRepo: DeepMocked<SystemRepo>;
+	let userRepo: DeepMocked<UserRepo>;
+	let feathersJwtProvider: DeepMocked<FeathersJwtProvider>;
+	let iservOAuthService: DeepMocked<IservOAuthService>;
+
+	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [HttpModule],
 			providers: [
@@ -152,12 +123,8 @@ describe('OAuthService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: 'OAuthEncryptionService',
-					useValue: {
-						decrypt: () => {
-							return defaultDecryptedSecret;
-						},
-					},
+					provide: SymetricKeyEncryptionService,
+					useValue: createMock<SymetricKeyEncryptionService>(),
 				},
 				{
 					provide: HttpService,
@@ -169,14 +136,7 @@ describe('OAuthService', () => {
 				},
 				{
 					provide: SystemRepo,
-					useValue: {
-						findById(id: string) {
-							if (id === defaultIservSystemId) {
-								return defaultIservSystem;
-							}
-							return systemFactory.build();
-						},
-					},
+					useValue: createMock<SystemRepo>(),
 				},
 				{
 					provide: UserRepo,
@@ -214,7 +174,12 @@ describe('OAuthService', () => {
 			],
 		}).compile();
 
-		service = await module.resolve<OAuthService>(OAuthService);
+		oAuthEncryptionService = module.get(SymetricKeyEncryptionService);
+		systemRepo = module.get(SystemRepo);
+		userRepo = module.get(UserRepo);
+		feathersJwtProvider = module.get(FeathersJwtProvider);
+		iservOAuthService = module.get(IservOAuthService);
+
 		jest.mock('axios', () =>
 			jest.fn(() => {
 				return Promise.resolve(defaultAxiosResponse);
@@ -223,6 +188,129 @@ describe('OAuthService', () => {
 		userRepo = await module.resolve<UserRepo>(UserRepo);
 		jwtService = await module.resolve<FeathersJwtProvider>(FeathersJwtProvider);
 		iservOauthService = await module.resolve<IservOAuthService>(IservOAuthService);
+	});
+
+	beforeEach(() => {
+		defaultSystem = systemFactory.build();
+		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
+
+		defaultAuthCode = '43534543jnj543342jn2';
+		defaultQuery = { code: defaultAuthCode };
+		defaultErrorQuery = { error: 'oauth_login_failed' };
+		defaultUserId = '123456789';
+		defaultScool = schoolFactory.build();
+		defaultDecodedJWT = {
+			sub: '4444',
+			uuid: '1111',
+		};
+
+		defaultUser = {
+			email: '',
+			roles: new Collection<Role>([]),
+			school: defaultScool,
+			_id: new ObjectId(),
+			id: '4444',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			ldapId: '1111',
+			firstName: 'Test',
+			lastName: 'Testmann',
+		};
+		defaultIservUser = {
+			email: '',
+			roles: new Collection<Role>([]),
+			school: defaultScool,
+			_id: new ObjectId(),
+			id: defaultUserId,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			ldapId: '3333',
+			firstName: 'iservTest',
+			lastName: 'Test',
+		};
+		defaultIservSystemId = '1234hasdhas8';
+		defaultJWT =
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
+		defaultTokenResponse = {
+			access_token: 'zzzz',
+			refresh_token: 'zzzz',
+			id_token: defaultJWT,
+		};
+		defaultAxiosResponse = {
+			data: defaultTokenResponse,
+			status: 0,
+			statusText: '',
+			headers: {},
+			config: {},
+		};
+
+		defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
+
+		iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
+			Configuration.get('HOST') as string
+		}/dashboard`;
+		defaultIservSystem = {
+			type: 'iserv',
+			url: 'http://mock.de',
+			alias: `system`,
+			oauthConfig: {
+				clientId: '12345',
+				clientSecret: 'mocksecret',
+				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				grantType: 'authorization_code',
+				tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
+				scope: 'openid uuid',
+				responseType: 'code',
+				authEndpoint: 'mock_authEndpoint',
+				provider: 'iserv',
+				logoutEndpoint: 'logoutEndpointMock',
+				issuer: 'mock_issuer',
+				jwksEndpoint: 'mock_jwksEndpoint',
+				codeRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
+			},
+			_id: new ObjectId(),
+			id: '',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+		defaultResponse = {
+			idToken: defaultJWT,
+			logoutEndpoint: 'logoutEndpointMock',
+			provider: 'providerMock',
+			redirect: '',
+		};
+		defaultResponseAfterBuild = {
+			idToken: defaultJWT,
+			logoutEndpoint: 'logoutEndpointMock',
+			provider: 'iserv',
+		};
+		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error as string}`;
+		defaultErrorResponse = {
+			errorcode: defaultErrorQuery.error as string,
+			redirect: defaultErrorRedirect,
+			provider: 'iserv',
+		};
+
+		// Init mocks
+		oAuthEncryptionService.decrypt.mockReturnValue(defaultDecryptedSecret);
+		systemRepo.findById.mockImplementation((id: string): Promise<System> => {
+			if (id === defaultIservSystemId) {
+				return Promise.resolve(defaultIservSystem);
+			}
+			return Promise.resolve(systemFactory.build());
+		});
+		userRepo.findById.mockImplementation((sub: string): Promise<User> => {
+			if (sub === '') {
+				throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+			}
+			if (sub) {
+				return Promise.resolve(defaultUser);
+			}
+			throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
+		});
+		feathersJwtProvider.generateJwt.mockResolvedValue(defaultJWT);
+		iservOAuthService.extractUUID.mockReturnValue(defaultDecodedJWT.uuid);
+		iservOAuthService.findUserById.mockResolvedValue(defaultIservUser);
 	});
 
 	it('should be defined', () => {
@@ -320,7 +408,7 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getJWTForUser', () => {
+	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
 			const resolveJWTSpy = jest.spyOn(jwtService, 'generateJwt');
 			const jwtResult = await service.getJWTForUser(defaultUser);

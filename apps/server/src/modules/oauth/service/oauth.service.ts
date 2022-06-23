@@ -5,7 +5,6 @@ import QueryString from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { OauthConfig, System, User } from '@shared/domain';
-import { Inject } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
@@ -27,7 +26,7 @@ export class OAuthService {
 		private readonly systemRepo: SystemRepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
-		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
+		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private iservOauthService: IservOAuthService,
 		private logger: Logger
 	) {
@@ -39,8 +38,12 @@ export class OAuthService {
 	 * @return authorization code or throws an error
 	 */
 	checkAuthorizationCode(query: AuthorizationParams): string {
-		if (query.code) return query.code;
+		if (query.code) {
+			return query.code;
+		}
+
 		let errorCode = 'sso_auth_code_step';
+
 		if (query.error) {
 			errorCode = `sso_oauth_${query.error}`;
 			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);

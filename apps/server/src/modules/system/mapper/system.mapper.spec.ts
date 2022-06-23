@@ -3,7 +3,7 @@ import { systemFactory } from '@shared/testing';
 import { System } from '@shared/domain';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 
-describe('system mapper', () => {
+describe('SystemMapper', () => {
 	let module: TestingModule;
 	afterAll(async () => {
 		await module.close();

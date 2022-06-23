@@ -13,6 +13,7 @@ export class SystemController {
 	@ApiOperation({ summary: 'Finds all systems.' })
 	@ApiResponse({ status: 200, type: SystemOauthResponse, description: 'Returns an SystemOauthResponse.' })
 	async find(@Query() filterParams: SystemFilterParams): Promise<SystemOauthResponse> {
-		return this.systemUc.findByFilter(filterParams.type, filterParams.onlyOauth === 'true');
+		const systemDtos = await this.systemUc.findByFilter(filterParams.type, filterParams.onlyOauth === 'true');
+		return SystemOauthResponseMapper.mapFromDtoToResponse(systemDtos);
 	}
 }
