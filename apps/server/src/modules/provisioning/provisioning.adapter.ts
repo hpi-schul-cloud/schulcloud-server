@@ -1,4 +1,4 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.interface.strategy';
+import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { Inject } from '@nestjs/common';
 
 export class ProvisioningAdapter {

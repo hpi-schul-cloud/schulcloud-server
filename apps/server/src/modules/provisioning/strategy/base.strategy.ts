@@ -1,6 +1,6 @@
 import { ProvisioningDto } from '@src/modules/provisioning/service/dto/provisioning.dto';
-import { IProviderResponse } from '@src/modules/provisioning/strategy/provider.response';
-import { IProviderResponseMapper } from '@src/modules/provisioning/strategy/provider-response.mapper';
+import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
+import { IProviderResponseMapper } from '@src/modules/provisioning/interface/provider-response.mapper.interface';
 
 export abstract class ProvisioningStrategy {
 	protected constructor(readonly responseMapper: IProviderResponseMapper) {}

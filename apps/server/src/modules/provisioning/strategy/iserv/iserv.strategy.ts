@@ -1,6 +1,6 @@
-import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.interface.strategy';
+import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { ProvisioningDto } from '@src/modules/provisioning/service/dto/provisioning.dto';
-import { IProviderResponse } from '@src/modules/provisioning/strategy/provider.response';
+import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
 import { IservOAuthService } from '@src/modules/oauth/service/iserv-oauth.service';
 
 export class IservProvisioningStrategy extends ProvisioningStrategy {

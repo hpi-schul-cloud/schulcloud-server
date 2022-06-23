@@ -1,5 +1,5 @@
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { LanguageType, Role, School, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { RoleMapper } from '@src/modules/user/mapper/role.mapper';
 
@@ -32,5 +32,19 @@ export class UserMapper {
 			forcePasswordChange: dto.forcePasswordChange,
 			preferences: dto.preferences,
 		});
+	}
+
+	static mapFromEntityToEntity(target: User, source: User): User {
+		target.firstName = source.firstName;
+		target.lastName = source.lastName;
+		target.email = source.email;
+		target.school = source.school;
+		target.roles = source.roles;
+		target.ldapDn = source.ldapDn;
+		target.ldapId = source.ldapId;
+		target.forcePasswordChange = source.forcePasswordChange;
+		target.language = source.language;
+		target.preferences = source.preferences;
+		return target;
 	}
 }

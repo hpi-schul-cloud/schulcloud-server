@@ -1,3 +1,3 @@
-import { IProviderResponse } from '@src/modules/provisioning/strategy/provider.response';
+import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
 
 export class IservResponse implements IProviderResponse {}
