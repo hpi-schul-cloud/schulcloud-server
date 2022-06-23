@@ -15,8 +15,6 @@ export enum CopyElementType {
 	'FILE' = 'file',
 	'LEAF' = 'leaf',
 	'LESSON' = 'lesson',
-	'LESSON_CONTENT' = 'content',
-	'LESSON_MATERIAL' = 'material',
 	'TASK' = 'task',
 }
 

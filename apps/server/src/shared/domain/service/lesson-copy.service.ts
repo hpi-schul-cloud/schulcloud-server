@@ -21,23 +21,13 @@ export class LessonCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.LESSON,
-			status: CopyStatusEnum.PARTIAL,
+			status: CopyStatusEnum.SUCCESS,
 			copyEntity: copy,
 			elements: [
 				{
 					title: 'metadata',
 					type: CopyElementType.LEAF,
 					status: CopyStatusEnum.SUCCESS,
-				},
-				{
-					title: 'content',
-					type: CopyElementType.LESSON_CONTENT,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
-					title: 'material',
-					type: CopyElementType.LESSON_MATERIAL,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
 				},
 			],
 		};
