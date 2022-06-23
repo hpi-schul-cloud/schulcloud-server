@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { FileRecordParentType } from '@shared/domain';
+import { FileRecord, FileRecordParentType, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import { DeleteOrphanedFilesRepo } from '../repo/delete-orphaned-files.repo';
+import { FileFileRecord } from '../types';
 
 @Injectable()
 export class DeleteOrphanedFilesUc {
@@ -14,7 +15,11 @@ export class DeleteOrphanedFilesUc {
 		const fileRecords = await this.deleteOrphanedFilesRepo.findFilerecords(parentType);
 		const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
 
-		const filteredFileRecords = fileRecords.filter((fileRecord) => {
+		const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
+	}
+
+	getOrphanedFileRecords(tasks: Task[], fileRecords: FileRecord[], fileFileRecords: FileFileRecord[]): FileRecord[] {
+		return fileRecords.filter((fileRecord) => {
 			const task = tasks.find((entity) => entity.id === fileRecord.parentId);
 
 			if (!task) {
@@ -34,7 +39,5 @@ export class DeleteOrphanedFilesUc {
 
 			return false;
 		});
-
-		console.log(filteredFileRecords);
 	}
 }

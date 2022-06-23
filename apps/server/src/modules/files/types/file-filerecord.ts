@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
-export type FileFilerecord = {
+export type FileFileRecord = {
 	_id: ObjectId;
 	fileId: ObjectId;
 	filerecordId: ObjectId;

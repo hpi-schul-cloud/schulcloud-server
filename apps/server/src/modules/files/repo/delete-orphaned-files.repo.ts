@@ -2,7 +2,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { FileRecord, FileRecordParentType, Task } from '@shared/domain';
-import { FileFilerecord } from '../types';
+import { FileFileRecord } from '../types';
 
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!
@@ -16,10 +16,10 @@ export class DeleteOrphanedFilesRepo {
 		return entities;
 	}
 
-	async findAllFilesFilerecords(): Promise<FileFilerecord[]> {
+	async findAllFilesFilerecords(): Promise<FileFileRecord[]> {
 		const fileFilerecords = await this._em.getConnection().find('files_filerecords', {});
 
-		return fileFilerecords as FileFilerecord[];
+		return fileFilerecords as FileFileRecord[];
 	}
 
 	async findFilerecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
