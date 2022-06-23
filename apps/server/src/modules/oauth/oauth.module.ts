@@ -23,7 +23,7 @@ const key = Configuration.get('AES_KEY') as string;
 		OAuthService,
 		IservOAuthService,
 		{ provide: 'SYMMETRIC_CIPHER_KEY', useValue: key },
-		{ provide: 'OAuthEncryptionService', useClass: SymetricKeyEncryptionService },
+		SymetricKeyEncryptionService,
 	],
 	exports: [OauthUc],
 })

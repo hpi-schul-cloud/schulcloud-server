@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { StringToBoolean } from '@shared/controller';
 
 export class SystemFilterParams {
 	@ApiProperty({
@@ -17,6 +18,7 @@ export class SystemFilterParams {
 		nullable: true,
 	})
 	@IsOptional()
-	@IsString()
-	onlyOauth?: string;
+	@IsBoolean()
+	@StringToBoolean()
+	onlyOauth?: boolean;
 }
