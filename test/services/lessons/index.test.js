@@ -2,7 +2,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 const testLesson = {
 	name: 'testLesson',
@@ -18,7 +18,7 @@ describe('lessons service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		lessonService = app.service('lessons');
 		lessonCopyService = app.service('lessons/copy');
 		server = await app.listen(0);

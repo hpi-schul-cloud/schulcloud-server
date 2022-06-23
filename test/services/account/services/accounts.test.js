@@ -4,8 +4,8 @@ const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParams, generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParams, generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 const { validateUserName } = require('../../../../src/services/account/hooks');
 
 chai.use(chaiHttp);
@@ -21,7 +21,7 @@ describe('Account Service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		accountService = app.service('/accounts');
 		userService = app.service('/users');
 		registrationPinsService = app.service('/registrationPins');

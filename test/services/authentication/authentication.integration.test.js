@@ -19,7 +19,7 @@ describe('authentication service integration tests', () => {
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
 		// eslint-disable-next-line global-require
-		const appPromise = require('../../../src/app');
+		const appPromise = require('../../../src/app')();
 		// eslint-disable-next-line global-require
 		testObjects = require('../helpers/testObjects')(appPromise);
 		app = await appPromise;

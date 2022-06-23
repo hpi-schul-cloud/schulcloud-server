@@ -7,7 +7,7 @@ const {
 	createTestSchool: createSchool,
 	createTestSystem: createSystem,
 	info,
-} = require('../../../helpers/testObjects')(appPromise);
+} = require('../../../helpers/testObjects')(appPromise());
 
 const { users: createdTestUsers, accounts: createdAccounts } = info();
 
@@ -20,7 +20,7 @@ describe('TSP API integration tests', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = app.listen(0);
 	});
 

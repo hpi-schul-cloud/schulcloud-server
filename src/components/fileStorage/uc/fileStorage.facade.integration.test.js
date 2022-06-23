@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 
 const { filesRepo } = require('../repo');
 
@@ -9,7 +9,7 @@ describe('fileStorageFacade', () => {
 	let app;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen();
 	});
 

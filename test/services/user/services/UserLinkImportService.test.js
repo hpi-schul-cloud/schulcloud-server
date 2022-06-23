@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const testGenericErrorMessage = 'Can not send mail(s) with registration link';
 
@@ -10,7 +10,7 @@ describe('UserLinkImportService', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		usersLinkImportService = app.service('/users/linkImport');
 		server = await app.listen(0);
 	});

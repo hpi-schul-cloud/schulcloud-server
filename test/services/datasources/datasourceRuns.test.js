@@ -4,8 +4,8 @@ const mockery = require('mockery');
 const sleep = require('util').promisify(setTimeout);
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
 const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
 
@@ -47,7 +47,7 @@ describe('datasourceRuns service', () => {
 			warnOnUnregistered: false,
 		});
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
-		app = await appPromise;
+		app = await appPromise();
 		datasourceRunsService = app.service('datasourceRuns');
 		// eslint-disable-next-line global-require
 		const sync = require('../../../src/services/sync');

@@ -2,7 +2,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const {
 	sortByGradeAndOrName,
@@ -64,7 +64,7 @@ describe('class hooks', () => {
 
 		before(async () => {
 			configBefore = Configuration.toObject({});
-			app = await appPromise;
+			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
 			server = await app.listen(0);
 		});
@@ -179,7 +179,7 @@ describe('class hooks', () => {
 		let server;
 
 		before(async () => {
-			app = await appPromise;
+			app = await appPromise();
 			server = await app.listen(0);
 		});
 

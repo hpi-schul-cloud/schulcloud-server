@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { isEmail, validateOrReject } from 'class-validator';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -30,7 +31,8 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../mapper/account-response.mapper';
+import { AccountResponseMapper } from '../mapper';
+import { AccountSaveDto } from '../services/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -101,6 +103,40 @@ export class AccountUc {
 		return AccountResponseMapper.mapToResponse(account);
 	}
 
+	async saveAccount(dto: AccountSaveDto): Promise<void> {
+		await validateOrReject(dto);
+		// sanatizeUsername ✔
+		if (!dto.systemId) {
+			dto.username = dto.username.trim().toLowerCase();
+		}
+		// validateUserName ✔
+		// usernames must be an email address, if they are not from an external system
+		if (!dto.systemId && !isEmail(dto.username)) {
+			throw new Error('Username is not an email');
+		}
+		// checkExistence ✔
+		if (dto.userId && (await this.accountService.findByUserId(dto.userId))) {
+			throw new Error('Account already exists');
+		}
+		// validateCredentials hook will not be ported ✔
+		// trimPassword hook will be done by class-validator ✔
+		// local.hooks.hashPassword('password'), will be done by account service ✔
+		// checkUnique ✔
+		const { accounts } = await this.accountService.searchByUsernameExactMatch(dto.username);
+		// usernames are only unique within a system
+		const filteredAccounts = accounts.filter((account) => account.systemId === dto.systemId);
+		if (filteredAccounts.length > 0) {
+			throw new Error('Username already exists');
+		}
+		// removePassword hook is not implemented
+		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
+		// 	dto.password = undefined;
+		// }
+
+		await this.accountService.save(dto);
+	}
+
 	/**
 	 * This method processes the request on the PATCH account with id endpoint from the account controller.
 	 *
@@ -117,6 +153,11 @@ export class AccountUc {
 	): Promise<AccountResponse> {
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
 		const targetAccount = await this.accountService.findById(params.id);
+
+		if (!targetAccount.userId) {
+			throw new EntityNotFoundError(User.name);
+		}
+
 		const targetUser = await this.userRepo.findById(targetAccount.userId, true);
 
 		let updateUser = false;
@@ -126,7 +167,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to update target account.');
 		}
 		if (body.password !== undefined) {
-			targetAccount.password = await this.calcPasswordHash(body.password);
+			targetAccount.password = body.password;
 			targetUser.forcePasswordChange = true;
 			updateUser = true;
 			updateAccount = true;
@@ -199,7 +240,7 @@ export class AccountUc {
 		let updateUser = false;
 		let updateAccount = false;
 		if (params.passwordNew) {
-			account.password = await this.calcPasswordHash(params.passwordNew);
+			account.password = params.passwordNew;
 			updateAccount = true;
 		}
 		if (params.email && user.email !== params.email) {
@@ -281,7 +322,7 @@ export class AccountUc {
 		}
 
 		try {
-			account.password = await this.calcPasswordHash(password);
+			account.password = password;
 			await this.accountService.save(account);
 		} catch (err) {
 			throw new EntityNotFoundError(Account.name);
@@ -402,10 +443,6 @@ export class AccountUc {
 		}
 
 		return roles;
-	}
-
-	private calcPasswordHash(password: string): Promise<string> {
-		return bcrypt.hash(password, 10);
 	}
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {

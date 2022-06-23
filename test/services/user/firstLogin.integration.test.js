@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const { userModel } = require('../../../src/services/user/model');
 
 describe('firstLogin Service', () => {
@@ -9,7 +9,7 @@ describe('firstLogin Service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 
