@@ -37,18 +37,18 @@ describe('SystemUc', () => {
 	});
 
 	describe('findByFilter', () => {
-		it('should return oauthResponse with data', async () => {
+		it('should return systems with oauthConfigs', async () => {
 			mockSystems.push(systemFactory.build());
 			mockSystems.push(systemFactory.build());
 
-			const resultResponse: SystemDto[] = await systemUc.findByFilter();
+			const systems: SystemDto[] = await systemUc.findByFilter();
 
-			expect(resultResponse.length).toEqual(mockSystems.length);
-			expect(resultResponse[0].oauthConfig?.clientId).toEqual(mockSystems[0].oauthConfig?.clientId);
-			expect(resultResponse[1].oauthConfig?.clientId).toEqual(mockSystems[1].oauthConfig?.clientId);
+			expect(systems.length).toEqual(mockSystems.length);
+			expect(systems[0].oauthConfig?.clientId).toEqual(mockSystems[0].oauthConfig?.clientId);
+			expect(systems[1].oauthConfig?.clientId).toEqual(mockSystems[1].oauthConfig?.clientId);
 		});
 
-		it('should return empty oauthResponse', async () => {
+		it('should return empty system list, because none exist', async () => {
 			const resultResponse = await systemUc.findByFilter();
 			expect(resultResponse).toEqual([]);
 		});

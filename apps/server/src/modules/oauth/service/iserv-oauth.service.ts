@@ -18,12 +18,10 @@ export class IservOAuthService {
 	}
 
 	async findUserById(systemId: string, decodedJwt: IJwt): Promise<User> {
-		let user: User;
 		try {
 			return await this.userRepo.findByLdapIdOrFail(this.extractUUID(decodedJwt), systemId);
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound');
 		}
-		return user;
 	}
 }
