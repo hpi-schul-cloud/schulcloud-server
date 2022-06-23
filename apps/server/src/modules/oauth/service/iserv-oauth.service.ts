@@ -20,7 +20,7 @@ export class IservOAuthService {
 	async findUserById(systemId: string, decodedJwt: IJwt): Promise<User> {
 		let user: User;
 		try {
-			user = await this.userRepo.findByLdapIdorFail(this.extractUUID(decodedJwt), systemId);
+			[user] = await Promise.all([this.userRepo.findByLdapIdOrFail(this.extractUUID(decodedJwt), systemId)]);
 		} catch (error) {
 			throw new OAuthSSOError('Failed to find user with this ldapId', 'sso_user_notfound');
 		}

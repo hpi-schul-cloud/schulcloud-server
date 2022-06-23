@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Collection } from '@mikro-orm/core';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, School, System, User } from '@shared/domain';
+import { OauthConfig, Role, School, System, User } from '@shared/domain';
 import { SystemRepo } from '@shared/repo/system';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { systemFactory } from '@shared/testing/factory/system.factory';
@@ -41,6 +41,9 @@ describe('OAuthService', () => {
 	let jwtService: FeathersJwtProvider;
 	Configuration.set('HOST', 'https://mock.de');
 
+	const defaultSystem: System = systemFactory.build();
+	const defaultOauthConfig: OauthConfig = defaultSystem.oauthConfig as OauthConfig;
+
 	const defaultAuthCode = '43534543jnj543342jn2';
 	const defaultQuery = { code: defaultAuthCode };
 	const defaultErrorQuery = { error: 'oauth_login_failed' };
@@ -77,7 +80,7 @@ describe('OAuthService', () => {
 	};
 
 	const defaultSystemId = '987654321';
-	const defaultIservSystemId = '2222';
+	const defaultIservSystemId = '1234hasdhas8';
 	const defaultJWT =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJ1dWlkIjoiMTIzIn0.H_iI0kYNrlAUtHfP2Db0EmDs4cH2SV9W-p7EU4K24bI';
 	const defaultTokenResponse: OauthTokenResponse = {
@@ -115,6 +118,7 @@ describe('OAuthService', () => {
 			logoutEndpoint: 'logoutEndpointMock',
 			issuer: 'mock_issuer',
 			jwksEndpoint: 'mock_jwksEndpoint',
+			codeRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
 		},
 		_id: new ObjectId(),
 		id: '',
@@ -167,7 +171,7 @@ describe('OAuthService', () => {
 					provide: SystemRepo,
 					useValue: {
 						findById(id: string) {
-							if (id === '2222') {
+							if (id === defaultIservSystemId) {
 								return defaultIservSystem;
 							}
 							return systemFactory.build();
@@ -249,16 +253,14 @@ describe('OAuthService', () => {
 
 	describe('requestToken', () => {
 		it('should get token from the external server', async () => {
-			const defaultSystem = systemFactory.build();
-			const responseToken = await service.requestToken(defaultAuthCode, defaultSystem);
+			const responseToken = await service.requestToken(defaultAuthCode, defaultOauthConfig);
 			expect(responseToken).toStrictEqual(defaultTokenResponse);
 		});
 	});
 
 	describe('_getPublicKey', () => {
 		it('should get public key from the external server', async () => {
-			const defaultSystem = systemFactory.build();
-			const publicKey = await service._getPublicKey(defaultSystem);
+			const publicKey = await service._getPublicKey(defaultOauthConfig);
 			expect(publicKey).toStrictEqual('publicKey');
 		});
 	});
@@ -268,16 +270,14 @@ describe('OAuthService', () => {
 			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
 				return { uuid: '123456' };
 			});
-			const defaultSystem = systemFactory.build();
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
-			const decodedJwt: IJwt = await service.validateToken(defaultJWT, defaultSystem);
+			const decodedJwt: IJwt = await service.validateToken(defaultJWT, defaultOauthConfig);
 			expect(decodedJwt.uuid).toStrictEqual('123456');
 		});
 		it('should throw an error', async () => {
 			jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
 				return 'string';
 			});
-			const defaultSystem = systemFactory.build();
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
 			await expect(service.validateToken(defaultJWT, defaultSystem)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
@@ -287,20 +287,34 @@ describe('OAuthService', () => {
 
 	describe('findUser', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
+			// Arrange
 			const resolveUserSpy = jest.spyOn(iservOauthService, 'findUserById');
-			const user: User = await service.findUser(defaultDecodedJWT, defaultIservSystemId);
+			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig!);
+			oauthConfig.provider = 'iserv';
+
+			// Act
+			const user: User = await service.findUser(defaultDecodedJWT, {
+				_id: new ObjectId(defaultIservSystemId),
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				id: defaultIservSystemId,
+				type: 'iserv',
+				oauthConfig,
+			});
+
+			// Assert
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
 		it('should return the user according to the id', async () => {
 			const resolveUserSpy = jest.spyOn(userRepo, 'findById');
-			const user = await service.findUser(defaultDecodedJWT, defaultSystemId);
+			const user = await service.findUser(defaultDecodedJWT, defaultSystem);
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
 		it('should return an error if no User is found by this Id', async () => {
 			defaultDecodedJWT.sub = '';
-			return expect(service.findUser(defaultDecodedJWT, '')).rejects.toEqual(
+			return expect(service.findUser(defaultDecodedJWT, defaultSystem)).rejects.toEqual(
 				new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound')
 			);
 		});
@@ -316,7 +330,7 @@ describe('OAuthService', () => {
 	});
 	describe('buildResponse', () => {
 		it('should build the Response successfully', () => {
-			const response = service.buildResponse(defaultIservSystem, defaultTokenResponse);
+			const response = service.buildResponse(defaultIservSystem.oauthConfig as OauthConfig, defaultTokenResponse);
 			expect(response).toEqual(defaultResponseAfterBuild);
 		});
 	});

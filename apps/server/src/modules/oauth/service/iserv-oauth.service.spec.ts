@@ -84,7 +84,7 @@ describe('IservOAuthService', () => {
 
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
-			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapIdorFail');
+			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapIdOrFail');
 			const user: User = await service.findUserById(defaultUserId, defaultDecodedJWT);
 			expect(resolveUserSpy).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
