@@ -38,7 +38,6 @@ jest.mock('jwks-rsa', () => {
 
 describe('OAuthService', () => {
 	let service: OAuthService;
-	let jwtService: FeathersJwtProvider;
 	Configuration.set('HOST', 'https://mock.de');
 
 	let defaultSystem: System;
