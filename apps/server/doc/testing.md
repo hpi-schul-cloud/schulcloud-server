@@ -176,6 +176,10 @@ beforeEach(async () => {
 	fut = module.get(FeatureUnderTest);
 	mockService = module.get(MockService);
 });
+
+afterEach(async () => {
+	await module.close();
+});
 ```
 
 the resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you the full intellij features of the original class including code completion and typesavety, combined with all the features of spies.
