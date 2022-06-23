@@ -3,8 +3,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, PermissionContextBuilder } from '@shared/domain';
-import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
+import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
@@ -84,11 +84,14 @@ describe('authorization.service', () => {
 		});
 
 		it('can resolve team', () => {
-			const user = userFactory.build();
-			const team = teamFactory.build();
+			const role = roleFactory.build({ permissions: [Permission.CHANGE_TEAM_ROLES] });
+			const user = userFactory.build({ roles: [role] });
+			const team = teamFactory.withRoleAndUserId(role, user.id).build();
 
-			const response = service.hasPermission(user, team, context);
-			expect(response).toBe(false);
+			const response = service.hasPermission(team.userIds[0].userId, team, {
+				requiredPermissions: [Permission.CHANGE_TEAM_ROLES],
+			});
+			expect(response).toBe(true);
 		});
 	});
 

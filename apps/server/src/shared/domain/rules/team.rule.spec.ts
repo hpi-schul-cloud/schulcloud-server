@@ -32,19 +32,16 @@ describe('TeamRule', () => {
 	beforeEach(() => {
 		role = roleFactory.build({ permissions: [permissionA] });
 		user = userFactory.build({ roles: [role] });
+		entity = teamFactory.withRoleAndUserId(role, user.id).build();
 	});
 
 	it('should return "true" if user in scope', () => {
-		entity = teamFactory.withRoleAndUserId(role.name, user.id).build();
-		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.hasPermission(user, entity, { requiredPermissions: [permissionA] });
+		const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionA] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "false" if user has not permission', () => {
-		entity = teamFactory.withRoleAndUserId(role.name, user.id).build();
-		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.hasPermission(user, entity, { requiredPermissions: [permissionC] });
+		const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});
 });

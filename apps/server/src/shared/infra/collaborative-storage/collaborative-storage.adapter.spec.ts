@@ -14,7 +14,7 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 	updateTeamPermissionsForRole(): void {}
 }
 
-describe('TeamStorage Adapter', () => {
+describe('CollaborativeStorage Adapter', () => {
 	let module: TestingModule;
 	let adapter: CollaborativeStorageAdapter;
 
@@ -24,7 +24,7 @@ describe('TeamStorage Adapter', () => {
 				CollaborativeStorageAdapter,
 				CollaborativeStorageAdapterMapper,
 				{
-					provide: 'ITeamStorageStrategy',
+					provide: 'ICollaborativeStorageStrategy',
 					useValue: TestStrategy,
 				},
 			],

@@ -39,6 +39,6 @@ export class Team extends BaseEntityWithTimestamps {
 	constructor(props: ITeamProperties) {
 		super();
 		this.name = props.name;
-		this.userIds = props.userIds ?? [];
+		this.userIds = props.userIds ? props.userIds.map((teamUser) => new TeamUser(teamUser)) : [];
 	}
 }

@@ -1,19 +1,20 @@
-import { ITeamProperties, RoleName, Team } from '@shared/domain';
+import { ITeamProperties, Role, RoleName, Team } from '@shared/domain';
 import { DeepPartial } from 'fishery';
-import { roleFactory, userFactory } from '@shared/testing';
+import { userFactory } from './user.factory';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
+import { roleFactory } from './role.factory';
 
 class TeamFactory extends BaseFactory<Team, ITeamProperties> {
-	withRoleAndUserId(name: RoleName, userId: string): this {
+	withRoleAndUserId(role: Role, userId: string): this {
 		const school = schoolFactory.build();
 		const params: DeepPartial<ITeamProperties> = {
 			userIds: [
 				{
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-					userId: userFactory.buildWithId({ school, roles: [roleFactory.build({ name })] }, userId),
+					userId: userFactory.buildWithId({ school, roles: [roleFactory.build({ roles: [role] })] }, userId),
 					schoolId: school,
-					role: roleFactory.build({ name }),
+					role,
 				},
 			],
 		};

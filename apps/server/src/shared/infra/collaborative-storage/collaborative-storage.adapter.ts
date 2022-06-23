@@ -16,7 +16,7 @@ export class CollaborativeStorageAdapter {
 		this.strategy = strategy;
 	}
 
-	public setStrategy(strategy: ICollaborativeStorageStrategy) {
+	public setStrategy(@Inject('ICollaborativeStorageStrategy') strategy: ICollaborativeStorageStrategy) {
 		this.strategy = strategy;
 	}
 

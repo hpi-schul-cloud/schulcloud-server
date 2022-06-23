@@ -1,8 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
+import { parseInt } from 'lodash';
 import { ICollaborativeStorageStrategy } from './base.interface.strategy';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
@@ -18,6 +19,7 @@ interface OcsResponse<T> {
 	ocs: { data: T };
 }
 
+@Injectable()
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	readonly baseURL: string;
 
@@ -83,7 +85,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		return this.httpService.get(`${this.baseURL}${apiPath}`, this.config);
 	}
 
-	private post(apiPath: string, data: any): Observable<AxiosResponse> {
+	private post(apiPath: string, data: unknown): Observable<AxiosResponse> {
 		return this.httpService.post(`${this.baseURL}${apiPath}`, data, this.config);
 	}
 

@@ -6,7 +6,14 @@ import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 
 @Module({
 	imports: [HttpModule],
-	providers: [CollaborativeStorageAdapter, CollaborativeStorageAdapterMapper, NextcloudStrategy],
-	exports: [CollaborativeStorageAdapter, NextcloudStrategy],
+	providers: [
+		CollaborativeStorageAdapter,
+		CollaborativeStorageAdapterMapper,
+		{
+			provide: 'ICollaborativeStorageStrategy',
+			useClass: NextcloudStrategy,
+		},
+	],
+	exports: [CollaborativeStorageAdapter],
 })
 export class CollaborativeStorageAdapterModule {}
