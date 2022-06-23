@@ -1,4 +1,4 @@
-import { ITeamProperties, Role, RoleName, Team } from '@shared/domain';
+import { ITeamProperties, Role, Team } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { userFactory } from './user.factory';
 import { BaseFactory } from './base.factory';
@@ -25,7 +25,7 @@ class TeamFactory extends BaseFactory<Team, ITeamProperties> {
 export const teamFactory = TeamFactory.define(Team, ({ sequence }) => {
 	const role = roleFactory.build();
 	const schoolId = schoolFactory.build();
-	const userId = userFactory.withRole(RoleName.DEMO).buildWithId({ roles: [role] });
+	const userId = userFactory.build({ roles: [role] });
 	return {
 		name: `team #${sequence}`,
 		userIds: [
