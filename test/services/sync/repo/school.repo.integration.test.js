@@ -6,7 +6,7 @@ const { schoolModel } = require('../../../../src/services/school/model');
 
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -17,7 +17,7 @@ describe('school repo', () => {
 	const createdSchools = [];
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

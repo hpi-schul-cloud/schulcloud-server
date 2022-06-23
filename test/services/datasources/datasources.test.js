@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
 const { datasourceModel } = require('../../../src/services/datasources/model');
 
 
@@ -11,7 +11,7 @@ describe('datasources service', () => {
 	let datasourcesService;
 	let server;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		datasourcesService = app.service('datasources');
 		server = await app.listen(0);
 	});

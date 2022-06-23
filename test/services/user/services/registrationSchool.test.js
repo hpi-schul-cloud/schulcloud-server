@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } = require('../../helpers/testObjects')(
-	appPromise
+	appPromise()
 );
 
 describe('registrationSchool service', () => {
@@ -10,9 +10,9 @@ describe('registrationSchool service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		registrationSchoolService = app.service('/registrationSchool');
-		server = await app.listen();
+		server = await app.listen(0);
 	});
 
 	after((done) => {

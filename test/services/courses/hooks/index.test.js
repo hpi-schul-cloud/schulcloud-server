@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { restrictChangesToArchivedCourse } = require('../../../../src/services/user-group/hooks/courses');
 
 const oneHour = 600000;
@@ -10,7 +10,7 @@ describe('course hooks', () => {
 	let app;
 	let server;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = app.listen(0);
 	});
 

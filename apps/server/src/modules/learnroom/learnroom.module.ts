@@ -1,5 +1,11 @@
 import { Module } from '@nestjs/common';
-import { BoardCopyService, CourseCopyService, LessonCopyService, TaskCopyService } from '@shared/domain';
+import {
+	BoardCopyService,
+	CourseCopyService,
+	LessonCopyService,
+	NameCopyService,
+	TaskCopyService,
+} from '@shared/domain';
 import {
 	BoardRepo,
 	CourseRepo,
@@ -48,6 +54,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		LessonCopyUC,
 		TaskCopyService,
 		CourseCopyService,
+		NameCopyService,
 		CourseCopyUC,
 		RoomsService,
 	],

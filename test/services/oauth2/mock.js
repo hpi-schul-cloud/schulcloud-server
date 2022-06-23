@@ -7,7 +7,7 @@ const oauth2Server = require('./oauth2MockServer');
 const oauth2 = require('../../../src/services/oauth2');
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 chai.use(chaiHttp);
 
@@ -48,7 +48,7 @@ describe('oauth2 service mock', function oauthTest() {
 	let beforeHydraUri;
 	before(async function before() {
 		this.timeout(10000);
-		app = await appPromise;
+		app = await appPromise();
 
 		baseUrlService = app.service('oauth2/baseUrl');
 		clientsService = app.service('oauth2/clients');

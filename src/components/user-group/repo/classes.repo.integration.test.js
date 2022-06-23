@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const { classesRepo } = require('.');
 const { equal: equalIds, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { AssertionError } = require('../../../errors');
@@ -14,7 +14,7 @@ describe('class repo', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

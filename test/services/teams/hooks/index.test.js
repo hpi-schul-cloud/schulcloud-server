@@ -9,7 +9,7 @@ const {
 } = require('../../../../src/services/teams/hooks/index.js');
 const appPromise = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
-const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(appPromise);
+const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(appPromise());
 const teamHelper = require('../../helpers/services/teams');
 
 describe('Team service hook tests.', () => {
@@ -17,7 +17,7 @@ describe('Team service hook tests.', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

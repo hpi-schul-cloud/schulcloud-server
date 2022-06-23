@@ -24,7 +24,7 @@ describe('service', () => {
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
-		app = await require('../../../../src/app');
+		app = await require('../../../../src/app')();
 		server = await app.listen(0);
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);

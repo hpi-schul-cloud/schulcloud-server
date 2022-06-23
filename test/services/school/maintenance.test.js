@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
-const { cleanup } = require('../helpers/testObjects')(appPromise);
-const { create: createSchool } = require('../helpers/services/schools')(appPromise);
-const { create: createSystem } = require('../helpers/services/testSystem')(appPromise);
+const { cleanup } = require('../helpers/testObjects')(appPromise());
+const { create: createSchool } = require('../helpers/services/schools')(appPromise());
+const { create: createSystem } = require('../helpers/services/testSystem')(appPromise());
 
 const { schoolUsesLdap } = require('../../../src/services/school/maintenance');
 
@@ -11,7 +11,7 @@ describe('schoolUsesLdap', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

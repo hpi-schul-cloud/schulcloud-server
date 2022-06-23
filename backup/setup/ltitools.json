@@ -12,7 +12,7 @@
 		"oAuthClientId": "portfolio",
 		"friendlyUrl": "portfolio",
 		"updatedAt": {
-			"$date": "2017-01-01T00:06:37.148Z"
+			"$date": "2022-06-22T08:18:02.481Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -20,7 +20,8 @@
 		"customs": [],
 		"privacy_permission": "pseudonymous",
 		"roles": [],
-		"__v": 0
+		"__v": 0,
+		"isHidden": false
 	},
 	{
 		"_id": {
@@ -40,8 +41,9 @@
 			"$date": "2020-01-27T15:42:13.633Z"
 		},
 		"updatedAt": {
-			"$date": "2020-01-27T15:42:13.633Z"
+			"$date": "2022-06-22T08:18:02.481Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"isHidden": false
 	}
 ]

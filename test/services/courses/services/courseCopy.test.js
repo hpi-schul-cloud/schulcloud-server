@@ -3,7 +3,7 @@ const chai = require('chai');
 
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -17,7 +17,7 @@ describe('courses copy service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		copyCourseService = app.service('courses/copy');
 		shareCourseService = app.service('courses-share');
 		server = await app.listen();

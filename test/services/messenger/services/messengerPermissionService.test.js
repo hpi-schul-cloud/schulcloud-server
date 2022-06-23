@@ -22,7 +22,7 @@ describe('MessengerPermissionService', () => {
 				},
 			});
 
-			app = await appPromise;
+			app = await appPromise();
 			server = await app.listen(0);
 			testHelper = testObjects(app);
 		});
@@ -79,7 +79,7 @@ describe('MessengerPermissionService', () => {
 				},
 			});
 
-			app = await appPromise;
+			app = await appPromise();
 			server = await app.listen(0);
 			testHelper = testObjects(app);
 		});
@@ -121,7 +121,7 @@ describe('MessengerPermissionService', () => {
 			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', false);
 
-			app = await appPromise;
+			app = await appPromise();
 			server = await app.listen(0);
 		});
 

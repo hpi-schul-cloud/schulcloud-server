@@ -3,8 +3,8 @@ const { expect } = require('chai');
 const { Forbidden } = require('../../../../src/errors');
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 
 describe('course scope members service', () => {
 	let app;
@@ -12,7 +12,7 @@ describe('course scope members service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		courseMembersService = app.service('/courses/:scopeId/members');
 		server = app.listen(0);
 	});

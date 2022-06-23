@@ -27,7 +27,7 @@ describe('roster service', function oauth() {
 	let pseudonym1 = null;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		metadataService = app.service('roster/users/:user/metadata');
 		userGroupsService = app.service('roster/users/:user/groups');
 		groupsService = app.service('roster/groups');

@@ -22,7 +22,7 @@ describe('UniventionLDAPStrategy', () => {
 	let app;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		originalLdapService = app.service('ldap');
 	});
 

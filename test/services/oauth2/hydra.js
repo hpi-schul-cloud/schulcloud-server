@@ -73,7 +73,7 @@ describe('oauth2 service', function oauthTest() {
 	let loginRequest2 = null;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		baseUrlService = app.service('oauth2/baseUrl');
 		clientsService = app.service('oauth2/clients');
 		loginService = app.service('oauth2/loginRequest');
