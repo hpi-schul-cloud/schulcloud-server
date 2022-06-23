@@ -139,9 +139,7 @@ export class OAuthService {
 			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
 			const oauthResponse: OAuthResponse = this.getRedirect(response);
 			oauthResponse.jwt = jwtResponse;
-			return await new Promise<OAuthResponse>((resolve) => {
-				resolve(oauthResponse);
-			});
+			return oauthResponse;
 		} catch (error) {
 			this.logger.log(error);
 			return this.getOAuthError(error as string);

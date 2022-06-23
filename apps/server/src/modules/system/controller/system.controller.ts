@@ -2,6 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SystemOauthResponse } from '@src/modules/system/controller/dto/system-oauth.response';
 import { SystemFilterParams } from '@src/modules/system/controller/dto/system.filter.params';
+import { SystemOauthResponseMapper } from '@src/modules/system/controller/mapper/system-oauth-response.mapper';
 import { SystemUc } from '../uc/system.uc';
 
 @ApiTags('System')

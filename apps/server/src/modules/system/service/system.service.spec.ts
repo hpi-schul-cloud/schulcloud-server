@@ -3,6 +3,7 @@ import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemService } from './system.service';
 
 describe('SystemService', () => {
@@ -11,7 +12,8 @@ describe('SystemService', () => {
 	let orm: MikroORM;
 	let oauthSystems: System[] = [];
 	const allSystems: System[] = [];
-	let systemRepo: SystemRepo;
+
+	let systemRepo: DeepMocked<SystemRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -24,10 +26,7 @@ describe('SystemService', () => {
 				SystemService,
 				{
 					provide: SystemRepo,
-					useValue: {
-						findByFilter: jest.fn().mockImplementation(() => Promise.resolve(oauthSystems)),
-						findAll: jest.fn().mockImplementation(() => Promise.resolve(allSystems)),
-					},
+					useValue: createMock<SystemRepo>(),
 				},
 			],
 		}).compile();
@@ -45,6 +44,9 @@ describe('SystemService', () => {
 		const moodle = systemFactory.build();
 		moodle.type = 'moodle';
 		allSystems.push(moodle);
+
+		systemRepo.findByFilter.mockResolvedValue(oauthSystems);
+		systemRepo.findAll.mockResolvedValue(allSystems);
 	});
 
 	describe('findByFilter', () => {

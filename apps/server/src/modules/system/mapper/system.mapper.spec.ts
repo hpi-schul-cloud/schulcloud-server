@@ -52,19 +52,19 @@ describe('SystemMapper', () => {
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);
 
 			// Assert
-			expect(result[0].oauthConfig!.clientId).toEqual(systemEntities[0].oauthConfig!.clientId);
-			expect(result[0].oauthConfig!.clientSecret).toEqual(systemEntities[0].oauthConfig!.clientSecret);
-			expect(result[0].oauthConfig!.tokenRedirectUri).toEqual(systemEntities[0].oauthConfig!.tokenRedirectUri);
-			expect(result[0].oauthConfig!.grantType).toEqual(systemEntities[0].oauthConfig!.grantType);
-			expect(result[0].oauthConfig!.tokenEndpoint).toEqual(systemEntities[0].oauthConfig!.tokenEndpoint);
-			expect(result[0].oauthConfig!.authEndpoint).toEqual(systemEntities[0].oauthConfig!.authEndpoint);
-			expect(result[0].oauthConfig!.responseType).toEqual(systemEntities[0].oauthConfig!.responseType);
-			expect(result[0].oauthConfig!.scope).toEqual(systemEntities[0].oauthConfig!.scope);
-			expect(result[0].oauthConfig!.provider).toEqual(systemEntities[0].oauthConfig!.provider);
-			expect(result[0].oauthConfig!.logoutEndpoint).toEqual(systemEntities[0].oauthConfig!.logoutEndpoint);
-			expect(result[0].oauthConfig!.issuer).toEqual(systemEntities[0].oauthConfig!.issuer);
-			expect(result[0].oauthConfig!.jwksEndpoint).toEqual(systemEntities[0].oauthConfig!.jwksEndpoint);
-			expect(result[0].oauthConfig!.codeRedirectUri).toEqual(systemEntities[0].oauthConfig!.codeRedirectUri);
+			expect(result[0].oauthConfig?.clientId).toEqual(systemEntities[0].oauthConfig?.clientId);
+			expect(result[0].oauthConfig?.clientSecret).toEqual(systemEntities[0].oauthConfig?.clientSecret);
+			expect(result[0].oauthConfig?.tokenRedirectUri).toEqual(systemEntities[0].oauthConfig?.tokenRedirectUri);
+			expect(result[0].oauthConfig?.grantType).toEqual(systemEntities[0].oauthConfig?.grantType);
+			expect(result[0].oauthConfig?.tokenEndpoint).toEqual(systemEntities[0].oauthConfig?.tokenEndpoint);
+			expect(result[0].oauthConfig?.authEndpoint).toEqual(systemEntities[0].oauthConfig?.authEndpoint);
+			expect(result[0].oauthConfig?.responseType).toEqual(systemEntities[0].oauthConfig?.responseType);
+			expect(result[0].oauthConfig?.scope).toEqual(systemEntities[0].oauthConfig?.scope);
+			expect(result[0].oauthConfig?.provider).toEqual(systemEntities[0].oauthConfig?.provider);
+			expect(result[0].oauthConfig?.logoutEndpoint).toEqual(systemEntities[0].oauthConfig?.logoutEndpoint);
+			expect(result[0].oauthConfig?.issuer).toEqual(systemEntities[0].oauthConfig?.issuer);
+			expect(result[0].oauthConfig?.jwksEndpoint).toEqual(systemEntities[0].oauthConfig?.jwksEndpoint);
+			expect(result[0].oauthConfig?.codeRedirectUri).toEqual(systemEntities[0].oauthConfig?.codeRedirectUri);
 			expect(result[1].oauthConfig).toBe(undefined);
 		});
 	});

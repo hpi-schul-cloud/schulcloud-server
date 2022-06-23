@@ -41,18 +41,15 @@ describe('OAuthService', () => {
 	let jwtService: FeathersJwtProvider;
 	Configuration.set('HOST', 'https://mock.de');
 
-	const defaultSystem: System = systemFactory.build();
-	const defaultOauthConfig: OauthConfig = defaultSystem.oauthConfig as OauthConfig;
+	let defaultSystem: System;
+	let defaultOauthConfig: OauthConfig;
 
-	const defaultAuthCode = '43534543jnj543342jn2';
-	const defaultQuery = { code: defaultAuthCode };
-	const defaultErrorQuery = { error: 'oauth_login_failed' };
-	const defaultUserId = '123456789';
-	const defaultScool: School = schoolFactory.build();
-	const defaultDecodedJWT: IJwt = {
-		sub: '4444',
-		uuid: '1111',
-	};
+	let defaultAuthCode: string;
+	let defaultQuery: AuthorizationParams;
+	let defaultErrorQuery: AuthorizationParams;
+	let defaultUserId: string;
+	let defaultScool: School;
+	let defaultDecodedJWT: IJwt;
 
 	let defaultUser: User;
 	let defaultIservUser: User;
@@ -61,51 +58,14 @@ describe('OAuthService', () => {
 	let defaultTokenResponse: OauthTokenResponse;
 	let defaultAxiosResponse: AxiosResponse<OauthTokenResponse>;
 
-	const defaultDecryptedSecret = 'IchBinNichtMehrGeheim';
+	let defaultDecryptedSecret: string;
 
-	const iservRedirectMock = `logoutEndpointMock?id_token_hint=${defaultJWT}&post_logout_redirect_uri=${
-		Configuration.get('HOST') as string
-	}/dashboard`;
-	const defaultIservSystem: System = {
-		type: 'iserv',
-		url: 'http://mock.de',
-		alias: `system`,
-		oauthConfig: {
-			clientId: '12345',
-			clientSecret: 'mocksecret',
-			tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-			grantType: 'authorization_code',
-			tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
-			scope: 'openid uuid',
-			responseType: 'code',
-			authEndpoint: 'mock_authEndpoint',
-			provider: 'iserv',
-			logoutEndpoint: 'logoutEndpointMock',
-			issuer: 'mock_issuer',
-			jwksEndpoint: 'mock_jwksEndpoint',
-			codeRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
-		},
-		_id: new ObjectId(),
-		id: '',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-	const defaultResponse: OAuthResponse = {
-		idToken: defaultJWT,
-		logoutEndpoint: 'logoutEndpointMock',
-		provider: 'providerMock',
-		redirect: '',
-	};
-	const defaultResponseAfterBuild = {
-		idToken: defaultJWT,
-		logoutEndpoint: 'logoutEndpointMock',
-		provider: 'iserv',
-	};
-	const defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`;
-	const defaultErrorResponse = {
-		errorcode: defaultErrorQuery.error,
-		redirect: defaultErrorRedirect,
-	};
+	let iservRedirectMock: string;
+	let defaultIservSystem: System;
+	let defaultResponse: OAuthResponse;
+	let defaultResponseAfterBuild;
+	let defaultErrorRedirect: string;
+	let defaultErrorResponse: OAuthResponse;
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let systemRepo: DeepMocked<SystemRepo>;
@@ -140,39 +100,19 @@ describe('OAuthService', () => {
 				},
 				{
 					provide: UserRepo,
-					useValue: {
-						findById(sub: string) {
-							if (sub === '') {
-								throw new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
-							}
-							if (sub) {
-								return defaultUser;
-							}
-							return new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound');
-						},
-					},
+					useValue: createMock<UserRepo>(),
 				},
 				{
 					provide: FeathersJwtProvider,
-					useValue: {
-						generateJwt() {
-							return defaultJWT;
-						},
-					},
+					useValue: createMock<FeathersJwtProvider>(),
 				},
 				{
 					provide: IservOAuthService,
-					useValue: {
-						extractUUID() {
-							return defaultDecodedJWT.uuid;
-						},
-						findUserById() {
-							return defaultIservUser;
-						},
-					},
+					useValue: createMock<IservOAuthService>(),
 				},
 			],
 		}).compile();
+		service = module.get(OAuthService);
 
 		oAuthEncryptionService = module.get(SymetricKeyEncryptionService);
 		systemRepo = module.get(SystemRepo);
@@ -185,9 +125,6 @@ describe('OAuthService', () => {
 				return Promise.resolve(defaultAxiosResponse);
 			})
 		);
-		userRepo = await module.resolve<UserRepo>(UserRepo);
-		jwtService = await module.resolve<FeathersJwtProvider>(FeathersJwtProvider);
-		iservOauthService = await module.resolve<IservOAuthService>(IservOAuthService);
 	});
 
 	beforeEach(() => {
@@ -367,7 +304,7 @@ describe('OAuthService', () => {
 				return 'string';
 			});
 			service._getPublicKey = jest.fn().mockResolvedValue('publicKey');
-			await expect(service.validateToken(defaultJWT, defaultSystem)).rejects.toEqual(
+			await expect(service.validateToken(defaultJWT, defaultOauthConfig)).rejects.toEqual(
 				new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
 			);
 		});
@@ -376,8 +313,7 @@ describe('OAuthService', () => {
 	describe('findUser', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
 			// Arrange
-			const resolveUserSpy = jest.spyOn(iservOauthService, 'findUserById');
-			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig!);
+			const oauthConfig = new OauthConfig(defaultSystem.oauthConfig as OauthConfig);
 			oauthConfig.provider = 'iserv';
 
 			// Act
@@ -391,28 +327,24 @@ describe('OAuthService', () => {
 			});
 
 			// Assert
-			expect(resolveUserSpy).toHaveBeenCalled();
+			expect(iservOAuthService.findUserById).toHaveBeenCalled();
 			expect(user).toBe(defaultIservUser);
 		});
 		it('should return the user according to the id', async () => {
-			const resolveUserSpy = jest.spyOn(userRepo, 'findById');
 			const user = await service.findUser(defaultDecodedJWT, defaultSystem);
-			expect(resolveUserSpy).toHaveBeenCalled();
+			expect(userRepo.findById).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
 		it('should return an error if no User is found by this Id', async () => {
 			defaultDecodedJWT.sub = '';
-			return expect(service.findUser(defaultDecodedJWT, defaultSystem)).rejects.toEqual(
-				new OAuthSSOError('Failed to find user with this Id', 'sso_user_notfound')
-			);
+			await expect(service.findUser(defaultDecodedJWT, defaultSystem)).rejects.toThrow(OAuthSSOError);
 		});
 	});
 
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
-			const resolveJWTSpy = jest.spyOn(jwtService, 'generateJwt');
 			const jwtResult = await service.getJWTForUser(defaultUser);
-			expect(resolveJWTSpy).toHaveBeenCalled();
+			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(defaultJWT);
 		});
 	});
