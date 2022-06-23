@@ -1,6 +1,6 @@
 import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
@@ -23,16 +23,13 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
-	async findByLdapId(ldapId: string, systemId: string): Promise<User> {
+	async findByLdapIdorFail(ldapId: string, systemId: string): Promise<User> {
 		const [users] = await this._em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
 			const { systems } = user.school;
 			return systems && systems.getItems().find((system) => system.id === systemId);
 		});
-		if (resultUser) {
-			return resultUser;
-		}
-		throw new NotFoundException('No user for this ldapId found');
+		return resultUser ?? Promise.reject();
 	}
 
 	/**

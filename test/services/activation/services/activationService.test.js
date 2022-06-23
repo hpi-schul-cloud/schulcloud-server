@@ -37,9 +37,9 @@ describe('activation/services activationService', () => {
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		server = await app.listen(0);
 		activationService = app.service('activation');
-		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {

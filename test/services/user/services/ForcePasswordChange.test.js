@@ -16,12 +16,13 @@ describe('forcePasswordChange service tests', () => {
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		forcePasswordChangeService = app.service('forcePasswordChange');
 		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});

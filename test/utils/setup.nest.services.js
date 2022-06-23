@@ -37,8 +37,9 @@ const setupNestServices = async (app) => {
 };
 
 const closeNestServices = async (nestServices) => {
-	await nestServices.nestApp.close();
-	await nestServices.orm.close();
+	const { nestApp, orm } = nestServices;
+	await orm.close();
+	await nestApp.close();
 };
 
 module.exports = {

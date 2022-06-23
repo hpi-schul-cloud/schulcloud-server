@@ -1,20 +1,20 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Board, EntityId } from '@shared/domain';
-import { BoardRepo, CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { EntityId } from '@shared/domain';
+import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { RoomBoardDTO } from '../types/room-board.types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
+import { RoomsService } from './rooms.service';
 
 @Injectable()
 export class RoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo,
-		private readonly taskRepo: TaskRepo,
 		private readonly userRepo: UserRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
-		private readonly authorisationService: RoomsAuthorisationService
+		private readonly authorisationService: RoomsAuthorisationService,
+		private readonly roomsService: RoomsService
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
@@ -22,19 +22,10 @@ export class RoomsUc {
 		const course = await this.courseRepo.findOne(roomId, userId);
 		let board = await this.boardRepo.findByCourseId(course.id);
 
-		board = await this.updateBoard(board, roomId, userId);
+		board = await this.roomsService.updateBoard(board, roomId, userId);
 
 		const dto = this.factory.createDTO({ room: course, board, user });
 		return dto;
-	}
-
-	private async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
-		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
-		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId);
-		board.syncTasksFromList(courseTasks);
-		board.syncLessonsFromList(courseLessons);
-		await this.boardRepo.save(board);
-		return board;
 	}
 
 	async updateVisibilityOfBoardElement(

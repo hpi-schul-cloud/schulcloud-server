@@ -52,13 +52,12 @@ class ForcePasswordChangeService {
 			throw new BadRequest(this.err.passwordSameAsPrevious);
 		}
 
-		const accountUpdate = {
-			password: newPassword,
-		};
-
-		const accountPromise = this.app.service('/accounts').patch(params.account._id, accountUpdate, params);
-		await accountPromise
-			.then((result) => Promise.resolve(result))
+		await this.app
+			.service('nest-account-service')
+			.save({
+				id: params.account._id.toString(),
+				password: newPassword,
+			})
 			.catch((err) => {
 				throw new BadRequest(this.err.failed, err);
 			});

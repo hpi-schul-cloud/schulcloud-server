@@ -60,7 +60,6 @@ const firstLogin = async (data, params, app) => {
 	const preferences = user.preferences || {};
 	preferences.firstLogin = true;
 
-	const accountUpdate = {};
 	let consentUpdate = {};
 	const userUpdate = {
 		preferences,
@@ -75,9 +74,10 @@ const firstLogin = async (data, params, app) => {
 	}
 
 	if (data['password-1']) {
-		accountUpdate.password_verification = data.password_verification || data['password-2'];
-		accountUpdate.password = data['password-1'];
-		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
+		await app.service('nest-account-uc').saveAccount({
+			id: accountId.toString(),
+			password: data.password_verification || data['password-1'],
+		});
 	}
 
 	// birthdate

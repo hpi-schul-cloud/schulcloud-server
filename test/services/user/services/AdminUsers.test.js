@@ -9,21 +9,22 @@ const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_
 describe('AdminUsersService', () => {
 	let app;
 	let server;
-	let nestServices;
 	let accountService;
 	let adminStudentsService;
 	let adminTeachersService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
+		accountService = app.service('nest-account-service');
 		adminStudentsService = app.service('/users/admin/students');
 		adminTeachersService = app.service('/users/admin/teachers');
 		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
-		accountService = app.service('nest-account-service');
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
@@ -948,7 +949,7 @@ describe('AdminUsersService', () => {
 			await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params);
 
 			// then
-			const updatedAccount = await accountService.findById(account.id);
+			const updatedAccount = await accountService.findById(account._id.toString());
 			expect(updatedAccount.username).equals('foo@bar.baz');
 		});
 
@@ -983,7 +984,7 @@ describe('AdminUsersService', () => {
 			);
 
 			// then
-			const notUpdatedAccount = await accountService.findById(account._id);
+			const notUpdatedAccount = await accountService.findById(account._id.toString());
 			expect(notUpdatedAccount.username).equals(username);
 		};
 
@@ -1119,7 +1120,7 @@ describe('AdminUsersService', () => {
 				expect(err.code).to.be.equal(400);
 			}
 
-			const notUpdatedAccount = await accountService.findById(account._id);
+			const notUpdatedAccount = await accountService.findById(account._id.toString());
 			const notUpdatedUser = await service.get(user._id, params);
 			expect(notUpdatedAccount.username).equal(userMail);
 			expect(notUpdatedUser.email).to.be.equal(userMail);
@@ -1292,13 +1293,14 @@ describe('AdminTeachersService', () => {
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		adminTeachersService = app.service('/users/admin/teachers');
 		consentService = app.service('consents');
 		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
