@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectsCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
@@ -123,5 +123,15 @@ export class SyncFilesStorageService implements OnModuleInit {
 			}
 			throw err;
 		}
+	}
+
+	public async remove(paths: string[]) {
+		const pathObjects = paths.map((p) => ({ Key: p }));
+		const req = new DeleteObjectsCommand({
+			Bucket: this.config.bucket,
+			Delete: { Objects: pathObjects },
+		});
+
+		return this.destinationClient.send(req);
 	}
 }

@@ -56,6 +56,8 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
+	delete;
+
 	private async findAndCount(
 		scope: FileRecordScope,
 		options?: IFindOptions<FileRecord>

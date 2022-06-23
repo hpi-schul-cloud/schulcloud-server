@@ -1,12 +1,18 @@
+import { DeleteObjectOutput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { FileRecord, FileRecordParentType, Task } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
 import { DeleteOrphanedFilesRepo } from '../repo/delete-orphaned-files.repo';
 import { FileFileRecord } from '../types';
+import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class DeleteOrphanedFilesUc {
-	constructor(private deleteOrphanedFilesRepo: DeleteOrphanedFilesRepo, private logger: Logger) {
+	constructor(
+		private deleteOrphanedFilesRepo: DeleteOrphanedFilesRepo,
+		private logger: Logger,
+		private syncFilesStorageService: SyncFilesStorageService
+	) {
 		this.logger.setContext(DeleteOrphanedFilesUc.name);
 	}
 
@@ -16,6 +22,8 @@ export class DeleteOrphanedFilesUc {
 		const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
 
 		const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
+
+		await this.removeFiles(orphanedFileRecords);
 	}
 
 	getOrphanedFileRecords(tasks: Task[], fileRecords: FileRecord[], fileFileRecords: FileFileRecord[]): FileRecord[] {
@@ -39,5 +47,15 @@ export class DeleteOrphanedFilesUc {
 
 			return false;
 		});
+	}
+
+	async removeFiles(fileRecords: FileRecord[]): Promise<DeleteObjectOutput> {
+		const paths = fileRecords.map((fileRecord) => {
+			return [fileRecord._schoolId.toHexString(), '/', fileRecord.id].join('');
+		});
+
+		const deleteObjectOutput = await this.syncFilesStorageService.remove(paths);
+
+		return deleteObjectOutput;
 	}
 }
