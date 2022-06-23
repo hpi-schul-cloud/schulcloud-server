@@ -51,7 +51,7 @@ export class DeleteOrphanedFilesUc {
 
 	async removeFiles(fileRecords: FileRecord[]): Promise<DeleteObjectOutput> {
 		const paths = fileRecords.map((fileRecord) => {
-			return [fileRecord._schoolId.toHexString(), '/', fileRecord.id].join('');
+			return [fileRecord._schoolId.toHexString(), fileRecord.id].join('/');
 		});
 
 		const deleteObjectOutput = await this.syncFilesStorageService.remove(paths);

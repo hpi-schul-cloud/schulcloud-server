@@ -28,7 +28,7 @@ export class DeleteOrphanedFilesRepo {
 			{
 				parentType,
 			},
-			{ fields: ['id', '_parentId'] }
+			{ fields: ['id', '_parentId', '_schoolId'] }
 		);
 
 		return fileRecords;
