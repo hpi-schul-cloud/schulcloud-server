@@ -6,7 +6,7 @@ export class SchoolDto {
 		this.name = schoolDto.name;
 	}
 
-	id: EntityId;
+	id?: EntityId;
 
 	name!: string;
 }

@@ -6,7 +6,9 @@ export class SchoolMapper {
 		const school = new School({
 			name: schoolDto.name,
 		});
-		school.id = schoolDto.id;
+		if (schoolDto.id) {
+			school.id = schoolDto.id;
+		}
 		return school;
 	}
 
