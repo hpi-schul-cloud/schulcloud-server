@@ -1,7 +1,5 @@
-import { DeleteObjectOutput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { FileRecord, FileRecordParentType, Task } from '@shared/domain';
-import { FileRecordRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger/logger.service';
 import { DeleteOrphanedFilesRepo } from '../repo/delete-orphaned-files.repo';
 import { FileFileRecord } from '../types';
@@ -11,7 +9,6 @@ import { SyncFilesStorageService } from './sync-files-storage.service';
 export class DeleteOrphanedFilesUc {
 	constructor(
 		private deleteOrphanedFilesRepo: DeleteOrphanedFilesRepo,
-		private fileRecordRepo: FileRecordRepo,
 		private logger: Logger,
 		private syncFilesStorageService: SyncFilesStorageService
 	) {
@@ -19,27 +16,20 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	async deleteOrphanedFilesForEntity(parentType: FileRecordParentType) {
-		try {
-			const tasks = await this.deleteOrphanedFilesRepo.findTasks();
-			this.logger.log(`Found ${tasks.length} tasks.`);
+		const tasks = await this.deleteOrphanedFilesRepo.findTasks();
+		this.logger.log(`Found ${tasks.length} tasks.`);
 
-			const fileRecords = await this.deleteOrphanedFilesRepo.findFilerecords(parentType);
-			this.logger.log(`Found ${fileRecords.length} fileRecords.`);
+		const fileRecords = await this.deleteOrphanedFilesRepo.findFilerecords(parentType);
+		this.logger.log(`Found ${fileRecords.length} fileRecords.`);
 
-			const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
-			this.logger.log(`Found ${fileFileRecords.length} fileFileRecords.`);
+		const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
+		this.logger.log(`Found ${fileFileRecords.length} fileFileRecords.`);
 
-			const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
-			this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
+		const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
+		this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
 
-			await this.removeS3Files(orphanedFileRecords);
-			this.logger.log(`Removed orphaned files in S3 storage.`);
-
-			await this.removeMetaData(orphanedFileRecords);
-			this.logger.log(`Removed orphaned fileRecords and the corresponding fileFileRecords.`);
-		} catch (error) {
-			this.logger.error(error);
-		}
+		await this.removeOrphans(orphanedFileRecords);
+		this.logger.log(`Finished removing orphaned fileRecords.`);
 	}
 
 	private getOrphanedFileRecords(
@@ -69,19 +59,33 @@ export class DeleteOrphanedFilesUc {
 		});
 	}
 
-	private async removeS3Files(fileRecords: FileRecord[]): Promise<DeleteObjectOutput> {
-		const paths = fileRecords.map((fileRecord) => {
-			return [fileRecord._schoolId.toHexString(), fileRecord.id].join('/');
+	private async removeOrphans(fileRecords: FileRecord[]) {
+		const promises = fileRecords.map(async (fileRecord) => {
+			await this.removeOrphan(fileRecord);
 		});
 
-		const deleteObjectOutput = await this.syncFilesStorageService.remove(paths);
-
-		return deleteObjectOutput;
+		await Promise.all(promises);
 	}
 
-	private async removeMetaData(fileRecords: FileRecord[]) {
-		await this.fileRecordRepo.delete(fileRecords);
+	private async removeOrphan(fileRecord: FileRecord) {
+		try {
+			const path = [fileRecord._schoolId.toHexString(), fileRecord.id].join('/');
+			await this.syncFilesStorageService.remove(path);
+			this.logger.log(`Successfully removed file with path = ${path} from S3 bucket.`);
 
-		await this.deleteOrphanedFilesRepo.deleteFileFileRecords(fileRecords);
+			await this.removeMetaData(fileRecord);
+			this.logger.log(
+				`Successfully removed fileRecord with id = ${fileRecord.id} and corresponding fileFileRecord from database.`
+			);
+		} catch (error) {
+			this.logger.error(`Error removing fileRecord with id = ${fileRecord.id}.`);
+			this.logger.error(error);
+		}
+	}
+
+	private async removeMetaData(fileRecord: FileRecord) {
+		await this.deleteOrphanedFilesRepo.deleteFileRecord(fileRecord);
+
+		await this.deleteOrphanedFilesRepo.deleteFileFileRecord(fileRecord);
 	}
 }

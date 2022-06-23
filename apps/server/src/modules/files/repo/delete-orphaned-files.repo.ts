@@ -34,8 +34,11 @@ export class DeleteOrphanedFilesRepo {
 		return fileRecords;
 	}
 
-	async deleteFileFileRecords(fileRecords: FileRecord[]) {
-		const fileRecordIds = fileRecords.map((fileRecord) => fileRecord._id);
-		await this._em.getConnection().deleteMany('files_filerecords', { filerecordId: { $in: fileRecordIds } });
+	async deleteFileRecord(fileRecord: FileRecord) {
+		await this._em.nativeDelete(FileRecord, fileRecord._id);
+	}
+
+	async deleteFileFileRecord(fileRecord: FileRecord) {
+		await this._em.getConnection().deleteMany('files_filerecords', { filerecordId: fileRecord._id });
 	}
 }
