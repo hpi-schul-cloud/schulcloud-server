@@ -5,7 +5,7 @@ export class RoleMapper {
 	static mapFromEntityToDto(entity: Role): RoleDto {
 		return new RoleDto({
 			permissions: entity.permissions,
-			roles: RoleMapper.mapFromEntitiesToDtos(entity.roles.getItems()), //TODO
+			roles: entity.roles ? RoleMapper.mapFromEntitiesToDtos(entity.roles.getItems()) : [],
 			name: entity.name,
 		});
 	}
@@ -13,7 +13,7 @@ export class RoleMapper {
 	static mapFromDtoToEntity(dto: RoleDto): Role {
 		return new Role({
 			permissions: dto.permissions,
-			roles: RoleMapper.mapFromDtosToEntities(dto.roles),
+			roles: [],
 			name: dto.name,
 		});
 	}

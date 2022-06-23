@@ -1,9 +1,10 @@
-import { LanguageType } from '@shared/domain';
+import { EntityId, LanguageType } from '@shared/domain';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { RoleDto } from '@src/modules/user/uc/dto/role.dto';
 
 export class UserDto {
 	constructor(user: UserDto) {
+		this.id = user.id;
 		this.email = user.email;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
@@ -15,6 +16,8 @@ export class UserDto {
 		this.forcePasswordChange = user.forcePasswordChange;
 		this.preferences = user.preferences;
 	}
+
+	id?: EntityId;
 
 	email: string;
 

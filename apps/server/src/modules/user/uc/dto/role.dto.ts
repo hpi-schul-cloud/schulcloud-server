@@ -1,4 +1,4 @@
-import { EntityId, Permission, RoleName } from '@shared/domain';
+import { Permission, RoleName } from '@shared/domain';
 
 export class RoleDto {
 	constructor(role: RoleDto) {
@@ -7,9 +7,9 @@ export class RoleDto {
 		this.name = role.name;
 	}
 
-	permissions: Permission[];
+	permissions?: Permission[];
 
 	roles?: RoleDto[];
 
-	name?: RoleName;
+	name: RoleName;
 }

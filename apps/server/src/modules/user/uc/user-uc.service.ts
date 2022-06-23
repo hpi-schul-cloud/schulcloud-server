@@ -2,10 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId, LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { ChangeLanguageParams } from '../controller/dto';
-import { IUserConfig } from '../interfaces';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
+import { ChangeLanguageParams } from '../controller/dto';
+import { IUserConfig } from '../interfaces';
 
 // TODO Refactoring https://ticketsystem.dbildungscloud.de/browse/N21-169 create service layer
 @Injectable()
@@ -39,6 +39,11 @@ export class UserUc {
 	}
 
 	async save(user: UserDto): Promise<void> {
+		if (user.id) {
+			const entity = await this.userRepo.findById(user.id);
+			const fromDto = UserMapper.mapFromDtoToEntity(user);
+			return this.userRepo.save(UserMapper.mapFromEntityToEntity(entity, fromDto));
+		}
 		return this.userRepo.save(UserMapper.mapFromDtoToEntity(user));
 	}
 }
