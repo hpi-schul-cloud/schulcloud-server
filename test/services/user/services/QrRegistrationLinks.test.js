@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 const HOST = Configuration.get('HOST');
 
@@ -16,7 +16,7 @@ describe('qrRegistrationLinks service tests', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		qrRegistrationLinksService = app.service('/users/qrRegistrationLink');
 		accountService = app.service('accounts');
 		server = await app.listen(0);

@@ -4,7 +4,7 @@ const appPromise = require('../../../src/app');
 describe('federalState service', () => {
 	let app;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 	});
 
 	it('registered the federalStates service', () => {

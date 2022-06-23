@@ -3,14 +3,14 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('course service', () => {
 	let app;
 	let courseService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		courseService = app.service('courses');
 	});
 

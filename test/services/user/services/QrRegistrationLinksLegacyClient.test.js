@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 
 describe('qrRegistrationLinksLegacyClient service tests', () => {
 	let app;
@@ -9,7 +9,7 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		qrRegistrationLinksLegacyService = app.service('/users/qrRegistrationLinkLegacy');
 		server = await app.listen(0);
 	});

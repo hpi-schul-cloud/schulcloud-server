@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -14,7 +14,7 @@ describe('user service v2', () => {
 	let usersModelService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		accountModelService = app.service('accountModel');
 		usersModelService = app.service('usersModel');

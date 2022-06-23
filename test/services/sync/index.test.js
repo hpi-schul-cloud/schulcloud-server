@@ -11,7 +11,7 @@ describe('sync service', () => {
 	let syncService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		syncService = app.service('sync');
 	});
 

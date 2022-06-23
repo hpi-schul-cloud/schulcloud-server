@@ -7,7 +7,7 @@ const { classModel } = require('../../../../src/services/user-group/model');
 
 const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -18,7 +18,7 @@ describe('class repo', () => {
 	const createdClasses = [];
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

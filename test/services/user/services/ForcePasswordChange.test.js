@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 describe('forcePasswordChange service tests', () => {
 	let app;
@@ -14,7 +14,7 @@ describe('forcePasswordChange service tests', () => {
 	const newPasswordThatIsToWeak = 'SomePassword1';
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		accountService = app.service('accounts');
 		forcePasswordChangeService = app.service('forcePasswordChange');
 		server = await app.listen(0);

@@ -3,8 +3,8 @@ const chaiAsPromised = require('chai-as-promised');
 
 const { BadRequest, NotFound } = require('../../../src/errors');
 const appPromise = require('../../../src/app');
-const { cleanup } = require('../helpers/testObjects')(appPromise);
-const { create: createSchool } = require('../helpers/services/schools')(appPromise);
+const { cleanup } = require('../helpers/testObjects')(appPromise());
+const { create: createSchool } = require('../helpers/services/schools')(appPromise());
 const { create: createYear } = require('../helpers/services/years');
 
 chai.use(chaiAsPromised);

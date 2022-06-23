@@ -9,6 +9,6 @@ import { AccountUc } from './uc/account.uc';
 	imports: [],
 	providers: [UserRepo, AccountRepo, SystemRepo, AccountService, AccountUc, PermissionService],
 	controllers: [AccountController],
-	exports: [AccountService],
+	exports: [AccountUc, AccountService],
 })
 export class AccountModule {}

@@ -8,7 +8,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../../src/app');
-const { createTestUser, createTestAccount, cleanup } = require('../../../helpers/testObjects')(appPromise);
+const { createTestUser, createTestAccount, cleanup } = require('../../../helpers/testObjects')(appPromise());
 
 const util = require('../../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../../src/services/activation/utils/customStrategyUtils');
@@ -24,7 +24,7 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 	let activationService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		activationService = app.service(`activation/${mockData.keyword}`);
 	});

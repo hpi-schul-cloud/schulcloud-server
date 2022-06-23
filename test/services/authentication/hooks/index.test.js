@@ -34,7 +34,7 @@ describe('authentication hooks', () => {
 		/* eslint-disable global-require */
 
 		redisHelper = require('../../../../src/utils/redis');
-		app = await require('../../../../src/app');
+		app = await require('../../../../src/app')();
 		server = await app.listen(0);
 		testObjects = require('../../helpers/testObjects')(app);
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));

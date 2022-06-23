@@ -73,7 +73,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
 
-			// debug: true, // use it for locally debugging of querys
+			// debug: true, // use it for locally debugging of queries
 		}),
 	],
 	controllers: [ServerController],

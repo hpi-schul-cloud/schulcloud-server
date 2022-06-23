@@ -25,7 +25,7 @@ describe('api-key authentication strategy', () => {
 	let configBefore = null;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		app.use(testRoute, new TestService());
 		app.service(testRoute).hooks(testServiceHooks);
 		server = await app.listen(0);
