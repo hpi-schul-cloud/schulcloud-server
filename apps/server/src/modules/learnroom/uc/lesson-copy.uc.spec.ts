@@ -129,7 +129,7 @@ describe('lesson copy uc', () => {
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
 			expect(authSpy).toBeCalledWith(user, lesson, {
 				action: Actions.read,
-				requiredPermissions: [Permission.LESSONS_CREATE],
+				requiredPermissions: [Permission.TOPIC_CREATE],
 			});
 		});
 
