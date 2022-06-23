@@ -222,11 +222,9 @@ describe('OAuthService', () => {
 			provider: 'iserv',
 		};
 		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error as string}`;
-		defaultErrorResponse = {
-			errorcode: defaultErrorQuery.error as string,
-			redirect: defaultErrorRedirect,
-			provider: 'iserv',
-		};
+		defaultErrorResponse = new OAuthResponse();
+		defaultErrorResponse.errorcode = defaultErrorQuery.error as string;
+		defaultErrorResponse.redirect = defaultErrorRedirect;
 
 		// Init mocks
 		oAuthEncryptionService.decrypt.mockReturnValue(defaultDecryptedSecret);
@@ -357,7 +355,7 @@ describe('OAuthService', () => {
 
 	describe('processOAuth', () => {
 		it('should do the process successfully and redirect to iserv', async () => {
-			jest.spyOn(service, 'validateToken').mockResolvedValue(defaultDecodedJWT);
+			jest.spyOn(service, 'validateToken').mockResolvedValueOnce(defaultDecodedJWT);
 			const response = await service.processOAuth(defaultQuery, defaultIservSystemId);
 			expect(response.redirect).toStrictEqual(iservRedirectMock);
 			expect(response.jwt).toStrictEqual(defaultJWT);
@@ -384,9 +382,7 @@ describe('OAuthService', () => {
 		it('should return a login url string within an error', () => {
 			const generalError = new Error('foo');
 			const response = service.getOAuthError(generalError);
-			expect(response.redirect).toStrictEqual(
-				`${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error}`
-			);
+			expect(response.redirect).toStrictEqual(defaultErrorRedirect);
 		});
 		it('should return a login url string within an error', () => {
 			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'bar');
