@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('files model service', () => {
 	let app;
