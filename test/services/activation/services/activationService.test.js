@@ -71,7 +71,7 @@ describe('activation/services activationService', () => {
 		expect(entries1.entry).to.have.lengthOf(0);
 	});
 
-	it('initiate an entry with valid activationCode', async () => {
+	it('initiate entry with valid activationCode', async () => {
 		const { entry, user } = await createEntry();
 		const credentials = { username: user.email, password: user.email };
 		const account = await createTestAccount(credentials, 'local', user);

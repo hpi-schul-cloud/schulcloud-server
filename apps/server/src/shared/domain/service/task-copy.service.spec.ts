@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { courseFactory, fileFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
+import { Task } from '../entity';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
@@ -43,122 +44,117 @@ describe('task copy service', () => {
 			it('should assign user as creator', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.creator).toEqual(user);
+				const task = status.copyEntity as Task;
+				expect(task.creator).toEqual(user);
 			});
 
 			it('should set school of user', () => {
 				const { user, destinationCourse, originalTask, school } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.school).toEqual(school);
+				const task = status.copyEntity as Task;
+				expect(task.school).toEqual(school);
 			});
 
 			it('should set copy as draft', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.private).toEqual(true);
-				expect(result.copy.availableDate).not.toBeDefined();
+				const task = status.copyEntity as Task;
+				expect(task.private).toEqual(true);
+				expect(task.availableDate).not.toBeDefined();
 			});
 
 			it('should set name of copy', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.name).toEqual(originalTask.name);
+				const task = status.copyEntity as Task;
+				expect(task.name).toEqual(originalTask.name);
 			});
 
 			it('should set course of the copy', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.course).toEqual(destinationCourse);
+				const task = status.copyEntity as Task;
+				expect(task.course).toEqual(destinationCourse);
 			});
 
 			it('should set description of copy', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.description).toEqual(originalTask.description);
-			});
-
-			it('should set copy to status', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				const result = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-
-				expect(result.status.copyEntity).toEqual(result.copy);
+				const task = status.copyEntity as Task;
+				expect(task.description).toEqual(originalTask.description);
 			});
 
 			it('should set status title to title of the copy', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.status.title).toEqual(result.copy.name);
+				const task = status.copyEntity as Task;
+				expect(status.title).toEqual(task.name);
 			});
 
 			it('should set status type to task', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.status.type).toEqual(CopyElementType.TASK);
+				expect(status.type).toEqual(CopyElementType.TASK);
 			});
 
 			it('should set status of metadata', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const metadataStatus = result.status.elements?.find(
+				const metadataStatus = status.elements?.find(
 					(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
 				);
 				expect(metadataStatus).toBeDefined();
@@ -168,13 +164,13 @@ describe('task copy service', () => {
 			it('should set status of description', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const descriptionStatus = result.status.elements?.find(
+				const descriptionStatus = status.elements?.find(
 					(el) => el.type === CopyElementType.LEAF && el.title === 'description'
 				);
 				expect(descriptionStatus).toBeDefined();
@@ -184,13 +180,13 @@ describe('task copy service', () => {
 			it('should set status of submissions', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const submissionsStatus = result.status.elements?.find(
+				const submissionsStatus = status.elements?.find(
 					(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
 				);
 				expect(submissionsStatus).toBeDefined();
@@ -200,13 +196,13 @@ describe('task copy service', () => {
 			it('should set status to success in absence of attached files', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.status.status).toEqual(CopyStatusEnum.SUCCESS);
+				expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 		});
 
@@ -219,13 +215,14 @@ describe('task copy service', () => {
 				const user = userFactory.build({ school: destinationSchool });
 				const originalTask = taskFactory.build({ course: originalCourse, school: originalSchool });
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.school).toEqual(destinationSchool);
+				const task = status.copyEntity as Task;
+				expect(task.school).toEqual(destinationSchool);
 			});
 		});
 
@@ -236,13 +233,14 @@ describe('task copy service', () => {
 				const user = userFactory.build({});
 				const originalTask = taskFactory.build({ course: originalCourse });
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.copy.course).toEqual(destinationCourse);
+				const task = status.copyEntity as Task;
+				expect(task.course).toEqual(destinationCourse);
 			});
 		});
 
@@ -262,15 +260,13 @@ describe('task copy service', () => {
 			it('should not set files leaf in absence of attached files', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const filesStatus = result.status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
-				);
+				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
 				expect(filesStatus).not.toBeDefined();
 			});
 		});
@@ -287,27 +283,25 @@ describe('task copy service', () => {
 			it('should set task status to partial', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
+				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 
 			it('should add file leaf with status "not implemented"', () => {
 				const { user, file, destinationCourse, originalTask } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const fileStatus = result.status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === file.name
-				);
+				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === file.name);
 				expect(fileStatus).toBeDefined();
 				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
@@ -325,27 +319,25 @@ describe('task copy service', () => {
 			it('should set task status to partial', () => {
 				const { originalTask, destinationCourse, user } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				expect(result.status.status).toEqual(CopyStatusEnum.PARTIAL);
+				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 
 			it('should add a status for files leaf', () => {
 				const { originalTask, destinationCourse, user } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const fileStatus = result.status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
-				);
+				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
 				expect(fileStatus).toBeDefined();
 				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
@@ -353,16 +345,13 @@ describe('task copy service', () => {
 			it('should add a status for each file under files', () => {
 				const { originalTask, destinationCourse, user, files } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const filestatus = result.status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
-				);
-
+				const filestatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
 				const fileStatusNames = filestatus?.elements?.map((el) => el.title);
 				const fileNames = files.map((file) => file.name);
 
@@ -372,15 +361,13 @@ describe('task copy service', () => {
 			it('should set "not implemented" as the status of every file', () => {
 				const { originalTask, destinationCourse, user } = setup();
 
-				const result = copyService.copyTaskMetadata({
+				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
 
-				const fileStatus = result.status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'files'
-				);
+				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
 
 				fileStatus?.elements?.forEach((el) => {
 					expect(el.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);

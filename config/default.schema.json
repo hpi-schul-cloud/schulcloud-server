@@ -858,6 +858,11 @@
 			"default": false,
 			"description": "Toggle for copy/duplicate a course feature."
 		},
+		"FEATURE_COURSE_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a course feature."
+		},
 		"FEATURE_TASK_COPY_ENABLED": {
 			"type": "boolean",
 			"default": false,
