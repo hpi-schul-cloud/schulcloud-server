@@ -6,6 +6,7 @@ import { CollaborativeStorageService } from '@src/modules/collaborative-storage/
 import { RoleMapper } from '@src/modules/collaborative-storage/mapper/role.mapper';
 import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
 import { TeamPermissionsMapper } from '@src/modules/collaborative-storage/mapper/team-permissions.mapper';
+import { RoleDto } from '@src/modules/collaborative-storage/services/dto/role.dto';
 import { CollaborativeStorageUc } from './uc/collaborative-storage.uc';
 import { CollaborativeStorageController } from './controller/collaborative-storage.controller';
 
@@ -21,6 +22,6 @@ import { CollaborativeStorageController } from './controller/collaborative-stora
 		TeamMapper,
 	],
 	controllers: [CollaborativeStorageController],
-	exports: [CollaborativeStorageUc],
+	exports: [CollaborativeStorageUc, RoleDto],
 })
 export class CollaborativeStorageModule {}
