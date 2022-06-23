@@ -275,8 +275,9 @@ class RocketChatChannel {
 	 * @param {*} params
 	 */
 	async get(teamId, params) {
+		await this.setModeratorRole();
 		const result = await this.getOrCreateRocketChatChannel(teamId, params);
-		this.synchronizeModerators(teamId);
+		await this.synchronizeModerators(teamId);
 		return result;
 	}
 
@@ -329,18 +330,17 @@ class RocketChatChannel {
 		this.app.service('teams').on('patched', this.onTeamPatched.bind(this));
 	}
 
+	async setModeratorRole() {
+		const teamModeratorRoles = await this.app.service('roles').find({
+			query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+		});
+
+		this.teamModeratorRoles = teamModeratorRoles.data.map((role) => role._id.toString());
+	}
+
 	setup(app) {
 		this.app = app;
 		this.registerEventListeners();
-		return app
-			.service('roles')
-			.find({
-				query: { name: { $in: ['teamowner', 'teamadministrator'] } },
-			})
-			.then((teamModeratorRoles) => {
-				this.teamModeratorRoles = teamModeratorRoles.data.map((role) => role._id.toString());
-				return Promise.resolve();
-			});
 	}
 }
 
