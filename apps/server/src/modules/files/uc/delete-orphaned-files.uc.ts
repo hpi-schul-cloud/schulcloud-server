@@ -19,23 +19,27 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	async deleteOrphanedFilesForEntity(parentType: FileRecordParentType) {
-		const tasks = await this.deleteOrphanedFilesRepo.findTasks();
-		this.logger.log(`Found ${tasks.length} tasks.`);
+		try {
+			const tasks = await this.deleteOrphanedFilesRepo.findTasks();
+			this.logger.log(`Found ${tasks.length} tasks.`);
 
-		const fileRecords = await this.deleteOrphanedFilesRepo.findFilerecords(parentType);
-		this.logger.log(`Found ${fileRecords.length} fileRecords.`);
+			const fileRecords = await this.deleteOrphanedFilesRepo.findFilerecords(parentType);
+			this.logger.log(`Found ${fileRecords.length} fileRecords.`);
 
-		const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
-		this.logger.log(`Found ${fileFileRecords.length} fileFileRecords.`);
+			const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
+			this.logger.log(`Found ${fileFileRecords.length} fileFileRecords.`);
 
-		const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
-		this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
+			const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
+			this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
 
-		await this.removeS3Files(orphanedFileRecords);
-		this.logger.log(`Removed orphaned files in S3 storage.`);
+			await this.removeS3Files(orphanedFileRecords);
+			this.logger.log(`Removed orphaned files in S3 storage.`);
 
-		await this.removeMetaData(orphanedFileRecords);
-		this.logger.log(`Removed orphaned fileRecords and the corresponding fileFileRecords.`);
+			await this.removeMetaData(orphanedFileRecords);
+			this.logger.log(`Removed orphaned fileRecords and the corresponding fileFileRecords.`);
+		} catch (error) {
+			this.logger.error(error);
+		}
 	}
 
 	private getOrphanedFileRecords(
