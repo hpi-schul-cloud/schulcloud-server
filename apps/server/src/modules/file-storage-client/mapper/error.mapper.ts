@@ -75,10 +75,10 @@ export class ErrorMapper {
 			error = new ApiValidationError(response.data.validationErrors);
 		} else if (axiosError.code === '403') {
 			const response = extractAxiosResponse(axiosError);
-			error = new ForbiddenException(response.statusText);
+			error = new ForbiddenException(response.data);
 		} else {
 			const response = extractAxiosResponse(axiosError);
-			error = new InternalServerErrorException(response);
+			error = new InternalServerErrorException(response.data);
 		}
 
 		return error;
