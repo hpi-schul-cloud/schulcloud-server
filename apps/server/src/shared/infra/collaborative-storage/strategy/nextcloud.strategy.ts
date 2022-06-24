@@ -127,5 +127,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		return this.httpService.post(`${this.baseURL}${apiPath}`, data, this.config);
 	}
 
-	private boolArrToNumber = (arr: Array<boolean>): number => parseInt(arr.map((r) => (r ? '1' : '0')).join(''), 2);
+	private boolArrToNumber(arr: Array<boolean>): number {
+		return parseInt(arr.map((r) => (r ? '1' : '0')).join(''), 2);
+	}
 }
