@@ -10,19 +10,20 @@ export interface ISystemProperties {
 }
 
 export class OauthConfig {
-	constructor(system: System) {
-		this.clientId = system.oauthConfig.clientId;
-		this.clientSecret = system.oauthConfig.clientSecret;
-		this.tokenEndpoint = system.oauthConfig.tokenEndpoint;
-		this.grantType = system.oauthConfig.grantType;
-		this.tokenRedirectUri = system.oauthConfig.tokenRedirectUri;
-		this.scope = system.oauthConfig.scope;
-		this.responseType = system.oauthConfig.responseType;
-		this.authEndpoint = system.oauthConfig.authEndpoint;
-		this.provider = system.oauthConfig.provider;
-		this.logoutEndpoint = system.oauthConfig.logoutEndpoint;
-		this.issuer = system.oauthConfig.issuer;
-		this.jwksEndpoint = system.oauthConfig.jwksEndpoint;
+	constructor(oauthConfig: OauthConfig) {
+		this.clientId = oauthConfig.clientId;
+		this.clientSecret = oauthConfig.clientSecret;
+		this.tokenEndpoint = oauthConfig.tokenEndpoint;
+		this.grantType = oauthConfig.grantType;
+		this.tokenRedirectUri = oauthConfig.tokenRedirectUri;
+		this.scope = oauthConfig.scope;
+		this.responseType = oauthConfig.responseType;
+		this.authEndpoint = oauthConfig.authEndpoint;
+		this.provider = oauthConfig.provider;
+		this.logoutEndpoint = oauthConfig.logoutEndpoint;
+		this.issuer = oauthConfig.issuer;
+		this.jwksEndpoint = oauthConfig.jwksEndpoint;
+		this.codeRedirectUri = oauthConfig.codeRedirectUri;
 	}
 
 	@Property()
@@ -60,6 +61,9 @@ export class OauthConfig {
 
 	@Property()
 	jwksEndpoint: string;
+
+	@Property()
+	codeRedirectUri: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
@@ -80,6 +84,6 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	alias?: string;
 
-	@Property()
-	oauthConfig: OauthConfig;
+	@Property({ nullable: true })
+	oauthConfig?: OauthConfig;
 }
