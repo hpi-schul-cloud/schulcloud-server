@@ -48,4 +48,10 @@ export class CollaborativeStorageService {
 			teamPermissions
 		);
 	}
+
+	// TODO;
+
+	removeGroupAndFolderfromNextcloud(teamId: string) {
+		this.adapter.removeGroupAndFolderfromNextcloud(teamId);
+	}
 }

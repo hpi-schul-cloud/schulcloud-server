@@ -23,4 +23,8 @@ export class CollaborativeStorageAdapter {
 	updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto) {
 		this.strategy.updateTeamPermissionsForRole(this.mapper.mapDomainToAdapter(team, role, permissions));
 	}
+
+	public removeGroupAndFolderfromNextcloud(teamId: string) {
+		this.strategy.deleteGroupfolder(teamId);
+	}
 }

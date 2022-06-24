@@ -27,4 +27,8 @@ export class CollaborativeStorageUc {
 			this.permissionMapper.mapBodyToDto(permissionsDto)
 		);
 	}
+
+	removeGroupAndFolderfromNextcloud(teamId: string) {
+		this.service.removeGroupAndFolderfromNextcloud(teamId);
+	}
 }

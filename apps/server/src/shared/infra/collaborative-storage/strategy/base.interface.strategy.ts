@@ -4,4 +4,5 @@ export interface ITeamStorageStrategy {
 	baseURL: string;
 
 	updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): void;
+	deleteGroupfolder(teamId: string): void;
 }

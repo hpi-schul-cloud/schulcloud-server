@@ -1,5 +1,5 @@
 const logger = require('../../../logger/index');
-
+const collaborativeStorageService = require('../../../../apps/server/src/modules/collaborative-storage/uc/collaborative-storage.uc.ts');
 const { teamsModel } = require('../model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -14,6 +14,7 @@ const removeTeamUserFromTeam = (team, userId) => {
 
 const patchOrRemoveTeam = (team) => {
 	if (team.userIds.length <= 0) {
+		collaborativeStorageService.removeGroupAndFolderfromNextcloud(team._id);
 		return removeTeam(team);
 	}
 	return patchTeamUsers(team);

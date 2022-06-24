@@ -55,6 +55,22 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 			});
 	}
 
+	// TODO
+	private async findGroupIdByTeamId(TeamId: string): Promise<string> {
+		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${TeamId}`))
+			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0])
+			.catch((error) => {
+				throw new NotFoundException(error, `Group with TeamId of ${TeamId} not found in Nextcloud!`);
+			});
+	}
+
+	// TODO
+	private removeGroup(groupId: string, folderId: string) {
+		this.post(`/apps/groupfolders/folders/${folderId}/groups/${groupId}`, {
+			// delete(folderId);,
+		});
+	}
+
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
 		return firstValueFrom(this.get(`/apps/groupfolders/folders`))
 			.then((resp: AxiosResponse<OcsResponse<Map<string, NextcloudGroupfolders>>>) => {
@@ -71,6 +87,22 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 			.catch((error) => {
 				throw new NotFoundException(error, `Group ${groupId} not found in Nextcloud!`);
 			});
+	}
+
+	// TODO
+	private deleteFolder(folderId: string) {
+		this.post(`/apps/groupfolders/folders/${folderId}`, {
+			// delete(folderId),
+		});
+	}
+
+	// TODO
+	async deleteGroupfolder(TeamId: string) {
+		// const groupId = await this.findGroupId(TeamId);
+		// const folderId = await this.findFolderIdForGroupId(groupId);
+		// // deletion order
+		// this.deleteFolder(folderId);
+		// this.removeGroup(groupId, folderId);
 	}
 
 	private setGroupPermissions(groupId: string, folderId: string, permissions: boolean[]) {
