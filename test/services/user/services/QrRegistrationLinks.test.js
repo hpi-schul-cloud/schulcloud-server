@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { Test } = require('@nestjs/testing');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
@@ -16,7 +15,7 @@ describe('qrRegistrationLinks service tests', () => {
 	let qrRegistrationLinksService;
 	let accountService;
 	let server;
-
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
