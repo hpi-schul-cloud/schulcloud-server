@@ -59,9 +59,63 @@ describe('system repo', () => {
 
 			await expect(repo.findById(idA)).rejects.toThrow(NotFoundError);
 		});
+	});
 
-		// it() -> design test that does something with a Systementity, so that we know, that System has been loaded correctly
+	describe('findAll', () => {
+		afterEach(async () => {
+			await em.nativeDelete(System, {});
+		});
 
-		// it() -> should throw error if it loaded incorrectly
+		it('should return all systems', async () => {
+			// Arrange
+			const systems = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
+			await em.persistAndFlush(systems);
+
+			// Act
+			const result = await repo.findAll();
+
+			// Assert
+			expect(result.length).toEqual(systems.length);
+			expect(result).toEqual(systems);
+		});
+	});
+
+	describe('findByFilter', () => {
+		let systems: System[] = [];
+		beforeEach(async () => {
+			systems = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
+			await em.persistAndFlush(systems);
+		});
+
+		afterEach(async () => {
+			await em.nativeDelete(System, {});
+		});
+
+		it('should return all systems with type iserv', async () => {
+			// Act
+			const result = await repo.findByFilter('iserv');
+
+			// Assert
+			expect(result.length).toEqual(systems.length);
+			expect(result).toEqual(systems);
+		});
+
+		it('should return all systems with type iserv and oauthConfig', async () => {
+			// Act
+			const result = await repo.findByFilter('iserv', true);
+
+			// Assert
+			expect(result.length).toEqual(1);
+			expect(result[0].id).toEqual(systems[0].id);
+		});
+
+		it('should return all systems with oauthConfig', async () => {
+			// Act
+			const result = await repo.findByFilter('', true);
+
+			// Assert
+			expect(result.length).toEqual(1);
+			expect(result[0].id).toEqual(systems[0].id);
+		});
 	});
 });
