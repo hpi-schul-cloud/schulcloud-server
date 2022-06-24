@@ -29,13 +29,16 @@ export class AuthorizationService extends BasePermissionManager {
 		entityId: EntityId,
 		context: IPermissionContext
 	): Promise<boolean> {
-		const [user, entity] = await Promise.all([
-			this.loader.getUserWithPermissions(userId),
-			this.loader.loadEntity(entityName, entityId),
-		]);
-		const permission = this.hasPermission(user, entity, context);
-
-		return permission;
+		try {
+			const [user, entity] = await Promise.all([
+				this.loader.getUserWithPermissions(userId),
+				this.loader.loadEntity(entityName, entityId),
+			]);
+			const permission = this.hasPermission(user, entity, context);
+			return permission;
+		} catch (err) {
+			throw new ForbiddenException();
+		}
 	}
 
 	async checkPermissionByReferences(
@@ -50,6 +53,12 @@ export class AuthorizationService extends BasePermissionManager {
 	}
 
 	async getUserWithPermissions(userId: EntityId) {
-		return this.loader.getUserWithPermissions(userId);
+		try {
+			const userWithPermissions = await this.loader.getUserWithPermissions(userId);
+
+			return userWithPermissions;
+		} catch (err) {
+			throw new ForbiddenException();
+		}
 	}
 }
