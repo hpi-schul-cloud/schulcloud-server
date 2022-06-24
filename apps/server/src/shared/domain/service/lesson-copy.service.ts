@@ -16,7 +16,7 @@ export class LessonCopyService {
 	copyLesson(params: LessonCopyParams): CopyStatus {
 		const copy = new Lesson({
 			course: params.destinationCourse,
-			hidden: params.originalLesson.hidden,
+			hidden: true,
 			name: this.nameCopyService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
 		});

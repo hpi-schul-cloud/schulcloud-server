@@ -112,7 +112,7 @@ describe('lesson copy service', () => {
 					});
 
 					const lesson = response.copyEntity as Lesson;
-					expect(lesson.hidden).toEqual(originalLesson.hidden);
+					expect(lesson.hidden).toEqual(true);
 				});
 			});
 
