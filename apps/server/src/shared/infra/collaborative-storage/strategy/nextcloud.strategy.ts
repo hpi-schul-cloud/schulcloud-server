@@ -19,6 +19,12 @@ interface OcsResponse<T> {
 	ocs: { data: T };
 }
 
+/**
+ * Nextcloud Strategy Implementation for Collaborative Storage
+ *
+ * @implements ICollaborativeStorageStrategy
+ *
+ */
 @Injectable()
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	readonly baseURL: string;
@@ -39,14 +45,14 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		};
 	}
 
-	private static generateGroupId(dto: TeamRolePermissionsDto): string {
-		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
-	}
-
 	public async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
 		const groupId = await this.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		const folderId = await this.findFolderIdForGroupId(groupId);
 		this.setGroupPermissions(groupId, folderId, dto.permissions);
+	}
+
+	private static generateGroupId(dto: TeamRolePermissionsDto): string {
+		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
 	}
 
 	private async findGroupId(groupName: string): Promise<string> {
@@ -71,7 +77,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 				return filtered[0];
 			})
 			.catch((error) => {
-				throw new NotFoundException(error, `Group ${groupId} not found in Nextcloud!`);
+				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			});
 	}
 
