@@ -1,4 +1,5 @@
 # Rocket.Chat
+
 ## Start Mongodb
 
 It makes sense for Rocket.Chat to launch its own mongodb in Docker. Reason for this is Rocket.Chat requires Mongodb as replicaSet setup.
@@ -15,7 +16,7 @@ rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}
 
 ## Start rocketChat
 
-(check the latest settings https://github.com/hpi-schul-cloud/dof_app_deploy/blob/main/ansible/roles/rocketchat/templates/configmap.yml.j2#L9)
+(check the latest settings <https://github.com/hpi-schul-cloud/dof_app_deploy/blob/main/ansible/roles/rocketchat/templates/configmap.yml.j2#L9>)
 
 Please not that the displayed //172.29.173.128 is the IP address of the mongoDB docker container.
 You can get the ip over the command:  docker inspect rocket-chat-mongodb | grep "IPAddress" (dependent on our system)
@@ -32,6 +33,7 @@ docker run\
         -e Accounts_AllowRealNameChange=false \
         -e Accounts_AllowUsernameChange=false \
         -e Accounts_AllowEmailChange=false \
+        -e Accounts_AllowAnonymousRead=false \
         -e Accounts_Send_Email_When_Activating=false \
         -e Accounts_Send_Email_When_Deactivating=false \
         -e Accounts_UseDefaultBlockedDomainsList=false \
@@ -64,7 +66,6 @@ ROCKET_CHAT_URI="http://localhost:3000"
 ROCKET_CHAT_ADMIN_USER=admin
 ROCKET_CHAT_ADMIN_PASSWORD=huhu
 ```
-
 
 ### dBildungscloud Legacy Client
 
