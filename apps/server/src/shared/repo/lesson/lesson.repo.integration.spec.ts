@@ -35,6 +35,17 @@ describe('LessonRepo', () => {
 	});
 
 	describe('findById', () => {
+		it('should find the lesson', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			await em.persistAndFlush([course, lesson]);
+			em.clear();
+
+			const resultLesson = await repo.findById(lesson.id);
+			// expect(resultLesson).toEqual(lesson);
+			expect(resultLesson.id).toEqual(lesson.id);
+			expect(resultLesson.name).toEqual(lesson.name);
+		});
 		it('should populate course', async () => {
 			const course = courseFactory.build();
 			const lesson = lessonFactory.build({ course });
