@@ -1,3 +1,4 @@
+import { NotFound } from '@feathersjs/errors';
 import {
 	BadRequestException,
 	Body,
@@ -88,6 +89,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 200, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFound })
 	@Get('/list/:schoolId/:parentType/:parentId')
 	async list(
 		@Param() params: FileRecordParams,

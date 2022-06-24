@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 import { FileDto } from '../dto';
 import { AxiosJWTOptionBuilder, FileStorageClientMapper, ErrorMapper } from '../mapper';
 import { FileApi } from '../fileStorageApi/v3';
@@ -50,9 +50,9 @@ export class FileStorageClientAdapterService {
 
 			return response;
 		} catch (err) {
-			// const error = ErrorMapper.mapAxiosToDomainError(err); todo
-			this.logger.error(err);
-			throw err;
+			const domainError = ErrorMapper.mapErrorToDomainError(err);
+
+			throw domainError;
 		}
 	}
 
@@ -71,9 +71,9 @@ export class FileStorageClientAdapterService {
 
 			return response;
 		} catch (err) {
-			// const error = ErrorMapper.mapAxiosToDomainError(err);  todo
-			this.logger.error(err);
-			throw err;
+			const domainError = ErrorMapper.mapErrorToDomainError(err);
+
+			throw domainError;
 		}
 	}
 
@@ -88,9 +88,9 @@ export class FileStorageClientAdapterService {
 
 			return response;
 		} catch (err) {
-			// const error = ErrorMapper.mapAxiosToDomainError(err);  todo
-			this.logger.error(err);
-			throw err;
+			const domainError = ErrorMapper.mapErrorToDomainError(err);
+
+			throw domainError;
 		}
 	}
 }
