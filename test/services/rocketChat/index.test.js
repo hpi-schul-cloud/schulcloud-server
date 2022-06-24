@@ -5,6 +5,7 @@ const assert = require('assert');
 const chai = require('chai');
 const mockery = require('mockery');
 const { ObjectId } = require('mongoose').Types;
+const sinon = require('sinon');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects');
@@ -84,19 +85,6 @@ describe('rocket.chat user service', () => {
 	});
 });
 
-describe('rocket.chat login service', async () => {
-	delete require.cache[require.resolve('../../../src/app')];
-	let app;
-	let rocketChatLoginService;
-	before(async () => {
-		app = await appPromise();
-		rocketChatLoginService = app.service('/rocketChat/login');
-	});
-	it('registered the RC login service', () => {
-		assert.ok(rocketChatLoginService);
-	});
-});
-
 // service.logoutUser(rcUser.authToken, rcUser.rcId);
 class NestRocketChatServiceMock {
 	setup(app) {
@@ -105,6 +93,29 @@ class NestRocketChatServiceMock {
 
 	async logoutUser(authToken, rcId) {
 		return { authToken, rcId };
+	}
+
+	async me() {
+		return {
+			success: true,
+		};
+	}
+
+	createUserToken() {
+		return {
+			data: {
+				authToken: 'Test_Token',
+			},
+			success: true,
+		};
+	}
+
+	async setUserStatus(returns) {
+		return (
+			returns || {
+				success: true,
+			}
+		);
 	}
 }
 
@@ -131,6 +142,75 @@ class RocketChatUserServiceMock {
 	}
 }
 
+describe('rocket.chat login service', async () => {
+	delete require.cache[require.resolve('../../../src/app')];
+	let app;
+	let rocketChatLoginService;
+	let server;
+	let testHelper;
+
+	before(async () => {
+		app = await appPromise();
+		server = app.listen(0);
+		testHelper = testObjects(app);
+
+		rocketChatLoginService = app.service('/rocketChat/login');
+	});
+
+	after(async () => {
+		await testHelper.cleanup();
+		await server.close();
+	});
+
+	const setupServices = async (RCNestMock, RCUserMock) => {
+		app.use('/nest-rocket-chat', RCNestMock || new NestRocketChatServiceMock());
+		app.use('/rocketChat/user', RCUserMock || new RocketChatUserServiceMock());
+		const setupData = await testHelper.setupUser();
+		return setupData;
+	};
+
+	it('registered the RC login service', () => {
+		assert.ok(rocketChatLoginService);
+	});
+
+	it('Should return { authToken: "rocketChatToken123" }', async () => {
+		const { requestParams, userId } = await setupServices();
+		const response = await rocketChatLoginService.get(userId, requestParams);
+
+		expect(response).to.deep.equal({ authToken: 'rocketChatToken123' });
+	});
+
+	it('Should return new tocken after call createUserToken() { authToken: "Test_Token" }', async () => {
+		const { requestParams, userId } = await setupServices(
+			undefined,
+			new RocketChatUserServiceMock(() => {
+				const rocktChatUserData = {
+					authToken: '',
+					username: 'rocktChatUserABC',
+					rcId: new ObjectId(userId),
+				};
+
+				return rocktChatUserData;
+			})
+		);
+
+		const response = await rocketChatLoginService.get(userId, requestParams);
+
+		expect(response).to.deep.equal({ authToken: 'Test_Token' });
+	});
+
+	it('Should throw error "Can not create token."', async () => {
+		const { requestParams, userId } = await setupServices(
+			undefined,
+			new RocketChatUserServiceMock(() => {
+				throw new Error();
+			})
+		);
+
+		await expect(rocketChatLoginService.get(userId, requestParams)).to.be.rejectedWith(Error, 'Can not create token.');
+	});
+});
+
 describe('rocket.chat logout service', async () => {
 	delete require.cache[require.resolve('../../../src/app')];
 	let app;
@@ -151,25 +231,39 @@ describe('rocket.chat logout service', async () => {
 		await server.close();
 	});
 
-	it('registered the RC login service', () => {
-		assert.ok(rocketChatLogoutService);
-	});
-
-	const setupSuccess = async () => {
-		app.use('/nest-rocket-chat', new NestRocketChatServiceMock());
-		app.use('/rocketChat/user', new RocketChatUserServiceMock());
+	const setupServices = async (RCNestMock, RCUserMock) => {
+		app.use('/nest-rocket-chat', RCNestMock || new NestRocketChatServiceMock());
+		app.use('/rocketChat/user', RCUserMock || new RocketChatUserServiceMock());
 
 		const setupData = await testHelper.setupUser();
 
 		return setupData;
 	};
 
-	it('Should ...', async () => {
-		const { requestParams, userId } = await setupSuccess();
+	it('registered the RC login service', () => {
+		assert.ok(rocketChatLogoutService);
+	});
+
+	it('Should return "success"', async () => {
+		const { requestParams, userId } = await setupServices();
 
 		const response = await rocketChatLogoutService.get(userId, requestParams);
 
 		expect(response).to.equal('success');
+	});
+
+	it('Should throw error', async () => {
+		const { requestParams, userId } = await setupServices(
+			undefined,
+			new RocketChatUserServiceMock(() => {
+				throw new Error();
+			})
+		);
+
+		await expect(rocketChatLogoutService.get(userId, requestParams)).to.be.rejectedWith(
+			Error,
+			'could not log out user'
+		);
 	});
 });
 
