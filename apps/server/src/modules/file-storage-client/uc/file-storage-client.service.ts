@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { AxiosError, AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { FileDto } from '../dto';
 import { AxiosJWTOptionBuilder, FileStorageClientMapper, ErrorMapper } from '../mapper';
-import { FileApi } from '../fileStorageApi/v3';
+import { FileApi, FileRecordListResponse } from '../fileStorageApi/v3';
 import { FileRequestInfo, FileRequestOptions } from '../interfaces';
 
 @Injectable()
@@ -36,7 +36,11 @@ export class FileStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	private async copy(param: FileRequestInfo, target: FileRequestInfo, options: AxiosRequestConfig<FileRequestOptions>) {
+	private async copy(
+		param: FileRequestInfo,
+		target: FileRequestInfo,
+		options: AxiosRequestConfig<FileRequestOptions>
+	): Promise<AxiosResponse<FileRecordListResponse>> {
 		try {
 			const response = await this.fileStorageClient.filesStorageControllerCopy(
 				param.schoolId,
@@ -56,7 +60,10 @@ export class FileStorageClientAdapterService {
 		}
 	}
 
-	private async list(param: FileRequestInfo, options: AxiosRequestConfig<FileRequestOptions>) {
+	private async list(
+		param: FileRequestInfo,
+		options: AxiosRequestConfig<FileRequestOptions>
+	): Promise<AxiosResponse<FileRecordListResponse>> {
 		try {
 			const skip = undefined;
 			const limit = undefined;
@@ -77,7 +84,10 @@ export class FileStorageClientAdapterService {
 		}
 	}
 
-	private async delete(param: FileRequestInfo, options: AxiosRequestConfig<FileRequestOptions>) {
+	private async delete(
+		param: FileRequestInfo,
+		options: AxiosRequestConfig<FileRequestOptions>
+	): Promise<AxiosResponse<FileRecordListResponse>> {
 		try {
 			const response = await this.fileStorageClient.filesStorageControllerDelete(
 				param.schoolId,
