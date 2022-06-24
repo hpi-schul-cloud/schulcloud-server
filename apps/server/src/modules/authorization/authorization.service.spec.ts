@@ -1,3 +1,4 @@
+import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -138,6 +139,22 @@ describe('authorization.service', () => {
 
 			spy.mockRestore();
 		});
+
+		it('Should throw ForbiddenException if entity by id can not be found.', async () => {
+			loader.loadEntity.mockRejectedValueOnce(new NotFound());
+
+			const userId = new ObjectId().toHexString();
+			const entityName = AllowedAuthorizationEntityType.Course;
+			const entityId = new ObjectId().toHexString();
+			const spy = jest.spyOn(service, 'hasPermission');
+			spy.mockReturnValue(true);
+
+			await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrowError(
+				ForbiddenException
+			);
+
+			spy.mockRestore();
+		});
 	});
 
 	describe('checkPermissionByReferences', () => {
@@ -159,11 +176,19 @@ describe('authorization.service', () => {
 	});
 
 	describe('getUserWithPermissions', () => {
-		it('should call ReferenceLoader.getUserWithPermissions', async () => {
+		it('Should call ReferenceLoader.getUserWithPermissions.', async () => {
 			const userId = new ObjectId().toHexString();
 
 			await service.getUserWithPermissions(userId);
 			expect(loader.getUserWithPermissions).lastCalledWith(userId);
+		});
+
+		it('Should throw ForbiddenException if user by id can not be found.', async () => {
+			loader.getUserWithPermissions.mockRejectedValueOnce(new NotFound());
+
+			const userId = new ObjectId().toHexString();
+
+			await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(ForbiddenException);
 		});
 	});
 });

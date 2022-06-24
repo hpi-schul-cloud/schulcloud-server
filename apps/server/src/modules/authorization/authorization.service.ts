@@ -35,6 +35,7 @@ export class AuthorizationService extends BasePermissionManager {
 				this.loader.loadEntity(entityName, entityId),
 			]);
 			const permission = this.hasPermission(user, entity, context);
+
 			return permission;
 		} catch (err) {
 			throw new ForbiddenException();
