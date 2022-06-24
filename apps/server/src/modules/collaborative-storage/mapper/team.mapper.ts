@@ -4,6 +4,11 @@ import { TeamDto, TeamUserDto } from '../services/dto/team.dto';
 
 @Injectable()
 export class TeamMapper {
+	/**
+	 * Maps a Team Entity to the ServiceDTO
+	 * @param teamEntity The Entity
+	 * @return The Dto
+	 */
 	public mapEntityToDto(teamEntity: Team): TeamDto {
 		const userIdDto: TeamUserDto[] = teamEntity.userIds.map(
 			(teamUser) =>

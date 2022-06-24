@@ -31,6 +31,13 @@ export class CollaborativeStorageService {
 		return this.roleMapper.mapEntityToDto(await this.roleRepo.findById(roleId));
 	}
 
+	/**
+	 * Sets the Permissions for the specified Role in a Team
+	 * @param currentUserId The current User. Needs to be either the teamowner or an teamadmin
+	 * @param teamId The TeamId
+	 * @param roleId The RoleId
+	 * @param teamPermissions The new Permissions
+	 */
 	async updateTeamPermissionsForRole(
 		currentUserId: string,
 		teamId: string,

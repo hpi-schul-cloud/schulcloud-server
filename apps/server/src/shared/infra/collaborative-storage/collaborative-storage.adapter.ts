@@ -1,4 +1,4 @@
-import { RoleDto } from '@src/modules/collaborative-storage/services/dto/Role.dto';
+import { RoleDto } from '@src/modules/collaborative-storage/services/dto/role.dto';
 import { TeamPermissionsDto } from '@src/modules/collaborative-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
