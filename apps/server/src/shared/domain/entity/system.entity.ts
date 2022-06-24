@@ -1,5 +1,6 @@
 /* istanbul ignore file */ // TODO remove when implementation exists
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ISystemProperties {
@@ -86,4 +87,8 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	oauthConfig?: OauthConfig;
+
+	@Property({ nullable: true })
+	@Enum()
+	provisioningStrategy?: SystemProvisioningStrategy;
 }

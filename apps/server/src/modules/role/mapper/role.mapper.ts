@@ -1,5 +1,5 @@
 import { Role } from '@shared/domain';
-import { RoleDto } from '@src/modules/user/uc/dto/role.dto';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 export class RoleMapper {
 	static mapFromEntityToDto(entity: Role): RoleDto {

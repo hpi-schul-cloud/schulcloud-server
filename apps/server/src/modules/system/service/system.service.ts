@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { System } from '@shared/domain';
+import { EntityId, System } from '@shared/domain';
 
 @Injectable()
 export class SystemService {
@@ -16,5 +16,9 @@ export class SystemService {
 			systemEntities = await this.systemRepo.findByFilter(type, onlyOauth);
 		}
 		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
+	}
+
+	async findById(id: EntityId): Promise<SystemDto> {
+		return SystemMapper.mapFromEntityToDto(await this.systemRepo.findById(id));
 	}
 }

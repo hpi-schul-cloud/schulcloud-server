@@ -28,6 +28,7 @@ describe('SystemMapper', () => {
 			expect(result.url).toEqual(systemEntity.url);
 			expect(result.alias).toEqual(systemEntity.alias);
 			expect(result.type).toEqual(systemEntity.type);
+			expect(result.provisioningStrategy).toEqual(systemEntity.provisioningStrategy);
 			expect(result.oauthConfig).toEqual(systemEntity.oauthConfig);
 		});
 	});

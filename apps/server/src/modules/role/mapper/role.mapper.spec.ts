@@ -1,8 +1,8 @@
-import { Permission, Role, RoleName } from '@shared/domain';
+import { Permission, Role } from '@shared/domain';
 import { roleFactory, setupEntities } from '@shared/testing';
-import { RoleDto } from '@src/modules/user/uc/dto/role.dto';
-import { RoleMapper } from '@src/modules/user/mapper/role.mapper';
-import { Collection, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
 
 describe('RoleMapper', () => {
 	let orm: MikroORM;
@@ -17,35 +17,15 @@ describe('RoleMapper', () => {
 
 	it('mapFromEntityToDto', () => {
 		// Arrange
-		const entity: Role = roleFactory.buildWithId();
-		const subRoles: Role[] = [roleFactory.buildWithId(), roleFactory.buildWithId()];
-		entity.permissions = [Permission.DELETE_TEAM, Permission.COMMENTS_EDIT];
-		entity.roles = new Collection<Role>(entity);
-		entity.roles.set(subRoles);
+		const entity: Role = roleFactory.buildWithId({ permissions: [Permission.DELETE_TEAM, Permission.COMMENTS_EDIT] });
 
 		// Act
 		const dto: RoleDto = RoleMapper.mapFromEntityToDto(entity);
 
 		// Assert
+		expect(dto.id).toEqual(entity.id);
 		expect(dto.name).toEqual(entity.name);
-		expect(dto.roles?.[0].name).toEqual(entity.roles[0].name);
-		expect(dto.roles?.[1].name).toEqual(entity.roles[1].name);
 		expect(dto.permissions).toEqual(entity.permissions);
-	});
-
-	it('mapFromDtoToEntity', () => {
-		// Arrange
-		const roleDto: RoleDto = new RoleDto({
-			permissions: [Permission.ACCOUNT_CREATE, Permission.DELETE_TEAM],
-			name: RoleName.STUDENT,
-		});
-
-		// Act
-		const entity: Role = RoleMapper.mapFromDtoToEntity(roleDto);
-
-		// Assert
-		expect(entity.name).toEqual(roleDto.name);
-		expect(entity.permissions).toEqual(roleDto.permissions);
 	});
 
 	it('mapFromEntitiesToDtos', () => {
@@ -57,35 +37,7 @@ describe('RoleMapper', () => {
 
 		// Assert
 		expect(dtos.length).toEqual(roles.length);
-		expect(dtos[0].name).toEqual(roles[0].name);
-		expect(dtos[1].name).toEqual(roles[1].name);
-	});
-
-	it('mapFromDtosToEntities', () => {
-		// Arrange
-		const dtos: RoleDto[] = [
-			new RoleDto({
-				permissions: [Permission.ACCOUNT_CREATE, Permission.DELETE_TEAM],
-				name: RoleName.STUDENT,
-			}),
-			new RoleDto({
-				permissions: [Permission.ADD_SCHOOL_MEMBERS],
-				name: RoleName.ADMINISTRATOR,
-			}),
-		];
-
-		// Act
-		const entities: Role[] = RoleMapper.mapFromDtosToEntities(dtos);
-
-		// Assert
-		expect(entities.length).toEqual(dtos.length);
-
-		expect(entities[0].permissions).toEqual(dtos[0].permissions);
-		expect(entities[0].roles).toEqual(dtos[0].roles);
-		expect(entities[0].name).toEqual(dtos[0].name);
-
-		expect(entities[1].permissions).toEqual(dtos[1].permissions);
-		expect(entities[1].roles).toEqual(dtos[1].roles);
-		expect(entities[1].name).toEqual(dtos[1].name);
+		expect(dtos[0].id).toEqual(roles[0].id);
+		expect(dtos[1].id).toEqual(roles[1].id);
 	});
 });

@@ -11,13 +11,14 @@ export class RoleRepo extends BaseRepo<Role> {
 	cacheExpiration = 60000;
 
 	async findByName(name: RoleName): Promise<Role> {
-		const role = await this._em.findOneOrFail(Role, { name }, { cache: this.cacheExpiration });
-		return role;
+		return this._em.findOneOrFail(Role, { name }, { cache: this.cacheExpiration });
 	}
 
 	async findById(id: EntityId): Promise<Role> {
-		const role = await this._em.findOneOrFail(Role, { id }, { cache: this.cacheExpiration });
+		return this._em.findOneOrFail(Role, { id }, { cache: this.cacheExpiration });
+	}
 
-		return role;
+	async findByIds(ids: EntityId[]): Promise<Role[]> {
+		return this._em.find(Role, { id: { $in: ids } }, { cache: this.cacheExpiration });
 	}
 }

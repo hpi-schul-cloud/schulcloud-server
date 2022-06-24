@@ -1,9 +1,12 @@
 export class ProvisioningDto {
-    userDto: UserSaveDto,
+    userDto: UserSaveDto
+,
     schoolDto: SchoolSaveDto
 }
 
-UserDto extends UserSaveDto
+UserDto
+extends
+UserSaveDto
 
 
 save(UserSaveDto)

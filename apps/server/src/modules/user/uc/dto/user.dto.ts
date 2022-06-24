@@ -1,6 +1,6 @@
 import { EntityId, LanguageType } from '@shared/domain';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { RoleDto } from '@src/modules/user/uc/dto/role.dto';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 export class UserDto {
 	constructor(user: UserDto) {

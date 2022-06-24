@@ -4,11 +4,14 @@ import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
+import { EntityId, RoleName, System } from '@shared/domain';
 
 describe('SystemUc', () => {
 	let module: TestingModule;
 	let systemUc: SystemUc;
 	let mockSystems: SystemDto[];
+	let system1: System;
 
 	let systemService: DeepMocked<SystemService>;
 
@@ -31,16 +34,20 @@ describe('SystemUc', () => {
 	});
 
 	beforeEach(() => {
+		system1 = systemFactory.buildWithId();
+
 		mockSystems = [];
+		mockSystems.push(SystemMapper.mapFromEntityToDto(systemFactory.buildWithId()));
+		mockSystems.push(SystemMapper.mapFromEntityToDto(system1));
 
 		systemService.find.mockResolvedValue(mockSystems);
+		systemService.findById.mockImplementation((id: EntityId): Promise<SystemDto> => {
+			return id === system1.id ? Promise.resolve(system1) : Promise.reject();
+		});
 	});
 
 	describe('findByFilter', () => {
 		it('should return systems with oauthConfigs', async () => {
-			mockSystems.push(systemFactory.build());
-			mockSystems.push(systemFactory.build());
-
 			const systems: SystemDto[] = await systemUc.findByFilter();
 
 			expect(systems.length).toEqual(mockSystems.length);
@@ -51,6 +58,18 @@ describe('SystemUc', () => {
 		it('should return empty system list, because none exist', async () => {
 			const resultResponse = await systemUc.findByFilter();
 			expect(resultResponse).toEqual([]);
+		});
+	});
+
+	describe('findById', () => {
+		it('should return a system by id', async () => {
+			const system: SystemDto = await systemUc.findById(system1.id);
+
+			expect(system.alias).toEqual(mockSystems[1].alias);
+		});
+
+		it('should reject promise, because no entity was found', async () => {
+			await expect(systemUc.findById('unknown id')).rejects.toEqual(undefined);
 		});
 	});
 });

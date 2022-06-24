@@ -1,7 +1,7 @@
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { User } from '@shared/domain';
+import { Role, User } from '@shared/domain';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { RoleMapper } from '@src/modules/user/mapper/role.mapper';
+import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
 
 export class UserMapper {
 	static mapFromEntityToDto(entity: User): UserDto {
@@ -19,13 +19,13 @@ export class UserMapper {
 		});
 	}
 
-	static mapFromDtoToEntity(dto: UserDto): User {
+	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[]): User {
 		return new User({
 			email: dto.email,
 			firstName: dto.firstName,
 			lastName: dto.lastName,
 			school: SchoolMapper.mapToEntity(dto.school),
-			roles: RoleMapper.mapFromDtosToEntities(dto.roles),
+			roles: rolesEntity,
 			ldapDn: dto.ldapDn,
 			ldapId: dto.ldapId,
 			language: dto.language,

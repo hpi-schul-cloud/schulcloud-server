@@ -1,1 +1,13 @@
-export class RoleUc {}
+import { RoleService } from '@src/modules/role/service/role.service';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { Injectable } from '@nestjs/common';
+import { RoleName } from '@shared/domain';
+
+@Injectable()
+export class RoleUc {
+	constructor(private readonly roleService: RoleService) {}
+
+	async findByName(name: RoleName): Promise<RoleDto> {
+		return this.roleService.findByName(name);
+	}
+}
