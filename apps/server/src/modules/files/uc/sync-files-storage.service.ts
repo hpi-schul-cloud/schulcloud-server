@@ -54,6 +54,15 @@ export class SyncFilesStorageService implements OnModuleInit {
 		}
 	}
 
+	async removeFile(path: string) {
+		const req = new DeleteObjectCommand({
+			Bucket: this.config.bucket,
+			Key: path,
+		});
+
+		return this.destinationClient.send(req);
+	}
+
 	private createDestinationProvider(config: S3Config) {
 		const provider = this.createStorageProviderClient({
 			endpoint: config.endpoint,
@@ -123,14 +132,5 @@ export class SyncFilesStorageService implements OnModuleInit {
 			}
 			throw err;
 		}
-	}
-
-	public async remove(path: string) {
-		const req = new DeleteObjectCommand({
-			Bucket: this.config.bucket,
-			Key: path,
-		});
-
-		return this.destinationClient.send(req);
 	}
 }

@@ -35,7 +35,7 @@ export class DeleteOrphanedFilesUc {
 	private async deleteOrphan(fileRecord: FileRecord) {
 		try {
 			const path = [fileRecord.schoolId, fileRecord.id].join('/');
-			await this.syncFilesStorageService.remove(path);
+			await this.syncFilesStorageService.removeFile(path);
 			this.logger.log(`Successfully removed file with path = ${path} from S3 bucket.`);
 
 			await this.deleteMetaData(fileRecord);
