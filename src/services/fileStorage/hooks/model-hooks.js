@@ -40,7 +40,7 @@ const handleShareCode = (hook) => {
 			throw new Forbidden('hook.result === undefined');
 		}
 		if (hook.result.shareToken === undefined) {
-			throw new Forbidden(JSON.stringify(hook.result).replace(/['"]/gim, '-'));
+			throw new Forbidden('hook.result.shareToken === undefined');
 		}
 		throw new Forbidden('Invalid share token.');
 	}
