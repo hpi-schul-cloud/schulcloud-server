@@ -1,12 +1,15 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { CopyElementType, CopyStatusEnum, Lesson } from '@shared/domain';
 import { LessonCopyService } from './lesson-copy.service';
+import { NameCopyService } from './name-copy.service';
 
-describe('course copy service', () => {
+describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
+	let nameCopyService: DeepMocked<NameCopyService>;
 
 	let orm: MikroORM;
 
@@ -20,10 +23,17 @@ describe('course copy service', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			providers: [LessonCopyService],
+			providers: [
+				LessonCopyService,
+				{
+					provide: NameCopyService,
+					useValue: createMock<NameCopyService>(),
+				},
+			],
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
+		nameCopyService = module.get(NameCopyService);
 	});
 
 	describe('handleCopyLesson', () => {
@@ -34,72 +44,85 @@ describe('course copy service', () => {
 				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({ course: originalCourse });
 
-				return { user, originalCourse, destinationCourse, originalLesson };
+				const copyName = 'Copy';
+				nameCopyService.deriveCopyName.mockReturnValue(copyName);
+
+				return { user, originalCourse, destinationCourse, originalLesson, copyName };
 			};
 
-			describe('the copy lesson', () => {
-				it('should set status title to the name of the lesson', () => {
-					const { destinationCourse, originalLesson, user } = setup();
-
-					const result = copyService.copyLesson({ originalLesson, destinationCourse, user });
-
-					expect(result.title).toEqual(originalLesson.name);
-				});
-
-				/*
-                it('should set copy as draft', () => {
-                    const { user, destinationCourse, originalLesson } = setup();
-    
-                    const status = copyService.copyLesson({
-                        originalLesson,
-                        destinationCourse,
-                        user,
-                    });
-    
-                    const lesson = status.copyEntity as Lesson;
-                    expect(lesson.hidden).toEqual(true);
-                });
-                */
-
+			describe('the copied lesson', () => {
 				it('should set name of copy', () => {
-					const { user, destinationCourse, originalLesson } = setup();
+					const { user, destinationCourse, originalLesson, copyName } = setup();
 
-					const status = copyService.copyLesson({
+					const response = copyService.copyLesson({
 						originalLesson,
 						destinationCourse,
 						user,
 					});
 
-					const lesson = status.copyEntity as Lesson;
-					expect(lesson.name).toEqual(originalLesson.name);
+					const lesson = response.copyEntity as Lesson;
+					expect(lesson.name).toEqual(copyName);
+				});
+
+				it('should use nameCopyService', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(originalLesson.name);
 				});
 
 				it('should set course of the copy', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
-					const status = copyService.copyLesson({
+					const result = copyService.copyLesson({
 						originalLesson,
 						destinationCourse,
 						user,
 					});
 
-					const lesson = status.copyEntity as Lesson;
+					const lesson = result.copyEntity as Lesson;
 					expect(lesson.course).toEqual(destinationCourse);
+				});
+
+				it('should set the position of copy', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const response = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					const lesson = response.copyEntity as Lesson;
+					expect(lesson.position).toEqual(originalLesson.position);
+				});
+
+				it('should set the hidden of copy', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const response = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					const lesson = response.copyEntity as Lesson;
+					expect(lesson.hidden).toEqual(originalLesson.hidden);
 				});
 			});
 
 			describe('the response', () => {
-				it('should set status title to title of the copy', () => {
-					const { user, destinationCourse, originalLesson } = setup();
+				it('should set status title to the name of the lesson', () => {
+					const { destinationCourse, originalLesson, user, copyName } = setup();
 
-					const status = copyService.copyLesson({
-						originalLesson,
-						destinationCourse,
-						user,
-					});
+					const result = copyService.copyLesson({ originalLesson, destinationCourse, user });
 
-					const lesson = status.copyEntity as Lesson;
-					expect(status.title).toEqual(lesson.name);
+					expect(result.title).toEqual(copyName);
 				});
 
 				it('should set status type to lesson', () => {
