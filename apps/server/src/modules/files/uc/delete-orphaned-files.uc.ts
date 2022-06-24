@@ -14,7 +14,7 @@ export class DeleteOrphanedFilesUc {
 		this.logger.setContext(DeleteOrphanedFilesUc.name);
 	}
 
-	async deleteOrphanedFilesForEntity(parentType: FileRecordParentType) {
+	async deleteOrphanedFilesForParentType(parentType: FileRecordParentType) {
 		this.logger.log('Start deletion process.');
 
 		const orphanedFileRecords = await this.deleteOrphanedFilesRepo.findOrphanedFileRecords(parentType);

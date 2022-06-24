@@ -12,6 +12,6 @@ export class DeleteOrphanedFilesConsole {
 
 	@Command({ command: 'tasks' })
 	async deleteOrphanedFilesForTasks() {
-		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForEntity(FileRecordParentType.Task);
+		await this.deleteOrphanedFilesUc.deleteOrphanedFilesForParentType(FileRecordParentType.Task);
 	}
 }
