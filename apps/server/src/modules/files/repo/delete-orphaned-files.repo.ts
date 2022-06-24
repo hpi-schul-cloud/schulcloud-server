@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FileRecord } from '@shared/domain';
+import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { FileRecordMapper } from '../mapper/filerecord-mapper';
 
 const tasksQuery = [
@@ -54,8 +54,14 @@ const tasksQuery = [
 export class DeleteOrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findOrphanedFileRecords(): Promise<FileRecord[]> {
-		const result = await this._em.aggregate(FileRecord, tasksQuery);
+	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecord[]> {
+		let query;
+
+		if (parentType === FileRecordParentType.Task) {
+			query = tasksQuery;
+		}
+
+		const result = await this._em.aggregate(FileRecord, query);
 
 		const fileRecords = result.map((item) => FileRecordMapper.mapToFileRecord(item));
 
