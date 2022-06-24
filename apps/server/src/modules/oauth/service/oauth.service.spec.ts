@@ -363,6 +363,15 @@ describe('OAuthService', () => {
 			const errorResponse = await service.processOAuth(defaultQuery, '');
 			expect(errorResponse).toEqual(defaultErrorResponse);
 		});
+		it('should throw error if oauthconfig is missing', async () => {
+			const system: System = systemFactory.buildWithId({ oauthConfig: undefined });
+			systemRepo.findById.mockResolvedValueOnce(system);
+			const response = await service.processOAuth(defaultQuery, system.id);
+			expect(response).toEqual({
+				errorcode: 'sso_internal_error',
+				redirect: 'https://mock.de/login?error=sso_internal_error',
+			});
+		});
 	});
 
 	describe('getRedirect', () => {
