@@ -19,7 +19,7 @@ describe('files model service', () => {
 		server.close(done);
 	});
 
-	describe.only('get', () => {
+	describe('get', () => {
 		const setup = async () => {
 			const owner = await testObjects.createTestUser();
 			const file = await testObjects.createTestFile({ owner: owner._id, shareToken: 'abc' });
