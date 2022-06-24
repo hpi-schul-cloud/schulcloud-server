@@ -4,8 +4,7 @@ import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom } from 'rxjs';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { System, User } from '@shared/domain';
-import { Inject } from '@nestjs/common';
+import { OauthConfig, System, User } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
@@ -27,7 +26,7 @@ export class OAuthService {
 		private readonly systemRepo: SystemRepo,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
-		@Inject('OAuthEncryptionService') private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
+		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
 		private iservOauthService: IservOAuthService,
 		private logger: Logger
 	) {
@@ -39,8 +38,12 @@ export class OAuthService {
 	 * @return authorization code or throws an error
 	 */
 	checkAuthorizationCode(query: AuthorizationParams): string {
-		if (query.code) return query.code;
+		if (query.code) {
+			return query.code;
+		}
+
 		let errorCode = 'sso_auth_code_step';
+
 		if (query.error) {
 			errorCode = `sso_oauth_${query.error}`;
 			this.logger.error(`SSO Oauth authorization code request return with an error: ${query.code as string}`);
@@ -48,10 +51,10 @@ export class OAuthService {
 		throw new OAuthSSOError('Authorization Query Object has no authorization code or error', errorCode);
 	}
 
-	async requestToken(code: string, system: System): Promise<OauthTokenResponse> {
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(system.oauthConfig.clientSecret);
+	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
-			system,
+			oauthConfig,
 			decryptedClientSecret,
 			code
 		);
@@ -69,32 +72,31 @@ export class OAuthService {
 		return responseToken.data;
 	}
 
-	async _getPublicKey(system: System): Promise<string> {
+	async _getPublicKey(oauthConfig: OauthConfig): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
 			cache: true,
-			jwksUri: system.oauthConfig.jwksEndpoint,
+			jwksUri: oauthConfig.jwksEndpoint,
 		});
 		const key: JwksRsa.SigningKey = await client.getSigningKey();
 		return key.getPublicKey();
 	}
 
-	async validateToken(idToken: string, system: System): Promise<IJwt> {
-		const publicKey = await this._getPublicKey(system);
+	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
+		const publicKey = await this._getPublicKey(oauthConfig);
 		const verifiedJWT = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
-			issuer: system.oauthConfig.issuer,
-			audience: system.oauthConfig.clientId,
+			issuer: oauthConfig.issuer,
+			audience: oauthConfig.clientId,
 		});
 		if (typeof verifiedJWT === 'string' || verifiedJWT instanceof String)
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
 		return verifiedJWT as IJwt;
 	}
 
-	async findUser(decodedJwt: IJwt, systemId: string): Promise<User> {
-		const system: System = await this.systemRepo.findById(systemId);
+	async findUser(decodedJwt: IJwt, system: System): Promise<User> {
 		// iserv strategy
-		if (system.oauthConfig.provider === 'iserv') {
-			return this.iservOauthService.findUserById(systemId, decodedJwt);
+		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
+			return this.iservOauthService.findUserById(system.id, decodedJwt);
 		}
 		// TODO in general
 
@@ -111,28 +113,33 @@ export class OAuthService {
 		return jwtResponse;
 	}
 
-	buildResponse(system: System, queryToken: OauthTokenResponse) {
+	buildResponse(oauthConfig: OauthConfig, queryToken: OauthTokenResponse) {
 		const response: OAuthResponse = new OAuthResponse();
 		response.idToken = queryToken.id_token;
-		response.logoutEndpoint = system.oauthConfig.logoutEndpoint;
-		response.provider = system.oauthConfig.provider;
+		response.logoutEndpoint = oauthConfig.logoutEndpoint;
+		response.provider = oauthConfig.provider;
 		return response;
 	}
 
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
-			const authCode = this.checkAuthorizationCode(query);
-			const system = await this.systemRepo.findById(systemId);
-			const queryToken = await this.requestToken(authCode, system);
-			const decodedToken = await this.validateToken(queryToken.id_token, system);
-			const user = await this.findUser(decodedToken, systemId);
-			const jwtResponse = await this.getJWTForUser(user);
-			const response = this.buildResponse(system, queryToken);
-			const oauthResponse = this.getRedirect(response);
+			const authCode: string = this.checkAuthorizationCode(query);
+			const system: System = await this.systemRepo.findById(systemId);
+			const { oauthConfig } = system;
+			if (oauthConfig == null) {
+				this.logger.error(
+					`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id}`
+				);
+				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
+			}
+			const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
+			const decodedToken: IJwt = await this.validateToken(queryToken.id_token, oauthConfig);
+			const user: User = await this.findUser(decodedToken, system);
+			const jwtResponse: string = await this.getJWTForUser(user);
+			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
+			const oauthResponse: OAuthResponse = this.getRedirect(response);
 			oauthResponse.jwt = jwtResponse;
-			return await new Promise<OAuthResponse>((resolve) => {
-				resolve(oauthResponse);
-			});
+			return oauthResponse;
 		} catch (error) {
 			this.logger.log(error);
 			return this.getOAuthError(error as string);
