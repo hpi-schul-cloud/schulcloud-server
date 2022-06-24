@@ -16,47 +16,13 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	async deleteOrphanedFilesForEntity(parentType: FileRecordParentType) {
-		const tasks = await this.deleteOrphanedFilesRepo.findTasks();
-		this.logger.log(`Found ${tasks.length} tasks.`);
+		this.logger.log('Start deletion process.');
 
-		const fileRecords = await this.deleteOrphanedFilesRepo.findFilerecords(parentType);
-		this.logger.log(`Found ${fileRecords.length} fileRecords.`);
-
-		const fileFileRecords = await this.deleteOrphanedFilesRepo.findAllFilesFilerecords();
-		this.logger.log(`Found ${fileFileRecords.length} fileFileRecords.`);
-
-		const orphanedFileRecords = this.getOrphanedFileRecords(tasks, fileRecords, fileFileRecords);
+		const orphanedFileRecords = await this.deleteOrphanedFilesRepo.findOrphanedFileRecords();
 		this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
 
 		await this.removeOrphans(orphanedFileRecords);
 		this.logger.log(`Finished removing orphaned fileRecords.`);
-	}
-
-	private getOrphanedFileRecords(
-		tasks: Task[],
-		fileRecords: FileRecord[],
-		fileFileRecords: FileFileRecord[]
-	): FileRecord[] {
-		return fileRecords.filter((fileRecord) => {
-			const task = tasks.find((entity) => entity.id === fileRecord.parentId);
-
-			if (!task) {
-				return true;
-			}
-
-			const fileId = fileFileRecords.find(
-				(fileFileRecord) => fileFileRecord.filerecordId.toHexString() === fileRecord.id
-			)?.fileId;
-
-			const isFileIdInTaskFiles = fileId && !task.files.toArray().some((file) => file.id === fileId.toHexString());
-
-			// Fehler werfen wenn fileId = undefined?
-			if (isFileIdInTaskFiles) {
-				return true;
-			}
-
-			return false;
-		});
 	}
 
 	private async removeOrphans(fileRecords: FileRecord[]) {
@@ -69,7 +35,7 @@ export class DeleteOrphanedFilesUc {
 
 	private async removeOrphan(fileRecord: FileRecord) {
 		try {
-			const path = [fileRecord._schoolId.toHexString(), fileRecord.id].join('/');
+			const path = [fileRecord.schoolId, fileRecord.id].join('/');
 			await this.syncFilesStorageService.remove(path);
 			this.logger.log(`Successfully removed file with path = ${path} from S3 bucket.`);
 
