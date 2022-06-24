@@ -4,7 +4,7 @@ const appPromise = require('../../../src/app');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
 
-describe.only('files proxy service', () => {
+describe('files proxy service', () => {
 	let app;
 	let server;
 	let sharedTokenService;
