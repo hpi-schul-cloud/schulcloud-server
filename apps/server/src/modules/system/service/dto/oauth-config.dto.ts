@@ -15,29 +15,29 @@ export class OauthConfigDto {
 		this.codeRedirectUri = oauthConfigDto.codeRedirectUri;
 	}
 
-	clientId!: string;
+	clientId: string;
 
-	clientSecret!: string;
+	clientSecret: string;
 
-	tokenRedirectUri!: string;
+	tokenRedirectUri: string;
 
-	grantType!: string;
+	grantType: string;
 
-	tokenEndpoint!: string;
+	tokenEndpoint: string;
 
-	authEndpoint!: string;
+	authEndpoint: string;
 
-	responseType!: string;
+	responseType: string;
 
-	scope!: string;
+	scope: string;
 
-	provider!: string;
+	provider: string;
 
-	logoutEndpoint!: string;
+	logoutEndpoint: string;
 
-	issuer!: string;
+	issuer: string;
 
-	jwksEndpoint!: string;
+	jwksEndpoint: string;
 
-	codeRedirectUri!: string;
+	codeRedirectUri: string;
 }

@@ -8,7 +8,7 @@ export class SystemDto {
 		this.oauthConfig = system.oauthConfig;
 	}
 
-	type!: string;
+	type: string;
 
 	url?: string;
 
