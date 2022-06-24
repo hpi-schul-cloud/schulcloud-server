@@ -20,6 +20,8 @@ export class FileRecordMapper {
 			deletedSince: aggregationResult.deletedSince,
 		});
 
+		fileRecord._id = aggregationResult._id;
+
 		return fileRecord;
 	}
 }
