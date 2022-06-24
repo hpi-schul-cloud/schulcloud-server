@@ -39,6 +39,6 @@ export class CollaborativeStorageAdapter {
 	}
 
 	public removeGroupAndFolderfromNextcloud(teamId: string) {
-		this.strategy.deleteGroupfolder(teamId);
+		// this.strategy.deleteGroupfolder(teamId);
 	}
 }

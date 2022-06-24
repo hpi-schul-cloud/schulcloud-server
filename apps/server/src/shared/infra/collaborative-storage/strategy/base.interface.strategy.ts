@@ -11,5 +11,5 @@ export interface ICollaborativeStorageStrategy {
 	 * @param dto The DTO to be processed
 	 */
 	updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): void;
-	deleteGroupfolder(teamId: string): void;
+	// deleteGroupfolder(teamId: string): void;
 }
