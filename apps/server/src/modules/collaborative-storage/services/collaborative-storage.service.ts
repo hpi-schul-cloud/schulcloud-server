@@ -23,14 +23,32 @@ export class CollaborativeStorageService {
 		this.adapter.setStrategy(new NextcloudStrategy());
 	}
 
+	/**
+	 * Find a Team by its Id and return the DTO
+	 * @param teamId The TeamId
+	 * @param populate Decide, if you want to populate the Users in the Entity
+	 * @return The mapped DTO
+	 */
 	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
 		return this.teamsMapper.mapEntityToDto(await this.teamsRepo.findById(teamId, populate));
 	}
 
+	/**
+	 * Find a Team by its Id and return the DTO
+	 * @param roleId The RoleId
+	 * @return The mapped DTO
+	 */
 	async findRoleById(roleId: EntityId): Promise<RoleDto> {
 		return this.roleMapper.mapEntityToDto(await this.roleRepo.findById(roleId));
 	}
 
+	/**
+	 * Sets the Permissions for the specified Role in a Team
+	 * @param currentUserId The current User. Needs to be either the teamowner or an teamadmin
+	 * @param teamId The TeamId
+	 * @param roleId The RoleId
+	 * @param teamPermissions The new Permissions
+	 */
 	async updateTeamPermissionsForRole(
 		currentUserId: string,
 		teamId: string,

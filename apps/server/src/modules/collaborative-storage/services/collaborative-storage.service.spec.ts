@@ -4,12 +4,13 @@ import { RoleRepo, TeamsRepo } from '@shared/repo';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { EntityId, Role, RoleName, Team } from '@shared/domain';
-import { roleFactory } from '@shared/testing';
+import { roleFactory, setupEntities } from '@shared/testing';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
 import { RoleMapper } from '@src/modules/collaborative-storage/mapper/role.mapper';
 import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationService } from '@src/modules/authorization';
+import { MikroORM } from '@mikro-orm/core';
 
 describe('Collaborative Storage Service', () => {
 	let module: TestingModule;
@@ -17,6 +18,7 @@ describe('Collaborative Storage Service', () => {
 	let adapter: DeepMocked<CollaborativeStorageAdapter>;
 	let authService: DeepMocked<AuthorizationService>;
 	let mockId: string;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
 		[module] = await Promise.all([
@@ -56,6 +58,11 @@ describe('Collaborative Storage Service', () => {
 		adapter = module.get(CollaborativeStorageAdapter);
 		authService = module.get(AuthorizationService);
 		mockId = '0123456789abcdef01234567';
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('Find Team By Id', () => {

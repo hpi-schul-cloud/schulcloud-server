@@ -1,9 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
-import { ITeamStorageStrategy } from './base.interface.strategy';
+import { parseInt } from 'lodash';
+import { ICollaborativeStorageStrategy } from './base.interface.strategy';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
 interface NextcloudGroups {
@@ -18,7 +19,14 @@ interface OcsResponse<T> {
 	ocs: { data: T };
 }
 
-export class NextcloudStrategy implements ITeamStorageStrategy {
+/**
+ * Nextcloud Strategy Implementation for Collaborative Storage
+ *
+ * @implements ICollaborativeStorageStrategy
+ *
+ */
+@Injectable()
+export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	readonly baseURL: string;
 
 	readonly httpService: HttpService;
@@ -37,14 +45,14 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 		};
 	}
 
-	private static generateGroupId(dto: TeamRolePermissionsDto): string {
-		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
-	}
-
 	public async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto) {
 		const groupId = await this.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		const folderId = await this.findFolderIdForGroupId(groupId);
 		this.setGroupPermissions(groupId, folderId, dto.permissions);
+	}
+
+	private static generateGroupId(dto: TeamRolePermissionsDto): string {
+		return `${dto.teamName as string}-${dto.teamId as string}-${dto.roleName as string}`;
 	}
 
 	private async findGroupId(groupName: string): Promise<string> {
@@ -85,7 +93,7 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 				return filtered[0];
 			})
 			.catch((error) => {
-				throw new NotFoundException(error, `Group ${groupId} not found in Nextcloud!`);
+				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			});
 	}
 
@@ -115,7 +123,7 @@ export class NextcloudStrategy implements ITeamStorageStrategy {
 		return this.httpService.get(`${this.baseURL}${apiPath}`, this.config);
 	}
 
-	private post(apiPath: string, data: any): Observable<AxiosResponse> {
+	private post(apiPath: string, data: unknown): Observable<AxiosResponse> {
 		return this.httpService.post(`${this.baseURL}${apiPath}`, data, this.config);
 	}
 

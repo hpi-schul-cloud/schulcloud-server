@@ -32,7 +32,7 @@ describe('TeamStorage Mapper', () => {
 			);
 			expect(ret.teamId).toEqual('teamId');
 			expect(ret.teamName).toEqual('teamName');
-			expect(ret.roleName).toEqual('testRoleName');
+			expect(ret.roleName).toEqual(RoleName.DEMO);
 			expect(ret.permissions).toEqual([false, false, false, false, false]);
 		});
 	});

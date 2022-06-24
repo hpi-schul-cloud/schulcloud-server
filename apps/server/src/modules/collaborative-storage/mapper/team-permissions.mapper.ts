@@ -4,6 +4,11 @@ import { TeamPermissionsDto } from '../services/dto/team-permissions.dto';
 
 @Injectable()
 export class TeamPermissionsMapper {
+	/**
+	 * Maps a TeamPermissions Body to a ServiceDTO
+	 * @param body The TeamPermissions Body
+	 * @return The mapped DTO
+	 */
 	public mapBodyToDto(body: TeamPermissionsBody): TeamPermissionsDto {
 		return new TeamPermissionsDto({
 			create: body.create,

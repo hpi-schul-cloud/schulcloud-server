@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage/collaborative-storage.adapter';
-import { ITeamStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
+import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 import { RoleName } from '@shared/domain';
 
-class TestStrategy implements ITeamStorageStrategy {
+class TestStrategy implements ICollaborativeStorageStrategy {
 	baseURL: string;
 
 	constructor() {
@@ -14,7 +14,7 @@ class TestStrategy implements ITeamStorageStrategy {
 	updateTeamPermissionsForRole(): void {}
 }
 
-describe('TeamStorage Adapter', () => {
+describe('CollaborativeStorage Adapter', () => {
 	let module: TestingModule;
 	let adapter: CollaborativeStorageAdapter;
 
@@ -24,7 +24,7 @@ describe('TeamStorage Adapter', () => {
 				CollaborativeStorageAdapter,
 				CollaborativeStorageAdapterMapper,
 				{
-					provide: 'ITeamStorageStrategy',
+					provide: 'ICollaborativeStorageStrategy',
 					useValue: TestStrategy,
 				},
 			],
