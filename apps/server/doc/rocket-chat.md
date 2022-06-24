@@ -1,14 +1,26 @@
+# Rocket.Chat
+## Start Mongodb
 
-Es macht Sinn für Rocket.Chat eigene Mongodb in Docker zustarten. Grund dafür ist Rocket.Chat benötigt Mongodb als replicaSet setup.
+It makes sense for Rocket.Chat to launch its own mongodb in Docker. Reason for this is Rocket.Chat requires Mongodb as replicaSet setup.
 
+```bash
 docker run --name rocket-chat-mongodb -m=256m -p27030:27017 -d docker.io/mongo --replSet rs0 --oplogSize 10
+```
 
-Im Mongodb console muss noch folgende Befehl ausgeführt werden
+Start mongoDB console and execute
 
+```mongodb
 rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})
+```
 
-Nun kann man den Rocket.Chat im Docker starten.
+## Start rocketChat
 
+(check the latest settings https://github.com/hpi-schul-cloud/dof_app_deploy/blob/main/ansible/roles/rocketchat/templates/configmap.yml.j2#L9)
+
+Please not that the displayed //172.29.173.128 is the IP address of the mongoDB docker container.
+You can get the ip over the command:  docker inspect rocket-chat-mongodb | grep "IPAddress" (dependent on our system)
+
+```bash
 docker run\
         -e CREATE_TOKENS_FOR_USERS=true \
         -e MONGO_URL=mongodb://172.29.173.128:27030/rocketchat  \
@@ -37,16 +49,26 @@ docker run\
         -e Accounts_Iframe_api_method=GET \
         -e OVERWRITE_SETTING_Show_Setup_Wizard='completed' \
         -p 3000:3000 docker.io/rocketchat/rocket.chat:4.7.2
+```
 
-Im dBildungscloud Backend Server folgende Vareablen setzen am einfachsten in der .env Datei
+## ENVS
 
+You must also configure you server and legacy client application.
+Use the .env file in top of the project folders.
+
+### dBildungscloud Backend Server
+
+```env
 ROCKETCHAT_SERVICE_ENABLED=true
 ROCKET_CHAT_URI="http://localhost:3000"
 ROCKET_CHAT_ADMIN_USER=admin
 ROCKET_CHAT_ADMIN_PASSWORD=huhu
+```
 
 
-Im dBildungscloud Legacy Client folgende Vareablen setzen am einfachsten in der .env Datei
+### dBildungscloud Legacy Client
 
+```env
 ROCKETCHAT_SERVICE_ENABLED=true
 ROCKET_CHAT_URI="http://localhost:3000"
+```
