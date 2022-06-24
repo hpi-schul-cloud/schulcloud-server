@@ -152,6 +152,64 @@ Every provider can be overwritten with custom provider implementation for testin
     });
 ```
 
+## Mocking
+
+Using the utilities provided by NestJs, we can easily inject mocks into our testing module. The mocks themselves, we create using a [library](https://www.npmjs.com/package/@golevelup/ts-jest) by @golevelup.
+
+You can create a mock using `createMock<Class>()`. As result you will recieved a `DeepMocked<Class>`
+
+```Typescript
+let fut: FeatureUnderTest;
+let mockService: DeepMocked<MockService>;
+
+beforeEach(async () => {
+	const module = await Test.createTestingModule({
+		providers: [
+			FeatureUnderTest,
+			{
+				provide: MockService,
+				useValue: createMock<MockService>(),
+			},
+		],
+	}).compile();
+
+	fut = module.get(FeatureUnderTest);
+	mockService = module.get(MockService);
+});
+
+afterEach(async () => {
+	await module.close();
+});
+```
+
+the resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you the full intellij features of the original class including code completion and typesavety, combined with all the features of spies.
+
+```Typescript
+describe('somefunction', () => {
+	describe('when service returns user', () => {
+		const setup = () => {
+			const resultUser = userFactory.buildWithId();
+
+			mockService.getUser.mockReturnValue(resultUser);
+
+			return { resultUser };
+		};
+
+		it('should call service', async () => {
+			setup();
+			await fut.somefunction();
+			expect(mockService.getUser).toHaveBeenCalled();
+		});
+
+		it('should return user passed by service', async () => {
+			const { resultUser } = setup();
+			const result = await fut.somefunction();
+			expect(result).toEqual(resultUser);
+		});
+	});
+});
+
+```
 ## Unit Tests vs Integration Tests
 
 In Unit Tests we access directly only the component which is currently testing.

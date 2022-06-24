@@ -5,13 +5,13 @@ import { Role, School, System, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo/user/user.repo';
 import { ObjectId } from 'bson';
 import { Logger } from '@src/core/logger';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IservOAuthService } from './iserv-oauth.service';
 
 describe('IservOAuthService', () => {
 	let service: IservOAuthService;
-	let userRepo: UserRepo;
+	let userRepo: DeepMocked<UserRepo>;
 
 	const defaultUserId = '123456789';
 	const defaultScool: School = {
@@ -48,18 +48,12 @@ describe('IservOAuthService', () => {
 				},
 				{
 					provide: UserRepo,
-					useValue: {
-						findByLdapIdorFail(userId) {
-							if (userId === '') throw new OAuthSSOError();
-							return defaultUser;
-						},
-					},
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
-		service = await module.resolve<IservOAuthService>(IservOAuthService);
-
-		userRepo = await module.resolve<UserRepo>(UserRepo);
+		service = module.get(IservOAuthService);
+		userRepo = module.get(UserRepo);
 	});
 
 	describe('extractUUID', () => {
@@ -84,14 +78,19 @@ describe('IservOAuthService', () => {
 
 	describe('findUserById', () => {
 		it('should return the user according to the uuid(LdapId)', async () => {
-			const resolveUserSpy = jest.spyOn(userRepo, 'findByLdapIdOrFail');
-			const user: User = await service.findUserById(defaultUserId, defaultDecodedJWT);
-			expect(resolveUserSpy).toHaveBeenCalled();
+			userRepo.findByLdapIdOrFail.mockImplementation((ldapId: string): Promise<User> => {
+				if (ldapId === '') {
+					throw new OAuthSSOError();
+				}
+				return Promise.resolve(defaultUser);
+			});
+			const user = await service.findUserById(defaultUserId, defaultDecodedJWT);
+			expect(userRepo.findByLdapIdOrFail).toHaveBeenCalled();
 			expect(user).toBe(defaultUser);
 		});
 
 		it('should return an error if no User is found by this ldapId', async () => {
-			return expect(
+			await expect(
 				service.findUserById('', {
 					uuid: '',
 					sub: '',
