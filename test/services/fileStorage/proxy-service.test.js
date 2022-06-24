@@ -4,14 +4,14 @@ const appPromise = require('../../../src/app');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
 
-describe('files model service', () => {
+describe.only('files proxy service', () => {
 	let app;
 	let server;
-	let modelService;
+	let sharedTokenService;
 
 	before(async () => {
 		app = await appPromise();
-		modelService = app.service('files');
+		sharedTokenService = app.service('fileStorage/shared');
 		server = await app.listen(0);
 	});
 
@@ -34,20 +34,32 @@ describe('files model service', () => {
 				const { userRequestParams } = await setup({ shareToken: 'abc' });
 
 				try {
-					await modelService.get(new ObjectId(), userRequestParams);
+					await sharedTokenService.get(new ObjectId(), userRequestParams);
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err.message).to.not.equal('should have failed');
-					expect(err.code).to.equal(404);
+					expect(err.code).to.equal(403);
 				}
 			});
 
-			it('should return error when filtering by wrong share token', async () => {
+			it('should return error when share token is wrong', async () => {
 				const { file, userRequestParams } = await setup();
 
 				userRequestParams.query = { shareToken: 'def' };
 				try {
-					await modelService.get(file._id, userRequestParams);
+					await sharedTokenService.get(file._id, userRequestParams);
+					throw new Error('should have failed');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed');
+					expect(err.code).to.equal(403);
+				}
+			});
+
+			it('should return error when no share token provided', async () => {
+				const { file, userRequestParams } = await setup();
+
+				try {
+					await sharedTokenService.get(file._id, userRequestParams);
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err.message).to.not.equal('should have failed');
@@ -57,19 +69,11 @@ describe('files model service', () => {
 		});
 
 		describe('answer file requests', () => {
-			it('should return file when not filtering by share token', async () => {
-				// these requests should only come so farä, when the user is the owner
-				const { file, userRequestParams } = await setup();
-
-				const result = await modelService.get(file._id, userRequestParams);
-				expect(result._id.toString()).to.equal(file._id.toString());
-			});
-
-			it('should return file when filtering by correct share token', async () => {
+			it('should return file when share token is correct', async () => {
 				const { file, userRequestParams } = await setup();
 
 				userRequestParams.query = { shareToken: 'abc' };
-				const result = await modelService.get(file._id, userRequestParams);
+				const result = await sharedTokenService.get(file._id, userRequestParams);
 				expect(result._id.toString()).to.equal(file._id.toString());
 			});
 		});

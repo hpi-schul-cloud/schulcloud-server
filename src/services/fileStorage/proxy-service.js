@@ -1019,6 +1019,22 @@ const filePermissionService = {
 	},
 };
 
+const shareTokenService = {
+	async get(id, params) {
+		if (!params.query || !params.query.shareToken) {
+			throw new Forbidden('invalid share token1.');
+		}
+
+		const shareToken = params.query ? params.query.shareToken : undefined;
+		const file = await FileModel.findOne({ _id: id, shareToken }).lean().exec();
+		if (!file) {
+			throw new Forbidden('invalid share token2.');
+		}
+
+		return file;
+	},
+};
+
 module.exports = function proxyService() {
 	const app = this;
 
@@ -1032,6 +1048,7 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/copy', copyService);
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
+	app.use('/fileStorage/shared', shareTokenService);
 	app.use('/fileStorage', fileStorageService);
 
 	[
@@ -1044,6 +1061,7 @@ module.exports = function proxyService() {
 		'/fileStorage/total',
 		'/fileStorage/copy',
 		'/fileStorage/files/new',
+		'/fileStorage/shared',
 		'/fileStorage/permission',
 	].forEach((apiPath) => {
 		// Get our initialize service to that we can bind hooks
