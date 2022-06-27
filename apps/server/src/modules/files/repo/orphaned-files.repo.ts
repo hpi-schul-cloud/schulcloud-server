@@ -51,7 +51,7 @@ const tasksQuery = [
 // Temporary functionality for migration to new fileservice
 // TODO: Remove when BC-1496 is done!
 @Injectable()
-export class DeleteOrphanedFilesRepo {
+export class OrphanedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
 	async findOrphanedFileRecords(parentType: FileRecordParentType): Promise<FileRecord[]> {

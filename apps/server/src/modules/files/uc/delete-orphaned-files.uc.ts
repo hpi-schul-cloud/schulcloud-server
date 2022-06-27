@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FileRecord, FileRecordParentType } from '@shared/domain';
 import { Logger } from '@src/core/logger/logger.service';
-import { DeleteOrphanedFilesRepo } from '../repo/delete-orphaned-files.repo';
+import { OrphanedFilesRepo } from '../repo/orphaned-files.repo';
 import { SyncFilesStorageService } from './sync-files-storage.service';
 
 @Injectable()
 export class DeleteOrphanedFilesUc {
 	constructor(
-		private deleteOrphanedFilesRepo: DeleteOrphanedFilesRepo,
+		private orphanedFilesRepo: OrphanedFilesRepo,
 		private syncFilesStorageService: SyncFilesStorageService,
 		private logger: Logger
 	) {
@@ -17,7 +17,7 @@ export class DeleteOrphanedFilesUc {
 	async deleteOrphanedFilesForParentType(parentType: FileRecordParentType) {
 		this.logger.log('Start deletion process.');
 
-		const orphanedFileRecords = await this.deleteOrphanedFilesRepo.findOrphanedFileRecords(parentType);
+		const orphanedFileRecords = await this.orphanedFilesRepo.findOrphanedFileRecords(parentType);
 		this.logger.log(`Found ${orphanedFileRecords.length} orphaned fileRecords.`);
 
 		await this.deleteOrphans(orphanedFileRecords);
@@ -49,8 +49,8 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	private async deleteMetaData(fileRecord: FileRecord) {
-		await this.deleteOrphanedFilesRepo.deleteFileRecord(fileRecord);
+		await this.orphanedFilesRepo.deleteFileRecord(fileRecord);
 
-		await this.deleteOrphanedFilesRepo.deleteFileFileRecord(fileRecord);
+		await this.orphanedFilesRepo.deleteFileFileRecord(fileRecord);
 	}
 }
