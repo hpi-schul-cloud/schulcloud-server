@@ -59,8 +59,8 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-
 					const lesson = response.copyEntity as Lesson;
+
 					expect(lesson.name).toEqual(copyName);
 				});
 
@@ -79,13 +79,13 @@ describe('lesson copy service', () => {
 				it('should set course of the copy', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
-					const result = copyService.copyLesson({
+					const response = copyService.copyLesson({
 						originalLesson,
 						destinationCourse,
 						user,
 					});
+					const lesson = response.copyEntity as Lesson;
 
-					const lesson = result.copyEntity as Lesson;
 					expect(lesson.course).toEqual(destinationCourse);
 				});
 
@@ -97,8 +97,8 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-
 					const lesson = response.copyEntity as Lesson;
+
 					expect(lesson.position).toEqual(originalLesson.position);
 				});
 
@@ -110,8 +110,8 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-
 					const lesson = response.copyEntity as Lesson;
+
 					expect(lesson.hidden).toEqual(true);
 				});
 			});
@@ -120,9 +120,9 @@ describe('lesson copy service', () => {
 				it('should set status title to the name of the lesson', () => {
 					const { destinationCourse, originalLesson, user, copyName } = setup();
 
-					const result = copyService.copyLesson({ originalLesson, destinationCourse, user });
+					const status = copyService.copyLesson({ originalLesson, destinationCourse, user });
 
-					expect(result.title).toEqual(copyName);
+					expect(status.title).toEqual(copyName);
 				});
 
 				it('should set status type to lesson', () => {
@@ -167,8 +167,8 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-
 				const lesson = status.copyEntity as Lesson;
+
 				expect(lesson.course).toEqual(destinationCourse);
 			});
 		});

@@ -42,6 +42,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			const resultLesson = await repo.findById(lesson.id);
+			// TODO for some reason, comparing the whole object does not work
 			// expect(resultLesson).toEqual(lesson);
 			expect(resultLesson.id).toEqual(lesson.id);
 			expect(resultLesson.name).toEqual(lesson.name);
