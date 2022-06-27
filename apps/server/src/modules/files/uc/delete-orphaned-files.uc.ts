@@ -51,8 +51,9 @@ export class DeleteOrphanedFilesUc {
 	}
 
 	private async deleteMetaData(fileRecord: FileRecord) {
-		await this.orphanedFilesRepo.deleteFileRecord(fileRecord);
-
-		await this.orphanedFilesRepo.deleteFileFileRecord(fileRecord);
+		await Promise.all([
+			this.orphanedFilesRepo.deleteFileRecord(fileRecord),
+			this.orphanedFilesRepo.deleteFileFileRecord(fileRecord),
+		]);
 	}
 }
