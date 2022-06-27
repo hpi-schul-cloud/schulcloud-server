@@ -10,12 +10,12 @@ export type CopyStatus = {
 };
 
 export enum CopyElementType {
-	'TASK' = 'task',
-	'LESSON' = 'lesson',
-	'COURSE' = 'course',
 	'BOARD' = 'board',
+	'COURSE' = 'course',
 	'FILE' = 'file',
 	'LEAF' = 'leaf',
+	'LESSON' = 'lesson',
+	'TASK' = 'task',
 }
 
 export enum CopyStatusEnum {

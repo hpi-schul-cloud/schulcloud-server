@@ -143,9 +143,13 @@ describe('board copy service', () => {
 				const destinationCourse = courseFactory.build();
 				const originalBoard = boardFactory.build({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.build();
+				const lessonCopy = taskFactory.build({ name: originalLesson.name });
 
 				lessonCopyService.copyLesson.mockReturnValue({
-					status: { title: originalLesson.name, type: CopyElementType.LESSON, status: CopyStatusEnum.NOT_IMPLEMENTED },
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
 				});
 
 				return { destinationCourse, originalBoard, user, originalLesson };
@@ -156,6 +160,14 @@ describe('board copy service', () => {
 
 				copyService.copyBoard({ originalBoard, user, destinationCourse });
 				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({ originalLesson, destinationCourse, user });
+			});
+
+			it('should add copy of lesson to board copy', () => {
+				const { destinationCourse, originalBoard, user } = setup();
+
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				const board = status.copyEntity as Board;
+				expect(board.getElements().length).toEqual(1);
 			});
 
 			it('should add status of copying lesson to board copy status', () => {

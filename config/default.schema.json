@@ -882,6 +882,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for copy/duplicate a task feature."
+		},
+		"FEATURE_LESSON_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for copy/duplicate a lesson feature."
 		}
 	},
 	"required": [
