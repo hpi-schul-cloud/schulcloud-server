@@ -22,7 +22,7 @@ describe('files proxy service', () => {
 	describe('get', () => {
 		const setup = async () => {
 			const owner = await testObjects.createTestUser();
-			const file = await testObjects.createTestFile({ owner: owner._id, shareToken: 'abc' });
+			const file = await testObjects.createTestFile({ owner: owner._id, shareTokens: ['abc'] });
 
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const userRequestParams = await testObjects.generateRequestParamsFromUser(user);
@@ -31,7 +31,7 @@ describe('files proxy service', () => {
 
 		describe('block file requests', () => {
 			it('should return error when file does not exist', async () => {
-				const { userRequestParams } = await setup({ shareToken: 'abc' });
+				const { userRequestParams } = await setup();
 
 				try {
 					await sharedTokenService.get(new ObjectId(), userRequestParams);

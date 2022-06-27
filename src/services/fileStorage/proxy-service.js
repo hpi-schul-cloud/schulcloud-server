@@ -1026,7 +1026,7 @@ const shareTokenService = {
 		}
 
 		const shareToken = params.query ? params.query.shareToken : undefined;
-		const file = await FileModel.findOne({ _id: id, shareToken }).lean().exec();
+		const file = await FileModel.findOne({ _id: id, shareTokens: shareToken }).lean().exec();
 		if (!file) {
 			throw new Forbidden('invalid share token2.');
 		}

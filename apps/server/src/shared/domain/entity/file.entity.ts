@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { User } from './user.entity';
@@ -14,6 +14,7 @@ export interface IFileProperties {
 }
 
 @Entity({ collection: 'files' })
+@Index({ properties: ['shareTokens'] })
 export class File extends BaseEntityWithTimestamps {
 	constructor(props: IFileProperties) {
 		super();
@@ -43,6 +44,9 @@ export class File extends BaseEntityWithTimestamps {
 
 	@Property()
 	name: string;
+
+	@Property()
+	shareTokens?: string[];
 
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
