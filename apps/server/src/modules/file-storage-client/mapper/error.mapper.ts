@@ -22,11 +22,11 @@ export interface AxiosError<T = any, D = any> extends Error {
 }
  */
 
-type FileStorageErrors = ApiValidationError | ForbiddenException | InternalServerErrorException;
+export type FileStorageErrors = ApiValidationError | ForbiddenException | InternalServerErrorException;
 
 const emptyAxiosResponse = {
 	data: {},
-	statusText: 'Can not cast to axios response',
+	statusText: 'Can not cast to axios response.',
 } as AxiosResponse<FileStorageErrors>;
 
 const extractAxiosResponse = (axiosError: AxiosError<FileStorageErrors>): AxiosResponse<FileStorageErrors> => {
