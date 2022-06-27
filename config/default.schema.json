@@ -293,7 +293,7 @@
 			"type": "integer",
 			"default": 20971520,
 			"description": "The maximum file size in bytes that can be handled by the WOPI API. Download of larger files throws an error."
-		},		
+		},
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -592,7 +592,7 @@
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
 		},
-		"NEXTCLOUD_API_PATH": {
+		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
 			"default": "http://localhost:8080/",
 			"description": "API URI for Nextcloud"

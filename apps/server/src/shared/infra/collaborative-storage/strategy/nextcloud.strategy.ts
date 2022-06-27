@@ -35,7 +35,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	constructor() {
 		this.httpService = new HttpService();
-		this.baseURL = Configuration.get('NEXTCLOUD_API_PATH') as string;
+		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
 		this.config = {
 			auth: {
 				username: Configuration.get('NEXTCLOUD_ADMIN_USER') as string,
