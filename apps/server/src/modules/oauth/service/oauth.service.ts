@@ -27,8 +27,8 @@ export class OAuthService {
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
-		private iservOauthService: IservOAuthService,
-		private logger: Logger
+		private readonly iservOauthService: IservOAuthService,
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OAuthService.name);
 	}

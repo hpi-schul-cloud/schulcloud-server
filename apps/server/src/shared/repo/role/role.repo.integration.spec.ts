@@ -100,17 +100,10 @@ describe('role repo', () => {
 			em.clear();
 		});
 
-		it('should return right keys', async () => {
-			const result = await repo.findByNames([RoleName.STUDENT, RoleName.TEAMMEMBER]);
-			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
-			);
-		});
-
 		it('should return multiple roles that matched by names', async () => {
-			const result = await repo.findByNames([RoleName.STUDENT, RoleName.TEACHER]);
-			expect(result).toContain(roleA);
-			expect(result).toContain(roleB);
+			const result: Role[] = await repo.findByNames([RoleName.STUDENT, RoleName.TEAMMEMBER]);
+			expect(result).toContainEqual(roleA);
+			expect(result).toContainEqual(roleB);
 		});
 	});
 

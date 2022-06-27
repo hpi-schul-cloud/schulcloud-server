@@ -1,21 +1,14 @@
-import { ProvisioningDto } from '@src/modules/provisioning/service/dto/provisioning.dto';
 import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
 import { IProviderResponseMapper } from '@src/modules/provisioning/interface/provider-response.mapper.interface';
+import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 
-export abstract class ProvisioningStrategy {
-	protected constructor(readonly responseMapper: IProviderResponseMapper) {}
+export abstract class ProvisioningStrategy<T extends IProviderResponse> {
+	protected constructor(private readonly responseMapper: IProviderResponseMapper<T>) {}
 
-	// TODO do we need this?
-	abstract strategySpecific(provisioningDto: ProvisioningDto): void;
+	abstract getProvisioningData(): Promise<T>;
 
-	abstract getProvisioningData(): IProviderResponse;
-
-	apply(): ProvisioningDto {
-		const provisioningData: IProviderResponse = this.getProvisioningData();
-		const provisioningDto: ProvisioningDto = this.responseMapper.mapToDto(provisioningData);
-
-		this.strategySpecific(provisioningDto);
-
-		return provisioningDto;
+	async apply(): Promise<ProvisioningDto> {
+		const provisioningData: T = await this.getProvisioningData();
+		return this.responseMapper.mapToDto(provisioningData);
 	}
 }

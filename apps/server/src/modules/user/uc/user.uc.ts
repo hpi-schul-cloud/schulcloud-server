@@ -4,7 +4,6 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserService } from '@src/modules/user/service/user.service';
 import { ChangeLanguageParams } from '../controller/dto';
 
-// TODO Refactoring https://ticketsystem.dbildungscloud.de/browse/N21-169 create service layer
 @Injectable()
 export class UserUc {
 	constructor(private readonly userService: UserService) {}

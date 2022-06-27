@@ -15,14 +15,15 @@ import { RocketChatModule } from '@src/modules/rocketchat';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
 import { SystemModule } from '@src/modules/system/system.module';
+import { SchoolModule } from '@src/modules/school/school.module';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { RoleModule } from '@src/modules/role/role.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { OauthModule } from './modules/oauth';
 import { ImportUserModule } from './modules/user-import/user-import.module';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
-import { SchoolModule } from '@src/modules/school/school.module';
-import { ProvisioningModule } from '@src/modules/provisioning';
 
 const serverModules = [
 	ConfigModule.forRoot({
@@ -52,6 +53,7 @@ const serverModules = [
 	}),
 	SchoolModule,
 	ProvisioningModule,
+	RoleModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

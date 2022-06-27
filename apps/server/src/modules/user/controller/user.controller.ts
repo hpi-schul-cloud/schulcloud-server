@@ -5,7 +5,7 @@ import { ICurrentUser } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 
 import { ResolvedUserMapper } from '../mapper';
-import { UserUc } from '../uc/user-uc.service';
+import { UserUc } from '../uc/user.uc';
 
 import { ResolvedUserResponse, ChangeLanguageParams, SuccessfulResponse } from './dto';
 

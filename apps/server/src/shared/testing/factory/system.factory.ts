@@ -1,4 +1,5 @@
-import { System, ISystemProperties } from '@shared/domain';
+import { ISystemProperties, System } from '@shared/domain';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseFactory } from './base.factory';
 
 export const systemFactory = BaseFactory.define<System, ISystemProperties>(System, ({ sequence }) => {
@@ -21,5 +22,6 @@ export const systemFactory = BaseFactory.define<System, ISystemProperties>(Syste
 			issuer: 'mock_issuer',
 			jwksEndpoint: 'mock_jwksEndpoint',
 		},
+		provisioningStrategy: SystemProvisioningStrategy.UNKNOWN,
 	};
 });

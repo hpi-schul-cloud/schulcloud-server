@@ -38,12 +38,12 @@ export class UserService {
 	}
 
 	async save(user: UserDto): Promise<void> {
-		const roleNames = user.roles.filter((role) => role.id != null).map((role) => role.name);
+		const roleNames = user.roles.map((role) => role.name);
 		const userRoles: Role[] = await this.roleRepo.findByNames(roleNames);
 
 		if (user.id) {
-			const userEntity = await this.userRepo.findById(user.id);
-			const fromDto = UserMapper.mapFromDtoToEntity(user, userRoles);
+			const userEntity: User = await this.userRepo.findById(user.id);
+			const fromDto: User = UserMapper.mapFromDtoToEntity(user, userRoles);
 			return this.userRepo.save(UserMapper.mapFromEntityToEntity(userEntity, fromDto));
 		}
 

@@ -6,6 +6,7 @@ import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
 export class UserMapper {
 	static mapFromEntityToDto(entity: User): UserDto {
 		return new UserDto({
+			id: entity.id,
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
@@ -15,12 +16,12 @@ export class UserMapper {
 			ldapId: entity.ldapId,
 			language: entity.language,
 			forcePasswordChange: entity.forcePasswordChange,
-			preferences: entity.preferences,
+			preferences: entity.preferences ?? {},
 		});
 	}
 
 	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[]): User {
-		return new User({
+		const user = new User({
 			email: dto.email,
 			firstName: dto.firstName,
 			lastName: dto.lastName,
@@ -30,21 +31,15 @@ export class UserMapper {
 			ldapId: dto.ldapId,
 			language: dto.language,
 			forcePasswordChange: dto.forcePasswordChange,
-			preferences: dto.preferences,
+			preferences: dto.preferences ?? {},
 		});
+		if (dto.id) {
+			user.id = dto.id;
+		}
+		return user;
 	}
 
 	static mapFromEntityToEntity(target: User, source: User): User {
-		target.firstName = source.firstName;
-		target.lastName = source.lastName;
-		target.email = source.email;
-		target.school = source.school;
-		target.roles = source.roles;
-		target.ldapDn = source.ldapDn;
-		target.ldapId = source.ldapId;
-		target.forcePasswordChange = source.forcePasswordChange;
-		target.language = source.language;
-		target.preferences = source.preferences;
-		return target;
+		return Object.assign(target, source);
 	}
 }
