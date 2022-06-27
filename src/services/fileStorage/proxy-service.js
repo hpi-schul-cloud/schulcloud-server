@@ -1033,6 +1033,18 @@ const shareTokenService = {
 
 		return file;
 	},
+
+	async patch(id, data, params) {
+		await canRead(params.payload.userId, id).catch(() => {
+			throw new Forbidden();
+		});
+		const token = data.shareToken;
+		if (!token) throw new BadRequest('shareToken is required');
+		const file = await FileModel.findOneAndUpdate({ _id: id }, { $push: { shareTokens: token } })
+			.lean()
+			.exec();
+		return file;
+	},
 };
 
 module.exports = function proxyService() {
