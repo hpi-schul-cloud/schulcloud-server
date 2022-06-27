@@ -22,10 +22,9 @@ export class TaskController {
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationParams,
-		@JWT() jwt: string
+		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser.userId, pagination, jwt);
+		const [tasksWithStatus, total] = await this.taskUc.findAll(currentUser.userId, pagination);
 		const taskresponses = tasksWithStatus.map((taskWithStatus) => {
 			return TaskMapper.mapToResponse(taskWithStatus);
 		});
