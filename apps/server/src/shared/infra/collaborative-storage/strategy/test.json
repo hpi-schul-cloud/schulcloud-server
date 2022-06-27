@@ -1,0 +1,107 @@
+{
+  "ocs": {
+    "meta": {
+      "status": "ok",
+      "statuscode": 100,
+      "message": "OK",
+      "totalitems": "",
+      "itemsperpage": ""
+    },
+    "data": {
+      "1": {
+        "id": 1,
+        "mount_point": "Test Team (5e1dba1eaa30ab4df47e11d2)",
+        "groups": {
+          "SchulcloudNextcloud-5e1dba1eaa30ab4df47e11d2": 31
+        },
+        "quota": -3,
+        "size": 3599029,
+        "acl": false,
+        "manage": []
+      },
+      "2": {
+        "id": 2,
+        "mount_point": "A-Team (5e1dc275322ce040a850b14b)",
+        "groups": {
+          "SchulcloudNextcloud-5e1dc275322ce040a850b14b": 31
+        },
+        "quota": -3,
+        "size": 0,
+        "acl": false,
+        "manage": []
+      },
+      "3": {
+        "id": 3,
+        "mount_point": "B-Team (629710f00e13df001d5ddfdd)",
+        "groups": {
+          "SchulcloudNextcloud-629710f00e13df001d5ddfdd": 31
+        },
+        "quota": -3,
+        "size": 0,
+        "acl": false,
+        "manage": []
+      },
+      "4": {
+        "id": 4,
+        "mount_point": "ML (629756a1fdceb4001d5117de)",
+        "groups": {
+          "SchulcloudNextcloud-629756a1fdceb4001d5117de": 31
+        },
+        "quota": -3,
+        "size": 0,
+        "acl": false,
+        "manage": []
+      },
+      "5": {
+        "id": 5,
+        "mount_point": "AAA (62986ad7fdceb4001d51eb27)",
+        "groups": {
+          "SchulcloudNextcloud-62986ad7fdceb4001d51eb27": 31
+        },
+        "quota": -3,
+        "size": 0,
+        "acl": false,
+        "manage": []
+      },
+      "6": {
+        "id": 6,
+        "mount_point": "Team 1 (62971bff0e13df001d5df9c0)",
+        "groups": {
+          "SchulcloudNextcloud-62971bff0e13df001d5df9c0": 31
+        },
+        "quota": -3,
+        "size": 404,
+        "acl": false,
+        "manage": []
+      },
+      "7": {
+        "id": 7,
+        "mount_point": "Musik (5fa3e16aa9c31a26f4d1dc43)",
+        "groups": {
+          "SchulcloudNextcloud-5fa3e16aa9c31a26f4d1dc43": 31
+        },
+        "quota": -3,
+        "size": 0,
+        "acl": false,
+        "manage": []
+      }
+    }
+  }
+}
+
+{
+  "ocs": {
+    "meta": {
+      "status": "ok",
+      "statuscode": 100,
+      "message": "OK",
+      "totalitems": "",
+      "itemsperpage": ""
+    },
+    "data": {
+      "groups": [
+        "SchulcloudNextcloud-5e1dc275322ce040a850b14b"
+      ]
+    }
+  }
+}

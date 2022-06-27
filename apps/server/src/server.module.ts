@@ -14,6 +14,7 @@ import { NewsModule } from '@src/modules/news';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
+import { CollaborativeStorageModule } from '@src/modules/collaborative-storage/collaborative-storage.module';
 import { SystemModule } from '@src/modules/system/system.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
@@ -30,13 +31,13 @@ const serverModules = [
 	}),
 	CoreModule,
 	AuthModule,
+	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
 	NewsModule,
 	UserModule,
 	ImportUserModule,
 	LearnroomModule,
-	SystemModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
@@ -48,6 +49,7 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
+	SystemModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

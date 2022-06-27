@@ -1,0 +1,47 @@
+import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { TeamRule } from '@shared/domain/rules/team.rule';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { Role, Team, User } from '../entity';
+import { Permission } from '../interface';
+
+describe('TeamRule', () => {
+	let orm: MikroORM;
+	let service: TeamRule;
+	let user: User;
+	let entity: Team;
+	let role: Role;
+	const permissionA = 'a' as Permission;
+	const permissionC = 'c' as Permission;
+
+	beforeAll(async () => {
+		orm = await setupEntities();
+
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [TeamRule],
+		}).compile();
+
+		service = await module.get(TeamRule);
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
+
+	beforeEach(() => {
+		role = roleFactory.build({ permissions: [permissionA] });
+		user = userFactory.build({ roles: [role] });
+		entity = teamFactory.withRoleAndUserId(role, user.id).build();
+	});
+
+	it('should return "true" if user in scope', () => {
+		const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionA] });
+		expect(res).toBe(true);
+	});
+
+	it('should return "false" if user has not permission', () => {
+		const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionC] });
+		expect(res).toBe(false);
+	});
+});
