@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { FileApi } from '../fileStorageApi/v3';
-import { FileRequestInfoBuilder, FileStorageClientMapper } from '../mapper';
+import { ErrorMapper, FileRequestInfoBuilder, FileStorageClientMapper } from '../mapper';
 import { FileStorageClientAdapterService } from './file-storage-client.service';
 
 describe('FileStorageClientAdapterService', () => {
@@ -66,6 +67,26 @@ describe('FileStorageClientAdapterService', () => {
 
 			spy.mockRestore();
 		});
+
+		it('Should call error mapper if throw an error.', async () => {
+			const jwt = 'jwt';
+			const schoolId = 'school123';
+			const parentId = 'parent123';
+			const targetParentId = 'target123';
+
+			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+			const target = FileRequestInfoBuilder.task(jwt, schoolId, targetParentId);
+
+			const spy = jest
+				.spyOn(ErrorMapper, 'mapErrorToDomainError')
+				.mockImplementation(() => new InternalServerErrorException());
+			client.filesStorageControllerCopy.mockRejectedValue(new Error());
+
+			await expect(service.copyFilesOfParent(param, target)).rejects.toThrowError();
+			expect(spy).toBeCalled();
+
+			spy.mockRestore();
+		});
 	});
 
 	describe('listFilesOfParent', () => {
@@ -88,6 +109,24 @@ describe('FileStorageClientAdapterService', () => {
 
 			spy.mockRestore();
 		});
+
+		it('Should call error mapper if throw an error.', async () => {
+			const jwt = 'jwt';
+			const schoolId = 'school123';
+			const parentId = 'parent123';
+
+			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+
+			const spy = jest
+				.spyOn(ErrorMapper, 'mapErrorToDomainError')
+				.mockImplementation(() => new InternalServerErrorException());
+			client.filesStorageControllerList.mockRejectedValue(new Error());
+
+			await expect(service.listFilesOfParent(param)).rejects.toThrowError();
+			expect(spy).toBeCalled();
+
+			spy.mockRestore();
+		});
 	});
 
 	describe('deleteFilesOfParent', () => {
@@ -106,6 +145,24 @@ describe('FileStorageClientAdapterService', () => {
 			const expectedParams = [schoolId, parentId, 'tasks', expectedOptions];
 
 			expect(client.filesStorageControllerDelete).toHaveBeenCalledWith(...expectedParams);
+			expect(spy).toBeCalled();
+
+			spy.mockRestore();
+		});
+
+		it('Should call error mapper if throw an error.', async () => {
+			const jwt = 'jwt';
+			const schoolId = 'school123';
+			const parentId = 'parent123';
+
+			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+
+			const spy = jest
+				.spyOn(ErrorMapper, 'mapErrorToDomainError')
+				.mockImplementation(() => new InternalServerErrorException());
+			client.filesStorageControllerDelete.mockRejectedValue(new Error());
+
+			await expect(service.deleteFilesOfParent(param)).rejects.toThrowError();
 			expect(spy).toBeCalled();
 
 			spy.mockRestore();
