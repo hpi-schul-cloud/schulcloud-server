@@ -236,13 +236,11 @@ describe('Ldap Sync Integration', function testSuite() {
 		};
 		await executeLdapSync(this, options);
 
-		const foundSchools = [];
-		for (const exampleSchool of exampleLdapSchoolData) {
-			// eslint-disable-next-line no-await-in-loop
-			const foundSchool = await SchoolRepo.findSchoolByLdapIdAndSystem(exampleSchool.ldapOu, system._id);
-			foundSchools.push(foundSchool);
-		}
-
+		const foundSchools = await Promise.all(
+			exampleLdapSchoolData.map((exampleSchool) =>
+				SchoolRepo.findSchoolByLdapIdAndSystem(exampleSchool.ldapOu, system._id)
+			)
+		);
 		expect(foundSchools.length).to.be.eql(exampleLdapSchoolData.length);
 		foundSchools.forEach((foundSchool) => expect(foundSchool).to.be.not.null);
 	});
@@ -256,14 +254,12 @@ describe('Ldap Sync Integration', function testSuite() {
 		};
 		await executeLdapSync(this, options);
 
-		const foundUsers = [];
-		for (const exampleUser of exampleLdapUserData) {
-			const foundSchool = schools.filter((school) => school.ldapSchoolIdentifier === exampleUser.schoolDn);
-			// eslint-disable-next-line no-await-in-loop
-			const foundUser = await UserRepo.findByLdapIdAndSchool(exampleUser.ldapUUID, foundSchool[0]._id);
-			foundUsers.push(foundUser);
-		}
-
+		const foundUsers = await Promise.all(
+			exampleLdapUserData.map((exampleUser) => {
+				const foundSchool = schools.filter((school) => school.ldapSchoolIdentifier === exampleUser.schoolDn);
+				return UserRepo.findByLdapIdAndSchool(exampleUser.ldapUUID, foundSchool[0]._id);
+			})
+		);
 		expect(foundUsers.length).to.be.eql(exampleLdapUserData.length);
 		foundUsers.forEach((foundUser) => expect(foundUser).to.be.not.null);
 	});
@@ -293,13 +289,11 @@ describe('Ldap Sync Integration', function testSuite() {
 
 		const currentYear = new SchoolYearFacade(await SchoolRepo.getYears()).defaultYear;
 
-		const foundClasses = [];
-		for (const exampleClass of exampleLdapClassData) {
-			// eslint-disable-next-line no-await-in-loop
-			const foundClass = await ClassRepo.findClassByYearAndLdapDn(currentYear._id, exampleClass.ldapDn);
-			foundClasses.push(foundClass);
-		}
-
+		const foundClasses = await Promise.all(
+			exampleLdapClassData.map((exampleClass) =>
+				ClassRepo.findClassByYearAndLdapDn(currentYear._id, exampleClass.ldapDn)
+			)
+		);
 		expect(foundClasses.length).to.be.eql(exampleLdapClassData.length);
 
 		for (const foundClass of foundClasses) {
