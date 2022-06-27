@@ -1022,13 +1022,14 @@ const filePermissionService = {
 const shareTokenService = {
 	async get(id, params) {
 		if (!params.query || !params.query.shareToken) {
-			throw new Forbidden('invalid share token1.');
+			// no share token provided
+			throw new Forbidden('invalid share token.');
 		}
 
 		const shareToken = params.query ? params.query.shareToken : undefined;
 		const file = await FileModel.findOne({ _id: id, shareTokens: shareToken }).lean().exec();
 		if (!file) {
-			throw new Forbidden('invalid share token2.');
+			throw new Forbidden('invalid share token.');
 		}
 
 		return file;
