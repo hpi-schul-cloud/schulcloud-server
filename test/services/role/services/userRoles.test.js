@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('userRoles', () => {
 	let app;
@@ -49,7 +49,7 @@ describe('userRoles', () => {
 	};
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		userRoles = app.service('/roles/user');
 		server = await app.listen(0);
 		testRole = await testObjects.createTestRole({

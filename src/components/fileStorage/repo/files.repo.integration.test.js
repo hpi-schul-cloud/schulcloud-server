@@ -24,7 +24,7 @@ describe('files.repo.integration.test', () => {
 
 	before(async () => {
 		/* eslint-disable global-require */
-		app = await require('../../../app');
+		app = await require('../../../app')();
 		({ files: fileTestUtils, generateObjectId } = require('../../../../test/services/helpers/testObjects')(app));
 		/* eslint-enable global-require */
 		server = await app.listen(0);

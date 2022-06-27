@@ -3,8 +3,8 @@ const mockery = require('mockery');
 const appPromise = require('../../../src/app');
 const mockAws = require('../fileStorage/aws/s3.mock');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
 
 describe('wopi service', function test() {
 	this.timeout(10000);
@@ -47,7 +47,7 @@ describe('wopi service', function test() {
 	};
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,

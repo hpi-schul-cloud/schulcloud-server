@@ -7,7 +7,7 @@ describe('resolve/users service', () => {
 	let service;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		service = app.service('resolve/users');
 	});
 

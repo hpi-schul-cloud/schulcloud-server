@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('edusharing hooks', () => {
 	let app;
@@ -9,7 +9,7 @@ describe('edusharing hooks', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		server = await app.listen(0);
 	});

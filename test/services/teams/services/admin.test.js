@@ -10,7 +10,7 @@ describe("'/teams/manage/admin' service", () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

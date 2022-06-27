@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { AccountSaveDto } from './account.save.dto';
+import { AccountSaveDto } from './account-save.dto';
 
 export class AccountDto extends AccountSaveDto {
 	readonly id: EntityId;

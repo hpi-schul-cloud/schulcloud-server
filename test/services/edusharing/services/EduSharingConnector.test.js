@@ -9,7 +9,7 @@ const MockNodeRestricted = JSON.stringify(require('../mock/response-node-restric
 const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
 const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('EduSharing FIND', () => {
 	let app;
@@ -18,7 +18,7 @@ describe('EduSharing FIND', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
@@ -201,7 +201,7 @@ describe('EduSharing config flags', () => {
 
 	before(async () => {
 		originalConfiguration = Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED');
-		app = await appPromise;
+		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		server = await app.listen(0);
 	});

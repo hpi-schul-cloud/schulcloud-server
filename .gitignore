@@ -83,3 +83,4 @@ build
 # Tests
 /coverage
 /.nyc_output
+/.idea/

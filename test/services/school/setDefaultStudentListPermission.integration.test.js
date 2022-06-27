@@ -2,7 +2,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', () => {
 	describe('scenario for enabled', () => {
@@ -12,7 +12,7 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 
 		before(async () => {
 			configBefore = Configuration.toObject({});
-			app = await appPromise;
+			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'true');
 			server = await app.listen(0);
 		});
@@ -47,7 +47,7 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 
 		before(async () => {
 			configBefore = Configuration.toObject({});
-			app = await appPromise;
+			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
 			server = await app.listen(0);
 		});
