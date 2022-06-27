@@ -23,7 +23,7 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
-	async findByLdapIdorFail(ldapId: string, systemId: string): Promise<User> {
+	async findByLdapIdOrFail(ldapId: string, systemId: string): Promise<User> {
 		const [users] = await this._em.findAndCount(User, { ldapId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
 			const { systems } = user.school;
