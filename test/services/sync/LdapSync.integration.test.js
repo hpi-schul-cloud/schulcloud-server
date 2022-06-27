@@ -9,7 +9,6 @@ const { setupNestServices, closeNestServices } = require('../../utils/setup.nest
 const { SchoolRepo, UserRepo, ClassRepo } = require('../../../src/services/sync/repo');
 
 const { userModel } = require('../../../src/services/user/model');
-const accountModel = require('../../../src/services/account/model');
 
 const { classModel } = require('../../../src/services/user-group/model');
 const { schoolModel } = require('../../../src/services/school/model');
@@ -144,34 +143,28 @@ const createTestUsers = async (schools) =>
 		)
 	);
 
-const isRabbitMqAvailable = (result) => {
-	const isRabbitMqEnabled = Configuration.get('FEATURE_RABBITMQ_ENABLED') === true;
-	if (!isRabbitMqEnabled) {
-		return false;
-	}
-	const isSuccess = result[0].success;
-	if (!isSuccess) {
-		const systemErrors = result[0].systems[SYSTEM_ALIAS].errors;
-		return !systemErrors || systemErrors[0].code !== 'ECONNREFUSED';
-	}
-	return true;
-};
-
 // the call should be with function, otherwise 'this' will not be available
-describe('Ldap Sync Integration', function testSuite() {
-	this.timeout(20000);
+// this is not executed on the CI since RabbitMQ is not available
+xdescribe('Ldap Sync Integration', () => {
+	let configBefore;
 	let app;
 	let nestServices;
+	let accountService;
 	let server;
 	let system;
 
 	const cleanupAll = async () => {
 		await testObjects.cleanup();
 		const accounts = exampleLdapUserData.map((user) => `${user.schoolDn}/${user.ldapUID}`.toLowerCase());
-		await accountModel
-			.deleteMany({ username: { $in: accounts } })
-			.lean()
-			.exec();
+
+		for (const accountUserName of accounts) {
+			// eslint-disable-next-line no-await-in-loop
+			const accountResult = await accountService.searchByUsernameExactMatch(accountUserName);
+			if (accountResult.accounts.length) {
+				// eslint-disable-next-line no-await-in-loop
+				await accountService.delete(accountResult.accounts[0].id);
+			}
+		}
 		const userLdapDns = exampleLdapUserData.map((user) => user.ldapDn);
 		await userModel
 			.deleteMany({ ldapDn: { $in: userLdapDns } })
@@ -190,9 +183,12 @@ describe('Ldap Sync Integration', function testSuite() {
 	};
 
 	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		accountService = await app.service('nest-account-service');
 		await cleanupAll();
 	});
 
@@ -209,6 +205,7 @@ describe('Ldap Sync Integration', function testSuite() {
 	});
 
 	after(async () => {
+		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
 	});
@@ -218,9 +215,6 @@ describe('Ldap Sync Integration', function testSuite() {
 		app.services.ldap = new FakeLdapService(app, options);
 		try {
 			const result = await app.service('sync').find(params);
-			if (!isRabbitMqAvailable(result)) {
-				testFuncContext.skip();
-			}
 			// eslint-disable-next-line promise/param-names
 			await new Promise((r) => setTimeout(r, 1000));
 			expect(result.length).to.be.eql(1);
@@ -311,4 +305,4 @@ describe('Ldap Sync Integration', function testSuite() {
 			expect(actualTeacherIds).to.have.members(expectedTeacherIds);
 		}
 	});
-});
+}).timeout(20000);

@@ -51,12 +51,12 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
-	deleteById(accountId: EntityId) {
+	async deleteById(accountId: EntityId): Promise<void> {
 		const accountReference = this._em.getReference(Account, accountId);
 		return this._em.removeAndFlush(accountReference);
 	}
 
-	deleteByUserId(userId: EntityId) {
+	async deleteByUserId(userId: EntityId): Promise<void> {
 		const accountReference = this._em.getReference(Account, userId);
 		return this._em.removeAndFlush(accountReference);
 	}
