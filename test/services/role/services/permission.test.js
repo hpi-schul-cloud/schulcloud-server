@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('PermissionService', () => {
 	let app;
@@ -26,7 +26,7 @@ describe('PermissionService', () => {
 	const xxPermissions = ['GO_TO_TOILET'];
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen();
 		permissionService = app.service('roles/:roleName/permissions');
 

@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http');
 const appPromise = require('../../../../src/app');
 const moodleMockServer = require('./moodleMockServer');
 
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -30,7 +30,7 @@ describe('Moodle single-sign-on', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = app.listen(0);
 		const moodle = await createMoodleTestServer();
 		const [system, testUser] = await Promise.all([

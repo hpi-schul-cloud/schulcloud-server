@@ -14,6 +14,7 @@ import { NewsModule } from '@src/modules/news';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
+import { SystemModule } from '@src/modules/system/system.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { OauthModule } from './modules/oauth';
@@ -35,6 +36,7 @@ const serverModules = [
 	UserModule,
 	ImportUserModule,
 	LearnroomModule,
+	SystemModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
@@ -71,7 +73,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
 
-			// debug: true, // use it for locally debugging of querys
+			// debug: true, // use it for locally debugging of queries
 		}),
 	],
 	controllers: [ServerController],

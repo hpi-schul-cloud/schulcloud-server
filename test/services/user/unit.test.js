@@ -7,7 +7,7 @@ const appPromise = require('../../../src/app');
 
 const { registrationPinModel } = require('../../../src/services/user/model');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('registrationPin Service', () => {
 	let app;
@@ -15,7 +15,7 @@ describe('registrationPin Service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		registrationPinService = app.service('registrationPins');
 		server = await app.listen(0);
 	});
@@ -85,7 +85,7 @@ describe('publicTeachers service', () => {
 	const schoolId = new ObjectId().toString();
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		userService = app.service('users');
 		publicTeachersService = app.service('publicTeachers');
 		server = await app.listen(0);

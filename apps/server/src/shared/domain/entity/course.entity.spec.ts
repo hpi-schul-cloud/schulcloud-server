@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { userFactory, courseFactory, schoolFactory, setupEntities } from '@shared/testing';
+import { courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Course } from './course.entity';
 
 const DEFAULT = {
@@ -71,6 +71,15 @@ describe('CourseEntity', () => {
 
 			expect(result.title).toEqual('A😀 History');
 			expect(result.shortTitle).toEqual('A😀');
+		});
+
+		it('should return numbers correctly if used as first two characters', () => {
+			const course = courseFactory.build({ name: '10 History', color: '#445566' });
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('10 History');
+			expect(result.shortTitle).toEqual('10');
 		});
 
 		it('should include start and enddate if course has them', () => {

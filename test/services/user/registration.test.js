@@ -5,7 +5,7 @@ const moment = require('moment');
 const appPromise = require('../../../src/app');
 const { userModel } = require('../../../src/services/user/model');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('registration service', () => {
 	let server;
@@ -13,13 +13,12 @@ describe('registration service', () => {
 	let registrationPinService;
 	let hashService;
 
-	before((done) => {
-		appPromise.then((app) => {
-			registrationService = app.service('registration');
-			registrationPinService = app.service('registrationPins');
-			hashService = app.service('hash');
-			server = app.listen(0, done);
-		});
+	before(async () => {
+		const app = await appPromise();
+		registrationService = app.service('registration');
+		registrationPinService = app.service('registrationPins');
+		hashService = app.service('hash');
+		server = app.listen(0);
 	});
 
 	after(async () => {

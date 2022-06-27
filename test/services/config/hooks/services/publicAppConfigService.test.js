@@ -9,7 +9,7 @@ describe('PublicAppConfigService', () => {
 	let configService;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		configService = app.service('/config/app/public');
 		server = await app.listen(0);
 	});

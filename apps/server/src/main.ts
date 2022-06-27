@@ -12,27 +12,31 @@ import { Logger } from '@nestjs/common';
 import { MailService, Mail } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
+import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
+import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
 
 async function bootstrap() {
 	sourceMapInstall();
 
-	// load the legacy feathers/express server
-	const feathersExpress = await legacyAppPromise;
-	feathersExpress.setup();
-
 	// create the NestJS application on a seperate express instance
 	const nestExpress = express();
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
+	const orm = nestApp.get(MikroORM);
+
+	// load the legacy feathers/express server
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const feathersExpress = await legacyAppPromise(orm);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider
 	// TODO remove if not needed anymore
 	nestExpress.set('feathersApp', feathersExpress);
-
-	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
 	// customize nest app settings
 	nestApp.enableCors();
@@ -52,11 +56,14 @@ async function bootstrap() {
 	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 
 	// mount instances
 	const rootExpress = express();
 
 	// exposed alias mounts
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
 
@@ -69,7 +76,9 @@ async function bootstrap() {
 
 	// safety net for deprecated paths not beginning with version prefix
 	// TODO remove when all calls to the server are migrated
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	const port = 3030;

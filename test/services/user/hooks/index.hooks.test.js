@@ -2,7 +2,7 @@ const mockery = require('mockery');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const {
 	hasEditPermissionForUser,
@@ -53,7 +53,7 @@ describe('hasEditPermissionForUser', () => {
 	let userService;
 	let server;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		userService = app.service('users');
 		server = await app.listen(0);
 	});
@@ -150,7 +150,7 @@ describe('hasReadPermissionForUser', () => {
 	let userService;
 	let server;
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		userService = app.service('users');
 		server = await app.listen(0);
 	});

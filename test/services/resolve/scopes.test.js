@@ -6,7 +6,7 @@ describe('resolve/scopes service', () => {
 	let service;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		service = app.service('resolve/scopes');
 	});
 

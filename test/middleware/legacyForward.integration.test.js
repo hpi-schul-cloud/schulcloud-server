@@ -32,7 +32,7 @@ describe('legacy forward', () => {
 	before(async () => {
 		const appPromise = proxyquire('../../src/app', { './services': registerMockServices });
 		// eslint-disable-next-line global-require
-		app = await appPromise;
+		app = await appPromise();
 
 		server = app.listen(0);
 		return server;

@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const { Forbidden } = require('../../../../src/errors');
 
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('CoursePermissionService', () => {
 	let app;
@@ -101,7 +101,7 @@ describe('CoursePermissionService', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 		server = await app.listen(0);
 		const studentOne = await testObjects.createTestUser({
