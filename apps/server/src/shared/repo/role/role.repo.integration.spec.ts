@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError, NullCacheAdapter } from '@mikro-orm/core';
+import { NotFoundError, NullCacheAdapter, ValidationError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName } from '@shared/domain';
@@ -83,6 +83,34 @@ describe('role repo', () => {
 		it('should throw an error if roles by name doesnt exist', async () => {
 			em.clear();
 			await expect(repo.findByName(RoleName.STUDENT)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByNames', () => {
+		let roleA;
+		let roleB;
+
+		beforeEach(async () => {
+			roleA = roleFactory.build({ name: RoleName.STUDENT });
+			roleB = roleFactory.build({ name: RoleName.TEAMMEMBER });
+			await em.persistAndFlush([roleA, roleB]);
+		});
+
+		afterEach(() => {
+			em.clear();
+		});
+
+		it('should return right keys', async () => {
+			const result = await repo.findByNames([RoleName.STUDENT, RoleName.TEAMMEMBER]);
+			expect(Object.keys(result).sort()).toEqual(
+				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
+			);
+		});
+
+		it('should return multiple roles that matched by names', async () => {
+			const result = await repo.findByNames([RoleName.STUDENT, RoleName.TEACHER]);
+			expect(result).toContain(roleA);
+			expect(result).toContain(roleB);
 		});
 	});
 

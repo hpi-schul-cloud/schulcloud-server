@@ -18,7 +18,7 @@ export class RoleRepo extends BaseRepo<Role> {
 		return this._em.findOneOrFail(Role, { id }, { cache: this.cacheExpiration });
 	}
 
-	async findByIds(ids: EntityId[]): Promise<Role[]> {
-		return this._em.find(Role, { id: { $in: ids } }, { cache: this.cacheExpiration });
+	async findByNames(names: RoleName[]): Promise<Role[]> {
+		return this._em.find(Role, { name: { $in: names } }, { cache: this.cacheExpiration });
 	}
 }

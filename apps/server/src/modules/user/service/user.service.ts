@@ -1,0 +1,52 @@
+import { RoleRepo, UserRepo } from '@shared/repo';
+import { EntityId, LanguageType, PermissionService, Role, User } from '@shared/domain';
+import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { UserMapper } from '@src/modules/user/mapper/user.mapper';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { IUserConfig } from '@src/modules/user/interfaces';
+
+@Injectable()
+export class UserService {
+	constructor(
+		private readonly userRepo: UserRepo,
+		private readonly roleRepo: RoleRepo,
+		private readonly permissionService: PermissionService,
+		private readonly configService: ConfigService<IUserConfig, true>
+	) {}
+
+	async me(userId: EntityId): Promise<[User, string[]]> {
+		const user = await this.userRepo.findById(userId, true);
+		const permissions = this.permissionService.resolvePermissions(user);
+
+		return [user, permissions];
+	}
+
+	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
+		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
+			throw new BadRequestException('Language is not activated.');
+		}
+	}
+
+	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {
+		this.checkAvailableLanguages(newLanguage);
+		const user = await this.userRepo.findById(userId);
+		user.language = newLanguage;
+		await this.userRepo.save(user);
+
+		return true;
+	}
+
+	async save(user: UserDto): Promise<void> {
+		const roleNames = user.roles.filter((role) => role.id != null).map((role) => role.name);
+		const userRoles: Role[] = await this.roleRepo.findByNames(roleNames);
+
+		if (user.id) {
+			const userEntity = await this.userRepo.findById(user.id);
+			const fromDto = UserMapper.mapFromDtoToEntity(user, userRoles);
+			return this.userRepo.save(UserMapper.mapFromEntityToEntity(userEntity, fromDto));
+		}
+
+		return this.userRepo.save(UserMapper.mapFromDtoToEntity(user, userRoles));
+	}
+}
