@@ -63,7 +63,6 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			});
 	}
 
-	// TODO
 	private async findGroupIdByTeamId(TeamId: string): Promise<string> {
 		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${TeamId}`))
 			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0])
@@ -72,11 +71,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			});
 	}
 
-	// TODO
-	private removeGroup(groupId: string, folderId: string) {
-		this.post(`/apps/groupfolders/folders/${folderId}/groups/${groupId}`, {
-			// delete(folderId);,
-		});
+	private removeGroup(groupId: string) {
+		this.delete(`ocs/v1.php/cloud/groups/${groupId}`);
 	}
 
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
@@ -97,20 +93,15 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			});
 	}
 
-	// TODO
 	private deleteFolder(folderId: string) {
-		this.post(`/apps/groupfolders/folders/${folderId}`, {
-			// delete(folderId),
-		});
+		this.delete(`/apps/groupfolders/folders/${folderId}`);
 	}
 
-	// TODO
 	async deleteGroupfolder(TeamId: string) {
-		// const groupId = await this.findGroupId(TeamId);
-		// const folderId = await this.findFolderIdForGroupId(groupId);
-		// // deletion order
-		// this.deleteFolder(folderId);
-		// this.removeGroup(groupId, folderId);
+		const groupId = await this.findGroupIdByTeamId(TeamId);
+		const folderId = await this.findFolderIdForGroupId(groupId);
+		this.removeGroup(groupId);
+		this.deleteFolder(folderId);
 	}
 
 	private setGroupPermissions(groupId: string, folderId: string, permissions: boolean[]) {
@@ -125,6 +116,10 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	private post(apiPath: string, data: unknown): Observable<AxiosResponse> {
 		return this.httpService.post(`${this.baseURL}${apiPath}`, data, this.config);
+	}
+
+	private delete(apiPath: string): Observable<AxiosResponse> {
+		return this.httpService.delete(`${this.baseURL}${apiPath}`, this.config);
 	}
 
 	private boolArrToNumber(arr: Array<boolean>): number {
