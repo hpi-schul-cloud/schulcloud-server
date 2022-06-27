@@ -1,3 +1,4 @@
+import { TeamRule } from '@shared/domain/rules/team.rule';
 import { CourseRule } from './course.rule';
 import { SchoolRule } from './school.rule';
 import { TaskRule } from './task.rule';
@@ -8,8 +9,9 @@ export * from './base-permission';
 export * from './base-permission-manager';
 export * from './course.rule';
 export * from './school.rule';
+export * from './team.rule';
 export * from './task.rule';
 export * from './user.rule';
 export { default as PermissionContextBuilder } from './permission-context-builder';
 
-export const ALL_RULES = [TaskRule, CourseRule, SchoolRule, UserRule];
+export const ALL_RULES = [TaskRule, CourseRule, SchoolRule, TeamRule, UserRule];

@@ -1,7 +1,7 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { IEntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { Role } from './role.entity';
+import { Role } from './role.entity';
 import type { School } from './school.entity';
 
 export enum LanguageType {
@@ -43,7 +43,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	lastName: string;
 
 	@Index()
-	@ManyToMany('Role', undefined, { fieldName: 'roles' })
+	@ManyToMany({ fieldName: 'roles', entity: () => Role })
 	roles = new Collection<Role>(this);
 
 	@Index()

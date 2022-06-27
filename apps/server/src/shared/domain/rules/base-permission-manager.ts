@@ -10,9 +10,7 @@ export abstract class BasePermissionManager extends AuthorisationUtils implement
 	protected selectStrategie = new SingleSelectStrategie<BasePermission>();
 
 	private selectPermissions(user: User, entity: PermissionTypes, context?: IPermissionContext): BasePermission[] {
-		const permissions = this.permissions.filter((publisher) => publisher.isApplicable(user, entity, context));
-
-		return permissions;
+		return this.permissions.filter((publisher) => publisher.isApplicable(user, entity, context));
 	}
 
 	protected registerPermissions(permissions: BasePermission[]): void {
@@ -23,8 +21,6 @@ export abstract class BasePermissionManager extends AuthorisationUtils implement
 		const permissions = this.selectPermissions(user, entity, context);
 		const permission = this.selectStrategie.match(permissions);
 
-		const hasPermission = permission.hasPermission(user, entity, context);
-
-		return hasPermission;
+		return permission.hasPermission(user, entity, context);
 	}
 }
