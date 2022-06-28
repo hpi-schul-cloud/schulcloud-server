@@ -18,6 +18,7 @@ import { SystemModule } from '@src/modules/system/system.module';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RoleModule } from '@src/modules/role/role.module';
+import { CollaborativeStorageModule } from '@src/modules/collaborative-storage/collaborative-storage.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { OauthModule } from './modules/oauth';
@@ -33,6 +34,7 @@ const serverModules = [
 	}),
 	CoreModule,
 	AuthModule,
+	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
 	NewsModule,

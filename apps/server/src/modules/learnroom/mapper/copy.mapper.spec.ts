@@ -5,6 +5,8 @@ import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
+import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { CopyApiResponse } from '../controller/dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 
@@ -82,6 +84,23 @@ describe('copy mapper', () => {
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId,
+				};
+
+				expect(result).toStrictEqual(expected);
+			});
+		});
+	});
+
+	describe('mapLessonCopyToDomain', () => {
+		describe('should map received params to domain', () => {
+			it('if course destination is given', () => {
+				const courseId = new ObjectId().toHexString();
+				const params: LessonCopyApiParams = {
+					courseId,
+				};
+				const result = CopyMapper.mapLessonCopyToDomain(params);
+				const expected: LessonCopyParentParams = {
+					courseId,
 				};
 
 				expect(result).toStrictEqual(expected);
