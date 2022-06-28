@@ -3,8 +3,17 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, PermissionContextBuilder } from '@shared/domain';
-import { courseFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
+import {
+	courseFactory,
+	lessonFactory,
+	roleFactory,
+	schoolFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -51,6 +60,14 @@ describe('authorization.service', () => {
 			expect(exec).toThrowError(NotImplementedException);
 		});
 
+		it('can resolve lesson', () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			const lesson = lessonFactory.build({ course });
+			const response = service.hasPermission(user, lesson, context);
+			expect(response).toBe(true);
+		});
+
 		it('can resolve tasks', () => {
 			const user = userFactory.build();
 			const task = taskFactory.build({ creator: user });
@@ -79,6 +96,17 @@ describe('authorization.service', () => {
 			const user = userFactory.build();
 
 			const response = service.hasPermission(user, user, context);
+			expect(response).toBe(true);
+		});
+
+		it('can resolve team', () => {
+			const role = roleFactory.build({ permissions: [Permission.CHANGE_TEAM_ROLES] });
+			const user = userFactory.build({ roles: [role] });
+			const team = teamFactory.withRoleAndUserId(role, user.id).build();
+
+			const response = service.hasPermission(team.userIds[0].userId, team, {
+				requiredPermissions: [Permission.CHANGE_TEAM_ROLES],
+			});
 			expect(response).toBe(true);
 		});
 	});

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
@@ -52,6 +52,15 @@ export class SyncFilesStorageService implements OnModuleInit {
 		} else {
 			throw new Error(`Unable to find storage provider with id ${item.source.storageProviderId}`);
 		}
+	}
+
+	async removeFile(path: string) {
+		const req = new DeleteObjectCommand({
+			Bucket: this.config.bucket,
+			Key: path,
+		});
+
+		return this.destinationClient.send(req);
 	}
 
 	private createDestinationProvider(config: S3Config) {

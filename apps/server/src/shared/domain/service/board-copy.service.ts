@@ -18,7 +18,7 @@ export class BoardCopyService {
 	) {}
 
 	copyBoard(params: BoardCopyParams): CopyStatus {
-		const elementStatuses: CopyStatus[] = [];
+		const elements: CopyStatus[] = [];
 		const references: BoardElement[] = [];
 
 		params.originalBoard.getElements().forEach((element) => {
@@ -29,18 +29,20 @@ export class BoardCopyService {
 					user: params.user,
 					destinationCourse: params.destinationCourse,
 				});
-				elementStatuses.push(status);
+				elements.push(status);
 				const taskBoardElement = BoardElement.FromTask(status.copyEntity as Task);
 				references.push(taskBoardElement);
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
 				const originalLesson = element.target as Lesson;
-				const { status } = this.lessonCopyService.copyLesson({
+				const status = this.lessonCopyService.copyLesson({
 					originalLesson,
 					user: params.user,
 					destinationCourse: params.destinationCourse,
 				});
-				elementStatuses.push(status);
+				elements.push(status);
+				const lessonBardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
+				references.push(lessonBardElement);
 			}
 		});
 
@@ -48,11 +50,22 @@ export class BoardCopyService {
 		const status = {
 			title: 'board',
 			type: CopyElementType.BOARD,
-			status: CopyStatusEnum.FAIL,
-			elements: elementStatuses,
+			status: this.inferStatusFromElements(elements),
 			copyEntity: copy,
+			elements,
 		};
 
 		return status;
+	}
+
+	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+		const elementsStatuses = elements.map((el) => el.status);
+		if (elementsStatuses.every((status) => status !== CopyStatusEnum.SUCCESS)) {
+			return CopyStatusEnum.FAIL;
+		}
+		if (elementsStatuses.some((status) => status !== CopyStatusEnum.SUCCESS)) {
+			return CopyStatusEnum.PARTIAL;
+		}
+		return CopyStatusEnum.SUCCESS;
 	}
 }

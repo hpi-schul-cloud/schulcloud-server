@@ -34,6 +34,29 @@ describe('LessonRepo', () => {
 		expect(repo.entityName).toBe(Lesson);
 	});
 
+	describe('findById', () => {
+		it('should find the lesson', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			await em.persistAndFlush([course, lesson]);
+			em.clear();
+
+			const resultLesson = await repo.findById(lesson.id);
+			// TODO for some reason, comparing the whole object does not work
+			// expect(resultLesson).toEqual(lesson);
+			expect(resultLesson.id).toEqual(lesson.id);
+			expect(resultLesson.name).toEqual(lesson.name);
+		});
+		it('should populate course', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			await em.persistAndFlush([course, lesson]);
+			em.clear();
+
+			const resultLesson = await repo.findById(lesson.id);
+			expect(resultLesson.course.name).toEqual(course.name);
+		});
+	});
 	describe('findAllByCourseIds', () => {
 		it('should find lessons by course ids', async () => {
 			const course1 = courseFactory.build();
