@@ -86,7 +86,7 @@ async function bootstrap() {
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);
-	console.log(`### Port: ${port}             ###`);
+	console.log(`### Port: ${port}                ###`);
 	console.log(`### Mounts                    ###`);
 	console.log(`### /api/v1 --> feathers      ###`);
 	console.log(`### /api/v3 --> nest          ###`);
