@@ -145,6 +145,22 @@ describe('Lesson Entity', () => {
 		});
 	});
 
+	describe('getLessonComponents', () => {
+		it('should return the content components', () => {
+			const expectedTextContent = {
+				title: 'test component',
+				hidden: false,
+				component: 'text',
+				content: {
+					text: 'this is a text content',
+				},
+			};
+			const lesson = lessonFactory.build({ contents: [expectedTextContent] });
+			const result = lesson.getLessonComponents();
+			expect(result).toEqual([expectedTextContent]);
+		});
+	});
+
 	describe('publish', () => {
 		it('should become visible', () => {
 			const lesson = lessonFactory.build({ hidden: true });

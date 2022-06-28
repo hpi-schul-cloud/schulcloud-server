@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { NameCopyService } from './name-copy.service';
-import { Course, Lesson, User } from '../entity';
+import { Course, IComponentProperties, Lesson, User } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { NameCopyService } from './name-copy.service';
 
 export type LessonCopyParams = {
 	originalLesson: Lesson;
@@ -19,22 +19,58 @@ export class LessonCopyService {
 			hidden: true,
 			name: this.nameCopyService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
+			contents: this.copyTextComponent(params.originalLesson),
 		});
+
+		const elements = [...this.lessonStatusElements()];
 
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.LESSON,
-			status: CopyStatusEnum.SUCCESS,
+			status: this.inferStatusFromElements(elements),
 			copyEntity: copy,
-			elements: [
-				{
-					title: 'metadata',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
-				},
-			],
+			elements,
 		};
 
 		return status;
+	}
+
+	private copyTextComponent(originalLesson: Lesson) {
+		const copiedContent: IComponentProperties[] = [];
+		const textComponents = originalLesson.contents.filter((element) => Object.keys(element.content)[0] === 'text');
+		textComponents.forEach((element) => {
+			element.hidden = true;
+			copiedContent.push(element);
+		});
+		return copiedContent;
+	}
+
+	private lessonStatusElements(): CopyStatus[] {
+		return [
+			{
+				title: 'metadata',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				title: 'contents',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.PARTIAL,
+			},
+			{
+				title: 'materials',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			},
+		];
+	}
+
+	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+		const childrenStatusArray = elements.map((el) => el.status);
+		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
+		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) {
+			return CopyStatusEnum.PARTIAL;
+		}
+		return CopyStatusEnum.SUCCESS;
 	}
 }

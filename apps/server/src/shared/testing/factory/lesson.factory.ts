@@ -1,7 +1,7 @@
-import { Lesson, ILessonProperties, Course } from '@shared/domain';
+import { Course, IComponentProperties, ILessonProperties, Lesson } from '@shared/domain';
 
-import { courseFactory } from './course.factory';
 import { BaseFactory } from './base.factory';
+import { courseFactory } from './course.factory';
 
 class LessonFactory extends BaseFactory<Lesson, ILessonProperties> {}
 
@@ -13,8 +13,16 @@ export const lessonFactory = LessonFactory.define<Lesson, ILessonProperties>(Les
 		course = courseFactory.build();
 	}
 
+	const contents: IComponentProperties[] = [];
+	if (params.contents) {
+		params.contents.forEach((element) => {
+			contents.push(element);
+		});
+	}
+
 	return {
 		name: `lesson #${sequence}`,
 		course,
+		contents,
 	};
 });

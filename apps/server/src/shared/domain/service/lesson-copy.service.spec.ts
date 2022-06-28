@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { CopyElementType, CopyStatusEnum, Lesson } from '@shared/domain';
+import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { LessonCopyService } from './lesson-copy.service';
 import { NameCopyService } from './name-copy.service';
 
@@ -39,10 +39,29 @@ describe('lesson copy service', () => {
 	describe('handleCopyLesson', () => {
 		describe('when copying a lesson within original course', () => {
 			const setup = () => {
+				const textContentOne = {
+					title: 'text component 1',
+					hidden: false,
+					component: 'text',
+					content: {
+						text: 'this is a text content',
+					},
+				};
+				const textContentTwo = {
+					title: 'text component 2',
+					hidden: false,
+					component: 'text',
+					content: {
+						text: 'this is another text content',
+					},
+				};
 				const user = userFactory.build();
 				const originalCourse = courseFactory.build({ school: user.school });
 				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const originalLesson = lessonFactory.build({ course: originalCourse });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+					contents: [textContentOne, textContentTwo],
+				});
 
 				const copyName = 'Copy';
 				nameCopyService.deriveCopyName.mockReturnValue(copyName);
@@ -102,7 +121,7 @@ describe('lesson copy service', () => {
 					expect(lesson.position).toEqual(originalLesson.position);
 				});
 
-				it('should set the hidden of copy', () => {
+				it('should set the hidden property of copy', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const response = copyService.copyLesson({
@@ -113,6 +132,33 @@ describe('lesson copy service', () => {
 					const lesson = response.copyEntity as Lesson;
 
 					expect(lesson.hidden).toEqual(true);
+				});
+
+				it('should set the contents of copy', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const response = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+					const lesson = response.copyEntity as Lesson;
+
+					expect(lesson.contents).toEqual(originalLesson.contents);
+				});
+
+				it('should set contents of copy as hidden', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const response = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+					const lesson = response.copyEntity as Lesson;
+
+					expect(lesson.contents[0].hidden).toEqual(true);
+					expect(lesson.contents[1].hidden).toEqual(true);
 				});
 			});
 
@@ -151,6 +197,38 @@ describe('lesson copy service', () => {
 					);
 					expect(metadataStatus).toBeDefined();
 					expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
+				});
+
+				it('should set status of contents', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const status = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					const contentsStatus = status.elements?.find(
+						(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
+					);
+					expect(contentsStatus).toBeDefined();
+					expect(contentsStatus?.status).toEqual(CopyStatusEnum.PARTIAL);
+				});
+
+				it('should set status of materials', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const status = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					const materialsStatus = status.elements?.find(
+						(el) => el.type === CopyElementType.LEAF && el.title === 'materials'
+					);
+					expect(materialsStatus).toBeDefined();
+					expect(materialsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 				});
 			});
 		});
