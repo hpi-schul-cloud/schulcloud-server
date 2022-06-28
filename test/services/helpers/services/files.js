@@ -26,6 +26,7 @@ const create = async ({
 	deletedAt,
 	bucket = 'bucket-test',
 	parent,
+	shareTokens,
 } = {}) => {
 	const data = {
 		isDirectory,
@@ -49,6 +50,7 @@ const create = async ({
 		parent,
 		bucket,
 		storageProviderId: ObjectId(),
+		shareTokens,
 	};
 	if (additonalPermissions) {
 		data.permissions = [...data.permissions, ...additonalPermissions];
