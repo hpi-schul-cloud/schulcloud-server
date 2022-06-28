@@ -45,7 +45,7 @@ export class File extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
-	@Property()
+	@Property({ nullable: true })
 	shareTokens?: string[];
 
 	@ManyToOne('User', { nullable: true })
