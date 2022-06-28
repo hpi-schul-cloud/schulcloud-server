@@ -30,7 +30,7 @@ export class CollaborativeStorageUc {
 		);
 	}
 
-	removeGroupAndFolderfromNextcloud(teamId: string) {
-		this.service.removeGroupAndFolderfromNextcloud(teamId);
+	deleteTeam(teamId: string) {
+		this.service.deleteTeam(teamId);
 	}
 }
