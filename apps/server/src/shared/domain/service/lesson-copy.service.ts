@@ -66,11 +66,11 @@ export class LessonCopyService {
 	}
 
 	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		const childrenStatusArray = elements.map((el) => el.status);
-		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
+		/* const childrenStatusArray = elements.map((el) => el.status);
+		if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
 		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) {
 			return CopyStatusEnum.PARTIAL;
-		}
+		} */
 		return CopyStatusEnum.SUCCESS;
 	}
 }

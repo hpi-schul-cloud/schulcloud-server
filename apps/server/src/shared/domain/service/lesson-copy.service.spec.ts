@@ -183,6 +183,18 @@ describe('lesson copy service', () => {
 					expect(status.type).toEqual(CopyElementType.LESSON);
 				});
 
+				it('should set lesson status to success', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const status = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
+				});
+
 				it('should set status of metadata', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
