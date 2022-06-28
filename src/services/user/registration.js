@@ -234,15 +234,14 @@ const registerUser = function register(data, params, app) {
 			})
 		)
 		.then(() => {
-			account = {
-				username: user.email,
-				password: data.password_1,
-				userId: user._id,
-				activated: true,
-			};
 			return app
-				.service('accounts')
-				.create(account)
+				.service('nest-account-uc')
+				.saveAccount({
+					username: user.email,
+					password: data.password_1,
+					userId: user._id.toString(),
+					activated: true,
+				})
 				.then((newAccount) => {
 					account = newAccount;
 				})
