@@ -5,7 +5,7 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
-import { EntityId, RoleName, System } from '@shared/domain';
+import { EntityId, System } from '@shared/domain';
 
 describe('SystemUc', () => {
 	let module: TestingModule;

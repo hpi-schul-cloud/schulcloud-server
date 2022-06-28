@@ -14,7 +14,7 @@ const expectedParams: TokenRequestParams = {
 	redirect_uri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId/token',
 };
 const defaultAuthCode = '43534543jnj543342jn2';
-const defaultOauthConfig: OauthConfig = systemFactory.build().oauthConfig!;
+const defaultOauthConfig: OauthConfig = systemFactory.build().oauthConfig as OauthConfig;
 describe('TokenRequestPayload.Mapper', () => {
 	const expectedPayload: TokenRequestPayload = {
 		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',

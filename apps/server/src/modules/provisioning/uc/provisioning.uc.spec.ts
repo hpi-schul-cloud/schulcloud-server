@@ -22,7 +22,6 @@ describe('ProvisioningUc', () => {
 
 	let userUc: DeepMocked<UserUc>;
 	let schoolUc: DeepMocked<SchoolUc>;
-	let roleUc: DeepMocked<RoleUc>;
 	let systemUc: DeepMocked<SystemUc>;
 	let unknownStrategy: DeepMocked<UnknownProvisioningStrategy>;
 	let logger: DeepMocked<Logger>;
@@ -61,7 +60,6 @@ describe('ProvisioningUc', () => {
 
 		userUc = module.get(UserUc);
 		schoolUc = module.get(SchoolUc);
-		roleUc = module.get(RoleUc);
 		systemUc = module.get(SystemUc);
 		unknownStrategy = module.get(UnknownProvisioningStrategy);
 		logger = module.get(Logger);

@@ -16,7 +16,7 @@ describe('SchoolUc', () => {
 				{
 					provide: SchoolService,
 					useValue: {
-						saveSchool: jest.fn().mockImplementation((dto: SchoolDto): Promise<void> => {
+						saveSchool: jest.fn().mockImplementation((): Promise<void> => {
 							return Promise.resolve();
 						}),
 					},

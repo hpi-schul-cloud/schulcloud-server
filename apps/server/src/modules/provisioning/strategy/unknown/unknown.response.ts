@@ -1,5 +1,4 @@
 import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 export class UnknownResponse implements IProviderResponse {
 	constructor(unknownResponse: UnknownResponse) {

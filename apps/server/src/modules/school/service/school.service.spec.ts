@@ -21,7 +21,7 @@ describe('SchoolService', () => {
 				{
 					provide: SchoolRepo,
 					useValue: {
-						save: jest.fn().mockImplementation((school: School): Promise<void> => {
+						save: jest.fn().mockImplementation((): Promise<void> => {
 							return Promise.resolve();
 						}),
 						findById: jest.fn().mockImplementation((schoolId: string): Promise<School | null> => {
