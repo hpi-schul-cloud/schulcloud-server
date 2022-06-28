@@ -242,6 +242,12 @@ class RocketChatChannel {
 	 */
 	async synchronizeModerators(teamId) {
 		try {
+			const teamModeratorRoles = await this.app
+				.service('roles')
+				.find({
+					query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+				})
+				.data.map((role) => role._id.toString());
 			const team = await this.app.service('teams').get(teamId);
 			const channel = await channelModel.findOne({ teamId });
 			if (channel) {
@@ -250,7 +256,7 @@ class RocketChatChannel {
 				let rcChannelModerators = rcResponse.moderators;
 				const scModeratorPromises = [];
 				team.userIds.forEach(async (user) => {
-					if (this.teamModeratorRoles.includes(user.role.toString())) {
+					if (teamModeratorRoles.includes(user.role.toString())) {
 						scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
 					}
 				});
@@ -275,7 +281,6 @@ class RocketChatChannel {
 	 * @param {*} params
 	 */
 	async get(teamId, params) {
-		await this.setModeratorRole();
 		const result = await this.getOrCreateRocketChatChannel(teamId, params);
 		await this.synchronizeModerators(teamId);
 		return result;
@@ -328,14 +333,6 @@ class RocketChatChannel {
 		this.app.on('teams:after:usersChanged', this.onTeamUsersChanged.bind(this)); // use hook to get app
 		this.app.service('teams').on('removed', this.onRemoved.bind(this));
 		this.app.service('teams').on('patched', this.onTeamPatched.bind(this));
-	}
-
-	async setModeratorRole() {
-		const teamModeratorRoles = await this.app.service('roles').find({
-			query: { name: { $in: ['teamowner', 'teamadministrator'] } },
-		});
-
-		this.teamModeratorRoles = teamModeratorRoles.data.map((role) => role._id.toString());
 	}
 
 	setup(app) {
