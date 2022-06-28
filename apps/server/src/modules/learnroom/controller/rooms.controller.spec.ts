@@ -4,6 +4,7 @@ import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId, ICurrentUser } f
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
+import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { RoomsUc } from '../uc/rooms.uc';
 import { BoardResponse, CopyApiResponse } from './dto';
 import { RoomsController } from './rooms.controller';
@@ -12,7 +13,8 @@ describe('rooms controller', () => {
 	let controller: RoomsController;
 	let mapper: RoomBoardResponseMapper;
 	let uc: RoomsUc;
-	let copyUc: CourseCopyUC;
+	let courseCopyUc: CourseCopyUC;
+	let lessonCopyUc: LessonCopyUC;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -45,6 +47,10 @@ describe('rooms controller', () => {
 					useValue: createMock<CourseCopyUC>(),
 				},
 				{
+					provide: LessonCopyUC,
+					useValue: createMock<LessonCopyUC>(),
+				},
+				{
 					provide: RoomBoardResponseMapper,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -58,7 +64,8 @@ describe('rooms controller', () => {
 		controller = module.get(RoomsController);
 		mapper = module.get(RoomBoardResponseMapper);
 		uc = module.get(RoomsUc);
-		copyUc = module.get(CourseCopyUC);
+		courseCopyUc = module.get(CourseCopyUC);
+		lessonCopyUc = module.get(LessonCopyUC);
 	});
 
 	describe('getRoomBoard', () => {
@@ -136,7 +143,7 @@ describe('rooms controller', () => {
 					status: 'SUCCESS' as CopyStatusEnum,
 					elements: [],
 				} as CopyStatus;
-				const ucSpy = jest.spyOn(copyUc, 'copyCourse').mockImplementation(() => {
+				const ucSpy = jest.spyOn(courseCopyUc, 'copyCourse').mockImplementation(() => {
 					return Promise.resolve(ucResult);
 				});
 				return { currentUser, ucSpy };
@@ -150,6 +157,36 @@ describe('rooms controller', () => {
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
 				const result = await controller.copyCourse(currentUser, 'courseId');
+				expect(result).toBeInstanceOf(CopyApiResponse);
+			});
+		});
+	});
+
+	describe('copyLesson', () => {
+		describe('when lesson should be copied via API call', () => {
+			const setup = () => {
+				const currentUser = { userId: 'userId' } as ICurrentUser;
+				const ucResult = {
+					title: 'example title',
+					type: 'LESSON' as CopyElementType,
+					status: 'SUCCESS' as CopyStatusEnum,
+					elements: [],
+				} as CopyStatus;
+				const ucSpy = jest.spyOn(lessonCopyUc, 'copyLesson').mockImplementation(() => {
+					return Promise.resolve(ucResult);
+				});
+				return { currentUser, ucSpy };
+			};
+
+			it('should call uc with parentId', async () => {
+				const { currentUser, ucSpy } = setup();
+				await controller.copyLesson(currentUser, 'lessonId', { courseId: 'id' });
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'lessonId', { courseId: 'id' });
+			});
+
+			it('should return result of correct type', async () => {
+				const { currentUser } = setup();
+				const result = await controller.copyLesson(currentUser, 'lessonid', {});
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
