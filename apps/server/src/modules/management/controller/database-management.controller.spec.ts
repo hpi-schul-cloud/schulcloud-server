@@ -12,13 +12,13 @@ describe('DatabaseManagementController', () => {
 				{
 					provide: DatabaseManagementUc,
 					useValue: {
-						seedCollectionFromFile(collectionName: string): Promise<void> {
+						seedCollectionFromFile(): Promise<void> {
 							return Promise.resolve();
 						},
 						seedAllCollectionsFromFiles(): Promise<void> {
 							return Promise.resolve();
 						},
-						exportCollectionToFile(collectionName: string): Promise<void> {
+						exportCollectionToFile(): Promise<void> {
 							return Promise.resolve();
 						},
 						exportAllCollectionsToFiles(): Promise<void> {

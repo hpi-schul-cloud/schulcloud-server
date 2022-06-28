@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DatabaseManagementController } from './controller/database-management.controller';
-import { ManagementModule, ManagementTestModule } from './management.module';
+import { ManagementServerTestModule, ManagementServerModule } from './management-server.module';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
 describe('ManagementModule', () => {
@@ -11,7 +11,7 @@ describe('ManagementModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ManagementModule],
+			imports: [ManagementServerModule],
 		}).compile();
 
 		service = module.get(DatabaseManagementUc);
@@ -35,7 +35,7 @@ describe('ManagementTestModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ManagementTestModule],
+			imports: [ManagementServerTestModule],
 		}).compile();
 
 		service = module.get(DatabaseManagementUc);

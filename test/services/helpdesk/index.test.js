@@ -28,7 +28,7 @@ describe('helpdesk service', function test() {
 	}
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		originalMailService = app.service('mails');
 		helpdeskService = app.service('helpdesk');
 		({ logger } = app);

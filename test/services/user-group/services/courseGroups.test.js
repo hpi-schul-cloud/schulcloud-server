@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const testObjects = require('../../helpers/testObjects')(appPromise());
 const { courseGroupModel } = require('../../../../src/services/user-group/model');
 
 describe('courseGroup service', () => {
@@ -8,7 +8,7 @@ describe('courseGroup service', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 	});
 

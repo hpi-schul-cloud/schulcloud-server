@@ -9,12 +9,13 @@ import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { CoreModule } from '@src/core';
-import { FilesModule } from '@src/modules/files';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { NewsModule } from '@src/modules/news';
 import { RocketChatModule } from '@src/modules/rocketchat';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
+import { CollaborativeStorageModule } from '@src/modules/collaborative-storage/collaborative-storage.module';
+import { SystemModule } from '@src/modules/system/system.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { OauthModule } from './modules/oauth';
@@ -30,6 +31,7 @@ const serverModules = [
 	}),
 	CoreModule,
 	AuthModule,
+	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
 	NewsModule,
@@ -40,7 +42,6 @@ const serverModules = [
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 	}),
-	FilesModule,
 	RocketChatModule.forRoot({
 		uri: Configuration.get('ROCKET_CHAT_URI') as string,
 		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
@@ -48,6 +49,7 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
+	SystemModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -73,7 +75,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
 
-			// debug: true, // use it for locally debugging of querys
+			// debug: true, // use it for locally debugging of queries
 		}),
 	],
 	controllers: [ServerController],

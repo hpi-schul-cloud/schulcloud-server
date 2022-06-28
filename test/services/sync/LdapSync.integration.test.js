@@ -13,7 +13,7 @@ const accountModel = require('../../../src/services/account/model');
 const { classModel } = require('../../../src/services/user-group/model');
 const { schoolModel } = require('../../../src/services/school/model');
 
-const testObjects = require('../helpers/testObjects')(appPromise);
+const testObjects = require('../helpers/testObjects')(appPromise());
 const { syncLogger } = require('../../../src/logger/syncLogger');
 
 const { expect } = chai;
@@ -188,7 +188,7 @@ describe('Ldap Sync Integration', function testSuite() {
 	};
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		await cleanupAll();
 	});

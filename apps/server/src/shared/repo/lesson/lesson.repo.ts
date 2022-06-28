@@ -9,6 +9,12 @@ export class LessonRepo extends BaseRepo<Lesson> {
 		return Lesson;
 	}
 
+	async findById(id: EntityId): Promise<Lesson> {
+		const lesson = await super.findById(id);
+		await this._em.populate(lesson, ['course']);
+		return lesson;
+	}
+
 	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<Lesson[]>> {
 		const scope = new LessonScope();
 

@@ -1,10 +1,17 @@
 import { taskFactory, lessonFactory, setupEntities } from '@shared/testing';
+import { MikroORM } from '@mikro-orm/core';
 import { TaskBoardElement, LessonBoardElement } from './boardelement.entity';
 import { BoardElementType } from '.';
 
 describe('TaskBoardElementEntity', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('constructor', () => {
@@ -19,8 +26,14 @@ describe('TaskBoardElementEntity', () => {
 });
 
 describe('LessonBoardElementEntity', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('constructor', () => {

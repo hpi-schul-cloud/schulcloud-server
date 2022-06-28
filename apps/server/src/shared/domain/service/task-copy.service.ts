@@ -4,19 +4,14 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/type
 
 export type TaskCopyParams = {
 	originalTask: Task;
-	destinationCourse: Course;
+	destinationCourse?: Course;
 	// destinationLesson?: Lesson;
 	user: User;
 };
 
-export type TaskCopyResponse = {
-	copy: Task;
-	status: CopyStatus;
-};
-
 @Injectable()
 export class TaskCopyService {
-	copyTaskMetadata(params: TaskCopyParams): TaskCopyResponse {
+	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
 			name: params.originalTask.name,
 			description: params.originalTask.description,
@@ -35,7 +30,7 @@ export class TaskCopyService {
 			elements,
 		};
 
-		return { copy, status };
+		return status;
 	}
 
 	private defaultTaskStatusElements(): CopyStatus[] {
@@ -89,7 +84,9 @@ export class TaskCopyService {
 	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
 		const childrenStatusArray = elements.map((el) => el.status);
 		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
-		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) return CopyStatusEnum.PARTIAL;
+		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) {
+			return CopyStatusEnum.PARTIAL;
+		}
 		return CopyStatusEnum.SUCCESS;
 	}
 }

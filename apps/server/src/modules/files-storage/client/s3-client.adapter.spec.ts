@@ -44,6 +44,11 @@ describe('S3ClientAdapter', () => {
 
 		service = module.get(S3ClientAdapter);
 		client = module.get('S3_Client');
+		client.config.endpoint = jest.fn().mockResolvedValue({ protocol: '' });
+	});
+
+	afterEach(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -134,7 +139,7 @@ describe('S3ClientAdapter', () => {
 			client.send = jest.fn().mockResolvedValue(true);
 			const result = await service.create(path, file);
 
-			expect(result).toStrictEqual(true);
+			expect(result).toBeDefined();
 		});
 
 		it('should throw error from client', async () => {

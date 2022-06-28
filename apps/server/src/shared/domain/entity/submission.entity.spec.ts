@@ -1,10 +1,16 @@
-import { Collection } from '@mikro-orm/core';
+import { Collection, MikroORM } from '@mikro-orm/core';
 import { userFactory, taskFactory, submissionFactory, fileFactory, setupEntities } from '@shared/testing';
 import { File } from './file.entity';
 
 describe('Submission entity', () => {
+	let orm: MikroORM;
+
 	beforeAll(async () => {
-		await setupEntities();
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
 	});
 
 	describe('constructor', () => {

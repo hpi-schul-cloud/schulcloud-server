@@ -5,11 +5,11 @@ const { ObjectId } = require('mongoose').Types;
 const { Forbidden } = require('../../../src/errors');
 
 const appPromise = require('../../../src/app');
-const { cleanup } = require('../helpers/testObjects')(appPromise);
-const { create: createSchool } = require('../helpers/services/schools')(appPromise);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
-const { create: createUser } = require('../helpers/services/users')(appPromise);
-const { create: createSystem } = require('../helpers/services/testSystem')(appPromise);
+const { cleanup } = require('../helpers/testObjects')(appPromise());
+const { create: createSchool } = require('../helpers/services/schools')(appPromise());
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
+const { create: createUser } = require('../helpers/services/users')(appPromise());
+const { create: createSystem } = require('../helpers/services/testSystem')(appPromise());
 const { create: createYear } = require('../helpers/services/years');
 
 chai.use(chaiAsPromised);
@@ -22,7 +22,7 @@ describe('school maintenance mode', () => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
+		app = await appPromise();
 		maintenanceService = app.service('schools/:schoolId/maintenance');
 		server = await app.listen(0);
 	});

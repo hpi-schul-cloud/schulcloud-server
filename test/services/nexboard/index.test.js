@@ -51,7 +51,7 @@ describe('Nexboard services', () => {
 			Configuration.set('NEXBOARD_USER_ID', 'someuserid');
 
 			// eslint-disable-next-line global-require
-			app = await require('../../../src/app');
+			app = await require('../../../src/app')();
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 

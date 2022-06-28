@@ -25,4 +25,5 @@ export * from './storageprovider';
 export * from './submission';
 export * from './system';
 export * from './task';
+export * from './teams';
 export * from './user';
