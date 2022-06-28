@@ -8,9 +8,9 @@ import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto'
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
-import { Logger } from '@src/core/logger';
 import { ProvisioningException } from '@src/modules/provisioning/exception/provisioning.exception';
 import { UnknownProvisioningStrategy } from '@src/modules/provisioning/strategy/unknown/unknown.strategy';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class ProvisioningUc {
@@ -26,8 +26,10 @@ export class ProvisioningUc {
 	}
 
 	async process(sub: string, systemId: string): Promise<void> {
-		const system: SystemDto = await this.systemUc.findById(systemId);
-		if (!system) {
+		let system: SystemDto;
+		try {
+			system = await this.systemUc.findById(systemId);
+		} catch (e) {
 			this.logger.error(`System with id ${systemId} was not found.`);
 			throw new ProvisioningException(`System with id "${systemId}" does not exist.`, 'ProvisioningSystemNotFound');
 		}
@@ -39,16 +41,13 @@ export class ProvisioningUc {
 				break;
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);
-				throw new ProvisioningException(
-					`Provisioning Strategy "${system.provisioningStrategy ?? 'undefined'}" is not defined.`,
-					'UnknownProvisioningStrategy'
-				);
+				throw new ProvisioningException(`Provisioning Strategy is not defined.`, 'UnknownProvisioningStrategy');
 		}
 
 		const provisioningDto: ProvisioningDto = await strategy.apply();
 
 		if (provisioningDto.schoolDto) {
-			await this.schoolUc.saveSchool(provisioningDto.schoolDto);
+			await this.schoolUc.save(provisioningDto.schoolDto);
 		}
 
 		if (provisioningDto.userDto) {

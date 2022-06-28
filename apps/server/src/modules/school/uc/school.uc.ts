@@ -6,7 +6,7 @@ import { SchoolService } from '@src/modules/school/service/school.service';
 export class SchoolUc {
 	constructor(readonly schoolService: SchoolService) {}
 
-	async saveSchool(schoolDto: SchoolDto) {
+	async save(schoolDto: SchoolDto) {
 		await this.schoolService.saveSchool(schoolDto);
 	}
 }

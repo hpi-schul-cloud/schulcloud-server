@@ -67,7 +67,7 @@ describe('UserUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			userService.patchLanguage.mockImplementation((userId: EntityId, newLanguage: LanguageType): Promise<boolean> => {
-				return newLanguage === LanguageType.DE ? Promise.resolve(true) : Promise.reject();
+				return newLanguage === LanguageType.DE ? Promise.resolve(true) : Promise.reject(new BadRequestException());
 			});
 		});
 

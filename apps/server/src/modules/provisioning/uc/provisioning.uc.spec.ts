@@ -8,13 +8,13 @@ import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { UnknownProvisioningStrategy } from '@src/modules/provisioning/strategy/unknown/unknown.strategy';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ProvisioningException } from '@src/modules/provisioning/exception/provisioning.exception';
-import { Logger } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { Permission, RoleName } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 
 describe('ProvisioningUc', () => {
 	let module: TestingModule;
@@ -71,6 +71,10 @@ describe('ProvisioningUc', () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('process', () => {
 		const unknownSystemStrategyId = 'unknownSystemId';
 		const unknownStrategySystem: SystemDto = new SystemDto({
@@ -110,29 +114,69 @@ describe('ProvisioningUc', () => {
 		});
 
 		it('should apply "unknown" provisioning strategy', async () => {
-			unknownStrategy.apply.mockResolvedValue(
+			// Arrange
+			unknownStrategy.apply.mockResolvedValueOnce(
 				new ProvisioningDto({
 					userDto: new UserDto(userDto),
 					schoolDto: new SchoolDto(schoolDto),
 				})
 			);
 
+			// Act
 			await provisioningUc.process('sub', unknownSystemStrategyId);
 
 			// Assert
 			expect(unknownStrategy.apply).toHaveBeenCalled();
-			expect(schoolUc.saveSchool).toHaveBeenCalledWith(schoolDto);
+			expect(schoolUc.save).toHaveBeenCalledWith(schoolDto);
 			expect(userUc.save).toHaveBeenCalledWith(userDto);
 		});
 
-		it('should throw error for missing provisioning stratgey', async () => {});
+		it('should throw error for missing provisioning stratgey', async () => {
+			// Arrange
+			const missingStrategySystem: SystemDto = new SystemDto({
+				type: 'unknown',
+				provisioningStrategy: 'unknown strategy' as SystemProvisioningStrategy,
+			});
+			systemUc.findById.mockReset();
+			systemUc.findById.mockResolvedValueOnce(missingStrategySystem);
 
-		it('should save schoolDto', async () => {});
+			// Act & Assert
+			await expect(provisioningUc.process('sub', 'missingStrategySystemId')).rejects.toThrow(ProvisioningException);
+			expect(logger.error).toHaveBeenCalled();
+		});
 
-		it('should not save schoolDto', async () => {});
+		it('should not save schoolDto', async () => {
+			// Arrange
+			unknownStrategy.apply.mockResolvedValueOnce(
+				new ProvisioningDto({
+					userDto: new UserDto(userDto),
+				})
+			);
 
-		it('should save userDto', async () => {});
+			// Act
+			await provisioningUc.process('sub', unknownSystemStrategyId);
 
-		it('should not save userDto', async () => {});
+			// Assert
+			expect(unknownStrategy.apply).toHaveBeenCalled();
+			expect(userUc.save).toHaveBeenCalledWith(userDto);
+			expect(schoolUc.save).not.toHaveBeenCalled();
+		});
+
+		it('should not save userDto', async () => {
+			// Arrange
+			unknownStrategy.apply.mockResolvedValueOnce(
+				new ProvisioningDto({
+					schoolDto: new SchoolDto(schoolDto),
+				})
+			);
+
+			// Act
+			await provisioningUc.process('sub', unknownSystemStrategyId);
+
+			// Assert
+			expect(unknownStrategy.apply).toHaveBeenCalled();
+			expect(schoolUc.save).toHaveBeenCalledWith(schoolDto);
+			expect(userUc.save).not.toHaveBeenCalled();
+		});
 	});
 });

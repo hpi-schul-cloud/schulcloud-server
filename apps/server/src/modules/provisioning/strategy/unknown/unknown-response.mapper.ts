@@ -5,7 +5,9 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleName } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UnknownResponseMapper implements IProviderResponseMapper<UnknownResponse> {
 	mapToDto(source: UnknownResponse): ProvisioningDto {
 		const schoolDto = new SchoolDto({

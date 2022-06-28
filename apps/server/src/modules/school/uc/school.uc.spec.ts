@@ -38,7 +38,7 @@ describe('SchoolUc', () => {
 	describe('saveSchool', () => {
 		it('should call schoolService', async () => {
 			// Act
-			await schoolUc.saveSchool(schoolDto);
+			await schoolUc.save(schoolDto);
 
 			// Assert
 			expect(schoolService.saveSchool).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));

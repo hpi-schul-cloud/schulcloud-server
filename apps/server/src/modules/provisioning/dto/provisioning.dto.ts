@@ -9,5 +9,5 @@ export class ProvisioningDto {
 
 	userDto?: UserDto;
 
-	schoolDto!: SchoolDto;
+	schoolDto?: SchoolDto;
 }

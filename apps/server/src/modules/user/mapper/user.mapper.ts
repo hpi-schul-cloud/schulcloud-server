@@ -16,7 +16,7 @@ export class UserMapper {
 			ldapId: entity.ldapId,
 			language: entity.language,
 			forcePasswordChange: entity.forcePasswordChange,
-			preferences: entity.preferences ?? {},
+			preferences: entity.preferences,
 		});
 	}
 

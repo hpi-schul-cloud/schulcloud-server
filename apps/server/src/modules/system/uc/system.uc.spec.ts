@@ -56,6 +56,7 @@ describe('SystemUc', () => {
 		});
 
 		it('should return empty system list, because none exist', async () => {
+			systemService.find.mockResolvedValue([]);
 			const resultResponse = await systemUc.findByFilter();
 			expect(resultResponse).toEqual([]);
 		});
