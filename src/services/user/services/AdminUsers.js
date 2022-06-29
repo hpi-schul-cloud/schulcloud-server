@@ -247,10 +247,7 @@ class AdminUsers {
 		if (email) {
 			email = email.toLowerCase();
 			const account = await this.app.service('nest-account-service').findByUserIdOrFail(userId.toString());
-			await this.app.service('nest-account-service').save({
-				id: account.id,
-				username: email,
-			});
+			await this.app.service('nest-account-service').updateUsername(account.id, email);
 		}
 	}
 
@@ -261,10 +258,7 @@ class AdminUsers {
 			if (email) {
 				const { email: oldMail } = await this.app.service('usersModel').get(userId);
 				const account = await this.app.service('nest-account-service').findByUserIdOrFail(userId.toString());
-				await this.app.service('nest-account-service').save({
-					id: account.id,
-					username: oldMail,
-				});
+				await this.app.service('nest-account-service').updateUsername(account.id, oldMail);
 			}
 			throw err;
 		}
