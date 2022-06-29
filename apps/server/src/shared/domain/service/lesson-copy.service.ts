@@ -27,7 +27,7 @@ export class LessonCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.LESSON,
-			status: CopyStatusEnum.PARTIAL,
+			status: CopyStatusEnum.SUCCESS,
 			copyEntity: copy,
 			elements,
 		};
@@ -39,7 +39,6 @@ export class LessonCopyService {
 		const copiedContent: IComponentProperties[] = [];
 		const textComponents = originalLesson.contents.filter((element) => Object.keys(element.content)[0] === 'text');
 		textComponents.forEach((element) => {
-			element.hidden = true;
 			copiedContent.push(element);
 		});
 		return copiedContent;
@@ -51,11 +50,6 @@ export class LessonCopyService {
 				title: 'metadata',
 				type: CopyElementType.LEAF,
 				status: CopyStatusEnum.SUCCESS,
-			},
-			{
-				title: 'materials',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
 		];
 	}
@@ -70,20 +64,11 @@ export class LessonCopyService {
 			const componentStatus = {
 				title: 'contents',
 				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.PARTIAL,
+				status: CopyStatusEnum.SUCCESS,
 				elements,
 			};
 			return [componentStatus];
 		}
 		return [];
 	}
-
-	/* 	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		const childrenStatusArray = elements.map((el) => el.status);
-		if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
-		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) {
-			return CopyStatusEnum.PARTIAL;
-		}
-		return CopyStatusEnum.PARTIAL;
-	} */
 }

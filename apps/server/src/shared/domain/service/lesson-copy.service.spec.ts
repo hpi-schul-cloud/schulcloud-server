@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CopyElementType, CopyStatusEnum, Lesson } from '@shared/domain';
+import { ComponentType, CopyElementType, CopyStatusEnum, Lesson } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { LessonCopyService } from './lesson-copy.service';
 import { NameCopyService } from './name-copy.service';
@@ -139,7 +139,7 @@ describe('lesson copy service', () => {
 					expect(status.type).toEqual(CopyElementType.LESSON);
 				});
 
-				it('should set lesson status to partial', () => {
+				it('should set lesson status', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const status = copyService.copyLesson({
@@ -148,7 +148,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
+					expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
 				});
 
 				it('should set status of metadata', () => {
@@ -165,22 +165,6 @@ describe('lesson copy service', () => {
 					);
 					expect(metadataStatus).toBeDefined();
 					expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-				});
-
-				it('should set status of materials', () => {
-					const { user, destinationCourse, originalLesson } = setup();
-
-					const status = copyService.copyLesson({
-						originalLesson,
-						destinationCourse,
-						user,
-					});
-
-					const materialsStatus = status.elements?.find(
-						(el) => el.type === CopyElementType.LEAF && el.title === 'materials'
-					);
-					expect(materialsStatus).toBeDefined();
-					expect(materialsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 				});
 			});
 		});
@@ -251,7 +235,7 @@ describe('lesson copy service', () => {
 				const textContentOne = {
 					title: 'text component 1',
 					hidden: false,
-					component: 'text',
+					component: ComponentType.TEXT,
 					content: {
 						text: 'this is a text content',
 					},
@@ -259,7 +243,7 @@ describe('lesson copy service', () => {
 				const textContentTwo = {
 					title: 'text component 2',
 					hidden: false,
-					component: 'text',
+					component: ComponentType.TEXT,
 					content: {
 						text: 'this is another text content',
 					},
@@ -277,7 +261,7 @@ describe('lesson copy service', () => {
 				return { user, originalCourse, destinationCourse, originalLesson, copyName };
 			};
 
-			it('contents array of copied lesson should contain hidden content elments of original lesson', () => {
+			it('contents array of copied lesson should contain content elments of original lesson', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = copyService.copyLesson({
@@ -290,8 +274,8 @@ describe('lesson copy service', () => {
 
 				expect(lesson.contents.length).toEqual(2);
 				expect(lesson.contents).toEqual(originalLesson.contents);
-				expect(lesson.contents[0].hidden).toEqual(true);
-				expect(lesson.contents[1].hidden).toEqual(true);
+				expect(lesson.contents[0].hidden).toEqual(false);
+				expect(lesson.contents[1].hidden).toEqual(false);
 			});
 
 			it('should set contents status leaf with correct amount of children status elements', () => {
@@ -312,7 +296,7 @@ describe('lesson copy service', () => {
 				}
 			});
 
-			it('should set contents status leaf with status partial', () => {
+			it('should set contents status leaf with correct status', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = copyService.copyLesson({
@@ -324,7 +308,7 @@ describe('lesson copy service', () => {
 					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
 				);
 				expect(contentsStatus).toBeDefined();
-				expect(contentsStatus?.status).toEqual(CopyStatusEnum.PARTIAL);
+				expect(contentsStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 		});
 	});
