@@ -242,12 +242,10 @@ class RocketChatChannel {
 	 */
 	async synchronizeModerators(teamId) {
 		try {
-			const teamModeratorRoles = await this.app
-				.service('roles')
-				.find({
-					query: { name: { $in: ['teamowner', 'teamadministrator'] } },
-				})
-				.data.map((role) => role._id.toString());
+			const getRoles = await this.app.service('roles').find({
+				query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+			});
+			const teamModeratorRoles = getRoles.data.map((role) => role._id.toString());
 			const team = await this.app.service('teams').get(teamId);
 			const channel = await channelModel.findOne({ teamId });
 			if (channel) {
