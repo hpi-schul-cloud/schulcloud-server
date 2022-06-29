@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordParamsParentTypeEnum } from '../fileStorageApi/v3';
+import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { IFileDomainObjectProps } from '../interfaces';
 
 export class FileDto {

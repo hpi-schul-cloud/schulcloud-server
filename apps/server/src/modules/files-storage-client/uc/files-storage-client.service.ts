@@ -2,20 +2,20 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { FileDto } from '../dto';
-import { AxiosJWTOptionBuilder, FileStorageClientMapper, ErrorMapper } from '../mapper';
-import { FileApi, FileRecordListResponse } from '../fileStorageApi/v3';
+import { AxiosJWTOptionBuilder, FilesStorageClientMapper, ErrorMapper } from '../mapper';
+import { FileApi, FileRecordListResponse } from '../filesStorageApi/v3';
 import { FileRequestInfo, FileRequestOptions } from '../interfaces';
 
 @Injectable()
-export class FileStorageClientAdapterService {
+export class FilesStorageClientAdapterService {
 	constructor(private logger: Logger, @Inject('FileStorageClient') private readonly fileStorageClient: FileApi) {
-		this.logger.setContext(FileStorageClientAdapterService.name);
+		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
 	async copyFilesOfParent(param: FileRequestInfo, target: FileRequestInfo): Promise<FileDto[]> {
 		const options = AxiosJWTOptionBuilder.build(param);
 		const response = await this.copy(param, target, options);
-		const fileInfos = FileStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
+		const fileInfos = FilesStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
 
 		return fileInfos;
 	}
@@ -23,7 +23,7 @@ export class FileStorageClientAdapterService {
 	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
 		const options = AxiosJWTOptionBuilder.build(param);
 		const response = await this.list(param, options);
-		const fileInfos = FileStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
+		const fileInfos = FilesStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
 
 		return fileInfos;
 	}
@@ -31,7 +31,7 @@ export class FileStorageClientAdapterService {
 	async deleteFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
 		const options = AxiosJWTOptionBuilder.build(param);
 		const response = await this.delete(param, options);
-		const fileInfos = FileStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
+		const fileInfos = FilesStorageClientMapper.mapAxiosToFilesDto(response, param.schoolId);
 
 		return fileInfos;
 	}

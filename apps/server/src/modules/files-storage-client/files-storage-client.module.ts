@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
-import { Configuration, FileApi } from './fileStorageApi/v3';
-import { IFileStorageClientConfig } from './interfaces';
-import { FileStorageClientAdapterService } from './uc';
+import { Configuration, FileApi } from './filesStorageApi/v3';
+import { IFilesStorageClientConfig } from './interfaces';
+import { FilesStorageClientAdapterService } from './uc';
 
 @Module({
 	imports: [],
 	controllers: [],
 	providers: [
-		FileStorageClientAdapterService,
+		FilesStorageClientAdapterService,
 		Logger,
 		{
 			provide: 'FileStorageClient',
-			useFactory: (configService: ConfigService<IFileStorageClientConfig, true>) => {
+			useFactory: (configService: ConfigService<IFilesStorageClientConfig, true>) => {
 				const apiUri = '/api/v3'; // == API_VERSION_PATH
 				const baseUrl = configService.get<string>('FILE_STORAGE_BASE_URL');
 				const timeout = configService.get<number>('INCOMING_REQUEST_TIMEOUT');
@@ -27,6 +27,6 @@ import { FileStorageClientAdapterService } from './uc';
 			inject: [ConfigService],
 		},
 	],
-	exports: [FileStorageClientAdapterService],
+	exports: [FilesStorageClientAdapterService],
 })
-export class FileStorageClientModule {}
+export class FilesStorageClientModule {}

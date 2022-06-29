@@ -1,4 +1,4 @@
-import { FileRecordParamsParentTypeEnum } from '../fileStorageApi/v3';
+import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { FileDto } from './file.dto';
 
 describe('FileDto', () => {

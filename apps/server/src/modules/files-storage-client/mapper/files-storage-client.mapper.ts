@@ -1,11 +1,11 @@
 import { EntityId } from '@shared/domain';
 import { AxiosResponse } from 'axios';
-import { FileRecordListResponse, FileRecordParamsParentTypeEnum, FileRecordResponse } from '../fileStorageApi/v3';
+import { FileRecordListResponse, FileRecordParamsParentTypeEnum, FileRecordResponse } from '../filesStorageApi/v3';
 import { FileDto } from '../dto';
 
-export class FileStorageClientMapper {
+export class FilesStorageClientMapper {
 	static mapAxiosToFilesDto(response: AxiosResponse<FileRecordListResponse>, schoolId: EntityId): FileDto[] {
-		const filesDto = FileStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response.data, schoolId);
+		const filesDto = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response.data, schoolId);
 
 		return filesDto;
 	}
@@ -15,7 +15,7 @@ export class FileStorageClientMapper {
 		schoolId: EntityId
 	): FileDto[] {
 		const filesDto = fileRecordListResponse.data.map((record) => {
-			const fileDto = FileStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
+			const fileDto = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
 
 			return fileDto;
 		});
@@ -24,7 +24,7 @@ export class FileStorageClientMapper {
 	}
 
 	static mapFileRecordResponseToFileDto(fileRecordResponse: FileRecordResponse, schoolId: EntityId) {
-		const parentType = FileStorageClientMapper.mapStringToPartenType(fileRecordResponse.parentType);
+		const parentType = FilesStorageClientMapper.mapStringToPartenType(fileRecordResponse.parentType);
 		const fileDto = new FileDto({
 			id: fileRecordResponse.id,
 			name: fileRecordResponse.name,

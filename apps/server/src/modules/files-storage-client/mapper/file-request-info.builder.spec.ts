@@ -1,4 +1,4 @@
-import { FileRecordParamsParentTypeEnum } from '../fileStorageApi/v3';
+import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { FileRequestInfoBuilder } from './file-request-info.builder';
 
 describe('FileRequestInfoBuilder', () => {

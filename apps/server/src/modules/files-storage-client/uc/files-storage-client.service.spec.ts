@@ -4,13 +4,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { FileApi } from '../fileStorageApi/v3';
-import { ErrorMapper, FileRequestInfoBuilder, FileStorageClientMapper } from '../mapper';
-import { FileStorageClientAdapterService } from './file-storage-client.service';
+import { FileApi } from '../filesStorageApi/v3';
+import { ErrorMapper, FileRequestInfoBuilder, FilesStorageClientMapper } from '../mapper';
+import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
-describe('FileStorageClientAdapterService', () => {
+describe('FilesStorageClientAdapterService', () => {
 	let module: TestingModule;
-	let service: FileStorageClientAdapterService;
+	let service: FilesStorageClientAdapterService;
 	let client: DeepMocked<FileApi>;
 	let orm: MikroORM;
 
@@ -25,7 +25,7 @@ describe('FileStorageClientAdapterService', () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				FileStorageClientAdapterService,
+				FilesStorageClientAdapterService,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -37,7 +37,7 @@ describe('FileStorageClientAdapterService', () => {
 			],
 		}).compile();
 
-		service = module.get(FileStorageClientAdapterService);
+		service = module.get(FilesStorageClientAdapterService);
 		client = module.get('FileStorageClient');
 	});
 
@@ -55,7 +55,7 @@ describe('FileStorageClientAdapterService', () => {
 			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
 			const target = FileRequestInfoBuilder.task(jwt, schoolId, targetParentId);
 
-			const spy = jest.spyOn(FileStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
+			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
 
 			await service.copyFilesOfParent(param, target);
 
@@ -97,7 +97,7 @@ describe('FileStorageClientAdapterService', () => {
 
 			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
 
-			const spy = jest.spyOn(FileStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
+			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
 
 			await service.listFilesOfParent(param);
 
@@ -137,7 +137,7 @@ describe('FileStorageClientAdapterService', () => {
 
 			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
 
-			const spy = jest.spyOn(FileStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
+			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
 
 			await service.deleteFilesOfParent(param);
 

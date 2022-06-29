@@ -26,7 +26,7 @@ const config: Config.InitialOptions = {
 		// The two paths below regarding the file-sync-job are added because istanbul-ignore-file is somehow not working on them. They can be removed when the job is done.
 		'apps/server/src/modules/files/mapper',
 		'apps/server/src/modules/files/types',
-		'apps/server/src/modules/files-storage-client/fileStorageApi'
+		'apps/server/src/modules/files-storage-client/filesStorageApi'
 	],
 	coverageThreshold: {
 		global: {

@@ -10,7 +10,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/
 import { CoreModule } from '@src/core';
 import {
 	UserModule,
-	FileStorageClientModule,
+	FilesStorageClientModule,
 	LearnroomModule,
 	NewsModule,
 	RocketChatModule,
@@ -39,7 +39,7 @@ const serverModules = [
 	UserModule,
 	ImportUserModule,
 	LearnroomModule,
-	FileStorageClientModule,
+	FilesStorageClientModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,

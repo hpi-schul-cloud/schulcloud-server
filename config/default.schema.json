@@ -263,7 +263,7 @@
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
-					"description": "Timeout for incoming requests to the File-Storage in milliseconds."
+					"description": "Timeout for incoming requests to the Files-Storage in milliseconds."
 				},
 				"S3_ENDPOINT": {
 					"type": "string",

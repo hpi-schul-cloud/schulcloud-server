@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
-import { FileRecordParamsParentTypeEnum } from '../fileStorageApi/v3';
+import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { FileRequestInfo } from '../interfaces';
-import { FileStorageClientMapper } from './file-storage-client.mapper';
+import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 export class FileRequestInfoBuilder {
 	static build(
@@ -10,7 +10,7 @@ export class FileRequestInfoBuilder {
 		parentTypeString: FileRecordParamsParentTypeEnum,
 		parentId: EntityId
 	): FileRequestInfo {
-		const parentType = FileStorageClientMapper.mapStringToPartenType(parentTypeString);
+		const parentType = FilesStorageClientMapper.mapStringToPartenType(parentTypeString);
 		const fileRequestInfo = {
 			jwt,
 			parentType,

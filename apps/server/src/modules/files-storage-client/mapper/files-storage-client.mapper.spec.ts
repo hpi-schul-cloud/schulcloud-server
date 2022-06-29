@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios';
-import { FileRecordListResponse, FileRecordResponse } from '../fileStorageApi/v3';
-import { FileStorageClientMapper } from './file-storage-client.mapper';
+import { FileRecordListResponse, FileRecordResponse } from '../filesStorageApi/v3';
+import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
-describe('FileStorageClientMapper', () => {
+describe('FilesStorageClientMapper', () => {
 	const schoolId = 'school123';
 
 	const record: FileRecordResponse = {
@@ -28,7 +28,7 @@ describe('FileStorageClientMapper', () => {
 
 	describe('mapAxiosToFilesDto', () => {
 		it('Should map to valid file Dtos.', () => {
-			const result = FileStorageClientMapper.mapAxiosToFilesDto(response, schoolId);
+			const result = FilesStorageClientMapper.mapAxiosToFilesDto(response, schoolId);
 
 			expect(Array.isArray(result)).toBe(true);
 			expect(result[0].id).toStrictEqual(record.id);
@@ -41,7 +41,7 @@ describe('FileStorageClientMapper', () => {
 
 	describe('mapfileRecordListResponseToDomainFilesDto', () => {
 		it('Should map to valid file Dtos.', () => {
-			const result = FileStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(list, schoolId);
+			const result = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(list, schoolId);
 
 			expect(Array.isArray(result)).toBe(true);
 			expect(result[0].id).toStrictEqual(record.id);
@@ -54,7 +54,7 @@ describe('FileStorageClientMapper', () => {
 
 	describe('mapFileRecordResponseToFileDto', () => {
 		it('Should map to valid file Dto.', () => {
-			const result = FileStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
+			const result = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record, schoolId);
 
 			expect(result).toBeDefined();
 			expect(result.id).toStrictEqual(record.id);
@@ -69,31 +69,31 @@ describe('FileStorageClientMapper', () => {
 
 	describe('mapStringToPartenType', () => {
 		it('Should map "users".', () => {
-			const result = FileStorageClientMapper.mapStringToPartenType('users');
+			const result = FilesStorageClientMapper.mapStringToPartenType('users');
 
 			expect(result).toStrictEqual('users');
 		});
 
 		it('Should map "courses".', () => {
-			const result = FileStorageClientMapper.mapStringToPartenType('courses');
+			const result = FilesStorageClientMapper.mapStringToPartenType('courses');
 
 			expect(result).toStrictEqual('courses');
 		});
 
 		it('Should map "schools".', () => {
-			const result = FileStorageClientMapper.mapStringToPartenType('schools');
+			const result = FilesStorageClientMapper.mapStringToPartenType('schools');
 
 			expect(result).toStrictEqual('schools');
 		});
 
 		it('Should map "tasks".', () => {
-			const result = FileStorageClientMapper.mapStringToPartenType('tasks');
+			const result = FilesStorageClientMapper.mapStringToPartenType('tasks');
 
 			expect(result).toStrictEqual('tasks');
 		});
 
 		it('Should throw for not supported mappings', () => {
-			expect(() => FileStorageClientMapper.mapStringToPartenType('abc')).toThrowError();
+			expect(() => FilesStorageClientMapper.mapStringToPartenType('abc')).toThrowError();
 		});
 	});
 });
