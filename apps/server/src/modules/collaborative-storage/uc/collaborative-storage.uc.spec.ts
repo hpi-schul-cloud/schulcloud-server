@@ -46,4 +46,11 @@ describe('TeamStorageUc', () => {
 			await uc.updateUserPermissionsForRole('mockUser', teamrole, permissions);
 		});
 	});
+
+	describe('delete Team in Nextcloud', () => {
+		it('should call the service', () => {
+			const teamIdMock = 'teamIdMock';
+			uc.deleteTeam(teamIdMock);
+		});
+	});
 });

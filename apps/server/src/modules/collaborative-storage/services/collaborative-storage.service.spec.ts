@@ -116,5 +116,12 @@ describe('Collaborative Storage Service', () => {
 				})
 			).rejects.toThrow(ForbiddenException);
 		});
+
+		describe('delete Team in the Nextcloud', () => {
+			const teamIdMock = 'teamIdMock';
+			it('should call the adapter', () => {
+				service.deleteTeam(teamIdMock);
+			});
+		});
 	});
 });

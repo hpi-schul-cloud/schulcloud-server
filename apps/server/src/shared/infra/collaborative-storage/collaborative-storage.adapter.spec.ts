@@ -59,4 +59,11 @@ describe('CollaborativeStorage Adapter', () => {
 			);
 		});
 	});
+
+	describe('Delete Team from Nextcloud', () => {
+		it('should call the strategy', () => {
+			const teamIdMock = 'teamIdMock';
+			adapter.deleteTeam(teamIdMock);
+		});
+	});
 });
