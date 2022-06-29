@@ -121,6 +121,7 @@ describe('Collaborative Storage Service', () => {
 			const teamIdMock = 'teamIdMock';
 			it('should call the adapter', () => {
 				service.deleteTeam(teamIdMock);
+				expect(adapter.deleteTeam).toHaveBeenCalled();
 			});
 		});
 	});
