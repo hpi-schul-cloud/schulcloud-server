@@ -76,7 +76,7 @@ export class FilesStorageUC {
 	}
 
 	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
-		const name = Buffer.from(info.filename, 'binary').toString();
+		const name = Buffer.from(info.filename, 'latin1').toString();
 		const size = Number(req.get('content-length'));
 		const fileDescription: IFile = {
 			name,
