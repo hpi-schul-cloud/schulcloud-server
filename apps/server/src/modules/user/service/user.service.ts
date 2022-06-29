@@ -42,12 +42,15 @@ export class UserService {
 		const userRoles: Role[] = await this.roleRepo.findByIds(user.roleIds);
 		const school: School = await this.schoolRepo.findById(user.schoolId);
 
+		let saveEntity: User;
 		if (user.id) {
 			const userEntity: User = await this.userRepo.findById(user.id);
 			const fromDto: User = UserMapper.mapFromDtoToEntity(user, userRoles, school);
-			return this.userRepo.save(UserMapper.mapFromEntityToEntity(fromDto, userEntity));
+			saveEntity = UserMapper.mapFromEntityToEntity(fromDto, userEntity);
+		} else {
+			saveEntity = UserMapper.mapFromDtoToEntity(user, userRoles, school);
 		}
 
-		return this.userRepo.save(UserMapper.mapFromDtoToEntity(user, userRoles, school));
+		return this.userRepo.save(saveEntity);
 	}
 }
