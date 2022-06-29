@@ -1,6 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from 'bson';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '../../testing';
+import { ComponentType } from './lesson.entity';
 import { Task } from './task.entity';
 
 describe('Lesson Entity', () => {
@@ -150,7 +151,7 @@ describe('Lesson Entity', () => {
 			const expectedTextContent = {
 				title: 'test component',
 				hidden: false,
-				component: 'text',
+				component: ComponentType.TEXT,
 				content: {
 					text: 'this is a text content',
 				},

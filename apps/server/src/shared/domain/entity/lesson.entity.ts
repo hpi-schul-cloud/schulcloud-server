@@ -6,22 +6,25 @@ import { Task } from './task.entity';
 
 export interface ILessonProperties {
 	name: string;
-	hidden?: boolean;
+	hidden: boolean;
 	course: Course;
 	position?: number;
 	contents: IComponentProperties[] | [];
 }
 
-export interface IContentProperties {
-	content: {
-		text: string;
-	};
+export enum ComponentType {
+	TEXT = 'text',
 }
 
-export interface IComponentProperties extends IContentProperties {
+export interface IComponentTextProperties {
+	text: string;
+}
+
+export interface IComponentProperties {
 	title: string;
-	hidden?: boolean;
-	component: string;
+	hidden: boolean;
+	component: ComponentType;
+	content: IComponentTextProperties;
 }
 
 @Entity({ tableName: 'lessons' })
