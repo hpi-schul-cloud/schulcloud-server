@@ -13,7 +13,7 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 
 	updateTeamPermissionsForRole(): void {}
 
-	deleteGroupfolder(): void {}
+	deleteGroupfolderAndRemoveGroup(teamId: string): void {}
 }
 
 describe('CollaborativeStorage Adapter', () => {

@@ -39,6 +39,6 @@ export class CollaborativeStorageAdapter {
 	}
 
 	public deleteTeam(teamId: string) {
-		this.strategy.deleteGroupfolder(teamId);
+		this.strategy.deleteGroupfolderAndRemoveGroup(teamId);
 	}
 }
