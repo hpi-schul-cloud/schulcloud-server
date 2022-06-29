@@ -7,10 +7,12 @@ import { EntityId } from '@shared/domain';
 
 @Injectable()
 export class UnknownResponseMapper implements IProviderResponseMapper<UnknownResponse> {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	mapToSchoolDto(source: UnknownResponse): ProvisioningSchoolOutputDto | undefined {
 		throw new Error('Method not implemented.');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	mapToUserDto(source: UnknownResponse, schoolId?: EntityId): ProvisioningUserOutputDto {
 		throw new Error('Method not implemented.');
 	}

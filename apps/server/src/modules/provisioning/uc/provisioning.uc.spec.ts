@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
-import { UserUc } from '@src/modules/user/uc';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { UnknownProvisioningStrategy } from '@src/modules/provisioning/strategy/unknown/unknown.strategy';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -14,8 +12,6 @@ describe('ProvisioningUc', () => {
 	let module: TestingModule;
 	let provisioningUc: ProvisioningUc;
 
-	let userUc: DeepMocked<UserUc>;
-	let schoolUc: DeepMocked<SchoolUc>;
 	let systemUc: DeepMocked<SystemUc>;
 	let unknownStrategy: DeepMocked<UnknownProvisioningStrategy>;
 	let logger: DeepMocked<Logger>;

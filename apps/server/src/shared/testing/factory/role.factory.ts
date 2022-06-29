@@ -1,4 +1,4 @@
-import { Role, IRoleProperties, RoleName, Permission } from '@shared/domain';
+import { IRoleProperties, Role, RoleName } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 export const roleFactory = BaseFactory.define<Role, IRoleProperties>(Role, ({ sequence }) => {
