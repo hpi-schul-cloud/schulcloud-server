@@ -1,4 +1,3 @@
-import { GeneralError } from '@feathersjs/errors';
 import { ForbiddenException, InternalServerErrorException, ValidationError as IValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
@@ -114,7 +113,7 @@ describe('ErrorMapper', () => {
 			const errorText = 'ForbiddenException ABC';
 			const json = JSON.stringify(new ForbiddenException(errorText));
 			const data = JSON.parse(json) as Record<string, unknown>;
-			const code = 403;
+			const code = 400;
 
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
@@ -130,7 +129,7 @@ describe('ErrorMapper', () => {
 			const error = new Error(errorText);
 			const result = ErrorMapper.mapErrorToDomainError(error);
 
-			expect(result).toEqual(new GeneralError(errorText));
+			expect(result).toEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map axios error response to domain error.', () => {

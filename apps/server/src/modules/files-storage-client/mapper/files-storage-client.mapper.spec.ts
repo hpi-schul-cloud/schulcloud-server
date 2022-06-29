@@ -69,31 +69,31 @@ describe('FilesStorageClientMapper', () => {
 
 	describe('mapStringToPartenType', () => {
 		it('Should map "users".', () => {
-			const result = FilesStorageClientMapper.mapStringToPartenType('users');
+			const result = FilesStorageClientMapper.mapStringToParentType('users');
 
 			expect(result).toStrictEqual('users');
 		});
 
 		it('Should map "courses".', () => {
-			const result = FilesStorageClientMapper.mapStringToPartenType('courses');
+			const result = FilesStorageClientMapper.mapStringToParentType('courses');
 
 			expect(result).toStrictEqual('courses');
 		});
 
 		it('Should map "schools".', () => {
-			const result = FilesStorageClientMapper.mapStringToPartenType('schools');
+			const result = FilesStorageClientMapper.mapStringToParentType('schools');
 
 			expect(result).toStrictEqual('schools');
 		});
 
 		it('Should map "tasks".', () => {
-			const result = FilesStorageClientMapper.mapStringToPartenType('tasks');
+			const result = FilesStorageClientMapper.mapStringToParentType('tasks');
 
 			expect(result).toStrictEqual('tasks');
 		});
 
 		it('Should throw for not supported mappings', () => {
-			expect(() => FilesStorageClientMapper.mapStringToPartenType('abc')).toThrowError();
+			expect(() => FilesStorageClientMapper.mapStringToParentType('abc')).toThrowError();
 		});
 	});
 });

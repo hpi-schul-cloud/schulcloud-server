@@ -10,7 +10,7 @@ export class FileRequestInfoBuilder {
 		parentTypeString: FileRecordParamsParentTypeEnum,
 		parentId: EntityId
 	): FileRequestInfo {
-		const parentType = FilesStorageClientMapper.mapStringToPartenType(parentTypeString);
+		const parentType = FilesStorageClientMapper.mapStringToParentType(parentTypeString);
 		const fileRequestInfo = {
 			jwt,
 			parentType,

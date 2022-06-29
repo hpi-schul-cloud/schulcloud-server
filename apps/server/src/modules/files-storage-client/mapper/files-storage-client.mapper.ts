@@ -24,7 +24,7 @@ export class FilesStorageClientMapper {
 	}
 
 	static mapFileRecordResponseToFileDto(fileRecordResponse: FileRecordResponse, schoolId: EntityId) {
-		const parentType = FilesStorageClientMapper.mapStringToPartenType(fileRecordResponse.parentType);
+		const parentType = FilesStorageClientMapper.mapStringToParentType(fileRecordResponse.parentType);
 		const fileDto = new FileDto({
 			id: fileRecordResponse.id,
 			name: fileRecordResponse.name,
@@ -36,7 +36,7 @@ export class FilesStorageClientMapper {
 		return fileDto;
 	}
 
-	static mapStringToPartenType(input: string): FileRecordParamsParentTypeEnum {
+	static mapStringToParentType(input: string): FileRecordParamsParentTypeEnum {
 		let response: FileRecordParamsParentTypeEnum;
 		const allowedStrings = ['users', 'courses', 'tasks', 'schools'];
 
