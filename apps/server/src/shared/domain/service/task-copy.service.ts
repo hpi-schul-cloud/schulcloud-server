@@ -55,16 +55,7 @@ export class TaskCopyService {
 
 	private copyTaskFiles(task: Task): CopyStatus[] {
 		const fileNames = task.getFileNames();
-		if (fileNames.length === 1) {
-			return [
-				{
-					title: fileNames[0],
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-			];
-		}
-		if (fileNames.length > 1) {
+		if (fileNames.length > 0) {
 			const elements = fileNames.map((title) => ({
 				title,
 				type: CopyElementType.FILE,

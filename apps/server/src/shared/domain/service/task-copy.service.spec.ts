@@ -301,7 +301,9 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === file.name);
+				const fileLeaf = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
+				expect(fileLeaf).toBeDefined();
+				const fileStatus = fileLeaf?.elements?.find((el) => el.type === CopyElementType.FILE && el.title === file.name);
 				expect(fileStatus).toBeDefined();
 				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
