@@ -10,6 +10,7 @@ data:
     #! /bin/bash
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
+    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
     npm install
     until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
       do
