@@ -22,12 +22,12 @@ export class LessonCopyService {
 			contents: this.copyTextComponent(params.originalLesson),
 		});
 
-		const elements = [...this.lessonStatusElements()];
+		const elements = [...this.lessonStatusElements(), ...this.textComponentStatus(copy.contents)];
 
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.LESSON,
-			status: this.inferStatusFromElements(elements),
+			status: CopyStatusEnum.PARTIAL,
 			copyEntity: copy,
 			elements,
 		};
@@ -35,7 +35,7 @@ export class LessonCopyService {
 		return status;
 	}
 
-	private copyTextComponent(originalLesson: Lesson) {
+	private copyTextComponent(originalLesson: Lesson): IComponentProperties[] {
 		const copiedContent: IComponentProperties[] = [];
 		const textComponents = originalLesson.contents.filter((element) => Object.keys(element.content)[0] === 'text');
 		textComponents.forEach((element) => {
@@ -53,11 +53,6 @@ export class LessonCopyService {
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'contents',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.PARTIAL,
-			},
-			{
 				title: 'materials',
 				type: CopyElementType.LEAF,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
@@ -65,12 +60,30 @@ export class LessonCopyService {
 		];
 	}
 
-	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		/* const childrenStatusArray = elements.map((el) => el.status);
+	private textComponentStatus(copiedTextContent: IComponentProperties[]): CopyStatus[] {
+		if (copiedTextContent.length >= 1) {
+			const elements = copiedTextContent.map((content) => ({
+				title: content.title,
+				type: CopyElementType.LESSON_CONTENT,
+				status: CopyStatusEnum.SUCCESS,
+			}));
+			const componentStatus = {
+				title: 'contents',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.PARTIAL,
+				elements,
+			};
+			return [componentStatus];
+		}
+		return [];
+	}
+
+	/* 	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+		const childrenStatusArray = elements.map((el) => el.status);
 		if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
 		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) {
 			return CopyStatusEnum.PARTIAL;
-		} */
-		return CopyStatusEnum.SUCCESS;
-	}
+		}
+		return CopyStatusEnum.PARTIAL;
+	} */
 }

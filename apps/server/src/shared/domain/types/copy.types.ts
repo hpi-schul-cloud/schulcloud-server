@@ -16,6 +16,7 @@ export enum CopyElementType {
 	'LEAF' = 'leaf',
 	'LESSON' = 'lesson',
 	'TASK' = 'task',
+	'LESSON_CONTENT' = 'lesson-content',
 }
 
 export enum CopyStatusEnum {

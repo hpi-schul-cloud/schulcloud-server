@@ -39,28 +39,11 @@ describe('lesson copy service', () => {
 	describe('handleCopyLesson', () => {
 		describe('when copying a lesson within original course', () => {
 			const setup = () => {
-				const textContentOne = {
-					title: 'text component 1',
-					hidden: false,
-					component: 'text',
-					content: {
-						text: 'this is a text content',
-					},
-				};
-				const textContentTwo = {
-					title: 'text component 2',
-					hidden: false,
-					component: 'text',
-					content: {
-						text: 'this is another text content',
-					},
-				};
 				const user = userFactory.build();
 				const originalCourse = courseFactory.build({ school: user.school });
 				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
-					contents: [textContentOne, textContentTwo],
 				});
 
 				const copyName = 'Copy';
@@ -133,33 +116,6 @@ describe('lesson copy service', () => {
 
 					expect(lesson.hidden).toEqual(true);
 				});
-
-				it('should set the contents of copy', () => {
-					const { user, destinationCourse, originalLesson } = setup();
-
-					const response = copyService.copyLesson({
-						originalLesson,
-						destinationCourse,
-						user,
-					});
-					const lesson = response.copyEntity as Lesson;
-
-					expect(lesson.contents).toEqual(originalLesson.contents);
-				});
-
-				it('should set contents of copy as hidden', () => {
-					const { user, destinationCourse, originalLesson } = setup();
-
-					const response = copyService.copyLesson({
-						originalLesson,
-						destinationCourse,
-						user,
-					});
-					const lesson = response.copyEntity as Lesson;
-
-					expect(lesson.contents[0].hidden).toEqual(true);
-					expect(lesson.contents[1].hidden).toEqual(true);
-				});
 			});
 
 			describe('the response', () => {
@@ -183,7 +139,7 @@ describe('lesson copy service', () => {
 					expect(status.type).toEqual(CopyElementType.LESSON);
 				});
 
-				it('should set lesson status to success', () => {
+				it('should set lesson status to partial', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const status = copyService.copyLesson({
@@ -192,7 +148,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
+					expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
 				});
 
 				it('should set status of metadata', () => {
@@ -209,22 +165,6 @@ describe('lesson copy service', () => {
 					);
 					expect(metadataStatus).toBeDefined();
 					expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-				});
-
-				it('should set status of contents', () => {
-					const { user, destinationCourse, originalLesson } = setup();
-
-					const status = copyService.copyLesson({
-						originalLesson,
-						destinationCourse,
-						user,
-					});
-
-					const contentsStatus = status.elements?.find(
-						(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
-					);
-					expect(contentsStatus).toBeDefined();
-					expect(contentsStatus?.status).toEqual(CopyStatusEnum.PARTIAL);
 				});
 
 				it('should set status of materials', () => {
@@ -260,6 +200,131 @@ describe('lesson copy service', () => {
 				const lesson = status.copyEntity as Lesson;
 
 				expect(lesson.course).toEqual(destinationCourse);
+			});
+		});
+
+		describe('when lesson contains no content', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+				});
+
+				const copyName = 'Copy';
+				nameCopyService.deriveCopyName.mockReturnValue(copyName);
+				return { user, originalCourse, destinationCourse, originalLesson, copyName };
+			};
+
+			it('contents array of copied lesson should be empty', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+
+				const lesson = status.copyEntity as Lesson;
+
+				expect(lesson.contents.length).toEqual(0);
+			});
+
+			it('should not set contents status leaf', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const contentsStatus = status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
+				);
+				expect(contentsStatus).not.toBeDefined();
+			});
+		});
+
+		describe('when lesson contains at least one content element', () => {
+			const setup = () => {
+				const textContentOne = {
+					title: 'text component 1',
+					hidden: false,
+					component: 'text',
+					content: {
+						text: 'this is a text content',
+					},
+				};
+				const textContentTwo = {
+					title: 'text component 2',
+					hidden: false,
+					component: 'text',
+					content: {
+						text: 'this is another text content',
+					},
+				};
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+					contents: [textContentOne, textContentTwo],
+				});
+
+				const copyName = 'Copy';
+				nameCopyService.deriveCopyName.mockReturnValue(copyName);
+				return { user, originalCourse, destinationCourse, originalLesson, copyName };
+			};
+
+			it('contents array of copied lesson should contain hidden content elments of original lesson', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+
+				const lesson = status.copyEntity as Lesson;
+
+				expect(lesson.contents.length).toEqual(2);
+				expect(lesson.contents).toEqual(originalLesson.contents);
+				expect(lesson.contents[0].hidden).toEqual(true);
+				expect(lesson.contents[1].hidden).toEqual(true);
+			});
+
+			it('should set contents status leaf with correct amount of children status elements', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const contentsStatus = status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
+				);
+				expect(contentsStatus).toBeDefined();
+				expect(contentsStatus?.elements?.length).toEqual(2);
+				if (contentsStatus?.elements && contentsStatus?.elements[0]) {
+					expect(contentsStatus?.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
+				}
+			});
+
+			it('should set contents status leaf with status partial', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const contentsStatus = status.elements?.find(
+					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
+				);
+				expect(contentsStatus).toBeDefined();
+				expect(contentsStatus?.status).toEqual(CopyStatusEnum.PARTIAL);
 			});
 		});
 	});
