@@ -44,7 +44,7 @@ describe('NextCloud Adapter Strategy', () => {
 				.spyOn(strategy.httpService, 'post')
 				// needed for proper mocking
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((url: string, data?: any, config?: AxiosRequestConfig): Observable<AxiosResponse> => {
+				.mockImplementation((url: string, data?: never, config?: AxiosRequestConfig): Observable<AxiosResponse> => {
 					return of({
 						data: [],
 						status: 0,

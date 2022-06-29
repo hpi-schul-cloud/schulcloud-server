@@ -96,7 +96,7 @@ const fileSchema = new Schema({
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	},
-	shareToken: { type: String },
+	shareTokens: { type: [String], index: true },
 	parent: { type: Schema.Types.ObjectId, ref: 'file' },
 	owner: {
 		type: Schema.Types.ObjectId,

@@ -15,9 +15,6 @@ export class TeamRule extends BasePermission<Team> {
 	}
 
 	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
-		console.log(user.id);
-		console.log(entity.userIds[0].role === user.roles[0]);
-		console.log(entity.userIds[0].userId === user);
 		const validTeamUsers = entity.userIds.filter((teamUser) => {
 			return context.requiredPermissions.some((p) => teamUser.role.permissions.includes(p));
 		});

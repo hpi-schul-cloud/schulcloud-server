@@ -1,6 +1,6 @@
 ###
 # curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev//ocs/v1.php/cloud/groups?search=SchulcloudNextcloud-5e1dc275322ce040a850b14b&format=json
-GET https://nextcloud-nbc.dbildungscloud.dev/ocs/v1.php/cloud/groups?search=Test
+GET https://nextcloud-nbc.dbildungscloud.dev/ocs/v1.php/cloud/groups
 Authorization: Basic capcakes {{CAPCAKESPASS}}
 OCS-APIRequest: true
 Accept: application/json
@@ -11,3 +11,16 @@ Authorization: Basic capcakes {{CAPCAKESPASS}}
 OCS-APIRequest: true
 Accept: application/json
 ###
+# curl -X GET 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/1' -H "OCS-APIRequest: true" -H "Accept: Application/json"
+GET https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/1
+Authorization: Basic capcakes {{CAPCAKESPASS}}
+OCS-APIRequest: true
+Accept: Application/json
+###
+# curl -X DELETE 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/2/' -H "OCS-APIRequest: true" -H "Accept: Application/json"
+DELETE https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/2/
+Authorization: Basic capcakes {{CAPCAKESPASS}}
+OCS-APIRequest: true
+Accept: application/json
+###
+

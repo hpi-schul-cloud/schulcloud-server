@@ -4,7 +4,15 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
-import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	roleFactory,
+	schoolFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
@@ -50,6 +58,14 @@ describe('authorization.service', () => {
 				service.hasPermission(user, entity, context);
 			};
 			expect(exec).toThrowError(NotImplementedException);
+		});
+
+		it('can resolve lesson', () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			const lesson = lessonFactory.build({ course });
+			const response = service.hasPermission(user, lesson, context);
+			expect(response).toBe(true);
 		});
 
 		it('can resolve tasks', () => {

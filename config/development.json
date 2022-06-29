@@ -33,5 +33,6 @@
 	"NEST_AVAILABLE_LOG_LEVELS": "log,error,warn,debug,verbose,http",
 	"ROOM_VIEW_ENABLED": true,
 	"FEATURE_COURSE_COPY": true,
-	"FEATURE_TASK_COPY_ENABLED": true
+	"FEATURE_TASK_COPY_ENABLED": true,
+	"FEATURE_LESSON_COPY_ENABLED": true
 }

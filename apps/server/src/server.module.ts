@@ -15,6 +15,7 @@ import { RocketChatModule } from '@src/modules/rocketchat';
 import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage/collaborative-storage.module';
+import { SystemModule } from '@src/modules/system/system.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { OauthModule } from './modules/oauth';
@@ -30,6 +31,7 @@ const serverModules = [
 	}),
 	CoreModule,
 	AuthModule,
+	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
 	NewsModule,
@@ -48,6 +50,7 @@ const serverModules = [
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
 	CollaborativeStorageModule,
+	SystemModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
