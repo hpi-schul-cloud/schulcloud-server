@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
@@ -42,6 +43,23 @@ describe('SchoolUc', () => {
 
 			// Assert
 			expect(schoolService.saveSchool).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+		});
+	});
+
+	describe('saveProvisioningSchoolOutputDto', () => {
+		it('should call save', async () => {
+			// Arrange
+			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({ name: schoolDto.name });
+			schoolUc.save = jest.fn();
+
+			// Act
+			await schoolUc.saveProvisioningSchoolOutputDto(dto);
+
+			// Assert
+			expect(schoolUc.save).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+
+			// Restore
+			schoolUc = module.get(SchoolUc);
 		});
 	});
 });

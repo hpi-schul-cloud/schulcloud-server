@@ -4,15 +4,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolRepo } from '@shared/repo';
 import { MikroORM } from '@mikro-orm/core';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
-	let schoolRepo: SchoolRepo;
+	let schoolRepo: DeepMocked<SchoolRepo>;
 	let orm: MikroORM;
 	let schoolDto: SchoolDto;
-	const mockSchoolEntities: School[] = [schoolFactory.buildWithId(), schoolFactory.buildWithId()];
+	let mockSchoolEntities: School[];
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,15 +21,7 @@ describe('SchoolService', () => {
 				SchoolService,
 				{
 					provide: SchoolRepo,
-					useValue: {
-						save: jest.fn().mockImplementation((): Promise<void> => {
-							return Promise.resolve();
-						}),
-						findById: jest.fn().mockImplementation((schoolId: string): Promise<School | null> => {
-							const school = mockSchoolEntities.find((tmpSchool) => tmpSchool.id?.toString() === schoolId);
-							return school ? Promise.resolve(school) : Promise.resolve(null);
-						}),
-					},
+					useValue: createMock<SchoolRepo>(),
 				},
 			],
 		}).compile();
@@ -43,7 +36,19 @@ describe('SchoolService', () => {
 	});
 
 	beforeEach(() => {
+		mockSchoolEntities = [schoolFactory.buildWithId(), schoolFactory.buildWithId()];
 		schoolDto = new SchoolDto({ name: 'schule1234' });
+		schoolRepo.createAndSave.mockImplementation((): Promise<School> => {
+			return Promise.resolve(mockSchoolEntities[0]);
+		});
+		schoolRepo.findById.mockImplementation((schoolId: string): Promise<School> => {
+			const school = mockSchoolEntities.find((tmpSchool) => tmpSchool.id?.toString() === schoolId);
+			return school ? Promise.resolve(school) : Promise.reject();
+		});
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('saveSchool', () => {
@@ -52,7 +57,7 @@ describe('SchoolService', () => {
 			await schoolService.saveSchool(schoolDto);
 
 			// Assert
-			expect(schoolRepo.save).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolRepo.createAndSave).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
 		});
 
 		it('should update existing school', async () => {
@@ -70,6 +75,7 @@ describe('SchoolService', () => {
 					id: schoolDto.id,
 				})
 			);
+			expect(schoolRepo.createAndSave).not.toHaveBeenCalled();
 		});
 	});
 });

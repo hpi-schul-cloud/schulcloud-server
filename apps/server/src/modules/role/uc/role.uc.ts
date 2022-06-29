@@ -7,7 +7,7 @@ import { RoleName } from '@shared/domain';
 export class RoleUc {
 	constructor(private readonly roleService: RoleService) {}
 
-	async findByName(name: RoleName): Promise<RoleDto> {
-		return this.roleService.findByName(name);
+	async findByNames(names: RoleName[]): Promise<RoleDto[]> {
+		return this.roleService.findByNames(names);
 	}
 }

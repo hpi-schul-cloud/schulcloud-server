@@ -13,8 +13,14 @@ export class SchoolMapper {
 	}
 
 	static mapEntityToEntity(target: School, source: School): School {
-		target.id = source.id;
 		target.name = source.name;
 		return target;
+	}
+
+	static mapToDto(entity: School) {
+		return new SchoolDto({
+			name: entity.name,
+			id: entity.id,
+		});
 	}
 }

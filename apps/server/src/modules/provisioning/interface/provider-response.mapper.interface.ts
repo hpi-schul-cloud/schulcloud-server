@@ -1,6 +1,10 @@
 import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
-import { ProvisioningDto } from '@src/modules/provisioning/dto/provisioning.dto';
+import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
+import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
+import { EntityId } from '@shared/domain';
 
 export interface IProviderResponseMapper<T extends IProviderResponse> {
-	mapToDto(source: T): ProvisioningDto;
+	mapToSchoolDto(source: T): ProvisioningSchoolOutputDto | undefined;
+
+	mapToUserDto(source: T, schoolId?: EntityId): ProvisioningUserOutputDto;
 }

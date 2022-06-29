@@ -1,16 +1,11 @@
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { Permission, Role, RoleName, School, User } from '@shared/domain';
-import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
+import { LanguageType, Permission, Role, RoleName, School, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 
 describe('UserMapper', () => {
 	let orm: MikroORM;
-	let schoolDto: SchoolDto;
-	let roleDto: RoleDto;
 	let userDto: UserDto;
 	let userEntity: User;
 
@@ -24,18 +19,13 @@ describe('UserMapper', () => {
 
 	beforeEach(() => {
 		userEntity = userFactory.buildWithId({ roles: [roleFactory.buildWithId()] });
-		schoolDto = new SchoolDto({ name: userEntity.school.name });
-		roleDto = new RoleDto({
-			name: userEntity.roles.getItems()[0].name,
-			permissions: userEntity.roles.getItems()[0].permissions,
-		});
 		userDto = new UserDto({
 			id: userEntity.id,
 			email: userEntity.email,
 			firstName: userEntity.firstName,
 			lastName: userEntity.lastName,
-			roles: [roleDto],
-			school: schoolDto,
+			roleIds: userEntity.roles.getItems().map((role) => role.id),
+			schoolId: userEntity.school.id,
 			preferences: userEntity.preferences,
 		});
 	});
@@ -49,25 +39,30 @@ describe('UserMapper', () => {
 		expect(resultDto.email).toEqual(userEntity.email);
 		expect(resultDto.firstName).toEqual(userEntity.firstName);
 		expect(resultDto.lastName).toEqual(userEntity.lastName);
-		expect(resultDto.school).toEqual(userEntity.school);
-		expect(resultDto.roles).toEqual(RoleMapper.mapFromEntitiesToDtos(userEntity.roles.getItems()));
+		expect(resultDto.schoolId).toEqual(userEntity.school.id);
+		expect(resultDto.roleIds).toEqual(userEntity.roles.getItems().map((role) => role.id));
 		expect(resultDto.ldapDn).toEqual(userEntity.ldapDn);
 		expect(resultDto.ldapId).toEqual(userEntity.ldapId);
 		expect(resultDto.language).toEqual(userEntity.language);
 		expect(resultDto.forcePasswordChange).toEqual(userEntity.forcePasswordChange);
 		expect(resultDto.preferences).toEqual(userEntity.preferences);
 	});
+
 	it('mapFromDtoToEntity', () => {
 		// Act
-		const resultEntity: User = UserMapper.mapFromDtoToEntity(userDto, userEntity.roles.getItems());
+		const resultEntity: User = UserMapper.mapFromDtoToEntity(
+			userDto,
+			userEntity.roles.getItems(),
+			new School({ name: 'schoolName' })
+		);
 
 		// Assert
 		expect(resultEntity.id).toEqual(userDto.id);
 		expect(resultEntity.email).toEqual(userDto.email);
 		expect(resultEntity.firstName).toEqual(userDto.firstName);
 		expect(resultEntity.lastName).toEqual(userDto.lastName);
-		expect(resultEntity.school.name).toEqual(userDto.school.name);
-		expect(resultEntity.roles[0].name).toEqual(roleDto.name);
+		expect(resultEntity.school.id).toEqual(userDto.schoolId);
+		expect(resultEntity.roles[0].id).toEqual(userDto.roleIds[0]);
 		expect(resultEntity.ldapDn).toEqual(userDto.ldapDn);
 		expect(resultEntity.ldapId).toEqual(userDto.ldapId);
 		expect(resultEntity.language).toEqual(userDto.language);
@@ -75,9 +70,9 @@ describe('UserMapper', () => {
 		expect(resultEntity.preferences).toEqual(userDto.preferences);
 	});
 
-	it('mapFromEntityToEntity', () => {
+	it('mapFromEntityToEntity, patch necessary', () => {
 		// Arrange
-		const resultEntity: User = new User({
+		const patch: User = new User({
 			email: 'overrideMe',
 			firstName: 'overrideMe',
 			lastName: 'overrideMe',
@@ -86,22 +81,56 @@ describe('UserMapper', () => {
 				name: 'overrideMe',
 			}),
 		});
-		resultEntity.id = 'overrideMe12';
 
 		// Act
-		UserMapper.mapFromEntityToEntity(resultEntity, userEntity);
+		const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
 
 		// Assert
 		expect(resultEntity.id).toEqual(userEntity.id);
-		expect(resultEntity.email).toEqual(userEntity.email);
-		expect(resultEntity.firstName).toEqual(userEntity.firstName);
-		expect(resultEntity.lastName).toEqual(userEntity.lastName);
-		expect(resultEntity.school).toEqual(userEntity.school);
-		expect(resultEntity.roles).toEqual(userEntity.roles);
+		expect(resultEntity.email).toEqual(patch.email);
+		expect(resultEntity.firstName).toEqual(patch.firstName);
+		expect(resultEntity.lastName).toEqual(patch.lastName);
+		expect(resultEntity.school).toEqual(patch.school);
+		expect(resultEntity.roles).toEqual(patch.roles);
 		expect(resultEntity.ldapDn).toEqual(userEntity.ldapDn);
 		expect(resultEntity.ldapId).toEqual(userEntity.ldapId);
 		expect(resultEntity.language).toEqual(userEntity.language);
 		expect(resultEntity.forcePasswordChange).toEqual(userEntity.forcePasswordChange);
 		expect(resultEntity.preferences).toEqual(userEntity.preferences);
+	});
+
+	it('mapFromEntityToEntity, patch all', () => {
+		// Arrange
+		const patch: User = new User({
+			email: 'overrideMe',
+			firstName: 'overrideMe',
+			lastName: 'overrideMe',
+			roles: [new Role({ name: RoleName.DEMO, permissions: [Permission.ADMIN_EDIT] })],
+			school: new School({
+				name: 'overrideMe',
+			}),
+		});
+
+		patch.ldapDn = 'ldapDn';
+		patch.ldapId = 'ldapId';
+		patch.language = LanguageType.DE;
+		patch.forcePasswordChange = true;
+		patch.preferences = { key: 'value' };
+
+		// Act
+		const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
+
+		// Assert
+		expect(resultEntity.id).toEqual(userEntity.id);
+		expect(resultEntity.email).toEqual(patch.email);
+		expect(resultEntity.firstName).toEqual(patch.firstName);
+		expect(resultEntity.lastName).toEqual(patch.lastName);
+		expect(resultEntity.school).toEqual(patch.school);
+		expect(resultEntity.roles).toEqual(patch.roles);
+		expect(resultEntity.ldapDn).toEqual(patch.ldapDn);
+		expect(resultEntity.ldapId).toEqual(patch.ldapId);
+		expect(resultEntity.language).toEqual(patch.language);
+		expect(resultEntity.forcePasswordChange).toEqual(patch.forcePasswordChange);
+		expect(resultEntity.preferences).toEqual(patch.preferences);
 	});
 });

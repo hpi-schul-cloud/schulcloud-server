@@ -1,6 +1,4 @@
 import { EntityId, LanguageType } from '@shared/domain';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 export class UserDto {
 	constructor(user: UserDto) {
@@ -8,8 +6,8 @@ export class UserDto {
 		this.email = user.email;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
-		this.roles = user.roles;
-		this.school = user.school;
+		this.roleIds = user.roleIds;
+		this.schoolId = user.schoolId;
 		this.ldapDn = user.ldapDn;
 		this.ldapId = user.ldapId;
 		this.language = user.language;
@@ -25,9 +23,9 @@ export class UserDto {
 
 	lastName: string;
 
-	roles: RoleDto[];
+	roleIds: string[] = [];
 
-	school: SchoolDto;
+	schoolId: string;
 
 	ldapDn?: string;
 
@@ -37,5 +35,6 @@ export class UserDto {
 
 	forcePasswordChange?: boolean;
 
-	preferences?: Record<string, unknown>;
+	// See user entity
+	preferences?: Record<string, unknown> = {};
 }

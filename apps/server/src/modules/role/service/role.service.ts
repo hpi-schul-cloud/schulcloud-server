@@ -12,7 +12,7 @@ export class RoleService {
 		return RoleMapper.mapFromEntityToDto(await this.roleRepo.findById(id));
 	}
 
-	async findByName(name: RoleName): Promise<RoleDto> {
-		return RoleMapper.mapFromEntityToDto(await this.roleRepo.findByName(name));
+	async findByNames(names: RoleName[]): Promise<RoleDto[]> {
+		return RoleMapper.mapFromEntitiesToDtos(await this.roleRepo.findByNames(names));
 	}
 }

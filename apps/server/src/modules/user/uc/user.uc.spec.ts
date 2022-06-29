@@ -1,18 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, LanguageType, Permission, Role, User } from '@shared/domain';
+import { EntityId, LanguageType, Permission, Role, RoleName, User } from '@shared/domain';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { BadRequestException } from '@nestjs/common';
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
+import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
+import { RoleUc } from '@src/modules/role/uc/role.uc';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {
 	let userUc: UserUc;
 	let userService: DeepMocked<UserService>;
 	let orm: MikroORM;
+	let roleUc: DeepMocked<RoleUc>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -30,11 +33,16 @@ describe('UserUc', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: RoleUc,
+					useValue: createMock<RoleUc>(),
+				},
 			],
 		}).compile();
 
 		userUc = module.get(UserUc);
 		userService = module.get(UserService);
+		roleUc = module.get(RoleUc);
 	});
 
 	it('should be defined', () => {
@@ -85,20 +93,45 @@ describe('UserUc', () => {
 
 	describe('save', () => {
 		let userDto: UserDto;
+		let roleDto: RoleDto;
 
 		beforeEach(() => {
+			roleDto = new RoleDto({
+				id: 'roleId',
+				name: RoleName.DEMO,
+			});
 			userDto = new UserDto({
 				firstName: 'John',
 				lastName: 'Doe',
 				email: 'user@example.com',
-				roles: [],
-				school: new SchoolDto({ name: 'school123' }),
+				roleIds: [roleDto.id as string],
+				schoolId: 'school123',
 			});
 		});
 
 		it('should call the save method of userService', async () => {
 			// Act
 			await userUc.save(userDto);
+
+			// Assert
+			expect(userService.save).toHaveBeenCalledWith(userDto);
+		});
+
+		it('should call the saveProvisioningUserOutputDto method of userService', async () => {
+			// Arrange
+			roleUc.findByNames.mockResolvedValue(Promise.resolve([roleDto]));
+
+			// Act
+			await userUc.saveProvisioningUserOutputDto(
+				new ProvisioningUserOutputDto({
+					id: userDto.id,
+					email: userDto.email,
+					firstName: userDto.firstName,
+					lastName: userDto.lastName,
+					roleNames: [RoleName.DEMO],
+					schoolId: userDto.schoolId,
+				})
+			);
 
 			// Assert
 			expect(userService.save).toHaveBeenCalledWith(userDto);

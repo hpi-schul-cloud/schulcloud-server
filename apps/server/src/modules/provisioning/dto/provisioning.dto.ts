@@ -1,5 +1,5 @@
-import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
+import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 
 export class ProvisioningDto {
 	constructor(provisioningDto: ProvisioningDto) {
@@ -7,7 +7,7 @@ export class ProvisioningDto {
 		this.schoolDto = provisioningDto.schoolDto;
 	}
 
-	userDto?: UserDto;
+	userDto: ProvisioningUserOutputDto;
 
-	schoolDto?: SchoolDto;
+	schoolDto?: ProvisioningSchoolOutputDto;
 }

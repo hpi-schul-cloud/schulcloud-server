@@ -33,17 +33,17 @@ describe('RoleUc', () => {
 		});
 	});
 
-	describe('findByName', () => {
-		it('should find role dto', async () => {
+	describe('findByNames', () => {
+		it('should find roledtos', async () => {
 			// Arrange
-			roleService.findByName.mockResolvedValue(roleDto);
+			roleService.findByNames.mockResolvedValue([roleDto]);
 
 			// Act
-			const resultRole = await roleUc.findByName(RoleName.STUDENT);
+			const resultRoles: RoleDto[] = await roleUc.findByNames([RoleName.STUDENT]);
 
 			// Assert
-			expect(resultRole).toEqual(roleDto);
-			expect(roleService.findByName).toHaveBeenCalledWith(RoleName.STUDENT);
+			expect(resultRoles).toEqual([roleDto]);
+			expect(roleService.findByNames).toHaveBeenCalledWith([RoleName.STUDENT]);
 		});
 	});
 });

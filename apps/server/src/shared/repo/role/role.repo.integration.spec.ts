@@ -135,4 +135,16 @@ describe('role repo', () => {
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
 		});
 	});
+
+	describe('findByIds', () => {
+		it('should return roles that matched by ids', async () => {
+			const roleA = roleFactory.build();
+			const roleB = roleFactory.build();
+
+			await em.persistAndFlush([roleA, roleB]);
+			const result: Role[] = await repo.findByIds([roleA.id, roleB.id]);
+			expect(result).toContainEqual(roleA);
+			expect(result).toContainEqual(roleB);
+		});
+	});
 });

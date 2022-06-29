@@ -1,7 +1,5 @@
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { Role, User } from '@shared/domain';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
+import { Role, School, User } from '@shared/domain';
 
 export class UserMapper {
 	static mapFromEntityToDto(entity: User): UserDto {
@@ -10,8 +8,8 @@ export class UserMapper {
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
-			school: entity.school,
-			roles: RoleMapper.mapFromEntitiesToDtos(entity.roles.getItems()),
+			schoolId: entity.school.id,
+			roleIds: entity.roles.getItems().map((role: Role) => role.id),
 			ldapDn: entity.ldapDn,
 			ldapId: entity.ldapId,
 			language: entity.language,
@@ -20,18 +18,18 @@ export class UserMapper {
 		});
 	}
 
-	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[]): User {
+	static mapFromDtoToEntity(dto: UserDto, rolesEntity: Role[], schoolEntity: School): User {
 		const user = new User({
 			email: dto.email,
 			firstName: dto.firstName,
 			lastName: dto.lastName,
-			school: SchoolMapper.mapToEntity(dto.school),
+			school: schoolEntity,
 			roles: rolesEntity,
 			ldapDn: dto.ldapDn,
 			ldapId: dto.ldapId,
 			language: dto.language,
 			forcePasswordChange: dto.forcePasswordChange,
-			preferences: dto.preferences ?? {},
+			preferences: dto.preferences,
 		});
 		if (dto.id) {
 			user.id = dto.id;
@@ -40,6 +38,19 @@ export class UserMapper {
 	}
 
 	static mapFromEntityToEntity(target: User, source: User): User {
-		return Object.assign(target, source);
+		target.firstName = source.firstName;
+		target.lastName = source.lastName;
+		target.email = source.email;
+		target.school = source.school;
+		target.roles = source.roles;
+		target.ldapDn = source.ldapDn ?? target.ldapDn;
+		target.ldapId = source.ldapId ?? target.ldapId;
+		target.forcePasswordChange = source.forcePasswordChange ?? target.forcePasswordChange;
+		target.language = source.language ?? target.language;
+		// Cannot patch preferences with empty object, because preferences is optional, but is always set in the constructor of the entity,
+		// so we can't check if the field is undefined. it is always initialized with an empty object.
+		target.preferences =
+			source.preferences && Object.keys(source.preferences).length !== 0 ? source.preferences : target.preferences;
+		return target;
 	}
 }

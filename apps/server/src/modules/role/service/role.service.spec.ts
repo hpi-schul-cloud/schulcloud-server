@@ -32,8 +32,10 @@ describe('RoleService', () => {
 		roleRepo.findById.mockImplementation(async (id: EntityId): Promise<Role> => {
 			return id === testRoleEntity.id ? Promise.resolve(testRoleEntity) : Promise.reject();
 		});
-		roleRepo.findByName.mockImplementation(async (name: RoleName): Promise<Role> => {
-			return name === testRoleEntity.name ? Promise.resolve(testRoleEntity) : Promise.reject();
+		roleRepo.findByNames.mockImplementation(async (names: RoleName[]): Promise<Role[]> => {
+			return names.some(() => names.includes(testRoleEntity.name)).valueOf()
+				? Promise.resolve([testRoleEntity])
+				: Promise.reject();
 		});
 	});
 
@@ -51,13 +53,13 @@ describe('RoleService', () => {
 
 	describe('findByName', () => {
 		it('should find role entity', async () => {
-			const entity: RoleDto = await roleService.findByName(testRoleEntity.name);
+			const entity: RoleDto[] = await roleService.findByNames([testRoleEntity.name]);
 
-			expect(entity.id).toEqual(testRoleEntity.id);
-			expect(entity.name).toEqual(testRoleEntity.name);
+			expect(entity[0].id).toEqual(testRoleEntity.id);
+			expect(entity[0].name).toEqual(testRoleEntity.name);
 		});
 		it('should reject promise, because no entity was found', async () => {
-			await expect(roleService.findByName('unknown role' as unknown as RoleName)).rejects.toEqual(undefined);
+			await expect(roleService.findByNames(['unknown role' as unknown as RoleName])).rejects.toEqual(undefined);
 		});
 	});
 });

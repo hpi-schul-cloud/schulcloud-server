@@ -25,7 +25,7 @@ describe('SchoolMapper', () => {
 		const entity = SchoolMapper.mapEntityToEntity(targetEntity, sourceEntity);
 
 		// Assert
-		expect(entity.id).toEqual(sourceEntity.id);
+		expect(entity.id).toEqual(targetEntity.id);
 		expect(entity.name).toEqual(sourceEntity.name);
 	});
 });

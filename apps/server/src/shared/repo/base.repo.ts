@@ -21,8 +21,6 @@ export abstract class BaseRepo<T extends BaseEntity> {
 	}
 
 	async findById(id: EntityId): Promise<T> {
-		const entity = await this._em.findOneOrFail(this.entityName, id as FilterQuery<T>);
-
-		return entity;
+		return this._em.findOneOrFail(this.entityName, id as FilterQuery<T>);
 	}
 }

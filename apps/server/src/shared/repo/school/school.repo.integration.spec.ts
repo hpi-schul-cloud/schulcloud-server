@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { School, SchoolRolePermission, SchoolRoles } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { schoolFactory } from '@shared/testing';
 import { SchoolRepo } from '..';
 
 describe('school repo', () => {
@@ -46,5 +47,18 @@ describe('school repo', () => {
 		expect(storedSchool.permissions?.student).toBeUndefined();
 		expect(storedSchool.permissions?.teacher).toBeDefined();
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
+	});
+
+	it('createAndSave', async () => {
+		// Arrange
+		const schoolEntity: School = schoolFactory.build();
+
+		// Act
+		const savedSchool: School = await repo.createAndSave(schoolEntity);
+
+		// Assert
+		const savedSchoolEntity = await em.find(School, {});
+		expect(savedSchoolEntity[0].id).toBeDefined();
+		expect(savedSchool).toEqual(savedSchoolEntity[0]);
 	});
 });

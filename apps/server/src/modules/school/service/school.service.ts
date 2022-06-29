@@ -8,16 +8,14 @@ import { Injectable } from '@nestjs/common';
 export class SchoolService {
 	constructor(readonly schoolRepo: SchoolRepo) {}
 
-	async saveSchool(schoolDto: SchoolDto) {
-		let school: School = SchoolMapper.mapToEntity(schoolDto);
-		if (schoolDto.id) {
-			school = await this.updateSchool(schoolDto.id, school);
+	async saveSchool(schoolDto: SchoolDto): Promise<SchoolDto> {
+		const school: School = SchoolMapper.mapToEntity(schoolDto);
+		if (school.id) {
+			const entity: School = await this.schoolRepo.findById(school.id);
+			SchoolMapper.mapEntityToEntity(entity, school);
+			await this.schoolRepo.save(entity);
+			return SchoolMapper.mapToDto(school);
 		}
-		await this.schoolRepo.save(school);
-	}
-
-	private async updateSchool(targetSchoolId: string, sourceSchool: School): Promise<School> {
-		const targetSchoolEntity: School = await this.schoolRepo.findById(targetSchoolId);
-		return SchoolMapper.mapEntityToEntity(targetSchoolEntity, sourceSchool);
+		return SchoolMapper.mapToDto(await this.schoolRepo.createAndSave(school));
 	}
 }

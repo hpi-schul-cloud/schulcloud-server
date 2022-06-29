@@ -1,15 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RoleRepo, UserRepo } from '@shared/repo';
-import { LanguageType, PermissionService, Role, RoleName, User } from '@shared/domain';
+import { RoleRepo, SchoolRepo, UserRepo } from '@shared/repo';
+import { LanguageType, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
-import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -17,6 +15,7 @@ describe('UserService', () => {
 	let module: TestingModule;
 
 	let userRepo: DeepMocked<UserRepo>;
+	let schoolRepo: DeepMocked<SchoolRepo>;
 	let roleRepo: DeepMocked<RoleRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
@@ -25,6 +24,10 @@ describe('UserService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
+				{
+					provide: SchoolRepo,
+					useValue: createMock<SchoolRepo>(),
+				},
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -46,6 +49,7 @@ describe('UserService', () => {
 		service = module.get(UserService);
 
 		userRepo = module.get(UserRepo);
+		schoolRepo = module.get(SchoolRepo);
 		roleRepo = module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
@@ -106,6 +110,7 @@ describe('UserService', () => {
 	describe('save', () => {
 		let user: User;
 		let roles: Role[];
+		let school: School;
 		const date: Date = new Date(2020, 1, 1);
 		let capturedUser: User;
 
@@ -123,6 +128,9 @@ describe('UserService', () => {
 			roleRepo.findByNames.mockImplementation((names: RoleName[]): Promise<Role[]> => {
 				return Promise.resolve(roles.filter((role) => names.includes(role.name)));
 			});
+			roleRepo.findByIds.mockImplementation((ids: string[]): Promise<Role[]> => {
+				return Promise.resolve(roles.filter((role: Role) => ids.includes(role.id)));
+			});
 			user = userFactory.buildWithId({ roles });
 			userRepo.findById.mockResolvedValue(user);
 			userRepo.save.mockResolvedValue();
@@ -132,6 +140,8 @@ describe('UserService', () => {
 				}
 				return Promise.resolve();
 			});
+			school = schoolFactory.buildWithId();
+			schoolRepo.findById.mockResolvedValue(school);
 		});
 
 		it('should patch existing user', async () => {
@@ -139,22 +149,23 @@ describe('UserService', () => {
 			expect(userDto.id).toEqual(user.id);
 			await service.save(userDto);
 
+			expect(schoolRepo.findById).toHaveBeenCalledWith(userDto.schoolId);
 			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
 			expect(userRepo.save).toHaveBeenCalledWith(user);
 		});
 
 		it('should save new user', async () => {
-			const { school } = user;
 			const userDto: UserDto = {
 				email: 'abc@def.xyz',
 				firstName: 'Hans',
 				lastName: 'Peter',
-				roles: RoleMapper.mapFromEntitiesToDtos(roles),
-				school: SchoolMapper.mapToEntity(school),
+				roleIds: [roles[0].id, roles[1].id],
+				schoolId: school.id,
 			} as UserDto;
 
 			await service.save(userDto);
 
+			expect(schoolRepo.findById).toHaveBeenCalledWith(userDto.schoolId);
 			expect(userRepo.findById).not.toHaveBeenCalled();
 			expect(userRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({

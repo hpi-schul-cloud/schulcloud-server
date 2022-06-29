@@ -8,5 +8,5 @@ export class SchoolDto {
 
 	id?: EntityId;
 
-	name!: string;
+	name: string;
 }
