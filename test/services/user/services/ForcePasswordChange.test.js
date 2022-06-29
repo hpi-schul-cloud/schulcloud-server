@@ -44,7 +44,7 @@ describe('forcePasswordChange service tests', () => {
 			return postChangePassword(userRequestAuthentication, newPassword, newPasswordThatDoesNotMatch).catch((err) => {
 				expect(err.code).to.equal(400);
 				expect(err.name).to.equal('BadRequest');
-				expect(err.message).to.equal('Die neuen Passwörter stimmen nicht überein.');
+				expect(err.message).to.equal('Password and confirm password do not match.');
 			});
 		});
 		it('when the password is to weak, the error object is returned with the proper error message', async () => {
@@ -76,9 +76,11 @@ describe('forcePasswordChange service tests', () => {
 			requestParams.authentication.payload = {
 				accountId: newAccount.accountId,
 			};
+			// this.app.service('/users').patch(params.account.userId
 
-			const resp = await postChangePassword(requestParams, newPassword, newPasswordConfirmation);
-			expect(resp.forcePasswordChange).to.equal(false);
+			await postChangePassword(requestParams, newPassword, newPasswordConfirmation);
+			const updatedUser = await app.service('users').get(savedUser._id);
+			expect(updatedUser.forcePasswordChange).to.equal(false);
 		});
 		// eslint-disable-next-line max-len
 		it('when the the user sets the password the same as the one specified by the admin, the proper error message will be shown', async () => {
@@ -93,7 +95,7 @@ describe('forcePasswordChange service tests', () => {
 			return postChangePassword(userRequestAuthentication, password, password).catch((err) => {
 				expect(err.code).to.equal(400);
 				expect(err.name).to.equal('BadRequest');
-				expect(err.message).to.equal('You need to setup your new unique password');
+				expect(err.message).to.equal('New password can not be same as old password.');
 			});
 		});
 	});

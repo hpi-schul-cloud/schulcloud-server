@@ -35,12 +35,13 @@ class ForcePasswordChangeService {
 		const newPassword = data['password-1'];
 		const newPasswordConfirm = data['password-2'];
 
-		await this.app
-			.service('nest-account-uc')
-			.replaceMyTemporaryPassword(currentUserId, newPassword, newPasswordConfirm)
-			.catch((err) => {
-				throw new BadRequest(this.err.failed, err);
-			});
+		try {
+			await this.app
+				.service('nest-account-uc')
+				.replaceMyTemporaryPassword(currentUserId, newPassword, newPasswordConfirm);
+		} catch (err) {
+			throw new BadRequest(err);
+		}
 	}
 
 	create(data, params) {
