@@ -109,14 +109,17 @@ export class AccountUc {
 		if (!dto.systemId) {
 			dto.username = dto.username.trim().toLowerCase();
 		}
+		if (!dto.systemId && !dto.password) {
+			throw new ValidationError('No password provided');
+		}
 		// validateUserName ✔
 		// usernames must be an email address, if they are not from an external system
 		if (!dto.systemId && !isEmail(dto.username)) {
-			throw new Error('Username is not an email');
+			throw new ValidationError('Username is not an email');
 		}
 		// checkExistence ✔
 		if (dto.userId && (await this.accountService.findByUserId(dto.userId))) {
-			throw new Error('Account already exists');
+			throw new ValidationError('Account already exists');
 		}
 		// validateCredentials hook will not be ported ✔
 		// trimPassword hook will be done by class-validator ✔
@@ -126,7 +129,7 @@ export class AccountUc {
 		// usernames are only unique within a system
 		const filteredAccounts = accounts.filter((account) => account.systemId === dto.systemId);
 		if (filteredAccounts.length > 0) {
-			throw new Error('Username already exists');
+			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
 		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];

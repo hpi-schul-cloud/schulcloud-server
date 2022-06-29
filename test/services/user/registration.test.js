@@ -64,7 +64,7 @@ describe('registration service', () => {
 			})
 			.then((response) => {
 				expect(response.user).to.have.property('_id');
-				expect(response.account).to.have.property('_id');
+				expect(response.account).to.have.property('id');
 				expect(response.consent).to.have.property('_id');
 				expect(response.consent).to.have.property('userConsent');
 			});
@@ -107,7 +107,7 @@ describe('registration service', () => {
 				expect(response.consent).to.have.property('_id');
 				expect(response.consent.parentConsents.length).to.be.at.least(1);
 				expect(response.user.parents[0]).not.to.be.null;
-				expect(response.account).to.have.property('_id');
+				expect(response.account).to.have.property('id');
 			});
 	});
 
@@ -284,7 +284,7 @@ describe('registration service', () => {
 				};
 				return registrationService.create(registrationInput).then((response) => {
 					expect(response.user).to.have.property('_id');
-					expect(response.account).to.have.property('_id');
+					expect(response.account).to.have.property('id');
 					expect(response.consent).to.have.property('_id');
 					expect(response.consent).to.have.property('userConsent');
 				});
@@ -368,7 +368,7 @@ describe('registration service', () => {
 				};
 				return registrationService.create(registrationInput).then((response) => {
 					expect(response.user).to.have.property('_id');
-					expect(response.account).to.have.property('_id');
+					expect(response.account).to.have.property('id');
 					expect(response.consent).to.have.property('_id');
 					expect(response.consent).to.have.property('userConsent');
 				});

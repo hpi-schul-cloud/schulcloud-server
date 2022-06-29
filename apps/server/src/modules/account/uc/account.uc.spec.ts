@@ -956,11 +956,14 @@ describe('AccountUc', () => {
 			const spy = jest.spyOn(accountService, 'save');
 			const params: AccountSaveDto = {
 				username: ' John.Doe@domain.tld ',
+				password: defaultPassword,
 			};
 			await accountUc.saveAccount(params);
-			expect(spy).toHaveBeenCalledWith({
-				username: 'john.doe@domain.tld',
-			});
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					username: 'john.doe@domain.tld',
+				})
+			);
 		});
 		it('should not sanitize username for external user', async () => {
 			const spy = jest.spyOn(accountService, 'save');
@@ -978,6 +981,7 @@ describe('AccountUc', () => {
 		it('should throw if username for a local user is not an email', async () => {
 			const params: AccountSaveDto = {
 				username: 'John Doe',
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username is not an email');
 		});
@@ -988,10 +992,17 @@ describe('AccountUc', () => {
 			};
 			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
+		it('should throw if no password is provided for an internal user', async () => {
+			const params: AccountSaveDto = {
+				username: 'john.doe@mail.tld',
+			};
+			await expect(accountUc.saveAccount(params)).rejects.toThrow('No password provided');
+		});
 		it('should throw if account already exists', async () => {
 			const params: AccountSaveDto = {
 				username: mockStudentUser.email,
 				userId: mockStudentUser.id,
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Account already exists');
 		});
@@ -999,6 +1010,7 @@ describe('AccountUc', () => {
 			mockStudentAccount.username = 'john.doe@domain.tld';
 			const params: AccountSaveDto = {
 				username: mockStudentAccount.username,
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
 		});
