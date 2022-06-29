@@ -22,7 +22,7 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { PermissionContexts, ErrorType } from '../files-storage.const';
+import { ErrorType, PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
@@ -76,9 +76,10 @@ export class FilesStorageUC {
 	}
 
 	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
+		const name = Buffer.from(info.filename, 'binary').toString();
 		const size = Number(req.get('content-length'));
 		const fileDescription: IFile = {
-			name: info.filename,
+			name,
 			buffer: file,
 			size,
 			mimeType: info.mimeType,
