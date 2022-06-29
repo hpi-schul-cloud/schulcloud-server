@@ -19,7 +19,7 @@ export class LessonCopyService {
 			hidden: true,
 			name: this.nameCopyService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
-			contents: this.copyTextComponent(params.originalLesson),
+			contents: this.copyTextComponent(params.originalLesson.contents),
 		});
 
 		const elements = [...this.lessonStatusElements(), ...this.textComponentStatus(copy.contents)];
@@ -35,9 +35,9 @@ export class LessonCopyService {
 		return status;
 	}
 
-	private copyTextComponent(originalLesson: Lesson): IComponentProperties[] {
+	private copyTextComponent(originalContent: IComponentProperties[]): IComponentProperties[] {
 		const copiedContent: IComponentProperties[] = [];
-		const textComponents = originalLesson.contents.filter((element) => Object.keys(element.content)[0] === 'text');
+		const textComponents = originalContent.filter((element) => Object.keys(element.content)[0] === 'text');
 		textComponents.forEach((element) => {
 			copiedContent.push(element);
 		});

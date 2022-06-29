@@ -20,10 +20,7 @@ export const lessonFactory = LessonFactory.define<Lesson, ILessonProperties>(Les
 		});
 	}
 
-	let hidden = false;
-	if (params.hidden) {
-		hidden = params.hidden;
-	}
+	const hidden = params.hidden || false;
 
 	return {
 		name: `lesson #${sequence}`,

@@ -196,9 +196,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 				});
 
-				const copyName = 'Copy';
-				nameCopyService.deriveCopyName.mockReturnValue(copyName);
-				return { user, originalCourse, destinationCourse, originalLesson, copyName };
+				return { user, originalCourse, destinationCourse, originalLesson };
 			};
 
 			it('contents array of copied lesson should be empty', () => {
@@ -256,9 +254,7 @@ describe('lesson copy service', () => {
 					contents: [textContentOne, textContentTwo],
 				});
 
-				const copyName = 'Copy';
-				nameCopyService.deriveCopyName.mockReturnValue(copyName);
-				return { user, originalCourse, destinationCourse, originalLesson, copyName };
+				return { user, originalCourse, destinationCourse, originalLesson };
 			};
 
 			it('contents array of copied lesson should contain content elments of original lesson', () => {
@@ -274,7 +270,22 @@ describe('lesson copy service', () => {
 
 				expect(lesson.contents.length).toEqual(2);
 				expect(lesson.contents).toEqual(originalLesson.contents);
-				expect(lesson.contents[0].hidden).toEqual(false);
+			});
+
+			it('copied content should persist the original hidden value', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+				originalLesson.contents[0].hidden = true;
+				originalLesson.contents[1].hidden = false;
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+
+				const lesson = status.copyEntity as Lesson;
+
+				expect(lesson.contents[0].hidden).toEqual(true);
 				expect(lesson.contents[1].hidden).toEqual(false);
 			});
 
