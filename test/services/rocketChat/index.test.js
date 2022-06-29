@@ -5,7 +5,6 @@ const assert = require('assert');
 const chai = require('chai');
 const mockery = require('mockery');
 const { ObjectId } = require('mongoose').Types;
-const sinon = require('sinon');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects');
