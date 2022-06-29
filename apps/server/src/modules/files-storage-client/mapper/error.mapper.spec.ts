@@ -2,7 +2,8 @@ import { GeneralError } from '@feathersjs/errors';
 import { ForbiddenException, InternalServerErrorException, ValidationError as IValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
-import { ErrorMapper, FileStorageErrors } from './error.mapper';
+import { ErrorMapper } from './error.mapper';
+import { FileStorageErrors } from '../interfaces';
 
 describe('ErrorMapper', () => {
 	const createAxiosError = (
