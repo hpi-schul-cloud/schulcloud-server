@@ -70,6 +70,7 @@ describe('AccountUc', () => {
 	let mockDifferentSchoolAdminAccount: Account;
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
+	let mockOtherExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
 	let mockAccountWithoutUser: Account;
 	let mockAccounts: Account[];
@@ -148,10 +149,9 @@ describe('AccountUc', () => {
 							}
 							if (username === 'not@available.username') {
 								return Promise.resolve({
-									accounts: [AccountEntityToDtoMapper.mapToDto(mockExternalUserAccount)],
+									accounts: [AccountEntityToDtoMapper.mapToDto(mockOtherTeacherAccount)],
 									total: 1,
 								});
-								// return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
 							}
 							if (username === 'multiple@account.username') {
 								return Promise.resolve({
@@ -379,15 +379,17 @@ describe('AccountUc', () => {
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
 		});
+		const externalSystem = systemFactory.buildWithId();
 		mockExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: externalSystem.id,
 		});
-		mockExternalUserAccount = accountFactory.buildWithId({
+		mockOtherExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
+			username: 'used.by.system@available.username',
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: externalSystem.id,
 		});
 		mockAccountWithoutUser = accountFactory.buildWithId({
 			userId: undefined,
@@ -426,6 +428,7 @@ describe('AccountUc', () => {
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
+			mockOtherExternalUserAccount,
 			mockAccountWithoutRole,
 			mockAccountWithoutUser,
 		];
@@ -1013,6 +1016,19 @@ describe('AccountUc', () => {
 				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
+		});
+		it('should throw if username already exists within the same system', async () => {
+			const params: AccountSaveDto = {
+				username: mockOtherExternalUserAccount.username,
+				systemId: mockExternalUserAccount.systemId?.toString(),
+			};
+			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
+		});
+		it('should ignore existing username if other system', async () => {
+			const params: AccountSaveDto = {
+				username: mockOtherExternalUserAccount.username,
+			};
+			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
 	});
 

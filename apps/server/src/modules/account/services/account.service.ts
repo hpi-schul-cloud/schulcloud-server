@@ -67,6 +67,14 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
+	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
+		const account = await this.accountRepo.findById(accountId);
+		account.username = username;
+		account.updatedAt = new Date();
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
+	}
+
 	delete(id: EntityId): Promise<void> {
 		return this.accountRepo.deleteById(id);
 	}

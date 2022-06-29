@@ -125,10 +125,7 @@ export class AccountUc {
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		const { accounts } = await this.accountService.searchByUsernameExactMatch(dto.username);
-		// usernames are only unique within a system
-		const filteredAccounts = accounts.filter((account) => account.systemId === dto.systemId);
-		if (filteredAccounts.length > 0) {
+		if (!(await this.isUniqueEmailInternal(dto.username, dto.userId, dto.id, dto.systemId))) {
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
@@ -342,7 +339,12 @@ export class AccountUc {
 		return this.isUniqueEmailInternal(email, userId);
 	}
 
-	private async isUniqueEmailInternal(email: string, userId?: EntityId, accountId?: EntityId): Promise<boolean> {
+	private async isUniqueEmailInternal(
+		email: string,
+		userId?: EntityId,
+		accountId?: EntityId,
+		systemId?: EntityId
+	): Promise<boolean> {
 		const [usersAccountId, foundUsers, { accounts: foundAccounts }] = await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
 			accountId ?? (userId ? this.accountService.findByUserId(userId).then((accountDto) => accountDto?.id) : undefined),
@@ -350,11 +352,14 @@ export class AccountUc {
 			this.accountService.searchByUsernameExactMatch(email),
 		]);
 
+		const filteredAccounts = foundAccounts.filter((foundAccount) => foundAccount.systemId === systemId);
+
 		return !(
 			foundUsers.length > 1 ||
-			foundAccounts.length > 1 ||
-			(foundUsers.length === 1 && foundUsers[0].id !== userId) ||
-			(foundAccounts.length === 1 && foundAccounts[0].id !== usersAccountId)
+			filteredAccounts.length > 1 ||
+			// paranoid 'toString': legacy code may call userId or accountId as ObjectID
+			(foundUsers.length === 1 && foundUsers[0].id.toString() !== userId?.toString()) ||
+			(filteredAccounts.length === 1 && filteredAccounts[0].id.toString() !== usersAccountId?.toString())
 		);
 	}
 
