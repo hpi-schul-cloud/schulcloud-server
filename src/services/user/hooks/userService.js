@@ -71,7 +71,7 @@ const checkUniqueEmail = async (hook) => {
 
 	// get userId of user entry to edit
 	const editUserId = hook.id;
-	const unique = await hook.app.service('nest-account-uc').isUniqueEmail(email, editUserId);
+	const unique = await hook.app.service('nest-account-uc').isUniqueEmail(email, editUserId.toString());
 
 	if (unique) {
 		return hook;
@@ -120,13 +120,9 @@ const updateAccountUsername = async (context) => {
 		return context;
 	}
 
-	// TODO ES-256
 	await app
-		.service('nest-account-uc')
-		.saveAccount({
-			id: account.id,
-			username: email,
-		})
+		.service('nest-account-service')
+		.updateUsername(account._id.toString(), email)
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
 		});

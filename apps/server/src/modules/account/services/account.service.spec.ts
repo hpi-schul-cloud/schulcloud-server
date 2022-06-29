@@ -101,6 +101,9 @@ describe('AccountService', () => {
 	});
 
 	beforeEach(() => {
+		jest.useFakeTimers('modern');
+		jest.setSystemTime(new Date(2020, 1, 1));
+
 		mockSchool = schoolFactory.buildWithId();
 
 		mockTeacherUser = userFactory.buildWithId({
@@ -119,6 +122,11 @@ describe('AccountService', () => {
 		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id, password: defaultPassword });
 
 		mockAccounts = [mockTeacherAccount, mockStudentAccount];
+	});
+
+	afterEach(() => {
+		jest.runOnlyPendingTimers();
+		jest.useRealTimers();
 	});
 
 	describe('findById', () => {
@@ -163,16 +171,6 @@ describe('AccountService', () => {
 	});
 
 	describe('save', () => {
-		beforeEach(() => {
-			jest.useFakeTimers('modern');
-			jest.setSystemTime(new Date(2020, 1, 1));
-		});
-
-		afterEach(() => {
-			jest.runOnlyPendingTimers();
-			jest.useRealTimers();
-		});
-
 		it('should update an existing account', async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
@@ -217,6 +215,7 @@ describe('AccountService', () => {
 				userId: new ObjectId(mockStudentUser.id),
 			});
 		});
+
 		it("should keep existing account's system undefined on update", async () => {
 			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
 			mockTeacherAccountDto.username = 'changedUsername@example.org';
@@ -322,6 +321,35 @@ describe('AccountService', () => {
 					password: undefined,
 				})
 			);
+		});
+	});
+
+	describe('updateUsername', () => {
+		it('should update an existing account but no other information', async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const newUsername = 'newUsername';
+			const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
+
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				...mockTeacherAccountDto,
+				username: newUsername,
+			});
+		});
+
+		it('should update an existing account and set update date', async () => {
+			const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+			const newUsername = 'newUsername';
+			const theNewDate = new Date(2020, 1, 2);
+			jest.setSystemTime(theNewDate);
+			const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
+
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject({
+				...mockTeacherAccountDto,
+				updatedAt: theNewDate,
+				username: newUsername,
+			});
 		});
 	});
 
