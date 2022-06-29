@@ -97,7 +97,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		this.delete(`/apps/groupfolders/folders/${folderId}`);
 	}
 
-	async deleteGroupfolder(TeamId: string) {
+	async deleteGroupfolderAndRemoveGroup(TeamId: string) {
 		const groupId = await this.findGroupIdByTeamId(TeamId);
 		const folderId = await this.findFolderIdForGroupId(groupId);
 		this.removeGroup(groupId);
