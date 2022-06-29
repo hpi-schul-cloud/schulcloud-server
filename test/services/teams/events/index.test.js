@@ -72,6 +72,9 @@ describe('Test user remove events for teams.', () => {
 			return Promise.resolve();
 		});
 
+		it('should call the nextcloud deleteTeam function', () => {
+			// call patchOrRemoveTeam -> expect deleteTeam to have been called
+		});
 		it('should remove team if last user is deleted.', async () => {
 			// Test if team has only owner inside the team.
 			expect(team.userIds).to.be.an('array').with.lengthOf(1);
