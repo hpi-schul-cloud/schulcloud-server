@@ -1027,6 +1027,7 @@ describe('AccountUc', () => {
 		it('should ignore existing username if other system', async () => {
 			const params: AccountSaveDto = {
 				username: mockOtherExternalUserAccount.username,
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
