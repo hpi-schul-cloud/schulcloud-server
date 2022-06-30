@@ -45,7 +45,7 @@ export class FilesStorageUC {
 		req: Request
 	): Promise<FileRecord> {
 		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers });
+			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
@@ -76,10 +76,9 @@ export class FilesStorageUC {
 	}
 
 	private createFileDescription(file: internal.Readable, info: busboy.FileInfo, req: Request): IFile {
-		const name = Buffer.from(info.filename, 'latin1').toString();
 		const size = Number(req.get('content-length'));
 		const fileDescription: IFile = {
-			name,
+			name: info.filename,
 			buffer: file,
 			size,
 			mimeType: info.mimeType,
