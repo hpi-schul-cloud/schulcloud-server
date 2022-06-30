@@ -8,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 export class SchoolService {
 	constructor(readonly schoolRepo: SchoolRepo) {}
 
-	async saveSchool(schoolDto: SchoolDto): Promise<SchoolDto> {
+	async createOrUpdateSchool(schoolDto: SchoolDto): Promise<SchoolDto> {
 		const school: School = SchoolMapper.mapToEntity(schoolDto);
 
 		let savedSchool: School;
@@ -22,7 +22,7 @@ export class SchoolService {
 		} else {
 			savedSchool = await this.schoolRepo.createAndSave(school);
 		}
-
-		return SchoolMapper.mapToDto(savedSchool);
+		const returnSchoolDto: SchoolDto = SchoolMapper.mapToDto(savedSchool);
+		return returnSchoolDto;
 	}
 }

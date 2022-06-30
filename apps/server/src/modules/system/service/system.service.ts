@@ -15,10 +15,13 @@ export class SystemService {
 		} else {
 			systemEntities = await this.systemRepo.findByFilter(type, onlyOauth);
 		}
-		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
+		const systemDtos: SystemDto[] = SystemMapper.mapFromEntitiesToDtos(systemEntities);
+		return systemDtos;
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {
-		return SystemMapper.mapFromEntityToDto(await this.systemRepo.findById(id));
+		const entity: System = await this.systemRepo.findById(id);
+		const systemDto: SystemDto = SystemMapper.mapFromEntityToDto(entity);
+		return systemDto;
 	}
 }

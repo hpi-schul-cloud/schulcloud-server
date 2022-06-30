@@ -54,7 +54,7 @@ describe('SchoolService', () => {
 	describe('saveSchool', () => {
 		it('should create new school', async () => {
 			// Act
-			await schoolService.saveSchool(schoolDto);
+			await schoolService.createOrUpdateSchool(schoolDto);
 
 			// Assert
 			expect(schoolRepo.createAndSave).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
@@ -65,7 +65,7 @@ describe('SchoolService', () => {
 			schoolDto.id = mockSchoolEntities[0].id;
 
 			// Act
-			await schoolService.saveSchool(schoolDto);
+			await schoolService.createOrUpdateSchool(schoolDto);
 
 			// Assert
 			expect(schoolRepo.findById).toHaveBeenCalledWith(schoolDto.id);

@@ -114,7 +114,7 @@ describe('UserUc', () => {
 			await userUc.save(userDto);
 
 			// Assert
-			expect(userService.save).toHaveBeenCalledWith(userDto);
+			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
 		});
 
 		it('should call the saveProvisioningUserOutputDto method of userService', async () => {
@@ -134,7 +134,7 @@ describe('UserUc', () => {
 			);
 
 			// Assert
-			expect(userService.save).toHaveBeenCalledWith(userDto);
+			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
 		});
 	});
 });

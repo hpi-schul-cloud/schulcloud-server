@@ -8,6 +8,7 @@ export class RoleUc {
 	constructor(private readonly roleService: RoleService) {}
 
 	async findByNames(names: RoleName[]): Promise<RoleDto[]> {
-		return this.roleService.findByNames(names);
+		const promise: Promise<RoleDto[]> = this.roleService.findByNames(names);
+		return promise;
 	}
 }

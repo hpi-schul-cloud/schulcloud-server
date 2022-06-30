@@ -38,7 +38,7 @@ export class UserService {
 		return true;
 	}
 
-	async save(user: UserDto): Promise<void> {
+	async createOrUpdate(user: UserDto): Promise<void> {
 		const userRoles: Role[] = await this.roleRepo.findByIds(user.roleIds);
 		const school: School = await this.schoolRepo.findById(user.schoolId);
 
@@ -51,6 +51,7 @@ export class UserService {
 			saveEntity = UserMapper.mapFromDtoToEntity(user, userRoles, school);
 		}
 
-		return this.userRepo.save(saveEntity);
+		const promise: Promise<void> = this.userRepo.save(saveEntity);
+		return promise;
 	}
 }

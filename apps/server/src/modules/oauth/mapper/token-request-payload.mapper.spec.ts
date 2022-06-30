@@ -1,4 +1,4 @@
-import { systemFactory } from '@shared/testing';
+import { systemFactory, taskFactory } from '@shared/testing';
 import { OauthConfig } from '@shared/domain';
 import { TokenRequestParams } from '../controller/dto/token-request.params';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
@@ -14,7 +14,8 @@ const expectedParams: TokenRequestParams = {
 	redirect_uri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId/token',
 };
 const defaultAuthCode = '43534543jnj543342jn2';
-const defaultOauthConfig: OauthConfig = systemFactory.build().oauthConfig as OauthConfig;
+const defaultOauthConfig: OauthConfig = systemFactory.withOauthConfig().build().oauthConfig as OauthConfig;
+
 describe('TokenRequestPayload.Mapper', () => {
 	const expectedPayload: TokenRequestPayload = {
 		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',

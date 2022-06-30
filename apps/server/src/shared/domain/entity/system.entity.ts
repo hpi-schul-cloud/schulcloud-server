@@ -4,10 +4,10 @@ import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ISystemProperties {
 	type: string;
-	url: string;
-	alias: string;
-	oauthConfig: OauthConfig;
-	provisioningStrategy: SystemProvisioningStrategy;
+	url?: string;
+	alias?: string;
+	oauthConfig?: OauthConfig;
+	provisioningStrategy?: SystemProvisioningStrategy;
 }
 
 export class OauthConfig {

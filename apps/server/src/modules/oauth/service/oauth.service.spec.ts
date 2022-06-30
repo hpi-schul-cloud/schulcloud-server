@@ -127,7 +127,7 @@ describe('OAuthService', () => {
 	});
 
 	beforeEach(() => {
-		defaultSystem = systemFactory.build();
+		defaultSystem = systemFactory.withOauthConfig().build();
 		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
 
 		defaultAuthCode = '43534543jnj543342jn2';

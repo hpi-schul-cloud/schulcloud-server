@@ -9,10 +9,10 @@ export class SchoolUc {
 	constructor(readonly schoolService: SchoolService) {}
 
 	async saveProvisioningSchoolOutputDto(schoolDto: ProvisioningSchoolOutputDto): Promise<SchoolDto> {
-		return this.save(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(schoolDto));
+		return this.createOrUpdate(SchoolUcMapper.mapFromProvisioningSchoolOutputDtoToSchoolDto(schoolDto));
 	}
 
-	async save(schoolDto: SchoolDto): Promise<SchoolDto> {
-		return this.schoolService.saveSchool(schoolDto);
+	async createOrUpdate(schoolDto: SchoolDto): Promise<SchoolDto> {
+		return this.schoolService.createOrUpdateSchool(schoolDto);
 	}
 }

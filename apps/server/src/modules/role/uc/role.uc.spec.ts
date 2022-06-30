@@ -34,7 +34,7 @@ describe('RoleUc', () => {
 	});
 
 	describe('findByNames', () => {
-		it('should find roledtos', async () => {
+		it('should find role dtos', async () => {
 			// Arrange
 			roleService.findByNames.mockResolvedValue([roleDto]);
 

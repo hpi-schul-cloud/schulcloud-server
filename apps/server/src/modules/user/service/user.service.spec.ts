@@ -147,7 +147,7 @@ describe('UserService', () => {
 		it('should patch existing user', async () => {
 			const userDto: UserDto = UserMapper.mapFromEntityToDto(user);
 
-			await service.save(userDto);
+			await service.createOrUpdate(userDto);
 
 			expect(userDto.id).toEqual(user.id);
 			expect(schoolRepo.findById).toHaveBeenCalledWith(userDto.schoolId);
@@ -164,7 +164,7 @@ describe('UserService', () => {
 				schoolId: school.id,
 			} as UserDto;
 
-			await service.save(userDto);
+			await service.createOrUpdate(userDto);
 
 			expect(schoolRepo.findById).toHaveBeenCalledWith(userDto.schoolId);
 			expect(userRepo.findById).not.toHaveBeenCalled();

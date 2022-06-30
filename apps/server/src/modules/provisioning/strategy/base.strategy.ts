@@ -5,6 +5,7 @@ import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provi
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { UserUc } from '@src/modules/user/uc';
+import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 
 export abstract class ProvisioningStrategy<T extends IProviderResponse> {
 	constructor(
@@ -22,7 +23,7 @@ export abstract class ProvisioningStrategy<T extends IProviderResponse> {
 		let userDto: ProvisioningUserOutputDto;
 
 		if (schoolDto) {
-			const savedSchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(schoolDto);
+			const savedSchoolDto: SchoolDto = await this.schoolUc.saveProvisioningSchoolOutputDto(schoolDto);
 			userDto = this.responseMapper.mapToUserDto(provisioningData, savedSchoolDto.id);
 		} else {
 			userDto = this.responseMapper.mapToUserDto(provisioningData);
@@ -30,6 +31,7 @@ export abstract class ProvisioningStrategy<T extends IProviderResponse> {
 
 		await this.userUc.saveProvisioningUserOutputDto(userDto);
 
-		return new ProvisioningDto({ schoolDto, userDto });
+		const provisioningDto: ProvisioningDto = new ProvisioningDto({ schoolDto, userDto });
+		return provisioningDto;
 	}
 }

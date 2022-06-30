@@ -46,7 +46,7 @@ describe('RoleService', () => {
 			expect(entity.id).toEqual(testRoleEntity.id);
 			expect(entity.name).toEqual(testRoleEntity.name);
 		});
-		it('should reject promise, because no entity was found', async () => {
+		it('should reject promise, when no entity was found', async () => {
 			await expect(roleService.findById('')).rejects.toEqual(undefined);
 		});
 	});
@@ -58,7 +58,7 @@ describe('RoleService', () => {
 			expect(entity[0].id).toEqual(testRoleEntity.id);
 			expect(entity[0].name).toEqual(testRoleEntity.name);
 		});
-		it('should reject promise, because no entity was found', async () => {
+		it('should reject promise, when no entity was found', async () => {
 			await expect(roleService.findByNames(['unknown role' as unknown as RoleName])).rejects.toEqual(undefined);
 		});
 	});

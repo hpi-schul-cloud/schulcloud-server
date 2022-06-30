@@ -13,20 +13,23 @@ export class UserUc {
 	constructor(private readonly userService: UserService, private readonly roleUc: RoleUc) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
-		return this.userService.me(userId);
+		const promise: Promise<[User, string[]]> = this.userService.me(userId);
+		return promise;
 	}
 
 	async patchLanguage(userId: EntityId, params: ChangeLanguageParams): Promise<boolean> {
-		return this.userService.patchLanguage(userId, params.language);
+		const promise: Promise<boolean> = this.userService.patchLanguage(userId, params.language);
+		return promise;
 	}
 
 	async save(user: UserDto): Promise<void> {
-		return this.userService.save(user);
+		const promise: Promise<void> = this.userService.createOrUpdate(user);
+		return promise;
 	}
 
 	async saveProvisioningUserOutputDto(user: ProvisioningUserOutputDto): Promise<void> {
 		const roleDtos = await this.roleUc.findByNames(user.roleNames);
 		const roleIds: EntityId[] = roleDtos.map((role: RoleDto) => role.id as EntityId);
-		return this.userService.save(UserUcMapper.mapFromProvisioningUserOutputDtoToUserDto(user, roleIds));
+		return this.userService.createOrUpdate(UserUcMapper.mapFromProvisioningUserOutputDtoToUserDto(user, roleIds));
 	}
 }

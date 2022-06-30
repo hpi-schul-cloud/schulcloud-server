@@ -39,10 +39,12 @@ describe('SchoolUc', () => {
 	describe('saveSchool', () => {
 		it('should call schoolService', async () => {
 			// Act
-			await schoolUc.save(schoolDto);
+			await schoolUc.createOrUpdate(schoolDto);
 
 			// Assert
-			expect(schoolService.saveSchool).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith(
+				expect.objectContaining({ name: schoolDto.name })
+			);
 		});
 	});
 
@@ -50,13 +52,13 @@ describe('SchoolUc', () => {
 		it('should call save', async () => {
 			// Arrange
 			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({ name: schoolDto.name });
-			schoolUc.save = jest.fn();
+			schoolUc.createOrUpdate = jest.fn();
 
 			// Act
 			await schoolUc.saveProvisioningSchoolOutputDto(dto);
 
 			// Assert
-			expect(schoolUc.save).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolUc.createOrUpdate).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
 
 			// Restore
 			schoolUc = module.get(SchoolUc);

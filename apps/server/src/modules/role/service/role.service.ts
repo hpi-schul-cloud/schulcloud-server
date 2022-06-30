@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RoleRepo } from '@shared/repo';
-import { EntityId, RoleName } from '@shared/domain';
+import { EntityId, Role, RoleName } from '@shared/domain';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
 
@@ -9,10 +9,14 @@ export class RoleService {
 	constructor(private readonly roleRepo: RoleRepo) {}
 
 	async findById(id: EntityId): Promise<RoleDto> {
-		return RoleMapper.mapFromEntityToDto(await this.roleRepo.findById(id));
+		const entity: Role = await this.roleRepo.findById(id);
+		const roleDto: RoleDto = RoleMapper.mapFromEntityToDto(entity);
+		return roleDto;
 	}
 
 	async findByNames(names: RoleName[]): Promise<RoleDto[]> {
-		return RoleMapper.mapFromEntitiesToDtos(await this.roleRepo.findByNames(names));
+		const entities: Role[] = await this.roleRepo.findByNames(names);
+		const roleDtos: RoleDto[] = RoleMapper.mapFromEntitiesToDtos(entities);
+		return roleDtos;
 	}
 }
