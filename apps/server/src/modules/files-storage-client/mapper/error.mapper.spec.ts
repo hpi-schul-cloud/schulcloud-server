@@ -23,7 +23,7 @@ describe('ErrorMapper', () => {
 		const error: AxiosError<FileStorageErrors> = {
 			isAxiosError: true,
 			config,
-			code: code.toString(),
+			code: code?.toString(),
 			response,
 			name: errorText,
 			message: errorText,
@@ -84,16 +84,38 @@ describe('ErrorMapper', () => {
 			expect(result).toEqual(new InternalServerErrorException(errorText));
 		});
 
-		it('Should map unkown axios error to InternalServerErrorException.', () => {
-			const errorText = 'ABC';
-			const json = JSON.stringify(new Error(errorText));
+		it('Should map unkown axios error code to InternalServerErrorException.', () => {
+			const errorText = 'ForbiddenException ABC';
+			const json = JSON.stringify(new ForbiddenException(errorText));
 			const data = JSON.parse(json) as Record<string, unknown>;
 			const code = 444;
 
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException('Internal Server Error Exception'));
+			expect(result).toEqual(new InternalServerErrorException(errorText));
+		});
+
+		it('Should map undefined axios error code to InternalServerErrorException.', () => {
+			const errorText = 'ForbiddenException ABC';
+			const json = JSON.stringify(new ForbiddenException(errorText));
+			const data = JSON.parse(json) as Record<string, unknown>;
+			const code = undefined;
+
+			// @ts-expect-error: Test case
+			const error = createAxiosError(data, code, errorText);
+			const result = ErrorMapper.mapAxiosToDomainError(error);
+
+			expect(result).toEqual(new InternalServerErrorException(errorText));
+		});
+
+		it('Should map generic error to InternalServerErrorException.', () => {
+			const errorText = 'ABC';
+			const error = new Error(errorText);
+			// @ts-expect-error: Test case
+			const result = ErrorMapper.mapAxiosToDomainError(error);
+
+			expect(result).toEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map 400 api validation error response to ApiValidationError.', () => {

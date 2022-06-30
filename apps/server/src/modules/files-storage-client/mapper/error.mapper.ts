@@ -21,9 +21,11 @@ export class ErrorMapper {
 		} else if (axiosError.code === '403') {
 			const response = extractAxiosResponse(axiosError);
 			error = new ForbiddenException(response.data);
-		} else {
+		} else if (axiosError.code) {
 			const response = extractAxiosResponse(axiosError);
 			error = new InternalServerErrorException(response.data);
+		} else {
+			error = new InternalServerErrorException(axiosError);
 		}
 
 		return error;

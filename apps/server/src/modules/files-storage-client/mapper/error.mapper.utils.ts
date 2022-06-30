@@ -43,7 +43,7 @@ export const hasAxiosResponse = (axiosError: AxiosError<FileStorageErrors>): boo
 export const isValidationError = (axiosError: AxiosError<FileStorageErrors>): boolean => {
 	if (hasAxiosResponse(axiosError)) {
 		const response = extractAxiosResponse(axiosError);
-		const checked = (response.data as ApiValidationError)?.validationErrors.length > 0;
+		const checked = (response.data as ApiValidationError)?.validationErrors?.length > 0;
 
 		return checked;
 	}

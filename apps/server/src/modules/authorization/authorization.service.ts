@@ -57,7 +57,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 			return permission;
 		} catch (err) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(err);
 		}
 	}
 
@@ -78,7 +78,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 			return userWithPermissions;
 		} catch (err) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(err);
 		}
 	}
 }
