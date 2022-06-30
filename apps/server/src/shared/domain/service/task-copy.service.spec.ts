@@ -1,13 +1,15 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CopyHelperService, TaskCopyService } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { courseFactory, fileFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
 import { Task } from '../entity';
-import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -21,10 +23,17 @@ describe('task copy service', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			providers: [TaskCopyService],
+			providers: [
+				TaskCopyService,
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
+			],
 		}).compile();
 
 		copyService = module.get(TaskCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyTask', () => {
@@ -193,16 +202,15 @@ describe('task copy service', () => {
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
-			it('should set status to success in absence of attached files', () => {
+			it('should call copyHelperService', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const status = copyService.copyTaskMetadata({
+				copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
-
-				expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
+				expect(copyHelperService.inferStatusFromElements).toHaveBeenCalled();
 			});
 		});
 
@@ -280,18 +288,6 @@ describe('task copy service', () => {
 				return { user, destinationCourse, file, originalTask };
 			};
 
-			it('should set task status to partial', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				const status = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-
-				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
-			});
-
 			it('should add file leaf with status "not implemented"', () => {
 				const { user, file, destinationCourse, originalTask } = setup();
 
@@ -317,18 +313,6 @@ describe('task copy service', () => {
 				const originalTask = taskFactory.buildWithId({ course: destinationCourse, files });
 				return { user, destinationCourse, files, originalTask };
 			};
-
-			it('should set task status to partial', () => {
-				const { originalTask, destinationCourse, user } = setup();
-
-				const status = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-
-				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
-			});
 
 			it('should add a status for files leaf', () => {
 				const { originalTask, destinationCourse, user } = setup();

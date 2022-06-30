@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import {
 	BoardCopyService,
+	CopyHelperService,
 	CourseCopyService,
 	LessonCopyService,
 	NameCopyService,
@@ -21,9 +22,9 @@ import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { CourseCopyUC } from './uc/course-copy.uc';
-import { LessonCopyUC } from './uc/lesson-copy.uc';
 import { CourseUc } from './uc/course.uc';
 import { DashboardUc } from './uc/dashboard.uc';
+import { LessonCopyUC } from './uc/lesson-copy.uc';
 import { RoomBoardDTOFactory } from './uc/room-board-dto.factory';
 import { RoomsAuthorisationService } from './uc/rooms.authorisation.service';
 import { RoomsService } from './uc/rooms.service';
@@ -53,6 +54,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		LessonCopyService,
 		LessonCopyUC,
 		TaskCopyService,
+		CopyHelperService,
 		CourseCopyService,
 		NameCopyService,
 		CourseCopyUC,

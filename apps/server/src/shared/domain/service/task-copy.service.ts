@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Course, Task, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
+import { CopyHelperService } from './copy-helper.service';
 
 export type TaskCopyParams = {
 	originalTask: Task;
@@ -11,6 +12,8 @@ export type TaskCopyParams = {
 
 @Injectable()
 export class TaskCopyService {
+	constructor(private readonly copyHelperService: CopyHelperService) {}
+
 	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
 			name: params.originalTask.name,
@@ -25,7 +28,7 @@ export class TaskCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			status: this.inferStatusFromElements(elements),
+			status: this.copyHelperService.inferStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};
@@ -70,14 +73,5 @@ export class TaskCopyService {
 			return [fileStatus];
 		}
 		return [];
-	}
-
-	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		const childrenStatusArray = elements.map((el) => el.status);
-		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
-		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) {
-			return CopyStatusEnum.PARTIAL;
-		}
-		return CopyStatusEnum.SUCCESS;
 	}
 }

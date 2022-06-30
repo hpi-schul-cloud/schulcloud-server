@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
+import { CopyHelperService } from './copy-helper.service';
 import { NameCopyService } from './name-copy.service';
 
 export type CourseCopyParams = {
@@ -10,7 +11,10 @@ export type CourseCopyParams = {
 
 @Injectable()
 export class CourseCopyService {
-	constructor(private readonly nameCopyService: NameCopyService) {}
+	constructor(
+		private readonly nameCopyService: NameCopyService,
+		private readonly copyHelperService: CopyHelperService
+	) {}
 
 	copyCourse(params: CourseCopyParams): CopyStatus {
 		const copy = new Course({
@@ -19,58 +23,60 @@ export class CourseCopyService {
 			color: params.originalCourse.color,
 			teachers: [params.user],
 		});
+		const elements = [
+			{
+				title: 'metadata',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.SUCCESS,
+			},
+			{
+				title: 'teachers',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				title: 'substitutionTeachers',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				title: 'students',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				title: 'classes',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				title: 'ltiTools',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_DOING,
+			},
+			{
+				title: 'times',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			},
+			{
+				title: 'files',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			},
+			{
+				title: 'coursegroups',
+				type: CopyElementType.LEAF,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			},
+		];
+
 		const status = {
 			title: copy.name,
 			type: CopyElementType.COURSE,
-			status: CopyStatusEnum.PARTIAL,
+			status: this.copyHelperService.inferStatusFromElements(elements),
 			copyEntity: copy,
-			elements: [
-				{
-					title: 'metadata',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.SUCCESS,
-				},
-				{
-					title: 'teachers',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'substitutionTeachers',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'students',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'classes',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'ltiTools',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_DOING,
-				},
-				{
-					title: 'times',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
-					title: 'files',
-					type: CopyElementType.FILE,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-				{
-					title: 'coursegroups',
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-			],
+			elements,
 		};
 
 		return status;

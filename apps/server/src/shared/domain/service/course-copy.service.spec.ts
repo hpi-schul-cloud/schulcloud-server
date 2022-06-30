@@ -1,18 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardCopyService, CopyHelperService, CourseCopyService, NameCopyService } from '@shared/domain';
 import { boardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '../../testing';
 import { Course } from '../entity';
 import { CopyElementType, CopyStatusEnum } from '../types';
-import { BoardCopyService } from './board-copy.service';
-import { CourseCopyService } from './course-copy.service';
-import { NameCopyService } from './name-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
 	let copyService: CourseCopyService;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let nameCopyService: DeepMocked<NameCopyService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -36,12 +35,17 @@ describe('course copy service', () => {
 					provide: NameCopyService,
 					useValue: createMock<NameCopyService>(),
 				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(CourseCopyService);
 		boardCopyService = module.get(BoardCopyService);
 		nameCopyService = module.get(NameCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyCourse', () => {
@@ -60,6 +64,7 @@ describe('course copy service', () => {
 				const courseCopyName = 'Copy';
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
 				nameCopyService.deriveCopyName.mockReturnValue(courseCopyName);
+				copyHelperService.inferStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 
 				return { user, originalCourse, boardCopyStatus, courseCopyName };
 			};
@@ -285,6 +290,16 @@ describe('course copy service', () => {
 				);
 				expect(coursegroupsStatus).toBeDefined();
 				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+			});
+
+			it('should call copyHelperService', () => {
+				const { originalCourse, user } = setup();
+
+				copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+				expect(copyHelperService.inferStatusFromElements).toHaveBeenCalled();
 			});
 		});
 

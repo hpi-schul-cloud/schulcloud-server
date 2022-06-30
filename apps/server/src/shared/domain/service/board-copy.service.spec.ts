@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, BoardCopyService, LessonCopyService, TaskCopyService } from '@shared/domain';
+import { Board, BoardCopyService, CopyHelperService, LessonCopyService, TaskCopyService } from '@shared/domain';
 import {
 	boardFactory,
 	courseFactory,
@@ -19,6 +19,7 @@ describe('board copy service', () => {
 	let copyService: BoardCopyService;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -42,12 +43,17 @@ describe('board copy service', () => {
 					provide: LessonCopyService,
 					useValue: createMock<LessonCopyService>(),
 				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(BoardCopyService);
 		taskCopyService = module.get(TaskCopyService);
 		lessonCopyService = module.get(LessonCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('copyBoard', () => {
@@ -115,6 +121,13 @@ describe('board copy service', () => {
 
 				copyService.copyBoard({ originalBoard, user, destinationCourse });
 				expect(taskCopyService.copyTaskMetadata).toHaveBeenCalledWith({ originalTask, destinationCourse, user });
+			});
+
+			it('should call copyHelperService', () => {
+				const { destinationCourse, originalBoard, user } = setup();
+
+				copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(copyHelperService.inferStatusFromElements).toHaveBeenCalledTimes(1);
 			});
 
 			it('should add copy of task to board copy', () => {
