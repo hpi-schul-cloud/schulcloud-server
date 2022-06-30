@@ -189,7 +189,7 @@ const restrictToUsersCoursesLessons = async (context) => {
 	}
 
 	const { course, courseGroup } = await getCourseAndCourseGroup(courseId, courseGroupId, context.app);
-	let studentsWithAccess = course.userIds;
+	let studentsWithAccess = course.userIds || [];
 	if (courseGroup) studentsWithAccess = courseGroup.userIds;
 
 	const hasAdminAccess = userIsSuperhero || (userIsAdmin && equal(course.schoolId, schoolId));
