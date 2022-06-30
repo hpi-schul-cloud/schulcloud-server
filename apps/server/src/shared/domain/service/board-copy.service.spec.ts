@@ -127,7 +127,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(copyHelperService.inferStatusFromElements).toHaveBeenCalledTimes(1);
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledTimes(1);
 			});
 
 			it('should add copy of task to board copy', () => {

@@ -27,7 +27,7 @@ describe('copy helper service', () => {
 	describe('inferStatusFromElements', () => {
 		describe('no elements', () => {
 			it('should return fail if no elements were given', () => {
-				const inferedStatus = copyHelperService.inferStatusFromElements([]);
+				const inferedStatus = copyHelperService.deriveStatusFromElements([]);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.FAIL);
 			});
@@ -36,21 +36,21 @@ describe('copy helper service', () => {
 		describe('only direct children', () => {
 			it('should set status to success, if all elements could be copied', () => {
 				const elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
-				const inferedStatus = copyHelperService.inferStatusFromElements(elements);
+				const inferedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
 			it('should set status to fail, if no elements could be copied', () => {
 				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_IMPLEMENTED]);
-				const inferedStatus = copyHelperService.inferStatusFromElements(elements);
+				const inferedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.FAIL);
 			});
 
 			it('should set status to partial, if some elements could be copied', () => {
 				const elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.NOT_IMPLEMENTED]);
-				const inferedStatus = copyHelperService.inferStatusFromElements(elements);
+				const inferedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.PARTIAL);
 			});
@@ -61,7 +61,7 @@ describe('copy helper service', () => {
 				const [one, two] = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
 				one.elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
 				two.elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
-				const inferedStatus = copyHelperService.inferStatusFromElements([one, two]);
+				const inferedStatus = copyHelperService.deriveStatusFromElements([one, two]);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.SUCCESS);
 			});
@@ -70,7 +70,7 @@ describe('copy helper service', () => {
 				const [one, two] = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.FAIL]);
 				one.elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_IMPLEMENTED]);
 				two.elements = createStates([CopyStatusEnum.NOT_IMPLEMENTED, CopyStatusEnum.FAIL]);
-				const inferedStatus = copyHelperService.inferStatusFromElements([one, two]);
+				const inferedStatus = copyHelperService.deriveStatusFromElements([one, two]);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.FAIL);
 			});
@@ -79,7 +79,7 @@ describe('copy helper service', () => {
 				const [one, two] = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
 				one.elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
 				two.elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.FAIL]);
-				const inferedStatus = copyHelperService.inferStatusFromElements([one, two]);
+				const inferedStatus = copyHelperService.deriveStatusFromElements([one, two]);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.PARTIAL);
 			});
@@ -88,7 +88,7 @@ describe('copy helper service', () => {
 				const [one, two] = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
 				one.elements = createStates([CopyStatusEnum.NOT_IMPLEMENTED, CopyStatusEnum.SUCCESS]);
 				two.elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
-				const inferedStatus = copyHelperService.inferStatusFromElements([one, two]);
+				const inferedStatus = copyHelperService.deriveStatusFromElements([one, two]);
 
 				expect(inferedStatus).toEqual(CopyStatusEnum.PARTIAL);
 			});

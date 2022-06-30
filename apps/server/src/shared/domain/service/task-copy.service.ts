@@ -28,7 +28,7 @@ export class TaskCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			status: this.copyHelperService.inferStatusFromElements(elements),
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};

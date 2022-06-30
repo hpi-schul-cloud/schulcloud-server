@@ -70,7 +70,7 @@ export class CourseCopyService {
 		const status = {
 			title: copy.name,
 			type: CopyElementType.COURSE,
-			status: this.copyHelperService.inferStatusFromElements(elements),
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};

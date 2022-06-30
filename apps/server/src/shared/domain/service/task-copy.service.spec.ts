@@ -210,7 +210,7 @@ describe('task copy service', () => {
 					destinationCourse,
 					user,
 				});
-				expect(copyHelperService.inferStatusFromElements).toHaveBeenCalled();
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 			});
 		});
 

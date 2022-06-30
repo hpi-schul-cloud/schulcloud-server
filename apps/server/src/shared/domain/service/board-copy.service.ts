@@ -52,7 +52,7 @@ export class BoardCopyService {
 		const status = {
 			title: 'board',
 			type: CopyElementType.BOARD,
-			status: this.copyHelperService.inferStatusFromElements(elements),
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};

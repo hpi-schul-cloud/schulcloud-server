@@ -3,9 +3,9 @@ import { CopyStatus, CopyStatusEnum } from '../types';
 
 @Injectable()
 export class CopyHelperService {
-	inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+	deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
 		const elementsStatuses = elements.map((el) =>
-			el.elements ? this.inferStatusFromElements(el.elements) : el.status
+			el.elements ? this.deriveStatusFromElements(el.elements) : el.status
 		);
 
 		if (elementsStatuses.every((status) => status !== CopyStatusEnum.SUCCESS)) {

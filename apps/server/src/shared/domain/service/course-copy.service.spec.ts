@@ -58,7 +58,7 @@ describe('course copy service', () => {
 				const courseCopyName = 'Copy';
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
 				copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
-				copyHelperService.inferStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 
 				return { user, originalCourse, boardCopyStatus, courseCopyName };
 			};
@@ -293,7 +293,7 @@ describe('course copy service', () => {
 					originalCourse,
 					user,
 				});
-				expect(copyHelperService.inferStatusFromElements).toHaveBeenCalled();
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 			});
 		});
 
