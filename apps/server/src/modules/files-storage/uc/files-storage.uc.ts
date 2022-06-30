@@ -22,7 +22,7 @@ import {
 	FileRecordParams,
 	SingleFileParams,
 } from '../controller/dto/file-storage.params';
-import { PermissionContexts, ErrorType } from '../files-storage.const';
+import { ErrorType, PermissionContexts } from '../files-storage.const';
 import { ICopyFiles } from '../interface';
 import { IFile } from '../interface/file';
 import { FileStorageMapper } from '../mapper/parent-type.mapper';
@@ -45,7 +45,7 @@ export class FilesStorageUC {
 		req: Request
 	): Promise<FileRecord> {
 		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers });
+			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
