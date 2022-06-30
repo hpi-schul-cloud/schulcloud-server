@@ -45,10 +45,8 @@ describe('supportJWTService', () => {
 	});
 
 	it(`create with ${testedPermission} permission should work.`, async () => {
-		const [superhero, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'superhero' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const superhero = await testObjects.setupUser({ roles: 'superhero' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const { roles } = await app.service('users').get(superhero.userId, { query: { $populate: 'roles' } });
 
@@ -68,10 +66,8 @@ describe('supportJWTService', () => {
 	});
 
 	it(`create without ${testedPermission} permission should not work.`, async () => {
-		const [teacher, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'teacher' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const teacher = await testObjects.setupUser({ roles: 'teacher' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const { roles } = await app.service('users').get(teacher.user._id, { query: { $populate: 'roles' } });
 
@@ -84,10 +80,8 @@ describe('supportJWTService', () => {
 	});
 
 	it('accountId, userId, roles, and schoolId values should be present in jwtData', async () => {
-		const [superhero, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'superhero' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const superhero = await testObjects.setupUser({ roles: 'superhero' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const jwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
 
@@ -100,10 +94,8 @@ describe('supportJWTService', () => {
 	});
 
 	it('superhero data should be the same as the requested user data when using the support jwt', async () => {
-		const [superhero, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'superhero' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const superhero = await testObjects.setupUser({ roles: 'superhero' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const requestedUserJwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
 
