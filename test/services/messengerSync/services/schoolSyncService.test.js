@@ -1,7 +1,5 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const sinon = require('sinon');
-const amqp = require('amqplib');
 const rabbitmqMock = require('../rabbitmqMock');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
@@ -12,32 +10,24 @@ describe('schoolSyncService', () => {
 	let nestServices;
 	let testObjects;
 
-	function requireUncached(module) {
-		delete require.cache[require.resolve(module)];
-		// eslint-disable-next-line global-require, import/no-dynamic-require
-		return require(module);
-	}
-
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 
-		sinon.stub(amqp, 'connect').callsFake(rabbitmqMock.amqplib.connect);
-
-		// await app only after configuration was adjusted
-		const appPromise = requireUncached('../../../../src/app');
+		const appPromise = rabbitmqMock.setupMock();
 		app = await appPromise();
 		nestServices = await setupNestServices(app);
 		server = await app.listen(0);
-		testObjects = requireUncached('../../helpers/testObjects')(appPromise());
+		// eslint-disable-next-line global-require
+		testObjects = require('../../helpers/testObjects')(appPromise());
 
 		rabbitmqMock.reset();
 	});
 
 	after(async () => {
 		Configuration.reset(configBefore);
-		sinon.restore();
+		rabbitmqMock.closeMock();
 		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);

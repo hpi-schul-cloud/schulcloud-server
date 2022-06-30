@@ -1,4 +1,4 @@
-const { getChannel } = require('../../../utils/rabbitmq');
+const rabbitMq = require('../../../utils/rabbitmq');
 const { syncLogger } = require('../../../logger/syncLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
@@ -32,7 +32,7 @@ class LDAPSyncerConsumer {
 }
 
 const setupConsumer = () => {
-	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
+	const syncQueue = rabbitMq.getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 
 	const shouldUseFilter = NODE_ENV === ENVIRONMENTS.PRODUCTION;
 	const consumer = new LDAPSyncerConsumer(
