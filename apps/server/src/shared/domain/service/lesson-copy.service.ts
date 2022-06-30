@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { NameCopyService } from './name-copy.service';
 import { Course, Lesson, User } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { CopyHelperService } from './copy-helper.service';
 
 export type LessonCopyParams = {
 	originalLesson: Lesson;
@@ -11,13 +11,13 @@ export type LessonCopyParams = {
 
 @Injectable()
 export class LessonCopyService {
-	constructor(private readonly nameCopyService: NameCopyService) {}
+	constructor(private readonly copyHelperService: CopyHelperService) {}
 
 	copyLesson(params: LessonCopyParams): CopyStatus {
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
-			name: this.nameCopyService.deriveCopyName(params.originalLesson.name),
+			name: this.copyHelperService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
 		});
 

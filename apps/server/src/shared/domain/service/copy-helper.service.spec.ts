@@ -94,4 +94,23 @@ describe('copy helper service', () => {
 			});
 		});
 	});
+
+	describe('deriveCopyName', () => {
+		it('should get name of element and extend it by number in brackets', () => {
+			const originalName = 'Test';
+			const nameCopy = copyHelperService.deriveCopyName(originalName);
+
+			expect(nameCopy).toEqual(`${originalName} (1)`);
+		});
+
+		it('should get name of element and increase an existing number in brackets', () => {
+			let originalName = 'Test';
+			const basename = originalName;
+			originalName += ' (12)';
+
+			const nameCopy = copyHelperService.deriveCopyName(originalName);
+
+			expect(nameCopy).toEqual(`${basename} (13)`);
+		});
+	});
 });

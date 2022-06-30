@@ -4,7 +4,6 @@ import {
 	CopyHelperService,
 	CourseCopyService,
 	LessonCopyService,
-	NameCopyService,
 	TaskCopyService,
 } from '@shared/domain';
 import {
@@ -56,7 +55,6 @@ import { RoomsUc } from './uc/rooms.uc';
 		TaskCopyService,
 		CopyHelperService,
 		CourseCopyService,
-		NameCopyService,
 		CourseCopyUC,
 		RoomsService,
 	],
