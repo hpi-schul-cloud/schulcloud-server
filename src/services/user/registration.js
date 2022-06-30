@@ -296,7 +296,8 @@ const registerUser = function register(data, params, app) {
 				}
 			}
 			if (account && account._id) {
-				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
+				// rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
+				rollbackPromises.push(app.service('nest-account-service').delete(account.id));
 			}
 			if (consent && consent._id) {
 				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());

@@ -19,11 +19,10 @@ describe('qrRegistrationLinks service tests', () => {
 
 	before(async () => {
 		app = await appPromise();
-		qrRegistrationLinksService = app.service('/users/qrRegistrationLink');
-		accountService = app.service('accounts');
-		server = await app.listen(0);
-
 		nestServices = await setupNestServices(app);
+		qrRegistrationLinksService = app.service('/users/qrRegistrationLink');
+		accountService = app.service('nest-account-service');
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -129,7 +128,7 @@ describe('qrRegistrationLinks service tests', () => {
 
 			const resp = await postRegistrationLinks(params, [String(user._id)]);
 			expect(resp.length).to.equal(0);
-			await accountService.remove(testAccount.id);
+			await accountService.delete(testAccount.id);
 		});
 
 		it('should return registration link for all users (from the caller school) with a role given (stundent)', async () => {
