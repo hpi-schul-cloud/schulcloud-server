@@ -66,7 +66,7 @@ export class TaskCopyService {
 			}));
 			const fileStatus = {
 				title: 'files',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.FILE_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 				elements,
 			};

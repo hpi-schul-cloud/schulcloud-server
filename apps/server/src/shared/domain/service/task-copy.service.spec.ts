@@ -274,8 +274,8 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				expect(filesStatus).not.toBeDefined();
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).not.toBeDefined();
 			});
 		});
 
@@ -297,9 +297,11 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileLeaf = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				expect(fileLeaf).toBeDefined();
-				const fileStatus = fileLeaf?.elements?.find((el) => el.type === CopyElementType.FILE && el.title === file.name);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				const fileStatus = fileGroup?.elements?.find(
+					(el) => el.type === CopyElementType.FILE && el.title === file.name
+				);
 				expect(fileStatus).toBeDefined();
 				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
@@ -323,9 +325,9 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				expect(fileStatus).toBeDefined();
-				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should add a status for each file under files', () => {
@@ -337,11 +339,11 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const filestatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				const fileStatusNames = filestatus?.elements?.map((el) => el.title);
-				const fileNames = files.map((file) => file.name);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				const statusFileNames = fileGroup?.elements?.map((el) => el.title);
+				const setupFileNames = files.map((file) => file.name);
 
-				expect(fileStatusNames?.sort()).toEqual(fileNames.sort());
+				expect(statusFileNames?.sort()).toEqual(setupFileNames.sort());
 			});
 
 			it('should set "not implemented" as the status of every file', () => {
@@ -353,9 +355,8 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-
-				fileStatus?.elements?.forEach((el) => {
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				fileGroup?.elements?.forEach((el) => {
 					expect(el.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 				});
 			});

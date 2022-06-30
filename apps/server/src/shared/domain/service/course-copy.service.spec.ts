@@ -272,9 +272,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				expect(filesStatus).toBeDefined();
-				expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should set status of coursegroups', () => {

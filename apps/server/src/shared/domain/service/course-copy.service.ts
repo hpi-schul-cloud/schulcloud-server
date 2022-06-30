@@ -61,7 +61,7 @@ export class CourseCopyService {
 			},
 			{
 				title: 'files',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.FILE_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
 			{
