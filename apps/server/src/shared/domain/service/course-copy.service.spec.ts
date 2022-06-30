@@ -272,7 +272,7 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.FILE && el.title === 'files');
+				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
 				expect(filesStatus).toBeDefined();
 				expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
