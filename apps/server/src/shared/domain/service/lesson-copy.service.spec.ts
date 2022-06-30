@@ -213,7 +213,7 @@ describe('lesson copy service', () => {
 				expect(lesson.contents.length).toEqual(0);
 			});
 
-			it('should not set contents status leaf', () => {
+			it('should not set contents status group', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = copyService.copyLesson({
@@ -221,9 +221,7 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-				const contentsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
-				);
+				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 				expect(contentsStatus).not.toBeDefined();
 			});
 		});
@@ -289,7 +287,7 @@ describe('lesson copy service', () => {
 				expect(lesson.contents[1].hidden).toEqual(false);
 			});
 
-			it('should set contents status leaf with correct amount of children status elements', () => {
+			it('should set contents status group with correct amount of children status elements', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = copyService.copyLesson({
@@ -297,9 +295,7 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-				const contentsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
-				);
+				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 				expect(contentsStatus).toBeDefined();
 				expect(contentsStatus?.elements?.length).toEqual(2);
 				if (contentsStatus?.elements && contentsStatus?.elements[0]) {
@@ -307,7 +303,7 @@ describe('lesson copy service', () => {
 				}
 			});
 
-			it('should set contents status leaf with correct status', () => {
+			it('should set contents status group with correct status', () => {
 				const { user, destinationCourse, originalLesson } = setup();
 
 				const status = copyService.copyLesson({
@@ -315,9 +311,7 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-				const contentsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'contents'
-				);
+				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 				expect(contentsStatus).toBeDefined();
 				expect(contentsStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});

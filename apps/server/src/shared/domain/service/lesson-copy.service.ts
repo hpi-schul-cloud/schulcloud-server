@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, IComponentProperties, Lesson, User } from '../entity';
+import { ComponentType, Course, IComponentProperties, Lesson, User } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { NameCopyService } from './name-copy.service';
 
@@ -19,7 +19,7 @@ export class LessonCopyService {
 			hidden: true,
 			name: this.nameCopyService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
-			contents: this.copyTextComponent(params.originalLesson.contents),
+			contents: this.copyTextComponent(params.originalLesson.contents || []),
 		});
 
 		const elements = [...this.lessonStatusElements(), ...this.textComponentStatus(copy.contents)];
@@ -37,9 +37,10 @@ export class LessonCopyService {
 
 	private copyTextComponent(originalContent: IComponentProperties[]): IComponentProperties[] {
 		const copiedContent: IComponentProperties[] = [];
-		const textComponents = originalContent.filter((element) => Object.keys(element.content)[0] === 'text');
-		textComponents.forEach((element) => {
-			copiedContent.push(element);
+		originalContent.forEach((element) => {
+			if (element.component === ComponentType.TEXT) {
+				copiedContent.push(element);
+			}
 		});
 		return copiedContent;
 	}
@@ -55,15 +56,14 @@ export class LessonCopyService {
 	}
 
 	private textComponentStatus(copiedTextContent: IComponentProperties[]): CopyStatus[] {
-		if (copiedTextContent.length >= 1) {
+		if (copiedTextContent.length > 0) {
 			const elements = copiedTextContent.map((content) => ({
 				title: content.title,
 				type: CopyElementType.LESSON_CONTENT,
 				status: CopyStatusEnum.SUCCESS,
 			}));
 			const componentStatus = {
-				title: 'contents',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.LESSON_CONTENT_GROUP,
 				status: CopyStatusEnum.SUCCESS,
 				elements,
 			};

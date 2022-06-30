@@ -2,7 +2,7 @@ import { BaseEntity } from '../entity/base.entity';
 
 export type CopyStatus = {
 	id?: string;
-	title: string;
+	title?: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
@@ -17,6 +17,7 @@ export enum CopyElementType {
 	'LESSON' = 'lesson',
 	'TASK' = 'task',
 	'LESSON_CONTENT' = 'lesson-content',
+	'LESSON_CONTENT_GROUP' = 'lesson-content-group',
 }
 
 export enum CopyStatusEnum {

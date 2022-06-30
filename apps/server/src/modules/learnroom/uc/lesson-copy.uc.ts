@@ -1,8 +1,8 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CopyStatus, EntityId, Lesson, LessonCopyService, PermissionContextBuilder, User } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
-import { CourseRepo, LessonRepo } from '@shared/repo';
 import { Permission } from '@shared/domain/interface/permission.enum';
+import { CourseRepo, LessonRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization';
 
 export type LessonCopyParentParams = {
 	courseId?: EntityId;

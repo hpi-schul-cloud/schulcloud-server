@@ -1,18 +1,19 @@
 import { CopyStatus } from '@shared/domain';
-import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
+import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
+import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { CopyApiResponse } from '../controller/dto/copy.response';
 
 export class CopyMapper {
 	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
 		const dto = new CopyApiResponse({
-			title: copyStatus.title,
 			type: copyStatus.type,
 			status: copyStatus.status,
 		});
-
+		if (copyStatus.title) {
+			dto.title = copyStatus.title;
+		}
 		if (copyStatus.copyEntity) {
 			dto.id = copyStatus.copyEntity.id;
 		}
