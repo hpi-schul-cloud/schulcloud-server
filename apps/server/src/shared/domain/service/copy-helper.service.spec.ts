@@ -93,6 +93,22 @@ describe('copy helper service', () => {
 				expect(inferedStatus).toEqual(CopyStatusEnum.PARTIAL);
 			});
 		});
+
+		describe('only parial successfull children', () => {
+			it('should not fail, if all children are partial successfull', () => {
+				const [one, two] = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.SUCCESS]);
+				one.elements = createStates([CopyStatusEnum.PARTIAL, CopyStatusEnum.PARTIAL]);
+				two.elements = createStates([
+					CopyStatusEnum.PARTIAL,
+					CopyStatusEnum.PARTIAL,
+					CopyStatusEnum.PARTIAL,
+					CopyStatusEnum.PARTIAL,
+				]);
+				const inferedStatus = copyHelperService.deriveStatusFromElements([one, two]);
+
+				expect(inferedStatus).toEqual(CopyStatusEnum.PARTIAL);
+			});
+		});
 	});
 
 	describe('deriveCopyName', () => {
