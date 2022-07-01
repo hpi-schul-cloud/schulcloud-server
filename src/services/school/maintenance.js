@@ -7,10 +7,9 @@ const ldapSystemFilter = (s) => s.type === 'ldap' && s.ldapConfig && s.ldapConfi
 const schoolUsesLdap = (school) => (school.systems || []).some(ldapSystemFilter);
 
 class SchoolMaintenanceService {
-	async setup(app) {
+	setup(app) {
 		this.app = app;
 		this.hooks(hooks);
-		this.years = await Years.find().lean().exec();
 	}
 
 	/**
@@ -19,8 +18,9 @@ class SchoolMaintenanceService {
 	 * @returns {Year} the next school year
 	 * @memberof SchoolMaintenanceService
 	 */
-	determineNextYear(school) {
-		const facade = new SchoolYearFacade(this.years, school);
+	async determineNextYear(school) {
+		const years = await Years.find().lean().exec();
+		const facade = new SchoolYearFacade(years, school);
 		return facade.getNextYearAfter(school.currentYear._id);
 	}
 
@@ -30,10 +30,10 @@ class SchoolMaintenanceService {
 	 * @returns {Object} { currentYear, nextYear, schoolUsesLdap, maintenance: { active, startDate } }
 	 * @memberof SchoolMaintenanceService
 	 */
-	getStatus(school) {
+	async getStatus(school) {
 		const maintenanceStatus = {
 			currentYear: school.currentYear,
-			nextYear: this.determineNextYear(school),
+			nextYear: await this.determineNextYear(school),
 			schoolUsesLdap: schoolUsesLdap(school),
 			maintenance: {
 				active: school.inMaintenance,
@@ -72,18 +72,18 @@ class SchoolMaintenanceService {
 	async create(data, params) {
 		let { school } = params;
 		const patch = {};
-		const bumpYear = () => {
-			patch.currentYear = this.determineNextYear(school);
+		const bumpYear = async () => {
+			patch.currentYear = await this.determineNextYear(school);
 			patch.$unset = { inMaintenanceSince: '' };
 		};
 		if (data.maintenance === true) {
 			if (schoolUsesLdap(school)) {
 				patch.inMaintenanceSince = Date.now();
 			} else {
-				bumpYear();
+				await bumpYear();
 			}
 		} else if (data.maintenance === false && school.inMaintenance) {
-			bumpYear();
+			await bumpYear();
 		}
 
 		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true })
