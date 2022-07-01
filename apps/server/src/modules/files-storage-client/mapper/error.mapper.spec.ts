@@ -1,4 +1,9 @@
-import { ForbiddenException, InternalServerErrorException, ValidationError as IValidationError } from '@nestjs/common';
+import {
+	BadRequestException,
+	ForbiddenException,
+	InternalServerErrorException,
+	ValidationError as IValidationError,
+} from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { ErrorMapper } from './error.mapper';
@@ -69,7 +74,7 @@ describe('ErrorMapper', () => {
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new ForbiddenException(errorText));
+			expect(result).toStrictEqual(new ForbiddenException(errorText));
 		});
 
 		it('Should map 500 axios error response to InternalServerErrorException.', () => {
@@ -81,7 +86,7 @@ describe('ErrorMapper', () => {
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map unkown axios error code to InternalServerErrorException.', () => {
@@ -93,7 +98,7 @@ describe('ErrorMapper', () => {
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map undefined axios error code to InternalServerErrorException.', () => {
@@ -106,7 +111,7 @@ describe('ErrorMapper', () => {
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map generic error to InternalServerErrorException.', () => {
@@ -115,7 +120,7 @@ describe('ErrorMapper', () => {
 			// @ts-expect-error: Test case
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map 400 api validation error response to ApiValidationError.', () => {
@@ -128,19 +133,19 @@ describe('ErrorMapper', () => {
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new ApiValidationError());
+			expect(result).toStrictEqual(new ApiValidationError());
 		});
 
-		it('Should map any 400 error that is not an ApiValidationError to InternalServerErrorException.', () => {
+		it('Should map any 400 axios error that is not an ApiValidationError to InternalServerErrorException.', () => {
 			const errorText = 'ForbiddenException ABC';
-			const json = JSON.stringify(new ForbiddenException(errorText));
+			const json = JSON.stringify(new ForbiddenException(errorText)); // ForbiddenException is miss used for testcase
 			const data = JSON.parse(json) as Record<string, unknown>;
 			const code = 400;
 
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapAxiosToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new BadRequestException(errorText));
 		});
 	});
 
@@ -151,7 +156,7 @@ describe('ErrorMapper', () => {
 			const error = new Error(errorText);
 			const result = ErrorMapper.mapErrorToDomainError(error);
 
-			expect(result).toEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
 		});
 
 		it('Should map axios error response to domain error.', () => {
@@ -163,7 +168,7 @@ describe('ErrorMapper', () => {
 			const error = createAxiosError(data, code, errorText);
 			const result = ErrorMapper.mapErrorToDomainError(error);
 
-			expect(result).toEqual(new ForbiddenException(errorText));
+			expect(result).toStrictEqual(new ForbiddenException(errorText));
 		});
 	});
 });

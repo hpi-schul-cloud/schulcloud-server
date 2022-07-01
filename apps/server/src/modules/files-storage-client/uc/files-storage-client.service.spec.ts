@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { FileApi } from '../filesStorageApi/v3';
-import { ErrorMapper, FileRequestInfoBuilder, FilesStorageClientMapper } from '../mapper';
+import { ErrorMapper, FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
 describe('FilesStorageClientAdapterService', () => {
@@ -52,8 +52,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const parentId = 'parent123';
 			const targetParentId = 'target123';
 
-			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
-			const target = FileRequestInfoBuilder.task(jwt, schoolId, targetParentId);
+			const param = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
+			const target = FileParamBuilder.buildForTask(jwt, schoolId, targetParentId);
 
 			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
 
@@ -74,8 +74,8 @@ describe('FilesStorageClientAdapterService', () => {
 			const parentId = 'parent123';
 			const targetParentId = 'target123';
 
-			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
-			const target = FileRequestInfoBuilder.task(jwt, schoolId, targetParentId);
+			const param = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
+			const target = FileParamBuilder.buildForTask(jwt, schoolId, targetParentId);
 
 			const spy = jest
 				.spyOn(ErrorMapper, 'mapErrorToDomainError')
@@ -95,7 +95,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const schoolId = 'school123';
 			const parentId = 'parent123';
 
-			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+			const param = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
 
 			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
 
@@ -115,7 +115,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const schoolId = 'school123';
 			const parentId = 'parent123';
 
-			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+			const param = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
 
 			const spy = jest
 				.spyOn(ErrorMapper, 'mapErrorToDomainError')
@@ -135,7 +135,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const schoolId = 'school123';
 			const parentId = 'parent123';
 
-			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+			const param = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
 
 			const spy = jest.spyOn(FilesStorageClientMapper, 'mapAxiosToFilesDto').mockImplementation(() => []);
 
@@ -155,7 +155,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const schoolId = 'school123';
 			const parentId = 'parent123';
 
-			const param = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+			const param = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
 
 			const spy = jest
 				.spyOn(ErrorMapper, 'mapErrorToDomainError')

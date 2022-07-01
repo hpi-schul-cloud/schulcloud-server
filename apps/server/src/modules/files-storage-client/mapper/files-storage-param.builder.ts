@@ -3,7 +3,7 @@ import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
 import { FileRequestInfo } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
-export class FileRequestInfoBuilder {
+export class FileParamBuilder {
 	static build(
 		jwt: string,
 		schoolId: EntityId,
@@ -21,8 +21,8 @@ export class FileRequestInfoBuilder {
 		return fileRequestInfo;
 	}
 
-	static task(jwt: string, schoolId: EntityId, parentId: EntityId): FileRequestInfo {
-		const fileRequestInfo = FileRequestInfoBuilder.build(jwt, schoolId, 'tasks', parentId);
+	static buildForTask(jwt: string, schoolId: EntityId, parentId: EntityId): FileRequestInfo {
+		const fileRequestInfo = FileParamBuilder.build(jwt, schoolId, 'tasks', parentId);
 
 		return fileRequestInfo;
 	}

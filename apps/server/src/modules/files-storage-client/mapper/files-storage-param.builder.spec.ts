@@ -1,5 +1,5 @@
 import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
-import { FileRequestInfoBuilder } from './file-request-info.builder';
+import { FileParamBuilder } from './file-request-info.builder';
 
 describe('FileRequestInfoBuilder', () => {
 	it('should build generic valid file request infos', () => {
@@ -8,7 +8,7 @@ describe('FileRequestInfoBuilder', () => {
 		const parentType: FileRecordParamsParentTypeEnum = 'tasks';
 		const parentId = '123';
 
-		const result = FileRequestInfoBuilder.build(jwt, schoolId, parentType, parentId);
+		const result = FileParamBuilder.build(jwt, schoolId, parentType, parentId);
 
 		const expectedResult = {
 			jwt,
@@ -27,7 +27,7 @@ describe('FileRequestInfoBuilder', () => {
 		const parentId = '123';
 
 		// @ts-expect-error: Test case
-		expect(() => FileRequestInfoBuilder.build(jwt, schoolId, parentType, parentId)).toThrowError();
+		expect(() => FileParamBuilder.build(jwt, schoolId, parentType, parentId)).toThrowError();
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {
@@ -36,7 +36,7 @@ describe('FileRequestInfoBuilder', () => {
 		const parentType: FileRecordParamsParentTypeEnum = 'tasks';
 		const parentId = '123';
 
-		const result = FileRequestInfoBuilder.task(jwt, schoolId, parentId);
+		const result = FileParamBuilder.buildForTask(jwt, schoolId, parentId);
 
 		const expectedResult = {
 			jwt,
