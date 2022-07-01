@@ -6,6 +6,7 @@ import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { UserUc } from '@src/modules/user/uc';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 
 export abstract class ProvisioningStrategy<T extends IProviderResponse> {
 	constructor(
@@ -15,6 +16,8 @@ export abstract class ProvisioningStrategy<T extends IProviderResponse> {
 	) {}
 
 	abstract getProvisioningData(): Promise<T>;
+
+	abstract getType(): SystemProvisioningStrategy;
 
 	async apply(): Promise<ProvisioningDto> {
 		const provisioningData: T = await this.getProvisioningData();

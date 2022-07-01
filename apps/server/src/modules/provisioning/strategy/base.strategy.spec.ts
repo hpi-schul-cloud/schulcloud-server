@@ -6,6 +6,7 @@ import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisioning-user-output.dto';
 import { UserUc } from '@src/modules/user/uc';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 
 const mapper: DeepMocked<IProviderResponseMapper<IProviderResponse>> =
 	createMock<IProviderResponseMapper<IProviderResponse>>();
@@ -23,6 +24,10 @@ class MockStrategy extends ProvisioningStrategy<IProviderResponse> {
 
 	override getProvisioningData(): Promise<IProviderResponse> {
 		return Promise.resolve(iProviderResponse);
+	}
+
+	getType(): SystemProvisioningStrategy {
+		return SystemProvisioningStrategy.UNDEFINED;
 	}
 }
 
