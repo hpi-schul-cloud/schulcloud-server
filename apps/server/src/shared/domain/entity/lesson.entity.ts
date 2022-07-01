@@ -14,17 +14,35 @@ export interface ILessonProperties {
 
 export enum ComponentType {
 	TEXT = 'text',
+	LERNSTORE = 'resources',
+	GEOGEBRA = 'geoGebra',
 }
 
 export interface IComponentTextProperties {
 	text: string;
 }
 
+export interface IComponentGeogebraProperties {
+	materialId: string;
+}
+
+export interface IComponentLernstoreProperties {
+	resources: [
+		{
+			url: string;
+			title: string;
+			description: string;
+			client: string;
+			merlinReference: string;
+		}
+	];
+}
+
 export interface IComponentProperties {
 	title: string;
 	hidden: boolean;
 	component: ComponentType;
-	content: IComponentTextProperties;
+	content: IComponentTextProperties | IComponentGeogebraProperties | IComponentLernstoreProperties;
 }
 
 @Entity({ tableName: 'lessons' })

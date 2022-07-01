@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ComponentType, Course, IComponentProperties, Lesson, User } from '../entity';
+import { ComponentType, Course, IComponentGeogebraProperties, IComponentProperties, Lesson, User } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { NameCopyService } from './name-copy.service';
 
@@ -19,10 +19,10 @@ export class LessonCopyService {
 			hidden: true,
 			name: this.nameCopyService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
-			contents: this.copyTextComponent(params.originalLesson.contents || []),
+			contents: this.copyLessonContents(params.originalLesson.contents || []),
 		});
 
-		const elements = [...this.lessonStatusElements(), ...this.textComponentStatus(copy.contents)];
+		const elements = [...this.lessonStatusElements(), ...this.componentStatus(copy.contents)];
 
 		const status: CopyStatus = {
 			title: copy.name,
@@ -35,14 +35,28 @@ export class LessonCopyService {
 		return status;
 	}
 
-	private copyTextComponent(originalContent: IComponentProperties[]): IComponentProperties[] {
+	private copyLessonContents(contents: IComponentProperties[]): IComponentProperties[] {
 		const copiedContent: IComponentProperties[] = [];
-		originalContent.forEach((element) => {
-			if (element.component === ComponentType.TEXT) {
+		contents.forEach((element) => {
+			if (element.component === ComponentType.TEXT || element.component === ComponentType.LERNSTORE) {
 				copiedContent.push(element);
+			} else if (element.component === ComponentType.GEOGEBRA) {
+				const geoGebraContent = this.copyGeogebra(element, element.content as IComponentGeogebraProperties);
+				copiedContent.push(geoGebraContent);
 			}
 		});
 		return copiedContent;
+	}
+
+	private copyGeogebra(
+		originalElement: IComponentProperties,
+		originalContent: IComponentGeogebraProperties
+	): IComponentProperties {
+		const copy = Object.assign(originalElement) as IComponentProperties;
+		const content = Object.assign(originalContent) as IComponentGeogebraProperties;
+		content.materialId = '';
+		copy.content = content;
+		return copy;
 	}
 
 	private lessonStatusElements(): CopyStatus[] {
@@ -55,9 +69,9 @@ export class LessonCopyService {
 		];
 	}
 
-	private textComponentStatus(copiedTextContent: IComponentProperties[]): CopyStatus[] {
-		if (copiedTextContent.length > 0) {
-			const elements = copiedTextContent.map((content) => ({
+	private componentStatus(copiedContent: IComponentProperties[]): CopyStatus[] {
+		if (copiedContent.length > 0) {
+			const elements = copiedContent.map((content) => ({
 				title: content.title,
 				type: CopyElementType.LESSON_CONTENT,
 				status: CopyStatusEnum.SUCCESS,
