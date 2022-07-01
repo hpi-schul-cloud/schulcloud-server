@@ -4,6 +4,18 @@ import { School } from '@shared/domain';
 import { schoolFactory } from '@shared/testing';
 
 describe('SchoolMapper', () => {
+	it('mapToDto', () => {
+		// Arrange
+		const schoolEntity: School = schoolFactory.buildWithId();
+
+		// Act
+		const schoolDto = SchoolMapper.mapToDto(schoolEntity);
+
+		// Assert
+		expect(schoolDto.id).toEqual(schoolEntity.id);
+		expect(schoolDto.name).toEqual(schoolEntity.name);
+	});
+
 	it('mapToEntity', () => {
 		// Arrange
 		const schoolDto: SchoolDto = new SchoolDto({ id: 'id445894', name: 'schoolName' });
