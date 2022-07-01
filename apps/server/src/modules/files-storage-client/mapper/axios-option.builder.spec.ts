@@ -1,5 +1,5 @@
 import { AxiosJWTOptionBuilder } from './axios-option.builder';
-import { FileParamBuilder } from './file-request-info.builder';
+import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('AxiosOptionBuilder', () => {
 	it('should build valid axios request config options', () => {
