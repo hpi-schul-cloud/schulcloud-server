@@ -63,6 +63,7 @@ export class LessonCopyService {
 				status: CopyStatusEnum.SUCCESS,
 			}));
 			const componentStatus = {
+				title: 'contents',
 				type: CopyElementType.LESSON_CONTENT_GROUP,
 				status: CopyStatusEnum.SUCCESS,
 				elements,

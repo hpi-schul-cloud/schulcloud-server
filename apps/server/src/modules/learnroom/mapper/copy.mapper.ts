@@ -8,12 +8,10 @@ import { CopyApiResponse } from '../controller/dto/copy.response';
 export class CopyMapper {
 	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
 		const dto = new CopyApiResponse({
+			title: copyStatus.title,
 			type: copyStatus.type,
 			status: copyStatus.status,
 		});
-		if (copyStatus.title) {
-			dto.title = copyStatus.title;
-		}
 		if (copyStatus.copyEntity) {
 			dto.id = copyStatus.copyEntity.id;
 		}
