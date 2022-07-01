@@ -61,7 +61,7 @@ describe('NextCloud Adapter Strategy', () => {
 
 		it('should call the setGroupPermissions method', async () => {
 			await strategy.updateTeamPermissionsForRole({
-				permissions: [false, false, false, false, false],
+				permissions: [false, true, false, true, false],
 				roleName: 'RoleName',
 				teamId: 'TeamId',
 				teamName: 'TeamName',
