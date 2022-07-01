@@ -27,7 +27,7 @@ const config: Config.InitialOptions = {
 		'apps/server/src/modules/files/mapper',
 		'apps/server/src/modules/files/types',
 		// TODO: Will be removed with ticket N21-138. Is also defined as acceptance criteria.
-		'apps/server/src/modules/provisioning/strategy/unknown',
+		'apps/server/src/modules/provisioning/strategy/placeholder',
 	],
 	coverageThreshold: {
 		global: {
