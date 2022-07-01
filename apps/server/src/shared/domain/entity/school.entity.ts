@@ -1,5 +1,6 @@
-import { Collection, Entity, Property, ManyToMany, Index, Embedded, Embeddable } from '@mikro-orm/core';
+import { Collection, Embeddable, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
+import { SchoolYear } from './schoolyear.entity';
 import { System } from './system.entity';
 
 export enum SchoolFeatures {
@@ -21,6 +22,7 @@ export interface ISchoolProperties {
 	officialSchoolNumber?: string;
 	systems?: System[];
 	features?: SchoolFeatures[];
+	schoolYear: SchoolYear;
 }
 
 @Embeddable()
@@ -53,6 +55,7 @@ export class School extends BaseEntity {
 		if (props.officialSchoolNumber) this.officialSchoolNumber = props.officialSchoolNumber;
 		if (props.systems) this.systems.set(props.systems);
 		if (props.features) this.features = props.features;
+		this.schoolYear = props.schoolYear;
 	}
 
 	@Property({ nullable: true })
@@ -78,4 +81,7 @@ export class School extends BaseEntity {
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
+
+	@ManyToOne('SchoolYear', { fieldName: 'currentYear' })
+	schoolYear: SchoolYear;
 }
