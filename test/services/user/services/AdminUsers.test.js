@@ -416,15 +416,7 @@ describe('AdminUsersService', () => {
 			roles: ['student'],
 			schoolId,
 		};
-		try {
-			await adminStudentsService.create(mockData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal(
-				'Creating, editing, or removing students or teachers is only possible in the source system.'
-			);
-		}
+		await expect(adminStudentsService.create(mockData, params)).to.be.rejected;
 	});
 
 	it('does not allow user creation if email already exists', async () => {
@@ -438,15 +430,10 @@ describe('AdminUsersService', () => {
 			schoolId: admin.schoolId,
 		};
 		// creates first student with unique data
-		await adminStudentsService.create(mockData, params);
+		const student = await adminStudentsService.create(mockData, params);
 		// creates second student with existent data
-		try {
-			await adminStudentsService.create(mockData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('Email already exists.');
-		}
+		await expect(adminStudentsService.create(mockData, params)).to.be.rejected;
+		await app.service('usersModel').remove(student._id);
 	});
 
 	it('does not allow user creation if email is disposable', async () => {
@@ -460,13 +447,7 @@ describe('AdminUsersService', () => {
 			schoolId: admin.schoolId,
 		};
 		// creates student with disposable email
-		try {
-			await adminStudentsService.create(mockData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
-		}
+		await expect(adminStudentsService.create(mockData, params)).to.be.rejected;
 	});
 
 	it('ignore schoolId', async () => {
@@ -515,14 +496,7 @@ describe('AdminUsersService', () => {
 			roles: ['noStudentListPerm'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-
-		try {
-			await adminStudentsService.find(params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_LIST.");
-		}
+		await expect(adminStudentsService.find(params)).to.be.rejected;
 	});
 
 	it('users with STUDENT_LIST permission can access the GET method', async () => {
@@ -564,14 +538,7 @@ describe('AdminUsersService', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
-
-		try {
-			await adminStudentsService.get(student._id, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_LIST.");
-		}
+		await expect(adminStudentsService.get(student._id, params)).to.be.rejected;
 	});
 
 	it('users cannot GET students from foreign schools', async () => {
@@ -617,6 +584,7 @@ describe('AdminUsersService', () => {
 		const student = await adminStudentsService.create(studentData, params);
 		expect(student).to.not.be.undefined;
 		expect(student.firstName).to.equals('testCreateStudent');
+		await app.service('usersModel').remove(student._id);
 	});
 
 	it('users without STUDENT_CREATE permission cannot access the CREATE method', async () => {
@@ -637,14 +605,7 @@ describe('AdminUsersService', () => {
 			firstName: 'testCreateStudent',
 			roles: ['student'],
 		});
-
-		try {
-			await adminStudentsService.create(studentData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_CREATE.");
-		}
+		await expect(adminStudentsService.create(studentData, params)).to.be.rejected;
 	});
 
 	it('users with STUDENT_DELETE permission can access the REMOVE method', async () => {
@@ -704,13 +665,8 @@ describe('AdminUsersService', () => {
 			...params.query,
 			_ids: [],
 		};
-		try {
-			await adminStudentsService.remove(student, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_DELETE.");
-		}
+		await expect(adminStudentsService.remove(student, params)).to.be.rejected;
+		await app.service('usersModel').remove(student._id);
 	});
 
 	it('does not allow externally managed schools to remove users', async () => {
@@ -725,15 +681,7 @@ describe('AdminUsersService', () => {
 			...params.query,
 			_ids: [student._id],
 		};
-		try {
-			await adminStudentsService.remove(student, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal(
-				'Creating, editing, or removing students or teachers is only possible in the source system.'
-			);
-		}
+		await expect(adminStudentsService.remove(student, params)).to.be.rejected;
 	});
 
 	it('users cannot REMOVE students from foreign schools', async () => {
@@ -757,13 +705,7 @@ describe('AdminUsersService', () => {
 			...params.query,
 			_ids: [studentOne._id, studentTwo._id],
 		};
-		try {
-			await adminStudentsService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You cannot remove users from other schools.');
-		}
+		await expect(adminStudentsService.remove(null, params)).to.be.rejected;
 	});
 
 	it('REMOVED users should also have their account deleted', async () => {
@@ -790,13 +732,17 @@ describe('AdminUsersService', () => {
 			password: 'ca4t9fsfr3dsd',
 			userId: student._id,
 		};
-		const studentAccount = await app.service('/accounts').create(accountDetails);
+
+		await app.service('nest-account-uc').saveAccount(accountDetails);
+		const result = await accountService.searchByUsernameExactMatch(accountDetails.username);
+		const studentAccount = result.accounts[0];
 
 		params.query = {
 			...params.query,
 			_ids: [student._id],
 		};
-		const deletedAccount = await app.service('accountModel').get(studentAccount._id);
+
+		const deletedAccount = await accountService.findById(studentAccount.id);
 		expect(deletedAccount).to.not.be.undefined;
 		expect(deletedAccount.username).to.equals(studentAccount.username);
 
@@ -804,12 +750,7 @@ describe('AdminUsersService', () => {
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 
-		try {
-			await app.service('accountModel').get(studentAccount._id);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(404);
-		}
+		await expect(accountService.findById(studentAccount.id)).to.be.rejected;
 	});
 
 	it('REMOVE requests must include _ids or id', async () => {
@@ -817,13 +758,8 @@ describe('AdminUsersService', () => {
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		// empty query without _ids key
 		params.query = {};
-		try {
-			await adminStudentsService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The request requires either an id or ids to be present.');
-		}
+
+		expect(adminStudentsService.remove(null, params)).to.be.rejected;
 	});
 
 	it('_ids must be of array type', async () => {
@@ -833,13 +769,7 @@ describe('AdminUsersService', () => {
 			...params.query,
 			_ids: 'this is the wrong type',
 		};
-		try {
-			await adminStudentsService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The type for ids is incorrect.');
-		}
+		await expect(adminStudentsService.remove(null, params)).to.be.rejected;
 	});
 
 	it('_ids elements must be a valid objectId', async () => {
@@ -882,13 +812,8 @@ describe('AdminUsersService', () => {
 			_ids: [otherStudent._id, 'wrong type'],
 		};
 
-		try {
-			await adminStudentsService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The type for either one or several ids is incorrect.');
-		}
+		await expect(adminStudentsService.remove(null, params)).to.be.rejected;
+		await app.service('usersModel').remove(otherStudent._id);
 	});
 
 	it('id can be both object and string type', async () => {
@@ -1286,6 +1211,7 @@ describe('AdminUsersService', () => {
 
 describe('AdminTeachersService', () => {
 	let app;
+	let accountService;
 	let adminTeachersService;
 	let consentService;
 	let server;
@@ -1294,6 +1220,7 @@ describe('AdminTeachersService', () => {
 	before(async () => {
 		app = await appPromise();
 		nestServices = await setupNestServices(app);
+		accountService = app.service('nest-account-service');
 		adminTeachersService = app.service('/users/admin/teachers');
 		consentService = app.service('consents');
 		server = await app.listen(0);
@@ -1318,14 +1245,7 @@ describe('AdminTeachersService', () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
-		try {
-			await adminTeachersService.find(params);
-			throw new Error('should have failed');
-		} catch (err) {
-			expect(err.message).to.not.equal('should have failed');
-			expect(err.message).to.equal(testGenericErrorMessage);
-			expect(err.code).to.equal(403);
-		}
+		await expect(adminTeachersService.find(params)).to.be.rejected;
 	});
 
 	// https://ticketsystem.dbildungscloud.de/browse/SC-5061
@@ -1411,15 +1331,7 @@ describe('AdminTeachersService', () => {
 			roles: ['teacher'],
 			schoolId,
 		};
-		try {
-			await adminTeachersService.create(mockData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal(
-				'Creating, editing, or removing students or teachers is only possible in the source system.'
-			);
-		}
+		await expect(adminTeachersService.create(mockData, params)).to.be.rejected;
 	});
 
 	it('does not allow user creation if email already exists', async () => {
@@ -1433,15 +1345,10 @@ describe('AdminTeachersService', () => {
 			schoolId: admin.schoolId,
 		};
 		// creates first teacher with unique data
-		await adminTeachersService.create(mockData, params);
+		const teacher = await adminTeachersService.create(mockData, params);
 		// creates second teacher with existent data
-		try {
-			await adminTeachersService.create(mockData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('Email already exists.');
-		}
+		await expect(adminTeachersService.create(mockData, params)).to.be.rejected;
+		await app.service('usersModel').remove(teacher._id);
 	});
 
 	it('does not allow user creation if email is disposable', async () => {
@@ -1455,13 +1362,7 @@ describe('AdminTeachersService', () => {
 			schoolId: admin.schoolId,
 		};
 		// creates teacher with disposable email
-		try {
-			await adminTeachersService.create(mockData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
-		}
+		await expect(adminTeachersService.create(mockData, params)).to.be.rejected;
 	});
 
 	it('users with TEACHER_LIST permission can access the FIND method', async () => {
@@ -1488,14 +1389,7 @@ describe('AdminTeachersService', () => {
 			roles: ['noTeacherListPerm'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-
-		try {
-			await adminTeachersService.find(params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: TEACHER_LIST.");
-		}
+		await expect(adminTeachersService.find(params)).to.be.rejected;
 	});
 
 	it('users with TEACHER_LIST permission can access the GET method', async () => {
@@ -1537,14 +1431,7 @@ describe('AdminTeachersService', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-
-		try {
-			await adminTeachersService.get(teacher._id, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: TEACHER_LIST.");
-		}
+		await expect(adminTeachersService.get(teacher._id, params)).to.be.rejected;
 	});
 
 	it('users cannot GET teachers from foreign schools', async () => {
@@ -1590,6 +1477,7 @@ describe('AdminTeachersService', () => {
 		const teacher = await adminTeachersService.create(teacherData, params);
 		expect(teacher).to.not.be.undefined;
 		expect(teacher.firstName).to.equals('testCreateTeacher');
+		await app.service('usersModel').remove(teacher._id);
 	});
 
 	it('users without TEACHER_CREATE permission cannot access the CREATE method', async () => {
@@ -1610,14 +1498,7 @@ describe('AdminTeachersService', () => {
 			firstName: 'testCreateTeacher',
 			roles: ['teacher'],
 		});
-
-		try {
-			await adminTeachersService.create(teacherData, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: TEACHER_CREATE.");
-		}
+		await expect(adminTeachersService.create(teacherData, params)).to.be.rejected;
 	});
 
 	it('users with TEACHER_DELETE permission can access the REMOVE method', async () => {
@@ -1677,13 +1558,8 @@ describe('AdminTeachersService', () => {
 			...params.query,
 			_ids: [],
 		};
-		try {
-			await adminTeachersService.remove(teacher, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have one of the permissions: TEACHER_DELETE.");
-		}
+		await expect(adminTeachersService.remove(teacher, params)).to.be.rejected;
+		await app.service('usersModel').remove(teacher._id);
 	});
 
 	it('users cannot REMOVE teachers from foreign schools', async () => {
@@ -1707,13 +1583,7 @@ describe('AdminTeachersService', () => {
 			...params.query,
 			_ids: [teacherOne._id, teacherTwo._id],
 		};
-		try {
-			await adminTeachersService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You cannot remove users from other schools.');
-		}
+		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
 	});
 
 	it('does not allow externally managed schools to remove users', async () => {
@@ -1728,15 +1598,7 @@ describe('AdminTeachersService', () => {
 			...params.query,
 			_ids: [teacher._id],
 		};
-		try {
-			await adminTeachersService.remove(teacher, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal(
-				'Creating, editing, or removing students or teachers is only possible in the source system.'
-			);
-		}
+		await expect(adminTeachersService.remove(teacher, params)).to.be.rejected;
 	});
 
 	it('REMOVED users should also have their account deleted', async () => {
@@ -1763,13 +1625,17 @@ describe('AdminTeachersService', () => {
 			password: 'ca4t9fsfr3dsd',
 			userId: teacher._id,
 		};
-		const teacherAccount = await app.service('/accounts').create(accountDetails);
+
+		await app.service('nest-account-uc').saveAccount(accountDetails);
+		const result = await accountService.searchByUsernameExactMatch(accountDetails.username);
+		const teacherAccount = result.accounts[0];
 
 		params.query = {
 			...params.query,
 			_ids: [teacher._id],
 		};
-		const deletedAccount = await app.service('accountModel').get(teacherAccount._id);
+
+		const deletedAccount = await accountService.findById(teacherAccount.id);
 		expect(deletedAccount).to.not.be.undefined;
 		expect(deletedAccount.username).to.equals(teacherAccount.username);
 
@@ -1777,12 +1643,7 @@ describe('AdminTeachersService', () => {
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.firstName).to.equals('testDeleteTeacher');
 
-		try {
-			await app.service('accountModel').get(teacherAccount._id);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(404);
-		}
+		await expect(accountService.findById(teacherAccount.id)).to.be.rejected;
 	});
 
 	it('REMOVE requests must include _ids or id', async () => {
@@ -1790,13 +1651,7 @@ describe('AdminTeachersService', () => {
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		// empty query without _ids key
 		params.query = {};
-		try {
-			await adminTeachersService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The request requires either an id or ids to be present.');
-		}
+		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
 	});
 
 	it('_ids must be of array type', async () => {
@@ -1806,13 +1661,7 @@ describe('AdminTeachersService', () => {
 			...params.query,
 			_ids: 'this is the wrong type',
 		};
-		try {
-			await adminTeachersService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The type for ids is incorrect.');
-		}
+		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
 	});
 
 	it('_ids elements must be a valid objectId', async () => {
@@ -1855,13 +1704,8 @@ describe('AdminTeachersService', () => {
 			_ids: [otherTeacher._id, 'wrong type'],
 		};
 
-		try {
-			await adminTeachersService.remove(null, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The type for either one or several ids is incorrect.');
-		}
+		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
+		await app.service('usersModel').remove(otherTeacher._id);
 	});
 
 	it('id can be both object and string type', async () => {
