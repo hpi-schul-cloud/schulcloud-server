@@ -26,8 +26,6 @@ data:
     fi
     curl --retry 5000 --retry-connrefused --retry-delay 10 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-    ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
-    mongo $DATABASE__URL --eval 'db.systems.remove([{ "oauthConfig" { "provider" : "iserv" }}]);
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
       "alias" : "Schulserver",
@@ -46,21 +44,6 @@ data:
         }
       },
       "type" : "ldap"
-      "oauthConfig": {
-        "clientId": "'$ISERV_CLIENT_ID'",
-        "clientSecret": "'$ISERV_CLIENT_SECRET'",
-        "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
-        "grantType": "authorization_code",
-        "tokenRedirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/0000d186816abba584714c92/token",
-        "scope": "openid uuid",
-        "responseType": "code",
-        "codeRedirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/0000d186816abba584714c92",
-        "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
-        "provider": "iserv",
-        "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
-        "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
-        "issuer": "https://iserv.n21.dbildungscloud.de"
-      }
     },
     {
       "type" : "ldap",
