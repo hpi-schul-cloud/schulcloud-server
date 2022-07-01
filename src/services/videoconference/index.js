@@ -276,8 +276,11 @@ function getSettings(
 		logoutURL,
 	};
 
-	if (moderatorMustApproveJoinRequests && role !== ROLES.MODERATOR) {
-		settings.guest = true;
+	if (moderatorMustApproveJoinRequests) {
+		if (role !== ROLES.MODERATOR) {
+			settings.guest = true;
+		}
+		settings.guestPolicy = 'ASK_MODERATOR';
 	}
 
 	if (everybodyJoinsAsModerator) {

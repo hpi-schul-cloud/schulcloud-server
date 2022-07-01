@@ -2,18 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ProvisioningUc } from '@src/modules/provisioning/uc/provisioning.uc';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
-import { UnknownProvisioningStrategy } from '@src/modules/provisioning/strategy/unknown/unknown.strategy';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
 import { HttpException } from '@nestjs/common';
+import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
 
 describe('ProvisioningUc', () => {
 	let module: TestingModule;
 	let provisioningUc: ProvisioningUc;
 
 	let systemUc: DeepMocked<SystemUc>;
-	let unknownStrategy: DeepMocked<UnknownProvisioningStrategy>;
+	let unknownStrategy: DeepMocked<PlaceholderProvisioningStrategy>;
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
@@ -25,8 +25,8 @@ describe('ProvisioningUc', () => {
 					useValue: createMock<SystemUc>(),
 				},
 				{
-					provide: UnknownProvisioningStrategy,
-					useValue: createMock<UnknownProvisioningStrategy>(),
+					provide: PlaceholderProvisioningStrategy,
+					useValue: createMock<PlaceholderProvisioningStrategy>(),
 				},
 				{
 					provide: Logger,
@@ -37,7 +37,7 @@ describe('ProvisioningUc', () => {
 		provisioningUc = module.get(ProvisioningUc);
 
 		systemUc = module.get(SystemUc);
-		unknownStrategy = module.get(UnknownProvisioningStrategy);
+		unknownStrategy = module.get(PlaceholderProvisioningStrategy);
 		logger = module.get(Logger);
 	});
 
@@ -53,7 +53,7 @@ describe('ProvisioningUc', () => {
 		const unknownSystemStrategyId = 'unknownSystemId';
 		const unknownStrategySystem: SystemDto = new SystemDto({
 			type: 'unknown',
-			provisioningStrategy: SystemProvisioningStrategy.UNKNOWN,
+			provisioningStrategy: SystemProvisioningStrategy.PLACEHOLDER,
 		});
 
 		beforeEach(() => {

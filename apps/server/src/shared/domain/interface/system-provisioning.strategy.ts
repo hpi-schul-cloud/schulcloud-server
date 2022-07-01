@@ -1,4 +1,4 @@
 export enum SystemProvisioningStrategy {
-	UNKNOWN = 'unknown',
+	PLACEHOLDER = 'placeholder',
 	UNDEFINED = 'undefined',
 }

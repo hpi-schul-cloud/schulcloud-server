@@ -5,12 +5,12 @@ import { UserUc } from '@src/modules/user/uc';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { RoleUc } from '@src/modules/role/uc/role.uc';
 import { SystemUc } from '@src/modules/system/uc/system.uc';
-import { UnknownProvisioningStrategy } from '@src/modules/provisioning/strategy/unknown/unknown.strategy';
 import { UserModule } from '@src/modules';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SystemModule } from '@src/modules/system/system.module';
-import { UnknownResponseMapper } from '@src/modules/provisioning/strategy/unknown/unknown-response.mapper';
+import { PlaceholderResponseMapper } from '@src/modules/provisioning/strategy/placeholder/placeholder-response.mapper';
+import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
 
 @Module({
 	imports: [UserModule, SchoolModule, RoleModule, SystemModule, LoggerModule],
@@ -21,9 +21,9 @@ import { UnknownResponseMapper } from '@src/modules/provisioning/strategy/unknow
 		SchoolUc,
 		RoleUc,
 		SystemUc,
-		UnknownProvisioningStrategy,
+		PlaceholderProvisioningStrategy,
 		Logger,
-		UnknownResponseMapper,
+		PlaceholderResponseMapper,
 	],
 	exports: [ProvisioningUc],
 })

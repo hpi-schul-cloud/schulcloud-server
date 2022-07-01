@@ -13,16 +13,20 @@ export class SchoolService {
 
 		let savedSchool: School;
 		if (school.id) {
-			const entity: School = await this.schoolRepo.findById(school.id);
-			const patchedEntity = SchoolMapper.mapEntityToEntity(entity, school);
-
-			await this.schoolRepo.save(patchedEntity);
-
-			savedSchool = patchedEntity;
+			savedSchool = await this.patchSchool(school);
 		} else {
 			savedSchool = await this.schoolRepo.createAndSave(school);
 		}
 		const returnSchoolDto: SchoolDto = SchoolMapper.mapToDto(savedSchool);
 		return returnSchoolDto;
+	}
+
+	private async patchSchool(school: School) {
+		const entity: School = await this.schoolRepo.findById(school.id);
+		const patchedEntity = SchoolMapper.mapEntityToEntity(entity, school);
+
+		await this.schoolRepo.save(patchedEntity);
+
+		return patchedEntity;
 	}
 }

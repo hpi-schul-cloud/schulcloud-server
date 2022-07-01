@@ -3,16 +3,16 @@ import { SystemUc } from '@src/modules/system/uc/system.uc';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
 import { IProviderResponse } from '@src/modules/provisioning/interface/provider.response.interface';
-import { UnknownProvisioningStrategy } from '@src/modules/provisioning/strategy/unknown/unknown.strategy';
 import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
+import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
 
 @Injectable()
 export class ProvisioningUc {
 	constructor(
 		private readonly systemUc: SystemUc,
-		private readonly unknownStrategy: UnknownProvisioningStrategy,
+		private readonly placeholderStrategy: PlaceholderProvisioningStrategy,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ProvisioningUc.name);
@@ -29,8 +29,8 @@ export class ProvisioningUc {
 
 		let strategy: ProvisioningStrategy<IProviderResponse>;
 		switch (system.provisioningStrategy) {
-			case SystemProvisioningStrategy.UNKNOWN:
-				strategy = this.unknownStrategy;
+			case SystemProvisioningStrategy.PLACEHOLDER:
+				strategy = this.placeholderStrategy;
 				break;
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);

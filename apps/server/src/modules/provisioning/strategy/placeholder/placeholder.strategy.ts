@@ -1,12 +1,12 @@
 import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.strategy';
-import { UnknownResponse } from '@src/modules/provisioning/strategy/unknown/unknown.response';
 import { Injectable } from '@nestjs/common';
+import { PlaceholderResponse } from '@src/modules/provisioning/strategy/placeholder/placeholder.response';
 
 @Injectable()
-export class UnknownProvisioningStrategy extends ProvisioningStrategy<UnknownResponse> {
-	override getProvisioningData(): Promise<UnknownResponse> {
+export class PlaceholderProvisioningStrategy extends ProvisioningStrategy<PlaceholderResponse> {
+	override getProvisioningData(): Promise<PlaceholderResponse> {
 		return Promise.resolve(
-			new UnknownResponse({
+			new PlaceholderResponse({
 				email: 'unknownMail@mail.de',
 				firstName: 'unknownFirstname',
 				lastName: 'unknownLastname',
