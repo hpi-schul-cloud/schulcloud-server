@@ -1,7 +1,7 @@
 import { FileRecordParamsParentTypeEnum } from '../filesStorageApi/v3';
-import { FileParamBuilder } from './file-request-info.builder';
+import { FileParamBuilder } from './files-storage-param.builder';
 
-describe('FileRequestInfoBuilder', () => {
+describe('FileParamBuilder', () => {
 	it('should build generic valid file request infos', () => {
 		const jwt = 'jwt';
 		const schoolId = '123';
