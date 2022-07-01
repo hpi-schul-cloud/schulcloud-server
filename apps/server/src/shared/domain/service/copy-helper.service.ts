@@ -21,18 +21,13 @@ export class CopyHelperService {
 		return CopyStatusEnum.SUCCESS;
 	}
 
-	deriveCopyName(name: string, skipNames?: string[]): string {
+	deriveCopyName(name: string): string {
 		let number = 1;
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
 			name = matches.groups.name;
 			number = Number(matches.groups.number) + 1;
 		}
-
-		const composedName = `${name} (${number})`;
-		if (skipNames?.includes(composedName)) {
-			return this.deriveCopyName(composedName);
-		}
-		return composedName;
+		return `${name} (${number})`;
 	}
 }
