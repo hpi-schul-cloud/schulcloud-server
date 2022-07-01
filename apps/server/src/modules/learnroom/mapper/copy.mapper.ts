@@ -12,6 +12,7 @@ export class CopyMapper {
 			type: copyStatus.type,
 			status: copyStatus.status,
 		});
+
 		if (copyStatus.copyEntity) {
 			dto.id = copyStatus.copyEntity.id;
 		}
