@@ -177,7 +177,7 @@ describe('NextCloud Adapter Strategy', () => {
 			expect(strategy.httpService.delete).toBeCalledTimes(2);
 		});
 
-		it('should not find the groupId and throw a NotFoundException', async () => {
+		it('should throw a NotFoundException when groupId is not found', async () => {
 			jest
 				.spyOn(strategy.httpService, 'get')
 				// needed for proper mocking
@@ -195,7 +195,7 @@ describe('NextCloud Adapter Strategy', () => {
 			await expect(strategy.deleteGroupfolderAndRemoveGroup(teamIdMock)).rejects.toThrow(NotFoundException);
 		});
 
-		it('should not find the folderId and throw a NotFoundException', async () => {
+		it('should throw a NotFoundException when folderId is not found', async () => {
 			jest
 				.spyOn(strategy.httpService, 'get')
 				// needed for proper mocking

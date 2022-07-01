@@ -9,6 +9,7 @@ import { TeamPermissionsBody } from '@src/modules/collaborative-storage/controll
 describe('TeamStorageUc', () => {
 	let module: TestingModule;
 	let uc: CollaborativeStorageUc;
+	let service: CollaborativeStorageService;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -25,6 +26,7 @@ describe('TeamStorageUc', () => {
 			],
 		}).compile();
 		uc = module.get(CollaborativeStorageUc);
+		service = module.get(CollaborativeStorageService);
 	});
 
 	describe('Update TeamRole Permissions', () => {
@@ -44,6 +46,7 @@ describe('TeamStorageUc', () => {
 
 		it('should call the service', async () => {
 			await uc.updateUserPermissionsForRole('mockUser', teamrole, permissions);
+			expect(service.updateTeamPermissionsForRole).toHaveBeenCalled();
 		});
 	});
 
@@ -51,6 +54,8 @@ describe('TeamStorageUc', () => {
 		it('should call the service', () => {
 			const teamIdMock = 'teamIdMock';
 			uc.deleteTeam(teamIdMock);
+			expect(service.deleteTeam).toHaveBeenCalled();
+			expect(service.deleteTeam).toHaveBeenCalledWith(teamIdMock);
 		});
 	});
 });
