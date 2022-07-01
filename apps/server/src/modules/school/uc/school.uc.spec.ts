@@ -3,11 +3,12 @@ import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
 	let schoolUc: SchoolUc;
-	let schoolService: SchoolService;
+	let schoolService: DeepMocked<SchoolService>;
 	let schoolDto: SchoolDto;
 
 	beforeAll(async () => {
@@ -16,11 +17,7 @@ describe('SchoolUc', () => {
 				SchoolUc,
 				{
 					provide: SchoolService,
-					useValue: {
-						saveSchool: jest.fn().mockImplementation((): Promise<void> => {
-							return Promise.resolve();
-						}),
-					},
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
@@ -34,6 +31,10 @@ describe('SchoolUc', () => {
 
 	beforeEach(() => {
 		schoolDto = new SchoolDto({ name: 'schule1234' });
+
+		schoolService.createOrUpdateSchool.mockImplementation((): Promise<SchoolDto> => {
+			return Promise.resolve(schoolDto);
+		});
 	});
 
 	describe('saveSchool', () => {
