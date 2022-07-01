@@ -304,8 +304,9 @@ export class AccountUc {
 		}
 
 		const userPreferences = <UserPreferences>user.preferences;
+		const firstLoginPassed = userPreferences ? userPreferences.firstLogin : false;
 
-		if (!user.forcePasswordChange && userPreferences.firstLogin) {
+		if (!user.forcePasswordChange && firstLoginPassed) {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 

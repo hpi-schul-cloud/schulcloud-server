@@ -722,6 +722,13 @@ describe('AccountUc', () => {
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
 		});
+		it('should allow to set strong password, if this is the users first login (if undefined)', async () => {
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = undefined;
+			await expect(
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
+			).resolves.not.toThrow();
+		});
 		it('should throw if user can not be updated', async () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = { firstLogin: false };
