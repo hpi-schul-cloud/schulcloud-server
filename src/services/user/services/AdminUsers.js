@@ -48,6 +48,15 @@ class AdminUsers {
 		this.docs = {};
 	}
 
+	async setRole() {
+		if (!this.role) {
+			const role = await this.app.service('roles').find({
+				query: { name: this.roleName },
+			});
+			this.role = role.data[0];
+		}
+	}
+
 	async find(params) {
 		return this.getUsers(undefined, params);
 	}
@@ -59,13 +68,7 @@ class AdminUsers {
 	async getUsers(_id, params) {
 		// integration test did not get the role in the setup
 		// so here is a workaround set it at first call
-		if (!this.role) {
-			this.role = (
-				await this.app.service('roles').find({
-					query: { name: this.roleName },
-				})
-			).data[0];
-		}
+		await this.setRole();
 
 		try {
 			const { query: clientQuery = {}, account } = params;
@@ -155,6 +158,7 @@ class AdminUsers {
 	}
 
 	async create(_data, _params) {
+		await this.setRole();
 		const currentUserId = _params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
 		await this.checkIfExternallyManaged(schoolId);
@@ -174,7 +178,7 @@ class AdminUsers {
 
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
-
+		await this.setRole();
 		const params = await this.prepareParams(_id, _params);
 		await this.checkIfExternallyManaged(params.query.schoolId);
 
@@ -282,6 +286,7 @@ class AdminUsers {
 	}
 
 	async remove(id, params) {
+		await this.setRole();
 		const { _ids } = params.query;
 		const currentUser = await getCurrentUserInfo(params.account.userId);
 		await this.checkIfExternallyManaged(currentUser.schoolId);
@@ -306,11 +311,6 @@ class AdminUsers {
 
 	async setup(app) {
 		this.app = app;
-		this.role = (
-			await this.app.service('roles').find({
-				query: { name: this.roleName },
-			})
-		).data[0];
 	}
 }
 
