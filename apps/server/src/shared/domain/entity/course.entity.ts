@@ -106,6 +106,9 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	}
 
 	private getShortTitle(): string {
+		if (this.name.length === 1) {
+			return this.name;
+		}
 		const [firstChar, secondChar] = [...this.name];
 		const pattern = /\p{Extended_Pictographic}/u;
 		if (pattern.test(firstChar)) {
