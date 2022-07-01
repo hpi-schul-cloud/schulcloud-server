@@ -122,7 +122,7 @@ const updateAccountUsername = async (context) => {
 
 	await app
 		.service('nest-account-service')
-		.updateUsername(account.id, email)
+		.updateUsername(account.id ? account.id : account._id.toString(), email)
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
 		});
