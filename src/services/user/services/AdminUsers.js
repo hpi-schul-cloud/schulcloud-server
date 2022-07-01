@@ -246,8 +246,10 @@ class AdminUsers {
 	async updateAccount(email, userId) {
 		if (email) {
 			email = email.toLowerCase();
-			const account = await this.app.service('nest-account-service').findByUserIdOrFail(userId.toString());
-			await this.app.service('nest-account-service').updateUsername(account.id, email);
+			const account = await this.app.service('nest-account-service').findByUserId(userId.toString());
+			if (account) {
+				await this.app.service('nest-account-service').updateUsername(account.id, email);
+			}
 		}
 	}
 

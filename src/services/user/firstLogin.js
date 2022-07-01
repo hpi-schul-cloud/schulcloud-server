@@ -1,8 +1,6 @@
 const moment = require('moment');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const constants = require('../../utils/constants');
-const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
 
 const getAutomaticConsent = () => ({
 	form: 'digital',
