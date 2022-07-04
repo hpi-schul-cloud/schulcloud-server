@@ -1,4 +1,4 @@
-import { Check, Entity, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 
 export interface ISchoolYear {
@@ -10,7 +10,6 @@ export interface ISchoolYear {
 @Entity({ tableName: 'years' })
 export class SchoolYear extends BaseEntity implements ISchoolYear {
 	@Property()
-	@Check({ expression: '/^[0-9]{4}/[0-9]{2}$/.test(name)' })
 	name: string;
 
 	@Property()
