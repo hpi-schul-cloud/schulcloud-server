@@ -1,8 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
-
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
-
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
@@ -57,11 +55,11 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	color: string = DEFAULT.color;
 
 	@Property({ nullable: true })
-	startDate?: Date;
+	startDate? = new Date();
 
 	@Index()
 	@Property({ nullable: true })
-	untilDate?: Date;
+	untilDate? = new Date();
 
 	@Property({ nullable: true })
 	@Unique({ options: { sparse: true } })
