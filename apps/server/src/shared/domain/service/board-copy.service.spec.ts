@@ -143,7 +143,7 @@ describe('board copy service', () => {
 				const destinationCourse = courseFactory.build();
 				const originalBoard = boardFactory.build({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.build();
-				const lessonCopy = taskFactory.build({ name: originalLesson.name });
+				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
 
 				lessonCopyService.copyLesson.mockReturnValue({
 					title: originalLesson.name,
@@ -178,6 +178,90 @@ describe('board copy service', () => {
 					(el) => el.type === CopyElementType.LESSON && el.title === originalLesson.name
 				);
 				expect(lessonStatus).toBeDefined();
+			});
+		});
+
+		describe('when board contains different types of elements', () => {
+			const setup = () => {
+				const originalTask = taskFactory.build();
+				const taskElement = taskBoardElementFactory.build({ target: originalTask });
+				const taskCopy = taskFactory.build({ name: originalTask.name });
+
+				const originalLesson = lessonFactory.build();
+				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
+				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
+
+				const destinationCourse = courseFactory.build();
+				const originalBoard = boardFactory.build({
+					references: [lessonElement, taskElement],
+					course: destinationCourse,
+				});
+				const user = userFactory.build();
+
+				return { destinationCourse, originalBoard, user, taskCopy, lessonCopy };
+			};
+
+			it('should set board status correct if all element types were copied successful', () => {
+				const { destinationCourse, originalBoard, user, taskCopy, lessonCopy } = setup();
+
+				taskCopyService.copyTaskMetadata.mockReturnValue({
+					title: taskCopy.name,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: taskCopy,
+				});
+
+				lessonCopyService.copyLesson.mockReturnValue({
+					title: lessonCopy.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
+			});
+
+			it('should set board status correct if one element type was not copied successful', () => {
+				const { destinationCourse, originalBoard, user, taskCopy, lessonCopy } = setup();
+
+				taskCopyService.copyTaskMetadata.mockReturnValue({
+					title: taskCopy.name,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: taskCopy,
+				});
+
+				lessonCopyService.copyLesson.mockReturnValue({
+					title: lessonCopy.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.PARTIAL,
+					copyEntity: lessonCopy,
+				});
+
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
+			});
+
+			it('should set board status correct if no element type was copied successful', () => {
+				const { destinationCourse, originalBoard, user, taskCopy, lessonCopy } = setup();
+
+				taskCopyService.copyTaskMetadata.mockReturnValue({
+					title: taskCopy.name,
+					type: CopyElementType.TASK,
+					status: CopyStatusEnum.PARTIAL,
+					copyEntity: taskCopy,
+				});
+
+				lessonCopyService.copyLesson.mockReturnValue({
+					title: lessonCopy.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.FAIL,
+					copyEntity: lessonCopy,
+				});
+
+				const status = copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(status.status).toEqual(CopyStatusEnum.FAIL);
 			});
 		});
 	});
