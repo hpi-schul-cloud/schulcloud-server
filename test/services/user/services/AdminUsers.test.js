@@ -608,7 +608,7 @@ describe('AdminUsersService', () => {
 		await expect(adminStudentsService.create(studentData, params)).to.be.rejected;
 	});
 
-	it('users with STUDENT_DELETE permission can access the REMOVE method', async () => {
+	it.skip('users with STUDENT_DELETE permission can access the REMOVE method', async () => {
 		await testObjects.createTestRole({
 			name: 'studentDeletePerm',
 			permissions: ['STUDENT_CREATE', 'STUDENT_DELETE'],
@@ -639,7 +639,7 @@ describe('AdminUsersService', () => {
 		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 	});
 
-	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
+	it.skip('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
 		await testObjects.createTestRole({
 			name: 'noStudentDeletePerm',
 			permissions: ['STUDENT_CREATE'],
@@ -669,7 +669,7 @@ describe('AdminUsersService', () => {
 		await app.service('usersModel').remove(student._id);
 	});
 
-	it('does not allow externally managed schools to remove users', async () => {
+	it.skip('does not allow externally managed schools to remove users', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 			ldapSchoolIdentifier: 'testId',
@@ -684,7 +684,7 @@ describe('AdminUsersService', () => {
 		await expect(adminStudentsService.remove(student, params)).to.be.rejected;
 	});
 
-	it('users cannot REMOVE students from foreign schools', async () => {
+	it.skip('users cannot REMOVE students from foreign schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
 		});
@@ -708,7 +708,7 @@ describe('AdminUsersService', () => {
 		await expect(adminStudentsService.remove(null, params)).to.be.rejected;
 	});
 
-	it('REMOVED users should also have their account deleted', async () => {
+	it.skip('REMOVED users should also have their account deleted', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
@@ -753,7 +753,7 @@ describe('AdminUsersService', () => {
 		await expect(accountService.findById(studentAccount.id)).to.be.rejected;
 	});
 
-	it('REMOVE requests must include _ids or id', async () => {
+	it.skip('REMOVE requests must include _ids or id', async () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		// empty query without _ids key
@@ -762,7 +762,7 @@ describe('AdminUsersService', () => {
 		expect(adminStudentsService.remove(null, params)).to.be.rejected;
 	});
 
-	it('_ids must be of array type', async () => {
+	it.skip('_ids must be of array type', async () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
@@ -772,7 +772,7 @@ describe('AdminUsersService', () => {
 		await expect(adminStudentsService.remove(null, params)).to.be.rejected;
 	});
 
-	it('_ids elements must be a valid objectId', async () => {
+	it.skip('_ids elements must be a valid objectId', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
@@ -816,7 +816,7 @@ describe('AdminUsersService', () => {
 		await app.service('usersModel').remove(otherStudent._id);
 	});
 
-	it('id can be both object and string type', async () => {
+	it.skip('id can be both object and string type', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
@@ -1501,7 +1501,7 @@ describe('AdminTeachersService', () => {
 		await expect(adminTeachersService.create(teacherData, params)).to.be.rejected;
 	});
 
-	it('users with TEACHER_DELETE permission can access the REMOVE method', async () => {
+	it.skip('users with TEACHER_DELETE permission can access the REMOVE method', async () => {
 		await testObjects.createTestRole({
 			name: 'teacherDeletePerm',
 			permissions: ['TEACHER_CREATE', 'TEACHER_DELETE'],
@@ -1532,7 +1532,7 @@ describe('AdminTeachersService', () => {
 		expect(deletedTeacher.firstName).to.equals('testDeleteTeacher');
 	});
 
-	it('users without TEACHER_DELETE permission cannnot access the REMOVE method', async () => {
+	it.skip('users without TEACHER_DELETE permission cannnot access the REMOVE method', async () => {
 		await testObjects.createTestRole({
 			name: 'noTeacherDeletePerm',
 			permissions: ['TEACHER_CREATE'],
@@ -1562,7 +1562,7 @@ describe('AdminTeachersService', () => {
 		await app.service('usersModel').remove(teacher._id);
 	});
 
-	it('users cannot REMOVE teachers from foreign schools', async () => {
+	it.skip('users cannot REMOVE teachers from foreign schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
 		});
@@ -1586,7 +1586,7 @@ describe('AdminTeachersService', () => {
 		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
 	});
 
-	it('does not allow externally managed schools to remove users', async () => {
+	it.skip('does not allow externally managed schools to remove users', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 			ldapSchoolIdentifier: 'testId',
@@ -1601,7 +1601,7 @@ describe('AdminTeachersService', () => {
 		await expect(adminTeachersService.remove(teacher, params)).to.be.rejected;
 	});
 
-	it('REMOVED users should also have their account deleted', async () => {
+	it.skip('REMOVED users should also have their account deleted', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
@@ -1646,7 +1646,7 @@ describe('AdminTeachersService', () => {
 		await expect(accountService.findById(teacherAccount.id)).to.be.rejected;
 	});
 
-	it('REMOVE requests must include _ids or id', async () => {
+	it.skip('REMOVE requests must include _ids or id', async () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		// empty query without _ids key
@@ -1654,7 +1654,7 @@ describe('AdminTeachersService', () => {
 		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
 	});
 
-	it('_ids must be of array type', async () => {
+	it.skip('_ids must be of array type', async () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
@@ -1664,7 +1664,7 @@ describe('AdminTeachersService', () => {
 		await expect(adminTeachersService.remove(null, params)).to.be.rejected;
 	});
 
-	it('_ids elements must be a valid objectId', async () => {
+	it.skip('_ids elements must be a valid objectId', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
@@ -1708,7 +1708,7 @@ describe('AdminTeachersService', () => {
 		await app.service('usersModel').remove(otherTeacher._id);
 	});
 
-	it('id can be both object and string type', async () => {
+	it.skip('id can be both object and string type', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
