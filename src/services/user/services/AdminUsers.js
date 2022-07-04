@@ -158,7 +158,6 @@ class AdminUsers {
 	}
 
 	async create(_data, _params) {
-		await this.setRole();
 		const currentUserId = _params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
 		await this.checkIfExternallyManaged(schoolId);
@@ -270,38 +269,42 @@ class AdminUsers {
 		}
 	}
 
-	async remove(id, params) {
-		await this.setRole();
-		const { _ids } = params.query;
-		const currentUser = await getCurrentUserInfo(params.account.userId);
-		await this.checkIfExternallyManaged(currentUser.schoolId);
-
-		if (id) {
-			const userToRemove = await getCurrentUserInfo(id);
-			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
-				throw new Forbidden('You cannot remove users from other schools.');
-			}
-			// TODO check if this is used if so use
-			// await this.app.service('nest-account-service').deleteByUserId(id);
-			// otherwise remove
-			await this.app.service('accountModel').remove(null, { query: { userId: id } });
-			return this.app.service('usersModel').remove(id);
-		}
-
-		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
-			throw new Forbidden('You cannot remove users from other schools.');
-		}
-
-		// TODO check if this is used if so use and implement
-		// await this.app.service('nest-account-service').deleteMultipleByUserId(id);
-		// otherwise remove
-		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
-		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
-	}
+	// async remove(id, params) {
+	// 	const { _ids } = params.query;
+	// 	const currentUser = await getCurrentUserInfo(params.account.userId);
+	// 	await this.checkIfExternallyManaged(currentUser.schoolId);
+//
+	// 	if (id) {
+	// 		const userToRemove = await getCurrentUserInfo(id);
+	// 		if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
+	// 			throw new Forbidden('You cannot remove users from other schools.');
+	// 		}
+	// 		// TODO check if this is used if so use
+	// 		// await this.app.service('nest-account-service').deleteByUserId(id);
+	// 		// otherwise remove
+	// 		await this.app.service('accountModel').remove(null, { query: { userId: id } });
+	// 		return this.app.service('usersModel').remove(id);
+	// 	}
+//
+	// 	const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+	// 	if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
+	// 		throw new Forbidden('You cannot remove users from other schools.');
+	// 	}
+//
+	// 	// TODO check if this is used if so use and implement
+	// 	// await this.app.service('nest-account-service').deleteMultipleByUserId(id);
+	// 	// otherwise remove
+	// 	await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
+	// 	return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+	// }
 
 	async setup(app) {
 		this.app = app;
+		this.role = (
+			await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})
+		).data[0];
 	}
 }
 
