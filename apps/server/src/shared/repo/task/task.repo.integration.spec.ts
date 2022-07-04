@@ -44,6 +44,23 @@ describe('TaskRepo', () => {
 		expect(repo.entityName).toBe(Task);
 	});
 
+	describe('findAllPrivateByCreator', () => {
+		it('should find private tasks by creator', async () => {
+			const teacher1 = userFactory.build();
+			const teacher2 = userFactory.build();
+			const task1 = taskFactory.build({ creator: teacher1, private: true });
+			const task2 = taskFactory.build({ creator: teacher1, private: false });
+			const task3 = taskFactory.build({ creator: teacher2, private: true });
+
+			await em.persistAndFlush([task1, task2, task3]);
+			em.clear();
+
+			const result = await repo.findAllPrivateByCreator(teacher1.id);
+			expect(result.length).toEqual(1);
+			expect(result[0].name).toEqual(task1.name);
+		});
+	});
+
 	describe('findAllByParentIds', () => {
 		describe('find by creator', () => {
 			it('should find tasks by creatorId', async () => {

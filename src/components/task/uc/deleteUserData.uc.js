@@ -69,12 +69,14 @@ const removeConnectionToArchivedHomeworks = async (userId) => {
 };
 
 const nestDeletePrivateUserHomeworks = async (app, userId) => {
-	// validateObjectId({ userId });
-	// const result = await taskRepo.findPrivateHomeworksByUser(userId);
-	app.service('nest-task-uc').findPrivateHomeworks();
+	const taskUc = app.service('nest-task-uc');
+	validateObjectId({ userId });
+	const result = await taskUc.findAllPrivateByCreator(userId);
+	console.log(result);
 	// let complete = true;
 	// if (result.length > 0) {
-	// 	const status = await taskRepo.deletePrivateHomeworksFromUser(userId);
+	// 	//const status = await taskRepo.deletePrivateHomeworksFromUser(userId);
+	// 	const status = taskUc.delete()
 	// 	complete = status.success;
 	// }
 	// return trashBinResult({ scope: 'homeworks-private', data: result, complete });
@@ -89,6 +91,6 @@ const deleteUserRelatedData = () => [
 	removeConnectionToArchivedHomeworks,
 ];
 
-const nestDeleteUserRelatedData = (app) => [() => nestDeletePrivateUserHomeworks(app)];
+const nestDeleteUserRelatedData = (app) => [(userId) => nestDeletePrivateUserHomeworks(app, userId)];
 
 module.exports = { deleteUserRelatedData, nestDeleteUserRelatedData };

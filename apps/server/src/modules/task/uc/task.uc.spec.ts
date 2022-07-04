@@ -15,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -75,6 +76,10 @@ describe('TaskUC', () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();
@@ -931,6 +936,17 @@ describe('TaskUC', () => {
 		});
 	});
 
+	describe('findAllPrivateByCreator', () => {
+		it('should call repo method', async () => {
+			const task = taskFactory.build();
+			const spy = taskRepo.findAllPrivateByCreator.mockResolvedValue([task]);
+
+			await service.findAllPrivateByCreator('creatorId');
+
+			expect(spy).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('updateTaskFinished', () => {
 		let task: Task;
 
@@ -1047,16 +1063,16 @@ describe('TaskUC', () => {
 				throw new ForbiddenException();
 			});
 			await expect(async () => {
-				await service.delete(user.id, task.id);
+				await service.delete(user.id, task.id, 'jwt');
 			}).rejects.toThrow(new ForbiddenException());
 		});
 
 		it('should call TaskRepo.delete() with Task', async () => {
-			await service.delete(user.id, task.id);
+			await service.delete(user.id, task.id, 'jwt');
 			expect(taskRepo.delete).toBeCalledWith(task);
 		});
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
-			await service.delete(user.id, task.id);
+			await service.delete(user.id, task.id, 'jwt');
 			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],

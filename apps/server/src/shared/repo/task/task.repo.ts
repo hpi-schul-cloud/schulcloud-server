@@ -16,6 +16,11 @@ export class TaskRepo extends BaseRepo<Task> {
 		return task;
 	}
 
+	async findAllPrivateByCreator(creatorId: EntityId): Promise<Task[]> {
+		const tasks = await this._em.find(Task, { creator: creatorId, private: true });
+		return tasks;
+	}
+
 	async findAllFinishedByParentIds(
 		parentIds: {
 			creatorId: EntityId;
