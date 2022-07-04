@@ -88,6 +88,10 @@ export class TaskUC {
 		return response;
 	}
 
+	findPrivateHomeworks() {
+		console.log('-------------GetPrivateTasks----------------');
+	}
+
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
 		const [user, task] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),

@@ -68,6 +68,19 @@ const removeConnectionToArchivedHomeworks = async (userId) => {
 	return trashBinResult({ scope: 'homeworks-archived', data: result, complete });
 };
 
+const nestDeletePrivateUserHomeworks = async (app, userId) => {
+	// validateObjectId({ userId });
+	// const result = await taskRepo.findPrivateHomeworksByUser(userId);
+	app.service('nest-task-uc').findPrivateHomeworks();
+	// let complete = true;
+	// if (result.length > 0) {
+	// 	const status = await taskRepo.deletePrivateHomeworksFromUser(userId);
+	// 	complete = status.success;
+	// }
+	// return trashBinResult({ scope: 'homeworks-private', data: result, complete });
+	// app.service;
+};
+
 const deleteUserRelatedData = () => [
 	deletePrivateSubmissions,
 	removeConnectionToSharedSubmissions,
@@ -76,4 +89,6 @@ const deleteUserRelatedData = () => [
 	removeConnectionToArchivedHomeworks,
 ];
 
-module.exports = { deleteUserRelatedData };
+const nestDeleteUserRelatedData = (app) => [() => nestDeletePrivateUserHomeworks(app)];
+
+module.exports = { deleteUserRelatedData, nestDeleteUserRelatedData };
