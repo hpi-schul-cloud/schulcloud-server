@@ -1,20 +1,22 @@
-import { System } from '@shared/domain';
+import { OauthConfig } from '@shared/domain';
 import { TokenRequestParams } from '../controller/dto/token-request.params';
 
 export class TokenRequestParamsMapper {
-	static mapToResponse(system: System, decryptedClientSecret: string, code: string): TokenRequestParams {
-		const dto = this.mapCreateTokenRequestParams(system, decryptedClientSecret, code);
-		return dto;
+	static mapToResponse(oauthConfig: OauthConfig, decryptedClientSecret: string, code: string): TokenRequestParams {
+		return this.mapCreateTokenRequestParams(oauthConfig, decryptedClientSecret, code);
 	}
 
-	static mapCreateTokenRequestParams(system: System, decryptedClientSecret: string, code: string): TokenRequestParams {
-		const dto = {
-			client_id: system.oauthConfig.clientId,
+	static mapCreateTokenRequestParams(
+		oauthConfig: OauthConfig,
+		decryptedClientSecret: string,
+		code: string
+	): TokenRequestParams {
+		return {
+			client_id: oauthConfig.clientId,
 			client_secret: decryptedClientSecret,
-			redirect_uri: system.oauthConfig.tokenRedirectUri,
-			grant_type: system.oauthConfig.grantType,
+			redirect_uri: oauthConfig.tokenRedirectUri,
+			grant_type: oauthConfig.grantType,
 			code,
 		};
-		return dto;
 	}
 }

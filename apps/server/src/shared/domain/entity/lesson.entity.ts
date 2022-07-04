@@ -6,9 +6,25 @@ import { Task } from './task.entity';
 
 export interface ILessonProperties {
 	name: string;
-	hidden?: boolean;
+	hidden: boolean;
 	course: Course;
 	position?: number;
+	contents: IComponentProperties[] | [];
+}
+
+export enum ComponentType {
+	TEXT = 'text',
+}
+
+export interface IComponentTextProperties {
+	text: string;
+}
+
+export interface IComponentProperties {
+	title: string;
+	hidden: boolean;
+	component: ComponentType;
+	content: IComponentTextProperties;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -27,6 +43,9 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	@Property()
 	position: number;
 
+	@Property()
+	contents: IComponentProperties[] | [];
+
 	@OneToMany('Task', 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
@@ -36,6 +55,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		if (props.hidden !== undefined) this.hidden = props.hidden;
 		this.course = props.course;
 		this.position = props.position || 0;
+		this.contents = props.contents;
 	}
 
 	private getTasksItems(): Task[] {
@@ -68,6 +88,10 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 			return task.isPlanned();
 		});
 		return filtered.length;
+	}
+
+	getLessonComponents(): IComponentProperties[] | [] {
+		return this.contents;
 	}
 
 	publish() {

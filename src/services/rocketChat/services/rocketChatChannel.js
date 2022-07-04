@@ -242,6 +242,10 @@ class RocketChatChannel {
 	 */
 	async synchronizeModerators(teamId) {
 		try {
+			const getRoles = await this.app.service('roles').find({
+				query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+			});
+			const teamModeratorRoles = getRoles.data.map((role) => role._id.toString());
 			const team = await this.app.service('teams').get(teamId);
 			const channel = await channelModel.findOne({ teamId });
 			if (channel) {
@@ -250,7 +254,7 @@ class RocketChatChannel {
 				let rcChannelModerators = rcResponse.moderators;
 				const scModeratorPromises = [];
 				team.userIds.forEach(async (user) => {
-					if (this.teamModeratorRoles.includes(user.role.toString())) {
+					if (teamModeratorRoles.includes(user.role.toString())) {
 						scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
 					}
 				});
@@ -276,7 +280,7 @@ class RocketChatChannel {
 	 */
 	async get(teamId, params) {
 		const result = await this.getOrCreateRocketChatChannel(teamId, params);
-		this.synchronizeModerators(teamId);
+		await this.synchronizeModerators(teamId);
 		return result;
 	}
 
@@ -332,15 +336,6 @@ class RocketChatChannel {
 	setup(app) {
 		this.app = app;
 		this.registerEventListeners();
-		return app
-			.service('roles')
-			.find({
-				query: { name: { $in: ['teamowner', 'teamadministrator'] } },
-			})
-			.then((teamModeratorRoles) => {
-				this.teamModeratorRoles = teamModeratorRoles.data.map((role) => role._id.toString());
-				return Promise.resolve();
-			});
 	}
 }
 
