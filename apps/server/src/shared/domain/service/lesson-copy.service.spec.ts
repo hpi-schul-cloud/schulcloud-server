@@ -10,13 +10,13 @@ import {
 	Lesson,
 } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
+import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
-import { NameCopyService } from './name-copy.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
-	let nameCopyService: DeepMocked<NameCopyService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -33,14 +33,14 @@ describe('lesson copy service', () => {
 			providers: [
 				LessonCopyService,
 				{
-					provide: NameCopyService,
-					useValue: createMock<NameCopyService>(),
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
 				},
 			],
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
-		nameCopyService = module.get(NameCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyLesson', () => {
@@ -54,7 +54,7 @@ describe('lesson copy service', () => {
 				});
 
 				const copyName = 'Copy';
-				nameCopyService.deriveCopyName.mockReturnValue(copyName);
+				copyHelperService.deriveCopyName.mockReturnValue(copyName);
 
 				return { user, originalCourse, destinationCourse, originalLesson, copyName };
 			};
@@ -73,7 +73,7 @@ describe('lesson copy service', () => {
 					expect(lesson.name).toEqual(copyName);
 				});
 
-				it('should use nameCopyService', () => {
+				it('should use copyHelperService', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					copyService.copyLesson({
@@ -82,7 +82,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(originalLesson.name);
+					expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalLesson.name);
 				});
 
 				it('should set course of the copy', () => {

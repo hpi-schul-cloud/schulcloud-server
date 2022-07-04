@@ -194,9 +194,9 @@ const restrictToUsersCoursesLessons = async (context) => {
 
 	const hasAdminAccess = userIsSuperhero || (userIsAdmin && equal(course.schoolId, schoolId));
 	const userInCourse =
-		studentsWithAccess.some((id) => equal(id, userId)) ||
-		course.teacherIds.some((id) => equal(id, userId)) ||
-		course.substitutionIds.some((id) => equal(id, userId));
+		(studentsWithAccess || []).some((id) => equal(id, userId)) ||
+		(course.teacherIds || []).some((id) => equal(id, userId)) ||
+		(course.substitutionIds || []).some((id) => equal(id, userId));
 
 	if (!(userInCourse || hasAdminAccess)) {
 		throw new NotFound(`no record found for id '${context.id || courseGroupId || courseId}'`);
