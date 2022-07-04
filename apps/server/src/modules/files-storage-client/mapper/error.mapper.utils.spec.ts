@@ -83,6 +83,28 @@ describe('error.mapper.utils', () => {
 
 			expect(response).toBe(false);
 		});
+
+		it('Should return false if error is *not* axios error response', () => {
+			const errorText = 'bla';
+			const error = new Error(errorText);
+
+			const response = isAxiosErrror(error);
+
+			expect(response).toBe(false);
+		});
+
+		it('Should handle undefined is isAxiosError key in error', () => {
+			const errorText = 'bla';
+			const json = JSON.stringify(new InternalServerErrorException(errorText));
+			const data = JSON.parse(json) as Record<string, unknown>;
+			const code = 500;
+			const error = createAxiosError(data, code, errorText);
+			// @ts-expect-error Testcase
+			error.isAxiosError = undefined;
+			const response = isAxiosErrror(error);
+
+			expect(response).toBe(false);
+		});
 	});
 
 	describe('isValidationError', () => {
@@ -105,6 +127,38 @@ describe('error.mapper.utils', () => {
 			const error = new Error(errorText);
 
 			// @ts-expect-error Testcase
+			const response = isValidationError(error);
+
+			expect(response).toBe(false);
+		});
+
+		it('Should handle undefined validationErrors key in data.', () => {
+			const errorText = 'ApiValidationError ABC';
+			const apiValidationError = createApiValidationError();
+			const json = JSON.stringify(apiValidationError);
+			const data = JSON.parse(json) as Record<string, unknown>;
+			const code = 400;
+
+			const error = createAxiosError(data, code, errorText);
+
+			// @ts-expect-error Testcase
+			error.response.data = undefined;
+			const response = isValidationError(error);
+
+			expect(response).toBe(false);
+		});
+
+		it('Should handle undefined validationErrors.length key in data.', () => {
+			const errorText = 'ApiValidationError ABC';
+			const apiValidationError = createApiValidationError();
+			const json = JSON.stringify(apiValidationError);
+			const data = JSON.parse(json) as Record<string, unknown>;
+			const code = 400;
+
+			const error = createAxiosError(data, code, errorText);
+
+			// @ts-expect-error Testcase
+			error.response.data.validationErrors = undefined;
 			const response = isValidationError(error);
 
 			expect(response).toBe(false);
