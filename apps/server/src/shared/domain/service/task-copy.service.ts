@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Course, Task, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
+import { CopyHelperService } from './copy-helper.service';
 
 export type TaskCopyParams = {
 	originalTask: Task;
@@ -11,6 +12,8 @@ export type TaskCopyParams = {
 
 @Injectable()
 export class TaskCopyService {
+	constructor(private readonly copyHelperService: CopyHelperService) {}
+
 	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
 			name: params.originalTask.name,
@@ -25,7 +28,7 @@ export class TaskCopyService {
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.TASK,
-			status: this.inferStatusFromElements(elements),
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};
@@ -55,16 +58,7 @@ export class TaskCopyService {
 
 	private copyTaskFiles(task: Task): CopyStatus[] {
 		const fileNames = task.getFileNames();
-		if (fileNames.length === 1) {
-			return [
-				{
-					title: fileNames[0],
-					type: CopyElementType.LEAF,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
-				},
-			];
-		}
-		if (fileNames.length > 1) {
+		if (fileNames.length > 0) {
 			const elements = fileNames.map((title) => ({
 				title,
 				type: CopyElementType.FILE,
@@ -72,19 +66,12 @@ export class TaskCopyService {
 			}));
 			const fileStatus = {
 				title: 'files',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.FILE_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 				elements,
 			};
 			return [fileStatus];
 		}
 		return [];
-	}
-
-	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		const childrenStatusArray = elements.map((el) => el.status);
-		// if (childrenStatusArray.includes(CopyStatusEnum.FAIL)) return CopyStatusEnum.PARTIAL; <- unused case, commented for now due to lack of test coverage and no scenario
-		if (childrenStatusArray.includes(CopyStatusEnum.NOT_IMPLEMENTED)) return CopyStatusEnum.PARTIAL;
-		return CopyStatusEnum.SUCCESS;
 	}
 }

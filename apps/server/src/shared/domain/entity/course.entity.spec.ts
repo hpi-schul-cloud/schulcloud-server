@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { userFactory, courseFactory, schoolFactory, setupEntities } from '@shared/testing';
+import { courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Course } from './course.entity';
 
 const DEFAULT = {
@@ -55,7 +55,7 @@ describe('CourseEntity', () => {
 			expect(result.id).toEqual(course.id);
 		});
 
-		it('should return only emoji if used as first character', () => {
+		it('should return only emoji as shortTitle if used as first character', () => {
 			const course = courseFactory.build({ name: '😀 History', color: '#445566' });
 
 			const result = course.getMetadata();
@@ -64,13 +64,40 @@ describe('CourseEntity', () => {
 			expect(result.shortTitle).toEqual('😀');
 		});
 
-		it('should return emoji correctly if used as second character', () => {
+		it('should return emoji correctly in shortTitle if used as second character', () => {
 			const course = courseFactory.build({ name: 'A😀 History', color: '#445566' });
 
 			const result = course.getMetadata();
 
 			expect(result.title).toEqual('A😀 History');
 			expect(result.shortTitle).toEqual('A😀');
+		});
+
+		it('should return numbers correctly as shortTitle if used as first two characters', () => {
+			const course = courseFactory.build({ name: '10 History', color: '#445566' });
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('10 History');
+			expect(result.shortTitle).toEqual('10');
+		});
+
+		it('should return correct shortTitle if course name only consists of one letter', () => {
+			const course = courseFactory.build({ name: 'A' });
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('A');
+			expect(result.shortTitle).toEqual('A');
+		});
+
+		it('should return correct shortTitle if course name only consists of one number', () => {
+			const course = courseFactory.build({ name: '1' });
+
+			const result = course.getMetadata();
+
+			expect(result.title).toEqual('1');
+			expect(result.shortTitle).toEqual('1');
 		});
 
 		it('should include start and enddate if course has them', () => {

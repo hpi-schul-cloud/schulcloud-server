@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Controller, ExecutionContext, Get, INestApplication } from '@nestjs/common';
+import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@shared/domain';
@@ -7,17 +7,7 @@ import { ServerTestModule } from '@src/server.module';
 import { MikroORM } from '@mikro-orm/core';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { Authenticate, CurrentUser, JWT } from './auth.decorator';
-/*
-describe('[Authenticate] Decorator', () => {
-	it('should fail when non-jwt strategy is set', () => {
-		expect(() => Authenticate('foo' as unknown as 'jwt')).toThrow(ForbiddenException);
-	});
 
-	it('should fail when no strategy is set', () => {
-		expect(() => Authenticate(undefined as unknown as 'jwt')).toThrow(ForbiddenException);
-	});
-});
-*/
 @Authenticate('jwt')
 @Controller('test_decorator_currentUser')
 export class TestDecoratorCurrentUserController {
@@ -45,7 +35,11 @@ describe('auth.decorator', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [ServerTestModule],
-			controllers: [TestDecoratorCurrentUserController, TestDecoratorJWTController],
+			controllers: [
+				TestDecoratorCurrentUserController,
+				TestDecoratorJWTController,
+				// TestDecoratorAuthenticateController,
+			],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -85,6 +79,14 @@ describe('auth.decorator', () => {
 			const response = await request(app.getHttpServer()).get('/test_decorator_currentUser/test');
 
 			expect(response.statusCode).toEqual(401);
+		});
+	});
+
+	describe.skip('Authenticate', () => {
+		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', () => {
+			// @ts-expect-error Testcase
+			const exec = () => Authenticate('bla');
+			expect(exec).toThrowError(new ForbiddenException('jwt strategy required'));
 		});
 	});
 });

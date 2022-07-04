@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Board, BoardElement, BoardElementType, Course, Lesson, Task, User } from '../entity';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { CopyElementType, CopyStatus } from '../types';
+import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { TaskCopyService } from './task-copy.service';
 
@@ -14,11 +15,12 @@ export type BoardCopyParams = {
 export class BoardCopyService {
 	constructor(
 		private readonly taskCopyService: TaskCopyService,
-		private readonly lessonCopyService: LessonCopyService
+		private readonly lessonCopyService: LessonCopyService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	copyBoard(params: BoardCopyParams): CopyStatus {
-		const elementStatuses: CopyStatus[] = [];
+		const elements: CopyStatus[] = [];
 		const references: BoardElement[] = [];
 
 		params.originalBoard.getElements().forEach((element) => {
@@ -29,18 +31,20 @@ export class BoardCopyService {
 					user: params.user,
 					destinationCourse: params.destinationCourse,
 				});
-				elementStatuses.push(status);
+				elements.push(status);
 				const taskBoardElement = BoardElement.FromTask(status.copyEntity as Task);
 				references.push(taskBoardElement);
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
 				const originalLesson = element.target as Lesson;
-				const { status } = this.lessonCopyService.copyLesson({
+				const status = this.lessonCopyService.copyLesson({
 					originalLesson,
 					user: params.user,
 					destinationCourse: params.destinationCourse,
 				});
-				elementStatuses.push(status);
+				elements.push(status);
+				const lessonBardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
+				references.push(lessonBardElement);
 			}
 		});
 
@@ -48,9 +52,9 @@ export class BoardCopyService {
 		const status = {
 			title: 'board',
 			type: CopyElementType.BOARD,
-			status: CopyStatusEnum.FAIL,
-			elements: elementStatuses,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			elements,
 		};
 
 		return status;

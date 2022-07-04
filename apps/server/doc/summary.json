@@ -34,6 +34,10 @@
 			{
 				"title": "Keycloak",
 				"file": "keycloak.md"
+			},
+			{
+				"title": "Rocket.Chat",
+				"file": "rocket-chat.md"
 			}
 		]
 	}

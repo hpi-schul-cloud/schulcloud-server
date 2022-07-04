@@ -1,9 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ICoreModuleConfig } from '@src/core';
-import { IUserConfig, IFileStorageClientConfig } from '@src/modules/';
+import { IUserConfig, IFilesStorageClientConfig } from '@src/modules/';
 import { AvailableLogLevel } from './core/logger';
 
-export interface IServerConfig extends ICoreModuleConfig, IUserConfig, IFileStorageClientConfig {}
+export interface IServerConfig extends ICoreModuleConfig, IUserConfig, IFilesStorageClientConfig {}
 
 const config: IServerConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,

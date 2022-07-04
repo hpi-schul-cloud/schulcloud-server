@@ -5,9 +5,11 @@ import { FileRecordRepo, FilesRepo, StorageProviderRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { S3Config } from '../files-storage/interface';
 import { DeleteFilesConsole } from './job/delete-files.console';
+import { DeleteOrphanedFilesConsole } from './job/delete-orphaned-files.console';
 import { SyncFilesConsole } from './job/sync-files.console';
+import { OrphanedFilesRepo } from './repo/orphaned-files.repo';
 import { SyncFilesRepo } from './repo/sync-files.repo';
-import { DeleteFilesUc, SyncFilesUc } from './uc';
+import { DeleteFilesUc, DeleteOrphanedFilesUc, SyncFilesUc } from './uc';
 import { SyncFilesMetadataService } from './uc/sync-files-metadata.service';
 import { SyncFilesStorageService } from './uc/sync-files-storage.service';
 
@@ -28,6 +30,9 @@ export const config: S3Config = {
 		FileStorageAdapter,
 		// Temporary functionality for migration to new fileservice
 		// TODO: Remove when BC-1496 is done!
+		DeleteOrphanedFilesConsole,
+		DeleteOrphanedFilesUc,
+		OrphanedFilesRepo,
 		SyncFilesConsole,
 		SyncFilesUc,
 		SyncFilesRepo,

@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardCopyService, CopyHelperService, CourseCopyService } from '@shared/domain';
 import { boardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '../../testing';
 import { Course } from '../entity';
 import { CopyElementType, CopyStatusEnum } from '../types';
-import { BoardCopyService } from './board-copy.service';
-import { CourseCopyService } from './course-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
 	let copyService: CourseCopyService;
 	let boardCopyService: DeepMocked<BoardCopyService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -30,11 +30,16 @@ describe('course copy service', () => {
 					provide: BoardCopyService,
 					useValue: createMock<BoardCopyService>(),
 				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
 			],
 		}).compile();
 
 		copyService = module.get(CourseCopyService);
 		boardCopyService = module.get(BoardCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyCourse', () => {
@@ -50,9 +55,12 @@ describe('course copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: boardCopy,
 				};
+				const courseCopyName = 'Copy';
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
+				copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 
-				return { user, originalCourse, boardCopyStatus };
+				return { user, originalCourse, boardCopyStatus, courseCopyName };
 			};
 
 			it('should assign user as teacher', () => {
@@ -81,8 +89,19 @@ describe('course copy service', () => {
 				expect(course.school).toEqual(destinationSchool);
 			});
 
-			it('should set name of course', () => {
+			it('should use copyHelperService', () => {
 				const { originalCourse, user } = setup();
+
+				copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalCourse.name);
+			});
+
+			it('should set name of copy', () => {
+				const { originalCourse, user, courseCopyName } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
@@ -90,7 +109,7 @@ describe('course copy service', () => {
 				});
 
 				const course = status.copyEntity as Course;
-				expect(course.name).toEqual(originalCourse.name);
+				expect(course.name).toEqual(courseCopyName);
 			});
 
 			it('should set color of course', () => {
@@ -247,9 +266,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.FILE && el.title === 'files');
-				expect(filesStatus).toBeDefined();
-				expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should set status of coursegroups', () => {
@@ -265,6 +284,16 @@ describe('course copy service', () => {
 				);
 				expect(coursegroupsStatus).toBeDefined();
 				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+			});
+
+			it('should call copyHelperService', () => {
+				const { originalCourse, user } = setup();
+
+				copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 			});
 		});
 

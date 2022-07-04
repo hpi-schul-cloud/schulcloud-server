@@ -8,9 +8,11 @@ import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/i
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
+// todo: MUST BE CHECKED BEFORE MERGE
+// import { FilesModule } from '@src/modules/files';
 import {
 	UserModule,
-	FileStorageClientModule,
+	FilesStorageClientModule,
 	LearnroomModule,
 	NewsModule,
 	RocketChatModule,
@@ -18,9 +20,10 @@ import {
 	AuthModule,
 	OauthModule,
 	ImportUserModule,
+	SystemModule,
+	CollaborativeStorageModule,
 } from '@src/modules';
-// todo: MUST BE CHECKED BEFORE MERGE
-// import { FilesModule } from '@src/modules/files';
+
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
@@ -33,13 +36,14 @@ const serverModules = [
 	}),
 	CoreModule,
 	AuthModule,
+	CollaborativeStorageModule,
 	OauthModule,
 	TaskModule,
 	NewsModule,
 	UserModule,
 	ImportUserModule,
 	LearnroomModule,
-	FileStorageClientModule,
+	FilesStorageClientModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
@@ -51,6 +55,7 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
+	SystemModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

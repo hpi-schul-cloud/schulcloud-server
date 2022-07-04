@@ -12,18 +12,10 @@ class SchoolsListService {
 		};
 		const systemsQuery = {
 			path: 'systems',
-			select:
-				'_id type alias oauthConfig.clientId oauthConfig.authEndpoint oauthConfig.codeRedirectUri oauthConfig.responseType oauthConfig.scope oauthConfig.provider oauthConfig.logoutEndpoint',
+			select: '_id type alias',
 			match: { $or: [{ type: { $ne: 'ldap' } }, { 'ldapConfig.active': { $eq: true } }] },
 		};
-		const schools = await schoolModel
-			.find(schoolQuery)
-			.populate(systemsQuery)
-			.select(['name', 'systems'])
-			.sort('name')
-			.lean()
-			.exec();
-		return schools;
+		return schoolModel.find(schoolQuery).populate(systemsQuery).select(['name', 'systems']).sort('name').lean().exec();
 	}
 
 	setup(app) {
