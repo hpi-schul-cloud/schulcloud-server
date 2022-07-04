@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Board, BoardElement, BoardElementType, Course, Lesson, Task, User } from '../entity';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { CopyElementType, CopyStatus } from '../types';
+import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
 import { TaskCopyService } from './task-copy.service';
 
@@ -14,7 +15,8 @@ export type BoardCopyParams = {
 export class BoardCopyService {
 	constructor(
 		private readonly taskCopyService: TaskCopyService,
-		private readonly lessonCopyService: LessonCopyService
+		private readonly lessonCopyService: LessonCopyService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	copyBoard(params: BoardCopyParams): CopyStatus {
@@ -50,22 +52,11 @@ export class BoardCopyService {
 		const status = {
 			title: 'board',
 			type: CopyElementType.BOARD,
-			status: this.inferStatusFromElements(elements),
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};
 
 		return status;
-	}
-
-	private inferStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
-		const elementsStatuses = elements.map((el) => el.status);
-		if (elementsStatuses.every((status) => status !== CopyStatusEnum.SUCCESS)) {
-			return CopyStatusEnum.FAIL;
-		}
-		if (elementsStatuses.some((status) => status !== CopyStatusEnum.SUCCESS)) {
-			return CopyStatusEnum.PARTIAL;
-		}
-		return CopyStatusEnum.SUCCESS;
 	}
 }
