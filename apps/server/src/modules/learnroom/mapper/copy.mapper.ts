@@ -1,4 +1,6 @@
 import { CopyStatus } from '@shared/domain';
+import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { CopyApiResponse } from '../controller/dto/copy.response';
@@ -17,6 +19,14 @@ export class CopyMapper {
 		if (copyStatus.elements) {
 			dto.elements = copyStatus.elements.map((status) => CopyMapper.mapToResponse(status));
 		}
+		return dto;
+	}
+
+	static mapLessonCopyToDomain(params: LessonCopyApiParams): LessonCopyParentParams {
+		const dto = {
+			courseId: params.courseId,
+		};
+
 		return dto;
 	}
 

@@ -15,7 +15,7 @@ const formatToLog = (data) => util.inspect(data, { depth: 5, compact: true, brea
 const syncIndexes = async () => {
 	try {
 		logger.alert('load app...');
-		await appPromise;
+		await appPromise();
 		logger.alert('start syncIndexes..');
 		const models = getModels();
 		for (const [modelName, model] of models) {

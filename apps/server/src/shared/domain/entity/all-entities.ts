@@ -15,7 +15,7 @@ import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
 import { Task } from './task.entity';
-import { Team } from './team.entity';
+import { Team, TeamUser } from './team.entity';
 import { User } from './user.entity';
 
 export const ALL_ENTITIES = [
@@ -38,6 +38,7 @@ export const ALL_ENTITIES = [
 	Submission,
 	Task,
 	Team,
+	TeamUser,
 	User,
 	CourseNews,
 	News,
