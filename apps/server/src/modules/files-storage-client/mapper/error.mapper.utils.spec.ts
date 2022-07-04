@@ -1,11 +1,15 @@
-import { GeneralError } from '@feathersjs/errors';
-import { ForbiddenException, InternalServerErrorException, ValidationError as IValidationError } from '@nestjs/common';
+import { InternalServerErrorException, ValidationError as IValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
-import { ErrorMapper } from './error.mapper';
 import { FileStorageErrors } from '../interfaces';
 
-import { emptyAxiosResponse, extractAxiosResponse, hasAxiosResponse, isAxiosErrror, isValidationError } from './error.mapper.utils';
+import {
+	emptyAxiosResponse,
+	extractAxiosResponse,
+	hasAxiosResponse,
+	isAxiosError,
+	isValidationError,
+} from './error.mapper.utils';
 
 describe('error.mapper.utils', () => {
 	const createAxiosError = (
@@ -70,7 +74,7 @@ describe('error.mapper.utils', () => {
 			const code = 500;
 			const error = createAxiosError(data, code, errorText);
 
-			const response = isAxiosErrror(error);
+			const response = isAxiosError(error);
 
 			expect(response).toBe(true);
 		});
@@ -79,7 +83,7 @@ describe('error.mapper.utils', () => {
 			const errorText = 'bla';
 			const error = new Error(errorText);
 
-			const response = isAxiosErrror(error);
+			const response = isAxiosError(error);
 
 			expect(response).toBe(false);
 		});
@@ -88,13 +92,13 @@ describe('error.mapper.utils', () => {
 			const errorText = 'bla';
 			const error = new Error(errorText);
 
-			const response = isAxiosErrror(error);
+			const response = isAxiosError(error);
 
 			expect(response).toBe(false);
 		});
 
 		it('Should handle undefined as error', () => {
-			const response = isAxiosErrror(undefined);
+			const response = isAxiosError(undefined);
 
 			expect(response).toBe(false);
 		});

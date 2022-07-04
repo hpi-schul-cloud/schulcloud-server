@@ -51,10 +51,10 @@ export const isValidationError = (axiosError: AxiosError<FileStorageErrors>): bo
 	return false;
 };
 
-export const isAxiosErrror = (requestResponse: unknown): boolean => {
-	const isAxiosError = (requestResponse as AxiosError)?.isAxiosError === true;
+export const isAxiosError = (requestResponse: unknown): boolean => {
+	const result = (requestResponse as AxiosError)?.isAxiosError === true;
 
-	return isAxiosError;
+	return result;
 };
 
 export const castToAxiosError = (requestResponse: unknown): AxiosError<FileStorageErrors> => {

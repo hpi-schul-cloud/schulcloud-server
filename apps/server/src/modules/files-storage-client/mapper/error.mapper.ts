@@ -3,11 +3,11 @@ import { ApiValidationError } from '@shared/common';
 import { AxiosError, AxiosResponse } from 'axios';
 import { FileStorageErrors } from '../interfaces';
 import {
-	isValidationError,
+	castToAxiosError,
 	extractAxiosResponse,
 	hasAxiosResponse,
-	isAxiosErrror,
-	castToAxiosError,
+	isAxiosError,
+	isValidationError,
 } from './error.mapper.utils';
 
 export class ErrorMapper {
@@ -36,7 +36,7 @@ export class ErrorMapper {
 
 	// expected inputs AxiosError<FileStorageErrors> | Error
 	static mapErrorToDomainError(requestResponse: unknown): FileStorageErrors {
-		if (isAxiosErrror(requestResponse)) {
+		if (isAxiosError(requestResponse)) {
 			const axiosError = castToAxiosError(requestResponse);
 			return ErrorMapper.mapAxiosToDomainError(axiosError);
 		}
