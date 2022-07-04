@@ -1,6 +1,6 @@
 import { Permission } from '../interface/permission.enum';
 import { Actions } from './actions.enum';
-import PermissionContextBuilder from './permission-context-builder';
+import PermissionContextBuilder from './permission-context.builder';
 
 describe('PermissionContextBuilder', () => {
 	it('Should create a default instance of PermissionContext with passing only required params.', () => {
