@@ -93,15 +93,8 @@ describe('error.mapper.utils', () => {
 			expect(response).toBe(false);
 		});
 
-		it('Should handle undefined is isAxiosError key in error', () => {
-			const errorText = 'bla';
-			const json = JSON.stringify(new InternalServerErrorException(errorText));
-			const data = JSON.parse(json) as Record<string, unknown>;
-			const code = 500;
-			const error = createAxiosError(data, code, errorText);
-			// @ts-expect-error Testcase
-			error.isAxiosError = undefined;
-			const response = isAxiosErrror(error);
+		it('Should handle undefined as error', () => {
+			const response = isAxiosErrror(undefined);
 
 			expect(response).toBe(false);
 		});
