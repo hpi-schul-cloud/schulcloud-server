@@ -18,9 +18,10 @@ export class CourseCopyService {
 			name: this.nameCopyService.deriveCopyName(params.originalCourse.name),
 			color: params.originalCourse.color,
 			teachers: [params.user],
-			startDate: params.user.school.schoolYear.startDate,
-			untilDate: params.user.school.schoolYear.endDate,
+			startDate: params.user.school.schoolYear?.startDate,
+			untilDate: params.user.school.schoolYear?.endDate,
 		});
+
 		const status = {
 			title: copy.name,
 			type: CopyElementType.COURSE,

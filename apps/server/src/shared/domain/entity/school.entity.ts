@@ -22,7 +22,7 @@ export interface ISchoolProperties {
 	officialSchoolNumber?: string;
 	systems?: System[];
 	features?: SchoolFeatures[];
-	schoolYear: SchoolYear;
+	schoolYear?: SchoolYear;
 }
 
 @Embeddable()
@@ -55,7 +55,7 @@ export class School extends BaseEntity {
 		if (props.officialSchoolNumber) this.officialSchoolNumber = props.officialSchoolNumber;
 		if (props.systems) this.systems.set(props.systems);
 		if (props.features) this.features = props.features;
-		this.schoolYear = props.schoolYear;
+		if (props.schoolYear) this.schoolYear = props.schoolYear;
 	}
 
 	@Property({ nullable: true })
@@ -82,6 +82,6 @@ export class School extends BaseEntity {
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne('SchoolYear', { fieldName: 'currentYear' })
-	schoolYear: SchoolYear;
+	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
+	schoolYear?: SchoolYear;
 }
