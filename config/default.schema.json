@@ -838,11 +838,6 @@
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
 		},
-		"ROOM_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "feature toggle activate Room view link."
-		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
 			"default": "lernen.cloud@dataport.de",
