@@ -14,8 +14,6 @@ const removeTeamUserFromTeam = (team, userId) => {
 
 const patchOrRemoveTeam = (team) => {
 	if (team.userIds.length <= 0) {
-		const service = this.app.service('/nest-collaborative-storage-uc');
-		service.deleteTeam(team.id);
 		return removeTeam(team);
 	}
 	return patchTeamUsers(team);

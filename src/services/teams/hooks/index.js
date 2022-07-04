@@ -759,6 +759,10 @@ const keys = {
 		'schoolId',
 	],
 };
+const deleteNextcloudTeam = (hook) => {
+	const service = hook.app.service('/nest-collaborative-storage-uc');
+	service.deleteTeam(hook.id);
+};
 
 // todo: TeamPermissions
 exports.before = {
@@ -786,7 +790,7 @@ exports.before = {
 		teamMainHook,
 		hasTeamPermission('RENAME_TEAM'),
 	], // todo: filterToRelated(keys.data,'data')
-	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM')],
+	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteNextcloudTeam],
 };
 
 // todo:clear unused values
