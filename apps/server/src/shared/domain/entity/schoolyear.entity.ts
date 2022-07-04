@@ -1,14 +1,14 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 
-export interface ISchoolYear {
+export interface ISchoolYearProperties {
 	name: string;
 	startDate: Date;
 	endDate: Date;
 }
 
 @Entity({ tableName: 'years' })
-export class SchoolYear extends BaseEntity implements ISchoolYear {
+export class SchoolYear extends BaseEntity implements ISchoolYearProperties {
 	@Property()
 	name: string;
 
@@ -18,7 +18,7 @@ export class SchoolYear extends BaseEntity implements ISchoolYear {
 	@Property()
 	endDate = new Date();
 
-	constructor(props: ISchoolYear) {
+	constructor(props: ISchoolYearProperties) {
 		super();
 		this.name = props.name;
 		this.startDate = props.startDate;
