@@ -163,7 +163,8 @@ class AdminUsers {
 		await this.checkIfExternallyManaged(schoolId);
 		const { email } = _data;
 		await this.checkMail(email);
-		return this.app.service('usersModel').create({
+		await this.setRole();
+		return await this.app.service('usersModel').create({
 			..._data,
 			schoolId,
 			roles: [this.role._id],
