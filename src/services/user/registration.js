@@ -240,7 +240,10 @@ const registerUser = function register(data, params, app) {
 					userId: user._id.toString(),
 					activated: true,
 				})
-				.then(async () => {	account = await app.service('nest-account-service').findByUserId(user._id.toString()); })
+				.then(async () => {
+					account = await app.service('nest-account-service').findByUserId(user._id.toString());
+					return Promise.resolve();
+				})
 				.catch((err) => {
 					const msg = 'Fehler beim Erstellen des Accounts.';
 					logger.warning(msg, err);
