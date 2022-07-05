@@ -1,25 +1,31 @@
 ###
 # curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev//ocs/v1.php/cloud/groups?search=SchulcloudNextcloud-5e1dc275322ce040a850b14b&format=json
-GET https://nextcloud-nbc.dbildungscloud.dev/ocs/v1.php/cloud/groups
-Authorization: Basic capcakes {{CAPCAKESPASS}}
+GET http://nextcloud.localhost:9090/ocs/v1.php/cloud/groups
+Authorization: Basic admin admin
 OCS-APIRequest: true
 Accept: application/json
 ###
 # curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders
-GET https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders
-Authorization: Basic capcakes {{CAPCAKESPASS}}
+GET http://nextcloud.localhost:9090/apps/groupfolders/folders
+Authorization: Basic admin admin
+OCS-APIRequest: true
+Accept: application/json
+###
+# curl -u -H OCS-APIRequest:true -H Accept:application/json http://nextcloud.localhost:9090/apps/schulcloud/groupfolders/folders/group/SchulcloudNextcloud-62c3ff62e90d837c28ae9b21
+GET http://nextcloud.localhost:9090/apps/schulcloud/groupfolders/folders/group/SchulcloudNextcloud-62c3ff62e90d837c28ae9b21
+Authorization: Basic admin admin
 OCS-APIRequest: true
 Accept: application/json
 ###
 # curl -X GET 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/1' -H "OCS-APIRequest: true" -H "Accept: Application/json"
-GET https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/1
-Authorization: Basic capcakes {{CAPCAKESPASS}}
+GET http://nextcloud.localhost:9090/apps/groupfolders/folders/1
+Authorization: Basic admin admin
 OCS-APIRequest: true
 Accept: Application/json
 ###
-# curl -X DELETE 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/2/' -H "OCS-APIRequest: true" -H "Accept: Application/json"
-DELETE https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/2/
-Authorization: Basic capcakes {{CAPCAKESPASS}}
+# curl -X DELETE 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/2' -H "OCS-APIRequest: true" -H "Accept: Application/json"
+DELETE http://nextcloud.localhost:9090/apps/groupfolders/folders/4
+Authorization: Basic admin admin
 OCS-APIRequest: true
 Accept: application/json
 ###

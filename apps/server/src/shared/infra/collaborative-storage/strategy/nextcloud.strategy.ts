@@ -11,7 +11,7 @@ interface NextcloudGroups {
 	groups: string[];
 }
 
-interface NextcloudGroupfolders {
+interface GroupfoldersFolder {
 	folder_id: string;
 }
 
@@ -72,12 +72,12 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	}
 
 	private removeGroup(groupId: string) {
-		this.delete(`ocs/v1.php/cloud/groups/${groupId}`);
+		this.delete(`/ocs/v1.php/cloud/groups/${groupId}`);
 	}
 
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
-		return firstValueFrom(this.get(`/apps/schulcloud/groupfolders/folders/groups/${groupId}`))
-			.then((resp: AxiosResponse<OcsResponse<NextcloudGroupfolders>>) => resp.data.ocs.data.folder_id)
+		return firstValueFrom(this.get(`/apps/schulcloud/groupfolders/folders/group/${groupId}`))
+			.then((resp: AxiosResponse<OcsResponse<GroupfoldersFolder[]>>) => resp.data.ocs.data[0].folder_id)
 			.catch((error) => {
 				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			});
@@ -90,8 +90,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	async deleteGroupfolderAndRemoveGroup(TeamId: string) {
 		const groupId = await this.findGroupIdByTeamId(TeamId);
 		const folderId = await this.findFolderIdForGroupId(groupId);
-		this.removeGroup(groupId);
-		this.deleteFolder(folderId);
+		this.removeGroup(groupId); // works with curl - could not been tested manually/debugged
+		this.deleteFolder(folderId); // works with curl - could not been tested manually/debugged
 	}
 
 	private setGroupPermissions(groupId: string, folderId: string, permissions: boolean[]) {
