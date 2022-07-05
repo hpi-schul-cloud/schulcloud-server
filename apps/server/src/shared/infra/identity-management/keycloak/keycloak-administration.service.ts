@@ -26,7 +26,8 @@ export class KeycloakAdministrationService {
 	public async testKcConnection(): Promise<boolean> {
 		try {
 			await this.kcAdminClient.auth(this.kcSettings.credentials);
-		} catch {
+		} catch (err) {
+			console.error(err);
 			return false;
 		}
 		return true;

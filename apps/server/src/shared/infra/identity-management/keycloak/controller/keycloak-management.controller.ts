@@ -1,6 +1,7 @@
-import { Controller, ServiceUnavailableException, Post } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import {Controller, Param, Post, ServiceUnavailableException} from '@nestjs/common';
+import {Logger} from '@src/core/logger';
+import {EnvType} from '../../../identity-management';
+import {KeycloakManagementUc, SysType} from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
@@ -19,6 +20,27 @@ export class KeycloakManagementController {
 		if (await this.keycloakManagementUc.check()) {
 			try {
 				return await this.keycloakManagementUc.seed();
+			} catch (err) {
+				this.logger.error(err);
+				return -1;
+			}
+		}
+		throw new ServiceUnavailableException();
+	}
+
+	/**
+	 * Configures the IDM with systems from the database.
+	 *
+	 * @param envType The environment type, can be 'dev' or 'prod'. Default 'prod'.
+	 * @param sysType The system type to configure.
+	 */
+	@Post('configure')
+	async applyConfiguration(@Param() envType?: EnvType, @Param() sysType?: SysType): Promise<number> {
+		envType ??= EnvType.Prod;
+		sysType ??= SysType.OAuth;
+		if (await this.keycloakManagementUc.check()) {
+			try {
+				return this.keycloakManagementUc.configure({ envType, sysType });
 			} catch (err) {
 				this.logger.error(err);
 				return -1;

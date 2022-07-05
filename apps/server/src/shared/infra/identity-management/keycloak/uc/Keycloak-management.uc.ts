@@ -1,12 +1,34 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import fs from 'node:fs/promises';
-import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
-import { KeycloakAdministrationService } from '../keycloak-administration.service';
+import {
+	IJsonAccount,
+	IJsonUser,
+	IKeycloakManagementInputFiles, IKeycloakSettings,
+	KeycloakManagementInputFiles,
+	KeycloakSettings
+} from '../interface';
+import {KeycloakAdministrationService} from '../keycloak-administration.service';
+import {EnvType} from "@shared/infra/identity-management";
+import {SystemRepo} from "@shared/repo";
+import {System} from '@shared/domain';
+
+export enum SysType {
+	Moodle = 'moodle',
+	LDAP = 'ldap',
+	OAuth = 'oauthIserv',
+}
+
+export interface IConfigureOptions {
+	envType?: EnvType;
+	sysType?: SysType;
+}
 
 @Injectable()
 export class KeycloakManagementUc {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
+		private readonly systemRepo: SystemRepo,
+		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
 
@@ -61,6 +83,34 @@ export class KeycloakManagementUc {
 			}
 		}
 		return userCount;
+	}
+
+	async configure(options: IConfigureOptions): Promise<number> {
+		options.envType ??= EnvType.Prod;
+		options.sysType ??= SysType.OAuth;
+		const configs = await this.loadConfigs(options.envType, options.sysType);
+		for (const config of configs) {
+			const kc = await this.kcAdmin.callKcAdminClient();
+			await kc.identityProviders.create({
+				providerId: 'oidc',
+				alias: config.alias ?? '',
+				realm: this.kcSettings.realmName,
+			})
+		}
+		return configs.length;
+	}
+
+	private async loadConfigs(envType: EnvType, sysType: SysType): Promise<System[]> {
+		if (envType === EnvType.Dev) {
+			const data = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
+			const systems = JSON.parse(data) as System[];
+			return systems.filter((system) => system.type === sysType);
+		}
+		if (envType === EnvType.Prod) {
+			return (await this.systemRepo.findAll())
+				.filter((system) => system.type === sysType);
+		}
+		throw new Error('EnvType not recognized');
 	}
 
 	private async loadAccounts(): Promise<IJsonAccount[]> {

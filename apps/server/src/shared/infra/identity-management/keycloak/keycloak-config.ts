@@ -20,5 +20,6 @@ export default class KeycloakConfiguration {
 	static keycloakInputFiles = {
 		accountsFile: './backup/setup/accounts.json',
 		usersFile: './backup/setup/users.json',
+		systemsFile: './backup/setup/systems.json',
 	} as IKeycloakManagementInputFiles;
 }

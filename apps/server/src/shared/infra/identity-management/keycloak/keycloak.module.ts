@@ -9,6 +9,7 @@ import { KeycloakManagementUc } from './uc/Keycloak-management.uc';
 import { KeycloakManagementController } from './controller/keycloak-management.controller';
 import { KeycloakManagementInputFiles } from './interface';
 import KeycloakConfiguration from './keycloak-config';
+import {SystemRepo} from "@shared/repo";
 
 @Module({
 	imports: [ConsoleWriterModule, LoggerModule],
@@ -26,6 +27,7 @@ import KeycloakConfiguration from './keycloak-config';
 		},
 		KeycloakManagementUc,
 		KeycloakConsole,
+		SystemRepo,
 	],
 	exports: [KeycloakAdministrationService, KeycloakConsole],
 })
