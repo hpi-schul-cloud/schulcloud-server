@@ -47,13 +47,13 @@ const getUserData = async (id) => {
  * @param schoolTombstoneUserId
  * @param {*} deleteUserFacades e.g. ['/registrationPin/v2', '/fileStorage/v2']
  */
-const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFacades = []) => {
+const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFacades = [], accessToken) => {
 	for (const facadeName of deleteUserFacades) {
 		const facade = facadeLocator.facade(facadeName);
 		for (const deleteFn of facade.deleteUserData) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const trash = await deleteFn(userId, schoolTombstoneUserId);
+				const trash = await deleteFn(userId, schoolTombstoneUserId, accessToken);
 				// eslint-disable-next-line no-await-in-loop
 				await trashbinRepo.updateTrashbinByUserId(userId, trash.trashBinData);
 			} catch (error) {
@@ -151,7 +151,7 @@ const getOrCreateTombstoneUserId = async (schoolId, user) => {
 	return undefined;
 };
 
-const deleteUser = async (id, { user: loggedinUser }) => {
+const deleteUser = async (id, { user: loggedinUser, authentication }) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
 
@@ -181,7 +181,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 		'/messenger/v2',
 		'/tasks/v2',
 	];
-	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {
+	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades, authentication.accessToken).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };
