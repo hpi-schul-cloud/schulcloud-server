@@ -12,7 +12,7 @@ interface NextcloudGroups {
 }
 
 interface NextcloudGroupfolders {
-	groups: Map<string, number>;
+	folder_id: string;
 }
 
 interface OcsResponse<T> {
@@ -77,7 +77,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
 		return firstValueFrom(this.get(`/apps/schulcloud/groupfolders/folders/groups/${groupId}`))
-			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0]) // groups has to be replaced to get the folderId
+			.then((resp: AxiosResponse<OcsResponse<NextcloudGroupfolders>>) => resp.data.ocs.data.folder_id)
 			.catch((error) => {
 				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			});
