@@ -79,7 +79,7 @@ const providers = [
 
 const controllers = [FilesStorageController, FileSecurityController];
 
-export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
