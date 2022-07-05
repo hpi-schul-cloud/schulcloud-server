@@ -8,13 +8,13 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 	let app;
 	let qrRegistrationLinksLegacyService;
 	let server;
-
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		qrRegistrationLinksLegacyService = app.service('/users/qrRegistrationLinkLegacy');
 		server = await app.listen(0);
-		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {

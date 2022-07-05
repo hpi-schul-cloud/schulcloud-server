@@ -164,7 +164,7 @@ class AdminUsers {
 		const { email } = _data;
 		await this.checkMail(email);
 		await this.setRole();
-		return await this.app.service('usersModel').create({
+		return this.app.service('usersModel').create({
 			..._data,
 			schoolId,
 			roles: [this.role._id],

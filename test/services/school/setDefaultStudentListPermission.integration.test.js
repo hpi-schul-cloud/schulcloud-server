@@ -53,9 +53,9 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 		before(async () => {
 			configBefore = Configuration.toObject({});
 			app = await appPromise();
+			nestServices = await setupNestServices(app);
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
 			server = await app.listen(0);
-			nestServices = await setupNestServices(app);
 		});
 
 		after(async () => {
@@ -65,6 +65,7 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 
 		afterEach(async () => {
 			await testObjects.cleanup();
+			await closeNestServices(nestServices);
 		});
 
 		it('should not add default student list permission', async () => {

@@ -1,8 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
-const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } =
-	require('../../helpers/testObjects')(appPromise());
+const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } =	require('../../helpers/testObjects')(appPromise());
 
 describe('registrationSchool service', () => {
 	let app;

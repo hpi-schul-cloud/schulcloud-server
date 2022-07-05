@@ -971,7 +971,6 @@ describe('AdminUsersService', () => {
 
 describe('AdminTeachersService', () => {
 	let app;
-	let accountService;
 	let adminTeachersService;
 	let consentService;
 	let server;
@@ -980,7 +979,6 @@ describe('AdminTeachersService', () => {
 	before(async () => {
 		app = await appPromise();
 		nestServices = await setupNestServices(app);
-		accountService = app.service('nest-account-service');
 		adminTeachersService = app.service('/users/admin/teachers');
 		consentService = app.service('consents');
 		server = await app.listen(0);
