@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ComponentType, Course, IComponentGeogebraProperties, IComponentProperties, Lesson, User } from '../entity';
+import {
+	ComponentType,
+	Course,
+	IComponentGeogebraProperties,
+	IComponentProperties,
+	Lesson,
+	User,
+} from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 
@@ -41,20 +48,16 @@ export class LessonCopyService {
 			if (element.component === ComponentType.TEXT || element.component === ComponentType.LERNSTORE) {
 				copiedContent.push(element);
 			} else if (element.component === ComponentType.GEOGEBRA) {
-				const geoGebraContent = this.copyGeogebra(element, element.content as IComponentGeogebraProperties);
+				const geoGebraContent = this.copyGeogebra(element);
 				copiedContent.push(geoGebraContent);
 			}
 		});
 		return copiedContent;
 	}
 
-	private copyGeogebra(
-		originalElement: IComponentProperties,
-		originalContent: IComponentGeogebraProperties
-	): IComponentProperties {
-		const copy = Object.assign(originalElement) as IComponentProperties;
-		const content = Object.assign(originalContent) as IComponentGeogebraProperties;
-		content.materialId = '';
+	private copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
+		const copy = { ...originalElement, hidden: true };
+		const content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
 		copy.content = content;
 		return copy;
 	}

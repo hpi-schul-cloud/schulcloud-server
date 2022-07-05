@@ -403,5 +403,18 @@ describe('lesson copy service', () => {
 
 			expect(geoGebraContent.materialId).toEqual('');
 		});
+
+		it('element should be hidden', () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			expect(lessonContents[0].hidden).toEqual(true);
+		});
 	});
 });
