@@ -76,18 +76,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	}
 
 	private async findFolderIdForGroupId(groupId: string): Promise<string> {
-		return firstValueFrom(this.get(`/apps/groupfolders/folders`))
-			.then((resp: AxiosResponse<OcsResponse<Map<string, NextcloudGroupfolders>>>) => {
-				const filtered = Object.entries(resp.data.ocs.data)
-					.filter(([, v]) => {
-						return Object.entries((v as NextcloudGroupfolders).groups).filter(([k]) => k === groupId);
-					})
-					.flatMap(([k]) => k);
-				if (filtered.length < 1) {
-					throw new NotFoundException();
-				}
-				return filtered[0];
-			})
+		return firstValueFrom(this.get(`/apps/schulcloud/groupfolders/folders/groups/${groupId}`))
+			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0]) // groups has to be replaced to get the folderId
 			.catch((error) => {
 				throw new NotFoundException(error, `Folder for ${groupId} not found in Nextcloud!`);
 			});
