@@ -20,4 +20,6 @@ export class TaskCopyApiParams {
 		description: 'Destination lesson parent Id the task is copied to',
 	})
 	lessonId?: string;
+
+	jwt?: string;
 }

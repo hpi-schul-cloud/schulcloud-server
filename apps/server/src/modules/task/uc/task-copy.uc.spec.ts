@@ -7,6 +7,7 @@ import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
@@ -49,6 +50,10 @@ describe('task copy uc', () => {
 				{
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();
