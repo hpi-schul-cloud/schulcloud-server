@@ -69,11 +69,11 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			});
 	}
 
-	private async findGroupIdByTeamId(TeamId: string): Promise<string> {
-		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${TeamId}`))
+	private async findGroupIdByTeamId(teamId: string): Promise<string> {
+		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${teamId}`))
 			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0])
 			.catch((error) => {
-				throw new NotFoundException(error, `Group with TeamId of ${TeamId} not found in Nextcloud!`);
+				throw new NotFoundException(error, `Group with TeamId of ${teamId} not found in Nextcloud!`);
 			});
 	}
 
@@ -107,8 +107,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			});
 	}
 
-	async deleteGroupfolderAndRemoveGroup(TeamId: string) {
-		const groupId = await this.findGroupIdByTeamId(TeamId);
+	async deleteGroupfolderAndRemoveGroup(teamId: string) {
+		const groupId = await this.findGroupIdByTeamId(teamId);
 		const folderId = await this.findFolderIdForGroupId(groupId);
 		if (groupId && folderId) {
 			await this.removeGroup(groupId);
