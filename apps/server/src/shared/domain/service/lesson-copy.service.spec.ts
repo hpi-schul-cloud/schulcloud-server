@@ -237,7 +237,7 @@ describe('lesson copy service', () => {
 		describe('when lesson contains at least one content element', () => {
 			const setup = () => {
 				const contentOne: IComponentProperties = {
-					title: 'text component 1',
+					title: 'title component 1',
 					hidden: false,
 					component: ComponentType.TEXT,
 					content: {
@@ -245,11 +245,19 @@ describe('lesson copy service', () => {
 					},
 				};
 				const contentTwo: IComponentProperties = {
-					title: 'text component 2',
+					title: 'title component 2',
 					hidden: false,
 					component: ComponentType.LERNSTORE,
 					content: {
-						text: 'this is another text content',
+						resources: [
+							{
+								url: 'http://foo.bar',
+								title: 'foo',
+								description: 'bar',
+								client: 'client',
+								merlinReference: '',
+							},
+						],
 					},
 				};
 				const user = userFactory.build();
