@@ -142,13 +142,15 @@ export class FilesStorageUC {
 
 	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (entity.name !== params.fileName) {
-			throw new NotFoundException(ErrorType.FILE_NOT_FOUND, `${FilesStorageUC.name}:download`);
+			this.logger.warn(`could not find file with id: ${entity.id} by filename`);
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
 	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
 		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED, `${FilesStorageUC.name}:download`);
+			this.logger.warn(`file is blocked with id: ${entity.id}`);
+			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
 	}
 
