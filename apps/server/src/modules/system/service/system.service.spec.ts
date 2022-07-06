@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { EntityId, System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { setupEntities, systemFactory } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
@@ -37,16 +37,19 @@ describe('SystemService', () => {
 
 	beforeEach(() => {
 		oauthSystems = [];
-		const iserv = systemFactory.build();
+		const iserv = systemFactory.buildWithId();
 		oauthSystems.push(iserv);
 		allSystems.push(iserv);
-		allSystems.push(systemFactory.build({ oauthConfig: undefined }));
-		const moodle = systemFactory.build();
+		allSystems.push(systemFactory.buildWithId({ oauthConfig: undefined }));
+		const moodle = systemFactory.buildWithId();
 		moodle.type = 'moodle';
 		allSystems.push(moodle);
 
 		systemRepo.findByFilter.mockResolvedValue(oauthSystems);
 		systemRepo.findAll.mockResolvedValue(allSystems);
+		systemRepo.findById.mockImplementation((id: EntityId): Promise<System> => {
+			return id === iserv.id ? Promise.resolve(iserv) : Promise.reject();
+		});
 	});
 
 	describe('findByFilter', () => {
@@ -64,6 +67,20 @@ describe('SystemService', () => {
 
 			// Assert
 			expect(resultSystems.length).toEqual(allSystems.length);
+		});
+	});
+
+	describe('findById', () => {
+		it('should return oauth system iserv', async () => {
+			// Act
+			const resultSystems = await systemService.findById(oauthSystems[0].id);
+
+			// Assert
+			expect(resultSystems.alias).toEqual(oauthSystems[0].alias);
+		});
+
+		it('should reject promise, because no entity was found', async () => {
+			await expect(systemService.findById('unknown id')).rejects.toEqual(undefined);
 		});
 	});
 });
