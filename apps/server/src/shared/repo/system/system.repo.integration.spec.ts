@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { SystemRepo } from './system.repo';
+import { SystemRepo } from '@shared/repo';
 
 describe('system repo', () => {
 	let module: TestingModule;
@@ -43,7 +43,7 @@ describe('system repo', () => {
 			await em.persistAndFlush([system]);
 			const result = await repo.findById(system.id);
 			expect(Object.keys(result).sort()).toEqual(
-				['createdAt', 'updatedAt', 'type', 'url', 'alias', 'oauthConfig', '_id'].sort()
+				['createdAt', 'updatedAt', 'type', 'url', 'alias', 'oauthConfig', '_id', 'provisioningStrategy'].sort()
 			);
 		});
 
@@ -83,7 +83,7 @@ describe('system repo', () => {
 	describe('findByFilter', () => {
 		let systems: System[] = [];
 		beforeEach(async () => {
-			systems = [systemFactory.build(), systemFactory.build({ oauthConfig: undefined })];
+			systems = [systemFactory.withOauthConfig().build(), systemFactory.build()];
 			await em.persistAndFlush(systems);
 		});
 

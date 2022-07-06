@@ -127,7 +127,7 @@ describe('OAuthService', () => {
 	});
 
 	beforeEach(() => {
-		defaultSystem = systemFactory.build();
+		defaultSystem = systemFactory.withOauthConfig().build();
 		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
 
 		defaultAuthCode = '43534543jnj543342jn2';
@@ -231,7 +231,7 @@ describe('OAuthService', () => {
 			if (id === defaultIservSystemId) {
 				return Promise.resolve(defaultIservSystem);
 			}
-			return Promise.resolve(systemFactory.build());
+			return Promise.resolve(systemFactory.withOauthConfig().build());
 		});
 		userRepo.findById.mockImplementation((sub: string): Promise<User> => {
 			if (sub === '') {
@@ -364,7 +364,7 @@ describe('OAuthService', () => {
 			expect(errorResponse).toEqual(defaultErrorResponse);
 		});
 		it('should throw error if oauthconfig is missing', async () => {
-			const system: System = systemFactory.buildWithId({ oauthConfig: undefined });
+			const system: System = systemFactory.buildWithId();
 			systemRepo.findById.mockResolvedValueOnce(system);
 			const response = await service.processOAuth(defaultQuery, system.id);
 			expect(response).toEqual({
