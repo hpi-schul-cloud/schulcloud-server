@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3Client } from '@aws-sdk/client-s3';
-import { Logger } from '@src/core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
-import { S3ClientAdapter } from './s3-client.adapter';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@src/core/logger';
+import { ICopyFiles } from '../interface';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';
-import { ICopyFiles } from '../interface';
+import { S3ClientAdapter } from './s3-client.adapter';
 
 const config = {
 	endpoint: '',
@@ -185,6 +185,14 @@ describe('S3ClientAdapter', () => {
 					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 				})
 			);
+		});
+
+		it('should throw an InternalServerErrorException by error', async () => {
+			// @ts-expect-error should run into error
+			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
+			const res = await service.delete([pathToFile]);
+			expect(res).toEqual([]);
+			client.send.mockRestore();
 		});
 
 		it('should throw an InternalServerErrorException by error', async () => {

@@ -73,6 +73,7 @@ export class TaskUC {
 
 		// load the user including all roles
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+
 		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
 			response = await this.findAllForStudent(user, pagination);
 		} else if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {

@@ -49,7 +49,7 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        run: npm run nest:test:cov
+        run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5

@@ -4,22 +4,30 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
-import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
-import { LearnroomModule } from '@src/modules/learnroom';
-import { NewsModule } from '@src/modules/news';
-import { RocketChatModule } from '@src/modules/rocketchat';
-import { TaskModule } from '@src/modules/task';
 import { UserModule } from '@src/modules/user';
-import { CollaborativeStorageModule } from '@src/modules/collaborative-storage/collaborative-storage.module';
-import { SystemModule } from '@src/modules/system/system.module';
+import { SchoolModule } from '@src/modules/school/school.module';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { RoleModule } from '@src/modules/role/role.module';
+// todo: MUST BE CHECKED BEFORE MERGE
+// import { FilesModule } from '@src/modules/files';
+import {
+	AuthModule,
+	CollaborativeStorageModule,
+	FilesStorageClientModule,
+	ImportUserModule,
+	LearnroomModule,
+	NewsModule,
+	OauthModule,
+	RocketChatModule,
+	SystemModule,
+	TaskModule,
+} from '@src/modules';
+
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
-import { AuthModule } from './modules/authentication/auth.module';
-import { OauthModule } from './modules/oauth';
-import { ImportUserModule } from './modules/user-import/user-import.module';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
 
@@ -38,6 +46,8 @@ const serverModules = [
 	UserModule,
 	ImportUserModule,
 	LearnroomModule,
+	FilesStorageClientModule,
+	SystemModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
@@ -49,7 +59,9 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	SystemModule,
+	SchoolModule,
+	ProvisioningModule,
+	RoleModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
