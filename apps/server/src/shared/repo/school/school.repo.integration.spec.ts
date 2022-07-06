@@ -1,20 +1,24 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School, SchoolRolePermission, SchoolRoles } from '@shared/domain';
+import { School, SchoolRolePermission, SchoolRoles, SchoolYear } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { SchoolRepo } from '..';
+import { SchoolYearRepo } from '../schoolyear';
 
 describe('school repo', () => {
 	let module: TestingModule;
 	let repo: SchoolRepo;
+	let schoolYearRepo: SchoolYearRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SchoolRepo],
+			providers: [SchoolRepo, SchoolYearRepo],
 		}).compile();
 		repo = module.get(SchoolRepo);
+		schoolYearRepo = module.get(SchoolYearRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -32,12 +36,16 @@ describe('school repo', () => {
 	});
 
 	it('should create a school with embedded object', async () => {
-		const school = new School({ name: 'test' });
+		const schoolYear = schoolYearFactory.build();
+		const school = new School({ name: 'test', schoolYear });
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
-		await repo.save(school);
+		await em.persistAndFlush([school, schoolYear]);
 		em.clear();
+		const storedSchoolYears = await em.find(SchoolYear, {});
+		expect(storedSchoolYears).toHaveLength(1);
+		expect(storedSchoolYears[0]).toEqual(schoolYear);
 		const storedSchools = await em.find(School, {});
 		expect(storedSchools).toHaveLength(1);
 		const storedSchool = storedSchools[0];
