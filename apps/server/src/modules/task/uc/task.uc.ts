@@ -15,6 +15,7 @@ import {
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
 @Injectable()
 export class TaskUC {
@@ -22,7 +23,8 @@ export class TaskUC {
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo
+		private readonly lessonRepo: LessonRepo,
+		private readonly fileStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -209,13 +211,17 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId) {
+	async delete(userId: EntityId, taskId: EntityId, jwt: string) {
 		const [user, task] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.taskRepo.findById(taskId),
 		]);
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+
+		const params = FileParamBuilder.buildForTask(jwt, task.school.id, task.id);
+		await this.fileStorageClientAdapterService.deleteFilesOfParent(params);
+
 		await this.taskRepo.delete(task);
 		return true;
 	}

@@ -76,9 +76,10 @@ export class TaskController {
 	@Delete(':id')
 	async delete(
 		@Param('id', ParseObjectIdPipe) taskId: string,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@JWT() jwt: string
 	): Promise<boolean> {
-		const result = await this.taskUc.delete(currentUser.userId, taskId);
+		const result = await this.taskUc.delete(currentUser.userId, taskId, jwt);
 
 		return result;
 	}
