@@ -30,7 +30,3 @@ export const jwtConstants: JwtConstants = {
 	secret: authConfig.secret as string,
 	jwtOptions: authConfig.jwtOptions,
 };
-
-export const email = new RegExp(
-	"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-);
