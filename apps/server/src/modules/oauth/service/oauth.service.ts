@@ -162,7 +162,7 @@ export class OAuthService {
 		return oauthResponse;
 	}
 
-	getOAuthError(error: any): OAuthResponse {
+	getOAuthError(error: unknown): OAuthResponse {
 		this.logger.error(error);
 		const oauthResponse = new OAuthResponse();
 		if (error instanceof OAuthSSOError) {

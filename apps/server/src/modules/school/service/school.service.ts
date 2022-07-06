@@ -11,13 +11,14 @@ export class SchoolService {
 	async createOrUpdateSchool(schoolDto: SchoolDto): Promise<SchoolDto> {
 		const school: School = SchoolMapper.mapToEntity(schoolDto);
 
-		let savedSchool: School;
+		let createdSchool: School;
 		if (school.id) {
-			savedSchool = await this.patchSchool(school);
+			createdSchool = await this.patchSchool(school);
 		} else {
-			savedSchool = await this.schoolRepo.createAndSave(school);
+			createdSchool = this.schoolRepo.create(school);
+			await this.schoolRepo.save(school);
 		}
-		const returnSchoolDto: SchoolDto = SchoolMapper.mapToDto(savedSchool);
+		const returnSchoolDto: SchoolDto = SchoolMapper.mapToDto(createdSchool);
 		return returnSchoolDto;
 	}
 

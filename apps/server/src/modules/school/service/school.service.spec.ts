@@ -38,8 +38,8 @@ describe('SchoolService', () => {
 	beforeEach(() => {
 		mockSchoolEntities = [schoolFactory.buildWithId(), schoolFactory.buildWithId()];
 		schoolDto = new SchoolDto({ name: 'schule1234' });
-		schoolRepo.createAndSave.mockImplementation((): Promise<School> => {
-			return Promise.resolve(mockSchoolEntities[0]);
+		schoolRepo.create.mockImplementation((): School => {
+			return mockSchoolEntities[0];
 		});
 		schoolRepo.findById.mockImplementation((schoolId: string): Promise<School> => {
 			const school = mockSchoolEntities.find((tmpSchool) => tmpSchool.id?.toString() === schoolId);
@@ -57,7 +57,8 @@ describe('SchoolService', () => {
 			await schoolService.createOrUpdateSchool(schoolDto);
 
 			// Assert
-			expect(schoolRepo.createAndSave).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolRepo.create).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 
 		it('should update existing school', async () => {
@@ -75,7 +76,8 @@ describe('SchoolService', () => {
 					id: schoolDto.id,
 				})
 			);
-			expect(schoolRepo.createAndSave).not.toHaveBeenCalled();
+			expect(schoolRepo.create).not.toHaveBeenCalled();
+			expect(schoolRepo.save).toHaveBeenCalled();
 		});
 	});
 });

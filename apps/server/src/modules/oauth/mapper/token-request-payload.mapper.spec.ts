@@ -1,4 +1,4 @@
-import { systemFactory, taskFactory } from '@shared/testing';
+import { systemFactory } from '@shared/testing';
 import { OauthConfig } from '@shared/domain';
 import { TokenRequestParams } from '../controller/dto/token-request.params';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';

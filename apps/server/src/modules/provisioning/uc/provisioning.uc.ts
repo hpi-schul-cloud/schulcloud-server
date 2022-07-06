@@ -26,7 +26,7 @@ export class ProvisioningUc {
 			throw new HttpException(`System with id "${systemId}" does not exist.`, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 
-		let strategy: ProvisioningStrategy<any>;
+		let strategy: ProvisioningStrategy<unknown>;
 		switch (system.provisioningStrategy) {
 			case SystemProvisioningStrategy.PLACEHOLDER:
 				strategy = this.placeholderStrategy;

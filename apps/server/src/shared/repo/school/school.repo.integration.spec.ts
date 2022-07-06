@@ -10,7 +10,6 @@ import { SchoolYearRepo } from '../schoolyear';
 describe('school repo', () => {
 	let module: TestingModule;
 	let repo: SchoolRepo;
-	let schoolYearRepo: SchoolYearRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
@@ -19,7 +18,6 @@ describe('school repo', () => {
 			providers: [SchoolRepo, SchoolYearRepo],
 		}).compile();
 		repo = module.get(SchoolRepo);
-		schoolYearRepo = module.get(SchoolYearRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -62,11 +60,12 @@ describe('school repo', () => {
 		const schoolEntity: School = schoolFactory.build();
 
 		// Act
-		const savedSchool: School = await repo.createAndSave(schoolEntity);
+		const createdSchool: School = repo.create(schoolEntity);
+		await repo.save(createdSchool);
 
 		// Assert
 		const savedSchoolEntity = await em.find(School, {});
 		expect(savedSchoolEntity[0].id).toBeDefined();
-		expect(savedSchool).toEqual(savedSchoolEntity[0]);
+		expect(createdSchool.id).toBeDefined();
 	});
 });

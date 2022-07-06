@@ -11,6 +11,8 @@ import { RoleModule } from '@src/modules/role/role.module';
 import { SystemModule } from '@src/modules/system/system.module';
 import { PlaceholderResponseMapper } from '@src/modules/provisioning/strategy/placeholder/placeholder-response.mapper';
 import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
+import { UserRepo } from '@shared/repo';
+import { PermissionService } from '@shared/domain';
 
 @Module({
 	imports: [UserModule, SchoolModule, RoleModule, SystemModule, LoggerModule],
@@ -24,6 +26,8 @@ import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strat
 		PlaceholderProvisioningStrategy,
 		Logger,
 		PlaceholderResponseMapper,
+		UserRepo,
+		PermissionService,
 	],
 	exports: [ProvisioningUc],
 })
