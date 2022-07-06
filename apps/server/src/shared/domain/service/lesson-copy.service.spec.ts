@@ -236,7 +236,7 @@ describe('lesson copy service', () => {
 
 		describe('when lesson contains at least one content element', () => {
 			const setup = () => {
-				const textContentOne: IComponentProperties = {
+				const contentOne: IComponentProperties = {
 					title: 'text component 1',
 					hidden: false,
 					component: ComponentType.TEXT,
@@ -244,7 +244,7 @@ describe('lesson copy service', () => {
 						text: 'this is a text content',
 					},
 				};
-				const textContentTwo: IComponentProperties = {
+				const contentTwo: IComponentProperties = {
 					title: 'text component 2',
 					hidden: false,
 					component: ComponentType.LERNSTORE,
@@ -257,7 +257,7 @@ describe('lesson copy service', () => {
 				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
-					contents: [textContentOne, textContentTwo],
+					contents: [contentOne, contentTwo],
 				});
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 				return { user, originalCourse, destinationCourse, originalLesson };

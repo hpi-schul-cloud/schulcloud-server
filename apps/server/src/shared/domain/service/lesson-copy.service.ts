@@ -14,7 +14,7 @@ export class LessonCopyService {
 	constructor(private readonly copyHelperService: CopyHelperService) {}
 
 	copyLesson(params: LessonCopyParams): CopyStatus {
-		const { copiedContent, contentStatus } = this.copyLessonContents(params.originalLesson.contents || []);
+		const { copiedContent, contentStatus } = this.copyLessonContent(params.originalLesson.contents || []);
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
@@ -36,10 +36,13 @@ export class LessonCopyService {
 		return status;
 	}
 
-	private copyLessonContents(contents: IComponentProperties[]) {
+	private copyLessonContent(content: IComponentProperties[]): {
+		copiedContent: IComponentProperties[];
+		contentStatus: CopyStatus[];
+	} {
 		const copiedContent: IComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
-		contents.forEach((element) => {
+		content.forEach((element) => {
 			if (element.component === ComponentType.TEXT || element.component === ComponentType.LERNSTORE) {
 				copiedContent.push(element);
 				copiedContentStatus.push({
@@ -57,7 +60,7 @@ export class LessonCopyService {
 				});
 			}
 		});
-		const contentStatus = this.contentStatus(copiedContentStatus);
+		const contentStatus = this.lessonStatusContent(copiedContentStatus);
 		return { copiedContent, contentStatus };
 	}
 
@@ -78,7 +81,7 @@ export class LessonCopyService {
 		];
 	}
 
-	private contentStatus(elements: CopyStatus[]): CopyStatus[] {
+	private lessonStatusContent(elements: CopyStatus[]): CopyStatus[] {
 		if (elements.length > 0) {
 			const componentStatus = {
 				title: 'contents',
