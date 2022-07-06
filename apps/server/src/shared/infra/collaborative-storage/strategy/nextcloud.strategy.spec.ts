@@ -3,7 +3,8 @@ import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/
 import { HttpModule } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
+import { createMock } from '@golevelup/ts-jest';
 
 describe('NextCloud Adapter Strategy', () => {
 	let module: TestingModule;
@@ -12,7 +13,13 @@ describe('NextCloud Adapter Strategy', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [HttpModule],
-			providers: [NextcloudStrategy],
+			providers: [
+				NextcloudStrategy,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 		strategy = module.get(NextcloudStrategy);
 	});

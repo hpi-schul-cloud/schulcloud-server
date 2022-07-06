@@ -4,6 +4,7 @@ import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-stora
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 import { RoleName } from '@shared/domain';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
 
 class TestStrategy implements ICollaborativeStorageStrategy {
 	baseURL: string;
@@ -27,6 +28,10 @@ describe('CollaborativeStorage Adapter', () => {
 			providers: [
 				CollaborativeStorageAdapter,
 				CollaborativeStorageAdapterMapper,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 				{
 					provide: 'ICollaborativeStorageStrategy',
 					useValue: createMock<ICollaborativeStorageStrategy>(),

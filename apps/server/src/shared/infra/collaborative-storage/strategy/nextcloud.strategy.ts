@@ -1,10 +1,9 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
 import { parseInt } from 'lodash';
-import { Logger } from '@src/core/logger';
 import { ICollaborativeStorageStrategy } from './base.interface.strategy';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
@@ -38,8 +37,10 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	config: AxiosRequestConfig;
 
-	constructor(private logger: Logger) {
-		this.logger.setContext(NextcloudStrategy.name);
+	private logger: Logger;
+
+	constructor() {
+		this.logger = new Logger(NextcloudStrategy.name);
 		this.httpService = new HttpService();
 		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
 		this.config = {
@@ -71,7 +72,12 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	private async findGroupIdByTeamId(teamId: string): Promise<string> {
 		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${teamId}`))
-			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => resp.data.ocs.data.groups[0])
+			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => {
+				if (resp.data.ocs.data.groups[0].length > 0) {
+					return resp.data.ocs.data.groups[0];
+				}
+				throw Error();
+			})
 			.catch((error) => {
 				throw new NotFoundException(error, `Group with TeamId of ${teamId} not found in Nextcloud!`);
 			});
@@ -109,8 +115,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	async deleteGroupfolderAndRemoveGroup(teamId: string) {
 		const groupId = await this.findGroupIdByTeamId(teamId);
-		const folderId = await this.findFolderIdForGroupId(groupId);
-		if (groupId && folderId) {
+		if (groupId) {
+			const folderId = await this.findFolderIdForGroupId(groupId);
 			await this.removeGroup(groupId);
 			await this.deleteFolder(folderId);
 		}
