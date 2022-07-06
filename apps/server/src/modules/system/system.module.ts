@@ -8,6 +8,6 @@ import { SystemUc } from '@src/modules/system/uc/system.uc';
 	imports: [],
 	providers: [SystemRepo, SystemService, SystemUc],
 	controllers: [SystemController],
-	exports: [SystemService],
+	exports: [SystemService, SystemUc],
 })
 export class SystemModule {}

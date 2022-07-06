@@ -27,8 +27,8 @@ export class OAuthService {
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly httpService: HttpService,
 		private readonly oAuthEncryptionService: SymetricKeyEncryptionService,
-		private iservOauthService: IservOAuthService,
-		private logger: Logger
+		private readonly iservOauthService: IservOAuthService,
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -109,8 +109,8 @@ export class OAuthService {
 	}
 
 	async getJWTForUser(user: User): Promise<string> {
-		const jwtResponse: string = await this.jwtService.generateJwt(user.id);
-		return jwtResponse;
+		const stringPromise = this.jwtService.generateJwt(user.id);
+		return stringPromise;
 	}
 
 	buildResponse(oauthConfig: OauthConfig, queryToken: OauthTokenResponse) {
@@ -162,7 +162,7 @@ export class OAuthService {
 		return oauthResponse;
 	}
 
-	getOAuthError(error: any): OAuthResponse {
+	getOAuthError(error: unknown): OAuthResponse {
 		this.logger.error(error);
 		const oauthResponse = new OAuthResponse();
 		if (error instanceof OAuthSSOError) {

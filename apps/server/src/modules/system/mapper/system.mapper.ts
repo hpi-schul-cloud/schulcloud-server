@@ -8,6 +8,7 @@ export class SystemMapper {
 			type: entity.type,
 			url: entity.url,
 			alias: entity.alias,
+			provisioningStrategy: entity.provisioningStrategy,
 			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
 		});
 	}

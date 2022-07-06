@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError, NullCacheAdapter } from '@mikro-orm/core';
+import { NotFoundError, NullCacheAdapter, ValidationError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName } from '@shared/domain';
@@ -86,6 +86,27 @@ describe('role repo', () => {
 		});
 	});
 
+	describe('findByNames', () => {
+		let roleA;
+		let roleB;
+
+		beforeEach(async () => {
+			roleA = roleFactory.build({ name: RoleName.STUDENT });
+			roleB = roleFactory.build({ name: RoleName.TEAMMEMBER });
+			await em.persistAndFlush([roleA, roleB]);
+		});
+
+		afterEach(() => {
+			em.clear();
+		});
+
+		it('should return multiple roles that matched by names', async () => {
+			const result: Role[] = await repo.findByNames([RoleName.STUDENT, RoleName.TEAMMEMBER]);
+			expect(result).toContainEqual(roleA);
+			expect(result).toContainEqual(roleB);
+		});
+	});
+
 	describe('findById', () => {
 		it('should return right keys', async () => {
 			const roleA = roleFactory.build();
@@ -112,6 +133,18 @@ describe('role repo', () => {
 
 			await em.persistAndFlush([roleA]);
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByIds', () => {
+		it('should return roles that matched by ids', async () => {
+			const roleA = roleFactory.build();
+			const roleB = roleFactory.build();
+
+			await em.persistAndFlush([roleA, roleB]);
+			const result: Role[] = await repo.findByIds([roleA.id, roleB.id]);
+			expect(result).toContainEqual(roleA);
+			expect(result).toContainEqual(roleB);
 		});
 	});
 });
