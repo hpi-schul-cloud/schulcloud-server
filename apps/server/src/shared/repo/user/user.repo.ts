@@ -16,7 +16,7 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
