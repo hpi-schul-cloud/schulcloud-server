@@ -13,10 +13,10 @@ export class SchoolYear extends BaseEntity implements ISchoolYearProperties {
 	name: string;
 
 	@Property()
-	startDate = new Date();
+	startDate: Date;
 
 	@Property()
-	endDate = new Date();
+	endDate: Date;
 
 	constructor(props: ISchoolYearProperties) {
 		super();

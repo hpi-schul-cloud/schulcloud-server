@@ -55,11 +55,11 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	color: string = DEFAULT.color;
 
 	@Property({ nullable: true })
-	startDate? = new Date();
+	startDate?: Date;
 
 	@Index()
 	@Property({ nullable: true })
-	untilDate? = new Date();
+	untilDate?: Date;
 
 	@Property({ nullable: true })
 	@Unique({ options: { sparse: true } })
