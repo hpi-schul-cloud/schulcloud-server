@@ -3,6 +3,7 @@ import { BBBCreateConfig } from '@src/modules/video-conference/config/bbb-create
 export class BBBCreateBreakoutConfig extends BBBCreateConfig {
 	constructor(config: BBBCreateBreakoutConfig) {
 		super(config);
+		this.isBreakout = true;
 		this.parentMeetingID = config.parentMeetingID;
 		this.sequence = config.sequence;
 		this.freeJoin = config.freeJoin;
@@ -10,7 +11,7 @@ export class BBBCreateBreakoutConfig extends BBBCreateConfig {
 		this.breakoutRoomsRecord = config.breakoutRoomsRecord;
 	}
 
-	readonly isBreakout: boolean = true;
+	readonly isBreakout?: boolean;
 
 	parentMeetingID: string;
 

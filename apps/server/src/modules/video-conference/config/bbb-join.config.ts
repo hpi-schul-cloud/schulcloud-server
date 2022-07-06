@@ -1,3 +1,8 @@
+export enum BBBRole {
+	MODERATOR = 'MODERATOR',
+	VIEWER = 'VIEWER',
+}
+
 export class BBBJoinConfig {
 	constructor(config: BBBJoinConfig) {
 		this.fullName = config.fullName;
@@ -11,7 +16,7 @@ export class BBBJoinConfig {
 
 	meetingID: string;
 
-	role: string;
+	role: BBBRole;
 
 	userID?: string;
 
