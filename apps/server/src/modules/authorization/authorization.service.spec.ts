@@ -4,7 +4,15 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
+import {
+	ALL_RULES,
+	BaseEntity,
+	IPermissionContext,
+	Permission,
+	PermissionContextBuilder,
+	PermissionTypes,
+	User,
+} from '@shared/domain';
 import {
 	courseFactory,
 	lessonFactory,
@@ -198,6 +206,31 @@ describe('authorization.service', () => {
 			await expect(() =>
 				service.checkPermissionByReferences(userId, entityName, entityId, context)
 			).rejects.toThrowError(ForbiddenException);
+
+			spy.mockRestore();
+		});
+	});
+
+	describe('checkPermissionsByReferences', () => {
+		const permissionTrue = 'true' as Permission;
+		const permissionFalse = 'false' as Permission;
+
+		it('should call ReferenceLoader.getUserWithPermissions', async () => {
+			const userId = new ObjectId().toHexString();
+			const entityName = AllowedAuthorizationEntityType.Course;
+			const entityId = new ObjectId().toHexString();
+			const spy = jest.spyOn(service, 'hasPermission');
+			spy.mockImplementation((user: User, entity: PermissionTypes, context: IPermissionContext) => {
+				return context.requiredPermissions[0] === permissionTrue;
+			});
+
+			const retMap = service.hasPermissionsByReferences(userId, entityName, entityId, [
+				permissionTrue,
+				permissionFalse,
+			]);
+
+			expect(retMap.get(permissionTrue)).toBe(true);
+			expect(retMap.get(permissionFalse)).toBe(false);
 
 			spy.mockRestore();
 		});

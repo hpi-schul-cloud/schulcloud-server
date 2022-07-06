@@ -8,6 +8,8 @@ import {
 	TaskRule,
 	User,
 	UserRule,
+	Permission,
+	PermissionContextBuilder,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
@@ -59,6 +61,27 @@ export class AuthorizationService extends BasePermissionManager {
 		} catch (err) {
 			throw new ForbiddenException(err);
 		}
+	}
+
+	hasPermissionsByReferences(
+		userId: EntityId,
+		entityName: AllowedAuthorizationEntityType,
+		entityId: EntityId,
+		permissions: Permission[]
+	): Map<Permission, boolean> {
+		const returnMap: Map<Permission, boolean> = new Map();
+		permissions.forEach((perm) => {
+			void this.hasPermissionByReferences(
+				userId,
+				entityName,
+				entityId,
+				PermissionContextBuilder.permissionOnly([perm])
+			).then((r) => {
+				returnMap.set(perm, r);
+				return null;
+			});
+		});
+		return returnMap;
 	}
 
 	async checkPermissionByReferences(

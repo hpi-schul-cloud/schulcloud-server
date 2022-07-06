@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import xml2json from '@hendt/xml2json';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { URLSearchParams } from 'url';
@@ -10,6 +10,7 @@ import { BBBCreateConfig } from '@src/modules/video-conference/config/bbb-create
 import { BBBJoinConfig } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
 import { BBBCreateBreakoutConfig } from '@src/modules/video-conference/config/bbb-create-breakout.config';
+import { BbbMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 
 interface BBBBaseResponse {
 	response: {
@@ -53,9 +54,30 @@ interface BBBEndResponse extends BBBBaseResponse {
 	};
 }
 
+interface BBBMeetingInfoResponse extends BBBBaseResponse {
+	response: {
+		returncode: string;
+		messageKey: string;
+		message: string;
+
+		meetingName: string;
+		meetingID: string;
+		running: boolean;
+
+		breakoutRooms?: {
+			breakout: string;
+		}[];
+
+		breakout?: {
+			parentMeetingID: string;
+			sequence: number;
+		};
+	};
+}
+
 @Injectable()
 export class VideoConferenceService {
-	readonly baseURL: string;
+	private readonly baseURL: string;
 
 	private readonly salt: string;
 
@@ -85,6 +107,14 @@ export class VideoConferenceService {
 			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBEndResponse)
 			.catch(() => {
 				throw new HttpException('Failed to end BBB room', HttpStatus.INTERNAL_SERVER_ERROR);
+			});
+	}
+
+	getMeetingInfo(config: BbbMeetingInfoConfig): Promise<BBBMeetingInfoResponse> {
+		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
+			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBMeetingInfoResponse)
+			.catch(() => {
+				throw new HttpException('Failed to fetch BBB room info', HttpStatus.INTERNAL_SERVER_ERROR);
 			});
 	}
 
