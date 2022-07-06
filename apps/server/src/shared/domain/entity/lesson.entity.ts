@@ -33,7 +33,7 @@ export interface IComponentLernstoreProperties {
 			title: string;
 			description: string;
 			client: string;
-			merlinReference: string;
+			merlinReference?: string;
 		}
 	];
 }
