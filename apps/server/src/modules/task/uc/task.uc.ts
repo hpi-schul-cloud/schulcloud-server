@@ -24,7 +24,7 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly fileStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -220,7 +220,7 @@ export class TaskUC {
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
 
 		const params = FileParamBuilder.buildForTask(jwt, task.school.id, task.id);
-		await this.fileStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
 
 		await this.taskRepo.delete(task);
 		return true;
