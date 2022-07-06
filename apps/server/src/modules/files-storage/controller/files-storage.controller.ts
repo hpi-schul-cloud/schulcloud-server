@@ -80,7 +80,7 @@ export class FilesStorageController {
 		// TODO set headers ?
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `inline; filename="${params.fileName}"`,
+			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
 		});
 	}
 
@@ -198,7 +198,6 @@ export class FilesStorageController {
 	@ApiResponse({ status: 201, type: FileRecordResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post('/restore/:fileRecordId')
 	async restoreFile(
 		@Param() params: SingleFileParams,

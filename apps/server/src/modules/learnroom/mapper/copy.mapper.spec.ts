@@ -3,10 +3,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
-import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@src/modules/learnroom/uc/lesson-copy.uc';
+import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
+import { TaskCopyParentParams } from '@src/modules/task/uc/task-copy.uc';
 import { CopyApiResponse } from '../controller/dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 
@@ -59,16 +59,19 @@ describe('copy mapper', () => {
 	});
 
 	describe('mapTaskCopyToDomain', () => {
+		const jwt = 'jwt';
+
 		describe('should map received params to domain', () => {
 			it('if only course destination is given', () => {
 				const courseId = new ObjectId().toHexString();
 				const params: TaskCopyApiParams = {
 					courseId,
 				};
-				const result = CopyMapper.mapTaskCopyToDomain(params);
+				const result = CopyMapper.mapTaskCopyToDomain(params, jwt);
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId: undefined,
+					jwt,
 				};
 
 				expect(result).toStrictEqual(expected);
@@ -80,10 +83,11 @@ describe('copy mapper', () => {
 					courseId,
 					lessonId,
 				};
-				const result = CopyMapper.mapTaskCopyToDomain(params);
+				const result = CopyMapper.mapTaskCopyToDomain(params, jwt);
 				const expected: TaskCopyParentParams = {
 					courseId,
 					lessonId,
+					jwt,
 				};
 
 				expect(result).toStrictEqual(expected);

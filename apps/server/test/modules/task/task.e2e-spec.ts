@@ -36,6 +36,7 @@ class API {
 		const response = await request(this.app.getHttpServer())
 			.get(this.routeName)
 			.set('Accept', 'application/json')
+			.set('Authorization', 'jwt')
 			.query(query || {});
 
 		return {
@@ -89,6 +90,7 @@ describe('Task Controller (e2e)', () => {
 					canActivate(context: ExecutionContext) {
 						const req: Request = context.switchToHttp().getRequest();
 						req.user = currentUser;
+
 						return true;
 					},
 				})
@@ -524,7 +526,10 @@ describe('Task Controller (e2e)', () => {
 				currentUser = mapUserToCurrentUser(teacher);
 				const params = { courseId: course.id };
 
-				const response = await request(app.getHttpServer()).post(`/tasks/${task.id}/copy`).send(params);
+				const response = await request(app.getHttpServer())
+					.post(`/tasks/${task.id}/copy`)
+					.set('Authorization', 'jwt')
+					.send(params);
 
 				expect(response.status).toEqual(201);
 			});
@@ -544,7 +549,10 @@ describe('Task Controller (e2e)', () => {
 				currentUser = mapUserToCurrentUser(teacher);
 				const params = { courseId: course.id };
 
-				const response = await request(app.getHttpServer()).post(`/tasks/${task.id}/copy`).send(params);
+				const response = await request(app.getHttpServer())
+					.post(`/tasks/${task.id}/copy`)
+					.send(params)
+					.set('Authorization', 'jwt');
 
 				expect(response.status).toEqual(201);
 			});

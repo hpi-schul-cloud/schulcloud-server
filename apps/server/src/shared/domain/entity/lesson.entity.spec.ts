@@ -1,6 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from 'bson';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '../../testing';
+import { ComponentType } from './lesson.entity';
 import { Task } from './task.entity';
 
 describe('Lesson Entity', () => {
@@ -142,6 +143,22 @@ describe('Lesson Entity', () => {
 				const result = lesson.getNumberOfPlannedTasks();
 				expect(result).toEqual(1);
 			});
+		});
+	});
+
+	describe('getLessonComponents', () => {
+		it('should return the content components', () => {
+			const expectedTextContent = {
+				title: 'test component',
+				hidden: false,
+				component: ComponentType.TEXT,
+				content: {
+					text: 'this is a text content',
+				},
+			};
+			const lesson = lessonFactory.build({ contents: [expectedTextContent] });
+			const result = lesson.getLessonComponents();
+			expect(result).toEqual([expectedTextContent]);
 		});
 	});
 
