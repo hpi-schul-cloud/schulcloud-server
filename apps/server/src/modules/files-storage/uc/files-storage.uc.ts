@@ -45,7 +45,7 @@ export class FilesStorageUC {
 		req: Request
 	): Promise<FileRecord> {
 		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+			const requestStream = busboy({ headers: req.headers, defCharset: 'utf8' });
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {

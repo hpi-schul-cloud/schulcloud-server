@@ -7,4 +7,9 @@ export class SchoolRepo extends BaseRepo<School> {
 	get entityName() {
 		return School;
 	}
+
+	create(entity: School): School {
+		const result = this._em.create(School, entity);
+		return result;
+	}
 }

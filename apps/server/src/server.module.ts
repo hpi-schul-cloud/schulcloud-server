@@ -4,24 +4,27 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
+import { UserModule } from '@src/modules/user';
+import { SchoolModule } from '@src/modules/school/school.module';
+import { ProvisioningModule } from '@src/modules/provisioning';
+import { RoleModule } from '@src/modules/role/role.module';
 // todo: MUST BE CHECKED BEFORE MERGE
 // import { FilesModule } from '@src/modules/files';
 import {
-	UserModule,
+	AuthModule,
+	CollaborativeStorageModule,
 	FilesStorageClientModule,
+	ImportUserModule,
 	LearnroomModule,
 	NewsModule,
-	RocketChatModule,
-	TaskModule,
-	AuthModule,
 	OauthModule,
-	ImportUserModule,
+	RocketChatModule,
 	SystemModule,
-	CollaborativeStorageModule,
+	TaskModule,
 } from '@src/modules';
 
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
@@ -44,6 +47,7 @@ const serverModules = [
 	ImportUserModule,
 	LearnroomModule,
 	FilesStorageClientModule,
+	SystemModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
@@ -55,7 +59,9 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	SystemModule,
+	SchoolModule,
+	ProvisioningModule,
+	RoleModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
