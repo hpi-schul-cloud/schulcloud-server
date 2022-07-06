@@ -1,23 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Test, TestingModule } from '@nestjs/testing';
+import {Test, TestingModule} from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { v1 } from 'uuid';
-import fs, { readFile } from 'node:fs/promises';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
-import { KeycloakManagementUc } from './Keycloak-management.uc';
-import { KeycloakAdministrationService } from '../keycloak-administration.service';
-import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
+import {v1} from 'uuid';
+import fs, {readFile} from 'node:fs/promises';
+import {IKeycloakSettings, KeycloakSettings} from '../interface/keycloak-settings.interface';
+import {KeycloakManagementUc} from './Keycloak-management.uc';
+import {KeycloakAdministrationService} from '../keycloak-administration.service';
+import {IConfigureOptions, IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles} from '../interface';
+import {EnvType, SysType} from "@shared/infra/identity-management";
+import {createMock, DeepMocked} from "@golevelup/ts-jest";
+import {SystemRepo} from "@shared/repo";
+import {Credentials} from "@keycloak/keycloak-admin-client/lib/utils/auth";
+import {System} from "@shared/domain";
+import {ObjectId} from "@mikro-orm/mongodb";
+import {ConnectionConfig} from "@keycloak/keycloak-admin-client/lib/client";
+import {IdentityProviders} from "@keycloak/keycloak-admin-client/lib/resources/identityProviders";
 
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
 	let uc: KeycloakManagementUc;
-	let client: KeycloakAdminClient;
-	let service: KeycloakAdministrationService;
+	let client: DeepMocked<KeycloakAdminClient>;
+	let service: DeepMocked<KeycloakAdministrationService>;
+	let repo: DeepMocked<SystemRepo>;
 	let settings: IKeycloakSettings;
 
 	const adminUsername = 'admin';
-
 	const accountsFile = 'accounts.json';
 	const usersFile = 'users.json';
 
@@ -60,16 +68,18 @@ describe('KeycloakManagementUc', () => {
 			email: 'jane.doe@email.tld',
 		},
 	];
+	const inputFiles: IKeycloakManagementInputFiles = {
+		accountsFile: 'accounts.json',
+		usersFile: 'users.json',
+		systemsFile: 'systems.json',
+	}
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: KeycloakManagementInputFiles,
-					useValue: {
-						accountsFile,
-						usersFile,
-					} as IKeycloakManagementInputFiles,
+					useValue: inputFiles,
 				},
 				KeycloakManagementUc,
 				{
@@ -84,23 +94,23 @@ describe('KeycloakManagementUc', () => {
 				},
 				{
 					provide: KeycloakAdminClient,
-					useValue: {
-						auth: jest.fn().mockImplementation(async (): Promise<void> => {
-							if (settings.credentials.username !== adminUser.username) {
-								throw new Error();
-							}
-
+					useValue: createMock<KeycloakAdminClient>({
+						auth: (): Promise<void> => {
+							if (settings.credentials.username !== adminUser.username) throw new Error();
 							return Promise.resolve();
-						}),
-						setConfig: jest.fn(),
-						users: {
-							create: jest.fn(),
-							del: jest.fn(),
-							find: jest
-								.fn()
-								.mockImplementation((): Promise<UserRepresentation[]> => Promise.resolve([...users, adminUser])),
 						},
-					},
+						setConfig: () => {},
+						users: {
+							create: async (): Promise<void> => Promise.resolve(),
+							del: async (): Promise<void> => Promise.resolve(),
+							find: async (): Promise<UserRepresentation[]> => Promise.resolve([adminUser, ...users]),
+						},
+						identityProviders: createMock<IdentityProviders>(),
+					}),
+				},
+				{
+					provide: SystemRepo,
+					useValue: createMock<SystemRepo>(),
 				},
 				{
 					provide: KeycloakSettings,
@@ -112,6 +122,7 @@ describe('KeycloakManagementUc', () => {
 		client = module.get(KeycloakAdminClient);
 		service = module.get(KeycloakAdministrationService);
 		settings = module.get(KeycloakSettings);
+		repo = module.get(SystemRepo);
 	});
 
 	describe('check', () => {
@@ -191,6 +202,53 @@ describe('KeycloakManagementUc', () => {
 				);
 			});
 			expect(result).toBe(validAccounts.length);
+		});
+	});
+
+	describe('configure', () => {
+		const devConfig: IConfigureOptions = { envType: EnvType.Dev, sysType: SysType.OAuth };
+		const prodConfig: IConfigureOptions = { envType: EnvType.Prod, sysType: SysType.OAuth };
+		const systems: System[] = [{
+			_id: new ObjectId(0),
+			id: new ObjectId(0).toString(),
+			type: SysType.OAuth.toString(),
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		}];
+		let fsReadFile: jest.SpyInstance;
+
+		beforeEach(() => {
+			repo.findAll.mockResolvedValue(systems);
+			// (<DeepMocked<IdentityProviders>>client.identityProviders).find.mockResolvedValue([]);
+			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
+				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
+				throw new Error('File not found');
+			})
+		});
+
+		afterEach(() => {
+			repo.findAll.mockRestore();
+			// (<DeepMocked<IdentityProviders>>client.identityProviders).find.mockRestore();
+			fsReadFile.mockRestore();
+		});
+
+		it('should read configs from file system in development', async () => {
+			const result = await uc.configure(devConfig);
+			expect(result).toBeGreaterThan(0);
+			expect(repo.findAll).not.toBeCalled();
+			expect(fsReadFile).toBeCalled();
+		});
+		it('should read configs from database in production', async () => {
+			const result = await uc.configure(prodConfig);
+			expect(result).toBeGreaterThan(0);
+			expect(repo.findAll).toBeCalled();
+			expect(fsReadFile).not.toBeCalled();
+		});
+		it('should configure Keycloak, if Keycloak is not configured', async () => {
+			expect(false).toBeTruthy();
+		});
+		it('should not configure Keycloak, if Keycloak is already configured', async () => {
+			expect(false).toBeTruthy();
 		});
 	});
 });

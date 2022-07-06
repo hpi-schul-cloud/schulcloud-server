@@ -1,7 +1,8 @@
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
-import {IConfigureOptions, KeycloakManagementUc, SysType} from '../uc/Keycloak-management.uc';
-import {EnvType} from "@shared/infra/identity-management";
+import {KeycloakManagementUc} from '../uc/Keycloak-management.uc';
+import {EnvType, SysType} from "@shared/infra/identity-management";
+import {IConfigureOptions} from "@shared/infra/identity-management/keycloak/interface";
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
@@ -91,7 +92,8 @@ export class KeycloakConsole {
 				flags: '-st, --sys-type <value>',
 				description: 'The system type to be configured',
 				required: false,
-				defaultValue: SysType.OAuth,
+				// TODO: SysType.OAuth doesn't seam to work?
+				defaultValue: 'iservOAuth',
 			},
 			...KeycloakConsole.retryFlags],
 	})

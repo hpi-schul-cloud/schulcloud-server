@@ -1,27 +1,18 @@
-import {Inject, Injectable} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import fs from 'node:fs/promises';
+import { EnvType, SysType } from '@shared/infra/identity-management';
+import { SystemRepo } from '@shared/repo';
+import { System } from '@shared/domain';
+import { KeycloakAdministrationService } from '../keycloak-administration.service';
 import {
+	IConfigureOptions,
 	IJsonAccount,
 	IJsonUser,
-	IKeycloakManagementInputFiles, IKeycloakSettings,
+	IKeycloakManagementInputFiles,
+	IKeycloakSettings,
 	KeycloakManagementInputFiles,
-	KeycloakSettings
+	KeycloakSettings,
 } from '../interface';
-import {KeycloakAdministrationService} from '../keycloak-administration.service';
-import {EnvType} from "@shared/infra/identity-management";
-import {SystemRepo} from "@shared/repo";
-import {System} from '@shared/domain';
-
-export enum SysType {
-	Moodle = 'moodle',
-	LDAP = 'ldap',
-	OAuth = 'oauthIserv',
-}
-
-export interface IConfigureOptions {
-	envType?: EnvType;
-	sysType?: SysType;
-}
 
 @Injectable()
 export class KeycloakManagementUc {
@@ -86,8 +77,8 @@ export class KeycloakManagementUc {
 	}
 
 	async configure(options: IConfigureOptions): Promise<number> {
-		options.envType ??= EnvType.Prod;
-		options.sysType ??= SysType.OAuth;
+		const configCount = 0;
+
 		const configs = await this.loadConfigs(options.envType, options.sysType);
 		for (const config of configs) {
 			const kc = await this.kcAdmin.callKcAdminClient();
@@ -95,9 +86,15 @@ export class KeycloakManagementUc {
 				providerId: 'oidc',
 				alias: config.alias ?? '',
 				realm: this.kcSettings.realmName,
-			})
+			});
 		}
 		return configs.length;
+	}
+
+	private async skipConfigure(): Promise<boolean> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const identityProviderCount = (await kc.identityProviders.find()).length;
+		return identityProviderCount <= 0;
 	}
 
 	private async loadConfigs(envType: EnvType, sysType: SysType): Promise<System[]> {
@@ -107,8 +104,7 @@ export class KeycloakManagementUc {
 			return systems.filter((system) => system.type === sysType);
 		}
 		if (envType === EnvType.Prod) {
-			return (await this.systemRepo.findAll())
-				.filter((system) => system.type === sysType);
+			return (await this.systemRepo.findAll()).filter((system) => system.type === sysType);
 		}
 		throw new Error('EnvType not recognized');
 	}

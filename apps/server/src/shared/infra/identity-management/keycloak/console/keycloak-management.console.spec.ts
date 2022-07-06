@@ -75,4 +75,8 @@ describe('KeycloakConsole', () => {
 			await expect(console.seed({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
 		});
 	});
+
+	describe('configure', () => {
+		it('should ')
+	});
 });

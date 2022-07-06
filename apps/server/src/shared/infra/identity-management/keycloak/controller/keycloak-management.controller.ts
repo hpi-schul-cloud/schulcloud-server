@@ -1,7 +1,7 @@
 import {Controller, Param, Post, ServiceUnavailableException} from '@nestjs/common';
 import {Logger} from '@src/core/logger';
-import {EnvType} from '../../../identity-management';
-import {KeycloakManagementUc, SysType} from '../uc/Keycloak-management.uc';
+import {EnvType, SysType} from '../../../identity-management';
+import {KeycloakManagementUc} from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
