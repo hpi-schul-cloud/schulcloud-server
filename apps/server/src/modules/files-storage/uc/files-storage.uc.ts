@@ -45,7 +45,7 @@ export class FilesStorageUC {
 		req: Request
 	): Promise<FileRecord> {
 		const result = await new Promise((resolve, reject) => {
-			const requestStream = busboy({ headers: req.headers, defCharset: 'utf8' });
+			const requestStream = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			requestStream.on('file', async (_name, file, info): Promise<void> => {
@@ -142,13 +142,15 @@ export class FilesStorageUC {
 
 	private checkFileName(entity: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (entity.name !== params.fileName) {
-			throw new NotFoundException(ErrorType.FILE_NOT_FOUND, `${FilesStorageUC.name}:download`);
+			this.logger.warn(`could not find file with id: ${entity.id} by filename`);
+			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
 	}
 
 	private checkScanStatus(entity: FileRecord): void | NotAcceptableException {
 		if (entity.securityCheck.status === ScanStatus.BLOCKED) {
-			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED, `${FilesStorageUC.name}:download`);
+			this.logger.warn(`file is blocked with id: ${entity.id}`);
+			throw new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 		}
 	}
 
