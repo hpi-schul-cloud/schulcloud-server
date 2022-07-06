@@ -5,39 +5,39 @@ Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: application/json
 ###
-# curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev//ocs/v1.php/cloud/groups
+# curl -u -H OCS-APIRequest:true -H Accept:application/json http://nextcloud.localhost:9090/ocs/v1.php/cloud/groups
 GET http://nextcloud.localhost:9090/ocs/v1.php/cloud/groups
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: application/json
 
 ###
-# curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders
+# curl -u -H OCS-APIRequest:true -H Accept:application/json http://nextcloud.localhost:9090/apps/groupfolders/folders
 GET http://nextcloud.localhost:9090/apps/groupfolders/folders
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: application/json
 ###
 # curl -u -H OCS-APIRequest:true -H Accept:application/json http://nextcloud.localhost:9090/apps/schulcloud/groupfolders/folders/group/SchulcloudNextcloud-62c3ff62e90d837c28ae9b21
-GET http://nextcloud.localhost:9090/apps/schulcloud/groupfolders/folders/group/SchulcloudNextcloud-62c3ff62e90d837c28ae9b21
+GET http://nextcloud.localhost:9090/apps/schulcloud/groupfolders/folders/group/SchulcloudNextcloud-62c442819b713d61c0a84f31
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: application/json
 ###
-# curl -X GET 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/1' -H "OCS-APIRequest: true" -H "Accept: Application/json"
+# curl -X GET 'http://nextcloud.localhost:9090/apps/groupfolders/folders/1' -H "OCS-APIRequest: true" -H "Accept: Application/json"
 GET http://nextcloud.localhost:9090/apps/groupfolders/folders
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: Application/json
 ###
-# curl -X DELETE 'https://nextcloud-nbc.dbildungscloud.dev/apps/groupfolders/folders/{folderId}' -H "OCS-APIRequest: true" -H "Accept: Application/json"
+# curl -X DELETE 'http://nextcloud.localhost:9090/apps/groupfolders/folders/{folderId}' -H "OCS-APIRequest: true" -H "Accept: Application/json"
 DELETE http://nextcloud.localhost:9090/apps/groupfolders/folders/4
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: application/json
 ###
-# curl -X DELETE 'https://nextcloud-nbc.dbildungscloud.dev/ocs/v1.php/cloud/groups/{groupId}' -H "OCS-APIRequest: true" -H "Accept: Application/json"
-DELETE http://nextcloud.localhost:9090//ocs/v1.php/cloud/groups/4
+# curl -X DELETE 'http://nextcloud.localhost:9090/ocs/v1.php/cloud/groups/{groupId}' -H "OCS-APIRequest: true" -H "Accept: Application/json"
+DELETE http://nextcloud.localhost:9090/ocs/v1.php/cloud/groups/SchulcloudNextcloud-62c44ac9dda3e4090c17e293
 Authorization: Basic {{NEXTCLOUD_ADMIN_USER}} {{NEXTCLOUD_ADMIN_PASS}}
 OCS-APIRequest: true
 Accept: application/json
