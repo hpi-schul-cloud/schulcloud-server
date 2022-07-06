@@ -55,6 +55,7 @@ describe('lesson copy service', () => {
 
 				const copyName = 'Copy';
 				copyHelperService.deriveCopyName.mockReturnValue(copyName);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
 				return { user, originalCourse, destinationCourse, originalLesson, copyName };
 			};
@@ -258,7 +259,7 @@ describe('lesson copy service', () => {
 					course: originalCourse,
 					contents: [textContentOne, textContentTwo],
 				});
-
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
 
