@@ -13,9 +13,12 @@ export enum CopyElementType {
 	'BOARD' = 'board',
 	'COURSE' = 'course',
 	'FILE' = 'file',
+	'FILE_GROUP' = 'file-group',
 	'LEAF' = 'leaf',
 	'LESSON' = 'lesson',
 	'TASK' = 'task',
+	'LESSON_CONTENT' = 'lesson-content',
+	'LESSON_CONTENT_GROUP' = 'lesson-content-group',
 }
 
 export enum CopyStatusEnum {

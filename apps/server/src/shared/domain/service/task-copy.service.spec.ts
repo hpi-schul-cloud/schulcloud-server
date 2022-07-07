@@ -1,13 +1,15 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CopyHelperService, TaskCopyService } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { courseFactory, fileFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
 import { Task } from '../entity';
-import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -21,10 +23,17 @@ describe('task copy service', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			providers: [TaskCopyService],
+			providers: [
+				TaskCopyService,
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
+			],
 		}).compile();
 
 		copyService = module.get(TaskCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyTask', () => {
@@ -38,7 +47,9 @@ describe('task copy service', () => {
 					school,
 					description: 'description of what you need to do',
 				});
-				return { user, destinationCourse, originalTask, school };
+				const taskCopyName = 'Copy(250)';
+				copyHelperService.deriveCopyName.mockReturnValue(taskCopyName);
+				return { user, destinationCourse, originalTask, school, taskCopyName };
 			};
 
 			it('should assign user as creator', () => {
@@ -82,7 +93,7 @@ describe('task copy service', () => {
 			});
 
 			it('should set name of copy', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, originalTask, taskCopyName } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
@@ -91,7 +102,7 @@ describe('task copy service', () => {
 				});
 
 				const task = status.copyEntity as Task;
-				expect(task.name).toEqual(originalTask.name);
+				expect(task.name).toEqual(taskCopyName);
 			});
 
 			it('should set course of the copy', () => {
@@ -193,16 +204,16 @@ describe('task copy service', () => {
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
-			it('should set status to success in absence of attached files', () => {
+			it('should call copyHelperService', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
-				const status = copyService.copyTaskMetadata({
+				copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					user,
 				});
-
-				expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalled();
 			});
 		});
 
@@ -266,8 +277,8 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				expect(filesStatus).not.toBeDefined();
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).not.toBeDefined();
 			});
 		});
 
@@ -280,18 +291,6 @@ describe('task copy service', () => {
 				return { user, destinationCourse, file, originalTask };
 			};
 
-			it('should set task status to partial', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				const status = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-
-				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
-			});
-
 			it('should add file leaf with status "not implemented"', () => {
 				const { user, file, destinationCourse, originalTask } = setup();
 
@@ -301,7 +300,11 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === file.name);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				const fileStatus = fileGroup?.elements?.find(
+					(el) => el.type === CopyElementType.FILE && el.title === file.name
+				);
 				expect(fileStatus).toBeDefined();
 				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
@@ -316,18 +319,6 @@ describe('task copy service', () => {
 				return { user, destinationCourse, files, originalTask };
 			};
 
-			it('should set task status to partial', () => {
-				const { originalTask, destinationCourse, user } = setup();
-
-				const status = copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-
-				expect(status.status).toEqual(CopyStatusEnum.PARTIAL);
-			});
-
 			it('should add a status for files leaf', () => {
 				const { originalTask, destinationCourse, user } = setup();
 
@@ -337,9 +328,9 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				expect(fileStatus).toBeDefined();
-				expect(fileStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should add a status for each file under files', () => {
@@ -351,11 +342,11 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const filestatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-				const fileStatusNames = filestatus?.elements?.map((el) => el.title);
-				const fileNames = files.map((file) => file.name);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				const statusFileNames = fileGroup?.elements?.map((el) => el.title);
+				const setupFileNames = files.map((file) => file.name);
 
-				expect(fileStatusNames?.sort()).toEqual(fileNames.sort());
+				expect(statusFileNames?.sort()).toEqual(setupFileNames.sort());
 			});
 
 			it('should set "not implemented" as the status of every file', () => {
@@ -367,9 +358,8 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const fileStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'files');
-
-				fileStatus?.elements?.forEach((el) => {
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				fileGroup?.elements?.forEach((el) => {
 					expect(el.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 				});
 			});

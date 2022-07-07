@@ -2,10 +2,13 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { CopyStatus, EntityId, PermissionContextBuilder, Task, TaskCopyService, User } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
+// todo: it look like it is required not optional
 export type TaskCopyParentParams = {
 	courseId?: EntityId;
 	lessonId?: EntityId;
+	jwt?: string;
 };
 
 @Injectable()
@@ -14,7 +17,8 @@ export class TaskCopyUC {
 		private readonly taskRepo: TaskRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly authorisation: AuthorizationService,
-		private readonly taskCopyService: TaskCopyService
+		private readonly taskCopyService: TaskCopyService,
+		private readonly filesStorageClient: FilesStorageClientAdapterService
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
