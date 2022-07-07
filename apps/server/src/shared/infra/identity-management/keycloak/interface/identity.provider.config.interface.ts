@@ -2,14 +2,14 @@ import {BaseEntityWithTimestamps, EntityId} from "@shared/domain";
 import {SysType} from "@shared/infra/identity-management";
 
 // this can be the schema for the database entity
-export class IIdentityProviderConfig extends BaseEntityWithTimestamps {
+export class IdentityProviderConfigBase extends BaseEntityWithTimestamps {
     type!: SysType;
     alias!: string;
     config?: Record<string, unknown>;
 }
 
 // specific type for a ldap system configuration
-export interface ILDAPIdentityProviderConfig extends IIdentityProviderConfig {
+export interface ILDAPIdentityProviderConfig extends IdentityProviderConfigBase {
     type: SysType.LDAP;
     config: {
         foo: string;
@@ -17,7 +17,7 @@ export interface ILDAPIdentityProviderConfig extends IIdentityProviderConfig {
 }
 
 // specific type for an oidc system configuration
-export interface IOIDCIdentityProviderConfig extends IIdentityProviderConfig {
+export interface IOIDCIdentityProviderConfig extends IdentityProviderConfigBase {
     type: SysType.OIDC;
     config: {
         bar: string;
