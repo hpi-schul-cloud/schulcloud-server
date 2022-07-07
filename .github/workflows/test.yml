@@ -3,7 +3,7 @@ name: Test
 on: [push]
 
 env:
-  MONGODB_VERSION: 4.2
+  MONGODB_VERSION: 4.4
   NODE_VERSION: '16'
 jobs:
   feathers_tests_cov:
