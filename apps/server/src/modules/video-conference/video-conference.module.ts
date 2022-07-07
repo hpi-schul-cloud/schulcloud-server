@@ -4,9 +4,10 @@ import { VideoConferenceController } from '@src/modules/video-conference/control
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { VideoConferenceService } from '@src/modules/video-conference/service/video-conference.service';
 import { AuthorizationModule } from '@src/modules';
+import { CalendarModule } from '@shared/infra/calendar';
 
 @Module({
-	imports: [AuthorizationModule],
+	imports: [AuthorizationModule, CalendarModule],
 	controllers: [VideoConferenceController],
 	providers: [VideoConferenceUc, VideoConferenceService, HttpService],
 })

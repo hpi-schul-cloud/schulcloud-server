@@ -1,14 +1,33 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { VideoConferenceService } from '@src/modules/video-conference/service/video-conference.service';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
-import { EntityId, ICurrentUser, Permission, RoleName, SchoolFeatures, Team, TeamUser } from '@shared/domain';
+import { Course, EntityId, ICurrentUser, Permission, RoleName, SchoolFeatures, Team, TeamUser } from '@shared/domain';
 import { AuthorizationService } from '@src/modules';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { CourseRepo, TeamsRepo } from '@shared/repo';
+import { CalendarService } from '@shared/infra/calendar';
+import { BbbMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
+import {
+	BBBBaseResponse,
+	BBBCreateResponse,
+	BBBJoinResponse,
+	BBBMeetingInfoResponse,
+	BBBResponse,
+} from '@src/modules/video-conference/interface/bbb-response.interface';
+import { ICalendarEvent } from '@shared/infra/calendar/calendar-event.interface';
+import { VideoConferenceScope } from '@src/modules/video-conference/controller/dto/vc-scope.enum';
+
+interface IScopeInfo {
+	scopeId: EntityId;
+	scopeName: string;
+	logoutUrl: string;
+	title: string;
+}
 
 @Injectable()
 export class VideoConferenceUc {
@@ -18,111 +37,206 @@ export class VideoConferenceUc {
 		private readonly videoConferenceService: VideoConferenceService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly courseRepo: CourseRepo
+		private readonly courseRepo: CourseRepo,
+		private readonly calendarService: CalendarService,
+		private readonly schoolUc: SchoolUc
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}
 
-	async createInCourses(currentUser: ICurrentUser, courseId: EntityId): Promise<unknown> {
-		const { userId } = currentUser;
-
-		if (this.checkPermission(userId, userId) !== BBBRole.MODERATOR) {
-			throw new ForbiddenException();
-		}
-
-		const course = await this.courseRepo.findById(courseId);
-
-		const logoutURL = `${this.hostURL}/courses/${courseId}?activeTab=tools`;
-
-		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
-			name: course.name,
-			meetingID: courseId,
-		}).withLogoutUrl(logoutURL);
-
-		return this.videoConferenceService.create(configBuilder.build());
-	}
-
-	async createInTeams(currentUser: ICurrentUser, teamId: EntityId): Promise<unknown> {
-		const { userId } = currentUser;
-
-		if (this.checkPermission(userId, userId) !== BBBRole.MODERATOR) {
-			throw new ForbiddenException();
-		}
-
-		// TODO get event from team calendar
-		const eventId = '???';
-		const eventName = '???';
-
-		const logoutURL = `${this.hostURL}/teams/${teamId}?activeTab=events`;
-
-		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
-			name: eventName,
-			meetingID: eventId,
-		}).withLogoutUrl(logoutURL);
-
-		return this.videoConferenceService.create(configBuilder.build());
-	}
-
-	async joinInCourses(currentUser: ICurrentUser, courseId: EntityId): Promise<unknown> {
+	/**
+	 * Creates a new video conference
+	 * @param {ICurrentUser} currentUser
+	 * @param {VideoConferenceScope} conferenceScope
+	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @returns {BBBResponse<BBBCreateResponse>}
+	 */
+	async create(
+		currentUser: ICurrentUser,
+		conferenceScope: VideoConferenceScope,
+		refId: EntityId
+	): Promise<BBBResponse<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
 
-		this.throwOnFeaturesDisabled(schoolId);
+		await this.throwOnFeaturesDisabled(schoolId);
 
-		const bbbRole: BBBRole = this.checkPermission(userId, userId);
+		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+
+		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
+
+		if (bbbRole !== BBBRole.MODERATOR) {
+			throw new ForbiddenException();
+		}
+
+		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
+			name: scopeInfo.title,
+			meetingID: refId,
+		}).withLogoutUrl(scopeInfo.logoutUrl);
+
+		return this.videoConferenceService.create(configBuilder.build());
+	}
+
+	/**
+	 * Generates a join link for a video conference
+	 * @param {ICurrentUser} currentUser
+	 * @param {VideoConferenceScope} conferenceScope
+	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @returns {BBBResponse<BBBJoinResponse>}
+	 */
+	async join(
+		currentUser: ICurrentUser,
+		conferenceScope: VideoConferenceScope,
+		refId: EntityId
+	): Promise<BBBResponse<BBBJoinResponse>> {
+		const { userId, schoolId } = currentUser;
+
+		await this.throwOnFeaturesDisabled(schoolId);
+
+		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+
+		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: `${currentUser.user.firstName} ${currentUser.user.lastName}`,
-			meetingID: '',
+			meetingID: refId,
 			role: bbbRole,
 		});
 
-		const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
-		if (roles.includes(RoleName.EXPERT)) {
-			configBuilder.asGuest();
+		// Let experts join as guests
+		switch (conferenceScope) {
+			case VideoConferenceScope.COURSE: {
+				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
+
+				if (roles.includes(RoleName.EXPERT)) {
+					configBuilder.asGuest();
+				}
+				break;
+			}
+			case VideoConferenceScope.EVENT: {
+				const team: Team = await this.teamsRepo.findById(scopeInfo.scopeId);
+				const teamUser: TeamUser | undefined = team.userIds.find(
+					(userInTeam) => userInTeam.userId.id === currentUser.userId
+				);
+
+				if (teamUser === undefined) {
+					throw new ForbiddenException('cannot find user in team');
+				}
+
+				if (teamUser.role.name === RoleName.TEAMEXPERT) {
+					configBuilder.asGuest();
+				}
+				break;
+			}
+			default:
+				throw new BadRequestException('Unknown scope name');
 		}
 
 		return this.videoConferenceService.join(configBuilder.build());
 	}
 
-	async joinInTeams(currentUser: ICurrentUser, teamId: EntityId): Promise<unknown> {
+	/**
+	 * Retrieves information about a video conference
+	 * @param {ICurrentUser} currentUser
+	 * @param {VideoConferenceScope} conferenceScope
+	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @returns {BBBResponse<BBBEndConfig>}
+	 */
+	async getMeetingInfo(
+		currentUser: ICurrentUser,
+		conferenceScope: VideoConferenceScope,
+		refId: EntityId
+	): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		const { userId, schoolId } = currentUser;
 
-		this.throwOnFeaturesDisabled(schoolId);
+		await this.throwOnFeaturesDisabled(schoolId);
 
-		const bbbRole: BBBRole = this.checkPermission(userId, teamId);
+		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
-			fullName: `${currentUser.user.firstName} ${currentUser.user.lastName}`,
-			meetingID: '',
-			role: bbbRole,
+		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
+
+		const config: BbbMeetingInfoConfig = new BbbMeetingInfoConfig({
+			meetingID: refId,
 		});
 
-		const team: Team = await this.teamsRepo.findById(teamId);
-		const teamUser: TeamUser | undefined = team.userIds.find(
-			(userInTeam) => userInTeam.userId.id === currentUser.userId
-		);
-
-		if (teamUser === undefined) {
-			throw new ForbiddenException('cannot find user in team');
-		}
-
-		if (teamUser.role.name === RoleName.TEAMEXPERT) {
-			configBuilder.asGuest();
-		}
-
-		return this.videoConferenceService.join(configBuilder.build());
+		return this.videoConferenceService.getMeetingInfo(config);
 	}
 
-	async end(): Promise<unknown> {
+	/**
+	 * Ends a video conference
+	 * @param {ICurrentUser} currentUser
+	 * @param {VideoConferenceScope} conferenceScope
+	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @returns {BBBResponse<BBBEndConfig>}
+	 */
+	async end(
+		currentUser: ICurrentUser,
+		conferenceScope: VideoConferenceScope,
+		refId: EntityId
+	): Promise<BBBResponse<BBBBaseResponse>> {
+		const { userId, schoolId } = currentUser;
+
+		await this.throwOnFeaturesDisabled(schoolId);
+
+		const { scopeId } = await this.getScopeInfo(userId, conferenceScope, refId);
+
+		const bbbRole: BBBRole = await this.checkPermission(userId, scopeId);
+
+		if (bbbRole !== BBBRole.MODERATOR) {
+			throw new ForbiddenException();
+		}
+
 		const config: BBBEndConfig = new BBBEndConfig({
-			meetingID: '',
+			meetingID: refId,
 		});
 
 		return this.videoConferenceService.end(config);
 	}
 
-	private checkPermission(userId: EntityId, entityId: EntityId): BBBRole {
-		const permissionMap: Map<Permission, boolean> = this.authorizationService.hasPermissionsByReferences(
+	/**
+	 * Retrieves information about the permission scope based on the scope of the video conference
+	 * @param {EntityId} userId
+	 * @param {VideoConferenceScope} conferenceScope
+	 * @param {EntityId } refId eventId or courseId, depending on scope
+	 * @returns {IScopeInfo}
+	 */
+	private async getScopeInfo(
+		userId: EntityId,
+		conferenceScope: VideoConferenceScope,
+		refId: string
+	): Promise<IScopeInfo> {
+		switch (conferenceScope) {
+			case VideoConferenceScope.COURSE: {
+				const course: Course = await this.courseRepo.findById(refId);
+				return {
+					scopeId: refId,
+					scopeName: 'courses',
+					logoutUrl: `${this.hostURL}/courses/${refId}?activeTab=tools`,
+					title: course.name,
+				};
+			}
+			case VideoConferenceScope.EVENT: {
+				const event: ICalendarEvent = await this.calendarService.findEvent(userId, refId);
+				return {
+					scopeId: event['x-sc-teamId'],
+					scopeName: 'teams',
+					logoutUrl: `${this.hostURL}/teams/${event['x-sc-teamId']}?activeTab=events`,
+					title: event.title,
+				};
+			}
+			default:
+				throw new BadRequestException('Unknown scope name');
+		}
+	}
+
+	/**
+	 * Checks if the user has the required permissions and returns their associated role in bbb
+	 * @param {EntityId} userId
+	 * @param {EntityId} entityId
+	 * @throws {ForbiddenException}
+	 * @returns {BBBRole}
+	 */
+	private async checkPermission(userId: EntityId, entityId: EntityId): Promise<BBBRole> {
+		const permissionMap: Map<Permission, boolean> = await this.authorizationService.hasPermissionsByReferences(
 			userId,
 			AllowedAuthorizationEntityType.User,
 			entityId,
@@ -138,21 +252,20 @@ export class VideoConferenceUc {
 		throw new ForbiddenException();
 	}
 
-	private throwOnFeaturesDisabled(schoolId: EntityId) {
+	/**
+	 * Throws an error if the feature is disabled for the school or for the entire instance
+	 * @param schoolId
+	 * @throws ForbiddenException
+	 */
+	private async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
 		// throw, if the feature has not been enabled
 		if (!Configuration.has('FEATURE_VIDEOCONFERENCE_ENABLED')) {
 			throw new ForbiddenException('feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled');
 		}
 		// throw, if the current users school does not have the feature enabled
-		const schoolFeatureEnabled = this.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+		const schoolFeatureEnabled = await this.schoolUc.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
 		if (!schoolFeatureEnabled) {
 			throw new ForbiddenException('school feature VIDEOCONFERENCE is disabled');
 		}
-	}
-
-	// TODO move to school uc
-	private hasFeature(schoolId: EntityId, feature: SchoolFeatures): boolean {
-		// TODO implementation of logic
-		return schoolId !== '' && feature === SchoolFeatures.VIDEOCONFERENCE;
 	}
 }

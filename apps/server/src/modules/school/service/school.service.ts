@@ -1,7 +1,7 @@
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SchoolRepo } from '@shared/repo';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
-import { School } from '@shared/domain';
+import { School, EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -29,5 +29,10 @@ export class SchoolService {
 		await this.schoolRepo.save(patchedEntity);
 
 		return patchedEntity;
+	}
+
+	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<boolean> {
+		const entity: School = await this.schoolRepo.findById(schoolId);
+		return entity.features ? entity.features.includes(feature) : false;
 	}
 }

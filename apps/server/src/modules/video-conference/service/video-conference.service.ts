@@ -1,79 +1,23 @@
 import crypto from 'crypto';
 import xml2json from '@hendt/xml2json';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { URLSearchParams } from 'url';
+import { URL, URLSearchParams } from 'url';
 import { firstValueFrom, Observable } from 'rxjs';
 import { BBBCreateConfig } from '@src/modules/video-conference/config/bbb-create.config';
 import { BBBJoinConfig } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
 import { BBBCreateBreakoutConfig } from '@src/modules/video-conference/config/bbb-create-breakout.config';
 import { BbbMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
-
-interface BBBBaseResponse {
-	response: {
-		returncode: string;
-		messageKey: string;
-		message: string;
-	};
-}
-
-interface BBBCreateResponse extends BBBBaseResponse {
-	response: {
-		returncode: string;
-		messageKey: string;
-		message: string;
-
-		meetingID: string;
-		internalMeetingID: string;
-		parentMeetingID: string;
-	};
-}
-
-interface BBBJoinResponse extends BBBBaseResponse {
-	response: {
-		returncode: string;
-		messageKey: string;
-		message: string;
-
-		meeting_id: string;
-		user_id: string;
-		auth_token: string;
-		session_token: string;
-		url: string;
-	};
-}
-
-interface BBBEndResponse extends BBBBaseResponse {
-	response: {
-		returncode: string;
-		messageKey: string;
-		message: string;
-	};
-}
-
-interface BBBMeetingInfoResponse extends BBBBaseResponse {
-	response: {
-		returncode: string;
-		messageKey: string;
-		message: string;
-
-		meetingName: string;
-		meetingID: string;
-		running: boolean;
-
-		breakoutRooms?: {
-			breakout: string;
-		}[];
-
-		breakout?: {
-			parentMeetingID: string;
-			sequence: number;
-		};
-	};
-}
+import {
+	BBBBaseResponse,
+	BBBCreateResponse,
+	BBBJoinResponse,
+	BBBMeetingInfoResponse,
+	BBBResponse,
+} from '@src/modules/video-conference/interface/bbb-response.interface';
 
 @Injectable()
 export class VideoConferenceService {
@@ -86,35 +30,35 @@ export class VideoConferenceService {
 		this.salt = Configuration.get('VIDEOCONFERENCE_SALT') as string;
 	}
 
-	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBCreateResponse> {
+	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		return firstValueFrom(this.get('create', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBCreateResponse)
+			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBCreateResponse>)
 			.catch(() => {
-				throw new HttpException('Failed to create BBB room', HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new InternalServerErrorException('Failed to create BBB room');
 			});
 	}
 
-	join(config: BBBJoinConfig): Promise<BBBJoinResponse> {
+	join(config: BBBJoinConfig): Promise<BBBResponse<BBBJoinResponse>> {
 		return firstValueFrom(this.get('join', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBJoinResponse)
+			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBJoinResponse>)
 			.catch(() => {
-				throw new HttpException('Failed to join BBB room', HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new InternalServerErrorException('Failed to join BBB room');
 			});
 	}
 
-	end(config: BBBEndConfig): Promise<BBBEndResponse> {
+	end(config: BBBEndConfig): Promise<BBBResponse<BBBBaseResponse>> {
 		return firstValueFrom(this.get('end', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBEndResponse)
+			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBBaseResponse>)
 			.catch(() => {
-				throw new HttpException('Failed to end BBB room', HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new InternalServerErrorException('Failed to end BBB room');
 			});
 	}
 
-	getMeetingInfo(config: BbbMeetingInfoConfig): Promise<BBBMeetingInfoResponse> {
+	getMeetingInfo(config: BbbMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBMeetingInfoResponse)
+			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse>)
 			.catch(() => {
-				throw new HttpException('Failed to fetch BBB room info', HttpStatus.INTERNAL_SERVER_ERROR);
+				throw new InternalServerErrorException('Failed to fetch BBB room info');
 			});
 	}
 
@@ -140,9 +84,10 @@ export class VideoConferenceService {
 		const checksum: string = this.generateChecksum(callName, queryParams);
 		queryParams.append('checksum', checksum);
 
-		const response: Observable<AxiosResponse> = this.httpService.get(
-			`${this.baseURL}/api/${callName}?${queryParams.toString()}`
-		);
-		return response;
+		const url: URL = new URL(this.baseURL);
+		url.pathname = `/api/${callName}`;
+		url.search = queryParams.toString();
+
+		return this.httpService.get(url.toString());
 	}
 }
