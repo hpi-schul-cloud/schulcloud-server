@@ -224,7 +224,7 @@ describe('authorization.service', () => {
 				return context.requiredPermissions[0] === permissionTrue;
 			});
 
-			const retMap = service.hasPermissionsByReferences(userId, entityName, entityId, [
+			const retMap = await service.hasPermissionsByReferences(userId, entityName, entityId, [
 				permissionTrue,
 				permissionFalse,
 			]);
