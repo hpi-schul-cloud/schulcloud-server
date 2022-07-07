@@ -37,7 +37,7 @@ export class KeycloakManagementController {
 	@Post('configure')
 	async applyConfiguration(@Param() envType?: EnvType, @Param() sysType?: SysType): Promise<number> {
 		envType ??= EnvType.Prod;
-		sysType ??= SysType.OAuth;
+		sysType ??= SysType.OIDC;
 		if (await this.keycloakManagementUc.check()) {
 			try {
 				return this.keycloakManagementUc.configure({ envType, sysType });

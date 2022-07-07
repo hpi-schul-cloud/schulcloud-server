@@ -76,11 +76,12 @@ export class KeycloakManagementUc {
 		return userCount;
 	}
 
+	// TODO wip
 	async configure(options: IConfigureOptions): Promise<number> {
-		const configCount = 0;
-
-		const configs = await this.loadConfigs(options.envType, options.sysType);
-		for (const config of configs) {
+		let kc = await this.kcAdmin.callKcAdminClient();
+		const oldConfigs = await kc.identityProviders.find();
+		const newConfigs = await this.loadConfigs(options.envType, options.sysType);
+		for (const config of newConfigs) {
 			const kc = await this.kcAdmin.callKcAdminClient();
 			await kc.identityProviders.create({
 				providerId: 'oidc',
@@ -88,13 +89,7 @@ export class KeycloakManagementUc {
 				realm: this.kcSettings.realmName,
 			});
 		}
-		return configs.length;
-	}
-
-	private async skipConfigure(): Promise<boolean> {
-		const kc = await this.kcAdmin.callKcAdminClient();
-		const identityProviderCount = (await kc.identityProviders.find()).length;
-		return identityProviderCount <= 0;
+		return newConfigs.length;
 	}
 
 	private async loadConfigs(envType: EnvType, sysType: SysType): Promise<System[]> {

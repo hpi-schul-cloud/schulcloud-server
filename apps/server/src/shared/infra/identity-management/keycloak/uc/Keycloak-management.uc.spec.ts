@@ -206,12 +206,12 @@ describe('KeycloakManagementUc', () => {
 	});
 
 	describe('configure', () => {
-		const devConfig: IConfigureOptions = { envType: EnvType.Dev, sysType: SysType.OAuth };
-		const prodConfig: IConfigureOptions = { envType: EnvType.Prod, sysType: SysType.OAuth };
+		const devConfig: IConfigureOptions = { envType: EnvType.Dev, sysType: SysType.OIDC };
+		const prodConfig: IConfigureOptions = { envType: EnvType.Prod, sysType: SysType.OIDC };
 		const systems: System[] = [{
 			_id: new ObjectId(0),
 			id: new ObjectId(0).toString(),
-			type: SysType.OAuth.toString(),
+			type: SysType.OIDC.toString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		}];
@@ -219,7 +219,6 @@ describe('KeycloakManagementUc', () => {
 
 		beforeEach(() => {
 			repo.findAll.mockResolvedValue(systems);
-			// (<DeepMocked<IdentityProviders>>client.identityProviders).find.mockResolvedValue([]);
 			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
 				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
 				throw new Error('File not found');
@@ -228,7 +227,6 @@ describe('KeycloakManagementUc', () => {
 
 		afterEach(() => {
 			repo.findAll.mockRestore();
-			// (<DeepMocked<IdentityProviders>>client.identityProviders).find.mockRestore();
 			fsReadFile.mockRestore();
 		});
 
