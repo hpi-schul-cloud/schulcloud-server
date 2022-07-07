@@ -108,6 +108,11 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.response && err.response.Code && err.response.Code === 'NoSuchKey') {
+				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
+				return [];
+			}
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
 		}
 	}
