@@ -78,7 +78,6 @@ export class S3ClientAdapter implements IStorageClient {
 			});
 
 			const a = await res.done();
-
 			return a;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -89,6 +88,8 @@ export class S3ClientAdapter implements IStorageClient {
 			}
 
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
+		} finally {
+			this.client.destroy();
 		}
 	}
 
