@@ -18,7 +18,7 @@
 		"_id": {
 			"$oid": "0000d186816abba584714c92"
 		},
-		"alias": "OAuth Zentrales IServ",
+		"alias": "Schulserver",
 		"type": "oauthIserv",
 		"__v": 0,
 		"oauthConfig": {
@@ -33,6 +33,29 @@
 			"authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
 			"provider": "iserv",
 			"logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714c93"
+		},
+		"alias": "SANIS",
+		"type": "oauthSanis",
+		"__v": 0,
+		"oauthConfig": {
+			"clientId": "insert clientId",
+			"clientSecret": "insert clientSecret",
+			"tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
+			"grantType": "authorization_code",
+			"tokenRedirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92/token",
+			"scope": "openid profile email",
+			"responseType": "code",
+			"codeRedirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
+			"authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",
+			"provider": "sanis",
+			"logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
+			"jwksEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/jwk",
+        	"issuer": "https://niedersachsen-login.schule"
 		}
 	}
 ]
