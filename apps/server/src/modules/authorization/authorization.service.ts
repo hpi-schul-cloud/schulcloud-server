@@ -63,24 +63,24 @@ export class AuthorizationService extends BasePermissionManager {
 		}
 	}
 
-	hasPermissionsByReferences(
+	async hasPermissionsByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		permissions: Permission[]
-	): Map<Permission, boolean> {
+	): Promise<Map<Permission, boolean>> {
 		const returnMap: Map<Permission, boolean> = new Map();
-		permissions.forEach((perm) => {
-			void this.hasPermissionByReferences(
-				userId,
-				entityName,
-				entityId,
-				PermissionContextBuilder.permissionOnly([perm])
-			).then((r) => {
-				returnMap.set(perm, r);
-				return null;
-			});
-		});
+		await Promise.all(
+			permissions.map(async (perm) => {
+				const ret = await this.hasPermissionByReferences(
+					userId,
+					entityName,
+					entityId,
+					PermissionContextBuilder.permissionOnly([perm])
+				);
+				returnMap.set(perm, ret);
+			})
+		);
 		return returnMap;
 	}
 
