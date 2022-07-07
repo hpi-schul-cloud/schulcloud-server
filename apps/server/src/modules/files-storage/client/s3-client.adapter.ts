@@ -8,12 +8,12 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class S3ClientAdapter implements IStorageClient {
 	private deletedFolderName = 'trash';
 
@@ -88,8 +88,6 @@ export class S3ClientAdapter implements IStorageClient {
 			}
 
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
-		} finally {
-			this.client.destroy();
 		}
 	}
 
