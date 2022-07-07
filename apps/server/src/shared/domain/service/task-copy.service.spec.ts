@@ -47,7 +47,9 @@ describe('task copy service', () => {
 					school,
 					description: 'description of what you need to do',
 				});
-				return { user, destinationCourse, originalTask, school };
+				const taskCopyName = 'Copy(250)';
+				copyHelperService.deriveCopyName.mockReturnValue(taskCopyName);
+				return { user, destinationCourse, originalTask, school, taskCopyName };
 			};
 
 			it('should assign user as creator', () => {
@@ -91,7 +93,7 @@ describe('task copy service', () => {
 			});
 
 			it('should set name of copy', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, originalTask, taskCopyName } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
@@ -100,7 +102,7 @@ describe('task copy service', () => {
 				});
 
 				const task = status.copyEntity as Task;
-				expect(task.name).toEqual(originalTask.name);
+				expect(task.name).toEqual(taskCopyName);
 			});
 
 			it('should set course of the copy', () => {
@@ -211,6 +213,7 @@ describe('task copy service', () => {
 					user,
 				});
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalled();
 			});
 		});
 

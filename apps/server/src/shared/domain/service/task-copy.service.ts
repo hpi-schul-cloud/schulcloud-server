@@ -16,7 +16,7 @@ export class TaskCopyService {
 
 	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
-			name: params.originalTask.name,
+			name: this.copyHelperService.deriveCopyName(params.originalTask.name),
 			description: params.originalTask.description,
 			school: params.user.school,
 			creator: params.user,
