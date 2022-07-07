@@ -112,6 +112,32 @@ describe('course copy service', () => {
 				expect(course.name).toEqual(courseCopyName);
 			});
 
+			it('should set start date of course', () => {
+				const { originalCourse, user } = setup();
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status.copyEntity as Course;
+				expect(user.school.schoolYear).toBeDefined();
+				expect(course.startDate).toEqual(user.school.schoolYear?.startDate);
+			});
+
+			it('should set end date of course', () => {
+				const { originalCourse, user } = setup();
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status.copyEntity as Course;
+				expect(user.school.schoolYear).toBeDefined();
+				expect(course.untilDate).toEqual(user.school.schoolYear?.endDate);
+			});
+
 			it('should set color of course', () => {
 				const { originalCourse, user } = setup();
 

@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { FileRecord } from '@shared/domain';
 
 export class FileRecordMapper {
-	static mapToFileRecord(aggregationResult: Record<string, any>): FileRecord {
+	static mapToFileRecord(aggregationResult: Record<string, never>): FileRecord {
 		const parentId = new ObjectId(aggregationResult.parent);
 		const creatorId = new ObjectId(aggregationResult.creator);
 		const schoolId = new ObjectId(aggregationResult.school);
