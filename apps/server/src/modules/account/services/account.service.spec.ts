@@ -288,7 +288,7 @@ describe('AccountService', () => {
 			});
 		});
 
-		it('should not encrypt password on save if no accountDTO id is given', async () => {
+		it('should set password to undefined if password is empty while creating a new account', async () => {
 			const spy = jest.spyOn(accountRepo, 'save');
 			const dto = {
 				username: 'john.doe@domain.tld',
@@ -305,7 +305,7 @@ describe('AccountService', () => {
 			);
 		});
 
-		it('should not encrypt password on save if accountDTO id is given', async () => {
+		it('should set password to undefined if password is empty while editing an existing account', async () => {
 			const spy = jest.spyOn(accountRepo, 'save');
 			const dto = {
 				id: mockTeacherAccount.id,
