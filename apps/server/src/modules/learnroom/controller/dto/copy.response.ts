@@ -6,7 +6,7 @@ import { CopyElementType, CopyStatusEnum } from '@shared/domain/types/copy.types
  */
 export class CopyApiResponse {
 	constructor({ title, type, status }: CopyApiResponse) {
-		this.title = title;
+		if (title) this.title = title;
 		this.type = type;
 		this.status = status;
 	}
@@ -16,10 +16,10 @@ export class CopyApiResponse {
 	})
 	id?: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Title of copied element',
 	})
-	title: string;
+	title?: string;
 
 	@ApiProperty({
 		type: 'string',

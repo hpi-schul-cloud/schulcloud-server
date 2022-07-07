@@ -160,9 +160,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					const metadataStatus = status.elements?.find(
-						(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-					);
+					const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 					expect(metadataStatus).toBeDefined();
 					expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 				});

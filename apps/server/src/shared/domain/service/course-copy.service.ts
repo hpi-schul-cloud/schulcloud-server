@@ -24,48 +24,27 @@ export class CourseCopyService {
 
 		const elements = [
 			{
-				title: 'metadata',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'teachers',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.USER_GROUP, // teachers, substitutionTeachers, students,...
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				title: 'substitutionTeachers',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.LTITOOL_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				title: 'students',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.TIME_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				title: 'classes',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				title: 'ltiTools',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				title: 'times',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			},
-			{
-				title: 'files',
 				type: CopyElementType.FILE_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
 			{
-				title: 'coursegroups',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.COURSEGROUP_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
 		];
