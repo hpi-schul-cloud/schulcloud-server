@@ -14,9 +14,11 @@ interface NextcloudGroups {
 interface GroupfoldersFolder {
 	folder_id: string;
 }
-
 interface OcsResponse<T> {
 	ocs: { data: T };
+}
+interface Meta {
+	ocs: { meta: { statuscode: number } };
 }
 
 interface SuccessfulRes {
@@ -33,15 +35,12 @@ interface SuccessfulRes {
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	readonly baseURL: string;
 
-	readonly httpService: HttpService;
-
 	config: AxiosRequestConfig;
 
 	private logger: Logger;
 
-	constructor() {
+	constructor(private httpService: HttpService) {
 		this.logger = new Logger(NextcloudStrategy.name);
-		this.httpService = new HttpService();
 		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
 		this.config = {
 			auth: {
@@ -83,11 +82,14 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			});
 	}
 
-	private removeGroup(groupId: string) {
+	private async removeGroup(groupId: string) {
 		return firstValueFrom(this.delete(`/ocs/v1.php/cloud/groups/${groupId}`))
-			.then((resp: AxiosResponse<OcsResponse<SuccessfulRes>>) => {
+			.then((resp: AxiosResponse<Meta>) => {
 				this.logger.log(` Successfully removed group with group id: ${groupId} in Nextcloud`);
-				return resp.data.ocs.data.success;
+				if (resp.data.ocs.meta.statuscode === 100) {
+					return resp.data.ocs.meta.statuscode;
+				}
+				throw Error();
 			})
 			.catch((error) => {
 				throw new NotFoundException(error, `Group could not be deleted in Nextcloud!`);
@@ -103,14 +105,19 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	}
 
 	private deleteFolder(folderId: string) {
-		return firstValueFrom(this.delete(`/apps/groupfolders/folders/${folderId}`))
-			.then((resp: AxiosResponse<OcsResponse<SuccessfulRes>>) => {
+		return firstValueFrom(this.delete(`/apps/groupfolders/folders/${folderId}`)).then(
+			(resp: AxiosResponse<OcsResponse<SuccessfulRes>>) => {
 				this.logger.log(` Successfully deleted folder with folder id: ${folderId} in Nextcloud`);
 				return resp.data.ocs.data.success;
-			})
-			.catch((error) => {
-				throw new NotFoundException(error, `Folder could not be deleted in Nextcloud!`);
-			});
+				// 	if (resp.data.ocs.data.success === true) {
+				// 		return resp.data.ocs.data.success;
+				// 	}
+				// 	throw Error();
+				// })
+				// .catch((error) => {
+				// 	throw new NotFoundException(error, `Folder could not be deleted in Nextcloud!`);
+			}
+		);
 	}
 
 	async deleteGroupfolderAndRemoveGroup(teamId: string) {
