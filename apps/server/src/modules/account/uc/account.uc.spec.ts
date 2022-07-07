@@ -29,6 +29,7 @@ import {
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
 import { AccountUc } from './account.uc';
+import { AccountValidationService } from '../services/account.validation.service';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -36,6 +37,7 @@ describe('AccountUc', () => {
 	let userRepo: UserRepo;
 	let accountService: AccountService;
 	let orm: MikroORM;
+	let accountValidationService: AccountValidationService;
 
 	let mockSchool: School;
 	let mockOtherSchool: School;
@@ -99,9 +101,11 @@ describe('AccountUc', () => {
 							const accountEntity = mockAccounts.find(
 								(tempAccount) => tempAccount.userId?.toString() === account.userId
 							);
-							Object.assign(accountEntity, account);
-
-							return Promise.resolve();
+							if (accountEntity) {
+								Object.assign(accountEntity, account);
+								return Promise.resolve();
+							}
+							return Promise.reject();
 						}),
 						delete: (id: EntityId): Promise<AccountDto> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id?.toString() === id);
@@ -205,6 +209,12 @@ describe('AccountUc', () => {
 					},
 				},
 				PermissionService,
+				{
+					provide: AccountValidationService,
+					useValue: {
+						isUniqueEmail: jest.fn().mockResolvedValue(true),
+					},
+				},
 			],
 		}).compile();
 
@@ -212,6 +222,7 @@ describe('AccountUc', () => {
 		userRepo = module.get(UserRepo);
 		accountService = module.get(AccountService);
 		orm = await setupEntities();
+		accountValidationService = module.get(AccountValidationService);
 	});
 
 	beforeEach(() => {
@@ -521,18 +532,12 @@ describe('AccountUc', () => {
 			expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 		});
 		it('should throw if new email already in use', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
 					passwordOld: defaultPassword,
 					email: mockAdminUser.email,
-				})
-			).rejects.toThrow(ValidationError);
-		});
-		it('should throw if new email already in use ignore case', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: mockAdminUser.email.toUpperCase(),
 				})
 			).rejects.toThrow(ValidationError);
 		});
@@ -601,46 +606,6 @@ describe('AccountUc', () => {
 					email: 'fail@to.update',
 				})
 			).rejects.toThrow(EntityNotFoundError);
-		});
-	});
-
-	describe('isUniqueEmail', () => {
-		it('should return true if new email is available', async () => {
-			const res = await accountUc.isUniqueEmail('an@available.email', mockStudentUser.id);
-			expect(res).toBe(true);
-		});
-
-		it('should return true if new email is available and ignore current user', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentUser.email, mockStudentUser.id);
-			expect(res).toBe(true);
-		});
-		it('should return true if new email is available and ignore current users account', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentAccount.username, mockStudentUser.id);
-			expect(res).toBe(true);
-		});
-		it('should return false if new email already in use by another user', async () => {
-			const res = await accountUc.isUniqueEmail(mockAdminUser.email, mockStudentUser.id);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email is already in use by any user', async () => {
-			const res = await accountUc.isUniqueEmail(mockStudentAccount.username);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email already in use by another user', async () => {
-			const res = await accountUc.isUniqueEmail('not@available.email', mockStudentUser.id);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email already in use by another account', async () => {
-			const res = await accountUc.isUniqueEmail('not@available.username', mockStudentUser.id);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email already in use by multiple users', async () => {
-			const res = await accountUc.isUniqueEmail('multiple@user.email', mockStudentUser.id);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email already in use by multiple accounts', async () => {
-			const res = await accountUc.isUniqueEmail('multiple@account.username', mockStudentUser.id);
-			expect(res).toBe(false);
 		});
 	});
 
@@ -1017,6 +982,8 @@ describe('AccountUc', () => {
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Account already exists');
 		});
 		it('should throw if username already exists', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
 			mockStudentAccount.username = 'john.doe@domain.tld';
 			const params: AccountSaveDto = {
 				username: mockStudentAccount.username,
@@ -1025,6 +992,8 @@ describe('AccountUc', () => {
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
 		});
 		it('should throw if username already exists within the same system', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
 			const params: AccountSaveDto = {
 				username: mockOtherExternalUserAccount.username,
 				systemId: mockExternalUserAccount.systemId?.toString(),
@@ -1101,6 +1070,8 @@ describe('AccountUc', () => {
 			).rejects.toThrow(EntityNotFoundError);
 		});
 		it('should throw if new username already in use', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
 			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 			const params = { id: mockStudentAccount.id } as AccountByIdParams;
 			const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;

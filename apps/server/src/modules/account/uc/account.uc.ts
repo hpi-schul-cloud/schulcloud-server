@@ -33,6 +33,7 @@ import {
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper';
 import { AccountSaveDto } from '../services/dto';
+import { AccountValidationService } from '../services/account.validation.service';
 
 type UserPreferences = {
 	// first login completed
@@ -44,7 +45,8 @@ export class AccountUc {
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly userRepo: UserRepo,
-		private readonly permissionService: PermissionService
+		private readonly permissionService: PermissionService,
+		private readonly accountValidationService: AccountValidationService
 	) {}
 
 	/**
@@ -125,7 +127,7 @@ export class AccountUc {
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		if (!(await this.isUniqueEmailInternal(dto.username, dto.userId, dto.id, dto.systemId))) {
+		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
@@ -336,36 +338,8 @@ export class AccountUc {
 		}
 	}
 
-	async isUniqueEmail(email: string, userId?: EntityId): Promise<boolean> {
-		return this.isUniqueEmailInternal(email, userId);
-	}
-
-	private async isUniqueEmailInternal(
-		email: string,
-		userId?: EntityId,
-		accountId?: EntityId,
-		systemId?: EntityId
-	): Promise<boolean> {
-		const [usersAccountId, foundUsers, { accounts: foundAccounts }] = await Promise.all([
-			// Test coverage: Missing branch null check; unreachable
-			accountId ?? (userId ? this.accountService.findByUserId(userId).then((accountDto) => accountDto?.id) : undefined),
-			this.userRepo.findByEmail(email),
-			this.accountService.searchByUsernameExactMatch(email),
-		]);
-
-		const filteredAccounts = foundAccounts.filter((foundAccount) => foundAccount.systemId === systemId);
-
-		return !(
-			foundUsers.length > 1 ||
-			filteredAccounts.length > 1 ||
-			// paranoid 'toString': legacy code may call userId or accountId as ObjectID
-			(foundUsers.length === 1 && foundUsers[0].id.toString() !== userId?.toString()) ||
-			(filteredAccounts.length === 1 && filteredAccounts[0].id.toString() !== usersAccountId?.toString())
-		);
-	}
-
-	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
-		if (!(await this.isUniqueEmailInternal(email, user.id, account.id))) {
+	async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
+		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id))) {
 			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
 		}
 	}
