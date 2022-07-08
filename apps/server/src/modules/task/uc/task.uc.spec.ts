@@ -15,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskUC } from './task.uc';
 
 const mockStatus: ITaskStatus = {
@@ -34,6 +35,7 @@ describe('TaskUC', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let orm: MikroORM;
 	let user!: User;
 
@@ -76,6 +78,10 @@ describe('TaskUC', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
 
@@ -85,6 +91,7 @@ describe('TaskUC', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
+		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 	});
 
 	afterEach(async () => {
@@ -1047,20 +1054,27 @@ describe('TaskUC', () => {
 				throw new ForbiddenException();
 			});
 			await expect(async () => {
-				await service.delete(user.id, task.id);
+				await service.delete(user.id, task.id, 'jwt');
 			}).rejects.toThrow(new ForbiddenException());
 		});
 
 		it('should call TaskRepo.delete() with Task', async () => {
-			await service.delete(user.id, task.id);
+			await service.delete(user.id, task.id, 'jwt');
 			expect(taskRepo.delete).toBeCalledWith(task);
 		});
+
 		it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
-			await service.delete(user.id, task.id);
+			await service.delete(user.id, task.id, 'jwt');
 			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
+		});
+
+		it('should call fileStorageClientAdapterService.deleteFilesOfParent', async () => {
+			await service.delete(user.id, task.id, 'jwt');
+			const params = FileParamBuilder.buildForTask('jwt', task.school.id, task.id);
+			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
 		});
 	});
 });
