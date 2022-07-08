@@ -15,6 +15,7 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
+import { FeathersModule } from '@shared/infra/feathers';
 import { AuthorizationModule } from '../authorization';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
@@ -30,7 +31,7 @@ import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule],
+	imports: [AuthorizationModule, FeathersModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,

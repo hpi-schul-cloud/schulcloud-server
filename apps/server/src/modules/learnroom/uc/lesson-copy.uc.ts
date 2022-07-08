@@ -30,7 +30,7 @@ export class LessonCopyUC {
 		if (parentParams.courseId) {
 			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
 		}
-		const status = this.lessonCopyService.copyLesson({
+		const status = await this.lessonCopyService.copyLesson({
 			originalLesson,
 			destinationCourse,
 			user,

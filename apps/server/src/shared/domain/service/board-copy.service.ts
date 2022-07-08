@@ -23,7 +23,8 @@ export class BoardCopyService {
 		const elements: CopyStatus[] = [];
 		const references: BoardElement[] = [];
 
-		params.originalBoard.getElements().forEach((element) => {
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises
+		params.originalBoard.getElements().forEach(async (element) => {
 			if (element.boardElementType === BoardElementType.Task) {
 				const originalTask = element.target as Task;
 				const status = this.taskCopyService.copyTaskMetadata({
@@ -37,7 +38,7 @@ export class BoardCopyService {
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
 				const originalLesson = element.target as Lesson;
-				const status = this.lessonCopyService.copyLesson({
+				const status = await this.lessonCopyService.copyLesson({
 					originalLesson,
 					user: params.user,
 					destinationCourse: params.destinationCourse,
