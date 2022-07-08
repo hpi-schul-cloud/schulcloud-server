@@ -80,7 +80,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	private async findGroupIdByTeamId(teamId: string): Promise<string> {
 		return firstValueFrom(this.get(`/ocs/v1.php/cloud/groups?search=${teamId}`))
 			.then((resp: AxiosResponse<OcsResponse<NextcloudGroups>>) => {
-				if (resp.data.ocs.data.groups[0].length > 0) {
+				if (resp.data.ocs.data.groups.length > 0) {
 					return resp.data.ocs.data.groups[0];
 				}
 				throw Error();
