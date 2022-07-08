@@ -764,7 +764,6 @@ const deleteNextcloudTeam = (hook) => {
 	service.deleteTeam(hook.id);
 };
 
-// todo: TeamPermissions
 exports.before = {
 	all: [
 		authenticate('jwt'),

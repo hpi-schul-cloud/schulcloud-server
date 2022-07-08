@@ -84,7 +84,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	const port = process.env.PORT || 3030;
+	const port = 3030;
 	rootExpress.listen(port);
 
 	console.log('#################################');
