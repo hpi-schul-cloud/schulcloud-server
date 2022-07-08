@@ -1,5 +1,4 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { VideoConferenceService } from '@src/modules/video-conference/service/video-conference.service';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
 import { Course, EntityId, ICurrentUser, Permission, RoleName, SchoolFeatures, Team, TeamUser } from '@shared/domain';
@@ -20,7 +19,10 @@ import {
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { ICalendarEvent } from '@shared/infra/calendar/calendar-event.interface';
-import { VideoConferenceScope } from '@src/modules/video-conference/controller/dto/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { BBBService } from '@src/modules/video-conference/service/bbb.service';
+import { VideoConferenceService } from '@src/modules/video-conference/service/video-conference.service';
+import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 
 interface IScopeInfo {
 	scopeId: EntityId;
@@ -34,6 +36,7 @@ export class VideoConferenceUc {
 	private readonly hostURL: string;
 
 	constructor(
+		private readonly bbbService: BBBService,
 		private readonly videoConferenceService: VideoConferenceService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly teamsRepo: TeamsRepo,
@@ -54,7 +57,8 @@ export class VideoConferenceUc {
 	async create(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
-		refId: EntityId
+		refId: EntityId,
+		options: VideoConferenceOptions //TODO docs and controller
 	): Promise<BBBResponse<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
 
@@ -69,11 +73,13 @@ export class VideoConferenceUc {
 		}
 
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
-			name: scopeInfo.title,
+			name: VideoConferenceUc.sanitizeString(scopeInfo.title),
 			meetingID: refId,
 		}).withLogoutUrl(scopeInfo.logoutUrl);
 
-		return this.videoConferenceService.create(configBuilder.build());
+		await this.videoConferenceService.create(refId, conferenceScope, options); // TODO update?
+
+		return this.bbbService.create(configBuilder.build());
 	}
 
 	/**
@@ -97,7 +103,7 @@ export class VideoConferenceUc {
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
-			fullName: `${currentUser.user.firstName} ${currentUser.user.lastName}`,
+			fullName: VideoConferenceUc.sanitizeString(`${currentUser.user.firstName} ${currentUser.user.lastName}`),
 			meetingID: refId,
 			role: bbbRole,
 		});
@@ -131,7 +137,10 @@ export class VideoConferenceUc {
 				throw new BadRequestException('Unknown scope name');
 		}
 
-		return this.videoConferenceService.join(configBuilder.build());
+		const options: VideoConferenceOptions = await this.videoConferenceService.get(refId, conferenceScope);
+		// TODO evaluate options
+
+		return this.bbbService.join(configBuilder.build());
 	}
 
 	/**
@@ -158,7 +167,7 @@ export class VideoConferenceUc {
 			meetingID: refId,
 		});
 
-		return this.videoConferenceService.getMeetingInfo(config);
+		return this.bbbService.getMeetingInfo(config);
 	}
 
 	/**
@@ -189,7 +198,7 @@ export class VideoConferenceUc {
 			meetingID: refId,
 		});
 
-		return this.videoConferenceService.end(config);
+		return this.bbbService.end(config);
 	}
 
 	/**
@@ -267,5 +276,9 @@ export class VideoConferenceUc {
 		if (!schoolFeatureEnabled) {
 			throw new ForbiddenException('school feature VIDEOCONFERENCE is disabled');
 		}
+	}
+
+	private static sanitizeString(text: string) {
+		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 }

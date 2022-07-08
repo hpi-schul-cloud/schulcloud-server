@@ -1,4 +1,4 @@
-import { VideoConferenceStatus } from '@src/modules/video-conference/controller/dto/vc-status.enum';
+import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 
 export class VideoConferenceBaseResponse {
 	status: VideoConferenceStatus;

@@ -14,7 +14,7 @@ import {
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceInfoResponse } from '@src/modules/video-conference/controller/dto/vc-info.response';
-import { VideoConferenceScope } from '@src/modules/video-conference/controller/dto/vc-scope.enum';
+import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -46,7 +46,8 @@ export class VideoConferenceController {
 		const bbbResponse: BBBResponse<BBBCreateResponse> = await this.videoConferenceUc.create(
 			currentUser,
 			conferenceScope,
-			refId
+			refId,
+			{ everybodyJoinsAsModerator: false, moderatorMustApproveJoinRequests: false, everyAttendeeJoinsMuted: false } // TODO
 		);
 		return VideoConferenceResponseMapper.mapToCreateResponse(bbbResponse);
 	}

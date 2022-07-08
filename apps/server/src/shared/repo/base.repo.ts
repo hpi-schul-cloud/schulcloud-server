@@ -12,6 +12,10 @@ export abstract class BaseRepo<T extends BaseEntity> {
 
 	abstract get entityName(): EntityName<T>;
 
+	create(entity: T): T {
+		return this._em.create(typeof entity, entity);
+	}
+
 	async save(entities: T | T[]): Promise<void> {
 		await this._em.persistAndFlush(entities);
 	}

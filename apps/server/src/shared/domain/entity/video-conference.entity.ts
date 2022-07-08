@@ -1,5 +1,6 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { Entity, Index, Property } from '@mikro-orm/core';
+import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 
 export enum TargetModels {
 	COURSES = 'courses',
@@ -7,21 +8,22 @@ export enum TargetModels {
 }
 
 export class VideoConferenceOptions {
-	moderatorMustApproveJoinRequests: boolean;
+	everyAttendeJoinsMuted: boolean;
 
 	everybodyJoinsAsModerator: boolean;
 
-	everyAttendeeJoinsMuted: boolean; // TODO migration from everyAttendeJoinsMuted to everyAttendeeJoinsMuted
+	moderatorMustApproveJoinRequests: boolean;
 
 	constructor(options: VideoConferenceOptions) {
-		this.moderatorMustApproveJoinRequests = options.moderatorMustApproveJoinRequests;
+		this.everyAttendeJoinsMuted = options.everyAttendeJoinsMuted;
 		this.everybodyJoinsAsModerator = options.everybodyJoinsAsModerator;
-		this.everyAttendeeJoinsMuted = options.everyAttendeeJoinsMuted;
+		this.moderatorMustApproveJoinRequests = options.moderatorMustApproveJoinRequests;
 	}
 }
 
 export type IVideoConferenceProperties = Readonly<Omit<VideoConference, keyof BaseEntityWithTimestamps>>;
 
+// Preset options for opening a video conference
 @Entity({ tableName: 'videoconferences' })
 @Index({ properties: 'target' })
 @Index({ properties: ['target', 'targetModel'] })
