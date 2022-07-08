@@ -1,17 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
-import { HttpModule, HttpService } from '@nestjs/axios';
+import {
+	GroupfoldersFolder,
+	Meta,
+	NextcloudGroups,
+	NextcloudStrategy,
+	OcsResponse,
+} from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
+import { HttpModule } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
 import { Logger, NotFoundException } from '@nestjs/common';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
+
+const createAxiosResponse = function (
+	data: OcsResponse<NextcloudGroups | GroupfoldersFolder> | undefined
+): AxiosResponse<OcsResponse<NextcloudGroups | GroupfoldersFolder> | OcsResponse<Meta> | undefined> {
+	return {
+		data: data ?? undefined,
+		status: 0,
+		statusText: '',
+		headers: {},
+		config: {},
+	};
+};
+
+const createOcsResponse = function (
+	data: NextcloudGroups | GroupfoldersFolder
+): OcsResponse<NextcloudGroups | GroupfoldersFolder> {
+	return { ocs: { data } };
+};
 
 describe('NextCloud Adapter Strategy', () => {
 	let module: TestingModule;
 	let strategy: NextcloudStrategy;
-	let httpService: DeepMocked<HttpService>;
 
-	let resp: AxiosResponse;
+	const groupfolderFolder: GroupfoldersFolder = { folder_id: 'testFolderId' };
+	const nextcloudGroups: NextcloudGroups = { groups: ['testGroupId'] };
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,14 +46,9 @@ describe('NextCloud Adapter Strategy', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: HttpService,
-					useValue: createMock<HttpService>(),
-				},
 			],
 		}).compile();
 		strategy = module.get(NextcloudStrategy);
-		httpService = module.get(HttpService);
 	});
 
 	describe('Update TeamPermissions For Role', () => {
@@ -39,20 +58,13 @@ describe('NextCloud Adapter Strategy', () => {
 				// needed for proper mocking
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((url: string, config?: AxiosRequestConfig): Observable<AxiosResponse> => {
-					let data = {};
+					const resp: AxiosResponse = createAxiosResponse(undefined);
 					if (url.endsWith('folders/group/testGroupId')) {
-						data = { ocs: { data: [{ folder_id: 'testFolderId' }] } };
+						resp.data = createOcsResponse(groupfolderFolder);
 					}
 					if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName')) {
-						data = { ocs: { data: { groups: ['testGroupId'] } } };
+						resp.data = createOcsResponse(nextcloudGroups);
 					}
-					const resp: AxiosResponse = {
-						data,
-						status: 0,
-						statusText: '',
-						headers: {},
-						config: {},
-					};
 					return of(resp);
 				});
 			jest
@@ -84,6 +96,7 @@ describe('NextCloud Adapter Strategy', () => {
 			expect(strategy.httpService.get).toBeCalledTimes(2);
 			expect(strategy.httpService.post).toBeCalledTimes(1);
 		});
+
 		it('should not find the group and throw a NotFoundException', async () => {
 			jest
 				.spyOn(strategy.httpService, 'get')
@@ -108,6 +121,7 @@ describe('NextCloud Adapter Strategy', () => {
 				})
 			).rejects.toThrow(NotFoundException);
 		});
+
 		it('should not find the folder and throw a NotFoundException', async () => {
 			jest
 				.spyOn(strategy.httpService, 'get')
@@ -150,24 +164,17 @@ describe('NextCloud Adapter Strategy', () => {
 				// needed for proper mocking
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((url: string, config?: AxiosRequestConfig): Observable<AxiosResponse> => {
-					let data = {};
+					let data: OcsResponse<NextcloudGroups | GroupfoldersFolder> | undefined;
 					if (url.endsWith('cloud/groups?search=teamIdMock')) {
-						data = { ocs: { data: { groups: ['testGroupId'] } } };
+						data = createOcsResponse(nextcloudGroups);
 					}
 					if (url.endsWith('cloud/groups?search=teamIdNoGroups')) {
-						data = { ocs: { data: { groups: [] } } };
+						data = createOcsResponse({ groups: [] });
 					}
 					if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-						data = { ocs: { data: [{ folder_id: 'testFolderId' }] } };
+						data = createOcsResponse(groupfolderFolder);
 					}
-					resp = {
-						data,
-						status: 0,
-						statusText: '',
-						headers: {},
-						config: {},
-					};
-					return of(resp);
+					return of(createAxiosResponse(data));
 				});
 			jest
 				.spyOn(strategy.httpService, 'delete')
@@ -198,9 +205,7 @@ describe('NextCloud Adapter Strategy', () => {
 		});
 
 		it('should remove the groups and delete the groupfolder ', async () => {
-			httpService.get.mockReturnValue(() => {
-				resp.data = { ocs: { data: { groups: [] } }
-			});
+			// TODO Mock
 			await strategy.deleteGroupfolderAndRemoveGroup(teamIdMock);
 			expect(strategy.httpService.get).toBeCalledTimes(2);
 			expect(strategy.httpService.delete).toBeCalledTimes(2);

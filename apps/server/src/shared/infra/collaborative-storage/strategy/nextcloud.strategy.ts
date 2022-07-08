@@ -7,21 +7,21 @@ import { parseInt } from 'lodash';
 import { ICollaborativeStorageStrategy } from './base.interface.strategy';
 import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
-interface NextcloudGroups {
+export interface NextcloudGroups {
 	groups: string[];
 }
 
-interface GroupfoldersFolder {
+export interface GroupfoldersFolder {
 	folder_id: string;
 }
-interface OcsResponse<T> {
+export interface OcsResponse<T> {
 	ocs: { data: T };
 }
-interface Meta {
+export interface Meta {
 	ocs: { meta: { statuscode: number } };
 }
 
-interface SuccessfulRes {
+export interface SuccessfulRes {
 	success: boolean;
 }
 
@@ -35,11 +35,14 @@ interface SuccessfulRes {
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	readonly baseURL: string;
 
+	readonly httpService: HttpService;
+
 	config: AxiosRequestConfig;
 
 	private logger: Logger;
 
-	constructor(private httpService: HttpService) {
+	constructor() {
+		this.httpService = new HttpService();
 		this.logger = new Logger(NextcloudStrategy.name);
 		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
 		this.config = {
