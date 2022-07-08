@@ -126,8 +126,11 @@ export class OAuthService {
 
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
+			this.logger.log('Oauth process strated. Next up: checkAuthorizationCode().');
 			const authCode: string = this.checkAuthorizationCode(query);
+			this.logger.log('Done. Next up: systemRepo.findById().');
 			const system: System = await this.systemRepo.findById(systemId);
+			this.logger.log('Done. Next up: oauthConfig check.');
 			const { oauthConfig } = system;
 			if (oauthConfig == null) {
 				this.logger.error(
@@ -135,12 +138,19 @@ export class OAuthService {
 				);
 				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
 			}
+			this.logger.log('Done. Next up: requestToken().');
 			const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
+			this.logger.log('Done. Next up: validateToken().');
 			const decodedToken: IJwt = await this.validateToken(queryToken.id_token, oauthConfig);
+			this.logger.log('Done. Next up: findUser().');
 			const user: User = await this.findUser(decodedToken, system);
+			this.logger.log('Done. Next up: getJWTForUser().');
 			const jwtResponse: string = await this.getJWTForUser(user);
+			this.logger.log('Done. Next up: buildResponse().');
 			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
+			this.logger.log('Done. Next up: getRedirect().');
 			const oauthResponse: OAuthResponse = this.getRedirect(response);
+			this.logger.log('Done. Response should now be returned().');
 			oauthResponse.jwt = jwtResponse;
 			return oauthResponse;
 		} catch (error) {
