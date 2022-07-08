@@ -338,8 +338,8 @@ export class AccountUc {
 		}
 	}
 
-	async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
-		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id))) {
+	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
+		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
 			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
 		}
 	}

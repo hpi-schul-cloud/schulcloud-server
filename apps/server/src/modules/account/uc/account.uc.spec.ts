@@ -72,7 +72,6 @@ describe('AccountUc', () => {
 	let mockDifferentSchoolAdminAccount: Account;
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
-	let mockOtherExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
 	let mockAccountWithoutUser: Account;
 	let mockAccounts: Account[];
@@ -396,12 +395,6 @@ describe('AccountUc', () => {
 			password: defaultPasswordHash,
 			systemId: externalSystem.id,
 		});
-		mockOtherExternalUserAccount = accountFactory.buildWithId({
-			userId: mockExternalUser.id,
-			username: 'used.by.system@available.username',
-			password: defaultPasswordHash,
-			systemId: externalSystem.id,
-		});
 		mockAccountWithoutUser = accountFactory.buildWithId({
 			userId: undefined,
 			password: defaultPasswordHash,
@@ -439,7 +432,6 @@ describe('AccountUc', () => {
 			mockDifferentSchoolAdminAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
-			mockOtherExternalUserAccount,
 			mockAccountWithoutRole,
 			mockAccountWithoutUser,
 		];
@@ -990,22 +982,6 @@ describe('AccountUc', () => {
 				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
-		});
-		it('should throw if username already exists within the same system', async () => {
-			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
-			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
-			const params: AccountSaveDto = {
-				username: mockOtherExternalUserAccount.username,
-				systemId: mockExternalUserAccount.systemId?.toString(),
-			};
-			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
-		});
-		it('should ignore existing username if other system', async () => {
-			const params: AccountSaveDto = {
-				username: mockOtherExternalUserAccount.username,
-				password: defaultPassword,
-			};
-			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
 	});
 

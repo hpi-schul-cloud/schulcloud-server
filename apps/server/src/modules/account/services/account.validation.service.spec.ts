@@ -3,26 +3,34 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
 import { AccountRepo, UserRepo } from '@shared/repo';
-import { setupEntities, userFactory, accountFactory } from '@shared/testing';
+import { setupEntities, userFactory, accountFactory, systemFactory } from '@shared/testing';
 import { AccountValidationService } from './account.validation.service';
 
 describe('AccountValidationService', () => {
 	let module: TestingModule;
 	let accountValidationService: AccountValidationService;
 	let orm: MikroORM;
-	let accountRepo: AccountRepo;
-	let userRepo: UserRepo;
+
+	let mockTeacherUser: User;
+	let mockTeacherAccount: Account;
+
+	let mockStudentUser: User;
+	let mockStudentAccount: Account;
+
+	let mockOtherTeacherUser: User;
+	let mockOtherTeacherAccount: Account;
+
+	let mockAdminUser: User;
+
+	let mockExternalUser: User;
+	let mockExternalUserAccount: Account;
+	let mockOtherExternalUser: User;
+	let mockOtherExternalUserAccount: Account;
+
+	let oprhanAccount: Account;
 
 	let mockUsers: User[];
-	let mockTeacherUser: User;
-	let mockStudentUser: User;
-	let mockExternalUser: User;
 	let mockAccounts: Account[];
-	let mockTeacherAccount: Account;
-	let mockStudentAccount: Account;
-	let mockAdminUser: User;
-	let mockOtherTeacherAccount: Account;
-	let mockOtherTeacherUser: User;
 
 	afterAll(async () => {
 		await module.close();
@@ -44,7 +52,6 @@ describe('AccountValidationService', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						}),
-
 						searchByUsernameExactMatch: jest
 							.fn()
 							.mockImplementation((username: string): Promise<[Account[], number]> => {
@@ -73,27 +80,29 @@ describe('AccountValidationService', () => {
 				{
 					provide: UserRepo,
 					useValue: {
-						findByEmail: (email: string): Promise<User[]> => {
+						findById: jest.fn().mockImplementation((userId: EntityId): Promise<User> => {
+							const user = mockUsers.find((tempUser) => tempUser.id === userId);
+							if (user) {
+								return Promise.resolve(user);
+							}
+							throw new EntityNotFoundError(User.name);
+						}),
+						findByEmail: jest.fn().mockImplementation((email: string): Promise<User[]> => {
 							const user = mockUsers.find((tempUser) => tempUser.email === email);
 
 							if (user) {
 								return Promise.resolve([user]);
 							}
-							if (email === 'not@available.email') {
-								return Promise.resolve([mockExternalUser]);
-							}
 							if (email === 'multiple@user.email') {
 								return Promise.resolve(mockUsers);
 							}
 							return Promise.resolve([]);
-						},
+						}),
 					},
 				},
 			],
 		}).compile();
 
-		accountRepo = module.get(AccountRepo);
-		userRepo = module.get(UserRepo);
 		accountValidationService = module.get(AccountValidationService);
 		orm = await setupEntities();
 	});
@@ -113,14 +122,44 @@ describe('AccountValidationService', () => {
 				}),
 			],
 		});
+		mockExternalUser = userFactory.buildWithId({
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
+		});
+		mockOtherExternalUser = userFactory.buildWithId({
+			roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
+		});
 
 		mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id });
 		mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
 		mockOtherTeacherAccount = accountFactory.buildWithId({
 			userId: mockOtherTeacherUser.id,
 		});
+		const externalSystemA = systemFactory.buildWithId();
+		const externalSystemB = systemFactory.buildWithId();
+		mockExternalUserAccount = accountFactory.buildWithId({
+			userId: mockExternalUser.id,
+			username: 'unique.within@system',
+			systemId: externalSystemA.id,
+		});
+		mockOtherExternalUserAccount = accountFactory.buildWithId({
+			userId: mockOtherExternalUser.id,
+			username: 'unique.within@system',
+			systemId: externalSystemB.id,
+		});
 
-		mockAccounts = [mockTeacherAccount, mockStudentAccount];
+		oprhanAccount = accountFactory.buildWithId({
+			username: 'orphan@account',
+			userId: undefined,
+		});
+
+		mockAccounts = [
+			mockTeacherAccount,
+			mockStudentAccount,
+			mockOtherTeacherAccount,
+			mockExternalUserAccount,
+			mockOtherExternalUserAccount,
+			oprhanAccount,
+		];
 		mockAdminUser = userFactory.buildWithId({
 			roles: [
 				new Role({
@@ -138,50 +177,103 @@ describe('AccountValidationService', () => {
 				}),
 			],
 		});
-		mockUsers = [mockTeacherUser, mockStudentUser];
+		mockUsers = [
+			mockTeacherUser,
+			mockStudentUser,
+			mockOtherTeacherUser,
+			mockAdminUser,
+			mockExternalUser,
+			mockOtherExternalUser,
+		];
 	});
 
 	describe('isUniqueEmail', () => {
 		it('should return true if new email is available', async () => {
-			const res = await accountValidationService.isUniqueEmail('an@available.email', mockStudentUser.id);
+			const res = await accountValidationService.isUniqueEmail('an@available.email');
 			expect(res).toBe(true);
 		});
-
 		it('should return true if new email is available and ignore current user', async () => {
 			const res = await accountValidationService.isUniqueEmail(mockStudentUser.email, mockStudentUser.id);
 			expect(res).toBe(true);
 		});
 		it('should return true if new email is available and ignore current users account', async () => {
-			const res = await accountValidationService.isUniqueEmail(mockStudentAccount.username, mockStudentUser.id);
+			const res = await accountValidationService.isUniqueEmail(
+				mockStudentAccount.username,
+				mockStudentUser.id,
+				mockStudentAccount.id
+			);
 			expect(res).toBe(true);
 		});
 		it('should return false if new email already in use by another user', async () => {
-			const res = await accountValidationService.isUniqueEmail(mockAdminUser.email, mockStudentUser.id);
-			expect(res).toBe(false);
-		});
-		xit('should return false if new email already in use by another user ignore case', async () => {
-			const res = await accountValidationService.isUniqueEmail(mockAdminUser.email.toUpperCase(), mockStudentUser.id);
+			const res = await accountValidationService.isUniqueEmail(
+				mockAdminUser.email,
+				mockStudentUser.id,
+				mockStudentAccount.id
+			);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email is already in use by any user', async () => {
-			const res = await accountValidationService.isUniqueEmail(mockStudentAccount.username);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email already in use by another user', async () => {
-			const res = await accountValidationService.isUniqueEmail('not@available.email', mockStudentUser.id);
-			expect(res).toBe(false);
-		});
-		it('should return false if new email already in use by another account', async () => {
-			const res = await accountValidationService.isUniqueEmail('not@available.username', mockStudentUser.id);
+			const res = await accountValidationService.isUniqueEmail(
+				mockTeacherAccount.username,
+				mockStudentUser.id,
+				mockStudentAccount.id,
+				mockStudentAccount.systemId?.toString()
+			);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email already in use by multiple users', async () => {
-			const res = await accountValidationService.isUniqueEmail('multiple@user.email', mockStudentUser.id);
+			const res = await accountValidationService.isUniqueEmail(
+				'multiple@user.email',
+				mockStudentUser.id,
+				mockStudentAccount.id,
+				mockStudentAccount.systemId?.toString()
+			);
 			expect(res).toBe(false);
 		});
 		it('should return false if new email already in use by multiple accounts', async () => {
-			const res = await accountValidationService.isUniqueEmail('multiple@account.username', mockStudentUser.id);
+			const res = await accountValidationService.isUniqueEmail(
+				'multiple@account.username',
+				mockStudentUser.id,
+				mockStudentAccount.id,
+				mockStudentAccount.systemId?.toString()
+			);
 			expect(res).toBe(false);
+		});
+		it('should ignore existing username if other system', async () => {
+			const res = await accountValidationService.isUniqueEmail(
+				mockExternalUser.email,
+				mockExternalUser.id,
+				mockExternalUserAccount.id,
+				mockOtherExternalUserAccount.systemId?.toString()
+			);
+			expect(res).toBe(true);
+		});
+	});
+
+	describe('isUniqueEmailForUser', () => {
+		it('should return true, if its the email of the given user', async () => {
+			const res = await accountValidationService.isUniqueEmailForUser(mockStudentUser.email, mockStudentUser.id);
+			expect(res).toBe(true);
+		});
+		it('should return false, if not the given users email', async () => {
+			const res = await accountValidationService.isUniqueEmailForUser(mockStudentUser.email, mockAdminUser.id);
+			expect(res).toBe(false);
+		});
+	});
+
+	describe('isUniqueEmailForAccount', () => {
+		it('should return true, if its the email of the given user', async () => {
+			const res = await accountValidationService.isUniqueEmailForAccount(mockStudentUser.email, mockStudentAccount.id);
+			expect(res).toBe(true);
+		});
+		it('should return false, if not the given users email', async () => {
+			const res = await accountValidationService.isUniqueEmailForAccount(mockStudentUser.email, mockTeacherAccount.id);
+			expect(res).toBe(false);
+		});
+		it('should ignore missing user for a given account', async () => {
+			console.log(oprhanAccount);
+			const res = await accountValidationService.isUniqueEmailForAccount(oprhanAccount.username, oprhanAccount.id);
+			expect(res).toBe(true);
 		});
 	});
 });

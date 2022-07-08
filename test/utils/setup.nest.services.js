@@ -7,6 +7,9 @@ const { MikroOrmModule } = require('@mikro-orm/nestjs');
 const { AccountModule } = require('../../dist/apps/server/modules/account/account.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/uc/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/services/account.service');
+const {
+	AccountValidationService,
+} = require('../../dist/apps/server/modules/account/services/account.validation.service');
 const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/config/database.config');
 const { ALL_ENTITIES } = require('../../dist/apps/server/shared/domain/entity/all-entities');
 
@@ -29,9 +32,11 @@ const setupNestServices = async (app) => {
 	const orm = nestApp.get(MikroORM);
 	const accountUc = nestApp.get(AccountUc);
 	const accountService = nestApp.get(AccountService);
+	const accountValidationService = nestApp.get(AccountValidationService);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
+	app.services['nest-account-validation-service'] = accountValidationService;
 
 	return { nestApp, orm, accountUc, accountService };
 };
