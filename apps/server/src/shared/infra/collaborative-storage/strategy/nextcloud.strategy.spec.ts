@@ -14,9 +14,9 @@ import { Logger, NotFoundException } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 
 const createAxiosResponse = (
-	data: OcsResponse<NextcloudGroups | GroupfoldersFolder | SuccessfulRes | []> | Record<string, unknown>
+	data: OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> | Record<string, unknown>
 ): AxiosResponse<
-	OcsResponse<NextcloudGroups | GroupfoldersFolder | SuccessfulRes | []> | OcsResponse<Meta> | Record<string, unknown>
+	OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> | OcsResponse<Meta> | Record<string, unknown>
 > => ({
 	data: data ?? {},
 	status: 0,
@@ -26,15 +26,15 @@ const createAxiosResponse = (
 });
 
 const createOcsResponse = (
-	data: NextcloudGroups | GroupfoldersFolder | SuccessfulRes | [],
+	data: NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | [],
 	meta?: Meta
-): OcsResponse<NextcloudGroups | GroupfoldersFolder | SuccessfulRes | []> => ({ ocs: { data, meta } });
+): OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> => ({ ocs: { data, meta } });
 
 describe('NextCloud Adapter Strategy', () => {
 	let module: TestingModule;
 	let strategy: NextcloudStrategy;
 
-	const groupfolderFolder: GroupfoldersFolder = { folder_id: 'testFolderId' };
+	const groupfoldersFolders: GroupfoldersFolder[] = [{ folder_id: 'testFolderId' }];
 	const nextcloudGroups: NextcloudGroups = { groups: ['testGroupId'] };
 
 	beforeAll(async () => {
@@ -56,7 +56,7 @@ describe('NextCloud Adapter Strategy', () => {
 			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfolderFolder);
+					resp.data = createOcsResponse(groupfoldersFolders);
 				}
 				if (url.endsWith('cloud/groups?search=TeamName-TeamId-RoleName')) {
 					resp.data = createOcsResponse(nextcloudGroups);
@@ -119,7 +119,6 @@ describe('NextCloud Adapter Strategy', () => {
 		});
 	});
 
-	// """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 	const teamIdMock = 'teamIdMock';
 	describe('Delete Team from Nextcloud', () => {
 		beforeEach(() => {
@@ -132,25 +131,18 @@ describe('NextCloud Adapter Strategy', () => {
 					resp.data = createOcsResponse({ groups: [] });
 				}
 				if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfolderFolder);
+					resp.data = createOcsResponse(groupfoldersFolders);
 				}
 				return of(resp);
 			});
 			jest.spyOn(strategy.httpService, 'delete').mockImplementation((url: string): Observable<AxiosResponse> => {
-				let data = {};
+				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('/groups/testGroupId')) {
-					data = { ocs: { data: [], meta: { statuscode: 100 } } };
+					resp.data = createOcsResponse([], { statuscode: 100 });
 				}
 				if (url.endsWith('/groupfolders/folders/testFolderId')) {
-					data = { ocs: { data: { success: true } } };
+					resp.data = createOcsResponse({ success: true });
 				}
-				const resp: AxiosResponse = {
-					data,
-					status: 200,
-					statusText: 'OK',
-					headers: {},
-					config: {},
-				};
 				return of(resp);
 			});
 		});
@@ -161,7 +153,6 @@ describe('NextCloud Adapter Strategy', () => {
 		});
 
 		it('should remove the groups and delete the groupfolder ', async () => {
-			// TODO Mock
 			await strategy.deleteGroupfolderAndRemoveGroup(teamIdMock);
 			expect(strategy.httpService.get).toBeCalledTimes(2);
 			expect(strategy.httpService.delete).toBeCalledTimes(2);
@@ -201,7 +192,7 @@ describe('NextCloud Adapter Strategy', () => {
 					resp.data = createOcsResponse(nextcloudGroups);
 				}
 				if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfolderFolder);
+					resp.data = createOcsResponse(groupfoldersFolders);
 				}
 				return of(resp);
 			});
@@ -226,7 +217,7 @@ describe('NextCloud Adapter Strategy', () => {
 					resp.data = createOcsResponse(nextcloudGroups);
 				}
 				if (url.endsWith('apps/schulcloud/groupfolders/folders/group/testGroupId')) {
-					resp.data = createOcsResponse(groupfolderFolder);
+					resp.data = createOcsResponse(groupfoldersFolders);
 				}
 				return of(resp);
 			});
