@@ -1,3 +1,4 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
@@ -13,6 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { FilesStorageClientAdapterService } from '@src/modules';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { TaskListResponse } from '@src/modules/task/controller/dto';
 import { ServerTestModule } from '@src/server.module';
@@ -80,6 +82,7 @@ describe('Task Controller (e2e)', () => {
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 		let api: API;
+		let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
@@ -94,6 +97,8 @@ describe('Task Controller (e2e)', () => {
 						return true;
 					},
 				})
+				.overrideProvider(FilesStorageClientAdapterService)
+				.useValue(createMock<FilesStorageClientAdapterService>())
 				.compile();
 
 			app = module.createNestApplication();
@@ -101,6 +106,7 @@ describe('Task Controller (e2e)', () => {
 			orm = app.get(MikroORM);
 			em = module.get(EntityManager);
 			api = new API(app, '/tasks');
+			filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
 		});
 
 		afterAll(async () => {
@@ -442,7 +448,13 @@ describe('Task Controller (e2e)', () => {
 
 				currentUser = mapUserToCurrentUser(teacher);
 
-				await request(app.getHttpServer()).delete(`/tasks/${task.id}`).set('Accept', 'application/json').expect(200);
+				await request(app.getHttpServer())
+					.delete(`/tasks/${task.id}`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(200);
+
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toBeCalled();
 
 				const foundTask = await em.findOne(Task, { id: task.id });
 				expect(foundTask).toEqual(null);
@@ -462,7 +474,11 @@ describe('Task Controller (e2e)', () => {
 
 				currentUser = mapUserToCurrentUser(student);
 
-				await request(app.getHttpServer()).delete(`/tasks/${task.id}`).set('Accept', 'application/json').expect(403);
+				await request(app.getHttpServer())
+					.delete(`/tasks/${task.id}`)
+					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
+					.expect(403);
 			});
 
 			it('should throw 404 if wrong task ID', async () => {
@@ -482,10 +498,11 @@ describe('Task Controller (e2e)', () => {
 				await request(app.getHttpServer())
 					.delete(`/tasks/${new ObjectID().toHexString()}`)
 					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
 					.expect(404);
 			});
 
-			it('should throw 404 if wrong task ID', async () => {
+			it('should throw 400 if task ID is invalid', async () => {
 				const teacher = setup();
 				const student = userFactory.build();
 				const course = courseFactory.build({
@@ -502,6 +519,7 @@ describe('Task Controller (e2e)', () => {
 				const r = await request(app.getHttpServer())
 					.delete(`/tasks/string`)
 					.set('Accept', 'application/json')
+					.set('Authorization', 'jwt')
 					.expect(400);
 				expect(r.body).toEqual({
 					type: 'BAD_REQUEST',
