@@ -54,6 +54,7 @@ describe('AccountUc', () => {
 	let mockOtherStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
 	let mockDifferentSchoolTeacherUser: User;
+	let mockDifferentSchoolStudentUser: User;
 	let mockUnknownRoleUser: User;
 	let mockExternalUser: User;
 	let mockUserWithoutAccount: User;
@@ -70,6 +71,8 @@ describe('AccountUc', () => {
 	let mockStudentAccount: Account;
 	let mockStudentSchoolPermissionAccount: Account;
 	let mockDifferentSchoolAdminAccount: Account;
+	let mockDifferentSchoolTeacherAccount: Account;
+	let mockDifferentSchoolStudentAccount: Account;
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
@@ -319,6 +322,10 @@ describe('AccountUc', () => {
 			school: mockOtherSchool,
 			roles: [...mockTeacherUser.roles],
 		});
+		mockDifferentSchoolStudentUser = userFactory.buildWithId({
+			school: mockOtherSchool,
+			roles: [...mockStudentUser.roles],
+		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [
@@ -385,6 +392,14 @@ describe('AccountUc', () => {
 			userId: mockDifferentSchoolAdminUser.id,
 			password: defaultPasswordHash,
 		});
+		mockDifferentSchoolTeacherAccount = accountFactory.buildWithId({
+			userId: mockDifferentSchoolTeacherUser.id,
+			password: defaultPasswordHash,
+		});
+		mockDifferentSchoolStudentAccount = accountFactory.buildWithId({
+			userId: mockDifferentSchoolStudentUser.id,
+			password: defaultPasswordHash,
+		});
 		mockUnknownRoleUserAccount = accountFactory.buildWithId({
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
@@ -411,6 +426,8 @@ describe('AccountUc', () => {
 			mockStudentUser,
 			mockStudentSchoolPermissionUser,
 			mockDifferentSchoolAdminUser,
+			mockDifferentSchoolTeacherUser,
+			mockDifferentSchoolStudentUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
 			mockUserWithoutRole,
@@ -430,6 +447,8 @@ describe('AccountUc', () => {
 			mockStudentAccount,
 			mockStudentSchoolPermissionAccount,
 			mockDifferentSchoolAdminAccount,
+			mockDifferentSchoolTeacherAccount,
+			mockDifferentSchoolStudentAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
@@ -875,6 +894,24 @@ describe('AccountUc', () => {
 
 				params = { type: AccountSearchType.USERNAME, value: mockStudentAccount.username } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = {
+					type: AccountSearchType.USERNAME,
+					value: mockDifferentSchoolAdminAccount.username,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = {
+					type: AccountSearchType.USERNAME,
+					value: mockDifferentSchoolTeacherAccount.username,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = {
+					type: AccountSearchType.USERNAME,
+					value: mockDifferentSchoolStudentAccount.username,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 		});
 	});
@@ -955,6 +992,13 @@ describe('AccountUc', () => {
 		it('should not throw if username for an external user is not an email', async () => {
 			const params: AccountSaveDto = {
 				username: 'John Doe',
+				systemId: 'ABC123',
+			};
+			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
+		});
+		it('should not throw if username for an external user is a ldap search string', async () => {
+			const params: AccountSaveDto = {
+				username: 'dc=schul-cloud,dc=org/fake.ldap',
 				systemId: 'ABC123',
 			};
 			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
