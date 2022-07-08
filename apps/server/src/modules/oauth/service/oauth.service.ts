@@ -52,7 +52,9 @@ export class OAuthService {
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
+		this.logger.log('requestToken() has started. Next up: decrypt().');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+		this.logger.log('decrypt() ran succefullly. Next up: post().');
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			oauthConfig,
 			decryptedClientSecret,
@@ -68,6 +70,7 @@ export class OAuthService {
 				},
 			}
 		);
+		this.logger.log('post() ran succefullly. The tokens should get returned now.');
 		const responseToken = await lastValueFrom(responseTokenObservable);
 		return responseToken.data;
 	}
