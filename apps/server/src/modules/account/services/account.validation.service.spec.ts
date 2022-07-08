@@ -271,7 +271,6 @@ describe('AccountValidationService', () => {
 			expect(res).toBe(false);
 		});
 		it('should ignore missing user for a given account', async () => {
-			console.log(oprhanAccount);
 			const res = await accountValidationService.isUniqueEmailForAccount(oprhanAccount.username, oprhanAccount.id);
 			expect(res).toBe(true);
 		});
