@@ -52,7 +52,7 @@ class API {
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
 
-describe('file-storage controller (e2e)', () => {
+describe('files-storage controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;

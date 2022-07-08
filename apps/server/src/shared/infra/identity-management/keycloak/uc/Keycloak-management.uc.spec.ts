@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { v1 } from 'uuid';
-import fs, { readFile } from 'node:fs/promises';
+import fs from 'node:fs/promises';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakManagementUc } from './Keycloak-management.uc';
 import { KeycloakAdministrationService } from '../keycloak-administration.service';

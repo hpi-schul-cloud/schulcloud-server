@@ -4,7 +4,7 @@ import { BaseDomainObject } from '../interface/base-domain-object';
 import { AuthorisationUtils } from './authorisation.utils';
 import { BasePermission } from './base-permission';
 import { BasePermissionManager } from './base-permission-manager';
-import PermissionContextBuilder from './permission-context-builder';
+import PermissionContextBuilder from './permission-context.builder';
 
 class MyDomainObject extends BaseDomainObject {
 	id: string;

@@ -9,14 +9,14 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { Logger } from '@nestjs/common';
-import { MailService, Mail } from '@shared/infra/mail';
+import { Mail, MailService } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from './server.module';
-import legacyAppPromise = require('../../../src/app');
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
+import legacyAppPromise = require('../../../src/app');
 import { AccountValidationService } from './modules/account/services/account.validation.service';
 
 async function bootstrap() {
@@ -84,7 +84,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	const port = 3030;
+	const port = process.env.PORT || 3030;
 	rootExpress.listen(port);
 
 	console.log('#################################');
