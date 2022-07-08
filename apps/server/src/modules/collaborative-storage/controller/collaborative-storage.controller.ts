@@ -2,6 +2,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ICurrentUser } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import { CollaborativeStorageUc } from '../uc/collaborative-storage.uc';
 import { TeamPermissionsBody } from './dto/team-permissions.body.params';
 import { TeamRoleDto } from './dto/team-role.params';
@@ -14,7 +15,9 @@ import { TeamRoleDto } from './dto/team-role.params';
 @Authenticate('jwt')
 @Controller('collaborative-storage')
 export class CollaborativeStorageController {
-	constructor(private readonly teamStorageUc: CollaborativeStorageUc) {}
+	constructor(private readonly teamStorageUc: CollaborativeStorageUc, private logger: Logger) {
+		this.logger.setContext(CollaborativeStorageController.name);
+	}
 
 	/**
 	 * Updates the CRUD Permissions(+Share) for a specific Role in a Team
