@@ -28,7 +28,7 @@ data:
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
-      "alias" : "Zentrales IServ",
+      "alias" : "Schulserver",
       "ldapConfig" : {
         "active" : true,
         "federalState": ObjectId("0000b186816abba584714c58"),
@@ -135,3 +135,4 @@ data:
 
 
     npm run syncIndexes
+
