@@ -32,7 +32,10 @@ export class VideoConferenceService {
 
 	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		return firstValueFrom(this.get('create', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBCreateResponse>)
+			.then((resp: AxiosResponse<string>) => {
+				const response: BBBResponse<BBBCreateResponse> = xml2json(resp.data) as BBBResponse<BBBCreateResponse>;
+				return response;
+			})
 			.catch(() => {
 				throw new InternalServerErrorException('Failed to create BBB room');
 			});
@@ -40,7 +43,10 @@ export class VideoConferenceService {
 
 	join(config: BBBJoinConfig): Promise<BBBResponse<BBBJoinResponse>> {
 		return firstValueFrom(this.get('join', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBJoinResponse>)
+			.then((resp: AxiosResponse<string>) => {
+				const response: BBBResponse<BBBJoinResponse> = xml2json(resp.data) as BBBResponse<BBBJoinResponse>;
+				return response;
+			})
 			.catch(() => {
 				throw new InternalServerErrorException('Failed to join BBB room');
 			});

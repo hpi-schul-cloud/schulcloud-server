@@ -152,7 +152,7 @@ export class VideoConferenceUc {
 
 		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
+		await this.checkPermission(userId, scopeInfo.scopeId);
 
 		const config: BbbMeetingInfoConfig = new BbbMeetingInfoConfig({
 			meetingID: refId,
@@ -196,7 +196,7 @@ export class VideoConferenceUc {
 	 * Retrieves information about the permission scope based on the scope of the video conference
 	 * @param {EntityId} userId
 	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId } refId eventId or courseId, depending on scope
+	 * @param {EntityId} refId eventId or courseId, depending on scope
 	 * @returns {IScopeInfo}
 	 */
 	private async getScopeInfo(

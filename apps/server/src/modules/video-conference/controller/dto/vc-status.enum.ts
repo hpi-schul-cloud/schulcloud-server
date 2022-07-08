@@ -1,5 +1,4 @@
-export enum MeetingStatus {
-	NOT_STARTED = 'NOT_STARTED',
-	RUNNING = 'RUNNING',
-	FINISHED = 'FINISHED',
+export enum VideoConferenceStatus {
+	SUCCESS = 'SUCCESS',
+	ERROR = 'ERROR',
 }

@@ -1,1 +1,3 @@
-export class VideoConferenceJoinResponse {}
+import { VideoConferenceBaseResponse } from '@src/modules/video-conference/controller/dto/vc-base.response';
+
+export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {}
