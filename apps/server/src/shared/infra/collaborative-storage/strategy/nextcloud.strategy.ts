@@ -14,11 +14,16 @@ export interface NextcloudGroups {
 export interface GroupfoldersFolder {
 	folder_id: string;
 }
+
 export interface OcsResponse<T> {
-	ocs: { data: T };
+	ocs: {
+		data: T;
+		meta?: Meta;
+	};
 }
+
 export interface Meta {
-	ocs: { meta: { statuscode: number } };
+	statuscode: number;
 }
 
 export interface SuccessfulRes {
@@ -87,10 +92,11 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 
 	private async removeGroup(groupId: string) {
 		return firstValueFrom(this.delete(`/ocs/v1.php/cloud/groups/${groupId}`))
-			.then((resp: AxiosResponse<Meta>) => {
+			.then((resp: AxiosResponse<OcsResponse<Meta>>) => {
 				this.logger.log(` Successfully removed group with group id: ${groupId} in Nextcloud`);
-				if (resp.data.ocs.meta.statuscode === 100) {
-					return resp.data.ocs.meta.statuscode;
+				const { meta } = resp.data.ocs;
+				if (meta && meta.statuscode && meta.statuscode === 100) {
+					return meta.statuscode;
 				}
 				throw Error();
 			})
