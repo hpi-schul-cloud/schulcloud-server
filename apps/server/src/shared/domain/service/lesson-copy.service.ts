@@ -110,21 +110,21 @@ export class LessonCopyService {
 		content.url = 'TODO';
 		content.title = randomBytes(12).toString('hex');
 
-		try {
-			const etherpadPadId = await this.createEtherpad(
-				params.user,
-				params.destinationCourse.id,
-				originalElement.title,
-				content.description
-			);
-			// content.url = pad as string;
-			// TODO add this to dof
-			const etherpadUri = Configuration.get('ETHERPAD_NEW_PAD_URI') as string;
-			content.url = `${etherpadUri}/${etherpadPadId}`;
-			// eslint-disable-next-line no-empty
-		} catch (e) {
-			// TODO return some error - status should be fail
-		}
+		// try {
+		const etherpadPadId = await this.createEtherpad(
+			params.user,
+			params.destinationCourse.id,
+			originalElement.title,
+			content.description
+		);
+		// content.url = pad as string;
+		// TODO add this to dof
+		const etherpadUri = Configuration.get('ETHERPAD_NEW_PAD_URI') as string;
+		content.url = `${etherpadUri}/${etherpadPadId}`;
+		// eslint-disable-next-line no-empty
+		// } catch (e) {
+		// TODO return some error - status should be fail
+		// }
 
 		copy.content = content;
 		return copy;
