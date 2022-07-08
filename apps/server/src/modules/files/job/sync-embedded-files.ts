@@ -10,5 +10,7 @@ export class SyncEmbeddedFilesConsole {
 	constructor(private syncEmbeddedFilesUc: SyncEmbeddedFilesUc) {}
 
 	@Command({ command: 'lessons' })
-	async syncFilesForLessons() {}
+	async syncFilesForLessons() {
+		await this.syncEmbeddedFilesUc.syncEmbeddedFilesForLesson();
+	}
 }

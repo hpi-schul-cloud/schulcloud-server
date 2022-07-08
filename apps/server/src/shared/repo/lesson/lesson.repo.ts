@@ -32,9 +32,4 @@ export class LessonRepo extends BaseRepo<Lesson> {
 
 		return [lessons, count];
 	}
-
-	async findAllWithTextComponents() {
-		const query = {};
-		const result = await this._em.find(Lesson);
-	}
 }
