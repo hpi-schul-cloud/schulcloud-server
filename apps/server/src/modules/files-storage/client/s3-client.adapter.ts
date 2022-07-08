@@ -84,12 +84,10 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err.Code && err.Code === 'NoSuchBucket') {
 				await this.createBucket();
 
-				return this.create(path, file);
+				return await this.create(path, file);
 			}
 
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
-		} finally {
-			this.client.destroy();
 		}
 	}
 

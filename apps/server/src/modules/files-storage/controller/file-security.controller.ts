@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Put, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Req, StreamableFile } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { ScanResultParams } from '@src/modules/files-storage/controller/dto';
+import { Request } from 'express';
 import { FilesStorageInternalActions } from '../files-storage.const';
 import { FileRecordUC } from '../uc/file-record.uc';
 import { FilesStorageUC } from '../uc/files-storage.uc';
@@ -12,8 +13,11 @@ export class FileSecurityController {
 
 	@ApiExcludeEndpoint()
 	@Get(FilesStorageInternalActions.downloadBySecurityToken)
-	async downloadBySecurityToken(@Param('token') token: string) {
+	async downloadBySecurityToken(@Param('token') token: string, @Req() req: Request) {
 		const res = await this.filesStorageUC.downloadBySecurityToken(token);
+		req.on('close', () => {
+			res.data.destroy();
+		});
 
 		return new StreamableFile(res.data, {
 			type: res.contentType,
