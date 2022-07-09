@@ -138,8 +138,9 @@ export class LessonCopyService {
 			text: description,
 		};
 		const userId = user.id;
-		const pad = (await service.create(data, { account: { userId } })) as unknown as Promise<string>;
-		return pad;
+		type PadResponse = { data: { padID: string } };
+		const pad = (await service.create(data, { account: { userId } })) as unknown as PadResponse;
+		return pad.data.padID;
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
