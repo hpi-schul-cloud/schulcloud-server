@@ -132,13 +132,13 @@ export class LessonCopyService {
 
 	private async createEtherpad(user: User, courseId: string, title: string, description: string) {
 		const service = this.feathersServiceProvider.getService('/etherpad/pads');
-		const params = {
+		const data = {
 			courseId,
 			padName: title,
 			text: description,
 		};
 		const userId = user.id;
-		const pad = (await service.create({ userId }, params)) as unknown as Promise<string>;
+		const pad = (await service.create(data, { account: { userId } })) as unknown as Promise<string>;
 		return pad;
 	}
 
