@@ -114,7 +114,7 @@ export class LessonCopyService {
 		const etherpadPadId = await this.createEtherpad(
 			params.user,
 			params.destinationCourse.id,
-			originalElement.title,
+			content.title,
 			content.description
 		);
 		// content.url = pad as string;
