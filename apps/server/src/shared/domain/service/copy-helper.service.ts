@@ -8,11 +8,13 @@ export class CopyHelperService {
 	deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
 		const elementsStatuses = elements.map((el) => el.status);
 
-		if (elementsStatuses.every((status) => !isAtLeastPartialSuccessfull(status))) {
+		const filtered = elementsStatuses.filter((status) => status !== CopyStatusEnum.NOT_DOING);
+
+		if (filtered.every((status) => !isAtLeastPartialSuccessfull(status))) {
 			return CopyStatusEnum.FAIL;
 		}
 
-		if (elementsStatuses.some((status) => status !== CopyStatusEnum.SUCCESS)) {
+		if (filtered.some((status) => status !== CopyStatusEnum.SUCCESS)) {
 			return CopyStatusEnum.PARTIAL;
 		}
 
