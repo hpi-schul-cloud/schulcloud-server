@@ -178,6 +178,7 @@ export class S3ClientAdapter implements IStorageClient {
 		return this.client.send(req);
 	}
 
+	/* istanbul ignore next */
 	private checkStreamResponsive(stream: Readable, context: string) {
 		let timer: NodeJS.Timeout;
 		const refreshTimeout = () => {
