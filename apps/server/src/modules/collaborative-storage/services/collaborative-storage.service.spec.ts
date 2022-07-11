@@ -11,6 +11,7 @@ import { RoleMapper } from '@src/modules/collaborative-storage/mapper/role.mappe
 import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationService } from '@src/modules/authorization';
 import { MikroORM } from '@mikro-orm/core';
+import { Logger } from '@src/core/logger';
 
 describe('Collaborative Storage Service', () => {
 	let module: TestingModule;
@@ -27,6 +28,10 @@ describe('Collaborative Storage Service', () => {
 					CollaborativeStorageService,
 					TeamMapper,
 					RoleMapper,
+					{
+						provide: Logger,
+						useValue: createMock<Logger>(),
+					},
 					{
 						provide: RoleRepo,
 						useValue: {
@@ -115,6 +120,14 @@ describe('Collaborative Storage Service', () => {
 					share: false,
 				})
 			).rejects.toThrow(ForbiddenException);
+		});
+
+		describe('delete Team in the Nextcloud', () => {
+			const teamIdMock = 'teamIdMock';
+			it('should call the adapter', () => {
+				service.deleteTeam(teamIdMock);
+				expect(adapter.deleteTeam).toHaveBeenCalled();
+			});
 		});
 	});
 });

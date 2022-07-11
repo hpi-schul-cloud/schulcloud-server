@@ -4,6 +4,7 @@ import { RoleRepo, TeamsRepo } from '@shared/repo';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
 import { AuthorizationService } from '@src/modules/authorization';
+import { Logger } from '@src/core/logger';
 import { RoleMapper } from '../mapper/role.mapper';
 import { TeamMapper } from '../mapper/team.mapper';
 import { RoleDto } from './dto/role.dto';
@@ -18,8 +19,10 @@ export class CollaborativeStorageService {
 		private teamsMapper: TeamMapper,
 		private roleMapper: RoleMapper,
 		private teamsRepo: TeamsRepo,
-		private authService: AuthorizationService
+		private authService: AuthorizationService,
+		private logger: Logger
 	) {
+		this.logger.setContext(CollaborativeStorageService.name);
 		this.adapter.setStrategy(new NextcloudStrategy());
 	}
 
@@ -65,5 +68,9 @@ export class CollaborativeStorageService {
 			await this.findRoleById(roleId),
 			teamPermissions
 		);
+	}
+
+	deleteTeam(teamId: string) {
+		this.adapter.deleteTeam(teamId);
 	}
 }
