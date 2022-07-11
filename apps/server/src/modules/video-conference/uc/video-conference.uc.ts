@@ -32,8 +32,6 @@ import {
 import { ICalendarEvent } from '@shared/infra/calendar/calendar-event.interface';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
-import { VideoConferenceService } from '@src/modules/video-conference/service/video-conference.service';
-import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 
@@ -50,7 +48,6 @@ export class VideoConferenceUc {
 
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly videoConferenceService: VideoConferenceService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
@@ -175,25 +172,23 @@ export class VideoConferenceUc {
 	/**
 	 * Retrieves information about a video conference
 	 * @param {ICurrentUser} currentUser
-	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @param {VideoConferenceDO} vcDO
 	 * @returns {BBBResponse<BBBEndConfig>}
 	 */
 	async getMeetingInfo(
 		currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
+		vcDO: VideoConferenceDO
 	): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, vcDO);
 
 		await this.checkPermission(userId, scopeInfo.scopeId);
 
 		const config: BBBMeetingInfoConfig = new BBBMeetingInfoConfig({
-			meetingID: refId,
+			meetingID: vcDO.target,
 		});
 
 		return this.bbbService.getMeetingInfo(config);
@@ -202,20 +197,15 @@ export class VideoConferenceUc {
 	/**
 	 * Ends a video conference
 	 * @param {ICurrentUser} currentUser
-	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @param {VideoConferenceDO} vcDO
 	 * @returns {BBBResponse<BBBEndConfig>}
 	 */
-	async end(
-		currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
-	): Promise<BBBResponse<BBBBaseResponse>> {
+	async end(currentUser: ICurrentUser, vcDO: VideoConferenceDO): Promise<BBBResponse<BBBBaseResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const { scopeId } = await this.getScopeInfo(userId, conferenceScope, refId);
+		const { scopeId } = await this.getScopeInfo(userId, vcDO);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeId);
 
@@ -224,7 +214,7 @@ export class VideoConferenceUc {
 		}
 
 		const config: BBBEndConfig = new BBBEndConfig({
-			meetingID: refId,
+			meetingID: vcDO.target,
 		});
 
 		return this.bbbService.end(config);
@@ -233,27 +223,22 @@ export class VideoConferenceUc {
 	/**
 	 * Retrieves information about the permission scope based on the scope of the video conference
 	 * @param {EntityId} userId
-	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @param {VideoConferenceDO} vcDO
 	 * @returns {IScopeInfo}
 	 */
-	private async getScopeInfo(
-		userId: EntityId,
-		conferenceScope: VideoConferenceScope,
-		refId: string
-	): Promise<IScopeInfo> {
-		switch (conferenceScope) {
+	private async getScopeInfo(userId: EntityId, vcDO: VideoConferenceDO): Promise<IScopeInfo> {
+		switch (vcDO.targetModel) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseRepo.findById(refId);
+				const course: Course = await this.courseRepo.findById(vcDO.target);
 				return {
-					scopeId: refId,
+					scopeId: vcDO.target,
 					scopeName: 'courses',
-					logoutUrl: `${this.hostURL}/courses/${refId}?activeTab=tools`,
+					logoutUrl: `${this.hostURL}/courses/${vcDO.target}?activeTab=tools`,
 					title: course.name,
 				};
 			}
 			case VideoConferenceScope.EVENT: {
-				const event: ICalendarEvent = await this.calendarService.findEvent(userId, refId);
+				const event: ICalendarEvent = await this.calendarService.findEvent(userId, vcDO.target);
 				return {
 					scopeId: event['x-sc-teamId'],
 					scopeName: 'teams',

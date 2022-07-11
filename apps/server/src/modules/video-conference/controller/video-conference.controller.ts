@@ -1,5 +1,5 @@
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { EntityId, ICurrentUser } from '@shared/domain';
+import { ICurrentUser, VideoConferenceDO } from '@shared/domain';
 import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceJoinResponse } from '@src/modules/video-conference/controller/dto/vc-join.response';
@@ -14,7 +14,6 @@ import {
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceInfoResponse } from '@src/modules/video-conference/controller/dto/vc-info.response';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -43,16 +42,10 @@ export class VideoConferenceController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
 	async create(
 		@CurrentUser() currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
+		vcDO: VideoConferenceDO
 	): Promise<VideoConferenceCreateResponse> {
-		const bbbResponse: BBBResponse<BBBCreateResponse> = await this.videoConferenceUc.create(
-			currentUser,
-			conferenceScope,
-			refId,
-			{ everybodyJoinsAsModerator: false, moderatorMustApproveJoinRequests: false, everyAttendeeJoinsMuted: false } // TODO
-		);
-		return VideoConferenceResponseMapper.mapToCreateResponse(bbbResponse);
+		const bbbResponse: BBBResponse<BBBCreateResponse> = await this.videoConferenceUc.create(currentUser, vcDO);
+		return this.responseMapper.mapToCreateResponse(bbbResponse);
 	}
 
 	@Get()
@@ -71,17 +64,9 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to join this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async join(
-		@CurrentUser() currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
-	): Promise<VideoConferenceJoinResponse> {
-		const bbbResponse: BBBResponse<BBBJoinResponse> = await this.videoConferenceUc.join(
-			currentUser,
-			conferenceScope,
-			refId
-		);
-		return VideoConferenceResponseMapper.mapToJoinResponse(bbbResponse);
+	async join(@CurrentUser() currentUser: ICurrentUser, vcDO: VideoConferenceDO): Promise<VideoConferenceJoinResponse> {
+		const bbbResponse: BBBResponse<BBBJoinResponse> = await this.videoConferenceUc.join(currentUser, vcDO);
+		return this.responseMapper.mapToJoinResponse(bbbResponse);
 	}
 
 	@Get()
@@ -100,15 +85,10 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to get information about this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async info(
-		@CurrentUser() currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
-	): Promise<VideoConferenceJoinResponse> {
+	async info(@CurrentUser() currentUser: ICurrentUser, vcDO: VideoConferenceDO): Promise<VideoConferenceJoinResponse> {
 		const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = await this.videoConferenceUc.getMeetingInfo(
 			currentUser,
-			conferenceScope,
-			refId
+			vcDO
 		);
 		return this.responseMapper.mapToInfoResponse(bbbResponse);
 	}
@@ -129,16 +109,8 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to get information about this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async end(
-		@CurrentUser() currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
-	): Promise<VideoConferenceJoinResponse> {
-		const bbbResponse: BBBResponse<BBBBaseResponse> = await this.videoConferenceUc.end(
-			currentUser,
-			conferenceScope,
-			refId
-		);
-		return VideoConferenceResponseMapper.mapToBaseResponse(bbbResponse);
+	async end(@CurrentUser() currentUser: ICurrentUser, vcDO: VideoConferenceDO): Promise<VideoConferenceJoinResponse> {
+		const bbbResponse: BBBResponse<BBBBaseResponse> = await this.videoConferenceUc.end(currentUser, vcDO);
+		return this.responseMapper.mapToBaseResponse(bbbResponse);
 	}
 }
