@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ComponentType, Course, IComponentProperties, Lesson, User } from '../entity';
+import { ComponentType, Course, IComponentGeogebraProperties, IComponentProperties, Lesson, User } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 
@@ -14,20 +14,21 @@ export class LessonCopyService {
 	constructor(private readonly copyHelperService: CopyHelperService) {}
 
 	copyLesson(params: LessonCopyParams): CopyStatus {
+		const { copiedContent, contentStatus } = this.copyLessonContent(params.originalLesson.contents || []);
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: this.copyHelperService.deriveCopyName(params.originalLesson.name),
 			position: params.originalLesson.position,
-			contents: this.copyTextComponent(params.originalLesson.contents || []),
+			contents: copiedContent,
 		});
 
-		const elements = [...this.lessonStatusElements(), ...this.textComponentStatus(copy.contents)];
+		const elements = [...this.lessonStatusMetadata(), ...contentStatus];
 
 		const status: CopyStatus = {
 			title: copy.name,
 			type: CopyElementType.LESSON,
-			status: CopyStatusEnum.SUCCESS,
+			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
 			elements,
 		};
@@ -35,17 +36,42 @@ export class LessonCopyService {
 		return status;
 	}
 
-	private copyTextComponent(originalContent: IComponentProperties[]): IComponentProperties[] {
+	private copyLessonContent(content: IComponentProperties[]): {
+		copiedContent: IComponentProperties[];
+		contentStatus: CopyStatus[];
+	} {
 		const copiedContent: IComponentProperties[] = [];
-		originalContent.forEach((element) => {
-			if (element.component === ComponentType.TEXT) {
+		const copiedContentStatus: CopyStatus[] = [];
+		content.forEach((element) => {
+			if (element.component === ComponentType.TEXT || element.component === ComponentType.LERNSTORE) {
 				copiedContent.push(element);
+				copiedContentStatus.push({
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.SUCCESS,
+				});
+			} else if (element.component === ComponentType.GEOGEBRA) {
+				const geoGebraContent = this.copyGeogebra(element);
+				copiedContent.push(geoGebraContent);
+				copiedContentStatus.push({
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.PARTIAL,
+				});
 			}
 		});
-		return copiedContent;
+		const contentStatus = this.lessonStatusContent(copiedContentStatus);
+		return { copiedContent, contentStatus };
 	}
 
-	private lessonStatusElements(): CopyStatus[] {
+	private copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
+		const copy = { ...originalElement, hidden: true };
+		const content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
+		copy.content = content;
+		return copy;
+	}
+
+	private lessonStatusMetadata(): CopyStatus[] {
 		return [
 			{
 				type: CopyElementType.METADATA,
@@ -54,16 +80,11 @@ export class LessonCopyService {
 		];
 	}
 
-	private textComponentStatus(copiedTextContent: IComponentProperties[]): CopyStatus[] {
-		if (copiedTextContent.length > 0) {
-			const elements = copiedTextContent.map((content) => ({
-				title: content.title,
-				type: CopyElementType.LESSON_CONTENT,
-				status: CopyStatusEnum.SUCCESS,
-			}));
+	private lessonStatusContent(elements: CopyStatus[]): CopyStatus[] {
+		if (elements.length > 0) {
 			const componentStatus = {
 				type: CopyElementType.LESSON_CONTENT_GROUP,
-				status: CopyStatusEnum.SUCCESS,
+				status: this.copyHelperService.deriveStatusFromElements(elements),
 				elements,
 			};
 			return [componentStatus];
