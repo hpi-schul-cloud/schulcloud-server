@@ -165,9 +165,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const metadataStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-				);
+				const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 				expect(metadataStatus).toBeDefined();
 				expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
@@ -181,9 +179,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const descriptionStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'description'
-				);
+				const descriptionStatus = status.elements?.find((el) => el.type === CopyElementType.CONTENT);
 				expect(descriptionStatus).toBeDefined();
 				expect(descriptionStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
@@ -197,9 +193,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const submissionsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
-				);
+				const submissionsStatus = status.elements?.find((el) => el.type === CopyElementType.SUBMISSION_GROUP);
 				expect(submissionsStatus).toBeDefined();
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
