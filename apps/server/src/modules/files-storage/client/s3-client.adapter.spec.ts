@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { ICopyFiles } from '../interface';
@@ -45,6 +45,14 @@ describe('S3ClientAdapter', () => {
 		service = module.get(S3ClientAdapter);
 		client = module.get('S3_Client');
 		client.config.endpoint = jest.fn().mockResolvedValue({ protocol: '' });
+		const resultObj = {
+			Body: { on: () => true },
+			ContentType: 'data.ContentType',
+			ContentLength: 'data.ContentLength',
+			ETag: 'data.ETag',
+		};
+
+		client.send = jest.fn().mockResolvedValue(resultObj);
 	});
 
 	afterEach(async () => {
@@ -85,29 +93,28 @@ describe('S3ClientAdapter', () => {
 		});
 
 		it('should return file', async () => {
-			const resultObj = {
-				Body: 'data.Body as Readable',
-				ContentType: 'data.ContentType',
-				ContentLength: 'data.ContentLength',
-				ETag: 'data.ETag',
-			};
-
-			client.send = jest.fn().mockResolvedValue(resultObj);
 			const result = await service.get(pathToFile);
+			expect(result).toStrictEqual(
+				expect.objectContaining({
+					contentLength: 'data.ContentLength',
+					contentType: 'data.ContentType',
+					etag: 'data.ETag',
+				})
+			);
+		});
 
-			expect(result).toStrictEqual({
-				contentLength: 'data.ContentLength',
-				contentType: 'data.ContentType',
-				data: 'data.Body as Readable',
-				etag: 'data.ETag',
-			});
+		it('should throw error from s3 client if NoSuchKey', async () => {
+			const e = new Error('NoSuchKey');
+			client.send = jest.fn().mockRejectedValue(e);
+
+			await expect(service.get(pathToFile)).rejects.toThrowError(new NotFoundException('NoSuchKey'));
 		});
 
 		it('should throw error from client', async () => {
 			const e = new Error('Bad Request');
 			client.send = jest.fn().mockRejectedValue(e);
 
-			await expect(service.get(pathToFile)).rejects.toThrow();
+			await expect(service.get(pathToFile)).rejects.toThrowError();
 		});
 	});
 
