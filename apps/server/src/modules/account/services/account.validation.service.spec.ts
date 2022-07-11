@@ -212,7 +212,7 @@ describe('AccountValidationService', () => {
 			);
 			expect(res).toBe(false);
 		});
-		it('should return false if new email is already in use by any user', async () => {
+		it('should return false if new email is already in use by any user, system id is given', async () => {
 			const res = await accountValidationService.isUniqueEmail(
 				mockTeacherAccount.username,
 				mockStudentUser.id,
