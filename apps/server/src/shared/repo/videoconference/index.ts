@@ -1,1 +1,1 @@
-export * from './videoconference.repo';
+export * from './video-conference.repo';

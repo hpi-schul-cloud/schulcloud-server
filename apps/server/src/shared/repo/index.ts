@@ -5,6 +5,7 @@
  */
 
 export * from './base.repo';
+export * from './base.do.repo';
 export * from './scope';
 
 export * from './mongo.patterns';

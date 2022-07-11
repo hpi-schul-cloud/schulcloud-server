@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, VideoConferenceDO } from '@shared/domain';
+import { VideoConferenceDO } from '@shared/domain';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
-import { BaseRepo } from '../base.repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 
 const TargetModelsMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
@@ -15,18 +15,12 @@ const VideoConferencingScopeMapping = {
 };
 
 @Injectable()
-export class VideoConferenceRepo extends BaseRepo<VideoConference> {
+export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConference> {
 	get entityName() {
 		return VideoConference;
 	}
 
 	cacheExpiration = 60000;
-
-	async findDOById(id: EntityId): Promise<VideoConferenceDO> {
-		const entity = await this._em.findOneOrFail(VideoConference, { id }, { cache: this.cacheExpiration });
-
-		return this.mapToDO(entity);
-	}
 
 	async findByScopeId(target: string, targetModel: TargetModels): Promise<VideoConferenceDO> {
 		const entity = await this._em.findOneOrFail(
@@ -35,19 +29,35 @@ export class VideoConferenceRepo extends BaseRepo<VideoConference> {
 			{ cache: this.cacheExpiration }
 		);
 
-		return this.mapToDO(entity);
+		return this.mapEntityToDO(entity);
 	}
 
-	private mapToDO(entity: VideoConference): VideoConferenceDO {
+	mapEntityToDO(entity: VideoConference): VideoConferenceDO {
 		return new VideoConferenceDO({
 			id: entity.id,
 			target: entity.target,
 			targetModel: VideoConferencingScopeMapping[entity.targetModel],
-			options: {
-				everybodyJoinsAsModerator: entity.options.everybodyJoinsAsModerator,
-				everyAttendeeJoinsMuted: entity.options.everyAttendeJoinsMuted,
-				moderatorMustApproveJoinRequests: entity.options.moderatorMustApproveJoinRequests,
-			},
+			options: entity.options
+				? {
+						everybodyJoinsAsModerator: entity.options.everybodyJoinsAsModerator,
+						everyAttendeeJoinsMuted: entity.options.everyAttendeJoinsMuted,
+						moderatorMustApproveJoinRequests: entity.options.moderatorMustApproveJoinRequests,
+				  }
+				: undefined,
+		});
+	}
+
+	mapDOToEntity(entityDO: VideoConferenceDO): VideoConference {
+		return new VideoConference({
+			target: entityDO.target,
+			targetModel: TargetModelsMapping[entityDO.targetModel],
+			options: entityDO.options
+				? {
+						everybodyJoinsAsModerator: entityDO.options.everybodyJoinsAsModerator,
+						everyAttendeJoinsMuted: entityDO.options.everyAttendeeJoinsMuted,
+						moderatorMustApproveJoinRequests: entityDO.options.moderatorMustApproveJoinRequests,
+				  }
+				: undefined,
 		});
 	}
 }

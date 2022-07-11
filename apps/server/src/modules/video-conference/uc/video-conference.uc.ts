@@ -1,7 +1,18 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
-import { Course, EntityId, ICurrentUser, Permission, RoleName, SchoolFeatures, Team, TeamUser } from '@shared/domain';
+import {
+	Course,
+	EntityId,
+	ICurrentUser,
+	Permission,
+	RoleName,
+	SchoolFeatures,
+	Team,
+	TeamUser,
+	VideoConferenceDO,
+	VideoConferenceOptionsDO,
+} from '@shared/domain';
 import { AuthorizationService } from '@src/modules';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
@@ -53,21 +64,15 @@ export class VideoConferenceUc {
 	/**
 	 * Creates a new video conference
 	 * @param {ICurrentUser} currentUser
-	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @param {VideoConferenceDO} vcDO
 	 * @returns {BBBResponse<BBBCreateResponse>}
 	 */
-	async create(
-		currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId,
-		options: VideoConferenceOptions //TODO docs and controller
-	): Promise<BBBResponse<BBBCreateResponse>> {
+	async create(currentUser: ICurrentUser, vcDO: VideoConferenceDO): Promise<BBBResponse<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, vcDO);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
@@ -77,19 +82,32 @@ export class VideoConferenceUc {
 
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: VideoConferenceUc.sanitizeString(scopeInfo.title),
-			meetingID: refId,
+			meetingID: vcDO.target,
 		}).withLogoutUrl(scopeInfo.logoutUrl);
 
 		// this.videoConferenceRepo.create();
-		if (options.moderatorMustApproveJoinRequests) {
+
+		if (!vcDO.options) {
+			throw new BadRequestException('missing options');
+		}
+
+		if (vcDO.options.moderatorMustApproveJoinRequests) {
 			configBuilder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
 		}
 
-		if (options.everyAttendeeJoinsMuted) {
+		if (vcDO.options.everyAttendeeJoinsMuted) {
 			configBuilder.withMuteOnStart(true);
 		}
 
-		await this.videoConferenceService.create(refId, conferenceScope, options); // TODO update?
+		let saveDO: VideoConferenceDO;
+		try {
+			const savedDO = await this.videoConferenceRepo.findByScopeId(vcDO.target, vcDO.targetModel);
+			savedDO.options = vcDO.options;
+			saveDO = savedDO;
+		} catch (error) {
+			saveDO = this.videoConferenceRepo.create(vcDO);
+		}
+		await this.videoConferenceRepo.save(saveDO);
 
 		return this.bbbService.create(configBuilder.build());
 	}
@@ -97,31 +115,26 @@ export class VideoConferenceUc {
 	/**
 	 * Generates a join link for a video conference
 	 * @param {ICurrentUser} currentUser
-	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @param {VideoConferenceDO} vcDO
 	 * @returns {BBBResponse<BBBJoinResponse>}
 	 */
-	async join(
-		currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
-	): Promise<BBBResponse<BBBJoinResponse>> {
+	async join(currentUser: ICurrentUser, vcDO: VideoConferenceDO): Promise<BBBResponse<BBBJoinResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, vcDO);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: VideoConferenceUc.sanitizeString(`${currentUser.user.firstName} ${currentUser.user.lastName}`),
-			meetingID: refId,
+			meetingID: vcDO.target,
 			role: bbbRole,
 		});
 
 		// Let experts join as guests
-		switch (conferenceScope) {
+		switch (vcDO.targetModel) {
 			case VideoConferenceScope.COURSE: {
 				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
 
@@ -149,7 +162,8 @@ export class VideoConferenceUc {
 				throw new BadRequestException('Unknown scope name');
 		}
 
-		const options: VideoConferenceOptions = await this.videoConferenceService.get(refId, conferenceScope);
+		const savedDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(vcDO.target, vcDO.targetModel);
+		const options: VideoConferenceOptionsDO = savedDO.options as VideoConferenceOptionsDO;
 
 		if (options.everybodyJoinsAsModerator) {
 			configBuilder.asGuest(false).withRole(BBBRole.MODERATOR);

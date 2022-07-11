@@ -20,7 +20,10 @@ import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 @Authenticate('jwt')
 @Controller('video-conference')
 export class VideoConferenceController {
-	constructor(private readonly videoConferenceUc: VideoConferenceUc) {}
+	constructor(
+		private readonly videoConferenceUc: VideoConferenceUc,
+		private readonly responseMapper: VideoConferenceResponseMapper
+	) {}
 
 	@Get()
 	@ApiOperation({
@@ -107,7 +110,7 @@ export class VideoConferenceController {
 			conferenceScope,
 			refId
 		);
-		return VideoConferenceResponseMapper.mapToInfoResponse(bbbResponse);
+		return this.responseMapper.mapToInfoResponse(bbbResponse);
 	}
 
 	@Get()
