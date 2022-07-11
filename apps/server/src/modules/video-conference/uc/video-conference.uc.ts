@@ -10,7 +10,7 @@ import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { CourseRepo, TeamsRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
-import { BbbMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
+import { BBBMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 import {
 	BBBBaseResponse,
 	BBBCreateResponse,
@@ -23,6 +23,8 @@ import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { VideoConferenceService } from '@src/modules/video-conference/service/video-conference.service';
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
+import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
+import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 
 interface IScopeInfo {
 	scopeId: EntityId;
@@ -39,6 +41,7 @@ export class VideoConferenceUc {
 		private readonly bbbService: BBBService,
 		private readonly videoConferenceService: VideoConferenceService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly calendarService: CalendarService,
@@ -77,6 +80,15 @@ export class VideoConferenceUc {
 			meetingID: refId,
 		}).withLogoutUrl(scopeInfo.logoutUrl);
 
+		// this.videoConferenceRepo.create();
+		if (options.moderatorMustApproveJoinRequests) {
+			configBuilder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
+		}
+
+		if (options.everyAttendeeJoinsMuted) {
+			configBuilder.withMuteOnStart(true);
+		}
+
 		await this.videoConferenceService.create(refId, conferenceScope, options); // TODO update?
 
 		return this.bbbService.create(configBuilder.build());
@@ -114,7 +126,7 @@ export class VideoConferenceUc {
 				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
 
 				if (roles.includes(RoleName.EXPERT)) {
-					configBuilder.asGuest();
+					configBuilder.asGuest(true);
 				}
 				break;
 			}
@@ -129,7 +141,7 @@ export class VideoConferenceUc {
 				}
 
 				if (teamUser.role.name === RoleName.TEAMEXPERT) {
-					configBuilder.asGuest();
+					configBuilder.asGuest(true);
 				}
 				break;
 			}
@@ -138,7 +150,10 @@ export class VideoConferenceUc {
 		}
 
 		const options: VideoConferenceOptions = await this.videoConferenceService.get(refId, conferenceScope);
-		// TODO evaluate options
+
+		if (options.everybodyJoinsAsModerator) {
+			configBuilder.asGuest(false).withRole(BBBRole.MODERATOR);
+		}
 
 		return this.bbbService.join(configBuilder.build());
 	}
@@ -163,7 +178,7 @@ export class VideoConferenceUc {
 
 		await this.checkPermission(userId, scopeInfo.scopeId);
 
-		const config: BbbMeetingInfoConfig = new BbbMeetingInfoConfig({
+		const config: BBBMeetingInfoConfig = new BBBMeetingInfoConfig({
 			meetingID: refId,
 		});
 

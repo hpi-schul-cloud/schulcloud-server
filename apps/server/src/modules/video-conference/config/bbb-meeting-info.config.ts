@@ -1,5 +1,5 @@
-export class BbbMeetingInfoConfig {
-	constructor(config: BbbMeetingInfoConfig) {
+export class BBBMeetingInfoConfig {
+	constructor(config: BBBMeetingInfoConfig) {
 		this.meetingID = config.meetingID;
 	}
 

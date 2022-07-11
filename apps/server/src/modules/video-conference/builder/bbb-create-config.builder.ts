@@ -16,4 +16,9 @@ export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {
 		this.product.guestPolicy = guestPolicy;
 		return this;
 	}
+
+	withMuteOnStart(value: boolean): BBBCreateConfigBuilder {
+		this.product.muteOnStart = value;
+		return this;
+	}
 }

@@ -22,4 +22,6 @@ export class BBBCreateConfig {
 	welcome?: string;
 
 	guestPolicy?: GuestPolicy;
+
+	muteOnStart?: boolean;
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { VideoconferenceRepo } from '@shared/repo/videoconference';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { VideoConferenceDO } from '@shared/domain';
+import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 
 const TargetModelMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
@@ -12,7 +12,7 @@ const TargetModelMapping = {
 
 @Injectable()
 export class VideoConferenceService {
-	constructor(private readonly vcRepo: VideoconferenceRepo) {}
+	constructor(private readonly vcRepo: VideoConferenceRepo) {}
 
 	/**
 	 * Gets the options selected for a video conference

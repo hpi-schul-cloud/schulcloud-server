@@ -10,7 +10,7 @@ import { BBBCreateConfig } from '@src/modules/video-conference/config/bbb-create
 import { BBBJoinConfig } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
 import { BBBCreateBreakoutConfig } from '@src/modules/video-conference/config/bbb-create-breakout.config';
-import { BbbMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
+import { BBBMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 import {
 	BBBBaseResponse,
 	BBBCreateResponse,
@@ -18,8 +18,6 @@ import {
 	BBBMeetingInfoResponse,
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { VideoconferenceRepo } from '@shared/repo/videoconference';
-import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
 @Injectable()
 export class BBBService {
@@ -56,7 +54,7 @@ export class BBBService {
 			});
 	}
 
-	getMeetingInfo(config: BbbMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
+	getMeetingInfo(config: BBBMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse>)
 			.catch(() => {

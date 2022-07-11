@@ -2,8 +2,13 @@ import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb
 import { Builder } from '@src/modules/video-conference/builder/builder';
 
 export class BBBJoinConfigBuilder extends Builder<BBBJoinConfig> {
-	asGuest(): BBBJoinConfigBuilder {
-		this.product.guest = true;
+	asGuest(value: boolean): BBBJoinConfigBuilder {
+		this.product.guest = value;
+		return this;
+	}
+
+	withRole(value: BBBRole): BBBJoinConfigBuilder {
+		this.product.role = value;
 		return this;
 	}
 }

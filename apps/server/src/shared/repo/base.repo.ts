@@ -13,7 +13,7 @@ export abstract class BaseRepo<T extends BaseEntity> {
 	abstract get entityName(): EntityName<T>;
 
 	create(entity: T): T {
-		return this._em.create(typeof entity, entity);
+		return this._em.create(this.entityName, entity);
 	}
 
 	async save(entities: T | T[]): Promise<void> {

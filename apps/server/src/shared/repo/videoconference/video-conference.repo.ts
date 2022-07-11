@@ -15,7 +15,7 @@ const VideoConferencingScopeMapping = {
 };
 
 @Injectable()
-export class VideoconferenceRepo extends BaseRepo<VideoConference> {
+export class VideoConferenceRepo extends BaseRepo<VideoConference> {
 	get entityName() {
 		return VideoConference;
 	}
