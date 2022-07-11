@@ -74,8 +74,7 @@ export class LessonCopyService {
 	private lessonStatusMetadata(): CopyStatus[] {
 		return [
 			{
-				title: 'metadata',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
 			},
 		];
@@ -84,7 +83,6 @@ export class LessonCopyService {
 	private lessonStatusContent(elements: CopyStatus[]): CopyStatus[] {
 		if (elements.length > 0) {
 			const componentStatus = {
-				title: 'contents',
 				type: CopyElementType.LESSON_CONTENT_GROUP,
 				status: this.copyHelperService.deriveStatusFromElements(elements),
 				elements,

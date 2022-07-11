@@ -594,7 +594,7 @@
 		},
 		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
-			"default": "http://localhost:8080/",
+			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
 		"NEXTCLOUD_ADMIN_USER": {
