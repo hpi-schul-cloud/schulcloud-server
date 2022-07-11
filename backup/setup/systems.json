@@ -48,7 +48,7 @@
 			"clientSecret": "insert clientSecret",
 			"tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
 			"grantType": "authorization_code",
-			"scope": "openid profile email",
+			"scope": "openid",
 			"responseType": "code",
 			"redirectUri": "http://localhost:3030/api/v3/sso/oauth/0000d186816abba584714c92",
 			"authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",

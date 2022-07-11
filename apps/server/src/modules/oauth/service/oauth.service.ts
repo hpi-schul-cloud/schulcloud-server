@@ -10,7 +10,7 @@ import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AxiosResponse } from 'axios';
-import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OauthTokenResponse } from '../controller/dto/oauth-token.response';
@@ -56,14 +56,14 @@ export class OAuthService {
 		this.logger.debug('requestToken() has started. Next up: decrypt().');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 		this.logger.debug('decrypt() ran succefullly. Next up: post().');
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
+		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
 			oauthConfig,
 			decryptedClientSecret,
 			code
 		);
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(
 			tokenRequestPayload.tokenEndpoint,
-			QueryString.stringify(tokenRequestPayload.tokenRequestParams),
+			QueryString.stringify(tokenRequestPayload),
 			{
 				method: 'POST',
 				headers: {
