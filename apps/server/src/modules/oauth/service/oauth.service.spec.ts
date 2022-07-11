@@ -340,7 +340,7 @@ describe('OAuthService', () => {
 
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
-			const jwtResult = await service.getJWTForUser(defaultUser);
+			const jwtResult = await service.getJwtForUser(defaultUser);
 			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(defaultJWT);
 		});

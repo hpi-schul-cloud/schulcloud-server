@@ -14,7 +14,7 @@ export class TokenRequestParamsMapper {
 		return {
 			client_id: oauthConfig.clientId,
 			client_secret: decryptedClientSecret,
-			redirect_uri: oauthConfig.tokenRedirectUri,
+			redirect_uri: oauthConfig.redirectUri,
 			grant_type: oauthConfig.grantType,
 			code,
 		};

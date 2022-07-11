@@ -1,5 +1,5 @@
 ###
-# curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev//ocs/v1.php/cloud/groups?search=SchulcloudNextcloud-5e1dc275322ce040a850b14b&format=json
+# curl -u -H OCS-APIRequest:true -H Accept:application/json https://nextcloud-nbc.dbildungscloud.dev/ocs/v1.php/cloud/groups?search=SchulcloudNextcloud-5e1dc275322ce040a850b14b&format=json
 GET https://nextcloud-nbc.dbildungscloud.dev/ocs/v1.php/cloud/groups
 Authorization: Basic capcakes {{CAPCAKESPASS}}
 OCS-APIRequest: true

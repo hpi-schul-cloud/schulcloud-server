@@ -107,8 +107,6 @@ export class OAuthService {
 		if (system.oauthConfig && system.oauthConfig.provider === 'iserv') {
 			return this.iservOauthService.findUserById(system.id, decodedJwt);
 		}
-		// TODO in general
-
 		try {
 			const user = await this.userRepo.findById(decodedJwt.sub);
 			return user;
@@ -117,7 +115,7 @@ export class OAuthService {
 		}
 	}
 
-	async getJWTForUser(user: User): Promise<string> {
+	async getJwtForUser(user: User): Promise<string> {
 		const stringPromise = this.jwtService.generateJwt(user.id);
 		return stringPromise;
 	}
@@ -151,7 +149,7 @@ export class OAuthService {
 			this.logger.debug('Done. Next up: findUser().');
 			const user: User = await this.findUser(decodedToken, system);
 			this.logger.debug('Done. Next up: getJWTForUser().');
-			const jwtResponse: string = await this.getJWTForUser(user);
+			const jwtResponse: string = await this.getJwtForUser(user);
 			this.logger.debug('Done. Next up: buildResponse().');
 			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
 			this.logger.debug('Done. Next up: getRedirect().');
