@@ -110,6 +110,15 @@ describe('authorization.service', () => {
 			});
 			expect(response).toBe(true);
 		});
+
+		it('can resolve lesson', () => {
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			const lesson = lessonFactory.build({ course });
+
+			const response = service.hasPermission(user, lesson, context);
+			expect(response).toBe(true);
+		});
 	});
 
 	describe('checkPermission', () => {

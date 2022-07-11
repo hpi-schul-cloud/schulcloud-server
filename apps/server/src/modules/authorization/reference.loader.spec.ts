@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
-import { CourseRepo, FileRecordRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, FileRecordRepo, LessonRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -15,6 +15,7 @@ describe('reference.loader', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
+	let lessonRepo: DeepMocked<LessonRepo>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -43,6 +44,10 @@ describe('reference.loader', () => {
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
 				},
+				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
 			],
 		}).compile();
 
@@ -51,6 +56,7 @@ describe('reference.loader', () => {
 		courseRepo = await module.get(CourseRepo);
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(SchoolRepo);
+		lessonRepo = await module.get(LessonRepo);
 	});
 
 	afterAll(async () => {
@@ -66,6 +72,7 @@ describe('reference.loader', () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Task, entityId);
 			expect(taskRepo.findById).toBeCalledWith(entityId);
 		});
+
 		it('should call courseRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Course, entityId);
 			expect(courseRepo.findById).toBeCalledWith(entityId);
@@ -75,9 +82,15 @@ describe('reference.loader', () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.School, entityId);
 			expect(schoolRepo.findById).toBeCalledWith(entityId);
 		});
+
 		it('should call userRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
 			expect(userRepo.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call lessonRepo.findById', async () => {
+			await service.loadEntity(AllowedAuthorizationEntityType.Lesson, entityId);
+			expect(lessonRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {
