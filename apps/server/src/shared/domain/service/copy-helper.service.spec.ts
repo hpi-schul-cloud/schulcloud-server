@@ -32,6 +32,13 @@ describe('copy helper service', () => {
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.SUCCESS);
 			});
+
+			it('should set status to success, if there are both successful and not doing children', () => {
+				const elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.NOT_DOING]);
+				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
+
+				expect(derivedStatus).toEqual(CopyStatusEnum.SUCCESS);
+			});
 		});
 
 		describe('failure cases', () => {
@@ -63,7 +70,14 @@ describe('copy helper service', () => {
 			});
 
 			it('should set status to fail, when all elements are a mixture of failing states', () => {
-				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_IMPLEMENTED, CopyStatusEnum.NOT_DOING]);
+				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_IMPLEMENTED]);
+				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
+
+				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
+			});
+
+			it('should set status to fail, when it has Failing and Not donig statuses', () => {
+				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_DOING]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
