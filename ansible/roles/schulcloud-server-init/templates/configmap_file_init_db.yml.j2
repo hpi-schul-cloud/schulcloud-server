@@ -74,7 +74,7 @@ data:
         "clientSecret": "'$SANIS_CLIENT_SECRET'",
         "tokenEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/token",
         "grantType": "authorization_code",
-        "scope": "openid profile email",
+        "scope": "openid",
         "responseType": "code",
         "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
         "authEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/auth",
