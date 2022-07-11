@@ -89,6 +89,9 @@ describe('OAuthService', () => {
 					provide: HttpService,
 					useValue: {
 						post: () => {
+							if (defaultOauthConfig.grantType === 'grantMock') {
+								return {};
+							}
 							return of(defaultAxiosResponse);
 						},
 					},
@@ -276,6 +279,12 @@ describe('OAuthService', () => {
 		it('should get token from the external server', async () => {
 			const responseToken = await service.requestToken(defaultAuthCode, defaultOauthConfig);
 			expect(responseToken).toStrictEqual(defaultTokenResponse);
+		});
+		it('should throw error if no token got returned', async () => {
+			defaultOauthConfig.grantType = 'grantMock';
+			await expect(service.requestToken(defaultAuthCode, defaultOauthConfig)).rejects.toEqual(
+				new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
+			);
 		});
 	});
 
