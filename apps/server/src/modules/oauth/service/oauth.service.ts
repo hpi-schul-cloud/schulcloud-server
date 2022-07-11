@@ -9,6 +9,7 @@ import { Logger } from '@src/core/logger';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { AxiosResponse } from 'axios';
 import { TokenRequestPayloadMapper } from '../mapper/token-request-payload.mapper';
 import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -52,9 +53,9 @@ export class OAuthService {
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		this.logger.log('requestToken() has started. Next up: decrypt().');
+		this.logger.debug('requestToken() has started. Next up: decrypt().');
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		this.logger.log('decrypt() ran succefullly. Next up: post().');
+		this.logger.debug('decrypt() ran succefullly. Next up: post().');
 		const tokenRequestPayload: TokenRequestPayload = TokenRequestPayloadMapper.mapToResponse(
 			oauthConfig,
 			decryptedClientSecret,
@@ -70,8 +71,13 @@ export class OAuthService {
 				},
 			}
 		);
-		this.logger.log('post() ran succefullly. The tokens should get returned now.');
-		const responseToken = await lastValueFrom(responseTokenObservable);
+		this.logger.debug('post() ran succefullly. The tokens should get returned now.');
+		let responseToken: AxiosResponse<OauthTokenResponse>;
+		try {
+			responseToken = await lastValueFrom(responseTokenObservable);
+		} catch (error) {
+			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
+		}
 		return responseToken.data;
 	}
 
@@ -126,11 +132,11 @@ export class OAuthService {
 
 	async processOAuth(query: AuthorizationParams, systemId: string): Promise<OAuthResponse> {
 		try {
-			this.logger.log('Oauth process strated. Next up: checkAuthorizationCode().');
+			this.logger.debug('Oauth process strated. Next up: checkAuthorizationCode().');
 			const authCode: string = this.checkAuthorizationCode(query);
-			this.logger.log('Done. Next up: systemRepo.findById().');
+			this.logger.debug('Done. Next up: systemRepo.findById().');
 			const system: System = await this.systemRepo.findById(systemId);
-			this.logger.log('Done. Next up: oauthConfig check.');
+			this.logger.debug('Done. Next up: oauthConfig check.');
 			const { oauthConfig } = system;
 			if (oauthConfig == null) {
 				this.logger.error(
@@ -138,19 +144,19 @@ export class OAuthService {
 				);
 				throw new OAuthSSOError('Requested system has no oauth configured', 'sso_internal_error');
 			}
-			this.logger.log('Done. Next up: requestToken().');
+			this.logger.debug('Done. Next up: requestToken().');
 			const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
-			this.logger.log('Done. Next up: validateToken().');
+			this.logger.debug('Done. Next up: validateToken().');
 			const decodedToken: IJwt = await this.validateToken(queryToken.id_token, oauthConfig);
-			this.logger.log('Done. Next up: findUser().');
+			this.logger.debug('Done. Next up: findUser().');
 			const user: User = await this.findUser(decodedToken, system);
-			this.logger.log('Done. Next up: getJWTForUser().');
+			this.logger.debug('Done. Next up: getJWTForUser().');
 			const jwtResponse: string = await this.getJWTForUser(user);
-			this.logger.log('Done. Next up: buildResponse().');
+			this.logger.debug('Done. Next up: buildResponse().');
 			const response: OAuthResponse = this.buildResponse(oauthConfig, queryToken);
-			this.logger.log('Done. Next up: getRedirect().');
+			this.logger.debug('Done. Next up: getRedirect().');
 			const oauthResponse: OAuthResponse = this.getRedirect(response);
-			this.logger.log('Done. Response should now be returned().');
+			this.logger.debug('Done. Response should now be returned().');
 			oauthResponse.jwt = jwtResponse;
 			return oauthResponse;
 		} catch (error) {
