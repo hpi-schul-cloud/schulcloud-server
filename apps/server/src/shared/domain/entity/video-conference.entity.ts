@@ -35,7 +35,7 @@ export class VideoConference extends BaseEntityWithTimestamps {
 	targetModel: TargetModels;
 
 	@Property()
-	options?: VideoConferenceOptions;
+	options: VideoConferenceOptions;
 
 	constructor(props: IVideoConferenceProperties) {
 		super();

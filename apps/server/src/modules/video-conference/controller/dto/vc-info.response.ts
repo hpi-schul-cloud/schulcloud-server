@@ -1,3 +1,0 @@
-import { VideoConferenceBaseResponse } from '@src/modules/video-conference/controller/dto/vc-base.response';
-
-export class VideoConferenceInfoResponse extends VideoConferenceBaseResponse {}

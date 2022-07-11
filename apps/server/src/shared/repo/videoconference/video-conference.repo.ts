@@ -37,13 +37,11 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 			id: entity.id,
 			target: entity.target,
 			targetModel: VideoConferencingScopeMapping[entity.targetModel],
-			options: entity.options
-				? {
-						everybodyJoinsAsModerator: entity.options.everybodyJoinsAsModerator,
-						everyAttendeeJoinsMuted: entity.options.everyAttendeJoinsMuted,
-						moderatorMustApproveJoinRequests: entity.options.moderatorMustApproveJoinRequests,
-				  }
-				: undefined,
+			options: {
+				everybodyJoinsAsModerator: entity.options.everybodyJoinsAsModerator,
+				everyAttendeeJoinsMuted: entity.options.everyAttendeJoinsMuted,
+				moderatorMustApproveJoinRequests: entity.options.moderatorMustApproveJoinRequests,
+			},
 		});
 	}
 
@@ -51,13 +49,11 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return new VideoConference({
 			target: entityDO.target,
 			targetModel: TargetModelsMapping[entityDO.targetModel],
-			options: entityDO.options
-				? {
-						everybodyJoinsAsModerator: entityDO.options.everybodyJoinsAsModerator,
-						everyAttendeJoinsMuted: entityDO.options.everyAttendeeJoinsMuted,
-						moderatorMustApproveJoinRequests: entityDO.options.moderatorMustApproveJoinRequests,
-				  }
-				: undefined,
+			options: {
+				everybodyJoinsAsModerator: entityDO.options.everybodyJoinsAsModerator,
+				everyAttendeJoinsMuted: entityDO.options.everyAttendeeJoinsMuted,
+				moderatorMustApproveJoinRequests: entityDO.options.moderatorMustApproveJoinRequests,
+			},
 		});
 	}
 }
