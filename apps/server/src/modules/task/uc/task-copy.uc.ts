@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CopyStatus, EntityId, PermissionContextBuilder, Task, TaskCopyService, User } from '@shared/domain';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
@@ -16,6 +16,7 @@ export class TaskCopyUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly courseRepo: CourseRepo,
+		private readonly lessonRepo: LessonRepo,
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly filesStorageClient: FilesStorageClientAdapterService
@@ -28,9 +29,11 @@ export class TaskCopyUC {
 			throw new NotFoundException('could not find task to copy');
 		}
 		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		const destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
 		const status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
+			destinationLesson,
 			user,
 		});
 
@@ -48,6 +51,17 @@ export class TaskCopyUC {
 				throw new ForbiddenException('you dont have permission to add to this course');
 			}
 			return destinationCourse;
+		}
+		return undefined;
+	}
+
+	private async getDestinationLesson(lessonId: string | undefined, user: User) {
+		if (lessonId) {
+			const destinationLesson = await this.lessonRepo.findById(lessonId);
+			if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
+				throw new ForbiddenException('you dont have permission to add to this lesson');
+			}
+			return destinationLesson;
 		}
 		return undefined;
 	}

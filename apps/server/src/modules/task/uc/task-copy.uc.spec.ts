@@ -4,8 +4,8 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, PermissionTypes, TaskCopyParams, TaskCopyService, User } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyUC } from './task-copy.uc';
@@ -16,6 +16,7 @@ describe('task copy uc', () => {
 	let userRepo: UserRepo;
 	let taskRepo: TaskRepo;
 	let courseRepo: CourseRepo;
+	let lessonRepo: LessonRepo;
 	let authorisation: AuthorizationService;
 	let taskCopyService: TaskCopyService;
 
@@ -44,6 +45,10 @@ describe('task copy uc', () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
+					provide: LessonRepo,
+					useValue: createMock<LessonRepo>(),
+				},
+				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
@@ -63,6 +68,7 @@ describe('task copy uc', () => {
 		taskRepo = module.get(TaskRepo);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
+		lessonRepo = module.get(LessonRepo);
 		taskCopyService = module.get(TaskCopyService);
 	});
 
@@ -70,12 +76,14 @@ describe('task copy uc', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
+			const lesson = lessonFactory.buildWithId({ course });
 			const task = taskFactory.buildWithId();
 			const userSpy = jest
 				.spyOn(authorisation, 'getUserWithPermissions')
 				.mockImplementation(() => Promise.resolve(user));
 			const taskSpy = jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
+			const lessonSpy = jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
 			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
@@ -89,7 +97,21 @@ describe('task copy uc', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((params: TaskCopyParams) => status);
 			const taskPersistSpy = jest.spyOn(taskRepo, 'save');
-			return { user, course, task, userSpy, taskSpy, courseSpy, authSpy, copy, status, taskCopySpy, taskPersistSpy };
+			return {
+				user,
+				course,
+				lesson,
+				task,
+				userSpy,
+				taskSpy,
+				courseSpy,
+				lessonSpy,
+				authSpy,
+				copy,
+				status,
+				taskCopySpy,
+				taskPersistSpy,
+			};
 		};
 
 		it('should fetch correct user', async () => {
@@ -116,9 +138,21 @@ describe('task copy uc', () => {
 			expect(courseSpy).not.toHaveBeenCalled();
 		});
 
+		it('should fetch destination lesson', async () => {
+			const { lesson, user, task, lessonSpy } = setup();
+			await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+			expect(lessonSpy).toBeCalledWith(lesson.id);
+		});
+
+		it('should pass without destination lesson', async () => {
+			const { user, task, lessonSpy } = setup();
+			await uc.copyTask(user.id, task.id, {});
+			expect(lessonSpy).not.toHaveBeenCalled();
+		});
+
 		it('should check authorisation for task', async () => {
-			const { course, user, task, authSpy } = setup();
-			await uc.copyTask(user.id, task.id, { courseId: course.id });
+			const { course, lesson, user, task, authSpy } = setup();
+			await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
 			expect(authSpy).toBeCalledWith(user, task, {
 				action: Actions.read,
 				requiredPermissions: [],
@@ -143,21 +177,44 @@ describe('task copy uc', () => {
 			});
 		});
 
+		it('should check authorisation for destination lesson', async () => {
+			const { lesson, user, task, authSpy } = setup();
+			await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+			expect(authSpy).toBeCalledWith(user, lesson, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
+
+		it('should pass authorisation check without destination lesson', async () => {
+			const { lesson, user, task, authSpy } = setup();
+			await uc.copyTask(user.id, task.id, {});
+			expect(authSpy).not.toBeCalledWith(user, lesson, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
+		});
+
 		it('should call copy service', async () => {
-			const { course, user, task, taskCopySpy } = setup();
-			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(taskCopySpy).toBeCalledWith({ originalTask: task, destinationCourse: course, user });
+			const { course, lesson, user, task, taskCopySpy } = setup();
+			await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
+			expect(taskCopySpy).toBeCalledWith({
+				originalTask: task,
+				destinationCourse: course,
+				destinationLesson: lesson,
+				user,
+			});
 		});
 
 		it('should persist copy', async () => {
-			const { course, user, task, taskPersistSpy, copy } = setup();
-			await uc.copyTask(user.id, task.id, { courseId: course.id });
+			const { course, lesson, user, task, taskPersistSpy, copy } = setup();
+			await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
 			expect(taskPersistSpy).toBeCalledWith(copy);
 		});
 
 		it('should return status', async () => {
-			const { course, user, task, status } = setup();
-			const result = await uc.copyTask(user.id, task.id, { courseId: course.id });
+			const { course, lesson, user, task, status } = setup();
+			const result = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
 			expect(result).toEqual(status);
 		});
 
@@ -165,6 +222,7 @@ describe('task copy uc', () => {
 			const setupWithTaskForbidden = () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
+				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId();
 				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
 				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
@@ -172,14 +230,14 @@ describe('task copy uc', () => {
 					if (e === task) return false;
 					return true;
 				});
-				return { user, course, task };
+				return { user, course, lesson, task };
 			};
 
 			it('should throw NotFoundException', async () => {
-				const { course, user, task } = setupWithTaskForbidden();
+				const { course, lesson, user, task } = setupWithTaskForbidden();
 
 				try {
-					await uc.copyTask(user.id, task.id, { courseId: course.id });
+					await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(NotFoundException);
@@ -207,6 +265,35 @@ describe('task copy uc', () => {
 
 				try {
 					await uc.copyTask(user.id, task.id, { courseId: course.id });
+					throw new Error('should have failed');
+				} catch (err) {
+					expect(err).toBeInstanceOf(ForbiddenException);
+				}
+			});
+		});
+
+		describe('when access to lesson is forbidden', () => {
+			const setupWithLessonForbidden = () => {
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId();
+				const lesson = lessonFactory.buildWithId({ course });
+				const task = taskFactory.buildWithId();
+				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
+				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
+				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
+				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
+				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: PermissionTypes) => {
+					if (e === lesson) return false;
+					return true;
+				});
+				return { user, lesson, task };
+			};
+
+			it('should throw Forbidden Exception', async () => {
+				const { lesson, user, task } = setupWithLessonForbidden();
+
+				try {
+					await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);
