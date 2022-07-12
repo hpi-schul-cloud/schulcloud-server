@@ -5,6 +5,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = chai;
 
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
@@ -15,15 +16,18 @@ const { create: createSchool, info: createdSchoolIds } = require('../helpers/ser
 describe('school service', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the schools services', () => {

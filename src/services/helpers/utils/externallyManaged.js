@@ -1,9 +1,6 @@
 module.exports = async (app, user) => {
 	if (user.source) return true;
-	const accounts = await app.service('/accounts').find({
-		query: {
-			userId: user._id,
-		},
-	});
-	return accounts.some((account) => !!account.systemId);
+	const userId = user._id ? user._id.toString() : user.toString();
+	const account = await app.service('nest-account-service').findByUserId(userId);
+	return !!account.systemId;
 };

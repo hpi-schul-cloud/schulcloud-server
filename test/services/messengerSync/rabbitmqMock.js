@@ -1,3 +1,5 @@
+const sinon = require('sinon');
+
 const queues = {};
 const callbacks = {};
 
@@ -45,6 +47,43 @@ const amqp = {
 	connect: async () => connection,
 };
 
+function clearCache(module) {
+	delete require.cache[require.resolve(module)];
+}
+
+function requireUncached(module) {
+	clearCache(module);
+	// eslint-disable-next-line global-require, import/no-dynamic-require
+	return require(module);
+}
+
+let amqpStub;
+
+const setupMock = () => {
+	const amqpLib = requireUncached('amqplib');
+	clearCache('../../../src/services/messengerSync');
+	clearCache('../../../src/services/messengerSync/producer');
+	clearCache('../../../src/services/messengerSync/consumer');
+	clearCache('../../../src/services/messengerSync/eventListener');
+	clearCache('../../../src/services/messengerSync/services/schoolSyncService');
+	clearCache('../../../src/services/sync/strategies');
+	clearCache('../../../src/services/sync/strategies/LDAPSyncer');
+	clearCache('../../../src/services/sync/strategies/LDAPSyncerConsumer');
+	clearCache('../../../src/services/sync/strategies/LDAPSystemSyncer');
+	clearCache('../../../src/services/sync');
+	clearCache('../../../src/utils/rabbitmq');
+	clearCache('../../../src/services');
+	clearCache('../../../src/app');
+	clearCache('../helpers/testObjects');
+
+	amqpStub = sinon.stub(amqpLib, 'connect').callsFake(amqp.connect);
+	return requireUncached('../../../src/app');
+};
+
+const closeMock = () => {
+	amqpStub.restore();
+};
+
 module.exports = {
 	amqplib: amqp,
 
@@ -53,4 +92,6 @@ module.exports = {
 	callbacks,
 	reset,
 	triggerConsume,
+	setupMock,
+	closeMock,
 };

@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } = require('../../helpers/testObjects')(
 	appPromise()
 );
@@ -8,15 +9,18 @@ describe('registrationSchool service', () => {
 	let app;
 	let registrationSchoolService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		registrationSchoolService = app.service('/registrationSchool');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the registrationSchoolService', () => {

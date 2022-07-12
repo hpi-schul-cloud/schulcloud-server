@@ -6,6 +6,8 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 const coursesRepo = require('./courses.repo');
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
@@ -31,10 +33,12 @@ const checkUserRoleInCourse = (result, expectOptions) => {
 describe('when having a user in course', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -43,6 +47,7 @@ describe('when having a user in course', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 	it('should return courses the user attends', async () => {
 		const student = await testObjects.createTestUser({ roles: 'student' });

@@ -4,7 +4,9 @@ const freeport = require('freeport');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
+const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { expect } = chai;
 
@@ -35,6 +37,7 @@ describe('Nexboard services', () => {
 	let mockServer;
 	let server;
 	let app;
+	let nestServices;
 	let testHelpers;
 	let configBefore;
 
@@ -50,19 +53,24 @@ describe('Nexboard services', () => {
 			Configuration.set('NEXBOARD_API_KEY', 'someapikey');
 			Configuration.set('NEXBOARD_USER_ID', 'someuserid');
 
-			// eslint-disable-next-line global-require
-			app = await require('../../../src/app')();
-			server = app.listen(0);
+			app = await appPromise();
 			testHelpers = testObjects(app);
+			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 
 			const mock = await MockServer(mockUrl, Configuration.get('NEXBOARD_URI'));
 			mockServer = mock.server;
 		});
 	});
 
+	afterEach(async () => {
+		await testHelpers.cleanup();
+	});
+
 	after(async () => {
 		await mockServer.close();
 		await server.close();
+		await closeNestServices(nestServices);
 		Configuration.reset(configBefore);
 	});
 

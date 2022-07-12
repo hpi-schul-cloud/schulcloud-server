@@ -33,6 +33,7 @@ import {
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper';
 import { AccountSaveDto } from '../services/dto';
+import { AccountValidationService } from '../services/account.validation.service';
 
 type UserPreferences = {
 	// first login completed
@@ -44,7 +45,8 @@ export class AccountUc {
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly userRepo: UserRepo,
-		private readonly permissionService: PermissionService
+		private readonly permissionService: PermissionService,
+		private readonly accountValidationService: AccountValidationService
 	) {}
 
 	/**
@@ -109,24 +111,24 @@ export class AccountUc {
 		if (!dto.systemId) {
 			dto.username = dto.username.trim().toLowerCase();
 		}
+		if (!dto.systemId && !dto.password) {
+			throw new ValidationError('No password provided');
+		}
 		// validateUserName ✔
 		// usernames must be an email address, if they are not from an external system
 		if (!dto.systemId && !isEmail(dto.username)) {
-			throw new Error('Username is not an email');
+			throw new ValidationError('Username is not an email');
 		}
 		// checkExistence ✔
 		if (dto.userId && (await this.accountService.findByUserId(dto.userId))) {
-			throw new Error('Account already exists');
+			throw new ValidationError('Account already exists');
 		}
 		// validateCredentials hook will not be ported ✔
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		const { accounts } = await this.accountService.searchByUsernameExactMatch(dto.username);
-		// usernames are only unique within a system
-		const filteredAccounts = accounts.filter((account) => account.systemId === dto.systemId);
-		if (filteredAccounts.length > 0) {
-			throw new Error('Username already exists');
+		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
+			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
 		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
@@ -215,7 +217,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to delete an account.');
 		}
 		const account: AccountDto = await this.accountService.findById(params.id);
-		await this.accountService.delete(account);
+		await this.accountService.delete(account.id);
 		return AccountResponseMapper.mapToResponse(account);
 	}
 
@@ -304,8 +306,9 @@ export class AccountUc {
 		}
 
 		const userPreferences = <UserPreferences>user.preferences;
+		const firstLoginPassed = userPreferences ? userPreferences.firstLogin : false;
 
-		if (!user.forcePasswordChange && userPreferences.firstLogin) {
+		if (!user.forcePasswordChange && firstLoginPassed) {
 			throw new ForbiddenOperationError('The password is not temporary, hence can not be changed.');
 		} // Password change was forces or this is a first logon for the user
 
@@ -332,6 +335,12 @@ export class AccountUc {
 			await this.userRepo.save(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
+		}
+	}
+
+	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
+		if (!(await this.accountValidationService.isUniqueEmail(email, user.id, account.id, account.systemId))) {
+			throw new ValidationError(`The email address is already in use!`);
 		}
 	}
 
@@ -447,21 +456,5 @@ export class AccountUc {
 
 	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
 		return bcrypt.compare(enteredPassword, hashedAccountPassword);
-	}
-
-	private async checkUniqueEmail(account: AccountDto, user: User, email: string): Promise<void> {
-		const [foundUsers, { accounts: foundAccounts }] = await Promise.all([
-			this.userRepo.findByEmail(email),
-			this.accountService.searchByUsernameExactMatch(email),
-		]);
-
-		if (
-			foundUsers.length > 1 ||
-			foundAccounts.length > 1 ||
-			(foundUsers.length === 1 && foundUsers[0].id !== user.id) ||
-			(foundAccounts.length === 1 && foundAccounts[0].id !== account.id)
-		) {
-			throw new ValidationError(`Die E-Mail Adresse ist bereits in Verwendung!`);
-		}
 	}
 }

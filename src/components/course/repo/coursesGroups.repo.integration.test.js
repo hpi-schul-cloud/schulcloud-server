@@ -3,7 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
-
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 const courseGroupsRepo = require('./courseGroups.repo');
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 
@@ -20,10 +20,12 @@ const prepareTestObjects = async () => {
 describe('when having a user in courseGroup', async () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -32,6 +34,7 @@ describe('when having a user in courseGroup', async () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 	it('should return course groups including the user', async () => {
 		const { testSchool, testUser, testCourse } = await prepareTestObjects();

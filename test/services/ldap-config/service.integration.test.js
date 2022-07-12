@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testObjects = require('../helpers/testObjects')(appPromise());
 const { Forbidden } = require('../../../src/errors');
 
@@ -19,6 +20,7 @@ const { expect } = chai;
 describe('LdapConfigService', () => {
 	let app;
 	let server;
+	let nestServices;
 	let configBefore;
 
 	before(async () => {
@@ -28,12 +30,14 @@ describe('LdapConfigService', () => {
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		Configuration.reset(configBefore);
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('GET route', () => {

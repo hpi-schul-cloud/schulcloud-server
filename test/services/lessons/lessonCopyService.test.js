@@ -1,22 +1,25 @@
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 describe('lesson copy service', () => {
 	let app;
 	let server;
 	let lessonCopyService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
-
+		nestServices = await setupNestServices(app);
 		lessonCopyService = app.service('lessons/copy');
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('can copy a lesson within a course', async () => {
