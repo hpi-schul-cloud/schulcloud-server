@@ -15,6 +15,7 @@ export enum FileRecordParentType {
 	'School' = 'schools',
 	'Course' = 'courses',
 	'Task' = 'tasks',
+	'Lesson' = 'lessons',
 }
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;
