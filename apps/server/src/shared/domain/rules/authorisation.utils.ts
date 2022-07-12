@@ -2,7 +2,7 @@ import { Collection } from '@mikro-orm/core';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
-import { IEntity, IEntityWithSchool } from '../interface';
+import { IEntity, IEntityWithSchool, IUserRoleName } from '../interface';
 
 @Injectable()
 export class AuthorisationUtils {
@@ -127,7 +127,7 @@ export class AuthorisationUtils {
 	 * Please not use role instead of permission. It is only for do something for target if it has the role xy.
 	 * For each other operations please define, use the string based permissions inside the roles.
 	 */
-	hasRole(user: User, roleName: string) {
+	hasRole(user: User, roleName: IUserRoleName) {
 		if (!user.roles.isInitialized(true)) {
 			throw new Error('Roles items are not loaded.');
 		}
