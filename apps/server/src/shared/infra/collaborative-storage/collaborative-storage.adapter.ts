@@ -4,6 +4,7 @@ import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dt
 import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
 import { Inject, Injectable } from '@nestjs/common';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
+import { Logger } from '@src/core/logger';
 
 /**
  * Provides an Adapter to an external collaborative storage.
@@ -15,8 +16,10 @@ export class CollaborativeStorageAdapter {
 
 	constructor(
 		@Inject('ICollaborativeStorageStrategy') strategy: ICollaborativeStorageStrategy,
-		private mapper: CollaborativeStorageAdapterMapper
+		private mapper: CollaborativeStorageAdapterMapper,
+		private logger: Logger
 	) {
+		this.logger.setContext(CollaborativeStorageAdapter.name);
 		this.strategy = strategy;
 	}
 
@@ -36,5 +39,9 @@ export class CollaborativeStorageAdapter {
 	 */
 	updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto) {
 		this.strategy.updateTeamPermissionsForRole(this.mapper.mapDomainToAdapter(team, role, permissions));
+	}
+
+	public deleteTeam(teamId: string) {
+		this.strategy.deleteGroupfolderAndRemoveGroup(teamId);
 	}
 }

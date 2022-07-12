@@ -2,7 +2,7 @@ import { BaseEntity } from '../entity/base.entity';
 
 export type CopyStatus = {
 	id?: string;
-	title: string;
+	title?: string;
 	type: CopyElementType;
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
@@ -10,15 +10,22 @@ export type CopyStatus = {
 };
 
 export enum CopyElementType {
-	'BOARD' = 'board',
-	'COURSE' = 'course',
-	'FILE' = 'file',
-	'FILE_GROUP' = 'file-group',
-	'LEAF' = 'leaf',
-	'LESSON' = 'lesson',
-	'TASK' = 'task',
-	'LESSON_CONTENT' = 'lesson-content',
-	'LESSON_CONTENT_GROUP' = 'lesson-content-group',
+	'BOARD' = 'BOARD',
+	'CONTENT' = 'CONTENT',
+	'COURSE' = 'COURSE',
+	'COURSEGROUP_GROUP' = 'COURSEGROUP_GROUP',
+	'FILE' = 'FILE',
+	'FILE_GROUP' = 'FILE_GROUP',
+	'LEAF' = 'LEAF',
+	'LESSON' = 'LESSON',
+	'LESSON_CONTENT' = 'LESSON_CONTENT',
+	'LESSON_CONTENT_GROUP' = 'LESSON_CONTENT_GROUP',
+	'LTITOOL_GROUP' = 'LTITOOL_GROUP',
+	'METADATA' = 'METADATA',
+	'SUBMISSION_GROUP' = 'SUBMISSION_GROUP',
+	'TASK' = 'TASK',
+	'TIME_GROUP' = 'TIME_GROUP',
+	'USER_GROUP' = 'USER_GROUP',
 }
 
 export enum CopyStatusEnum {

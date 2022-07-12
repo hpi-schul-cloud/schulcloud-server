@@ -8,7 +8,7 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { ICopyFiles, IFile, IGetFileResponse, IStorageClient, S3Config } from '../interface';
@@ -28,7 +28,7 @@ export class S3ClientAdapter implements IStorageClient {
 	// is public but only used internally
 	public async createBucket() {
 		try {
-			this.logger.debug({ action: 'create bucket', params: { bucket: this.config.bucket } });
+			this.logger.log({ action: 'create bucket', params: { bucket: this.config.bucket } });
 
 			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
 			await this.client.send(req);
@@ -42,7 +42,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 	public async get(path: string): Promise<IGetFileResponse> {
 		try {
-			this.logger.debug({ action: 'get', params: { path, bucket: this.config.bucket } });
+			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
 			const req = new GetObjectCommand({
 				Bucket: this.config.bucket,
@@ -50,21 +50,28 @@ export class S3ClientAdapter implements IStorageClient {
 			});
 
 			const data = await this.client.send(req);
+			const stream = data.Body as Readable;
 
+			this.checkStreamResponsive(stream, path);
 			return {
-				data: data.Body as Readable,
+				data: stream,
 				contentType: data.ContentType,
 				contentLength: data.ContentLength,
 				etag: data.ETag,
 			};
 		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.message && err.message === 'NoSuchKey') {
+				this.logger.log(`could not find one of the files for deletion with id ${path}`);
+				throw new NotFoundException('NoSuchKey');
+			}
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 		}
 	}
 
 	public async create(path: string, file: IFile): Promise<ServiceOutputTypes> {
 		try {
-			this.logger.debug({ action: 'create', params: { path, bucket: this.config.bucket } });
+			this.logger.log({ action: 'create', params: { path, bucket: this.config.bucket } });
 
 			const req = {
 				Body: file.buffer,
@@ -78,14 +85,13 @@ export class S3ClientAdapter implements IStorageClient {
 			});
 
 			const a = await res.done();
-
 			return a;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.Code && err.Code === 'NoSuchBucket') {
 				await this.createBucket();
 
-				return this.create(path, file);
+				return await this.create(path, file);
 			}
 
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
@@ -94,7 +100,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 	public async delete(paths: string[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+			this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
 			const copyPaths = paths.map((path) => {
 				return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
@@ -119,7 +125,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+			this.logger.log({ action: 'restore', params: { paths, bucket: this.config.bucket } });
 
 			const copyPaths = paths.map((path) => {
 				return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
@@ -140,7 +146,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 	public async copy(paths: ICopyFiles[]) {
 		try {
-			this.logger.debug({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+			this.logger.log({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
 			const copyRequests = paths.map(async (path) => {
 				const req = new CopyObjectCommand({
@@ -170,5 +176,22 @@ export class S3ClientAdapter implements IStorageClient {
 		});
 
 		return this.client.send(req);
+	}
+
+	/* istanbul ignore next */
+	private checkStreamResponsive(stream: Readable, context: string) {
+		let timer: NodeJS.Timeout;
+		const refreshTimeout = () => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				this.logger.log(`Stream unresponsive: S3 object key ${context}`);
+				stream.destroy();
+			}, 60 * 1000);
+		};
+
+		stream.on('data', () => {
+			refreshTimeout();
+		});
 	}
 }

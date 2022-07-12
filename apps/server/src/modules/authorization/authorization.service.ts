@@ -23,8 +23,8 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly lessonRule: LessonRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly taskRule: TaskRule,
-		private readonly teamRule: TeamRule,
 		private readonly userRule: UserRule,
+		private readonly teamRule: TeamRule,
 		private readonly loader: ReferenceLoader
 	) {
 		super();
