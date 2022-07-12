@@ -1,10 +1,14 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { userRepo, trashbinRepo } = require('../repo/index');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 const { trashBinResult, grantPermissionsForSchool } = require('../../helper/uc.helper');
+
+const initialize = (app) => {
+	this.app = app;
+};
 
 const getSchoolIdOfUser = async (userId) => {
 	const user = await userRepo.getUser(userId);
@@ -21,6 +25,7 @@ const userHaveSameSchool = async (userId, otherUserId) => {
 	return false;
 };
 
+// TODO check caller, usage of scope account, field match!
 const getUserData = async (id) => {
 	const returnArray = [];
 	const user = await userRepo.getUser(id);
@@ -31,8 +36,7 @@ const getUserData = async (id) => {
 		scope: 'user',
 		data: user,
 	});
-
-	const account = await accountRepo.getUserAccount(id);
+	const account = await this.app.service('nest-account-service').findByUserId(id);
 	returnArray.push({
 		scope: 'account',
 		data: account,
@@ -81,7 +85,7 @@ const replaceUserWithTombstone = async (user) => {
 		deletedAt: new Date(),
 		schoolId,
 	});
-	await accountRepo.deleteAccountForUserId(_id);
+	await this.app.service('nest-account-service').deleteByUserId(_id);
 	return { success: true };
 };
 
@@ -189,4 +193,5 @@ module.exports = {
 	replaceUserWithTombstone,
 	userHaveSameSchool,
 	getOrCreateTombstoneUserId,
+	initialize,
 };

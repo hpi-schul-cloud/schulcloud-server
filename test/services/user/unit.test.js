@@ -4,7 +4,7 @@ const { ObjectId } = require('mongoose').Types;
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
-
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { registrationPinModel } = require('../../../src/services/user/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
@@ -13,16 +13,19 @@ describe('registrationPin Service', () => {
 	let app;
 	let registrationPinService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		registrationPinService = app.service('registrationPins');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
 		await testObjects.cleanup();
+		await closeNestServices(nestServices);
 	});
 
 	let pin = null;
@@ -72,6 +75,7 @@ describe('registrationPin Service', () => {
 
 describe('publicTeachers service', () => {
 	let app;
+	let nestServices;
 	let userService;
 	let publicTeachersService;
 
@@ -89,6 +93,7 @@ describe('publicTeachers service', () => {
 		userService = app.service('users');
 		publicTeachersService = app.service('publicTeachers');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 
 		testStudent = await testObjects.createTestUser({
 			roles: ['student'],
@@ -122,8 +127,9 @@ describe('publicTeachers service', () => {
 		params = await testObjects.generateRequestParamsFromUser(teacherFromDifferentSchool);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	after(testObjects.cleanup);

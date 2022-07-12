@@ -1,16 +1,15 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const commons = require('@hpi-schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('./rabbitmqMock');
 const { ACTIONS } = require('../../../src/services/messengerSync/producer');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
-const { Configuration } = commons;
-
-describe('service', () => {
+describe('consumerTest', () => {
 	let configBefore;
 	let server;
 	let app;
+	let nestServices;
 	let testObjects;
 
 	before(async () => {
@@ -19,30 +18,22 @@ describe('service', () => {
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
 		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
-		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
-		// eslint-disable-next-line global-require
-		app = await require('../../../src/app')();
-		// eslint-disable-next-line global-require
-		testObjects = require('../helpers/testObjects')(app);
+		const appPromise = rabbitmqMock.setupMock();
+		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		server = await app.listen(0);
+		// eslint-disable-next-line global-require
+		testObjects = require('../helpers/testObjects')(appPromise());
 	});
 
 	after(async () => {
-		rabbitmqMock.reset();
-
 		Configuration.reset(configBefore);
-		mockery.deregisterAll();
-		mockery.disable();
+		rabbitmqMock.closeMock();
 
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('reject invalid messages', async () => {

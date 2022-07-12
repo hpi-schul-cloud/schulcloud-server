@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
-
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
@@ -9,15 +9,18 @@ describe('me service', () => {
 	let app;
 	let meService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the me service', () => {

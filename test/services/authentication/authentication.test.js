@@ -3,6 +3,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 const should = chai.should();
@@ -11,18 +12,21 @@ chai.use(chaiHttp);
 
 describe('start server', () => {
 	let app;
+	let nestServices;
+	let server;
 	let accountService;
 
-	let server;
 	before(async () => {
 		app = await appPromise();
-		accountService = app.service('accounts');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+		accountService = app.service('nest-account-service');
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('General login service', () => {
@@ -56,8 +60,7 @@ describe('start server', () => {
 			decodedToken.should.have.property('roles');
 			decodedToken.should.have.property('schoolId');
 
-
-			const account = await accountService.get(decodedToken.accountId);
+			const account = await accountService.findById(decodedToken.accountId);
 			account.username.should.equal(testAccount.username);
 		});
 
@@ -79,7 +82,7 @@ describe('start server', () => {
 			// get the account id from JWT
 			decodedToken.should.have.property('accountId');
 
-			const account = await accountService.get(decodedToken.accountId);
+			const account = await accountService.findById(decodedToken.accountId);
 			account.username.should.equal(testAccount.username);
 		});
 

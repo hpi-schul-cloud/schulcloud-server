@@ -3,6 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 const schoolRepo = require('./school.repo');
 const { SCHOOL_OF_DELETED_USERS } = require('./db');
 
@@ -12,14 +13,17 @@ const { expect } = chai;
 describe('school repository', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {

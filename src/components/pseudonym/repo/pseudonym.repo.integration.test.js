@@ -8,14 +8,18 @@ const { AssertionError } = require('../../../errors');
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 describe('pseudonym repo', () => {
 	let app;
 	let server;
 	let ltiTool;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	beforeEach(async () => {
@@ -28,6 +32,7 @@ describe('pseudonym repo', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('deletePseudonyms', () => {

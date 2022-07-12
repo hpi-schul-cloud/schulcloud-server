@@ -5,6 +5,8 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 const { registrationPinRepo } = require('.');
 const { AssertionError } = require('../../../errors');
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 chai.use(chaiAsPromised);
 
 const { expect } = chai;
@@ -18,10 +20,12 @@ const registrationPinParams = {
 describe('registration pin repo', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -30,6 +34,7 @@ describe('registration pin repo', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('deleteRegistrationPinForUser', () => {

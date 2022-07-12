@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const schoolServices = require('../../../../src/services/school/index');
 const testObjects = require('../../helpers/testObjects');
 
@@ -11,9 +12,11 @@ describe('permissons service', () => {
 	let testSchool;
 	let testUser;
 	let testParams;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		testHelper = testObjects(appPromise());
 		server = await app.listen(0);
 		testSchool = await testHelper.createTestSchool();
@@ -30,6 +33,7 @@ describe('permissons service', () => {
 	after(async () => {
 		await testHelper.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('for STUDENT_LIST permission', () => {

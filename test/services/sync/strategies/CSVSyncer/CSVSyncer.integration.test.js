@@ -1,11 +1,12 @@
 const { expect } = require('chai');
 
 const appPromise = require('../../../../../src/app');
-const roleModel = require('../../../../../src/services/role/model.js');
+const roleModel = require('../../../../../src/services/role/model');
 const { userModel } = require('../../../../../src/services/user/model');
-const MailService = require('../../../../../src/services/helpers/service.js');
+const MailService = require('../../../../../src/services/helpers/service');
 
 const testObjects = require('../../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../../utils/setup.nest.services');
 const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(appPromise());
 const { create: createUser } = require('../../../helpers/services/users')(appPromise());
 const { create: createSchool } = require('../../../helpers/services/schools')(appPromise());
@@ -25,14 +26,17 @@ const { deleteUser, MockEmailService } = require('./helper');
 describe('CSVSyncer Integration', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('Scenario 0 - Missing authentication', () => {

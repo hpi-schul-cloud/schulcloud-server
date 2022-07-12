@@ -4,6 +4,7 @@ const userRolesUc = require('./userRoles.uc');
 class UserFacade {
 	constructor(app) {
 		this.app = app;
+		userUc.initialize(app);
 	}
 
 	async getSchoolIdOfUser(userId) {

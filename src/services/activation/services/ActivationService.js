@@ -41,7 +41,7 @@ class ActivationService {
 
 		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
-		validEntry(entry);
+		await validEntry(entry);
 
 		try {
 			// custom job part here (done by specific service)

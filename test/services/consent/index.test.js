@@ -8,6 +8,7 @@ const appPromise = require('../../../src/app');
 const globals = require('../../../config/globals');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 let consentService;
 let consentVersionService;
@@ -17,6 +18,8 @@ chai.use(chaiAsPromised);
 describe('consent service', () => {
 	let app;
 	let server;
+	let nestServices;
+
 	before(async () => {
 		app = await appPromise();
 		consentService = app.service('/consents');
@@ -24,10 +27,12 @@ describe('consent service', () => {
 		consentVersionService = app.service('consentVersions');
 		consentVersionService.setup(app);
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(async () => {

@@ -16,6 +16,11 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
+	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
+		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
+		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
+	}
+
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
 		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
@@ -29,7 +34,7 @@ export class AccountService {
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<void> {
+	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		// Check if the ID is correct?
 		// const user = await this.userRepo.findById(accountDto.userId);
 		// const system = accountDto.systemId ? await this.systemRepo.findById(accountDto.systemId) : undefined;
@@ -58,11 +63,24 @@ export class AccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 		}
-		return this.accountRepo.save(account);
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
-	delete(account: AccountDto): Promise<void> {
-		return this.accountRepo.deleteById(account.id);
+	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
+		const account = await this.accountRepo.findById(accountId);
+		account.username = username;
+		account.updatedAt = new Date();
+		await this.accountRepo.save(account);
+		return AccountEntityToDtoMapper.mapToDto(account);
+	}
+
+	delete(id: EntityId): Promise<void> {
+		return this.accountRepo.deleteById(id);
+	}
+
+	deleteByUserId(userId: EntityId): Promise<void> {
+		return this.accountRepo.deleteByUserId(userId);
 	}
 
 	async searchByUsernamePartialMatch(
@@ -71,20 +89,12 @@ export class AccountService {
 		limit: number
 	): Promise<{ accounts: AccountDto[]; total: number }> {
 		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
-		return this.mapSearchResult(accountEntities);
+		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
-		return this.mapSearchResult(accountEntities);
-	}
-
-	private mapSearchResult(accountEntities: [Account[], number]) {
-		const foundAccounts = accountEntities[0];
-		const accountDtos: AccountDto[] = foundAccounts.map((accountEntity) =>
-			AccountEntityToDtoMapper.mapToDto(accountEntity)
-		);
-		return { accounts: accountDtos, total: accountEntities[1] };
+		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
 	private encryptPassword(password: string): Promise<string> {

@@ -2,8 +2,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { BadRequest } = require('../../errors');
 const { userModel: User } = require('./model');
-
-const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
 const logger = require('../../logger');
@@ -94,7 +92,7 @@ const insertUserToDB = async (app, data, user) => {
 		];
 		return app
 			.service('users')
-			.update(user._id, user)
+			.update(user.id, user)
 			.catch((err) => {
 				logger.warning(err);
 				throw new BadRequest('Fehler beim Updaten der Nutzerdaten.');
@@ -234,17 +232,17 @@ const registerUser = function register(data, params, app) {
 			})
 		)
 		.then(() => {
-			account = {
-				username: user.email,
-				password: data.password_1,
-				userId: user._id,
-				activated: true,
-			};
 			return app
-				.service('accounts')
-				.create(account)
-				.then((newAccount) => {
-					account = newAccount;
+				.service('nest-account-uc')
+				.saveAccount({
+					username: user.email,
+					password: data.password_1,
+					userId: user._id.toString(),
+					activated: true,
+				})
+				.then(async () => {
+					account = await app.service('nest-account-service').findByUserId(user._id.toString());
+					return Promise.resolve();
 				})
 				.catch((err) => {
 					const msg = 'Fehler beim Erstellen des Accounts.';
@@ -297,7 +295,7 @@ const registerUser = function register(data, params, app) {
 				}
 			}
 			if (account && account._id) {
-				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
+				rollbackPromises.push(app.service('nest-account-service').delete(account.id));
 			}
 			if (consent && consent._id) {
 				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
