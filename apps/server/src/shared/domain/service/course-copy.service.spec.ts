@@ -191,14 +191,12 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const metadataStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-				);
+				const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 				expect(metadataStatus).toBeDefined();
 				expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should set status of teachers', () => {
+			it('should set status of users', () => {
 				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
@@ -206,54 +204,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const teachersStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'teachers'
-				);
+				const teachersStatus = status.elements?.find((el) => el.type === CopyElementType.USER_GROUP);
 				expect(teachersStatus).toBeDefined();
 				expect(teachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should set status of substitutionTeachers', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const substitutionTeachersStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'substitutionTeachers'
-				);
-				expect(substitutionTeachersStatus).toBeDefined();
-				expect(substitutionTeachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should set status of students', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const studentsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'students'
-				);
-				expect(studentsStatus).toBeDefined();
-				expect(studentsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should set status of classes', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const classesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'classes');
-				expect(classesStatus).toBeDefined();
-				expect(classesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
 			it('should set status of ltiTools', () => {
@@ -264,9 +217,7 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const ltiToolsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'ltiTools'
-				);
+				const ltiToolsStatus = status.elements?.find((el) => el.type === CopyElementType.LTITOOL_GROUP);
 				expect(ltiToolsStatus).toBeDefined();
 				expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
@@ -279,9 +230,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const timesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'times');
+				const timesStatus = status.elements?.find((el) => el.type === CopyElementType.TIME_GROUP);
 				expect(timesStatus).toBeDefined();
-				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
 			it('should set status of files', () => {
@@ -305,9 +256,7 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const coursegroupsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'coursegroups'
-				);
+				const coursegroupsStatus = status.elements?.find((el) => el.type === CopyElementType.COURSEGROUP_GROUP);
 				expect(coursegroupsStatus).toBeDefined();
 				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});

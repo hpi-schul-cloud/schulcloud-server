@@ -17,6 +17,7 @@ import { ServerModule } from './server.module';
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
 import legacyAppPromise = require('../../../src/app');
+import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -58,6 +59,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
 
 	// mount instances
 	const rootExpress = express();
@@ -81,7 +84,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
-	const port = process.env.PORT || 3030;
+	const port = 3030;
 	rootExpress.listen(port);
 
 	console.log('#################################');
