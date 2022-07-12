@@ -19,6 +19,7 @@ import {
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class BBBService {
@@ -26,7 +27,7 @@ export class BBBService {
 
 	private readonly salt: string;
 
-	constructor(private readonly httpService: HttpService) {
+	constructor(private readonly httpService: HttpService, private readonly logger: Logger) {
 		this.baseURL = Configuration.get('VIDEOCONFERENCE_HOST') as string;
 		this.salt = Configuration.get('VIDEOCONFERENCE_SALT') as string;
 	}
@@ -40,7 +41,8 @@ export class BBBService {
 				}
 				return bbbResp;
 			})
-			.catch(() => {
+			.catch((error) => {
+				this.logger.error(error);
 				throw new InternalServerErrorException('Failed to create BBB room');
 			});
 	}
@@ -54,7 +56,8 @@ export class BBBService {
 				}
 				return bbbResp;
 			})
-			.catch(() => {
+			.catch((error) => {
+				this.logger.error(error);
 				throw new InternalServerErrorException('Failed to join BBB room');
 			});
 	}
@@ -68,7 +71,8 @@ export class BBBService {
 				}
 				return undefined;
 			})
-			.catch(() => {
+			.catch((error) => {
+				this.logger.error(error);
 				throw new InternalServerErrorException('Failed to end BBB room');
 			});
 	}
@@ -82,8 +86,11 @@ export class BBBService {
 				}
 				return bbbResp;
 			})
-			.catch(() => {
-				throw new InternalServerErrorException('Failed to fetch BBB room info');
+			.catch((error) => {
+				this.logger.error(error);
+				return { response: { running: false } } as unknown as BBBResponse<BBBMeetingInfoResponse>;
+				// throw new InternalServerErrorException('Failed to fetch BBB room info');
+				// TODO better error handling
 			});
 	}
 
@@ -110,9 +117,10 @@ export class BBBService {
 		queryParams.append('checksum', checksum);
 
 		const url: URL = new URL(this.baseURL);
-		url.pathname = `/api/${callName}`;
+		url.pathname = `/bigbluebutton/api/${callName}`;
 		url.search = queryParams.toString();
 
-		return this.httpService.post(url.toString());
+		const urll = url.toString();
+		return this.httpService.post(urll, { headers: { 'Content-Type': 'application/xml' } });
 	}
 }

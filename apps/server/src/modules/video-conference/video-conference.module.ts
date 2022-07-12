@@ -9,9 +9,10 @@ import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-confer
 import { CourseRepo, TeamsRepo } from '@shared/repo';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
+import { LoggerModule } from '@src/core/logger';
 
 @Module({
-	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule],
+	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule],
 	controllers: [VideoConferenceController],
 	providers: [VideoConferenceUc, BBBService, VideoConferenceRepo, TeamsRepo, CourseRepo, VideoConferenceResponseMapper],
 })
