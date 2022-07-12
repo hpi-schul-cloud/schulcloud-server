@@ -11,8 +11,8 @@ export * from './base-permission-manager';
 export * from './course.rule';
 export * from './lesson.rule';
 export * from './school.rule';
-export * from './task.rule';
 export * from './team.rule';
+export * from './task.rule';
 export * from './user.rule';
 export { default as PermissionContextBuilder } from './permission-context.builder';
 
