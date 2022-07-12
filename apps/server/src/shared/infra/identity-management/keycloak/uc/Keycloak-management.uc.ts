@@ -1,9 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
 import fs from 'node:fs/promises';
-import { EnvType, SysType } from '@shared/infra/identity-management';
+import { Inject, Injectable } from '@nestjs/common';
 import { SystemRepo } from '@shared/repo';
 import { System } from '@shared/domain';
-import { KeycloakAdministrationService } from '../keycloak-administration.service';
+import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IdentityProviderConfig } from '../interface/identity-provider-config.type';
+import { SysType } from '../../sys.type';
+import { EnvType } from '../../env.type';
 import {
 	IConfigureOptions,
 	IJsonAccount,
@@ -13,6 +16,13 @@ import {
 	KeycloakManagementInputFiles,
 	KeycloakSettings,
 } from '../interface';
+import { KeycloakAdministrationService } from '../keycloak-administration.service';
+
+enum ConfigureAction {
+	CREATE = 'create',
+	UPDATE = 'update',
+	DELETE = 'delete',
+}
 
 @Injectable()
 export class KeycloakManagementUc {
@@ -76,30 +86,114 @@ export class KeycloakManagementUc {
 		return userCount;
 	}
 
-	// TODO wip
 	async configure(options: IConfigureOptions): Promise<number> {
-		let kc = await this.kcAdmin.callKcAdminClient();
+		let count = 0;
+		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.loadConfigs(options.envType, options.sysType);
-		for (const config of newConfigs) {
-			const kc = await this.kcAdmin.callKcAdminClient();
-			await kc.identityProviders.create({
-				providerId: 'oidc',
-				alias: config.alias ?? '',
-				realm: this.kcSettings.realmName,
-			});
+		const newConfigs = await this.loadConfigs(options.envType, [options.sysType]);
+		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
+		// eslint-disable-next-line no-restricted-syntax
+		for (const configureAction of configureActions) {
+			if (configureAction.action === ConfigureAction.CREATE) {
+				// eslint-disable-next-line no-await-in-loop
+				await this.createIdentityProvider(configureAction.config);
+				count += 1;
+			}
+			if (configureAction.action === ConfigureAction.UPDATE) {
+				// eslint-disable-next-line no-await-in-loop
+				await this.updateIdentityProvider(configureAction.config);
+				count += 1;
+			}
+			if (configureAction.action === ConfigureAction.DELETE) {
+				// eslint-disable-next-line no-await-in-loop
+				await this.deleteIdentityProvider(configureAction.alias);
+				count += 1;
+			}
 		}
-		return newConfigs.length;
+		return count;
 	}
 
-	private async loadConfigs(envType: EnvType, sysType: SysType): Promise<System[]> {
-		if (envType === EnvType.Dev) {
-			const data = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
-			const systems = JSON.parse(data) as System[];
-			return systems.filter((system) => system.type === sysType);
+	private selectConfigureAction(newConfigs: System[], oldConfigs: IdentityProviderRepresentation[]) {
+		const result = [] as (
+			| { action: ConfigureAction.CREATE; config: IdentityProviderConfig }
+			| { action: ConfigureAction.UPDATE; config: IdentityProviderConfig }
+			| { action: ConfigureAction.DELETE; alias: string }
+		)[];
+		// creating configs
+		newConfigs.forEach((newConfig) => {
+			if (!oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.alias)) {
+				result.push({ action: ConfigureAction.CREATE, config: newConfig as IdentityProviderConfig });
+			}
+		});
+		// updating configs
+		newConfigs.forEach((newConfig) => {
+			if (oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.alias)) {
+				result.push({ action: ConfigureAction.UPDATE, config: newConfig as IdentityProviderConfig });
+			}
+		});
+		// deleting configs
+		oldConfigs.forEach((oldConfig) => {
+			if (!newConfigs.some((newConfig) => newConfig.alias === oldConfig.alias)) {
+				result.push({ action: ConfigureAction.DELETE, alias: oldConfig.alias as string });
+			}
+		});
+		return result;
+	}
+
+	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		if (system.type === SysType.OIDC) {
+			await kc.identityProviders.create({
+				providerId: system.type,
+				alias: system.alias,
+				enabled: true,
+				config: {
+					clientId: Configuration.get(system.config.clientId) as string,
+					clientSecret: Configuration.get(system.config.clientSecret) as string,
+					authorizationUrl: system.config.authorizationUrl,
+					tokenUrl: system.config.tokenUrl,
+					logoutUrl: system.config.logoutUrl,
+				},
+			});
 		}
-		if (envType === EnvType.Prod) {
-			return (await this.systemRepo.findAll()).filter((system) => system.type === sysType);
+	}
+
+	private async updateIdentityProvider(system: IdentityProviderConfig): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		if (system.type === SysType.OIDC) {
+			await kc.identityProviders.update(
+				{ alias: system.alias },
+				{
+					providerId: system.type,
+					alias: system.alias,
+					enabled: true,
+					config: {
+						clientId: Configuration.get(system.config.clientId) as string,
+						clientSecret: Configuration.get(system.config.clientSecret) as string,
+						authorizationUrl: system.config.authorizationUrl,
+						tokenUrl: system.config.tokenUrl,
+						logoutUrl: system.config.logoutUrl,
+					},
+				}
+			);
+		}
+	}
+
+	private async deleteIdentityProvider(alias: string): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		await kc.identityProviders.del({ alias });
+	}
+
+	private async loadConfigs(envType: EnvType, sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
+		if (envType === EnvType.DEV) {
+			const data = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
+			const systems = JSON.parse(data) as IdentityProviderConfig[];
+			return systems.filter((system) => sysTypes.includes(system.type as SysType));
+		}
+		if (envType === EnvType.PROD) {
+			return (await this.systemRepo.findAll()).filter((system) =>
+				sysTypes.includes(system.type as SysType)
+			) as IdentityProviderConfig[];
 		}
 		throw new Error('EnvType not recognized');
 	}

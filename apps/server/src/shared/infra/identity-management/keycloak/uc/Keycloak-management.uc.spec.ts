@@ -1,21 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {Test, TestingModule} from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import {v1} from 'uuid';
-import fs, {readFile} from 'node:fs/promises';
-import {IKeycloakSettings, KeycloakSettings} from '../interface/keycloak-settings.interface';
-import {KeycloakManagementUc} from './Keycloak-management.uc';
-import {KeycloakAdministrationService} from '../keycloak-administration.service';
-import {IConfigureOptions, IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles} from '../interface';
-import {EnvType, SysType} from "@shared/infra/identity-management";
-import {createMock, DeepMocked} from "@golevelup/ts-jest";
-import {SystemRepo} from "@shared/repo";
-import {Credentials} from "@keycloak/keycloak-admin-client/lib/utils/auth";
-import {System} from "@shared/domain";
-import {ObjectId} from "@mikro-orm/mongodb";
-import {ConnectionConfig} from "@keycloak/keycloak-admin-client/lib/client";
-import {IdentityProviders} from "@keycloak/keycloak-admin-client/lib/resources/identityProviders";
+import { v1 } from 'uuid';
+import fs from 'node:fs/promises';
+import { EnvType, SysType } from '@shared/infra/identity-management';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SystemRepo } from '@shared/repo';
+import { System } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
+import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import {
+	IConfigureOptions,
+	IJsonAccount,
+	IJsonUser,
+	IKeycloakManagementInputFiles,
+	KeycloakManagementInputFiles,
+} from '../interface';
+import { KeycloakAdministrationService } from '../keycloak-administration.service';
+import { KeycloakManagementUc } from './Keycloak-management.uc';
+import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
@@ -25,6 +31,7 @@ describe('KeycloakManagementUc', () => {
 	let repo: DeepMocked<SystemRepo>;
 	let settings: IKeycloakSettings;
 
+	const clientIdentityProviders = createMock<IdentityProviders>();
 	const adminUsername = 'admin';
 	const accountsFile = 'accounts.json';
 	const usersFile = 'users.json';
@@ -72,7 +79,7 @@ describe('KeycloakManagementUc', () => {
 		accountsFile: 'accounts.json',
 		usersFile: 'users.json',
 		systemsFile: 'systems.json',
-	}
+	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -105,7 +112,7 @@ describe('KeycloakManagementUc', () => {
 							del: async (): Promise<void> => Promise.resolve(),
 							find: async (): Promise<UserRepresentation[]> => Promise.resolve([adminUser, ...users]),
 						},
-						identityProviders: createMock<IdentityProviders>(),
+						identityProviders: clientIdentityProviders,
 					}),
 				},
 				{
@@ -206,27 +213,62 @@ describe('KeycloakManagementUc', () => {
 	});
 
 	describe('configure', () => {
-		const devConfig: IConfigureOptions = { envType: EnvType.Dev, sysType: SysType.OIDC };
-		const prodConfig: IConfigureOptions = { envType: EnvType.Prod, sysType: SysType.OIDC };
-		const systems: System[] = [{
-			_id: new ObjectId(0),
-			id: new ObjectId(0).toString(),
-			type: SysType.OIDC.toString(),
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		}];
+		const devConfig: IConfigureOptions = { envType: EnvType.DEV, sysType: SysType.OIDC };
+		const prodConfig: IConfigureOptions = { envType: EnvType.PROD, sysType: SysType.OIDC };
+		const idps: IdentityProviderRepresentation[] = [
+			{
+				providerId: 'oidc',
+				alias: 'alias',
+				enabled: true,
+				config: {
+					clientId: 'clientId',
+					clientSecret: 'clientSecret',
+					authorizationUrl: 'authorizationUrl',
+					tokenUrl: 'tokenUrl',
+					logoutUrl: 'logoutUrl',
+				},
+			},
+		];
+		const systems: System[] = [
+			{
+				_id: new ObjectId(0),
+				id: new ObjectId(0).toString(),
+				type: SysType.OIDC.toString(),
+				alias: 'alias',
+				config: {
+					clientId: 'clientId',
+					clientSecret: 'clientSecret',
+					authorizationUrl: 'authorizationUrl',
+					tokenUrl: 'tokenUrl',
+					logoutUrl: 'logoutUrl',
+				},
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		];
+		let configurationGet: jest.SpyInstance;
 		let fsReadFile: jest.SpyInstance;
 
 		beforeEach(() => {
 			repo.findAll.mockResolvedValue(systems);
+			clientIdentityProviders.find.mockResolvedValue(idps);
+			clientIdentityProviders.create.mockResolvedValue({ id: '' });
+			clientIdentityProviders.update.mockResolvedValue();
+			clientIdentityProviders.del.mockResolvedValue();
+			configurationGet = jest.spyOn(Configuration, 'get').mockImplementation((key) => key);
 			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
 				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
 				throw new Error('File not found');
-			})
+			});
 		});
 
 		afterEach(() => {
 			repo.findAll.mockRestore();
+			clientIdentityProviders.find.mockRestore();
+			clientIdentityProviders.create.mockRestore();
+			clientIdentityProviders.update.mockRestore();
+			clientIdentityProviders.del.mockRestore();
+			configurationGet.mockRestore();
 			fsReadFile.mockRestore();
 		});
 
@@ -242,11 +284,37 @@ describe('KeycloakManagementUc', () => {
 			expect(repo.findAll).toBeCalled();
 			expect(fsReadFile).not.toBeCalled();
 		});
-		it('should configure Keycloak, if Keycloak is not configured', async () => {
-			expect(false).toBeTruthy();
+		it('should throw if environment is unknown', async () => {
+			await expect(
+				uc.configure({
+					envType: 'unknown' as EnvType,
+					sysType: SysType.OIDC,
+				})
+			).rejects.toThrow();
 		});
-		it('should not configure Keycloak, if Keycloak is already configured', async () => {
-			expect(false).toBeTruthy();
+		it('should create a configuration in Keycloak', async () => {
+			clientIdentityProviders.find.mockResolvedValue([]);
+
+			const result = await uc.configure(prodConfig);
+			expect(result).toBe(1);
+			expect(clientIdentityProviders.create).toBeCalledTimes(1);
+			expect(configurationGet).toBeCalled();
+
+			clientIdentityProviders.find.mockRestore();
+		});
+		it('should update a configuration in Keycloak', async () => {
+			const result = await uc.configure(prodConfig);
+			expect(result).toBe(1);
+			expect(clientIdentityProviders.update).toBeCalledTimes(1);
+		});
+		it('should delete a new configuration in Keycloak', async () => {
+			repo.findAll.mockResolvedValue([]);
+
+			const result = await uc.configure(prodConfig);
+			expect(result).toBe(1);
+			expect(clientIdentityProviders.del).toBeCalledTimes(1);
+
+			repo.findAll.mockRestore();
 		});
 	});
 });

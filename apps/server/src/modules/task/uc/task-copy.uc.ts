@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { CopyStatus, EntityId, PermissionContextBuilder, User, TaskCopyService, Task } from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FilesStorageClientAdapterService, FileParamBuilder } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
 // todo: it look like it is required not optional
 export type TaskCopyParentParams = {

@@ -30,7 +30,7 @@
 		"setup": "npm run setup:db",
 		"setup:db": "npm run nest:start:console -- database seed",
 		"setup:idm": "npm run nest:start:console -- idm seed",
-		"setup:idm:systems": "npm run nest:start:console -- idm configure -et dev",
+		"setup:idm:systems": "npm run nest:start:console -- idm configure -et prod",
 		"build": "npm run nest:build",
 		"copy-files": "copyfiles src/**/*.yaml build",
 		"inspect": "npm run build && node --inspect=5959 build/src/",

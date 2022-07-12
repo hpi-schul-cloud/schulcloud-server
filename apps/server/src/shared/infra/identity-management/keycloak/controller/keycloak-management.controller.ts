@@ -1,7 +1,8 @@
-import {Controller, Param, Post, ServiceUnavailableException} from '@nestjs/common';
-import {Logger} from '@src/core/logger';
-import {EnvType, SysType} from '../../../identity-management';
-import {KeycloakManagementUc} from '../uc/Keycloak-management.uc';
+import { Controller, Param, Post, ServiceUnavailableException } from '@nestjs/common';
+import { Logger } from '@src/core/logger';
+import { EnvType } from '../../env.type';
+import { SysType } from '../../sys.type';
+import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
@@ -36,11 +37,11 @@ export class KeycloakManagementController {
 	 */
 	@Post('configure')
 	async applyConfiguration(@Param() envType?: EnvType, @Param() sysType?: SysType): Promise<number> {
-		envType ??= EnvType.Prod;
+		envType ??= EnvType.PROD;
 		sysType ??= SysType.OIDC;
 		if (await this.keycloakManagementUc.check()) {
 			try {
-				return this.keycloakManagementUc.configure({ envType, sysType });
+				return await this.keycloakManagementUc.configure({ envType, sysType });
 			} catch (err) {
 				this.logger.error(err);
 				return -1;

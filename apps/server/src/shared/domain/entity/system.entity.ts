@@ -86,4 +86,7 @@ export class System extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	oauthConfig?: OauthConfig;
+
+	@Property({ nullable: true })
+	config?: Record<string, unknown>;
 }

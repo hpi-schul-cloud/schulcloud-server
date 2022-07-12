@@ -1,4 +1,4 @@
 export enum SysType {
-    LDAP = 'ldap',
-    OIDC = 'oidc',
+	LDAP = 'ldap',
+	OIDC = 'oidc',
 }
