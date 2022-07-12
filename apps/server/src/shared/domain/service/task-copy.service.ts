@@ -40,18 +40,15 @@ export class TaskCopyService {
 	private defaultTaskStatusElements(): CopyStatus[] {
 		return [
 			{
-				title: 'metadata',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'description',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.CONTENT,
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'submissions',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.SUBMISSION_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 		];
