@@ -1,26 +1,24 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
-const { setupNestServices } = require('../../../utils/setup.nest.services');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('skipRegistration service', () => {
 	let skipRegistrationService;
 	let app;
 	let server;
-	let nestApp;
-	let orm;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		skipRegistrationService = app.service('/users/:userId/skipregistration');
 		server = await app.listen(0);
-		({ nestApp, orm } = await setupNestServices(app));
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
-		await orm.close();
-		await nestApp.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the users service', () => {

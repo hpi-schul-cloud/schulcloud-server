@@ -1,17 +1,22 @@
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
-
-
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('course service', () => {
 	let app;
 	let courseService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		courseService = app.service('courses');
+	});
+
+	after(async () => {
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the courses service', () => {
