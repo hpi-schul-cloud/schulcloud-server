@@ -1,6 +1,5 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { Entity, Index, Property } from '@mikro-orm/core';
-import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 
 export enum TargetModels {
 	COURSES = 'courses',
@@ -25,10 +24,10 @@ export type IVideoConferenceProperties = Readonly<Omit<VideoConference, keyof Ba
 
 // Preset options for opening a video conference
 @Entity({ tableName: 'videoconferences' })
-@Index({ properties: 'target' })
 @Index({ properties: ['target', 'targetModel'] })
 export class VideoConference extends BaseEntityWithTimestamps {
 	@Property()
+	@Index()
 	target: string;
 
 	@Property()

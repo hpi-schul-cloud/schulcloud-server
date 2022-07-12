@@ -1,12 +1,9 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { Board, BoardProps, IUserProperties, RoleName, User } from '@shared/domain';
-import { courseFactory, roleFactory } from '@shared/testing';
 import {
 	IVideoConferenceProperties,
 	TargetModels,
 	VideoConference,
 } from '@shared/domain/entity/video-conference.entity';
-import { DeepPartial } from 'fishery';
 
 export const videoConferenceFactory = BaseFactory.define<VideoConference, IVideoConferenceProperties>(
 	VideoConference,
@@ -16,7 +13,7 @@ export const videoConferenceFactory = BaseFactory.define<VideoConference, IVideo
 			targetModel: TargetModels.COURSES,
 			options: {
 				moderatorMustApproveJoinRequests: false,
-				everyAttendeeJoinsMuted: false,
+				everyAttendeJoinsMuted: false,
 				everybodyJoinsAsModerator: false,
 			},
 		};

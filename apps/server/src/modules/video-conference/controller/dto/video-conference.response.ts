@@ -1,36 +1,15 @@
-import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
+export class VideoConferenceJoinResponse {
+	joinUrl: string;
 
-export class VideoConferenceBaseResponse {
-	status: VideoConferenceStatus;
-
-	messageKey: string;
-
-	message: string;
-
-	constructor(resp: VideoConferenceBaseResponse) {
-		this.status = resp.status;
-		this.messageKey = resp.message;
-		this.message = resp.message;
-	}
-}
-
-export class VideoConferenceCreateResponse extends VideoConferenceBaseResponse {
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
-	constructor(resp: VideoConferenceCreateResponse) {
-		super(resp);
-	}
-}
-
-export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
 	constructor(resp: VideoConferenceJoinResponse) {
-		super(resp);
+		this.joinUrl = resp.joinUrl;
 	}
 }
 
-export class VideoConferenceInfoResponse extends VideoConferenceBaseResponse {
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
+export class VideoConferenceInfoResponse {
+	isRunning: boolean;
+
 	constructor(resp: VideoConferenceInfoResponse) {
-		super(resp);
+		this.isRunning = resp.isRunning;
 	}
 }

@@ -12,7 +12,6 @@ import {
 	TeamUser,
 	VideoConferenceDO,
 } from '@shared/domain';
-import { AuthorizationService } from '@src/modules';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
@@ -22,7 +21,6 @@ import { CourseRepo, TeamsRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
 import { BBBMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 import {
-	BBBBaseResponse,
 	BBBCreateResponse,
 	BBBJoinResponse,
 	BBBMeetingInfoResponse,
@@ -34,6 +32,7 @@ import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
+import { AuthorizationService } from '@src/modules/authorization';
 
 interface IScopeInfo {
 	scopeId: EntityId;
@@ -71,11 +70,10 @@ export class VideoConferenceUc {
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
 		options: VideoConferenceOptions
-	): Promise<BBBResponse<BBBCreateResponse>> {
+	): Promise<void> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
-
 		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
@@ -101,18 +99,18 @@ export class VideoConferenceUc {
 		try {
 			// Patch options, if preset exists
 			vcDo = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
-			vcDo.options = { ...options }; // TODO Mapper?
+			vcDo.options = options; // TODO Mapper?
 		} catch (error) {
 			// Create new preset
 			vcDo = this.videoConferenceRepo.create({
 				target: refId,
 				targetModel: conferenceScope,
-				options: { ...options },
+				options,
 			});
 		}
 		await this.videoConferenceRepo.save(vcDo);
 
-		return this.bbbService.create(configBuilder.build());
+		await this.bbbService.create(configBuilder.build());
 	}
 
 	/**
@@ -211,13 +209,9 @@ export class VideoConferenceUc {
 	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope
-	 * @returns {BBBResponse<BBBEndConfig>}
+	 * @returns
 	 */
-	async end(
-		currentUser: ICurrentUser,
-		conferenceScope: VideoConferenceScope,
-		refId: EntityId
-	): Promise<BBBResponse<BBBBaseResponse>> {
+	async end(currentUser: ICurrentUser, conferenceScope: VideoConferenceScope, refId: EntityId): Promise<void> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -283,7 +277,7 @@ export class VideoConferenceUc {
 	private async checkPermission(userId: EntityId, entityId: EntityId): Promise<BBBRole> {
 		const permissionMap: Map<Permission, boolean> = await this.authorizationService.hasPermissionsByReferences(
 			userId,
-			AllowedAuthorizationEntityType.User,
+			AllowedAuthorizationEntityType.Course,
 			entityId,
 			[Permission.START_MEETING, Permission.JOIN_MEETING]
 		);

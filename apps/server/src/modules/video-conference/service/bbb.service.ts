@@ -18,6 +18,7 @@ import {
 	BBBMeetingInfoResponse,
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
+import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 
 @Injectable()
 export class BBBService {
@@ -31,32 +32,56 @@ export class BBBService {
 	}
 
 	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBResponse<BBBCreateResponse>> {
-		return firstValueFrom(this.get('create', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBCreateResponse>)
+		return firstValueFrom(this.post('create', this.toParams(config)))
+			.then((resp: AxiosResponse<string>) => {
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBCreateResponse>;
+				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+				}
+				return bbbResp;
+			})
 			.catch(() => {
 				throw new InternalServerErrorException('Failed to create BBB room');
 			});
 	}
 
 	join(config: BBBJoinConfig): Promise<BBBResponse<BBBJoinResponse>> {
-		return firstValueFrom(this.get('join', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBJoinResponse>)
+		return firstValueFrom(this.post('join', this.toParams(config)))
+			.then((resp: AxiosResponse<string>) => {
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBJoinResponse>;
+				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+				}
+				return bbbResp;
+			})
 			.catch(() => {
 				throw new InternalServerErrorException('Failed to join BBB room');
 			});
 	}
 
-	end(config: BBBEndConfig): Promise<BBBResponse<BBBBaseResponse>> {
-		return firstValueFrom(this.get('end', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBBaseResponse>)
+	end(config: BBBEndConfig): Promise<void> {
+		return firstValueFrom(this.post('end', this.toParams(config)))
+			.then((resp: AxiosResponse<string>) => {
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBBaseResponse>;
+				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+				}
+				return undefined;
+			})
 			.catch(() => {
 				throw new InternalServerErrorException('Failed to end BBB room');
 			});
 	}
 
 	getMeetingInfo(config: BBBMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
-		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
-			.then((resp: AxiosResponse<string>) => xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse>)
+		return firstValueFrom(this.post('getMeetingInfo', this.toParams(config)))
+			.then((resp: AxiosResponse<string>) => {
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse>;
+				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+				}
+				return bbbResp;
+			})
 			.catch(() => {
 				throw new InternalServerErrorException('Failed to fetch BBB room info');
 			});
@@ -80,7 +105,7 @@ export class BBBService {
 		return params;
 	}
 
-	private get(callName: string, queryParams: URLSearchParams): Observable<AxiosResponse> {
+	private post(callName: string, queryParams: URLSearchParams): Observable<AxiosResponse> {
 		const checksum: string = this.generateChecksum(callName, queryParams);
 		queryParams.append('checksum', checksum);
 
@@ -88,6 +113,6 @@ export class BBBService {
 		url.pathname = `/api/${callName}`;
 		url.search = queryParams.toString();
 
-		return this.httpService.get(url.toString());
+		return this.httpService.post(url.toString());
 	}
 }
