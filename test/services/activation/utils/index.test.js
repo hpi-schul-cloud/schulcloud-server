@@ -12,6 +12,7 @@ const HOST = Configuration.get('HOST');
 
 const appPromise = require('../../../../src/app');
 const { createTestUser, createTestActivation, cleanup } = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -33,15 +34,18 @@ const createEntry = async () => {
 describe('activation/utils utils', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('create entry', async () => {

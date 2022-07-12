@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 
 const appPromise = require('../../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../../utils/setup.nest.services');
 
 const {
 	cleanup,
@@ -18,14 +19,17 @@ const { findSchool, createUserAndAccount } = require('../../../../../src/service
 describe('TSP API integration tests', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('#findSchool', () => {

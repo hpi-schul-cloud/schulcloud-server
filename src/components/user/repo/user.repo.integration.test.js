@@ -11,21 +11,26 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 // id from seed data
 const TOMBSTONE_SCHOOL_ID = '5fda01df490123cba891a193';
 
 describe('user repository', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('getUser', () => {

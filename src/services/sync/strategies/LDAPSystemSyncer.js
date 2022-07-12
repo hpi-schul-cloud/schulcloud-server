@@ -2,7 +2,7 @@ const asyncPool = require('tiny-async-pool');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
 const { LDAPSyncer } = require('./LDAPSyncer');
-const { getChannel } = require('../../../utils/rabbitmq');
+const rabbitMq = require('../../../utils/rabbitmq');
 const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
 
 /**
@@ -17,7 +17,7 @@ class LDAPSystemSyncer extends Syncer {
 		Object.assign(this.stats, {
 			systems: {},
 		});
-		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
+		this.syncQueue = rabbitMq.getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 	}
 
 	/**

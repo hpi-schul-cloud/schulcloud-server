@@ -1,11 +1,13 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 describe('userPermissions', () => {
 	let app;
 	let userPermissions;
 	let server;
+	let nestServices;
 	const ROLES = {
 		TEST: 'test',
 		OTHER: 'other',
@@ -51,6 +53,7 @@ describe('userPermissions', () => {
 		app = await appPromise();
 		userPermissions = app.service('/permissions/user');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		testRole = await testObjects.createTestRole({
 			name: ROLES.TEST,
 			permissions: testPermissions,
@@ -92,6 +95,7 @@ describe('userPermissions', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the service', () => {

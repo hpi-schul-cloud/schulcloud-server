@@ -3,6 +3,10 @@ const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
 const redisMock = require('./utils/redis/redisMock');
 const whitelist = require('../src/services/authentication/logic/whitelist');
+const appPromise = require('../src/app');
+const testObjects = require('./services/helpers/testObjects')(appPromise());
+
+const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
 
 const { Configuration } = commons; // separated from require, mocked in tests
 
@@ -12,9 +16,13 @@ describe('handleAutoLogout hook', () => {
 	let configBefore;
 	let app;
 	let server;
-	let testObjects;
+	let nestServices;
 
 	before(async () => {
+		app = await appPromise();
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
@@ -28,17 +36,11 @@ describe('handleAutoLogout hook', () => {
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../src/utils/redis')];
-		delete require.cache[require.resolve('../src/app')];
-		delete require.cache[require.resolve('./services/helpers/testObjects')];
-		delete require.cache[require.resolve('../src/app.hooks')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
-		app = await require('../src/app')();
-		testObjects = require('./services/helpers/testObjects')(app);
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */
 		redisHelper.initializeRedisClient();
-		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -51,6 +53,7 @@ describe('handleAutoLogout hook', () => {
 		delete require.cache[require.resolve('../src/app.hooks')];
 		Configuration.reset(configBefore);
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('whitelisted JWT is accepted and extended', async () => {

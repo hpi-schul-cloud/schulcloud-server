@@ -6,8 +6,9 @@ const { Forbidden } = require('../../../../src/errors');
 const {
 	filterToRelated,
 	rejectDefaultFilePermissionUpdatesIfNotPermitted,
-} = require('../../../../src/services/teams/hooks/index.js');
+} = require('../../../../src/services/teams/hooks/index');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { createHook } = require('../helper/helper.hook');
 const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(appPromise());
 const teamHelper = require('../../helpers/services/teams');
@@ -15,14 +16,17 @@ const teamHelper = require('../../helpers/services/teams');
 describe('Team service hook tests.', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe.skip('sendInfo', () => {});

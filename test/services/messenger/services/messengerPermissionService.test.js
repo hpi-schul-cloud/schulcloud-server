@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects');
 const { ForbiddenError } = require('../../../../src/errors/applicationErrors');
 
@@ -8,6 +9,7 @@ describe('MessengerPermissionService', () => {
 	describe('if Matrix messenger and student room creation is enabled', async () => {
 		let configBefore;
 		let app;
+		let nestServices;
 		let server;
 		let testHelper;
 
@@ -24,6 +26,7 @@ describe('MessengerPermissionService', () => {
 
 			app = await appPromise();
 			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 			testHelper = testObjects(app);
 		});
 
@@ -31,6 +34,7 @@ describe('MessengerPermissionService', () => {
 			Configuration.reset(configBefore);
 			await testHelper.cleanup();
 			await server.close();
+			await closeNestServices(nestServices);
 		});
 
 		it('administrators have messenger permission to open one to one chats', async () => {
@@ -66,6 +70,7 @@ describe('MessengerPermissionService', () => {
 		let configBefore;
 		let app;
 		let server;
+		let nestServices;
 		let testHelper;
 
 		before(async () => {
@@ -81,6 +86,7 @@ describe('MessengerPermissionService', () => {
 
 			app = await appPromise();
 			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 			testHelper = testObjects(app);
 		});
 
@@ -88,6 +94,7 @@ describe('MessengerPermissionService', () => {
 			Configuration.reset(configBefore);
 			await testHelper.cleanup();
 			await server.close();
+			await closeNestServices(nestServices);
 		});
 
 		it('administrators have messenger permission to open one to one chats', async () => {

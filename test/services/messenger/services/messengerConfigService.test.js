@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const commons = require('@hpi-schul-cloud/commons');
 const testHelper = require('../../helpers/testObjects');
 const { ForbiddenError } = require('../../../../src/errors/applicationErrors');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const { Configuration } = commons;
 
@@ -22,6 +23,8 @@ describe('MessengerConfigService', () => {
 	let testObjects;
 
 	describe('if Matrix messenger is enabled', () => {
+		let nestServices;
+
 		before(async () => {
 			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
@@ -31,6 +34,7 @@ describe('MessengerConfigService', () => {
 			app = await require('../../../../src/app')();
 			testObjects = testHelper(app);
 			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 			schoolServiceListeners = app.service('schools').listeners();
 			app.service('schools').removeAllListeners();
 		});
@@ -40,6 +44,7 @@ describe('MessengerConfigService', () => {
 			app.service('schools').listeners(schoolServiceListeners);
 			await testObjects.cleanup();
 			await server.close();
+			await closeNestServices(nestServices);
 		});
 
 		it('administrators can get messenger config', async () => {
