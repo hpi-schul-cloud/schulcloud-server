@@ -11,12 +11,13 @@ RUN apk add --no-cache git make python3
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
 RUN npm ci && npm cache clean --force
-COPY src /schulcloud-server/src
-COPY apps /schulcloud-server/apps
 COPY config /schulcloud-server/config
 COPY backup /schulcloud-server/backup
 COPY migrations /schulcloud-server/migrations
-COPY static-assets /schulcloud-server/static-assets
-COPY --from=git /app/version /schulcloud-server/static-assets
+COPY src /schulcloud-server/src
+COPY apps /schulcloud-server/apps
+COPY --from=git /app/version /schulcloud-server/apps/server/static-assets
 RUN npm run build
+
+ENV NODE_ENV=production
 CMD npm run start
