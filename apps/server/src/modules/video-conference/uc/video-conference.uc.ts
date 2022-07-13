@@ -22,6 +22,7 @@ import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
 import { BBBMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 import {
+	BBBBaseResponse,
 	BBBCreateResponse,
 	BBBJoinResponse,
 	BBBMeetingInfoResponse,
@@ -34,12 +35,37 @@ import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conferen
 import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { AuthorizationService } from '@src/modules/authorization';
+import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 
 interface IScopeInfo {
 	scopeId: EntityId;
 	scopeName: string;
 	logoutUrl: string;
 	title: string;
+}
+
+class VideoConferenceDTO<T extends BBBResponse<BBBBaseResponse>> {
+	constructor(props: VideoConferenceDTO<T>) {
+		super(props);
+	}
+
+	state: VideoConferenceState;
+
+	permission: Permission;
+
+	bbbResponse?: BBBResponse<BBBBaseResponse>;
+
+	options?: VideoConferenceOptions;
+}
+
+const PermissionMapping = {
+	[BBBRole.MODERATOR]: Permission.START_MEETING,
+	[BBBRole.VIEWER]: Permission.JOIN_MEETING,
+};
+
+// TODO move to ./error/bbb.error.ts
+export enum BBBError {
+	NOT_FOUND = 'notFound',
 }
 
 @Injectable()
@@ -72,7 +98,7 @@ export class VideoConferenceUc {
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
 		options: VideoConferenceOptions
-	): Promise<void> {
+	): Promise<ControllerResponse<BBBResponse<BBBCreateResponse>>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -112,7 +138,11 @@ export class VideoConferenceUc {
 		}
 		await this.videoConferenceRepo.save(vcDo);
 
-		await this.bbbService.create(configBuilder.build());
+		return {
+			state: VideoConferenceState.NOT_STARTED,
+			permission: PermissionMapping[bbbRole],
+			bbbResponse: await this.bbbService.create(configBuilder.build()),
+		};
 	}
 
 	/**
@@ -126,7 +156,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise<BBBResponse<BBBJoinResponse>> {
+	): Promise<ControllerResponse<BBBResponse<BBBJoinResponse>>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -177,7 +207,11 @@ export class VideoConferenceUc {
 			configBuilder.withRole(BBBRole.MODERATOR);
 		}
 
-		return this.bbbService.join(configBuilder.build());
+		return {
+			state: VideoConferenceState.RUNNING,
+			permission: PermissionMapping[bbbRole],
+			bbbResponse: await this.bbbService.join(configBuilder.build()),
+		};
 	}
 
 	/**
@@ -191,20 +225,37 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise<BBBResponse<BBBMeetingInfoResponse>> {
+	): Promise<ControllerResponse<BBBResponse<BBBMeetingInfoResponse>>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
 		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		await this.checkPermission(userId, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
 		const config: BBBMeetingInfoConfig = new BBBMeetingInfoConfig({
 			meetingID: refId,
 		});
 
-		return this.bbbService.getMeetingInfo(config);
+		let info: BBBResponse<BBBMeetingInfoResponse> | undefined;
+		try {
+			info = await this.bbbService.getMeetingInfo(config);
+		} catch (error) {
+			return {
+				state: VideoConferenceState.NOT_STARTED,
+				permission: PermissionMapping[bbbRole],
+			};
+		}
+
+		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
+
+		return {
+			state: VideoConferenceState.RUNNING,
+			permission: PermissionMapping[bbbRole],
+			bbbResponse: info,
+			options: bbbRole === BBBRole.MODERATOR ? vcDO.options : undefined,
+		};
 	}
 
 	/**
@@ -214,7 +265,11 @@ export class VideoConferenceUc {
 	 * @param {EntityId} refId eventId or courseId, depending on scope
 	 * @returns
 	 */
-	async end(currentUser: ICurrentUser, conferenceScope: VideoConferenceScope, refId: EntityId): Promise<void> {
+	async end(
+		currentUser: ICurrentUser,
+		conferenceScope: VideoConferenceScope,
+		refId: EntityId
+	): Promise<ControllerResponse<BBBResponse<BBBBaseResponse>>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -231,7 +286,11 @@ export class VideoConferenceUc {
 			meetingID: refId,
 		});
 
-		return this.bbbService.end(config);
+		return {
+			state: VideoConferenceState.FINISHED,
+			permission: PermissionMapping[bbbRole],
+			bbbResponse: await this.bbbService.end(config),
+		};
 	}
 
 	/**

@@ -10,6 +10,7 @@ export class BBBJoinConfig {
 		this.role = config.role;
 		this.userID = config.userID;
 		this.guest = config.guest;
+		this.redirect = config.redirect;
 	}
 
 	fullName: string;
@@ -21,4 +22,6 @@ export class BBBJoinConfig {
 	userID?: string;
 
 	guest?: boolean;
+
+	redirect?: string;
 }

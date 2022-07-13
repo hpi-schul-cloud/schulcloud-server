@@ -11,11 +11,18 @@ export class BBBCreateConfig {
 		this.logoutURL = config.logoutURL;
 		this.welcome = config.welcome;
 		this.guestPolicy = config.guestPolicy;
+		this.moderatorPW = config.moderatorPW;
+		this.attendeePW = config.attendeePW;
+		this.allowModsToUnmuteUsers = config.allowModsToUnmuteUsers;
 	}
 
 	name: string;
 
 	meetingID: string;
+
+	attendeePW?: string;
+
+	moderatorPW?: string;
 
 	logoutURL?: string;
 
@@ -24,4 +31,6 @@ export class BBBCreateConfig {
 	guestPolicy?: GuestPolicy;
 
 	muteOnStart?: boolean;
+
+	allowModsToUnmuteUsers?: boolean;
 }

@@ -11,4 +11,10 @@ export class BBBJoinConfigBuilder extends Builder<BBBJoinConfig> {
 		this.product.role = value;
 		return this;
 	}
+
+	override build(): BBBJoinConfig {
+		this.product.redirect = 'FALSE';
+
+		return super.build();
+	}
 }

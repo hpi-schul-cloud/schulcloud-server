@@ -35,12 +35,11 @@ export class BBBService {
 	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		return firstValueFrom(this.get('create', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBCreateResponse>;
-				console.log(bbbResp);
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
-				return bbbResp;
+				return bbbResp as BBBResponse<BBBCreateResponse>;
 			})
 			.catch((error) => {
 				this.logger.error(error);
@@ -51,11 +50,11 @@ export class BBBService {
 	join(config: BBBJoinConfig): Promise<BBBResponse<BBBJoinResponse>> {
 		return firstValueFrom(this.get('join', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBJoinResponse>;
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBJoinResponse> | BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
-				return bbbResp;
+				return bbbResp as BBBResponse<BBBJoinResponse>;
 			})
 			.catch((error) => {
 				this.logger.error(error);
@@ -63,14 +62,14 @@ export class BBBService {
 			});
 	}
 
-	end(config: BBBEndConfig): Promise<void> {
+	end(config: BBBEndConfig): Promise<BBBResponse<BBBBaseResponse>> {
 		return firstValueFrom(this.get('end', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = xml2json(resp.data) as BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
-				return undefined;
+				return bbbResp;
 			})
 			.catch((error) => {
 				this.logger.error(error);
@@ -81,17 +80,15 @@ export class BBBService {
 	getMeetingInfo(config: BBBMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse>;
+				const bbbResp = xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
-				return bbbResp;
+				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;
 			})
 			.catch((error) => {
 				this.logger.error(error);
-				return { response: { running: false } } as unknown as BBBResponse<BBBMeetingInfoResponse>;
-				// throw new InternalServerErrorException('Failed to fetch BBB room info');
-				// TODO better error handling
+				throw new InternalServerErrorException('Failed to fetch BBB room info');
 			});
 	}
 
@@ -123,11 +120,7 @@ export class BBBService {
 
 		const urll = url.toString();
 
-		const r = this.httpService.get(urll, { headers: { 'Content-Type': 'application/xml' } });
-
-		r.forEach((resp) => {
-			console.log(resp);
-		}).catch((error) => console.log(error));
+		const r = this.httpService.get(urll);
 
 		return r;
 	}

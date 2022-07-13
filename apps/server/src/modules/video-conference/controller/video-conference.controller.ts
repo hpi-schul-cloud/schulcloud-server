@@ -77,7 +77,11 @@ export class VideoConferenceController {
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceJoinResponse> {
-		const bbbResponse: BBBResponse<BBBJoinResponse> = await this.videoConferenceUc.join(currentUser, scope, scopeId);
+		const bbbResponse: ControllerResponse<BBBJoinResponse> = await this.videoConferenceUc.join(
+			currentUser,
+			scope,
+			scopeId
+		);
 		return this.responseMapper.mapToJoinResponse(bbbResponse);
 	}
 
