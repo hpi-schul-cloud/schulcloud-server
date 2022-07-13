@@ -43,7 +43,7 @@ spec:
         command: ['npm', 'run', 'nest:start:files-storage:prod']
         readinessProbe:
           httpGet:
-            path: api/v3/docs
+            path: /version
             port: 4444
           timeoutSeconds: 4
           failureThreshold: 3
@@ -51,14 +51,14 @@ spec:
         # liveless if unsatisfactory reply
         livenessProbe:
           httpGet:
-            path: api/v3/docs
+            path: /version
             port: 4444
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
-            path: api/v3/docs
+            path: /version
             port: 4444
           timeoutSeconds: 4
           failureThreshold:  36
