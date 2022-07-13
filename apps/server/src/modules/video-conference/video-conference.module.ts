@@ -6,7 +6,7 @@ import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conferen
 import { VideoConferenceController } from '@src/modules/video-conference/controller/video-conference.controller';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
-import { CourseRepo, TeamsRepo } from '@shared/repo';
+import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { LoggerModule } from '@src/core/logger';
@@ -14,6 +14,14 @@ import { LoggerModule } from '@src/core/logger';
 @Module({
 	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule],
 	controllers: [VideoConferenceController],
-	providers: [VideoConferenceUc, BBBService, VideoConferenceRepo, TeamsRepo, CourseRepo, VideoConferenceResponseMapper],
+	providers: [
+		VideoConferenceUc,
+		BBBService,
+		VideoConferenceRepo,
+		TeamsRepo,
+		CourseRepo,
+		UserRepo,
+		VideoConferenceResponseMapper,
+	],
 })
 export class VideoConferenceModule {}

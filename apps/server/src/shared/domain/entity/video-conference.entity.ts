@@ -1,5 +1,5 @@
-import { BaseEntityWithTimestamps } from '@shared/domain';
 import { Entity, Index, Property } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum TargetModels {
 	COURSES = 'courses',

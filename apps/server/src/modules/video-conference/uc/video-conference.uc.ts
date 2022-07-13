@@ -10,6 +10,7 @@ import {
 	SchoolFeatures,
 	Team,
 	TeamUser,
+	User,
 	VideoConferenceDO,
 } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
@@ -17,7 +18,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
-import { CourseRepo, TeamsRepo } from '@shared/repo';
+import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
 import { BBBMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 import {
@@ -51,6 +52,7 @@ export class VideoConferenceUc {
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly courseRepo: CourseRepo,
+		private readonly userRepo: UserRepo,
 		private readonly calendarService: CalendarService,
 		private readonly schoolUc: SchoolUc
 	) {
@@ -133,8 +135,9 @@ export class VideoConferenceUc {
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
+		const resolvedUser: User = await this.userRepo.findById(userId);
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
-			fullName: VideoConferenceUc.sanitizeString(`${currentUser.user.firstName} ${currentUser.user.lastName}`),
+			fullName: VideoConferenceUc.sanitizeString(`${resolvedUser.firstName} ${resolvedUser.lastName}`),
 			meetingID: refId,
 			role: bbbRole,
 		});

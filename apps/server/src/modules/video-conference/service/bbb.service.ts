@@ -33,9 +33,10 @@ export class BBBService {
 	}
 
 	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBResponse<BBBCreateResponse>> {
-		return firstValueFrom(this.post('create', this.toParams(config)))
+		return firstValueFrom(this.get('create', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = xml2json(resp.data) as BBBResponse<BBBCreateResponse>;
+				console.log(bbbResp);
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
@@ -48,7 +49,7 @@ export class BBBService {
 	}
 
 	join(config: BBBJoinConfig): Promise<BBBResponse<BBBJoinResponse>> {
-		return firstValueFrom(this.post('join', this.toParams(config)))
+		return firstValueFrom(this.get('join', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = xml2json(resp.data) as BBBResponse<BBBJoinResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
@@ -63,7 +64,7 @@ export class BBBService {
 	}
 
 	end(config: BBBEndConfig): Promise<void> {
-		return firstValueFrom(this.post('end', this.toParams(config)))
+		return firstValueFrom(this.get('end', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = xml2json(resp.data) as BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
@@ -78,7 +79,7 @@ export class BBBService {
 	}
 
 	getMeetingInfo(config: BBBMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
-		return firstValueFrom(this.post('getMeetingInfo', this.toParams(config)))
+		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
@@ -112,7 +113,7 @@ export class BBBService {
 		return params;
 	}
 
-	private post(callName: string, queryParams: URLSearchParams): Observable<AxiosResponse> {
+	private get(callName: string, queryParams: URLSearchParams): Observable<AxiosResponse> {
 		const checksum: string = this.generateChecksum(callName, queryParams);
 		queryParams.append('checksum', checksum);
 
@@ -121,6 +122,13 @@ export class BBBService {
 		url.search = queryParams.toString();
 
 		const urll = url.toString();
-		return this.httpService.post(urll, { headers: { 'Content-Type': 'application/xml' } });
+
+		const r = this.httpService.get(urll, { headers: { 'Content-Type': 'application/xml' } });
+
+		r.forEach((resp) => {
+			console.log(resp);
+		}).catch((error) => console.log(error));
+
+		return r;
 	}
 }
