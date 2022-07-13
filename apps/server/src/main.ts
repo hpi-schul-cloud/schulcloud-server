@@ -16,6 +16,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from './server.module';
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
+import { join } from "path";
 import legacyAppPromise = require('../../../src/app');
 import { AccountValidationService } from './modules/account/services/account.validation.service';
 import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
@@ -72,6 +73,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
+	rootExpress.use(express.static(join(__dirname, 'static')))
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
