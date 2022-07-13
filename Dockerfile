@@ -9,7 +9,7 @@ FROM docker.io/node:16-alpine
 ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python3
 WORKDIR /schulcloud-server
-COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore ./
+COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
 RUN npm ci && npm cache clean --force
 COPY src /schulcloud-server/src
 COPY apps /schulcloud-server/apps
@@ -18,6 +18,5 @@ COPY backup /schulcloud-server/backup
 COPY migrations /schulcloud-server/migrations
 COPY static-assets /schulcloud-server/static-assets
 COPY --from=git /app/version /schulcloud-server/static-assets
-RUN ls -lsa
 RUN npm run build
 CMD npm run start
