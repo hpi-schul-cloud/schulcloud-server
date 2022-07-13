@@ -58,7 +58,7 @@
 			"provider": "sanis",
 			"logoutEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/logout",
 			"jwksEndpoint": "https://auth.niedersachsen-login.schule/auth/realms/SANIS/protocol/openid-connect/certs",
-			"issuer": "https://niedersachsen-login.schule"
+			"issuer": "https://auth.niedersachsen-login.schule/auth/realms/SANIS"
 		},
 		"updatedAt": {
 			"$date": "2022-07-12T14:01:58.588Z"
