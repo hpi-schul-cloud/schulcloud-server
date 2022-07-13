@@ -63,10 +63,6 @@ const checkUnique = (hook) => {
 };
 
 const checkUniqueEmail = async (hook) => {
-	// const userService = hook.service;
-	const userService = hook.app.service('users');
-	const accountService = hook.app.service('/accounts');
-
 	const { email } = hook.data;
 	if (!email) {
 		// there is no email address given. Nothing to check...
@@ -74,41 +70,26 @@ const checkUniqueEmail = async (hook) => {
 	}
 
 	// get userId of user entry to edit
-	const editUserId = hook.id;
+	const editUserId = hook.id ? hook.id.toString() : undefined;
+	const unique = await hook.app.service('nest-account-validation-service').isUniqueEmailForUser(email, editUserId);
 
-	const queryUsers = { email: email.toLowerCase() };
-	const queryAccounts = { username: email.toLowerCase() };
-
-	// check if new user or update of existing entry
-	if (editUserId) {
-		// exclude existing user entry
-		queryUsers._id = { $ne: editUserId };
-		// exclude existing account entry
-		queryAccounts.userId = { $ne: editUserId };
+	if (unique) {
+		return hook;
 	}
-
-	// check for users with same email
-	const users = ((await userService.find({ query: queryUsers })) || {}).data || [];
-
-	// check for account with same username (=email)
-	const accounts = await accountService.find({ query: queryAccounts });
-
-	if (users.length === 0 && accounts.length === 0) {
-		return Promise.resolve(hook);
-	}
-
-	return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
+	throw new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`);
 };
 
 const checkUniqueAccount = (hook) => {
-	const accountService = hook.app.service('/accounts');
 	const { email } = hook.data;
-	return accountService.find({ query: { username: email.toLowerCase() } }).then((result) => {
-		if (result.length > 0) {
-			return Promise.reject(new BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
-		}
-		return Promise.resolve(hook);
-	});
+	return hook.app
+		.service('nest-account-service')
+		.searchByUsernameExactMatch(email.toLowerCase())
+		.then((result) => {
+			if (result.length > 0) {
+				throw new BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`);
+			}
+			return hook;
+		});
 };
 
 const updateAccountUsername = async (context) => {
@@ -129,7 +110,7 @@ const updateAccountUsername = async (context) => {
 	}
 
 	if (!account || !ObjectId.equal(context.id, account.userId)) {
-		account = (await app.service('/accounts').find({ query: { userId: context.id } }))[0];
+		account = await app.service('nest-account-service').findByUserId(context.id);
 
 		if (!account) return context;
 	}
@@ -140,9 +121,8 @@ const updateAccountUsername = async (context) => {
 	}
 
 	await app
-		.service('/accounts')
-		// set account in params to context.parmas.account to reference the current user
-		.patch(account._id, { username: email }, { account: context.params.account })
+		.service('nest-account-service')
+		.updateUsername(account.id ? account.id : account._id.toString(), email)
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
 		});

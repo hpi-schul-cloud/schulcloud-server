@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 const { classesRepo } = require('.');
 const { equal: equalIds, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { AssertionError } = require('../../../errors');
@@ -12,10 +13,12 @@ const { expect } = chai;
 describe('class repo', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -24,6 +27,7 @@ describe('class repo', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('when get classes for user', async () => {

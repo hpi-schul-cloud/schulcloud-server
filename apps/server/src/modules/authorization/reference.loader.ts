@@ -1,22 +1,25 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { CourseRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { AllowedAuthorizationEntityType } from './interfaces';
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map<AllowedAuthorizationEntityType, TaskRepo | CourseRepo | UserRepo | SchoolRepo> = new Map();
+	private repos: Map<AllowedAuthorizationEntityType, TaskRepo | CourseRepo | UserRepo | SchoolRepo | LessonRepo> =
+		new Map();
 
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly taskRepo: TaskRepo,
-		private readonly schoolRepo: SchoolRepo
+		private readonly schoolRepo: SchoolRepo,
+		private readonly lessonRepo: LessonRepo
 	) {
 		this.repos.set(AllowedAuthorizationEntityType.Task, this.taskRepo);
 		this.repos.set(AllowedAuthorizationEntityType.Course, this.courseRepo);
 		this.repos.set(AllowedAuthorizationEntityType.User, this.userRepo);
 		this.repos.set(AllowedAuthorizationEntityType.School, this.schoolRepo);
+		this.repos.set(AllowedAuthorizationEntityType.Lesson, this.lessonRepo);
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType) {

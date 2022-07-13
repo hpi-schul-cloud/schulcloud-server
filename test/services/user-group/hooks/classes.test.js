@@ -2,6 +2,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const {
@@ -59,6 +60,7 @@ describe('class hooks', () => {
 
 	describe('restrictFINDToClassesTheUserIsAllowedToSee', () => {
 		let app;
+		let nestServices;
 		let server;
 		let configBefore;
 
@@ -67,12 +69,14 @@ describe('class hooks', () => {
 			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
 			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 		});
 
 		after(async () => {
 			Configuration.reset(configBefore);
 			await testObjects.cleanup();
 			await server.close();
+			await closeNestServices(nestServices);
 		});
 
 		it('should extend the query with user filter for teacher', async () => {
@@ -176,16 +180,19 @@ describe('class hooks', () => {
 
 	describe('restrictToUsersOwnClasses', () => {
 		let app;
+		let nestServices;
 		let server;
 
 		before(async () => {
 			app = await appPromise();
 			server = await app.listen(0);
+			nestServices = await setupNestServices(app);
 		});
 
 		after(async () => {
 			await testObjects.cleanup();
 			await server.close();
+			await closeNestServices(nestServices);
 		});
 
 		it('should allow teacher to modify her own class', async () => {

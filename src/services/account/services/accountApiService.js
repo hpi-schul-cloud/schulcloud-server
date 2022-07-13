@@ -28,6 +28,10 @@ const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
 
+/**
+ *  @deprecated This service is replaced by "apps\server\src\modules\account\uc\account.uc.ts" and corresponding services.
+ *  This is about to be removed with completion of EW-214.
+ */
 class Accounts {
 	constructor(options) {
 		this.options = options || {};

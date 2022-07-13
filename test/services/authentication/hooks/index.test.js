@@ -5,6 +5,7 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 const redisMock = require('../../../utils/redis/redisMock');
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('authentication hooks', () => {
 	let redisHelper;
@@ -13,10 +14,18 @@ describe('authentication hooks', () => {
 	let configBefore = null;
 	let app;
 	let server;
+	let nestServices;
 	let testObjects;
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
+
+		/* eslint-disable global-require */
+		app = await require('../../../../src/app')();
+		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+		testObjects = require('../../helpers/testObjects')(app);
+		/* eslint-enable global-require */
 
 		mockery.enable({
 			warnOnReplace: false,
@@ -32,11 +41,7 @@ describe('authentication hooks', () => {
 		delete require.cache[require.resolve('../../../services/helpers/services/login')];
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 		/* eslint-disable global-require */
-
 		redisHelper = require('../../../../src/utils/redis');
-		app = await require('../../../../src/app')();
-		server = await app.listen(0);
-		testObjects = require('../../helpers/testObjects')(app);
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
 		/* eslint-enable global-require */
 
@@ -58,6 +63,7 @@ describe('authentication hooks', () => {
 
 		Configuration.reset(configBefore);
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('addJwtToWhitelist', async () => {

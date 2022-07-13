@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 const classSuccessorServiceClass = require('../../../../src/services/user-group/services/classSuccessor');
 
@@ -9,15 +10,18 @@ describe('classSuccessor service', () => {
 	let app;
 	let classSuccessorService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		classSuccessorService = app.service('classes/successor');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('is properly registered the class successor service', () => {

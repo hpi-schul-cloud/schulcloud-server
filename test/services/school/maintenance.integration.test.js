@@ -5,6 +5,7 @@ const { ObjectId } = require('mongoose').Types;
 const { Forbidden } = require('../../../src/errors');
 
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { cleanup } = require('../helpers/testObjects')(appPromise());
 const { create: createSchool } = require('../helpers/services/schools')(appPromise());
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise());
@@ -20,15 +21,18 @@ describe('school maintenance mode', () => {
 	let maintenanceService;
 
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		maintenanceService = app.service('schools/:schoolId/maintenance');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('status route', () => {

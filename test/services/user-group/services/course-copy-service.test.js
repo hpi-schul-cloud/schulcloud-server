@@ -3,6 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { BadRequest } = require('../../../../src/errors');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -10,15 +11,18 @@ const { expect } = chai;
 describe('course share service', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('getShareToken', () => {

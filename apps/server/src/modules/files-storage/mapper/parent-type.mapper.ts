@@ -4,18 +4,18 @@ import { AllowedAuthorizationEntityType } from '@src/modules/authorization/inter
 
 export class FileStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
-		let result: AllowedAuthorizationEntityType;
-		if (type === FileRecordParentType.Course) {
-			result = AllowedAuthorizationEntityType.Course;
-		} else if (type === FileRecordParentType.Task) {
-			result = AllowedAuthorizationEntityType.Task;
-		} else if (type === FileRecordParentType.School) {
-			result = AllowedAuthorizationEntityType.School;
-		} else if (type === FileRecordParentType.User) {
-			result = AllowedAuthorizationEntityType.User;
-		} else {
+		const types: Map<FileRecordParentType, AllowedAuthorizationEntityType> = new Map();
+		types.set(FileRecordParentType.Task, AllowedAuthorizationEntityType.Task);
+		types.set(FileRecordParentType.Course, AllowedAuthorizationEntityType.Course);
+		types.set(FileRecordParentType.User, AllowedAuthorizationEntityType.User);
+		types.set(FileRecordParentType.School, AllowedAuthorizationEntityType.School);
+		types.set(FileRecordParentType.Lesson, AllowedAuthorizationEntityType.Lesson);
+
+		const res = types.get(type);
+
+		if (!res) {
 			throw new NotImplementedException();
 		}
-		return result;
+		return res;
 	}
 }

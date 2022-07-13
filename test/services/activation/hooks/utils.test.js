@@ -1,6 +1,5 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-
 const { BadRequest, Forbidden } = require('../../../../src/errors');
 
 const { expect } = chai;
@@ -10,6 +9,7 @@ const appPromise = require('../../../../src/app');
 const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(
 	appPromise()
 );
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');
@@ -25,15 +25,18 @@ const existingTestAccountParameters = {
 describe('activation/hooks utils', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	function createMoodleTestServer() {
@@ -88,7 +91,6 @@ describe('activation/hooks utils', () => {
 				'Your user data is managed by a IDM. Changes to it can only be made in the source system'
 			);
 		}
-
 		await hookUtils.blockThirdParty({ app, params: params(user2) });
 	});
 

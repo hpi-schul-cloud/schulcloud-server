@@ -9,7 +9,7 @@ const getTombstoneSchool = async () => School.findOne({ purpose: SCHOOL_OF_DELET
 const getStorageProviderIdForSchool = async (schoolId) => {
 	const school = await School.findById(schoolId).select('storageProvider').lean().exec();
 	return school.storageProvider;
-}
+};
 
 const setTombstoneUser = async (schoolId, tombstoneUserId) =>
 	School.findByIdAndUpdate(schoolId, { tombstoneUserId }, { new: true }).lean().exec();
