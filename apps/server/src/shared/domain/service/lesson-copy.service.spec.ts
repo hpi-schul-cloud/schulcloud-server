@@ -8,8 +8,9 @@ import {
 	IComponentGeogebraProperties,
 	IComponentProperties,
 	Lesson,
+	TaskCopyService,
 } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
 
@@ -35,6 +36,10 @@ describe('lesson copy service', () => {
 				{
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
+				},
+				{
+					provide: TaskCopyService,
+					useValue: createMock<TaskCopyService>(),
 				},
 			],
 		}).compile();
@@ -422,6 +427,48 @@ describe('lesson copy service', () => {
 
 			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
 			expect(lessonContents[0].hidden).toEqual(true);
+		});
+	});
+
+	describe('when tasks are linked to the original lesson', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+			});
+			const originalTask = taskFactory.build({
+				description: 'lesson task description',
+				course: originalCourse,
+				lesson: originalLesson,
+			});
+
+			const copyStatus = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			return { user, originalCourse, destinationCourse, originalLesson, originalTask, copyStatus };
+		};
+
+		it('should copy the linked task', () => {
+			const { copyStatus, originalTask } = setup();
+
+			const lesson = copyStatus.copyEntity as Lesson;
+			const linkedTasks = lesson.getLessonTasks();
+			const newTask = linkedTasks[0];
+			expect(newTask.description).toEqual(originalTask.description);
+		});
+
+		it('link the copied task to the new lesson', () => {
+			const { copyStatus } = setup();
+
+			const lesson = copyStatus.copyEntity as Lesson;
+			const linkedTasks = lesson.getLessonTasks();
+			const newTask = linkedTasks[0];
+			expect(newTask.lesson).toEqual(lesson);
 		});
 	});
 });
