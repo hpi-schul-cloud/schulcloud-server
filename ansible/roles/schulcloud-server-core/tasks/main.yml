@@ -36,7 +36,6 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      state: absent
       api_version: batch/v1
       kind: Job
       name: api-migration-job
