@@ -1,30 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
+import { EnvType, SysType } from '@shared/infra/identity-management';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { KeycloakConsole } from './keycloak-management.console';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
 	let console: KeycloakConsole;
-	let writer: ConsoleWriterService;
-	let uc: KeycloakManagementUc;
+	let writer: DeepMocked<ConsoleWriterService>;
+	let uc: DeepMocked<KeycloakManagementUc>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: ConsoleWriterService,
-					useValue: {
-						info: jest.fn(),
-					},
+					useValue: createMock<ConsoleWriterService>(),
 				},
 				{
 					provide: KeycloakManagementUc,
-					useValue: {
-						check: jest.fn(),
-						clean: jest.fn(),
-						seed: jest.fn(),
-					},
+					useValue: createMock<KeycloakManagementUc>(),
 				},
 			],
 		}).compile();
@@ -77,6 +73,33 @@ describe('KeycloakConsole', () => {
 	});
 
 	describe('configure', () => {
-		it('should ')
+		it('should resolve successfully', async () => {
+			uc.configure.mockResolvedValue(1);
+
+			await expect(
+				console.configure({
+					envType: EnvType.PROD,
+					sysType: SysType.OIDC,
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).resolves.not.toThrow();
+
+			uc.configure.mockRestore();
+		});
+		it('should throw on error', async () => {
+			uc.configure.mockRejectedValue('configure failed');
+
+			await expect(
+				console.configure({
+					envType: EnvType.PROD,
+					sysType: SysType.OIDC,
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).rejects.toThrow();
+
+			uc.configure.mockRestore();
+		});
 	});
 });

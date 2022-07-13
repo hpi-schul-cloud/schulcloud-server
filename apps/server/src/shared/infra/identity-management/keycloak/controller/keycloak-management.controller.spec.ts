@@ -44,37 +44,50 @@ describe('KeycloakManagementController', () => {
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
-	it('should accept calls on seed route', async () => {
-		const received = await controller.importSeedData();
-		expect(received).toBe(1);
+
+	describe('importSeedData', () => {
+		it('should accept calls on seed route', async () => {
+			const received = await controller.importSeedData();
+			expect(received).toBe(1);
+		});
+		it('should return -1 if connection ok but seed fails', async () => {
+			uc.seed.mockRejectedValue('seeding error');
+
+			const received = await controller.importSeedData();
+			expect(received).toBe(-1);
+
+			uc.seed.mockRestore();
+		});
+		it('should throw if connection fails', async () => {
+			uc.check.mockResolvedValue(false);
+			uc.seed.mockRejectedValue('seeding error');
+
+			await expect(controller.importSeedData()).rejects.toThrow(ServiceUnavailableException);
+
+			uc.check.mockRestore();
+			uc.seed.mockRestore();
+		});
 	});
-	it('should return -1 if connection ok but seed fails', async () => {
-		uc.seed.mockRejectedValue('seeding error');
 
-		const received = await controller.importSeedData();
-		expect(received).toBe(-1);
+	describe('applyConfiguration', () => {
+		it('should accept calls on configure route', async () => {
+			const result = await controller.applyConfiguration();
+			expect(result).toBe(1);
+		});
+		it('should return -1 if connection is ok but configure fails', async () => {
+			uc.configure.mockRejectedValue('configure failed');
 
-		uc.seed.mockRestore();
-	});
-	it('should throw if connection fails', async () => {
-		uc.check.mockResolvedValue(false);
-		uc.seed.mockRejectedValue('seeding error');
+			const result = await controller.applyConfiguration('unknown' as EnvType);
+			expect(result).toBe(-1);
 
-		await expect(controller.importSeedData()).rejects.toThrow(ServiceUnavailableException);
+			uc.configure.mockRestore();
+		});
+		it('should throw if connection fails', async () => {
+			uc.check.mockResolvedValue(false);
 
-		uc.check.mockRestore();
-		uc.seed.mockRestore();
-	});
-	it('should accept calls on configure route', async () => {
-		const result = await controller.applyConfiguration();
-		expect(result).toBe(1);
-	});
-	it('should return -1 if connection is ok but configure fails', async () => {
-		uc.configure.mockRejectedValue('configure failed');
+			await expect(controller.applyConfiguration()).rejects.toThrow(ServiceUnavailableException);
 
-		const result = await controller.applyConfiguration('unknown' as EnvType);
-		expect(result).toBe(-1);
-
-		uc.configure.mockRestore();
+			uc.check.mockRestore();
+		});
 	});
 });

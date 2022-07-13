@@ -1,8 +1,9 @@
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
-import {KeycloakManagementUc} from '../uc/Keycloak-management.uc';
-import {EnvType, SysType} from "@shared/infra/identity-management";
-import {IConfigureOptions} from "@shared/infra/identity-management/keycloak/interface";
+import { EnvType } from '../../env.type';
+import { SysType } from '../../sys.type';
+import { IConfigureOptions } from '../interface/configure-options.interface';
+import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
@@ -86,26 +87,26 @@ export class KeycloakConsole {
 				flags: '-et, --env-type <value>',
 				description: 'Determines the environment and how the configuration will be loaded.',
 				required: false,
-				defaultValue: EnvType.Prod,
+				defaultValue: EnvType.PROD,
 			},
 			{
 				flags: '-st, --sys-type <value>',
 				description: 'The system type to be configured',
 				required: false,
-				// TODO: SysType.OAuth doesn't seam to work?
-				defaultValue: 'iservOAuth',
+				defaultValue: SysType.OIDC,
 			},
-			...KeycloakConsole.retryFlags],
+			...KeycloakConsole.retryFlags,
+		],
 	})
 	async configure(options: IConfigureOptions & IRetryOptions): Promise<void> {
 		await this.repeatCommand(
 			'configure',
 			async () => {
 				const count = await this.keycloakManagementUc.configure(options);
-				this.console.info(`Configured ${count} systems for IDM.`);
+				this.console.info(`Configured ${count} system(s) for IDM.`);
 			},
 			options.retryCount,
-			options.retryDelay,
+			options.retryDelay
 		);
 	}
 

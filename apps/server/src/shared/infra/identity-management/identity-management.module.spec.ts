@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ConfigModule } from '@nestjs/config';
 import { IdentityManagementService } from './identity-management.service';
 import { IdentityManagementModule } from './identity-management.module';
@@ -10,8 +11,9 @@ describe('IdentityManagementModule', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 				IdentityManagementModule,
+				MongoMemoryDatabaseModule.forRoot(),
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();
 		idm = module.get(IdentityManagementService);
