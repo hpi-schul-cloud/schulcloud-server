@@ -5,13 +5,13 @@ import { ProvisioningStrategy } from '@src/modules/provisioning/strategy/base.st
 import { Logger } from '@src/core/logger';
 import { ProvisioningSystemInputDto } from '@src/modules/provisioning/dto/provisioning-system-input.dto';
 import { ProvisioningSystemInputMapper } from '@src/modules/provisioning/mapper/provisioning-system-input.mapper';
-import { PlaceholderProvisioningStrategy } from '@src/modules/provisioning/strategy/placeholder/placeholder.strategy';
+import { SanisProvisioningStrategy } from '@src/modules/provisioning/strategy/sanis/sanis.strategy';
 
 @Injectable()
 export class ProvisioningUc {
 	constructor(
 		private readonly systemUc: SystemUc,
-		private readonly placeholderStrategy: PlaceholderProvisioningStrategy,
+		private readonly sanisStrategy: SanisProvisioningStrategy,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ProvisioningUc.name);
@@ -28,8 +28,8 @@ export class ProvisioningUc {
 
 		let strategy: ProvisioningStrategy<unknown>;
 		switch (system.provisioningStrategy) {
-			case SystemProvisioningStrategy.PLACEHOLDER:
-				strategy = this.placeholderStrategy;
+			case SystemProvisioningStrategy.SANIS:
+				strategy = this.sanisStrategy;
 				break;
 			default:
 				this.logger.error(`Missing provisioning strategy for system with id ${systemId}`);

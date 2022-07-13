@@ -1,5 +1,5 @@
-export class PlaceholderResponse {
-	constructor(placeholderResponse: PlaceholderResponse) {
+export class SanisResponse {
+	constructor(placeholderResponse: SanisResponse) {
 		this.email = placeholderResponse.email;
 		this.firstName = placeholderResponse.firstName;
 		this.lastName = placeholderResponse.lastName;

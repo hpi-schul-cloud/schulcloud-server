@@ -6,7 +6,7 @@ import { EntityId } from '@shared/domain';
 import { PlaceholderResponse } from '@src/modules/provisioning/strategy/placeholder/placeholder.response';
 
 @Injectable()
-export class PlaceholderResponseMapper implements IProviderResponseMapper<PlaceholderResponse> {
+export class SanisResponseMapper implements IProviderResponseMapper<PlaceholderResponse> {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	mapToSchoolDto(source: PlaceholderResponse): ProvisioningSchoolOutputDto | undefined {
 		throw new Error('Method not implemented.');
