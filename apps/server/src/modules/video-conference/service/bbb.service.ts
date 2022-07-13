@@ -118,10 +118,6 @@ export class BBBService {
 		url.pathname = `/bigbluebutton/api/${callName}`;
 		url.search = queryParams.toString();
 
-		const urll = url.toString();
-
-		const r = this.httpService.get(urll);
-
-		return r;
+		return this.httpService.get(url.toString());
 	}
 }

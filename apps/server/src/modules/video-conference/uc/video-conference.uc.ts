@@ -36,6 +36,7 @@ import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.con
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { AuthorizationService } from '@src/modules/authorization';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
+import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
 
 interface IScopeInfo {
 	scopeId: EntityId;
@@ -44,29 +45,10 @@ interface IScopeInfo {
 	title: string;
 }
 
-class VideoConferenceDTO<T extends BBBResponse<BBBBaseResponse>> {
-	constructor(props: VideoConferenceDTO<T>) {
-		super(props);
-	}
-
-	state: VideoConferenceState;
-
-	permission: Permission;
-
-	bbbResponse?: BBBResponse<BBBBaseResponse>;
-
-	options?: VideoConferenceOptions;
-}
-
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
 	[BBBRole.VIEWER]: Permission.JOIN_MEETING,
 };
-
-// TODO move to ./error/bbb.error.ts
-export enum BBBError {
-	NOT_FOUND = 'notFound',
-}
 
 @Injectable()
 export class VideoConferenceUc {
@@ -98,7 +80,7 @@ export class VideoConferenceUc {
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
 		options: VideoConferenceOptions
-	): Promise<ControllerResponse<BBBResponse<BBBCreateResponse>>> {
+	): Promise<VideoConferenceDTO<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -127,7 +109,7 @@ export class VideoConferenceUc {
 		try {
 			// Patch options, if preset exists
 			vcDo = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
-			vcDo.options = options; // TODO Mapper?
+			vcDo.options = options;
 		} catch (error) {
 			// Create new preset
 			vcDo = this.videoConferenceRepo.create({
@@ -156,7 +138,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise<ControllerResponse<BBBResponse<BBBJoinResponse>>> {
+	): Promise<VideoConferenceDTO<BBBJoinResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -201,6 +183,8 @@ export class VideoConferenceUc {
 				throw new BadRequestException('Unknown scope name');
 		}
 
+		configBuilder.withPassword(bbbRole);
+
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
 
 		if (vcDO.options.everybodyJoinsAsModerator) {
@@ -225,7 +209,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise<ControllerResponse<BBBResponse<BBBMeetingInfoResponse>>> {
+	): Promise<VideoConferenceInfoDTO> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -269,7 +253,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise<ControllerResponse<BBBResponse<BBBBaseResponse>>> {
+	): Promise<VideoConferenceDTO<BBBBaseResponse>> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);

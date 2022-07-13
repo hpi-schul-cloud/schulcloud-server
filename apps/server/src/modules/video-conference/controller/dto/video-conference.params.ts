@@ -4,13 +4,13 @@ import { IsBoolean } from 'class-validator';
 export class VideoConferenceCreateParams {
 	@ApiProperty()
 	@IsBoolean()
-	everyAttendeeJoinsMuted!: boolean;
+	everyAttendeeJoinsMuted?: boolean;
 
 	@ApiProperty()
 	@IsBoolean()
-	everybodyJoinsAsModerator!: boolean;
+	everybodyJoinsAsModerator?: boolean;
 
 	@ApiProperty()
 	@IsBoolean()
-	moderatorMustApproveJoinRequests!: boolean;
+	moderatorMustApproveJoinRequests?: boolean;
 }

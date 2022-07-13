@@ -15,13 +15,20 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import {
+	BBBBaseResponse,
+	BBBCreateResponse,
 	BBBJoinResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
-import { VideoConferenceInfoResponse, VideoConferenceJoinResponse } from './dto/video-conference.response';
+import {
+	VideoConferenceBaseResponse,
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+} from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
+import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -48,12 +55,20 @@ export class VideoConferenceController {
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string,
 		@Body() params: VideoConferenceCreateParams
-	): Promise<void> {
-		return this.videoConferenceUc.create(currentUser, scope, scopeId, {
-			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted,
-			everybodyJoinsAsModerator: params.everybodyJoinsAsModerator,
-			moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests,
-		});
+	): Promise<VideoConferenceBaseResponse> {
+		const dto: VideoConferenceDTO<BBBCreateResponse> = await this.videoConferenceUc.create(
+			currentUser,
+			scope,
+			scopeId,
+			{
+				everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
+				everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
+				moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
+			}
+		);
+		const dto2: VideoConferenceDTO<BBBJoinResponse> = await this.videoConferenceUc.join(currentUser, scope, scopeId);
+
+		return this.responseMapper.mapToJoinResponse(dto2);
 	}
 
 	@Post('join/:scope/:scopeId')
@@ -77,7 +92,7 @@ export class VideoConferenceController {
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceJoinResponse> {
-		const bbbResponse: ControllerResponse<BBBJoinResponse> = await this.videoConferenceUc.join(
+		const bbbResponse: VideoConferenceDTO<BBBJoinResponse> = await this.videoConferenceUc.join(
 			currentUser,
 			scope,
 			scopeId
@@ -106,13 +121,8 @@ export class VideoConferenceController {
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceInfoResponse> {
-		const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = await this.videoConferenceUc.getMeetingInfo(
-			currentUser,
-			scope,
-			scopeId
-		);
-
-		return this.responseMapper.mapToInfoResponse(bbbResponse);
+		const dto: VideoConferenceInfoDTO = await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
+		return this.responseMapper.mapToInfoResponse(dto);
 	}
 
 	@Delete(':scope/:scopeId')
@@ -130,7 +140,8 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
-	): Promise<void> {
-		return this.videoConferenceUc.end(currentUser, scope, scopeId);
+	): Promise<VideoConferenceBaseResponse> {
+		const dto: VideoConferenceDTO<BBBBaseResponse> = await this.videoConferenceUc.end(currentUser, scope, scopeId);
+		return this.responseMapper.mapToBaseResponse(dto);
 	}
 }

@@ -1,12 +1,13 @@
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { Permission } from '@shared/domain';
+import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 
 export class VideoConferenceBaseResponse {
 	status?: string;
 
 	state: VideoConferenceState;
 
-	permission: Permission.START_MEETING | Permission.JOIN_MEETING;
+	permission: Permission;
 
 	constructor(resp: VideoConferenceBaseResponse) {
 		this.status = 'SUCCESS';
@@ -16,7 +17,7 @@ export class VideoConferenceBaseResponse {
 }
 
 export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {
-	url: string;
+	url?: string;
 
 	constructor(resp: VideoConferenceJoinResponse) {
 		super(resp);
@@ -25,13 +26,7 @@ export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {
 }
 
 export class VideoConferenceInfoResponse extends VideoConferenceBaseResponse {
-	options: {
-		everyAttendeeJoinsMuted: boolean;
-
-		everybodyJoinsAsModerator: boolean;
-
-		moderatorMustApproveJoinRequests: boolean;
-	}; // TODO another interface?
+	options?: VideoConferenceOptions;
 
 	constructor(resp: VideoConferenceInfoResponse) {
 		super(resp);
