@@ -1,5 +1,13 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CopyStatus, EntityId, PermissionContextBuilder, Task, TaskCopyService, User } from '@shared/domain';
+import {
+	CopyHelperService,
+	CopyStatus,
+	EntityId,
+	PermissionContextBuilder,
+	Task,
+	TaskCopyService,
+	User,
+} from '@shared/domain';
 import { CourseRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -18,6 +26,7 @@ export class TaskCopyUC {
 		private readonly courseRepo: CourseRepo,
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly filesStorageClient: FilesStorageClientAdapterService
 	) {}
 
@@ -28,10 +37,12 @@ export class TaskCopyUC {
 			throw new NotFoundException('could not find task to copy');
 		}
 		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		const copyName = this.copyHelperService.deriveCopyName(originalTask.name);
 		const status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
 			user,
+			copyName,
 		});
 
 		if (status.copyEntity) {

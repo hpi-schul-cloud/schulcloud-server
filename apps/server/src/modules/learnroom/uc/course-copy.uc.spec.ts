@@ -6,6 +6,7 @@ import {
 	Actions,
 	BoardCopyService,
 	CopyElementType,
+	CopyHelperService,
 	CopyStatusEnum,
 	CourseCopyService,
 	Permission,
@@ -25,6 +26,7 @@ describe('course copy uc', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let roomsService: DeepMocked<RoomsService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -66,6 +68,10 @@ describe('course copy uc', () => {
 					provide: RoomsService,
 					useValue: createMock<RoomsService>(),
 				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
 			],
 		}).compile();
 
@@ -76,6 +82,7 @@ describe('course copy uc', () => {
 		boardRepo = module.get(BoardRepo);
 		boardCopyService = module.get(BoardCopyService);
 		roomsService = module.get(RoomsService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('copy course', () => {
@@ -91,6 +98,9 @@ describe('course copy uc', () => {
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			authorisation.checkPermission.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
+
+			const courseCopyName = 'Copy';
+			copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
 
 			const boardCopyStatus = {
 				title: 'boardCopy',
@@ -108,7 +118,7 @@ describe('course copy uc', () => {
 			};
 			courseCopyService.copyCourse.mockReturnValue(status);
 
-			return { user, course, originalBoard, courseCopy, boardCopy, status };
+			return { user, course, originalBoard, courseCopy, boardCopy, status, courseCopyName };
 		};
 
 		it('should fetch correct user', async () => {
@@ -139,9 +149,9 @@ describe('course copy uc', () => {
 		});
 
 		it('should call course copy service', async () => {
-			const { course, user } = setup();
+			const { course, user, courseCopyName } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(courseCopyService.copyCourse).toBeCalledWith({ originalCourse: course, user });
+			expect(courseCopyService.copyCourse).toBeCalledWith({ originalCourse: course, user, copyName: courseCopyName });
 		});
 
 		it('should persist course copy', async () => {
@@ -172,6 +182,12 @@ describe('course copy uc', () => {
 			const { course, user, originalBoard } = setup();
 			await uc.copyCourse(user.id, course.id);
 			expect(roomsService.updateBoard).toHaveBeenCalledWith(originalBoard, course.id, user.id);
+		});
+
+		it('should use copyHelperService', async () => {
+			const { course, user } = setup();
+			await uc.copyCourse(user.id, course.id);
+			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name);
 		});
 
 		describe('when access to course is forbidden', () => {

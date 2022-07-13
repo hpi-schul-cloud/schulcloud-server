@@ -47,9 +47,8 @@ describe('task copy service', () => {
 					school,
 					description: 'description of what you need to do',
 				});
-				const taskCopyName = 'Copy(250)';
-				copyHelperService.deriveCopyName.mockReturnValue(taskCopyName);
-				return { user, destinationCourse, originalTask, school, taskCopyName };
+				const copyName = 'Copy(250)';
+				return { user, destinationCourse, originalTask, school, copyName };
 			};
 
 			it('should assign user as creator', () => {
@@ -92,8 +91,22 @@ describe('task copy service', () => {
 				expect(task.availableDate).not.toBeDefined();
 			});
 
-			it('should set name of copy', () => {
-				const { user, destinationCourse, originalTask, taskCopyName } = setup();
+			it('should set name of copy to provided name', () => {
+				const { user, destinationCourse, originalTask, copyName } = setup();
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse,
+					user,
+					copyName,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.name).toEqual(copyName);
+			});
+
+			it('should set name of copy original when no name is provided', () => {
+				const { user, destinationCourse, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
@@ -102,7 +115,7 @@ describe('task copy service', () => {
 				});
 
 				const task = status.copyEntity as Task;
-				expect(task.name).toEqual(taskCopyName);
+				expect(task.name).toEqual(originalTask.name);
 			});
 
 			it('should set course of the copy', () => {
@@ -196,18 +209,6 @@ describe('task copy service', () => {
 				const submissionsStatus = status.elements?.find((el) => el.type === CopyElementType.SUBMISSION_GROUP);
 				expect(submissionsStatus).toBeDefined();
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should call copyHelperService', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalled();
 			});
 		});
 

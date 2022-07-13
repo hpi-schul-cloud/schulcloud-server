@@ -55,20 +55,21 @@ describe('course copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: boardCopy,
 				};
-				const courseCopyName = 'Copy';
+				const copyName = 'Copy';
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
-				copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 
-				return { user, originalCourse, boardCopyStatus, courseCopyName };
+				return { user, originalCourse, boardCopyStatus, copyName };
 			};
 
 			it('should assign user as teacher', () => {
-				const { originalCourse, user } = setup();
+				const { originalCourse, user, copyName } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
 					user,
+					copyName,
 				});
 
 				expect((status.copyEntity as Course).teachers.contains(user)).toEqual(true);
@@ -89,27 +90,28 @@ describe('course copy service', () => {
 				expect(course.school).toEqual(destinationSchool);
 			});
 
-			it('should use copyHelperService', () => {
+			it('should use provided copyName', () => {
 				const { originalCourse, user } = setup();
+				const copyName = 'Name of the Copy';
 
-				copyService.copyCourse({
+				const status = copyService.copyCourse({
 					originalCourse,
 					user,
+					copyName,
 				});
 
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalCourse.name);
+				expect((status.copyEntity as Course).name).toEqual(copyName);
 			});
 
-			it('should set name of copy', () => {
-				const { originalCourse, user, courseCopyName } = setup();
+			it('should use original courseName if no copyName is provided', () => {
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
 					user,
 				});
 
-				const course = status.copyEntity as Course;
-				expect(course.name).toEqual(courseCopyName);
+				expect((status.copyEntity as Course).name).toEqual(originalCourse.name);
 			});
 
 			it('should set start date of course', () => {

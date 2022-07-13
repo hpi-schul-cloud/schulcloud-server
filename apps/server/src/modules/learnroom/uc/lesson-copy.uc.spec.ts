@@ -1,13 +1,13 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, PermissionTypes, LessonCopyParams, LessonCopyService, User } from '@shared/domain';
+import { Actions, CopyHelperService, LessonCopyParams, LessonCopyService, PermissionTypes, User } from '@shared/domain';
+import { Permission } from '@shared/domain/interface/permission.enum';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
-import { courseFactory, setupEntities, lessonFactory, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
@@ -17,7 +17,8 @@ describe('lesson copy uc', () => {
 	let lessonRepo: LessonRepo;
 	let courseRepo: CourseRepo;
 	let authorisation: AuthorizationService;
-	let lessonCopyService: LessonCopyService;
+	let lessonCopyService: LessonCopyService; // TODO: add other DeepMocked
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -51,6 +52,10 @@ describe('lesson copy uc', () => {
 					provide: LessonCopyService,
 					useValue: createMock<LessonCopyService>(),
 				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
 			],
 		}).compile();
 
@@ -60,6 +65,7 @@ describe('lesson copy uc', () => {
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		lessonCopyService = module.get(LessonCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('copy lesson', () => {
@@ -85,6 +91,8 @@ describe('lesson copy uc', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((params: LessonCopyParams) => status);
 			const lessonPersistSpy = jest.spyOn(lessonRepo, 'save');
+			const lessonCopyName = 'Copy';
+			copyHelperService.deriveCopyName.mockReturnValue(lessonCopyName);
 			return {
 				user,
 				course,
@@ -97,6 +105,7 @@ describe('lesson copy uc', () => {
 				status,
 				lessonCopySpy,
 				lessonPersistSpy,
+				lessonCopyName,
 			};
 		};
 
@@ -152,9 +161,14 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should call copy service', async () => {
-			const { course, user, lesson, lessonCopySpy } = setup();
+			const { course, user, lesson, lessonCopySpy, lessonCopyName } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(lessonCopySpy).toBeCalledWith({ originalLesson: lesson, destinationCourse: course, user });
+			expect(lessonCopySpy).toBeCalledWith({
+				originalLesson: lesson,
+				destinationCourse: course,
+				user,
+				copyName: lessonCopyName,
+			});
 		});
 
 		it('should persist copy', async () => {
@@ -167,6 +181,12 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, status } = setup();
 			const result = await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
 			expect(result).toEqual(status);
+		});
+
+		it('should use copyHelperService', async () => {
+			const { course, user, lesson } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
+			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(lesson.name);
 		});
 
 		describe('when access to lesson is forbidden', () => {

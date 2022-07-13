@@ -54,7 +54,6 @@ describe('lesson copy service', () => {
 				});
 
 				const copyName = 'Copy';
-				copyHelperService.deriveCopyName.mockReturnValue(copyName);
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
 				return { user, originalCourse, destinationCourse, originalLesson, copyName };
@@ -68,22 +67,24 @@ describe('lesson copy service', () => {
 						originalLesson,
 						destinationCourse,
 						user,
+						copyName,
 					});
 					const lesson = response.copyEntity as Lesson;
 
 					expect(lesson.name).toEqual(copyName);
 				});
 
-				it('should use copyHelperService', () => {
+				it('should set name of copy', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
-					copyService.copyLesson({
+					const response = copyService.copyLesson({
 						originalLesson,
 						destinationCourse,
 						user,
 					});
+					const lesson = response.copyEntity as Lesson;
 
-					expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalLesson.name);
+					expect(lesson.name).toEqual(originalLesson.name);
 				});
 
 				it('should set course of the copy', () => {
@@ -130,7 +131,7 @@ describe('lesson copy service', () => {
 				it('should set status title to the name of the lesson', () => {
 					const { destinationCourse, originalLesson, user, copyName } = setup();
 
-					const status = copyService.copyLesson({ originalLesson, destinationCourse, user });
+					const status = copyService.copyLesson({ originalLesson, destinationCourse, user, copyName });
 
 					expect(status.title).toEqual(copyName);
 				});

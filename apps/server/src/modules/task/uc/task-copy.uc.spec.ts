@@ -1,8 +1,8 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, PermissionTypes, TaskCopyParams, TaskCopyService, User } from '@shared/domain';
+import { Actions, CopyHelperService, PermissionTypes, TaskCopyParams, TaskCopyService, User } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
@@ -18,6 +18,7 @@ describe('task copy uc', () => {
 	let courseRepo: CourseRepo;
 	let authorisation: AuthorizationService;
 	let taskCopyService: TaskCopyService;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -52,6 +53,10 @@ describe('task copy uc', () => {
 					useValue: createMock<TaskCopyService>(),
 				},
 				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
+				},
+				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
@@ -64,6 +69,7 @@ describe('task copy uc', () => {
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		taskCopyService = module.get(TaskCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('copy task', () => {
@@ -77,6 +83,8 @@ describe('task copy uc', () => {
 			const taskSpy = jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
 			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
+			const copyName = 'name of the copy';
+			const copyNameSpy = copyHelperService.deriveCopyName.mockReturnValue(copyName);
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
 				title: 'taskCopy',
@@ -89,7 +97,21 @@ describe('task copy uc', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				.mockImplementation((params: TaskCopyParams) => status);
 			const taskPersistSpy = jest.spyOn(taskRepo, 'save');
-			return { user, course, task, userSpy, taskSpy, courseSpy, authSpy, copy, status, taskCopySpy, taskPersistSpy };
+			return {
+				user,
+				course,
+				task,
+				userSpy,
+				taskSpy,
+				courseSpy,
+				authSpy,
+				copyNameSpy,
+				copyName,
+				copy,
+				status,
+				taskCopySpy,
+				taskPersistSpy,
+			};
 		};
 
 		it('should fetch correct user', async () => {
@@ -143,10 +165,16 @@ describe('task copy uc', () => {
 			});
 		});
 
-		it('should call copy service', async () => {
-			const { course, user, task, taskCopySpy } = setup();
+		it('should derive name for copy', async () => {
+			const { course, user, task, copyNameSpy } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(taskCopySpy).toBeCalledWith({ originalTask: task, destinationCourse: course, user });
+			expect(copyNameSpy).toBeCalledWith(task.name);
+		});
+
+		it('should call copy service', async () => {
+			const { course, user, task, copyName, taskCopySpy } = setup();
+			await uc.copyTask(user.id, task.id, { courseId: course.id });
+			expect(taskCopySpy).toBeCalledWith({ originalTask: task, destinationCourse: course, user, copyName });
 		});
 
 		it('should persist copy', async () => {
