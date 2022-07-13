@@ -1,5 +1,4 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { getChannel } = require('../../../utils/rabbitmq');
 const Syncer = require('./Syncer');
 const SchoolYearFacade = require('../../school/logic/year');
 const { SyncMessageBuilder } = require('./SyncMessageBuilder');

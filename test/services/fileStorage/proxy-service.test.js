@@ -2,22 +2,26 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
 const { FileModel } = require('../../../src/services/fileStorage/model');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 describe('files proxy service', () => {
 	let app;
 	let server;
+	let nestServices;
 	let sharedTokenService;
 
 	before(async () => {
 		app = await appPromise();
 		sharedTokenService = app.service('fileStorage/shared');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('get', () => {

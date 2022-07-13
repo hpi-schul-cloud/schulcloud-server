@@ -1,8 +1,6 @@
 const moment = require('moment');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const constants = require('../../utils/constants');
-const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
 
 const getAutomaticConsent = () => ({
 	form: 'digital',
@@ -43,10 +41,7 @@ const parseDate = (dateString) => {
 };
 
 const firstLogin = async (data, params, app) => {
-	const { accountId } = params.authentication.payload;
-
 	let userPromise = Promise.resolve();
-	let accountPromise = Promise.resolve();
 	let consentPromise = Promise.resolve();
 	let updateConsentUsingVersions = Promise.resolve();
 
@@ -60,7 +55,6 @@ const firstLogin = async (data, params, app) => {
 	const preferences = user.preferences || {};
 	preferences.firstLogin = true;
 
-	const accountUpdate = {};
 	let consentUpdate = {};
 	const userUpdate = {
 		preferences,
@@ -70,14 +64,10 @@ const firstLogin = async (data, params, app) => {
 	// if firstLogin === false skip execution?
 
 	// password
-	if (!passwordsMatch(data['password-1'], data['password-2'])) {
-		throw new Error('Die neuen Passwörter stimmen nicht überein.');
-	}
-
 	if (data['password-1']) {
-		accountUpdate.password_verification = data.password_verification || data['password-2'];
-		accountUpdate.password = data['password-1'];
-		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
+		await app
+			.service('nest-account-uc')
+			.replaceMyTemporaryPassword(user._id.toString(), data['password-1'], data['password-2']);
 	}
 
 	// birthdate
@@ -193,7 +183,7 @@ const firstLogin = async (data, params, app) => {
 	}
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
-	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions]);
+	return Promise.all([userPromise, consentPromise, updateConsentUsingVersions]);
 };
 
 module.exports = function setup(app) {

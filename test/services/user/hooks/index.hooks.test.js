@@ -2,6 +2,7 @@ const mockery = require('mockery');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const {
@@ -52,10 +53,13 @@ describe('hasEditPermissionForUser', () => {
 	let app;
 	let userService;
 	let server;
+	let nestServices;
+
 	before(async () => {
 		app = await appPromise();
 		userService = app.service('users');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -65,6 +69,7 @@ describe('hasEditPermissionForUser', () => {
 	after(async () => {
 		await testObjects.cleanup;
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('can edit your own user', async () => {
@@ -149,10 +154,13 @@ describe('hasReadPermissionForUser', () => {
 	let app;
 	let userService;
 	let server;
+	let nestServices;
+
 	before(async () => {
 		app = await appPromise();
 		userService = app.service('users');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -162,6 +170,7 @@ describe('hasReadPermissionForUser', () => {
 	after(async () => {
 		await testObjects.cleanup;
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('can read own user', async () => {

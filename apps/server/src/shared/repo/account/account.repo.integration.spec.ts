@@ -53,6 +53,28 @@ describe('account repo', () => {
 		});
 	});
 
+	describe('findMultipleByUserId', () => {
+		it('should find multiple user by id', async () => {
+			const anAccountToFind = accountFactory.build();
+			const anotherAccountToFind = accountFactory.build();
+			await em.persistAndFlush(anAccountToFind);
+			await em.persistAndFlush(anotherAccountToFind);
+			em.clear();
+			const accounts = await repo.findMultipleByUserId([anAccountToFind.userId!, anotherAccountToFind.userId!]);
+			expect(accounts).toContainEqual(anAccountToFind);
+			expect(accounts).toContainEqual(anotherAccountToFind);
+			expect(accounts).toHaveLength(2);
+		});
+
+		it('should return empty list if no results', async () => {
+			const accountToFind = accountFactory.build();
+			await em.persistAndFlush(accountToFind);
+			em.clear();
+			const accounts = await repo.findMultipleByUserId(['123456789012', '098765432101']);
+			expect(accounts).toHaveLength(0);
+		});
+	});
+
 	describe('findByUserIdOrFail', () => {
 		it('should find a user by id', async () => {
 			const accountToFind = accountFactory.build();
@@ -144,6 +166,16 @@ describe('account repo', () => {
 
 			[accounts] = await repo.searchByUsernameExactMatch('.*');
 			expect(accounts).toHaveLength(0);
+		});
+	});
+
+	describe('deleteByUserId', () => {
+		it('should delete an account by user id', async () => {
+			const account = accountFactory.buildWithId();
+			await expect(repo.deleteByUserId(account.userId?.toString() ?? '')).resolves.not.toThrow();
+			em.clear();
+
+			await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
 		});
 	});
 });

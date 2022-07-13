@@ -1,5 +1,4 @@
 import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
-import { TokenRequestParams } from './token-request.params';
 
 export class TokenRequestPayload {
 	@IsDefined()
@@ -8,6 +7,27 @@ export class TokenRequestPayload {
 	tokenEndpoint!: string;
 
 	@IsDefined()
+	@IsString()
 	@IsNotEmpty()
-	tokenRequestParams!: TokenRequestParams;
+	client_id!: string;
+
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	client_secret!: string;
+
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	redirect_uri!: string;
+
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	grant_type!: string;
+
+	@IsDefined()
+	@IsString()
+	@IsNotEmpty()
+	code!: string;
 }

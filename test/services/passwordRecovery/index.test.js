@@ -3,12 +3,14 @@ const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
 const PORT = 0;
 
 describe('passwordRecovery service', () => {
 	let app;
+	let nestServices;
 	let passwordRecoveryService;
 
 	let server;
@@ -27,6 +29,7 @@ describe('passwordRecovery service', () => {
 		app = await appPromise();
 		passwordRecoveryService = app.service('passwordRecovery');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		savedUser = await testObjects.createTestUser();
 		savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
 		await passwordRecoveryService.create({ username: recoveryUsername });
@@ -35,6 +38,7 @@ describe('passwordRecovery service', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it.skip('should work for existing email addresses', async () => {
@@ -65,9 +69,9 @@ describe('passwordRecovery service', () => {
 
 	it('found the correct passwordRecovery document for account', async () => {
 		const result = await passwordRecovery.findOne({
-			account: savedAccount._id,
+			account: savedAccount.id,
 		});
-		assert.equal(result.account.toHexString(), savedAccount._id.toHexString());
+		assert.equal(result.account.toHexString(), savedAccount.id);
 	});
 
 	it('registered the passwordRecovery service', () => {
@@ -76,14 +80,14 @@ describe('passwordRecovery service', () => {
 
 	it('token is 32 characters long', async () => {
 		const result = await passwordRecovery.findOne({
-			account: savedAccount._id,
+			account: savedAccount.id,
 		});
 		assert.equal(result.token.length, 32);
 	});
 
 	it('successfully changed password for user', async () => {
 		const result = await passwordRecovery.findOne({
-			account: savedAccount._id,
+			account: savedAccount.id,
 		});
 		const success = await app.service('passwordRecovery/reset').create({
 			password: 'schulcloud',

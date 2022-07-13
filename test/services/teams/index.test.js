@@ -11,6 +11,7 @@ const {
 	createTestAccount,
 } = require('../helpers/testObjects')(appPromise());
 const testHelper = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
@@ -18,15 +19,18 @@ describe('Test team basic methods', () => {
 	let app;
 	let server;
 	let teamService;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		teamService = app.service('/teams');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('teams create', () => {
@@ -113,13 +117,13 @@ describe('Test team basic methods', () => {
 				await cleanup();
 			}
 		});
-
 	});
 });
 
 describe('Test team extern add services', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	let teacher;
 	let params;
@@ -133,6 +137,7 @@ describe('Test team extern add services', () => {
 		addService = app.service('/teams/extern/add');
 		addService.setup(app);
 		server = await app.listen();
+		nestServices = await setupNestServices(app);
 
 		[owner, teacher, expert, student] = await Promise.all([
 			createTestUser({ roles: ['teacher'] }),
@@ -151,6 +156,7 @@ describe('Test team extern add services', () => {
 	after(async () => {
 		await testHelper.cleanup;
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('add new teamadministrator with userId', async () => {

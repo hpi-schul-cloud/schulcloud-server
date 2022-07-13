@@ -4,6 +4,7 @@ const chai = require('chai');
 const appPromise = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -15,16 +16,19 @@ describe('courses copy service', () => {
 	let copyCourseService;
 	let shareCourseService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		copyCourseService = app.service('courses/copy');
 		shareCourseService = app.service('courses-share');
 		server = await app.listen();
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the course copy service', () => {

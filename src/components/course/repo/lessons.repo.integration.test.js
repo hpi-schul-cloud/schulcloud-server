@@ -3,6 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 const lessonsRepo = require('./lessons.repo');
 
@@ -34,10 +35,12 @@ const getTestObjects = async () => {
 describe('when having a user in lesson contents', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -46,6 +49,7 @@ describe('when having a user in lesson contents', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 	it('should remove the user related lesson contents', async () => {
 		// create test objects
