@@ -99,4 +99,4 @@ enableAuditLog(systemSchema);
 
 const systemModel = mongoose.model('system', systemSchema);
 
-module.exports = { systemModel, systemSchema };
+module.exports = systemModel;

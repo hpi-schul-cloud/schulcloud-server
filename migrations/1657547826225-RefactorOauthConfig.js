@@ -3,9 +3,33 @@ const mongoose = require('mongoose');
 const { alert, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
-const { systemSchema } = require('../src/services/system/model');
-
-const System = mongoose.model('systemSchemaOauthRefactor', systemSchema, 'systems');
+const System = mongoose.model(
+	'systemSchemaOauthRefactor',
+	new mongoose.Schema(
+		{
+			oauthConfig: {
+				type: {
+					clientId: { type: String, required: true },
+					clientSecret: { type: String, required: true },
+					grantType: { type: String, required: true },
+					redirectUri: { type: String, required: true },
+					scope: { type: String, required: true },
+					responseType: { type: String, required: true },
+					authEndpoint: { type: String, required: true },
+					provider: { type: String, required: true },
+					logoutEndpoint: { type: String, required: false },
+					issuer: { type: String, required: true },
+					jwksEndpoint: { type: String, required: true },
+				},
+				required: false,
+			},
+		},
+		{
+			timestamps: true,
+		}
+	),
+	'systems'
+);
 
 // This migration renames a field and removes an unnecessary one
 
