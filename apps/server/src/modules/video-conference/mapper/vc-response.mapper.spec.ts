@@ -1,0 +1,92 @@
+import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
+import { BBBBaseResponse, BBBJoinResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
+import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
+import { Test, TestingModule } from '@nestjs/testing';
+import {
+	VideoConferenceBaseResponse,
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+} from '@src/modules/video-conference/controller/dto/video-conference.response';
+import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
+import { Permission } from '@shared/domain';
+import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
+
+describe('VideoConferenceResponseMapper', () => {
+	let module: TestingModule;
+	let mapper: VideoConferenceResponseMapper;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [VideoConferenceResponseMapper],
+		}).compile();
+		mapper = module.get(VideoConferenceResponseMapper);
+	});
+
+	describe('test mapping', () => {
+		it('mapToBaseResponse', () => {
+			// Arrange
+			const from: VideoConferenceDTO<BBBBaseResponse> = {
+				state: VideoConferenceState.RUNNING,
+				permission: Permission.ADD_SCHOOL_MEMBERS,
+			};
+
+			// Act
+			const result: VideoConferenceBaseResponse = mapper.mapToBaseResponse(from);
+
+			// Assert
+			expect(result.state).toEqual(from.state);
+			expect(result.permission).toEqual(from.permission);
+		});
+
+		it('mapToJoinResponse', () => {
+			// Arrange
+			const from: VideoConferenceDTO<BBBJoinResponse> = {
+				state: VideoConferenceState.RUNNING,
+				permission: Permission.ADD_SCHOOL_MEMBERS,
+				bbbResponse: {
+					response: {
+						meeting_id: 'meetingId',
+						user_id: 'userId',
+						auth_token: 'auth_token',
+						session_token: 'session_token',
+						url: 'url',
+						message: 'message',
+						messageKey: 'messageKey',
+						returncode: VideoConferenceStatus.SUCCESS,
+					},
+				},
+			};
+
+			// Act
+			const result: VideoConferenceJoinResponse = mapper.mapToJoinResponse(from);
+
+			// Assert
+			expect(result.state).toEqual(from.state);
+			expect(result.permission).toEqual(from.permission);
+			expect(result.url).toEqual(from.bbbResponse?.response.url);
+		});
+
+		it('mapToInfoResponse', () => {
+			// Arrange
+			const from: VideoConferenceInfoDTO = {
+				state: VideoConferenceState.RUNNING,
+				permission: Permission.ADD_SCHOOL_MEMBERS,
+				options: {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: false,
+				},
+			};
+
+			// Act
+			const result: VideoConferenceInfoResponse = mapper.mapToInfoResponse(from);
+
+			// Assert
+			expect(result.state).toEqual(from.state);
+			expect(result.permission).toEqual(from.permission);
+			expect(result.options?.moderatorMustApproveJoinRequests).toEqual(from.options?.moderatorMustApproveJoinRequests);
+			expect(result.options?.everyAttendeeJoinsMuted).toEqual(from.options?.everyAttendeeJoinsMuted);
+			expect(result.options?.everybodyJoinsAsModerator).toEqual(from.options?.everybodyJoinsAsModerator);
+		});
+	});
+});
