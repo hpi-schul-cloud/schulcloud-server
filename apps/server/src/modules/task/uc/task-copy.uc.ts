@@ -37,7 +37,15 @@ export class TaskCopyUC {
 			throw new NotFoundException('could not find task to copy');
 		}
 		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
-		const copyName = this.copyHelperService.deriveCopyName(originalTask.name);
+
+		let parentIds = {};
+		if (parentParams.courseId) {
+			parentIds = { courseIds: [parentParams.courseId] };
+			// TODO: do we need to take care for lessonIds? as they are not shown in the course: probably not
+		}
+		const [existingTasks] = await this.taskRepo.findAllByParentIds(parentIds);
+		const existingNames = existingTasks.map((t) => t.name);
+		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
 		const status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,

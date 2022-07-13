@@ -88,13 +88,15 @@ describe('course copy uc', () => {
 	describe('copy course', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId({ teachers: [user] });
+			const allCourses = courseFactory.buildList(3, { teachers: [user] });
+			const course = allCourses[0];
 			const originalBoard = boardFactory.build({ course });
 			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
 			const boardCopy = boardFactory.build({ course: courseCopy });
 
 			authorisation.getUserWithPermissions.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
+			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			authorisation.checkPermission.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
@@ -118,7 +120,7 @@ describe('course copy uc', () => {
 			};
 			courseCopyService.copyCourse.mockReturnValue(status);
 
-			return { user, course, originalBoard, courseCopy, boardCopy, status, courseCopyName };
+			return { user, course, originalBoard, courseCopy, boardCopy, status, courseCopyName, allCourses };
 		};
 
 		it('should fetch correct user', async () => {
@@ -185,9 +187,16 @@ describe('course copy uc', () => {
 		});
 
 		it('should use copyHelperService', async () => {
+			const { course, user, allCourses } = setup();
+			await uc.copyCourse(user.id, course.id);
+			const allCourseNames = allCourses.map((c) => c.name);
+			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name, allCourseNames);
+		});
+
+		it('should use findAllByUserId to determine existing course names', async () => {
 			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name);
+			expect(courseRepo.findAllByUserId).toHaveBeenCalledWith(user.id);
 		});
 
 		describe('when access to course is forbidden', () => {

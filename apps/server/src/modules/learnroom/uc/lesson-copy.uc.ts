@@ -40,7 +40,9 @@ export class LessonCopyUC {
 			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
 		}
 
-		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name);
+		const [existingLessons] = await this.lessonRepo.findAllByCourseIds([originalLesson.course.id]);
+		const existingNames = existingLessons.map((l) => l.name);
+		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
 
 		const status = this.lessonCopyService.copyLesson({
 			originalLesson,

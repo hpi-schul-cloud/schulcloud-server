@@ -14,7 +14,7 @@ describe('task copy uc', () => {
 	let orm: MikroORM;
 	let uc: TaskCopyUC;
 	let userRepo: UserRepo;
-	let taskRepo: TaskRepo;
+	let taskRepo: DeepMocked<TaskRepo>;
 	let courseRepo: CourseRepo;
 	let authorisation: AuthorizationService;
 	let taskCopyService: TaskCopyService;
@@ -76,15 +76,17 @@ describe('task copy uc', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			const task = taskFactory.buildWithId();
+			const allTasks = taskFactory.buildList(3, { course });
+			const task = allTasks[0];
 			const userSpy = jest
 				.spyOn(authorisation, 'getUserWithPermissions')
 				.mockImplementation(() => Promise.resolve(user));
-			const taskSpy = jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
+			taskRepo.findById.mockResolvedValue(task);
+			taskRepo.findAllByParentIds.mockResolvedValue([allTasks, allTasks.length]);
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
 			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
 			const copyName = 'name of the copy';
-			const copyNameSpy = copyHelperService.deriveCopyName.mockReturnValue(copyName);
+			copyHelperService.deriveCopyName.mockReturnValue(copyName);
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
 				title: 'taskCopy',
@@ -102,15 +104,14 @@ describe('task copy uc', () => {
 				course,
 				task,
 				userSpy,
-				taskSpy,
 				courseSpy,
 				authSpy,
-				copyNameSpy,
 				copyName,
 				copy,
 				status,
 				taskCopySpy,
 				taskPersistSpy,
+				allTasks,
 			};
 		};
 
@@ -121,9 +122,9 @@ describe('task copy uc', () => {
 		});
 
 		it('should fetch correct task', async () => {
-			const { course, user, task, taskSpy } = setup();
+			const { course, user, task } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(taskSpy).toBeCalledWith(task.id);
+			expect(taskRepo.findById).toBeCalledWith(task.id);
 		});
 
 		it('should fetch destination course', async () => {
@@ -166,9 +167,16 @@ describe('task copy uc', () => {
 		});
 
 		it('should derive name for copy', async () => {
-			const { course, user, task, copyNameSpy } = setup();
+			const { course, user, task, allTasks } = setup();
 			await uc.copyTask(user.id, task.id, { courseId: course.id });
-			expect(copyNameSpy).toBeCalledWith(task.name);
+			const existingNames = allTasks.map((t) => t.name);
+			expect(copyHelperService.deriveCopyName).toBeCalledWith(task.name, existingNames);
+		});
+
+		it('should use findAllByParentIds to determine existing task names', async () => {
+			const { course, user, task } = setup();
+			await uc.copyTask(user.id, task.id, { courseId: course.id });
+			expect(taskRepo.findAllByParentIds).toHaveBeenCalledWith({ courseIds: [course.id] });
 		});
 
 		it('should call copy service', async () => {

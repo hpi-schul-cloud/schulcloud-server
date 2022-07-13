@@ -21,13 +21,22 @@ export class CopyHelperService {
 		return CopyStatusEnum.SUCCESS;
 	}
 
-	deriveCopyName(name: string): string {
+	deriveCopyName(name: string, existingNames?: string[]): string {
 		let number = 1;
+		let composedName = this.composeCopyName(name, number);
+		while (existingNames?.includes(composedName)) {
+			number += 1;
+			composedName = this.composeCopyName(name, number);
+		}
+		return composedName;
+	}
+
+	private composeCopyName(name: string, num: number): string {
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
 			name = matches.groups.name;
-			number = Number(matches.groups.number) + 1;
+			num = Number(matches.groups.number) + 1;
 		}
-		return `${name} (${number})`;
+		return `${name} (${num})`;
 	}
 }

@@ -37,7 +37,10 @@ export class CourseCopyUC {
 			requiredPermissions: [Permission.COURSE_CREATE],
 		});
 
-		const copyName = this.copyHelperService.deriveCopyName(originalCourse.name);
+		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
+		const existingNames = existingCourses.map((course: Course) => course.name);
+
+		const copyName = this.copyHelperService.deriveCopyName(originalCourse.name, existingNames);
 
 		const statusCourse = this.courseCopyService.copyCourse({ originalCourse, user, copyName });
 		const courseCopy = statusCourse.copyEntity as Course;

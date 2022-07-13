@@ -152,5 +152,39 @@ describe('copy helper service', () => {
 
 			expect(nameCopy).toEqual(`${basename} (13)`);
 		});
+
+		describe('avoid name collisions with existing names', () => {
+			it('should not return an existing name', () => {
+				const originalName = 'Test';
+				const existingName = 'Test (1)';
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, [existingName]);
+				expect(nameCopy).not.toEqual(existingName);
+			});
+
+			it('should return the right name regardless of existing names order', () => {
+				const originalName = 'Test';
+				const existingNames = ['Test (2)', 'Test (3)', 'Test (1)'];
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (4)');
+			});
+
+			it('should use the first available gap in the list', () => {
+				const originalName = 'Test';
+				const existingNames = ['Test (1)', 'Test (3)'];
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (2)');
+			});
+
+			it('should work with long lists of existing names', () => {
+				const originalName = 'Test';
+				const existingNames = Array.from(Array(2000).keys()).map((n) => `Test (${n})`);
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (2000)');
+			});
+		});
 	});
 });

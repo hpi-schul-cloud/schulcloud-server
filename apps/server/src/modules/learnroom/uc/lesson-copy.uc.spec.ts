@@ -14,7 +14,7 @@ describe('lesson copy uc', () => {
 	let orm: MikroORM;
 	let uc: LessonCopyUC;
 	let userRepo: UserRepo;
-	let lessonRepo: LessonRepo;
+	let lessonRepo: DeepMocked<LessonRepo>;
 	let courseRepo: CourseRepo;
 	let authorisation: AuthorizationService;
 	let lessonCopyService: LessonCopyService; // TODO: add other DeepMocked
@@ -72,11 +72,15 @@ describe('lesson copy uc', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			const lesson = lessonFactory.buildWithId();
+			const allLessons = lessonFactory.buildList(3, { course });
+			const lesson = allLessons[0];
+
 			const userSpy = jest
 				.spyOn(authorisation, 'getUserWithPermissions')
 				.mockImplementation(() => Promise.resolve(user));
-			const lessonSpy = jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
+			lessonRepo.findById.mockResolvedValue(lesson);
+			lessonRepo.findAllByCourseIds.mockResolvedValue([allLessons, allLessons.length]);
+
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
 			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
 			const copy = lessonFactory.buildWithId({ course });
@@ -98,7 +102,6 @@ describe('lesson copy uc', () => {
 				course,
 				lesson,
 				userSpy,
-				lessonSpy,
 				courseSpy,
 				authSpy,
 				copy,
@@ -106,6 +109,7 @@ describe('lesson copy uc', () => {
 				lessonCopySpy,
 				lessonPersistSpy,
 				lessonCopyName,
+				allLessons,
 			};
 		};
 
@@ -116,9 +120,9 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should fetch correct lesson', async () => {
-			const { course, user, lesson, lessonSpy } = setup();
+			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(lessonSpy).toBeCalledWith(lesson.id);
+			expect(lessonRepo.findById).toBeCalledWith(lesson.id);
 		});
 
 		it('should fetch destination course', async () => {
@@ -184,9 +188,16 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should use copyHelperService', async () => {
+			const { course, user, lesson, allLessons } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
+			const existingNames = allLessons.map((l) => l.name);
+			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(lesson.name, existingNames);
+		});
+
+		it('should use findAllByCourseIds to determine existing lesson names', async () => {
 			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(lesson.name);
+			expect(lessonRepo.findAllByCourseIds).toHaveBeenCalledWith([course.id]);
 		});
 
 		describe('when access to lesson is forbidden', () => {
