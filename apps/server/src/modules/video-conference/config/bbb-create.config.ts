@@ -1,11 +1,14 @@
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+
 export enum GuestPolicy {
 	ALWAYS_ACCEPT = 'ALWAYS_ACCEPT',
 	ALWAYS_DENY = 'ALWAYS_DENY',
 	ASK_MODERATOR = 'ASK_MODERATOR',
 }
 
-export class BBBCreateConfig {
+export class BBBCreateConfig extends BBBBaseMeetingConfig {
 	constructor(config: BBBCreateConfig) {
+		super(config);
 		this.name = config.name;
 		this.meetingID = config.meetingID;
 		this.logoutURL = config.logoutURL;
@@ -17,8 +20,6 @@ export class BBBCreateConfig {
 	}
 
 	name: string;
-
-	meetingID: string;
 
 	attendeePW?: string;
 

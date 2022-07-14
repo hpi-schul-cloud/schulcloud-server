@@ -14,25 +14,15 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
-import {
-	BBBBaseResponse,
-	BBBCreateResponse,
-	BBBJoinResponse,
-	BBBMeetingInfoResponse,
-	BBBResponse,
-} from '@src/modules/video-conference/interface/bbb-response.interface';
+import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
-import {
-	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-} from './dto/video-conference.response';
-import { VideoConferenceCreateParams } from './dto/video-conference.params';
 import {
 	VideoConferenceDTO,
 	VideoConferenceInfoDTO,
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
+import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from './dto/video-conference.response';
+import { VideoConferenceCreateParams } from './dto/video-conference.params';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -54,49 +44,20 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to create this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async create(
+	async createAndJoin(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<VideoConferenceBaseResponse> {
-		const dto: VideoConferenceDTO<BBBCreateResponse> = await this.videoConferenceUc.create(
-			currentUser,
-			scope,
-			scopeId,
-			{
-				everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
-				everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
-				moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
-			}
-		);
-		const dto2: VideoConferenceJoinDTO = await this.videoConferenceUc.join(currentUser, scope, scopeId);
+		await this.videoConferenceUc.create(currentUser, scope, scopeId, {
+			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
+			everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
+			moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
+		});
 
-		return this.responseMapper.mapToJoinResponse(dto2);
-	}
-
-	@Post('join/:scope/:scopeId')
-	@ApiOperation({
-		summary: 'Returns a join link for a video conference.',
-	})
-	@ApiResponse({
-		status: 200,
-		type: VideoConferenceJoinResponse,
-		description: 'Returns a valid join link for a video conference.',
-	})
-	@ApiResponse({ status: 400, type: BadRequestException, description: 'Invalid parameters.' })
-	@ApiResponse({
-		status: 403,
-		type: ForbiddenException,
-		description: 'User does not have the permission to join this conference.',
-	})
-	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async join(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('scope') scope: VideoConferenceScope,
-		@Param('scopeId') scopeId: string
-	): Promise<VideoConferenceJoinResponse> {
 		const dto: VideoConferenceJoinDTO = await this.videoConferenceUc.join(currentUser, scope, scopeId);
+
 		return this.responseMapper.mapToJoinResponse(dto);
 	}
 

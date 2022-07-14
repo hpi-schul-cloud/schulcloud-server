@@ -36,6 +36,6 @@ export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity> {
 		return this.mapEntityToDO(entity);
 	}
 
-	abstract mapDOToEntity(T): E;
-	abstract mapEntityToDO(E): T;
+	protected abstract mapDOToEntity(T): E;
+	protected abstract mapEntityToDO(E): T;
 }

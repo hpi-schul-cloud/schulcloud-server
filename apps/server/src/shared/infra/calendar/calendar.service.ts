@@ -14,7 +14,7 @@ export class CalendarService {
 
 	private readonly timeoutMs: number;
 
-	constructor(private readonly httpService: HttpService, private readonly logger: Logger) {
+	constructor(private readonly httpService: HttpService) {
 		this.baseURL = Configuration.get('HOST') as string;
 		this.timeoutMs = Configuration.get('REQUEST_OPTION__TIMEOUT_MS') as number;
 	}
@@ -34,8 +34,7 @@ export class CalendarService {
 		)
 			.then((resp: AxiosResponse<ICalendarEvent>) => resp.data)
 			.catch((error) => {
-				this.logger.error(error);
-				throw new InternalServerErrorException();
+				throw new InternalServerErrorException(error);
 			});
 	}
 
@@ -43,7 +42,7 @@ export class CalendarService {
 		path: string,
 		queryParams: URLSearchParams = new URLSearchParams(),
 		config: AxiosRequestConfig = {}
-	): Observable<AxiosResponse> {
+	): Observable<AxiosResponse<ICalendarEvent>> {
 		const url: URL = new URL(this.baseURL);
 		url.pathname = `/calendar${path}`;
 		url.search = queryParams.toString();

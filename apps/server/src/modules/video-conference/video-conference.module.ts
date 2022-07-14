@@ -10,6 +10,7 @@ import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { LoggerModule } from '@src/core/logger';
+import { ConverterUtil } from '@shared/common';
 
 @Module({
 	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule],
@@ -22,6 +23,7 @@ import { LoggerModule } from '@src/core/logger';
 		CourseRepo,
 		UserRepo,
 		VideoConferenceResponseMapper,
+		ConverterUtil,
 	],
 })
 export class VideoConferenceModule {}

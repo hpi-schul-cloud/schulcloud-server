@@ -1,12 +1,14 @@
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
+
 export enum BBBRole {
 	MODERATOR = 'MODERATOR',
 	VIEWER = 'VIEWER',
 }
 
-export class BBBJoinConfig {
+export class BBBJoinConfig extends BBBBaseMeetingConfig {
 	constructor(config: BBBJoinConfig) {
+		super(config);
 		this.fullName = config.fullName;
-		this.meetingID = config.meetingID;
 		this.role = config.role;
 		this.userID = config.userID;
 		this.guest = config.guest;
@@ -14,8 +16,6 @@ export class BBBJoinConfig {
 	}
 
 	fullName: string;
-
-	meetingID: string;
 
 	role: BBBRole;
 

@@ -1,6 +1,6 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import { BBBEndConfig } from '@src/modules/video-conference/config/bbb-end.config';
+import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
 import {
 	Course,
 	EntityId,
@@ -20,11 +20,9 @@ import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { CalendarService } from '@shared/infra/calendar';
-import { BBBMeetingInfoConfig } from '@src/modules/video-conference/config/bbb-meeting-info.config';
 import {
 	BBBBaseResponse,
 	BBBCreateResponse,
-	BBBJoinResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
@@ -42,7 +40,7 @@ import {
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
 
-interface IScopeInfo {
+export interface IScopeInfo {
 	scopeId: EntityId;
 	scopeName: string;
 	logoutUrl: string;
@@ -72,12 +70,12 @@ export class VideoConferenceUc {
 	}
 
 	/**
-	 * Creates a new video conference
+	 * Creates a new video conference.
 	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
+	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @param {VideoConferenceOptions} options
-	 * @returns {BBBResponse<BBBCreateResponse>}
+	 * @returns {Promise<VideoConferenceDTO<BBBCreateResponse>>}
 	 */
 	async create(
 		currentUser: ICurrentUser,
@@ -124,19 +122,21 @@ export class VideoConferenceUc {
 		}
 		await this.videoConferenceRepo.save(vcDo);
 
+		const bbbResponse: BBBResponse<BBBCreateResponse> = await this.bbbService.create(configBuilder.build());
+
 		return {
 			state: VideoConferenceState.NOT_STARTED,
 			permission: PermissionMapping[bbbRole],
-			bbbResponse: await this.bbbService.create(configBuilder.build()),
+			bbbResponse,
 		};
 	}
 
 	/**
-	 * Generates a join link for a video conference
+	 * Generates a join link for a video conference.
 	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
-	 * @returns {BBBResponse<BBBJoinResponse>}
+	 * @param {EntityId} refId eventId or courseId, depending on scope.
+	 * @returns {Promise<VideoConferenceJoinDTO>}
 	 */
 	async join(
 		currentUser: ICurrentUser,
@@ -196,19 +196,21 @@ export class VideoConferenceUc {
 			configBuilder.withRole(BBBRole.MODERATOR);
 		}
 
+		const url: string = await this.bbbService.join(configBuilder.build());
+
 		return {
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
-			url: await this.bbbService.join(configBuilder.build()),
+			url,
 		};
 	}
 
 	/**
-	 * Retrieves information about a video conference
+	 * Retrieves information about a video conference.
 	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
-	 * @returns {BBBResponse<BBBEndConfig>}
+	 * @param {EntityId} refId eventId or courseId, depending on scope.
+	 * @returns {BBBResponse<BBBBaseMeetingConfig>}
 	 */
 	async getMeetingInfo(
 		currentUser: ICurrentUser,
@@ -223,13 +225,13 @@ export class VideoConferenceUc {
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
 
-		const config: BBBMeetingInfoConfig = new BBBMeetingInfoConfig({
+		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
 			meetingID: refId,
 		});
 
-		let info: BBBResponse<BBBMeetingInfoResponse> | undefined;
+		let bbbResponse: BBBResponse<BBBMeetingInfoResponse>;
 		try {
-			info = await this.bbbService.getMeetingInfo(config);
+			bbbResponse = await this.bbbService.getMeetingInfo(config);
 		} catch (error) {
 			return {
 				state: VideoConferenceState.NOT_STARTED,
@@ -242,17 +244,17 @@ export class VideoConferenceUc {
 		return {
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
-			bbbResponse: info,
+			bbbResponse,
 			options: bbbRole === BBBRole.MODERATOR ? vcDO.options : undefined,
 		};
 	}
 
 	/**
-	 * Ends a video conference
+	 * Ends a video conference.
 	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
-	 * @returns
+	 * @param {EntityId} refId eventId or courseId, depending on scope.
+	 * @returns {Promise<VideoConferenceDTO<BBBBaseResponse>>}
 	 */
 	async end(
 		currentUser: ICurrentUser,
@@ -271,25 +273,27 @@ export class VideoConferenceUc {
 			throw new ForbiddenException();
 		}
 
-		const config: BBBEndConfig = new BBBEndConfig({
+		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
 			meetingID: refId,
 		});
+
+		const bbbResponse: BBBResponse<BBBBaseResponse> = await this.bbbService.end(config);
 
 		return {
 			state: VideoConferenceState.FINISHED,
 			permission: PermissionMapping[bbbRole],
-			bbbResponse: await this.bbbService.end(config),
+			bbbResponse,
 		};
 	}
 
 	/**
-	 * Retrieves information about the permission scope based on the scope of the video conference
+	 * Retrieves information about the permission scope based on the scope of the video conference.
 	 * @param {EntityId} userId
 	 * @param {VideoConferenceScope} conferenceScope
-	 * @param {EntityId} refId eventId or courseId, depending on scope
-	 * @returns {IScopeInfo}
+	 * @param {EntityId} refId eventId or courseId, depending on scope.
+	 * @returns {Promise<IScopeInfo>}
 	 */
-	private async getScopeInfo(
+	protected async getScopeInfo(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
 		refId: string
@@ -319,13 +323,13 @@ export class VideoConferenceUc {
 	}
 
 	/**
-	 * Checks if the user has the required permissions and returns their associated role in bbb
+	 * Checks if the user has the required permissions and returns their associated role in BBB.
 	 * @param {EntityId} userId
 	 * @param {EntityId} entityId
 	 * @throws {ForbiddenException}
-	 * @returns {BBBRole}
+	 * @returns {Promise<BBBRole>}
 	 */
-	private async checkPermission(userId: EntityId, entityId: EntityId): Promise<BBBRole> {
+	protected async checkPermission(userId: EntityId, entityId: EntityId): Promise<BBBRole> {
 		const permissionMap: Map<Permission, boolean> = await this.authorizationService.hasPermissionsByReferences(
 			userId,
 			AllowedAuthorizationEntityType.Course,
@@ -343,13 +347,13 @@ export class VideoConferenceUc {
 	}
 
 	/**
-	 * Throws an error if the feature is disabled for the school or for the entire instance
+	 * Throws an error if the feature is disabled for the school or for the entire instance.
 	 * @param schoolId
 	 * @throws ForbiddenException
 	 */
-	private async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
+	protected async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
 		// throw, if the feature has not been enabled
-		if (!Configuration.has('FEATURE_VIDEOCONFERENCE_ENABLED')) {
+		if (!Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED')) {
 			throw new ForbiddenException('feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled');
 		}
 		// throw, if the current users school does not have the feature enabled

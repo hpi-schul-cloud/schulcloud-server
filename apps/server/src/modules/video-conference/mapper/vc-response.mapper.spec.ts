@@ -1,4 +1,8 @@
-import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
+import {
+	VideoConferenceDTO,
+	VideoConferenceInfoDTO,
+	VideoConferenceJoinDTO,
+} from '@src/modules/video-conference/dto/video-conference.dto';
 import { BBBBaseResponse, BBBJoinResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,7 +13,6 @@ import {
 } from '@src/modules/video-conference/controller/dto/video-conference.response';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { Permission } from '@shared/domain';
-import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 
 describe('VideoConferenceResponseMapper', () => {
 	let module: TestingModule;
@@ -40,21 +43,10 @@ describe('VideoConferenceResponseMapper', () => {
 
 		it('mapToJoinResponse', () => {
 			// Arrange
-			const from: VideoConferenceDTO<BBBJoinResponse> = {
+			const from: VideoConferenceJoinDTO = {
 				state: VideoConferenceState.RUNNING,
 				permission: Permission.ADD_SCHOOL_MEMBERS,
-				bbbResponse: {
-					response: {
-						meeting_id: 'meetingId',
-						user_id: 'userId',
-						auth_token: 'auth_token',
-						session_token: 'session_token',
-						url: 'url',
-						message: 'message',
-						messageKey: 'messageKey',
-						returncode: VideoConferenceStatus.SUCCESS,
-					},
-				},
+				url: 'url',
 			};
 
 			// Act
@@ -63,7 +55,7 @@ describe('VideoConferenceResponseMapper', () => {
 			// Assert
 			expect(result.state).toEqual(from.state);
 			expect(result.permission).toEqual(from.permission);
-			expect(result.url).toEqual(from.bbbResponse?.response.url);
+			expect(result.url).toEqual(from.url);
 		});
 
 		it('mapToInfoResponse', () => {

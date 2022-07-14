@@ -32,7 +32,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return this.mapEntityToDO(entity);
 	}
 
-	mapEntityToDO(entity: VideoConference): VideoConferenceDO {
+	protected mapEntityToDO(entity: VideoConference): VideoConferenceDO {
 		return new VideoConferenceDO({
 			id: entity.id,
 			target: entity.target,
@@ -45,7 +45,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	mapDOToEntity(entityDO: VideoConferenceDO): VideoConference {
+	protected mapDOToEntity(entityDO: VideoConferenceDO): VideoConference {
 		return new VideoConference({
 			target: entityDO.target,
 			targetModel: TargetModelsMapping[entityDO.targetModel],
