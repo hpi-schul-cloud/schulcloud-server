@@ -2,20 +2,24 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('consentVersionService tests', () => {
 	let app;
 	let server;
+	let nestServices;
 	let consentVersionService;
 
 	before(async () => {
 		app = await appPromise();
 		consentVersionService = app.service('/consentVersions');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(testObjects.cleanup);

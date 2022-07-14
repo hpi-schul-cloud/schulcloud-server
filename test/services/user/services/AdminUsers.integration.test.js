@@ -3,12 +3,14 @@ const chaiHttp = require('chai-http');
 const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('admin users integration tests', () => {
 	let app;
+	let nestServices;
 	let server;
 	let configBefore;
 	let testObjects;
@@ -23,11 +25,13 @@ describe('admin users integration tests', () => {
 		testObjects = require('../../helpers/testObjects')(appPromise);
 		app = await appPromise;
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
 		Configuration.reset(configBefore);
+		await closeNestServices(nestServices);
 	});
 
 	const getAdminToken = async (schoolId = undefined) => {

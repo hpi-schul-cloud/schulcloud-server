@@ -1,13 +1,14 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 describe('forcePasswordChange service tests', () => {
 	let app;
-	let accountService;
 	let forcePasswordChangeService;
 	let server;
+	let nestServices;
 	const newPassword = 'SomePassword1!';
 	const newPasswordConfirmation = 'SomePassword1!';
 	const newPasswordThatDoesNotMatch = 'SomePassword2!';
@@ -15,13 +16,15 @@ describe('forcePasswordChange service tests', () => {
 
 	before(async () => {
 		app = await appPromise();
-		accountService = app.service('accounts');
+		nestServices = await setupNestServices(app);
 		forcePasswordChangeService = app.service('forcePasswordChange');
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	const postChangePassword = (requestParams, password, password2) =>
@@ -41,7 +44,7 @@ describe('forcePasswordChange service tests', () => {
 			return postChangePassword(userRequestAuthentication, newPassword, newPasswordThatDoesNotMatch).catch((err) => {
 				expect(err.code).to.equal(400);
 				expect(err.name).to.equal('BadRequest');
-				expect(err.message).to.equal('Die neuen Passwörter stimmen nicht überein.');
+				expect(err.message).to.equal('Password and confirm password do not match.');
 			});
 		});
 		it('when the password is to weak, the error object is returned with the proper error message', async () => {
@@ -68,16 +71,16 @@ describe('forcePasswordChange service tests', () => {
 				forcePasswordChange: true,
 			};
 			const savedUser = await testObjects.createTestUser();
-			const account = await testObjects.createTestAccount(newAccount, null, savedUser);
+			await testObjects.createTestAccount(newAccount, null, savedUser);
 			const requestParams = userRequestAuthentication;
 			requestParams.authentication.payload = {
 				accountId: newAccount.accountId,
 			};
+			// this.app.service('/users').patch(params.account.userId
 
-			return postChangePassword(requestParams, newPassword, newPasswordConfirmation).then((resp) => {
-				expect(resp.forcePasswordChange).to.equal(false);
-				accountService.remove(account._id);
-			});
+			await postChangePassword(requestParams, newPassword, newPasswordConfirmation);
+			const updatedUser = await app.service('users').get(savedUser._id);
+			expect(updatedUser.forcePasswordChange).to.equal(false);
 		});
 		// eslint-disable-next-line max-len
 		it('when the the user sets the password the same as the one specified by the admin, the proper error message will be shown', async () => {
@@ -92,7 +95,7 @@ describe('forcePasswordChange service tests', () => {
 			return postChangePassword(userRequestAuthentication, password, password).catch((err) => {
 				expect(err.code).to.equal(400);
 				expect(err.name).to.equal('BadRequest');
-				expect(err.message).to.equal('You need to setup your new unique password');
+				expect(err.message).to.equal('New password can not be same as old password.');
 			});
 		});
 	});

@@ -3,9 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, roleFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { AuthorisationUtils } from './authorisation.utils';
 import { Role } from '../entity/role.entity';
 import { Permission, RoleName } from '../interface';
+import { AuthorisationUtils } from './authorisation.utils';
 
 class TestRule extends AuthorisationUtils {}
 
@@ -348,7 +348,7 @@ describe('permission.utils', () => {
 			const user = userFactory.build();
 			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
-			expect(() => service.hasRole(user, permissionC)).toThrowError();
+			expect(() => service.hasRole(user, RoleName.ADMINISTRATOR)).toThrowError();
 		});
 	});
 });

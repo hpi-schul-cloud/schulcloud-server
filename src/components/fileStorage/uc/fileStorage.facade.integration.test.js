@@ -4,18 +4,23 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 
 const { filesRepo } = require('../repo');
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 describe('fileStorageFacade', () => {
 	let server;
 	let app;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen();
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		testObjects.cleanup;
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('deleteUserRelatedData', () => {

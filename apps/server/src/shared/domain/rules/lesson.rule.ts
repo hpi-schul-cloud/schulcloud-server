@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Lesson, User } from '../entity';
+import { RoleName } from '../interface';
 import { IPermissionContext } from '../interface/permission';
 import { BasePermission } from './base-permission';
 import { CourseRule } from './course.rule';
@@ -18,6 +19,12 @@ export class LessonRule extends BasePermission<Lesson> {
 
 	public hasPermission(user: User, entity: Lesson, context: IPermissionContext): boolean {
 		const { action, requiredPermissions } = context;
+		const isStudent = this.utils.hasRole(user, RoleName.STUDENT);
+
+		if (isStudent && entity.hidden) {
+			return false;
+		}
+
 		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
 		const hasCoursePermission = this.courseRule.hasPermission(user, entity.course, { action, requiredPermissions: [] });
 		const result = hasPermission && hasCoursePermission;

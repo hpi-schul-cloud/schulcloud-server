@@ -8,11 +8,14 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+
 describe('homework service', () => {
 	let app;
 	let homeworkService;
 	let homeworkCopyService;
 	let server;
+	let nestServices;
 
 	const setupPrivateHomework = async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -66,11 +69,13 @@ describe('homework service', () => {
 		homeworkService = app.service('homework');
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the homework service', () => {
@@ -219,12 +224,14 @@ describe('homework service', () => {
 			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'] });
 
-			const userPromises = [otherTeacher, otherStudent].map(async (user) => {
-				const params = await testObjects.generateRequestParamsFromUser(user);
-				params.query = {};
-				expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-			});
-			await Promise.all(userPromises);
+			let params;
+			params = await testObjects.generateRequestParamsFromUser(otherTeacher);
+			params.query = {};
+			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
+
+			params = await testObjects.generateRequestParamsFromUser(otherStudent);
+			params.query = {};
+			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
 		});
 		it('should not allow homework removal by course student', async () => {
 			const { student, homework } = await setupHomeworkWithCourse();

@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { createDateFromAge, createParentConsent, createUserConsent } = require('../utils/helper');
 
 const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =>
@@ -17,6 +18,7 @@ const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =
 describe('consentCheck tests', () => {
 	let app;
 	let server;
+	let nestServices;
 	let consentCheckService;
 	let schoolSerivce;
 
@@ -25,10 +27,12 @@ describe('consentCheck tests', () => {
 		schoolSerivce = app.service('/schools');
 		consentCheckService = app.service('/consents/:userId/check');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	afterEach(testObjects.cleanup);

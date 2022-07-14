@@ -9,18 +9,23 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 describe('user repository', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('createUserTrashbin', () => {

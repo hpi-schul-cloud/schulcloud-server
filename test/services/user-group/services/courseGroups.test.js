@@ -3,18 +3,23 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { courseGroupModel } = require('../../../../src/services/user-group/model');
 
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
+
 describe('courseGroup service', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('basic functions', () => {

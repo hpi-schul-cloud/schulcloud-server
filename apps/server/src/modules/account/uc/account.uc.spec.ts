@@ -29,6 +29,7 @@ import {
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
 import { AccountUc } from './account.uc';
+import { AccountValidationService } from '../services/account.validation.service';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -36,6 +37,7 @@ describe('AccountUc', () => {
 	let userRepo: UserRepo;
 	let accountService: AccountService;
 	let orm: MikroORM;
+	let accountValidationService: AccountValidationService;
 
 	let mockSchool: School;
 	let mockOtherSchool: School;
@@ -52,6 +54,7 @@ describe('AccountUc', () => {
 	let mockOtherStudentUser: User;
 	let mockDifferentSchoolAdminUser: User;
 	let mockDifferentSchoolTeacherUser: User;
+	let mockDifferentSchoolStudentUser: User;
 	let mockUnknownRoleUser: User;
 	let mockExternalUser: User;
 	let mockUserWithoutAccount: User;
@@ -68,6 +71,8 @@ describe('AccountUc', () => {
 	let mockStudentAccount: Account;
 	let mockStudentSchoolPermissionAccount: Account;
 	let mockDifferentSchoolAdminAccount: Account;
+	let mockDifferentSchoolTeacherAccount: Account;
+	let mockDifferentSchoolStudentAccount: Account;
 	let mockUnknownRoleUserAccount: Account;
 	let mockExternalUserAccount: Account;
 	let mockAccountWithoutRole: Account;
@@ -98,12 +103,19 @@ describe('AccountUc', () => {
 							const accountEntity = mockAccounts.find(
 								(tempAccount) => tempAccount.userId?.toString() === account.userId
 							);
-							Object.assign(accountEntity, account);
-
-							return Promise.resolve();
+							if (accountEntity) {
+								Object.assign(accountEntity, account);
+								return Promise.resolve();
+							}
+							return Promise.reject();
 						}),
-						delete: (account: AccountDto): Promise<AccountDto> => {
-							return Promise.resolve(account);
+						delete: (id: EntityId): Promise<AccountDto> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.id?.toString() === id);
+
+							if (account) {
+								return Promise.resolve(AccountEntityToDtoMapper.mapToDto(account));
+							}
+							throw new EntityNotFoundError(Account.name);
 						},
 						create: (): Promise<void> => {
 							return Promise.resolve();
@@ -143,10 +155,9 @@ describe('AccountUc', () => {
 							}
 							if (username === 'not@available.username') {
 								return Promise.resolve({
-									accounts: [AccountEntityToDtoMapper.mapToDto(mockExternalUserAccount)],
+									accounts: [AccountEntityToDtoMapper.mapToDto(mockOtherTeacherAccount)],
 									total: 1,
 								});
-								// return Promise.resolve([[mockExternalUserAccount], mockAccounts.length]);
 							}
 							if (username === 'multiple@account.username') {
 								return Promise.resolve({
@@ -200,6 +211,12 @@ describe('AccountUc', () => {
 					},
 				},
 				PermissionService,
+				{
+					provide: AccountValidationService,
+					useValue: {
+						isUniqueEmail: jest.fn().mockResolvedValue(true),
+					},
+				},
 			],
 		}).compile();
 
@@ -207,6 +224,7 @@ describe('AccountUc', () => {
 		userRepo = module.get(UserRepo);
 		accountService = module.get(AccountService);
 		orm = await setupEntities();
+		accountValidationService = module.get(AccountValidationService);
 	});
 
 	beforeEach(() => {
@@ -304,6 +322,10 @@ describe('AccountUc', () => {
 			school: mockOtherSchool,
 			roles: [...mockTeacherUser.roles],
 		});
+		mockDifferentSchoolStudentUser = userFactory.buildWithId({
+			school: mockOtherSchool,
+			roles: [...mockStudentUser.roles],
+		});
 		mockUserWithoutAccount = userFactory.buildWithId({
 			school: mockSchool,
 			roles: [
@@ -370,19 +392,23 @@ describe('AccountUc', () => {
 			userId: mockDifferentSchoolAdminUser.id,
 			password: defaultPasswordHash,
 		});
+		mockDifferentSchoolTeacherAccount = accountFactory.buildWithId({
+			userId: mockDifferentSchoolTeacherUser.id,
+			password: defaultPasswordHash,
+		});
+		mockDifferentSchoolStudentAccount = accountFactory.buildWithId({
+			userId: mockDifferentSchoolStudentUser.id,
+			password: defaultPasswordHash,
+		});
 		mockUnknownRoleUserAccount = accountFactory.buildWithId({
 			userId: mockUnknownRoleUser.id,
 			password: defaultPasswordHash,
 		});
+		const externalSystem = systemFactory.buildWithId();
 		mockExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
 			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
-		});
-		mockExternalUserAccount = accountFactory.buildWithId({
-			userId: mockExternalUser.id,
-			password: defaultPasswordHash,
-			systemId: systemFactory.buildWithId().id,
+			systemId: externalSystem.id,
 		});
 		mockAccountWithoutUser = accountFactory.buildWithId({
 			userId: undefined,
@@ -400,6 +426,8 @@ describe('AccountUc', () => {
 			mockStudentUser,
 			mockStudentSchoolPermissionUser,
 			mockDifferentSchoolAdminUser,
+			mockDifferentSchoolTeacherUser,
+			mockDifferentSchoolStudentUser,
 			mockUnknownRoleUser,
 			mockExternalUser,
 			mockUserWithoutRole,
@@ -419,6 +447,8 @@ describe('AccountUc', () => {
 			mockStudentAccount,
 			mockStudentSchoolPermissionAccount,
 			mockDifferentSchoolAdminAccount,
+			mockDifferentSchoolTeacherAccount,
+			mockDifferentSchoolStudentAccount,
 			mockUnknownRoleUserAccount,
 			mockExternalUserAccount,
 			mockAccountWithoutRole,
@@ -513,43 +543,12 @@ describe('AccountUc', () => {
 			expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 		});
 		it('should throw if new email already in use', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
 					passwordOld: defaultPassword,
 					email: mockAdminUser.email,
-				})
-			).rejects.toThrow(ValidationError);
-			// other criteria branching
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'multiple@user.email',
-				})
-			).rejects.toThrow(ValidationError);
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'multiple@account.username',
-				})
-			).rejects.toThrow(ValidationError);
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'not@available.email',
-				})
-			).rejects.toThrow(ValidationError);
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: 'not@available.username',
-				})
-			).rejects.toThrow(ValidationError);
-		});
-		it('should throw if new email already in use ignore case', async () => {
-			await expect(
-				accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					email: mockAdminUser.email.toUpperCase(),
 				})
 			).rejects.toThrow(ValidationError);
 		});
@@ -695,6 +694,13 @@ describe('AccountUc', () => {
 		it('should allow to set strong password, if this is the users first login', async () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = { firstLogin: false };
+			await expect(
+				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
+			).resolves.not.toThrow();
+		});
+		it('should allow to set strong password, if this is the users first login (if undefined)', async () => {
+			mockStudentUser.forcePasswordChange = false;
+			mockStudentUser.preferences = undefined;
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
@@ -888,6 +894,24 @@ describe('AccountUc', () => {
 
 				params = { type: AccountSearchType.USERNAME, value: mockStudentAccount.username } as AccountSearchQueryParams;
 				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = {
+					type: AccountSearchType.USERNAME,
+					value: mockDifferentSchoolAdminAccount.username,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = {
+					type: AccountSearchType.USERNAME,
+					value: mockDifferentSchoolTeacherAccount.username,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
+
+				params = {
+					type: AccountSearchType.USERNAME,
+					value: mockDifferentSchoolStudentAccount.username,
+				} as AccountSearchQueryParams;
+				await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 			});
 		});
 	});
@@ -936,11 +960,14 @@ describe('AccountUc', () => {
 			const spy = jest.spyOn(accountService, 'save');
 			const params: AccountSaveDto = {
 				username: ' John.Doe@domain.tld ',
+				password: defaultPassword,
 			};
 			await accountUc.saveAccount(params);
-			expect(spy).toHaveBeenCalledWith({
-				username: 'john.doe@domain.tld',
-			});
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					username: 'john.doe@domain.tld',
+				})
+			);
 		});
 		it('should not sanitize username for external user', async () => {
 			const spy = jest.spyOn(accountService, 'save');
@@ -958,6 +985,7 @@ describe('AccountUc', () => {
 		it('should throw if username for a local user is not an email', async () => {
 			const params: AccountSaveDto = {
 				username: 'John Doe',
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username is not an email');
 		});
@@ -968,17 +996,34 @@ describe('AccountUc', () => {
 			};
 			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
 		});
+		it('should not throw if username for an external user is a ldap search string', async () => {
+			const params: AccountSaveDto = {
+				username: 'dc=schul-cloud,dc=org/fake.ldap',
+				systemId: 'ABC123',
+			};
+			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
+		});
+		it('should throw if no password is provided for an internal user', async () => {
+			const params: AccountSaveDto = {
+				username: 'john.doe@mail.tld',
+			};
+			await expect(accountUc.saveAccount(params)).rejects.toThrow('No password provided');
+		});
 		it('should throw if account already exists', async () => {
 			const params: AccountSaveDto = {
 				username: mockStudentUser.email,
 				userId: mockStudentUser.id,
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Account already exists');
 		});
 		it('should throw if username already exists', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
 			mockStudentAccount.username = 'john.doe@domain.tld';
 			const params: AccountSaveDto = {
 				username: mockStudentAccount.username,
+				password: defaultPassword,
 			};
 			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
 		});
@@ -1043,6 +1088,14 @@ describe('AccountUc', () => {
 					{ username: 'user-fail@to.update' } as AccountByIdBodyParams
 				)
 			).rejects.toThrow(EntityNotFoundError);
+		});
+		it('should throw if new username already in use', async () => {
+			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
+			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
+			const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
+			const params = { id: mockStudentAccount.id } as AccountByIdParams;
+			const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
+			await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ValidationError);
 		});
 
 		describe('hasPermissionsToUpdateAccount', () => {

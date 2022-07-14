@@ -9,21 +9,25 @@ const { helpDocumentsModel } = require('../../../src/services/help/model');
 
 const { expect } = chai;
 
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 describe('help documents service', () => {
 	let app;
 	let helpDocumentService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		helpDocumentService = app.service('/help/documents');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the help documents service', () => {

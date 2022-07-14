@@ -4,10 +4,12 @@ const { Forbidden } = require('../../../../src/errors');
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('CoursePermissionService', () => {
 	let app;
 	let coursePermissionService;
+	let nestServices;
 
 	const studentPermissions = [
 		...new Set(
@@ -104,6 +106,8 @@ describe('CoursePermissionService', () => {
 		app = await appPromise();
 		coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
+
 		const studentOne = await testObjects.createTestUser({
 			firstName: 'Hans',
 			lastName: 'Wurst',
@@ -153,6 +157,7 @@ describe('CoursePermissionService', () => {
 	after(async () => {
 		await testObjects.cleanup;
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the service', () => {

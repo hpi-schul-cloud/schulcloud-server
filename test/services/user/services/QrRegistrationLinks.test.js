@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 const HOST = Configuration.get('HOST');
@@ -14,16 +15,19 @@ describe('qrRegistrationLinks service tests', () => {
 	let qrRegistrationLinksService;
 	let accountService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		qrRegistrationLinksService = app.service('/users/qrRegistrationLink');
-		accountService = app.service('accounts');
+		accountService = app.service('nest-account-service');
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	const postRegistrationLinks = (requestParams, userIds, roleName = 'teacher', selectionType = 'inclusive') =>
@@ -124,7 +128,7 @@ describe('qrRegistrationLinks service tests', () => {
 
 			const resp = await postRegistrationLinks(params, [String(user._id)]);
 			expect(resp.length).to.equal(0);
-			await accountService.remove(testAccount._id);
+			await accountService.delete(testAccount.id);
 		});
 
 		it('should return registration link for all users (from the caller school) with a role given (stundent)', async () => {

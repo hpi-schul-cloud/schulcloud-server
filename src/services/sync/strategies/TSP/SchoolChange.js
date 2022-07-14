@@ -26,10 +26,10 @@ const invalidateUser = async (app, user) => {
 
 const deleteUser = (app, user) => {
 	const userService = app.service('usersModel');
-	const accountService = app.service('accountModel');
+	const accountService = app.service('nest-account-service');
 	return Promise.all([
 		userService.remove({ _id: user._id }),
-		accountService.remove(null, { query: { userId: user._id } }),
+		accountService.deleteByUserId(user._id.toString()),
 	]);
 };
 

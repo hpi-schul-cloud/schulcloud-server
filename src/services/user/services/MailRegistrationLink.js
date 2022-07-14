@@ -48,11 +48,7 @@ class SendRegistrationLinkService {
 			mailUsers = users;
 		}
 
-		let accounts = await this.app.service('/accounts').find({
-			query: {
-				userId: mailUsers.map((u) => u._id),
-			},
-		});
+		let accounts = await this.app.service('nest-account-service').findMultipleByUserId(mailUsers.map((u) => u._id));
 		accounts = accounts.map((account) => String(account.userId));
 
 		const mailUsersWithoutAccount = mailUsers.filter((u) => !accounts.includes(u._id.toString()));

@@ -4,23 +4,27 @@ const testObjects = require('../helpers/testObjects')(appPromise());
 const { homeworkModel } = require('../../../src/services/homework/model');
 
 const { expect } = chai;
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 describe('homework copy service', () => {
 	let app;
 	let homeworkCopyService;
 	const homeworkIdsToDelete = [];
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await homeworkModel.deleteMany({ id: { $in: homeworkIdsToDelete } });
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('internal call can copy a homework via POST', async () => {
