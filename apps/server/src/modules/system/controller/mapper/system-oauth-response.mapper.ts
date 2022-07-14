@@ -26,7 +26,7 @@ export class SystemOauthResponseMapper {
 		return new OauthConfigResponse({
 			clientId: oauthConfigDto.clientId,
 			// clientSecret will not be mapped for security reasons,
-			tokenRedirectUri: oauthConfigDto.tokenRedirectUri,
+			redirectUri: oauthConfigDto.redirectUri,
 			grantType: oauthConfigDto.grantType,
 			tokenEndpoint: oauthConfigDto.tokenEndpoint,
 			authEndpoint: oauthConfigDto.authEndpoint,
@@ -36,7 +36,6 @@ export class SystemOauthResponseMapper {
 			logoutEndpoint: oauthConfigDto.logoutEndpoint,
 			issuer: oauthConfigDto.issuer,
 			jwksEndpoint: oauthConfigDto.jwksEndpoint,
-			codeRedirectUri: oauthConfigDto.codeRedirectUri,
 		});
 	}
 }
