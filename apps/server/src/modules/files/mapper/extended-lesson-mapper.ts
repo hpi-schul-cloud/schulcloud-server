@@ -1,8 +1,7 @@
 import { Lesson } from '@shared/domain';
-import { ExtendedLesson } from '../types/extended-lesson';
 
-export class ExtendedLessonMapper {
-	static mapToExtendedLesson(aggregationResult: Record<string, never>): ExtendedLesson {
+export class LessonMapper {
+	static mapToLesson(aggregationResult: Record<string, never>): Lesson {
 		const lesson = new Lesson({
 			name: aggregationResult.name,
 			hidden: aggregationResult.hidden,
@@ -13,6 +12,6 @@ export class ExtendedLessonMapper {
 
 		lesson._id = aggregationResult._id;
 
-		return new ExtendedLesson(lesson, aggregationResult.schoolId);
+		return lesson;
 	}
 }

@@ -2,8 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Lesson, FileRecordParentType, File } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
-import { ExtendedLessonMapper } from '../mapper/extended-lesson-mapper';
-import { SyncFileItem, ExtendedLesson } from '../types';
+import { LessonMapper } from '../mapper/extended-lesson-mapper';
+import { SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 const lessonsQuery = [
@@ -28,11 +28,6 @@ const lessonsQuery = [
 	{
 		$set: {
 			course: { $arrayElemAt: ['$courses', 0] },
-		},
-	},
-	{
-		$set: {
-			schoolId: '$course.schoolId',
 		},
 	},
 ];
@@ -113,13 +108,13 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 export class EmbeddedFilesRepo {
 	constructor(protected readonly _em: EntityManager) {}
 
-	async findEmbeddedFilesForLessons(): Promise<ExtendedLesson[]> {
+	async findEmbeddedFilesForLessons(): Promise<Lesson[]> {
 		const results = await this._em.aggregate(Lesson, lessonsQuery);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const extendedLessons = results.map((result) => ExtendedLessonMapper.mapToExtendedLesson(result));
+		const lessons = results.map((result) => LessonMapper.mapToLesson(result));
 
-		return extendedLessons;
+		return lessons;
 	}
 
 	async findFiles(fileIds: ObjectId[], lessonId: ObjectId): Promise<SyncFileItem[]> {

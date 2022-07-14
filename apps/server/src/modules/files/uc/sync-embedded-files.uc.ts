@@ -3,9 +3,8 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { IComponentProperties } from '@shared/domain';
+import { IComponentProperties, Lesson } from '@shared/domain';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
-import { ExtendedLesson } from '../types/extended-lesson';
 import { SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
 import { SyncFilesStorageService } from './sync-files-storage.service';
@@ -19,8 +18,8 @@ export class SyncEmbeddedFilesUc {
 		private syncFilesStorageService: SyncFilesStorageService
 	) {}
 
-	extractFileIds(content: ExtendedLesson): ObjectId[] {
-		const contentText = content.lesson.contents[0].content.text;
+	extractFileIds(lesson: Lesson): ObjectId[] {
+		const contentText = lesson.contents[0].content.text;
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const fileIds = contentText.match(regEx);
 
@@ -66,13 +65,13 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	async syncEmbeddedFilesForLesson() {
-		const contents = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
-		this.logger.log(`Found ${contents.length} lesson contents with embedded files.`);
+		const lessonContents = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
+		this.logger.log(`Found ${lessonContents.length} lesson contents with embedded files.`);
 
-		const promises = contents.map(async (content) => {
+		const promises = lessonContents.map(async (content) => {
 			const fileIds = this.extractFileIds(content);
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, content.lesson._id);
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, content._id);
 			return this.syncFiles(files);
 		});
 
