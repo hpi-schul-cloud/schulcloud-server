@@ -172,6 +172,53 @@ describe('task copy uc', () => {
 					requiredPermissions: [],
 				});
 			});
+
+			describe('when access to task is forbidden', () => {
+				const setupWithTaskForbidden = () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId();
+					const task = taskFactory.buildWithId();
+					userRepo.findById.mockResolvedValue(user);
+					taskRepo.findById.mockResolvedValue(task);
+					authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== task);
+					return { user, course, task };
+				};
+
+				it('should throw NotFoundException', async () => {
+					const { course, user, task } = setupWithTaskForbidden();
+
+					try {
+						await uc.copyTask(user.id, task.id, { courseId: course.id });
+						throw new Error('should have failed');
+					} catch (err) {
+						expect(err).toBeInstanceOf(NotFoundException);
+					}
+				});
+			});
+
+			describe('when access to course is forbidden', () => {
+				const setupWithCourseForbidden = () => {
+					const user = userFactory.buildWithId();
+					const course = courseFactory.buildWithId();
+					const task = taskFactory.buildWithId();
+					userRepo.findById.mockResolvedValue(user);
+					taskRepo.findById.mockResolvedValue(task);
+					courseRepo.findById.mockResolvedValue(course);
+					authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
+					return { user, course, task };
+				};
+
+				it('should throw Forbidden Exception', async () => {
+					const { course, user, task } = setupWithCourseForbidden();
+
+					try {
+						await uc.copyTask(user.id, task.id, { courseId: course.id });
+						throw new Error('should have failed');
+					} catch (err) {
+						expect(err).toBeInstanceOf(ForbiddenException);
+					}
+				});
+			});
 		});
 
 		describe('derive copy name', () => {
@@ -197,53 +244,6 @@ describe('task copy uc', () => {
 					user,
 					copyName,
 				});
-			});
-		});
-
-		describe('when access to task is forbidden', () => {
-			const setupWithTaskForbidden = () => {
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				userRepo.findById.mockResolvedValue(user);
-				taskRepo.findById.mockResolvedValue(task);
-				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== task);
-				return { user, course, task };
-			};
-
-			it('should throw NotFoundException', async () => {
-				const { course, user, task } = setupWithTaskForbidden();
-
-				try {
-					await uc.copyTask(user.id, task.id, { courseId: course.id });
-					throw new Error('should have failed');
-				} catch (err) {
-					expect(err).toBeInstanceOf(NotFoundException);
-				}
-			});
-		});
-
-		describe('when access to course is forbidden', () => {
-			const setupWithCourseForbidden = () => {
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
-				const task = taskFactory.buildWithId();
-				userRepo.findById.mockResolvedValue(user);
-				taskRepo.findById.mockResolvedValue(task);
-				courseRepo.findById.mockResolvedValue(course);
-				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
-				return { user, course, task };
-			};
-
-			it('should throw Forbidden Exception', async () => {
-				const { course, user, task } = setupWithCourseForbidden();
-
-				try {
-					await uc.copyTask(user.id, task.id, { courseId: course.id });
-					throw new Error('should have failed');
-				} catch (err) {
-					expect(err).toBeInstanceOf(ForbiddenException);
-				}
 			});
 		});
 	});
