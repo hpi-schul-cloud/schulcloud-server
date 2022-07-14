@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { CopyStatus, EntityId, Lesson, LessonCopyService, PermissionContextBuilder, User } from '@shared/domain';
+import { CopyStatus, EntityId, Lesson, LessonCopyService, PermissionContextBuilder, Task, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { CourseRepo, LessonRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskCopyUC } from '@src/modules/task/uc/task-copy.uc';
 
@@ -17,7 +17,8 @@ export class LessonCopyUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly taskCopyUC: TaskCopyUC,
 		private readonly lessonRepo: LessonRepo,
-		private readonly courseRepo: CourseRepo
+		private readonly courseRepo: CourseRepo,
+		private readonly taskRepo: TaskRepo
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
@@ -37,21 +38,17 @@ export class LessonCopyUC {
 			destinationCourse,
 			user,
 		});
-		// const copiedTasksStatus: CopyStatus[] = [];
 
 		if (status.copyEntity) {
 			const lessonCopy = status.copyEntity as Lesson;
 			await this.lessonRepo.save(lessonCopy);
 
-			const linkedTasks = originalLesson.getLessonTasks();
+			const [linkedTasks] = await this.taskRepo.findAllByParentIds({ lessonIds: [lessonId] });
 
-			linkedTasks.map(async (element) => {
-				const { copyEntity, ...taskStatus } = await this.taskCopyUC.copyTask(userId, element.id, {
-					courseId: destinationCourse.id,
-					lessonId: lessonCopy.id,
-				});
-				status.elements?.push(taskStatus);
-			});
+			const copiedTasksStatus = this.copyLinkedTasks(linkedTasks, userId, destinationCourse.id, lessonCopy.id);
+			if (status.elements) {
+				this.addTaskStatus(status.elements, copiedTasksStatus);
+			}
 		}
 
 		return status;
@@ -63,5 +60,30 @@ export class LessonCopyUC {
 			throw new ForbiddenException('you dont have permission to add to this course');
 		}
 		return destinationCourse;
+	}
+
+	private copyLinkedTasks(
+		tasks: Task[],
+		userId: string,
+		destinationCourseId: string,
+		destinationLessonId: string
+	): CopyStatus[] {
+		const copiedTasksStatus: CopyStatus[] = [];
+
+		tasks.map(async (element) => {
+			const { copyEntity, ...taskStatus } = await this.taskCopyUC.copyTask(userId, element.id, {
+				courseId: destinationCourseId,
+				lessonId: destinationLessonId,
+			});
+			copiedTasksStatus.push(taskStatus);
+		});
+
+		return copiedTasksStatus;
+	}
+
+	private addTaskStatus(lessonStatusElements: CopyStatus[], taskStatus: CopyStatus[]) {
+		taskStatus.forEach((element) => {
+			lessonStatusElements.push(element);
+		});
 	}
 }
