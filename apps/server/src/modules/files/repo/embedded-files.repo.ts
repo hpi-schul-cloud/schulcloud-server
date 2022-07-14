@@ -8,9 +8,6 @@ import { SyncFileItem } from '../types';
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 const lessonsQuery = [
 	{
-		$unwind: '$contents',
-	},
-	{
 		$match: {
 			'contents.component': {
 				$eq: 'text',
@@ -26,9 +23,7 @@ const lessonsQuery = [
 		},
 	},
 	{
-		$set: {
-			course: { $arrayElemAt: ['$courses', 0] },
-		},
+		$unwind: '$contents',
 	},
 ];
 
