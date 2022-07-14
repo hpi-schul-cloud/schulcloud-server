@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import {
 	CopyHelperService,
 	CopyStatus,
+	Course,
 	EntityId,
 	PermissionContextBuilder,
 	Task,
@@ -36,15 +37,17 @@ export class TaskCopyUC {
 		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
-		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
 
-		let parentIds = {};
-		if (parentParams.courseId) {
-			parentIds = { courseIds: [parentParams.courseId] };
-			// TODO: do we need to take care for lessonIds? as they are not shown in the course: probably not
+		let existingNames: string[] = [];
+		let destinationCourse: Course | undefined;
+
+		const courseId = parentParams.courseId || originalTask.course?.id;
+		if (courseId) {
+			destinationCourse = await this.getDestinationCourse(courseId, user);
+			const [existingTasks] = await this.taskRepo.findBySingleParent('', courseId);
+			existingNames = existingTasks.map((t) => t.name);
 		}
-		const [existingTasks] = await this.taskRepo.findAllByParentIds(parentIds);
-		const existingNames = existingTasks.map((t) => t.name);
+
 		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
 		const status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
@@ -57,6 +60,7 @@ export class TaskCopyUC {
 			const taskCopy = status.copyEntity as Task;
 			await this.taskRepo.save(taskCopy);
 		}
+
 		return status;
 	}
 
