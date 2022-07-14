@@ -19,9 +19,14 @@ export class SyncEmbeddedFilesUc {
 	) {}
 
 	extractFileIds(lesson: Lesson): ObjectId[] {
-		const contentText = lesson.contents[0].content.text;
+		const { content } = lesson.contents[0];
+
+		if (!('text' in content)) {
+			return [];
+		}
+
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
-		const fileIds = contentText.match(regEx);
+		const fileIds = content.text.match(regEx);
 
 		if (fileIds === null) {
 			return [];
@@ -38,7 +43,9 @@ export class SyncEmbeddedFilesUc {
 				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
 				const newUrl = `/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}`;
 
-				item.content.text = item.content.text.replace(regex, newUrl);
+				if ('text' in item.content) {
+					item.content.text = item.content.text.replace(regex, newUrl);
+				}
 
 				return item;
 			});
