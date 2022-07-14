@@ -4,6 +4,7 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 const nock = require('nock');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const {
 	messengerTokenService,
@@ -14,15 +15,18 @@ describe('MessengerTokenService', function test() {
 	let app;
 	this.timeout(10000);
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('should not be loaded if feature flags are not set', () => {

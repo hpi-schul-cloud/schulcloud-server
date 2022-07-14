@@ -6,8 +6,11 @@ const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
-
 const redisMock = require('../../../utils/redis/redisMock');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise());
+
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('jwtTimer service', () => {
 	it('registered the supportJWT service', async () => {
@@ -16,14 +19,18 @@ describe('jwtTimer service', () => {
 		assert.ok(defaultApp.service('accounts/jwtTimer'));
 	});
 	describe('redis mocked', () => {
-		let testObjects;
 		let app;
+		let nestServices;
 		let redisHelper;
 		let configBefore = null;
 
 		describe('with redis instance', () => {
 			let server;
 			before(async () => {
+				app = await appPromise();
+				server = await app.listen(0);
+				nestServices = await setupNestServices(app);
+
 				configBefore = Configuration.toObject({ plainSecrets: true });
 				mockery.enable({
 					warnOnReplace: false,
@@ -31,23 +38,18 @@ describe('jwtTimer service', () => {
 					useCleanCache: true,
 				});
 				delete require.cache[require.resolve('../../../../src/utils/redis')];
-				delete require.cache[require.resolve('../../helpers/testObjects')];
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
-				delete require.cache[require.resolve('../../../../src/app')];
 
 				mockery.registerMock('redis', redisMock);
 				mockery.registerMock('@hpi-schul-cloud/commons', commons);
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
-				app = await require('../../../../src/app')();
-				testObjects = require('../../helpers/testObjects')(app);
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
 				Configuration.set('REDIS_URI', '//validHost:4444');
 				redisHelper.initializeRedisClient();
-				server = await app.listen(0);
 			});
 
 			after(async () => {
@@ -55,11 +57,10 @@ describe('jwtTimer service', () => {
 				mockery.disable();
 				await testObjects.cleanup();
 				delete require.cache[require.resolve('../../../../src/utils/redis')];
-				delete require.cache[require.resolve('../../helpers/testObjects')];
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
-				delete require.cache[require.resolve('../../../../src/app')];
 				Configuration.reset(configBefore);
 				await server.close();
+				await closeNestServices(nestServices);
 			});
 
 			it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
@@ -89,6 +90,10 @@ describe('jwtTimer service', () => {
 			let server;
 
 			before(async () => {
+				app = await appPromise();
+				server = await app.listen(0);
+				nestServices = await setupNestServices(app);
+
 				mockery.enable({
 					warnOnReplace: false,
 					warnOnUnregistered: false,
@@ -100,13 +105,10 @@ describe('jwtTimer service', () => {
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
-				app = await require('../../../../src/app')();
-				testObjects = require('../../helpers/testObjects')(app);
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
 				redisHelper.initializeRedisClient();
-				server = await app.listen(0);
 			});
 
 			after(async () => {
@@ -114,6 +116,7 @@ describe('jwtTimer service', () => {
 				mockery.disable();
 				await testObjects.cleanup();
 				await server.close();
+				await closeNestServices(nestServices);
 			});
 
 			it('FIND fails without redis server.', async () => {
@@ -147,8 +150,6 @@ describe('jwtTimer service', () => {
 			await testObjects.cleanup();
 
 			delete require.cache[require.resolve('../../../../src/utils/redis')];
-			delete require.cache[require.resolve('../../../../src/app')];
-			delete require.cache[require.resolve('../../helpers/testObjects')];
 			delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
 			Configuration.reset(configBefore);
 		});

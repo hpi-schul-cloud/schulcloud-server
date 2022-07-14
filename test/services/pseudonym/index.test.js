@@ -2,17 +2,13 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { MethodNotAllowed, BadRequest } = require('../../../src/errors');
 
 const PseudonymModel = require('../../../src/services/pseudonym/model');
 
-const {
-	cleanup,
-	createTestUser,
-	createTestLtiTool,
-	createTestPseudonym,
-	generateRequestParamsFromUser,
-} = require('../helpers/testObjects')(appPromise()); // todo import everything
+const { cleanup, createTestUser, createTestLtiTool, createTestPseudonym, generateRequestParamsFromUser } =
+	require('../helpers/testObjects')(appPromise()); // todo import everything
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -21,6 +17,7 @@ describe('pseudonym service', function pseudonymTest() {
 	let app;
 	let pseudonymService;
 	let server;
+	let nestServices;
 	this.timeout(10000);
 
 	const createTestData = async () => {
@@ -49,6 +46,7 @@ describe('pseudonym service', function pseudonymTest() {
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		pseudonymService = app.service('pseudonym');
 	});
 
@@ -56,6 +54,7 @@ describe('pseudonym service', function pseudonymTest() {
 		await PseudonymModel.remove({}).exec();
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('is registered', () => {

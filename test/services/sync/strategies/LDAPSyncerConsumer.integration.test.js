@@ -13,6 +13,7 @@ const { classModel } = require('../../../../src/services/user-group/model');
 const { schoolModel } = require('../../../../src/services/school/model');
 
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { SyncError } = require('../../../../src/errors/applicationErrors');
 
 const testObjects = require('../../helpers/testObjects')(appPromise());
@@ -29,6 +30,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 	let app;
 	let server;
 	let ldapConsumer;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
@@ -39,6 +41,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			new UserAction(shouldUseFilter),
 			new ClassAction(shouldUseFilter)
 		);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -52,6 +55,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('school messages', () => {

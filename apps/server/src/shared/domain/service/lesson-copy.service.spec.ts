@@ -1,7 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, CopyElementType, CopyStatusEnum, Lesson } from '@shared/domain';
+import {
+	ComponentType,
+	CopyElementType,
+	CopyStatusEnum,
+	IComponentGeogebraProperties,
+	IComponentProperties,
+	Lesson,
+} from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -48,6 +55,7 @@ describe('lesson copy service', () => {
 
 				const copyName = 'Copy';
 				copyHelperService.deriveCopyName.mockReturnValue(copyName);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
 				return { user, originalCourse, destinationCourse, originalLesson, copyName };
 			};
@@ -160,9 +168,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					const metadataStatus = status.elements?.find(
-						(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-					);
+					const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 					expect(metadataStatus).toBeDefined();
 					expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 				});
@@ -228,20 +234,28 @@ describe('lesson copy service', () => {
 
 		describe('when lesson contains at least one content element', () => {
 			const setup = () => {
-				const textContentOne = {
-					title: 'text component 1',
+				const contentOne: IComponentProperties = {
+					title: 'title component 1',
 					hidden: false,
 					component: ComponentType.TEXT,
 					content: {
 						text: 'this is a text content',
 					},
 				};
-				const textContentTwo = {
-					title: 'text component 2',
+				const contentTwo: IComponentProperties = {
+					title: 'title component 2',
 					hidden: false,
-					component: ComponentType.TEXT,
+					component: ComponentType.LERNSTORE,
 					content: {
-						text: 'this is another text content',
+						resources: [
+							{
+								url: 'http://foo.bar',
+								title: 'foo',
+								description: 'bar',
+								client: 'client',
+								merlinReference: '',
+							},
+						],
 					},
 				};
 				const user = userFactory.build();
@@ -249,9 +263,9 @@ describe('lesson copy service', () => {
 				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
-					contents: [textContentOne, textContentTwo],
+					contents: [contentOne, contentTwo],
 				});
-
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 				return { user, originalCourse, destinationCourse, originalLesson };
 			};
 
@@ -315,6 +329,99 @@ describe('lesson copy service', () => {
 				expect(contentsStatus).toBeDefined();
 				expect(contentsStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
+		});
+	});
+
+	describe('when lesson contains LernStore content element', () => {
+		const setup = () => {
+			const lernStoreContent: IComponentProperties = {
+				title: 'text component 1',
+				hidden: false,
+				component: ComponentType.LERNSTORE,
+				content: {
+					resources: [
+						{
+							url: 'https://foo.bar/baz',
+							title: 'Test title',
+							description: 'description',
+							client: 'Schul-Cloud',
+							merlinReference: '',
+						},
+					],
+				},
+			};
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [lernStoreContent],
+			});
+
+			return { user, originalCourse, destinationCourse, originalLesson, lernStoreContent };
+		};
+
+		it('the content should be fully copied', () => {
+			const { user, destinationCourse, originalLesson, lernStoreContent } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
+		});
+	});
+
+	describe('when lesson contains geoGebra content element', () => {
+		const setup = () => {
+			const geoGebraContent: IComponentProperties = {
+				title: 'text component 1',
+				hidden: false,
+				component: ComponentType.GEOGEBRA,
+				content: {
+					materialId: 'foo',
+				},
+			};
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [geoGebraContent],
+			});
+
+			return { user, originalCourse, destinationCourse, originalLesson };
+		};
+
+		it('geoGebra Material-ID should not be copied', () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const geoGebraContent = lessonContents[0].content as IComponentGeogebraProperties;
+
+			expect(geoGebraContent.materialId).toEqual('');
+		});
+
+		it('element should be hidden', () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			expect(lessonContents[0].hidden).toEqual(true);
 		});
 	});
 });
