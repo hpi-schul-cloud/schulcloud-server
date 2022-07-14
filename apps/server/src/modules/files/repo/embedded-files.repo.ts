@@ -5,6 +5,7 @@ import { SyncFileItemMapper } from '../mapper';
 import { ExtendedLessonMapper } from '../mapper/extended-lesson-mapper';
 import { SyncFileItem, ExtendedLesson } from '../types';
 
+export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 const lessonsQuery = [
 	{
 		$unwind: '$contents',
@@ -19,7 +20,7 @@ const lessonsQuery = [
 	{
 		$match: {
 			'contents.content.text': {
-				$regex: /src="(https?:\/\/[^"]*)?\/files\/file\?/,
+				$regex: new RegExp(`src=${fileUrlRegex}`),
 				$options: 'i',
 			},
 		},

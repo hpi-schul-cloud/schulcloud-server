@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { IComponentProperties } from '@shared/domain';
-import { EmbeddedFilesRepo } from '../repo/embedded-files.repo';
+import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
 import { ExtendedLesson } from '../types/extended-lesson';
 import { SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
@@ -21,7 +21,7 @@ export class SyncEmbeddedFilesUc {
 
 	extractFileIds(content: ExtendedLesson): ObjectId[] {
 		const contentText = content.lesson.contents[0].content.text;
-		const regEx = /(?<=src="(https?:\/\/[^"]*)?\/files\/file\?file=).+?(?=&amp;)/g;
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const fileIds = contentText.match(regEx);
 
 		if (fileIds === null) {
@@ -36,7 +36,7 @@ export class SyncEmbeddedFilesUc {
 
 		if (lesson) {
 			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-				const regex = new RegExp(`"(https?://[^"]*)?/files/file\\?file=${file.source.id}.+?"`, 'g');
+				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
 				const newUrl = `/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}`;
 
 				item.content.text = item.content.text.replace(regex, newUrl);
