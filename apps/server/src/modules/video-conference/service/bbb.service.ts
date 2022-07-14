@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import xml2json from '@hendt/xml2json';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
@@ -20,6 +19,7 @@ import {
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 import { Logger } from '@src/core/logger';
+import { xml2json } from 'xml-js';
 
 @Injectable()
 export class BBBService {
@@ -35,7 +35,7 @@ export class BBBService {
 	create(config: BBBCreateConfig | BBBCreateBreakoutConfig): Promise<BBBResponse<BBBCreateResponse>> {
 		return firstValueFrom(this.get('create', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>;
+				const bbbResp = xml2json(resp.data) as unknown as BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
@@ -50,7 +50,7 @@ export class BBBService {
 	join(config: BBBJoinConfig): Promise<BBBResponse<BBBJoinResponse>> {
 		return firstValueFrom(this.get('join', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBJoinResponse> | BBBResponse<BBBBaseResponse>;
+				const bbbResp = xml2json(resp.data) as unknown as BBBResponse<BBBJoinResponse> | BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
@@ -65,7 +65,7 @@ export class BBBService {
 	end(config: BBBEndConfig): Promise<BBBResponse<BBBBaseResponse>> {
 		return firstValueFrom(this.get('end', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBBaseResponse>;
+				const bbbResp = xml2json(resp.data) as unknown as BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
@@ -80,7 +80,9 @@ export class BBBService {
 	getMeetingInfo(config: BBBMeetingInfoConfig): Promise<BBBResponse<BBBMeetingInfoResponse>> {
 		return firstValueFrom(this.get('getMeetingInfo', this.toParams(config)))
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>;
+				const bbbResp = xml2json(resp.data) as unknown as
+					| BBBResponse<BBBMeetingInfoResponse>
+					| BBBResponse<BBBBaseResponse>;
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
