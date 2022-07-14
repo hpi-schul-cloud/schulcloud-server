@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import xml2json from '@hendt/xml2json';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
@@ -78,7 +77,7 @@ export class BBBService {
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBBaseResponse>;
+				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBBaseResponse>>(resp.data);
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
@@ -101,7 +100,9 @@ export class BBBService {
 
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
-				const bbbResp = xml2json(resp.data) as BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>;
+				const bbbResp = this.converterUtil.xml2object<
+					BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>
+				>(resp.data);
 				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
