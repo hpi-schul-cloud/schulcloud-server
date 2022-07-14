@@ -2,12 +2,13 @@ import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, PermissionTypes, LessonCopyParams, LessonCopyService, User } from '@shared/domain';
+import { Actions, LessonCopyParams, LessonCopyService, PermissionTypes, User } from '@shared/domain';
+import { Permission } from '@shared/domain/interface/permission.enum';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
-import { courseFactory, setupEntities, lessonFactory, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { Permission } from '@shared/domain/interface/permission.enum';
+import { TaskCopyUC } from '@src/modules/task/uc';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
@@ -31,6 +32,10 @@ describe('lesson copy uc', () => {
 		const module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,
+				{
+					provide: TaskCopyUC,
+					useValue: createMock<TaskCopyUC>(),
+				},
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
@@ -76,7 +81,7 @@ describe('lesson copy uc', () => {
 			const copy = lessonFactory.buildWithId({ course });
 			const status = {
 				title: 'lessonCopy',
-				type: CopyElementType.TASK,
+				type: CopyElementType.LESSON,
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: copy,
 			};
@@ -219,6 +224,32 @@ describe('lesson copy uc', () => {
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);
 				}
+			});
+		});
+
+		describe('when tasks are linked to the original lesson', () => {
+			const setupWithLinkedTasks = () => {
+				const user = userFactory.buildWithId();
+				const originalCourse = courseFactory.buildWithId({ school: user.school });
+				const destinationCourse = courseFactory.buildWithId({ school: user.school });
+				const originalLesson = lessonFactory.buildWithId({ course: originalCourse });
+				const originalTask = taskFactory.buildWithId({
+					description: 'lesson task description',
+					course: originalCourse,
+					lesson: originalLesson,
+				});
+				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
+				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(originalLesson));
+				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(originalCourse));
+				jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
+				return { user, originalCourse, destinationCourse, originalLesson, originalTask };
+			};
+
+			it('xyz', async () => {
+				const { originalCourse, user, originalLesson } = setupWithLinkedTasks();
+
+				const result = await uc.copyLesson(user.id, originalLesson.id, { courseId: originalCourse.id });
+				expect(result).toBeDefined();
 			});
 		});
 	});

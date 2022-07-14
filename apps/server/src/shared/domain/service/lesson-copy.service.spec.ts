@@ -8,9 +8,8 @@ import {
 	IComponentGeogebraProperties,
 	IComponentProperties,
 	Lesson,
-	TaskCopyService,
 } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
 
@@ -37,10 +36,10 @@ describe('lesson copy service', () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
-				{
+				/* {
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
-				},
+				}, */
 			],
 		}).compile();
 
@@ -430,10 +429,10 @@ describe('lesson copy service', () => {
 		});
 	});
 
-	describe('when tasks are linked to the original lesson', () => {
+	/* describe('when tasks are linked to the original lesson', () => {
 		const setup = () => {
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
+			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
 			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
 			const originalLesson = lessonFactory.build({
 				course: originalCourse,
@@ -470,5 +469,5 @@ describe('lesson copy service', () => {
 			const newTask = linkedTasks[0];
 			expect(newTask.lesson).toEqual(lesson);
 		});
-	});
+	}); */
 });

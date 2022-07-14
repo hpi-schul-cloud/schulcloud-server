@@ -16,6 +16,9 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { AuthorizationModule } from '../authorization';
+import { FilesStorageClientModule } from '../files-storage-client/files-storage-client.module';
+import { TaskModule } from '../task';
+import { TaskCopyUC } from '../task/uc/task-copy.uc';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -30,7 +33,7 @@ import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule],
+	imports: [AuthorizationModule, TaskModule, FilesStorageClientModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -57,6 +60,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyService,
 		CourseCopyUC,
 		RoomsService,
+		TaskCopyUC,
 	],
 })
 export class LearnroomModule {}

@@ -3,6 +3,7 @@ import { CopyStatus, EntityId, Lesson, LessonCopyService, PermissionContextBuild
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { TaskCopyUC } from '@src/modules/task/uc/task-copy.uc';
 
 export type LessonCopyParentParams = {
 	courseId?: EntityId;
@@ -14,6 +15,7 @@ export class LessonCopyUC {
 	constructor(
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,
+		private readonly taskCopyUC: TaskCopyUC,
 		private readonly lessonRepo: LessonRepo,
 		private readonly courseRepo: CourseRepo
 	) {}
@@ -35,10 +37,21 @@ export class LessonCopyUC {
 			destinationCourse,
 			user,
 		});
+		// const copiedTasksStatus: CopyStatus[] = [];
 
 		if (status.copyEntity) {
 			const lessonCopy = status.copyEntity as Lesson;
 			await this.lessonRepo.save(lessonCopy);
+
+			const linkedTasks = originalLesson.getLessonTasks();
+
+			linkedTasks.map(async (element) => {
+				const { copyEntity, ...taskStatus } = await this.taskCopyUC.copyTask(userId, element.id, {
+					courseId: destinationCourse.id,
+					lessonId: lessonCopy.id,
+				});
+				status.elements?.push(taskStatus);
+			});
 		}
 
 		return status;
