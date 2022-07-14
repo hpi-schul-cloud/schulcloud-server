@@ -13,7 +13,7 @@ import { Mail, MailService } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { MikroORM } from '@mikro-orm/core';
-import { join } from "path";
+import { join } from 'path';
 import { ServerModule } from './server.module';
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
