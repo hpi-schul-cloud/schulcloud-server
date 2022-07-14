@@ -49,9 +49,24 @@ describe('Logger', () => {
 			service.http(msg);
 			expect(processStdoutWriteSpy).toBeCalledWith(expect.stringMatching(/HTTP REQUEST/));
 		});
+
 		it('should write to stdout with CUSTOM_CONTEXT', () => {
 			service.http(msg, 'CUSTOM_CONTEXT');
 			expect(processStdoutWriteSpy).toBeCalledWith(expect.stringMatching(/CUSTOM_CONTEXT/));
+		});
+
+		it('should write to stderr with a newline only at the end', () => {
+			const error = new Error('custom error');
+			service.error(error.message, error.stack);
+			expect(processStderrWriteSpy).toBeCalledWith(expect.stringMatching(/^[^\n]*\n$/g));
+		});
+
+		it('should work also when providing circular references', () => {
+			const a: { name: string; b?: any } = { name: 'great' };
+			const b = { a };
+			a.b = b;
+			service.error(a);
+			expect(processStderrWriteSpy).toBeCalledWith(expect.stringMatching(/name.*great/));
 		});
 	});
 });
