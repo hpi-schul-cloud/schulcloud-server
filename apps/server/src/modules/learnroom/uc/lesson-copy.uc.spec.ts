@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, CopyHelperService, LessonCopyParams, LessonCopyService, PermissionTypes, User } from '@shared/domain';
+import { Actions, CopyHelperService, LessonCopyService, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
@@ -13,11 +13,11 @@ import { LessonCopyUC } from './lesson-copy.uc';
 describe('lesson copy uc', () => {
 	let orm: MikroORM;
 	let uc: LessonCopyUC;
-	let userRepo: UserRepo;
+	let userRepo: DeepMocked<UserRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
-	let courseRepo: CourseRepo;
-	let authorisation: AuthorizationService;
-	let lessonCopyService: LessonCopyService; // TODO: add other DeepMocked
+	let courseRepo: DeepMocked<CourseRepo>;
+	let authorisation: DeepMocked<AuthorizationService>;
+	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	beforeAll(async () => {
@@ -75,14 +75,12 @@ describe('lesson copy uc', () => {
 			const allLessons = lessonFactory.buildList(3, { course });
 			const lesson = allLessons[0];
 
-			const userSpy = jest
-				.spyOn(authorisation, 'getUserWithPermissions')
-				.mockImplementation(() => Promise.resolve(user));
+			authorisation.getUserWithPermissions.mockResolvedValue(user);
 			lessonRepo.findById.mockResolvedValue(lesson);
 			lessonRepo.findAllByCourseIds.mockResolvedValue([allLessons, allLessons.length]);
 
-			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
+			courseRepo.findById.mockResolvedValue(course);
+			authorisation.hasPermission.mockReturnValue(true);
 			const copy = lessonFactory.buildWithId({ course });
 			const status = {
 				title: 'lessonCopy',
@@ -90,23 +88,17 @@ describe('lesson copy uc', () => {
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: copy,
 			};
-			const lessonCopySpy = jest
-				.spyOn(lessonCopyService, 'copyLesson')
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((params: LessonCopyParams) => status);
+			lessonCopyService.copyLesson.mockReturnValue(status);
 			const lessonPersistSpy = jest.spyOn(lessonRepo, 'save');
+			lessonRepo.save.mockResolvedValue(undefined);
 			const lessonCopyName = 'Copy';
 			copyHelperService.deriveCopyName.mockReturnValue(lessonCopyName);
 			return {
 				user,
 				course,
 				lesson,
-				userSpy,
-				courseSpy,
-				authSpy,
 				copy,
 				status,
-				lessonCopySpy,
 				lessonPersistSpy,
 				lessonCopyName,
 				allLessons,
@@ -114,9 +106,9 @@ describe('lesson copy uc', () => {
 		};
 
 		it('should fetch correct user', async () => {
-			const { course, user, lesson, userSpy } = setup();
+			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(userSpy).toBeCalledWith(user.id);
+			expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 		});
 
 		it('should fetch correct lesson', async () => {
@@ -126,48 +118,48 @@ describe('lesson copy uc', () => {
 		});
 
 		it('should fetch destination course', async () => {
-			const { course, user, lesson, courseSpy } = setup();
+			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(courseSpy).toBeCalledWith(course.id);
+			expect(courseRepo.findById).toBeCalledWith(course.id);
 		});
 
 		it('should pass without destination course', async () => {
-			const { user, lesson, courseSpy } = setup();
+			const { user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, {});
-			expect(courseSpy).not.toHaveBeenCalled();
+			expect(courseRepo.findById).not.toHaveBeenCalled();
 		});
 
 		it('should check authorisation for lesson', async () => {
-			const { course, user, lesson, authSpy } = setup();
+			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(authSpy).toBeCalledWith(user, lesson, {
+			expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
 				action: Actions.read,
 				requiredPermissions: [Permission.TOPIC_CREATE],
 			});
 		});
 
 		it('should check authorisation for destination course', async () => {
-			const { course, user, lesson, authSpy } = setup();
+			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(authSpy).toBeCalledWith(user, course, {
+			expect(authorisation.hasPermission).toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
 		});
 
 		it('should pass authorisation check without destination course', async () => {
-			const { course, user, lesson, authSpy } = setup();
+			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, {});
-			expect(authSpy).not.toBeCalledWith(user, course, {
+			expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [],
 			});
 		});
 
 		it('should call copy service', async () => {
-			const { course, user, lesson, lessonCopySpy, lessonCopyName } = setup();
+			const { course, user, lesson, lessonCopyName } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(lessonCopySpy).toBeCalledWith({
+			expect(lessonCopyService.copyLesson).toBeCalledWith({
 				originalLesson: lesson,
 				destinationCourse: course,
 				user,
@@ -205,12 +197,10 @@ describe('lesson copy uc', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId();
-				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: PermissionTypes) => {
-					if (e === lesson) return false;
-					return true;
-				});
+				userRepo.findById.mockResolvedValue(user);
+				lessonRepo.findById.mockResolvedValue(lesson);
+				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== lesson);
+
 				return { user, course, lesson };
 			};
 
@@ -231,13 +221,11 @@ describe('lesson copy uc', () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId();
-				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
-				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: PermissionTypes) => {
-					if (e === course) return false;
-					return true;
-				});
+				userRepo.findById.mockResolvedValue(user);
+				lessonRepo.findById.mockResolvedValue(lesson);
+				courseRepo.findById.mockResolvedValue(course);
+				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
+
 				return { user, course, lesson };
 			};
 
