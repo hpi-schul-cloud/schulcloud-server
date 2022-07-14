@@ -36,7 +36,11 @@ import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.con
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { AuthorizationService } from '@src/modules/authorization';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
-import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
+import {
+	VideoConferenceDTO,
+	VideoConferenceInfoDTO,
+	VideoConferenceJoinDTO,
+} from '@src/modules/video-conference/dto/video-conference.dto';
 
 interface IScopeInfo {
 	scopeId: EntityId;
@@ -138,7 +142,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise<VideoConferenceDTO<BBBJoinResponse>> {
+	): Promise<VideoConferenceJoinDTO> {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -183,7 +187,8 @@ export class VideoConferenceUc {
 				throw new BadRequestException('Unknown scope name');
 		}
 
-		configBuilder.withPassword(bbbRole);
+		configBuilder.withRole(bbbRole);
+		configBuilder.withUserId(currentUser.userId);
 
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
 
@@ -194,7 +199,7 @@ export class VideoConferenceUc {
 		return {
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
-			bbbResponse: await this.bbbService.join(configBuilder.build()),
+			url: await this.bbbService.join(configBuilder.build()),
 		};
 	}
 

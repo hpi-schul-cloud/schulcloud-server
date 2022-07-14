@@ -5,7 +5,11 @@ import {
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 } from '@src/modules/video-conference/controller/dto/video-conference.response';
-import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
+import {
+	VideoConferenceDTO,
+	VideoConferenceInfoDTO,
+	VideoConferenceJoinDTO,
+} from '@src/modules/video-conference/dto/video-conference.dto';
 
 @Injectable()
 export class VideoConferenceResponseMapper {
@@ -16,11 +20,11 @@ export class VideoConferenceResponseMapper {
 		});
 	}
 
-	mapToJoinResponse(from: VideoConferenceDTO<BBBJoinResponse>): VideoConferenceJoinResponse {
+	mapToJoinResponse(from: VideoConferenceJoinDTO): VideoConferenceJoinResponse {
 		return new VideoConferenceJoinResponse({
 			state: from.state,
 			permission: from.permission,
-			url: from.bbbResponse?.response.url,
+			url: from.url,
 		});
 	}
 

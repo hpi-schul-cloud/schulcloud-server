@@ -15,6 +15,14 @@ export interface VideoConferenceDTO<T extends BBBBaseResponse> {
 	bbbResponse?: BBBResponse<T>;
 }
 
+export interface VideoConferenceJoinDTO {
+	state: VideoConferenceState;
+
+	permission: Permission;
+
+	url: string;
+}
+
 export interface VideoConferenceInfoDTO extends VideoConferenceDTO<BBBMeetingInfoResponse> {
 	options?: VideoConferenceOptions;
 }

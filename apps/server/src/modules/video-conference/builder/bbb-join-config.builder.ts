@@ -12,14 +12,8 @@ export class BBBJoinConfigBuilder extends Builder<BBBJoinConfig> {
 		return this;
 	}
 
-	withPassword(value: string): BBBJoinConfigBuilder {
-		this.product.password = value;
+	withUserId(value: string): BBBJoinConfigBuilder {
+		this.product.userID = value;
 		return this;
-	}
-
-	override build(): BBBJoinConfig {
-		this.product.redirect = 'FALSE';
-
-		return super.build();
 	}
 }

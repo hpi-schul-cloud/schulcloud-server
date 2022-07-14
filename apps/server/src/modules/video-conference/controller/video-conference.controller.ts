@@ -28,7 +28,11 @@ import {
 	VideoConferenceJoinResponse,
 } from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
-import { VideoConferenceDTO, VideoConferenceInfoDTO } from '@src/modules/video-conference/dto/video-conference.dto';
+import {
+	VideoConferenceDTO,
+	VideoConferenceInfoDTO,
+	VideoConferenceJoinDTO,
+} from '@src/modules/video-conference/dto/video-conference.dto';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -66,7 +70,7 @@ export class VideoConferenceController {
 				moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
 			}
 		);
-		const dto2: VideoConferenceDTO<BBBJoinResponse> = await this.videoConferenceUc.join(currentUser, scope, scopeId);
+		const dto2: VideoConferenceJoinDTO = await this.videoConferenceUc.join(currentUser, scope, scopeId);
 
 		return this.responseMapper.mapToJoinResponse(dto2);
 	}
@@ -92,12 +96,8 @@ export class VideoConferenceController {
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceJoinResponse> {
-		const bbbResponse: VideoConferenceDTO<BBBJoinResponse> = await this.videoConferenceUc.join(
-			currentUser,
-			scope,
-			scopeId
-		);
-		return this.responseMapper.mapToJoinResponse(bbbResponse);
+		const dto: VideoConferenceJoinDTO = await this.videoConferenceUc.join(currentUser, scope, scopeId);
+		return this.responseMapper.mapToJoinResponse(dto);
 	}
 
 	@Get(':scope/:scopeId')
