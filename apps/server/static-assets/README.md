@@ -1,0 +1,1 @@
+This is a place host your static files, during build time we put the version number in this directory
