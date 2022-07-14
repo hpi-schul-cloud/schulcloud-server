@@ -16,7 +16,7 @@ export class OauthConfig {
 		this.clientSecret = oauthConfig.clientSecret;
 		this.tokenEndpoint = oauthConfig.tokenEndpoint;
 		this.grantType = oauthConfig.grantType;
-		this.tokenRedirectUri = oauthConfig.tokenRedirectUri;
+		this.redirectUri = oauthConfig.redirectUri;
 		this.scope = oauthConfig.scope;
 		this.responseType = oauthConfig.responseType;
 		this.authEndpoint = oauthConfig.authEndpoint;
@@ -24,7 +24,6 @@ export class OauthConfig {
 		this.logoutEndpoint = oauthConfig.logoutEndpoint;
 		this.issuer = oauthConfig.issuer;
 		this.jwksEndpoint = oauthConfig.jwksEndpoint;
-		this.codeRedirectUri = oauthConfig.codeRedirectUri;
 	}
 
 	@Property()
@@ -34,7 +33,7 @@ export class OauthConfig {
 	clientSecret: string;
 
 	@Property()
-	tokenRedirectUri: string;
+	redirectUri: string;
 
 	@Property()
 	grantType: string;
@@ -62,9 +61,6 @@ export class OauthConfig {
 
 	@Property()
 	jwksEndpoint: string;
-
-	@Property()
-	codeRedirectUri: string;
 }
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {

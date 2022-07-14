@@ -20,7 +20,7 @@ export class SystemMapper {
 		return new OauthConfigDto({
 			clientId: oauthConfig.clientId,
 			clientSecret: oauthConfig.clientSecret,
-			tokenRedirectUri: oauthConfig.tokenRedirectUri,
+			redirectUri: oauthConfig.redirectUri,
 			grantType: oauthConfig.grantType,
 			tokenEndpoint: oauthConfig.tokenEndpoint,
 			authEndpoint: oauthConfig.authEndpoint,
@@ -30,7 +30,6 @@ export class SystemMapper {
 			logoutEndpoint: oauthConfig.logoutEndpoint,
 			issuer: oauthConfig.issuer,
 			jwksEndpoint: oauthConfig.jwksEndpoint,
-			codeRedirectUri: oauthConfig.codeRedirectUri,
 		});
 	}
 
