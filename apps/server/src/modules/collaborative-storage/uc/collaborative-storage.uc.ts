@@ -29,4 +29,8 @@ export class CollaborativeStorageUc {
 			this.permissionMapper.mapBodyToDto(permissionsDto)
 		);
 	}
+
+	deleteTeam(teamId: string) {
+		this.service.deleteTeam(teamId);
+	}
 }

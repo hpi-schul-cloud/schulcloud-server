@@ -1,5 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { getChannel } = require('../../utils/rabbitmq');
+const rabbitMq = require('../../utils/rabbitmq');
 const { getAllCourseUserIds } = require('../user-group/logic/courses');
 const { teamsModel } = require('../teams/model');
 
@@ -153,7 +153,7 @@ const requestSyncForEachSchoolUser = async (schoolId, schoolSync = false) => {
 // SETUP
 const setup = (app_) => {
 	app = app_;
-	channelSendInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
+	channelSendInternal = rabbitMq.getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 };
 
 module.exports = {

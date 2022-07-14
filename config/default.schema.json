@@ -594,7 +594,7 @@
 		},
 		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
-			"default": "http://localhost:8080/",
+			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
 		"NEXTCLOUD_ADMIN_USER": {
@@ -838,11 +838,6 @@
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
 		},
-		"ROOM_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "feature toggle activate Room view link."
-		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
 			"default": "lernen.cloud@dataport.de",
@@ -887,6 +882,13 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for copy/duplicate a lesson feature."
+		},
+		"GHOST_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://blog.dbildungscloud.de",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of ghost blog (should end without a slash)"
 		}
 	},
 	"required": [

@@ -1,6 +1,7 @@
 const assert = require('assert');
 const mockery = require('mockery');
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const mockAws = require('../fileStorage/aws/s3.mock');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
@@ -11,6 +12,7 @@ describe('wopi service', function test() {
 	let app;
 	const testUserId = '599ec14d8e4e364ec18ff46d';
 	let server;
+	let nestServices;
 
 	const testFile = {
 		_id: '597860e9667a0659ed0b0006',
@@ -55,6 +57,7 @@ describe('wopi service', function test() {
 
 		mockery.registerMock('aws-sdk', mockAws);
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 
 		delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
 		await app.service('files').create(testFile);
@@ -63,6 +66,7 @@ describe('wopi service', function test() {
 	after(async () => {
 		await app.service('files').remove(testFile._id);
 		await server.close();
+		await closeNestServices(nestServices);
 		mockery.deregisterAll();
 		mockery.disable();
 	});

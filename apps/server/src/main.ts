@@ -9,14 +9,16 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { Logger } from '@nestjs/common';
-import { MailService, Mail } from '@shared/infra/mail';
+import { Mail, MailService } from '@shared/infra/mail';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from './server.module';
-import legacyAppPromise = require('../../../src/app');
 import { AccountUc } from './modules/account/uc/account.uc';
 import { AccountService } from './modules/account/services/account.service';
+import legacyAppPromise = require('../../../src/app');
+import { AccountValidationService } from './modules/account/services/account.validation.service';
+import { CollaborativeStorageUc } from './modules/collaborative-storage/uc/collaborative-storage.uc';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -57,7 +59,11 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-account-validation-service'] = nestApp.get(AccountValidationService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
 
 	// mount instances
 	const rootExpress = express();

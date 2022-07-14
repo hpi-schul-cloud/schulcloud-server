@@ -2,23 +2,26 @@ const { expect } = require('chai');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
-
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { webuntisMetadataModel } = require('../../../src/services/webuntis/model');
 
 describe('webuntis metadata service', () => {
 	let webuntisMetadataService;
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		webuntisMetadataService = app.service('webuntisMetadata');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the webuntis metadata service', () => {

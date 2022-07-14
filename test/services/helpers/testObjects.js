@@ -131,7 +131,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 				account,
 				requestParams,
 				userId: user._id.toString(),
-				accountId: account._id.toString(),
+				accountId: account.id.toString(),
 			};
 		} catch (err) {
 			logger.warning(err);

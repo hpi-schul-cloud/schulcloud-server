@@ -6,16 +6,20 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 const { problemRepo } = require('.');
 const { AssertionError } = require('../../../errors');
 
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
+
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
 describe('problem repo', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -24,6 +28,7 @@ describe('problem repo', () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('deleteProblems', () => {

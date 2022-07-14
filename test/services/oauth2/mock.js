@@ -8,6 +8,7 @@ const oauth2 = require('../../../src/services/oauth2');
 
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 
 chai.use(chaiHttp);
 
@@ -21,6 +22,7 @@ describe('oauth2 service mock', function oauthTest() {
 	let introspectService;
 	let consentService;
 	let server;
+	let nestServices;
 	this.timeout(15000);
 
 	const testUser2 = {
@@ -63,12 +65,14 @@ describe('oauth2 service mock', function oauthTest() {
 
 		app.configure(oauth2);
 		server = await app.listen();
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		// sets uri back to original uri
 		app.settings.services.hydra = beforeHydraUri;
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('is registered', () => {

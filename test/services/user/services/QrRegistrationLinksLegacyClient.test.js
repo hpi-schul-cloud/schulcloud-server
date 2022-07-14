@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 
@@ -7,15 +8,18 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 	let app;
 	let qrRegistrationLinksLegacyService;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		qrRegistrationLinksLegacyService = app.service('/users/qrRegistrationLinkLegacy');
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	const createRegistrationLinks = (requestParams, classId, role) =>

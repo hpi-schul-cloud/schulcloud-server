@@ -1,8 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
-
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
-
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
@@ -106,6 +104,9 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 	}
 
 	private getShortTitle(): string {
+		if (this.name.length === 1) {
+			return this.name;
+		}
 		const [firstChar, secondChar] = [...this.name];
 		const pattern = /\p{Extended_Pictographic}/u;
 		if (pattern.test(firstChar)) {

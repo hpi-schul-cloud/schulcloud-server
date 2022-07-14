@@ -116,7 +116,7 @@ class Channel {
 			const ch = await this.getChannel();
 			ch.reject(message, requeue);
 		} catch (err) {
-			logger.errwor('RabbitMQ unable to reject message.', err);
+			logger.error('RabbitMQ unable to reject message.', err);
 		}
 	}
 }

@@ -1,18 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardCopyService, CopyHelperService, CourseCopyService } from '@shared/domain';
 import { boardFactory, courseFactory, schoolFactory, setupEntities, userFactory } from '../../testing';
 import { Course } from '../entity';
 import { CopyElementType, CopyStatusEnum } from '../types';
-import { BoardCopyService } from './board-copy.service';
-import { CourseCopyService } from './course-copy.service';
-import { NameCopyService } from './name-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
 	let copyService: CourseCopyService;
 	let boardCopyService: DeepMocked<BoardCopyService>;
-	let nameCopyService: DeepMocked<NameCopyService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -33,15 +31,15 @@ describe('course copy service', () => {
 					useValue: createMock<BoardCopyService>(),
 				},
 				{
-					provide: NameCopyService,
-					useValue: createMock<NameCopyService>(),
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
 				},
 			],
 		}).compile();
 
 		copyService = module.get(CourseCopyService);
 		boardCopyService = module.get(BoardCopyService);
-		nameCopyService = module.get(NameCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyCourse', () => {
@@ -59,7 +57,8 @@ describe('course copy service', () => {
 				};
 				const courseCopyName = 'Copy';
 				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
-				nameCopyService.deriveCopyName.mockReturnValue(courseCopyName);
+				copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 
 				return { user, originalCourse, boardCopyStatus, courseCopyName };
 			};
@@ -90,7 +89,7 @@ describe('course copy service', () => {
 				expect(course.school).toEqual(destinationSchool);
 			});
 
-			it('should use nameCopyService', () => {
+			it('should use copyHelperService', () => {
 				const { originalCourse, user } = setup();
 
 				copyService.copyCourse({
@@ -98,7 +97,7 @@ describe('course copy service', () => {
 					user,
 				});
 
-				expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(originalCourse.name);
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalCourse.name);
 			});
 
 			it('should set name of copy', () => {
@@ -111,6 +110,32 @@ describe('course copy service', () => {
 
 				const course = status.copyEntity as Course;
 				expect(course.name).toEqual(courseCopyName);
+			});
+
+			it('should set start date of course', () => {
+				const { originalCourse, user } = setup();
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status.copyEntity as Course;
+				expect(user.school.schoolYear).toBeDefined();
+				expect(course.startDate).toEqual(user.school.schoolYear?.startDate);
+			});
+
+			it('should set end date of course', () => {
+				const { originalCourse, user } = setup();
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status.copyEntity as Course;
+				expect(user.school.schoolYear).toBeDefined();
+				expect(course.untilDate).toEqual(user.school.schoolYear?.endDate);
 			});
 
 			it('should set color of course', () => {
@@ -166,14 +191,12 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const metadataStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-				);
+				const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 				expect(metadataStatus).toBeDefined();
 				expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should set status of teachers', () => {
+			it('should set status of users', () => {
 				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
@@ -181,54 +204,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const teachersStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'teachers'
-				);
+				const teachersStatus = status.elements?.find((el) => el.type === CopyElementType.USER_GROUP);
 				expect(teachersStatus).toBeDefined();
 				expect(teachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should set status of substitutionTeachers', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const substitutionTeachersStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'substitutionTeachers'
-				);
-				expect(substitutionTeachersStatus).toBeDefined();
-				expect(substitutionTeachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should set status of students', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const studentsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'students'
-				);
-				expect(studentsStatus).toBeDefined();
-				expect(studentsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should set status of classes', () => {
-				const { originalCourse, user } = setup();
-
-				const status = copyService.copyCourse({
-					originalCourse,
-					user,
-				});
-
-				const classesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'classes');
-				expect(classesStatus).toBeDefined();
-				expect(classesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
 			it('should set status of ltiTools', () => {
@@ -239,9 +217,7 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const ltiToolsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'ltiTools'
-				);
+				const ltiToolsStatus = status.elements?.find((el) => el.type === CopyElementType.LTITOOL_GROUP);
 				expect(ltiToolsStatus).toBeDefined();
 				expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
@@ -254,9 +230,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const timesStatus = status.elements?.find((el) => el.type === CopyElementType.LEAF && el.title === 'times');
+				const timesStatus = status.elements?.find((el) => el.type === CopyElementType.TIME_GROUP);
 				expect(timesStatus).toBeDefined();
-				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			});
 
 			it('should set status of files', () => {
@@ -267,9 +243,9 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const filesStatus = status.elements?.find((el) => el.type === CopyElementType.FILE && el.title === 'files');
-				expect(filesStatus).toBeDefined();
-				expect(filesStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+				const fileGroup = status.elements?.find((el) => el.type === CopyElementType.FILE_GROUP);
+				expect(fileGroup).toBeDefined();
+				expect(fileGroup?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
 			});
 
 			it('should set status of coursegroups', () => {
@@ -280,11 +256,19 @@ describe('course copy service', () => {
 					user,
 				});
 
-				const coursegroupsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'coursegroups'
-				);
+				const coursegroupsStatus = status.elements?.find((el) => el.type === CopyElementType.COURSEGROUP_GROUP);
 				expect(coursegroupsStatus).toBeDefined();
 				expect(coursegroupsStatus?.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+			});
+
+			it('should call copyHelperService', () => {
+				const { originalCourse, user } = setup();
+
+				copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 			});
 		});
 

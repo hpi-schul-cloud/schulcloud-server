@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 const { createLessonContents } = testObjects.lessons;
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
@@ -28,10 +29,12 @@ const createTestData = async () => {
 describe('when removing user data in courses', async () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	afterEach(async () => {
@@ -40,6 +43,7 @@ describe('when removing user data in courses', async () => {
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('should resolve with empty trashbin data for a user with no course connection', async () => {

@@ -1,5 +1,6 @@
 const chai = require('chai');
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
@@ -53,14 +54,17 @@ describe('submission service', function test() {
 	let app;
 	this.timeout(4000);
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('lets student add a submission', async () => {

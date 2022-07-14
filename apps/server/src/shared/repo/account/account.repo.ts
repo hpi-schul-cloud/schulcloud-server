@@ -19,6 +19,11 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this._em.findOne(Account, { userId: new ObjectId(userId) });
 	}
 
+	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<Account[]> {
+		const objectIds = userIds.map((id: EntityId | ObjectId) => new ObjectId(id));
+		return this._em.find(Account, { userId: objectIds });
+	}
+
 	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
 		return this._em.findOneOrFail(Account, { userId: new ObjectId(userId) });
 	}
@@ -46,8 +51,13 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
-	deleteById(accountId: EntityId) {
+	async deleteById(accountId: EntityId): Promise<void> {
 		const accountReference = this._em.getReference(Account, accountId);
+		return this._em.removeAndFlush(accountReference);
+	}
+
+	async deleteByUserId(userId: EntityId): Promise<void> {
+		const accountReference = this._em.getReference(Account, userId);
 		return this._em.removeAndFlush(accountReference);
 	}
 

@@ -1,15 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+	ComponentType,
+	CopyElementType,
+	CopyStatusEnum,
+	IComponentGeogebraProperties,
+	IComponentProperties,
+	Lesson,
+} from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { CopyElementType, CopyStatusEnum, Lesson } from '@shared/domain';
+import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
-import { NameCopyService } from './name-copy.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
-	let nameCopyService: DeepMocked<NameCopyService>;
+	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -26,14 +33,14 @@ describe('lesson copy service', () => {
 			providers: [
 				LessonCopyService,
 				{
-					provide: NameCopyService,
-					useValue: createMock<NameCopyService>(),
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
 				},
 			],
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
-		nameCopyService = module.get(NameCopyService);
+		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyLesson', () => {
@@ -42,10 +49,13 @@ describe('lesson copy service', () => {
 				const user = userFactory.build();
 				const originalCourse = courseFactory.build({ school: user.school });
 				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const originalLesson = lessonFactory.build({ course: originalCourse });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+				});
 
 				const copyName = 'Copy';
-				nameCopyService.deriveCopyName.mockReturnValue(copyName);
+				copyHelperService.deriveCopyName.mockReturnValue(copyName);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
 
 				return { user, originalCourse, destinationCourse, originalLesson, copyName };
 			};
@@ -64,7 +74,7 @@ describe('lesson copy service', () => {
 					expect(lesson.name).toEqual(copyName);
 				});
 
-				it('should use nameCopyService', () => {
+				it('should use copyHelperService', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					copyService.copyLesson({
@@ -73,7 +83,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					expect(nameCopyService.deriveCopyName).toHaveBeenCalledWith(originalLesson.name);
+					expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalLesson.name);
 				});
 
 				it('should set course of the copy', () => {
@@ -102,7 +112,7 @@ describe('lesson copy service', () => {
 					expect(lesson.position).toEqual(originalLesson.position);
 				});
 
-				it('should set the hidden of copy', () => {
+				it('should set the hidden property of copy', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
 					const response = copyService.copyLesson({
@@ -137,6 +147,18 @@ describe('lesson copy service', () => {
 					expect(status.type).toEqual(CopyElementType.LESSON);
 				});
 
+				it('should set lesson status', () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const status = copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					expect(status.status).toEqual(CopyStatusEnum.SUCCESS);
+				});
+
 				it('should set status of metadata', () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
@@ -146,9 +168,7 @@ describe('lesson copy service', () => {
 						user,
 					});
 
-					const metadataStatus = status.elements?.find(
-						(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-					);
+					const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 					expect(metadataStatus).toBeDefined();
 					expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 				});
@@ -171,6 +191,237 @@ describe('lesson copy service', () => {
 
 				expect(lesson.course).toEqual(destinationCourse);
 			});
+		});
+
+		describe('when lesson contains no content', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+				});
+
+				return { user, originalCourse, destinationCourse, originalLesson };
+			};
+
+			it('contents array of copied lesson should be empty', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+
+				const lesson = status.copyEntity as Lesson;
+
+				expect(lesson.contents.length).toEqual(0);
+			});
+
+			it('should not set contents status group', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+				expect(contentsStatus).not.toBeDefined();
+			});
+		});
+
+		describe('when lesson contains at least one content element', () => {
+			const setup = () => {
+				const contentOne: IComponentProperties = {
+					title: 'title component 1',
+					hidden: false,
+					component: ComponentType.TEXT,
+					content: {
+						text: 'this is a text content',
+					},
+				};
+				const contentTwo: IComponentProperties = {
+					title: 'title component 2',
+					hidden: false,
+					component: ComponentType.LERNSTORE,
+					content: {
+						resources: [
+							{
+								url: 'http://foo.bar',
+								title: 'foo',
+								description: 'bar',
+								client: 'client',
+								merlinReference: '',
+							},
+						],
+					},
+				};
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+					contents: [contentOne, contentTwo],
+				});
+				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.SUCCESS);
+				return { user, originalCourse, destinationCourse, originalLesson };
+			};
+
+			it('contents array of copied lesson should contain content elments of original lesson', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+
+				const lesson = status.copyEntity as Lesson;
+
+				expect(lesson.contents.length).toEqual(2);
+				expect(lesson.contents).toEqual(originalLesson.contents);
+			});
+
+			it('copied content should persist the original hidden value', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+				originalLesson.contents[0].hidden = true;
+				originalLesson.contents[1].hidden = false;
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+
+				const lesson = status.copyEntity as Lesson;
+
+				expect(lesson.contents[0].hidden).toEqual(true);
+				expect(lesson.contents[1].hidden).toEqual(false);
+			});
+
+			it('should set contents status group with correct amount of children status elements', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+				expect(contentsStatus).toBeDefined();
+				expect(contentsStatus?.elements?.length).toEqual(2);
+				if (contentsStatus?.elements && contentsStatus?.elements[0]) {
+					expect(contentsStatus?.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
+				}
+			});
+
+			it('should set contents status group with correct status', () => {
+				const { user, destinationCourse, originalLesson } = setup();
+
+				const status = copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+				expect(contentsStatus).toBeDefined();
+				expect(contentsStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
+			});
+		});
+	});
+
+	describe('when lesson contains LernStore content element', () => {
+		const setup = () => {
+			const lernStoreContent: IComponentProperties = {
+				title: 'text component 1',
+				hidden: false,
+				component: ComponentType.LERNSTORE,
+				content: {
+					resources: [
+						{
+							url: 'https://foo.bar/baz',
+							title: 'Test title',
+							description: 'description',
+							client: 'Schul-Cloud',
+							merlinReference: '',
+						},
+					],
+				},
+			};
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [lernStoreContent],
+			});
+
+			return { user, originalCourse, destinationCourse, originalLesson, lernStoreContent };
+		};
+
+		it('the content should be fully copied', () => {
+			const { user, destinationCourse, originalLesson, lernStoreContent } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
+		});
+	});
+
+	describe('when lesson contains geoGebra content element', () => {
+		const setup = () => {
+			const geoGebraContent: IComponentProperties = {
+				title: 'text component 1',
+				hidden: false,
+				component: ComponentType.GEOGEBRA,
+				content: {
+					materialId: 'foo',
+				},
+			};
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [geoGebraContent],
+			});
+
+			return { user, originalCourse, destinationCourse, originalLesson };
+		};
+
+		it('geoGebra Material-ID should not be copied', () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const geoGebraContent = lessonContents[0].content as IComponentGeogebraProperties;
+
+			expect(geoGebraContent.materialId).toEqual('');
+		});
+
+		it('element should be hidden', () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			expect(lessonContents[0].hidden).toEqual(true);
 		});
 	});
 });
