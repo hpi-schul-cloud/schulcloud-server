@@ -14,7 +14,7 @@ export class CalendarService {
 	private readonly timeoutMs: number;
 
 	constructor(private readonly httpService: HttpService) {
-		this.baseURL = Configuration.get('HOST') as string;
+		this.baseURL = Configuration.get('CALENDAR_URI') as string;
 		this.timeoutMs = Configuration.get('REQUEST_OPTION__TIMEOUT_MS') as number;
 	}
 
