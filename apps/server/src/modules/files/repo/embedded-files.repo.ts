@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Lesson, FileRecordParentType, File } from '@shared/domain';
