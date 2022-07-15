@@ -441,7 +441,6 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 			});
 			const originalTask = taskFactory.build({
-				description: 'lesson task description',
 				course: originalCourse,
 				lesson: originalLesson,
 			});
