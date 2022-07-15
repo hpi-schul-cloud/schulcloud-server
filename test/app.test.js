@@ -20,11 +20,6 @@ describe('Feathers application tests', () => {
 		await server.close();
 	});
 
-	it('starts and shows the index page', async () => {
-		const response = await chai.request(app).get('/');
-		assert.equal(response.status, 200);
-	});
-
 	describe('404', () => {
 		let configBefore;
 		before('enable 404 handler', () => {
