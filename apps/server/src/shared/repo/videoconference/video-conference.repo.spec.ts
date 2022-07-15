@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { VideoConference } from '@shared/domain';
+import { VideoConference, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { NotFoundError } from '@mikro-orm/core';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
@@ -37,6 +37,23 @@ describe('Video Conference Repo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(VideoConference);
+	});
+
+	describe('create', () => {
+		it('should create a single entity', () => {
+			const testDO = new VideoConferenceDO({
+				target: '123',
+				targetModel: VideoConferenceScope.COURSE,
+				options: new VideoConferenceOptionsDO({
+					everyAttendeeJoinsMuted: true,
+					moderatorMustApproveJoinRequests: true,
+					everybodyJoinsAsModerator: true,
+				}),
+			});
+
+			const resDO = repo.create(testDO);
+			expect(resDO.target).toEqual(testDO.target);
+		});
 	});
 
 	describe('findById', () => {
