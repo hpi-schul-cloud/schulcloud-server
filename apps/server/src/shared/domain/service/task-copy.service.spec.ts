@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyHelperService, TaskCopyService } from '@shared/domain';
@@ -9,7 +9,6 @@ import { Task } from '../entity';
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
-	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -33,7 +32,6 @@ describe('task copy service', () => {
 		}).compile();
 
 		copyService = module.get(TaskCopyService);
-		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyTask', () => {
