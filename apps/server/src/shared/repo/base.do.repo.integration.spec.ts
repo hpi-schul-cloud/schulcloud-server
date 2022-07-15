@@ -82,6 +82,15 @@ describe('BaseDORepo', () => {
 		});
 	});
 
+	describe('create', () => {
+		it('should create a single entity', () => {
+			const testDO = new TestDO({ id: '', name: 'test' });
+
+			const resDO = repo.create(testDO);
+			expect(resDO.name).toEqual(testDO.name);
+		});
+	});
+
 	describe('save', () => {
 		it('should persist and flush a single entity', async () => {
 			const testDO = new TestDO({ id: '', name: 'test' });

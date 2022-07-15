@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
-import { VideoConference } from '@shared/domain/entity/video-conference.entity';
+import { VideoConference, VideoConferenceOptions } from '@shared/domain/entity/video-conference.entity';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 
 describe('Video Conference Entity', () => {
@@ -23,6 +23,11 @@ describe('Video Conference Entity', () => {
 
 		it('should create a user by passing required properties', () => {
 			const vc = videoConferenceFactory.build();
+			vc.options = new VideoConferenceOptions({
+				everyAttendeJoinsMuted: true,
+				everybodyJoinsAsModerator: true,
+				moderatorMustApproveJoinRequests: true,
+			});
 			expect(vc instanceof VideoConference).toEqual(true);
 		});
 	});
