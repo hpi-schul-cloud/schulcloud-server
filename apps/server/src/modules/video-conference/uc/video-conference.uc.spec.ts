@@ -599,8 +599,6 @@ describe('VideoConferenceUc', () => {
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
-			// Act & Assert
-			expect().rejects.toThrow(ForbiddenException);
 		});
 	});
 });
