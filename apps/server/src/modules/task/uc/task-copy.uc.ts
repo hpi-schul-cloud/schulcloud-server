@@ -41,11 +41,10 @@ export class TaskCopyUC {
 		let existingNames: string[] = [];
 		let destinationCourse: Course | undefined;
 
-		const courseId = parentParams.courseId || originalTask.course?.id;
-		if (courseId) {
-			destinationCourse = await this.getDestinationCourse(courseId, user);
-			const [existingTasks] = await this.taskRepo.findBySingleParent('', courseId);
-			existingNames = existingTasks.map((t) => t.name);
+		if (parentParams.courseId) {
+			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentParams.courseId);
+			existingNames = (existingTasks || []).map((t) => t.name);
 		}
 
 		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
