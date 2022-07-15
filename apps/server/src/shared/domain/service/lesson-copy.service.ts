@@ -88,7 +88,7 @@ export class LessonCopyService {
 	}
 
 	private copyTasks(params: TaskCopyParams): CopyStatus {
-		const { copyEntity, ...taskStatus } = this.taskCopyService.copyTaskMetadata(params);
+		const taskStatus = this.taskCopyService.copyTaskMetadata(params);
 		return taskStatus;
 	}
 

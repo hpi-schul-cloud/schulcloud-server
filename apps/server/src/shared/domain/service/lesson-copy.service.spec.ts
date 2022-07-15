@@ -10,13 +10,14 @@ import {
 	Lesson,
 	TaskCopyService,
 } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
 import { LessonCopyService } from './lesson-copy.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
+	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
@@ -45,6 +46,7 @@ describe('lesson copy service', () => {
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
+		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
 	});
 
@@ -430,7 +432,7 @@ describe('lesson copy service', () => {
 		});
 	});
 
-	/* describe('when tasks are linked to the original lesson', () => {
+	describe('when tasks are linked to the original lesson', () => {
 		const setup = () => {
 			const user = userFactory.build();
 			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
@@ -443,6 +445,16 @@ describe('lesson copy service', () => {
 				course: originalCourse,
 				lesson: originalLesson,
 			});
+			const taskCopy = taskFactory.build({ name: originalTask.name });
+			const mockedTaskStatus = {
+				title: taskCopy.name,
+				type: CopyElementType.TASK,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: taskCopy,
+			};
+			const taskSpy = jest.spyOn(taskCopyService, 'copyTaskMetadata').mockImplementation(() => mockedTaskStatus);
+
+			taskCopyService.copyTaskMetadata.mockReturnValue(mockedTaskStatus);
 
 			const copyStatus = copyService.copyLesson({
 				originalLesson,
@@ -450,25 +462,36 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			return { user, originalCourse, destinationCourse, originalLesson, originalTask, copyStatus };
+			return {
+				user,
+				originalCourse,
+				destinationCourse,
+				originalLesson,
+				originalTask,
+				taskCopy,
+				copyStatus,
+				mockedTaskStatus,
+				taskSpy,
+			};
 		};
 
-		it('should copy the linked task', () => {
-			const { copyStatus, originalTask } = setup();
+		it('should put copy status for each copied task', () => {
+			const { copyStatus, mockedTaskStatus } = setup();
 
-			const lesson = copyStatus.copyEntity as Lesson;
-			const linkedTasks = lesson.getLessonTasks();
-			const newTask = linkedTasks[0];
-			expect(newTask.description).toEqual(originalTask.description);
+			const tasksStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
+			expect(tasksStatus).toBeDefined();
+			expect(tasksStatus).toEqual(mockedTaskStatus);
 		});
 
-		it('link the copied task to the new lesson', () => {
-			const { copyStatus } = setup();
+		it('should call taskCopyService for linked tasks', () => {
+			const { copyStatus, originalTask, destinationCourse, user, taskSpy } = setup();
 
-			const lesson = copyStatus.copyEntity as Lesson;
-			const linkedTasks = lesson.getLessonTasks();
-			const newTask = linkedTasks[0];
-			expect(newTask.lesson).toEqual(lesson);
+			expect(taskSpy).toHaveBeenCalledWith({
+				originalTask,
+				destinationCourse,
+				destinationLesson: copyStatus.copyEntity,
+				user,
+			});
 		});
-	}); */
+	});
 });
