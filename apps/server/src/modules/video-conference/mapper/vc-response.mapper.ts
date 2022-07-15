@@ -1,4 +1,4 @@
-import { BBBBaseResponse, BBBJoinResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
+import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { Injectable } from '@nestjs/common';
 import {
 	VideoConferenceBaseResponse,

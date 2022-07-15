@@ -26,7 +26,6 @@ import {
 	BBBMeetingInfoResponse,
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';

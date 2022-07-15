@@ -3,7 +3,7 @@ import {
 	VideoConferenceInfoDTO,
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
-import { BBBBaseResponse, BBBJoinResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
+import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
