@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { VideoConference } from '@shared/domain';
+import { VideoConference, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { NotFoundError } from '@mikro-orm/core';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
@@ -66,7 +66,7 @@ describe('Video Conference Repo', () => {
 	describe('findByScopeId', () => {
 		it('should find a vc by ScopeId', async () => {
 			const vcA = videoConferenceFactory.build();
-			console.log(vcA);
+			await em.persistAndFlush(vcA);
 			const result = await repo.findByScopeId(vcA.target, VideoConferenceScope.COURSE);
 			expect(result.id).toEqual(vcA.id);
 		});
@@ -74,6 +74,22 @@ describe('Video Conference Repo', () => {
 		it('should throw an Error if the scope mismatches the idtype', async () => {
 			const vcA = videoConferenceFactory.build();
 			await expect(repo.findByScopeId(vcA.target, VideoConferenceScope.EVENT)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('create', () => {
+		it('should create an Entity from a Do', () => {
+			const vcDo = new VideoConferenceDO({
+				target: '2',
+				targetModel: VideoConferenceScope.EVENT,
+				options: new VideoConferenceOptionsDO({
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: false,
+					everyAttendeeJoinsMuted: true,
+				}),
+			});
+			const retDo = repo.create(vcDo);
+			expect(retDo.target).toEqual(vcDo.target);
 		});
 	});
 });

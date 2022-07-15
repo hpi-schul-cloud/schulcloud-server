@@ -132,7 +132,6 @@ describe('VideoConferenceUc', () => {
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
-		authorizationService.hasPermissionsByReferences.mockResolvedValue(); // TODO mock this
 	});
 
 	afterEach(() => {
@@ -262,6 +261,7 @@ describe('VideoConferenceUc', () => {
 			savedVcDO.id = 'videoConferenceId';
 
 			const config: BBBCreateConfig = {
+				meetingID: 'meetingID',
 				name: 'videoConferenceTitle',
 			};
 

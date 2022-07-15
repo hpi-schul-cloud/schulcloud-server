@@ -61,6 +61,15 @@ describe('BaseRepo', () => {
 		});
 	});
 
+	describe('create', () => {
+		it('should create a single entity', () => {
+			const testEntity = new TestEntity();
+
+			const resEntity = repo.create(testEntity);
+			expect(resEntity.name).toEqual(testEntity.name);
+		});
+	});
+
 	describe('save', () => {
 		it('should persist and flush a single entity', async () => {
 			const testEntity = new TestEntity();
