@@ -20,7 +20,7 @@ import {
 	User,
 	VideoConferenceDO,
 } from '@shared/domain';
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { VideoConferenceDTO, VideoConferenceJoinDTO } from '@src/modules/video-conference/dto/video-conference.dto';
@@ -564,13 +564,15 @@ describe('VideoConferenceUc', () => {
 		});
 
 		it('should successfully end a meeting', async () => {
+			// Arrange
+			bbbService.end.mockResolvedValue(bbbResponse);
+
 			// Act
 			const result: VideoConferenceDTO<BBBBaseResponse> = await useCase.end(
 				defaultCurrentUser,
 				VideoConferenceScope.COURSE,
 				course.id
 			);
-			bbbService.end.mockResolvedValue(bbbResponse);
 
 			// Assert
 			expect(bbbService.end).toHaveBeenCalledWith(config);
@@ -582,6 +584,10 @@ describe('VideoConferenceUc', () => {
 	});
 
 	describe('getMeetingInfo', () => {
+		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+			meetingID: course.id,
+		});
+
 		const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = {
 			response: {
 				returncode: VideoConferenceStatus.SUCCESS,
@@ -598,7 +604,24 @@ describe('VideoConferenceUc', () => {
 			// Arrange
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 
+			// Act
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
+
+			// Assert
+			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(result.bbbResponse).toEqual(bbbResponse);
+		});
+
+		it('should throw an error when the meeting is not found', async () => {
+			// Arrange
+			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
+
+			// Act
+			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
+
+			// Assert
+			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 		});
 	});
 });

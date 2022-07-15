@@ -1,25 +1,29 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { CourseRepo, LessonRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { AllowedAuthorizationEntityType } from './interfaces';
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map<AllowedAuthorizationEntityType, TaskRepo | CourseRepo | UserRepo | SchoolRepo | LessonRepo> =
-		new Map();
+	private repos: Map<
+		AllowedAuthorizationEntityType,
+		TaskRepo | CourseRepo | UserRepo | SchoolRepo | LessonRepo | TeamsRepo
+	> = new Map();
 
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly courseRepo: CourseRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: SchoolRepo,
-		private readonly lessonRepo: LessonRepo
+		private readonly lessonRepo: LessonRepo,
+		private readonly teamsRepo: TeamsRepo
 	) {
 		this.repos.set(AllowedAuthorizationEntityType.Task, this.taskRepo);
 		this.repos.set(AllowedAuthorizationEntityType.Course, this.courseRepo);
 		this.repos.set(AllowedAuthorizationEntityType.User, this.userRepo);
 		this.repos.set(AllowedAuthorizationEntityType.School, this.schoolRepo);
 		this.repos.set(AllowedAuthorizationEntityType.Lesson, this.lessonRepo);
+		this.repos.set(AllowedAuthorizationEntityType.Team, this.teamsRepo);
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType) {
