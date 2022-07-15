@@ -456,12 +456,6 @@ describe('lesson copy service', () => {
 
 			taskCopyService.copyTaskMetadata.mockReturnValue(mockedTaskStatus);
 
-			const copyStatus = copyService.copyLesson({
-				originalLesson,
-				destinationCourse,
-				user,
-			});
-
 			return {
 				user,
 				originalCourse,
@@ -469,23 +463,32 @@ describe('lesson copy service', () => {
 				originalLesson,
 				originalTask,
 				taskCopy,
-				copyStatus,
 				mockedTaskStatus,
 				taskSpy,
 			};
 		};
 
 		it('should put copy status for each copied task', () => {
-			const { copyStatus, mockedTaskStatus } = setup();
+			const { originalLesson, destinationCourse, user, mockedTaskStatus } = setup();
 
+			const copyStatus = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
 			const tasksStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
 			expect(tasksStatus).toBeDefined();
 			expect(tasksStatus).toEqual(mockedTaskStatus);
 		});
 
 		it('should call taskCopyService for linked tasks', () => {
-			const { copyStatus, originalTask, destinationCourse, user, taskSpy } = setup();
+			const { originalLesson, destinationCourse, user, originalTask, taskSpy } = setup();
 
+			const copyStatus = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
 			expect(taskSpy).toHaveBeenCalledWith({
 				originalTask,
 				destinationCourse,
