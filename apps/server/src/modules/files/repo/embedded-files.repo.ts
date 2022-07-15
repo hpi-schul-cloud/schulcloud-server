@@ -72,7 +72,7 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 	},
 	{
 		$set: {
-			filerecord: { $arrayElemAt: ['$filerecords', 0] },
+			filerecord: { $arrayElemAt: ['$filerecord', 0] },
 		},
 	},
 	{
