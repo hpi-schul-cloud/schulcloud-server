@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
-import { CourseRepo, FileRecordRepo, LessonRepo, SchoolRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, FileRecordRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -16,6 +16,7 @@ describe('reference.loader', () => {
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
+	let teamsRepo: DeepMocked<TeamsRepo>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -48,6 +49,10 @@ describe('reference.loader', () => {
 					provide: LessonRepo,
 					useValue: createMock<LessonRepo>(),
 				},
+				{
+					provide: TeamsRepo,
+					useValue: createMock<TeamsRepo>(),
+				},
 			],
 		}).compile();
 
@@ -57,6 +62,7 @@ describe('reference.loader', () => {
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(SchoolRepo);
 		lessonRepo = await module.get(LessonRepo);
+		teamsRepo = await module.get(TeamsRepo);
 	});
 
 	afterAll(async () => {
@@ -91,6 +97,11 @@ describe('reference.loader', () => {
 		it('should call lessonRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Lesson, entityId);
 			expect(lessonRepo.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call teamsRepo.findById', async () => {
+			await service.loadEntity(AllowedAuthorizationEntityType.Team, entityId);
+			expect(teamsRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {
