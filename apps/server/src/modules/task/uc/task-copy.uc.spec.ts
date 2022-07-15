@@ -80,7 +80,7 @@ describe('task copy uc', () => {
 			const task = allTasks[0];
 			authorisation.getUserWithPermissions.mockResolvedValue(user);
 			taskRepo.findById.mockResolvedValue(task);
-			taskRepo.findAllByParentIds.mockResolvedValue([allTasks, allTasks.length]);
+			taskRepo.findBySingleParent.mockResolvedValue([allTasks, allTasks.length]);
 			courseRepo.findById.mockResolvedValue(course);
 			authorisation.hasPermission.mockReturnValue(true);
 			const copyName = 'name of the copy';
@@ -226,13 +226,14 @@ describe('task copy uc', () => {
 				const { course, user, task, allTasks } = setup();
 				await uc.copyTask(user.id, task.id, { courseId: course.id });
 				const existingNames = allTasks.map((t) => t.name);
+				expect(existingNames.length).toEqual(3);
 				expect(copyHelperService.deriveCopyName).toBeCalledWith(task.name, existingNames);
 			});
 
 			it('should use findAllByParentIds to determine existing task names', async () => {
 				const { course, user, task } = setup();
 				await uc.copyTask(user.id, task.id, { courseId: course.id });
-				expect(taskRepo.findAllByParentIds).toHaveBeenCalledWith({ courseIds: [course.id] });
+				expect(taskRepo.findBySingleParent).toHaveBeenCalledWith('', course.id);
 			});
 
 			it('should call copy service', async () => {
