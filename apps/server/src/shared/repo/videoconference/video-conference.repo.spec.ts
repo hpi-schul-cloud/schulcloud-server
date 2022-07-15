@@ -65,7 +65,7 @@ describe('Video Conference Repo', () => {
 	});
 
 	describe('findByScopeId', () => {
-		it('should find a vc by ScopeId', async () => {
+		it('should find a videoconference by ScopeId', async () => {
 			const vcA = videoConferenceFactory.build();
 			await em.persistAndFlush(vcA);
 			const result = await repo.findByScopeId(vcA.target, VideoConferenceScope.COURSE);

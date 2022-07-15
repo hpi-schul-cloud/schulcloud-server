@@ -34,6 +34,11 @@
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
 		},
+		"CALENDAR_URI": {
+			"type": "uri",
+			"default": "example",
+			"description": "The URI to the Calendar Service"
+		},
 		"CONSENT_AGE_FIRST": {
 			"tpye": "integer",
 			"default": 14,

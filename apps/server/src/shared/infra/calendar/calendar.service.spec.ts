@@ -17,7 +17,7 @@ describe('VideoConferenceUc', () => {
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
 			switch (key) {
-				case 'HOST':
+				case 'CALENDAR_URI':
 					return 'http://localhost:4000';
 				default:
 					return null;

@@ -24,5 +24,5 @@ export interface VideoConferenceJoinDTO {
 }
 
 export interface VideoConferenceInfoDTO extends VideoConferenceDTO<BBBMeetingInfoResponse> {
-	options?: VideoConferenceOptions;
+	options: VideoConferenceOptions;
 }

@@ -5,3 +5,9 @@ export interface VideoConferenceOptions {
 
 	moderatorMustApproveJoinRequests: boolean;
 }
+
+export const defaultVideoConferenceOptions: VideoConferenceOptions = {
+	moderatorMustApproveJoinRequests: true,
+	everyAttendeeJoinsMuted: false,
+	everybodyJoinsAsModerator: false,
+};

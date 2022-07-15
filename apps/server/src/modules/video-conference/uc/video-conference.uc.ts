@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
 import {
@@ -31,7 +31,10 @@ import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
-import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
+import {
+	defaultVideoConferenceOptions,
+	VideoConferenceOptions,
+} from '@src/modules/video-conference/interface/vc-options.interface';
 import { AuthorizationService } from '@src/modules/authorization';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import {
@@ -240,6 +243,7 @@ export class VideoConferenceUc {
 			return {
 				state: VideoConferenceState.NOT_STARTED,
 				permission: PermissionMapping[bbbRole],
+				options: bbbRole === BBBRole.MODERATOR ? defaultVideoConferenceOptions : ({} as VideoConferenceOptions),
 			};
 		}
 
@@ -249,7 +253,7 @@ export class VideoConferenceUc {
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
 			bbbResponse,
-			options: bbbRole === BBBRole.MODERATOR ? vcDO.options : undefined,
+			options: bbbRole === BBBRole.MODERATOR ? vcDO.options : ({} as VideoConferenceOptions),
 		};
 	}
 
