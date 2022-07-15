@@ -99,6 +99,24 @@ export class KeycloakConsole {
 	 * @param options
 	 */
 	@Command({
+		command: 'setPasswordPolicy',
+		description: 'Sets the password policy to 310000 iterations',
+		options: KeycloakConsole.retryFlags,
+	})
+	async setPasswordPolicy(options: IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'setPasswordPolicy',
+			async () => {
+				const count = await this.keycloakManagementUc.setPasswordPolicy();
+				this.console.info(`Password policy was set`);
+				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
+	@Command({
 		command: 'configure',
 		description: 'Configures Keycloak identity providers.',
 		options: [
