@@ -35,7 +35,6 @@ export class CopyHelperService {
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
 			name = matches.groups.name;
-			num = Number(matches.groups.number) + 1;
 		}
 		return `${name} (${num})`;
 	}

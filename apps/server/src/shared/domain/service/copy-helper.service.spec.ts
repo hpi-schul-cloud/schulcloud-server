@@ -178,6 +178,14 @@ describe('copy helper service', () => {
 				expect(nameCopy).toEqual('Test (2)');
 			});
 
+			it('should work when original has a number and a successor', () => {
+				const originalName = 'Test (1)';
+				const existingNames = ['Test', 'Test (1)', 'Test (2)'];
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (3)');
+			});
+
 			it('should work with long lists of existing names', () => {
 				const originalName = 'Test';
 				const existingNames = Array.from(Array(2000).keys()).map((n) => `Test (${n})`);
