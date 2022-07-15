@@ -1,5 +1,6 @@
 import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import util from 'util';
 import { ILoggerConfig, RequestLoggingBody } from './interfaces';
 import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
 
@@ -28,5 +29,14 @@ export class Logger extends ConsoleLogger implements ILogger {
 			return;
 		}
 		this.printMessages([JSON.stringify(message)], context || this.context, 'HTTP Request' as LogLevel);
+	}
+
+	error(message: unknown, trace?: unknown): void {
+		const result = {
+			message,
+			trace,
+		};
+		const stringifiedMessage = util.inspect(result).replace(/\n/g, '').replace(/\\n/g, '');
+		super.error(stringifiedMessage);
 	}
 }
