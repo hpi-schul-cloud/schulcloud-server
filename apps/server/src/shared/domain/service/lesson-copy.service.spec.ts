@@ -8,6 +8,7 @@ import {
 	IComponentGeogebraProperties,
 	IComponentProperties,
 	Lesson,
+	TaskCopyService,
 } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
@@ -36,10 +37,10 @@ describe('lesson copy service', () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
-				/* {
+				{
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
-				}, */
+				},
 			],
 		}).compile();
 

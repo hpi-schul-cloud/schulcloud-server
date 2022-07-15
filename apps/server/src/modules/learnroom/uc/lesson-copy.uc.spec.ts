@@ -1,14 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, LessonCopyParams, LessonCopyService, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
+import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { TaskCopyUC } from '@src/modules/task/uc';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
@@ -17,7 +16,6 @@ describe('lesson copy uc', () => {
 	let userRepo: UserRepo;
 	let lessonRepo: LessonRepo;
 	let courseRepo: CourseRepo;
-	let taskRepo: DeepMocked<TaskRepo>;
 	let authorisation: AuthorizationService;
 	let lessonCopyService: LessonCopyService;
 
@@ -34,10 +32,6 @@ describe('lesson copy uc', () => {
 			providers: [
 				LessonCopyUC,
 				{
-					provide: TaskCopyUC,
-					useValue: createMock<TaskCopyUC>(),
-				},
-				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
@@ -48,10 +42,6 @@ describe('lesson copy uc', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
-				},
-				{
-					provide: TaskRepo,
-					useValue: createMock<TaskRepo>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -67,7 +57,6 @@ describe('lesson copy uc', () => {
 		uc = module.get(LessonCopyUC);
 		userRepo = module.get(UserRepo);
 		lessonRepo = module.get(LessonRepo);
-		taskRepo = module.get(TaskRepo);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		lessonCopyService = module.get(LessonCopyService);
@@ -78,13 +67,11 @@ describe('lesson copy uc', () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const lesson = lessonFactory.buildWithId({ course });
-			const task = taskFactory.buildWithId({ lesson, course });
 			const userSpy = jest
 				.spyOn(authorisation, 'getUserWithPermissions')
 				.mockImplementation(() => Promise.resolve(user));
 			const lessonSpy = jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
 			const courseSpy = jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-			const taskSpy = taskRepo.findAllByParentIds.mockResolvedValue([[task], 1]);
 			const authSpy = jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
 			const copy = lessonFactory.buildWithId({ course });
 			const status = {
@@ -105,7 +92,6 @@ describe('lesson copy uc', () => {
 				userSpy,
 				lessonSpy,
 				courseSpy,
-				taskSpy,
 				authSpy,
 				copy,
 				status,
@@ -234,52 +220,6 @@ describe('lesson copy uc', () => {
 					expect(err).toBeInstanceOf(ForbiddenException);
 				}
 			});
-		});
-
-		describe('when tasks are linked to the original lesson', () => {
-			const setupWithLinkedTasks = () => {
-				const user = userFactory.buildWithId();
-				const originalCourse = courseFactory.buildWithId({ school: user.school });
-				const destinationCourse = courseFactory.buildWithId({ school: user.school });
-				const originalLesson = lessonFactory.buildWithId({ course: originalCourse });
-				const originalTask = taskFactory.buildWithId({
-					description: 'lesson task description',
-					course: originalCourse,
-					lesson: originalLesson,
-				});
-				/* const copy = lessonFactory.buildWithId({ course: destinationCourse });
-				const status = {
-					title: 'lessonCopy',
-					type: CopyElementType.LESSON,
-					status: CopyStatusEnum.SUCCESS,
-					copyEntity: copy,
-				};
-				const lessonCopySpy = jest
-					.spyOn(lessonCopyService, 'copyLesson')
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					.mockImplementation((params: LessonCopyParams) => status); */
-				const taskSpy = taskRepo.findAllByParentIds.mockResolvedValue([[originalTask], 1]);
-				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(originalLesson));
-				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(originalCourse));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation(() => true);
-				return { user, originalCourse, destinationCourse, originalLesson, originalTask, taskSpy };
-			};
-
-			it('should call findAllByParentIds from task repo', async () => {
-				const { originalCourse, user, originalLesson, taskSpy } = setupWithLinkedTasks();
-
-				await uc.copyLesson(user.id, originalLesson.id, { courseId: originalCourse.id });
-				expect(taskSpy).toHaveBeenCalled();
-			});
-
-			/* it('lesson status should contain task status', async () => {
-				const { originalCourse, user, originalLesson } = setupWithLinkedTasks();
-
-				const result = await uc.copyLesson(user.id, originalLesson.id, { courseId: originalCourse.id });
-				const taskStatus = result.elements?.find((el) => el.type === CopyElementType.TASK);
-				expect(taskStatus).toBeDefined();
-			}); */
 		});
 	});
 });
