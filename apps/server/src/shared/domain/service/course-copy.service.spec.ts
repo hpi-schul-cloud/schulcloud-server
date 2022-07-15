@@ -56,7 +56,7 @@ describe('course copy service', () => {
 					copyEntity: boardCopy,
 				};
 				const courseCopyName = 'Copy';
-				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
+				boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
 				copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 

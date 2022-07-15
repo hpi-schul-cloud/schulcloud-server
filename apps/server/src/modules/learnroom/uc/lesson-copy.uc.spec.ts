@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, PermissionTypes, LessonCopyParams, LessonCopyService, User } from '@shared/domain';
+import { Actions, PermissionTypes, LessonCopyParams, LessonCopyService, User, EtherpadService } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, lessonFactory, userFactory } from '@shared/testing';
@@ -18,6 +18,7 @@ describe('lesson copy uc', () => {
 	let courseRepo: CourseRepo;
 	let authorisation: AuthorizationService;
 	let lessonCopyService: LessonCopyService;
+	let etherpadService: EtherpadService;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -51,6 +52,10 @@ describe('lesson copy uc', () => {
 					provide: LessonCopyService,
 					useValue: createMock<LessonCopyService>(),
 				},
+				{
+					provide: EtherpadService,
+					useValue: createMock<EtherpadService>(),
+				},
 			],
 		}).compile();
 
@@ -60,6 +65,7 @@ describe('lesson copy uc', () => {
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
 		lessonCopyService = module.get(LessonCopyService);
+		etherpadService = module.get(EtherpadService);
 	});
 
 	describe('copy lesson', () => {
@@ -83,7 +89,7 @@ describe('lesson copy uc', () => {
 			const lessonCopySpy = jest
 				.spyOn(lessonCopyService, 'copyLesson')
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.mockImplementation((params: LessonCopyParams) => status);
+				.mockImplementation((params: LessonCopyParams) => Promise.resolve(status));
 			const lessonPersistSpy = jest.spyOn(lessonRepo, 'save');
 			return {
 				user,

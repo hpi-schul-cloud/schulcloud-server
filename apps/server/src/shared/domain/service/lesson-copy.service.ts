@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { randomBytes } from 'crypto';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { EtherpadService } from './etherpad.service';
 import {
 	ComponentType,
 	Course,
@@ -24,7 +24,7 @@ export type LessonCopyParams = {
 export class LessonCopyService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
-		private readonly feathersServiceProvider: FeathersServiceProvider
+		private readonly etherpadService: EtherpadService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
@@ -57,6 +57,7 @@ export class LessonCopyService {
 		copiedContent: IComponentProperties[];
 		contentStatus: CopyStatus[];
 	}> {
+		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
 		const copiedContent: IComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
@@ -78,15 +79,20 @@ export class LessonCopyService {
 					status: CopyStatusEnum.PARTIAL,
 				});
 			}
-			if (element.component === ComponentType.ETHERPAD) {
+			if (element.component === ComponentType.ETHERPAD && etherpadEnabled) {
 				// eslint-disable-next-line no-await-in-loop
 				const etherpadContent = await this.copyEtherpad(element, params);
-				copiedContent.push(etherpadContent);
-				copiedContentStatus.push({
+				const etherpadStatus = {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT,
 					status: CopyStatusEnum.PARTIAL,
-				});
+				};
+				if (etherpadContent) {
+					copiedContent.push(etherpadContent);
+				} else {
+					etherpadStatus.status = CopyStatusEnum.FAIL;
+				}
+				copiedContentStatus.push(etherpadStatus);
 			}
 		}
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
@@ -102,45 +108,24 @@ export class LessonCopyService {
 	private async copyEtherpad(
 		originalElement: IComponentProperties,
 		params: LessonCopyParams
-	): Promise<IComponentProperties> {
-		// new env as in client ETHERPAD__PAD_URI
-		const copy = { ...originalElement, hidden: true } as IComponentProperties;
-		const content = { ...copy.content, url: '' } as unknown as IComponentEtherpadProperties;
-		// TODO generate new Etherpad
-		content.url = 'TODO';
+	): Promise<IComponentProperties | false> {
+		const copy = { ...originalElement } as IComponentProperties;
+		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');
 
-		// try {
-		const etherpadPadId = await this.createEtherpad(
-			params.user,
+		const etherpadPadId = await this.etherpadService.createEtherpad(
+			params.user.id,
 			params.destinationCourse.id,
 			content.title,
-			content.description
+			''
 		);
-		// content.url = pad as string;
-		// TODO add this to dof
-		const etherpadUri = Configuration.get('ETHERPAD_NEW_PAD_URI') as string;
-		content.url = `${etherpadUri}/${etherpadPadId}`;
-		// eslint-disable-next-line no-empty
-		// } catch (e) {
-		// TODO return some error - status should be fail
-		// }
-
-		copy.content = content;
-		return copy;
-	}
-
-	private async createEtherpad(user: User, courseId: string, title: string, description: string) {
-		const service = this.feathersServiceProvider.getService('/etherpad/pads');
-		const data = {
-			courseId,
-			padName: title,
-			text: description,
-		};
-		const userId = user.id;
-		type PadResponse = { data: { padID: string } };
-		const pad = (await service.create(data, { account: { userId } })) as unknown as PadResponse;
-		return pad.data.padID;
+		if (etherpadPadId) {
+			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
+			content.url = `${etherpadUri}/${etherpadPadId}`;
+			copy.content = content;
+			return copy;
+		}
+		return false;
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
