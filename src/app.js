@@ -60,8 +60,6 @@ const setupApp = async (orm) => {
 		.use(compress())
 		.options('*', cors())
 		.use(cors())
-		.use(favicon(path.join(app.get('public'), 'favicon.ico')))
-		.use('/', express.static('public'))
 		.configure(setupConfiguration)
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))

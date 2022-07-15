@@ -15,7 +15,7 @@ jobs:
     # run the action, when label 'run unstable tests' has been set
     if: "contains( github.event.label.name , 'run unstable tests' ) || contains( github.event.pull_request.labels.*.name , 'run unstable tests' )"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set BRANCH_NAME on pull_request
         run: |
             echo ${{ github.head_ref }}
