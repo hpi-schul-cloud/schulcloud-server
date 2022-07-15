@@ -38,6 +38,9 @@ describe('KeycloakAdministrationService', () => {
 							return Promise.resolve();
 						}),
 						setConfig: jest.fn(),
+						realms: {
+							update: jest.fn(),
+						},
 					},
 				},
 				{
@@ -98,6 +101,16 @@ describe('KeycloakAdministrationService', () => {
 	describe('getAdminUser', () => {
 		it('should return the admin username', () => {
 			expect(service.getAdminUser()).toBe(settings.credentials.username);
+		});
+	});
+
+	describe('setPasswordPolicy', () => {
+		it('should call the keycloak admin client with the correct params', async () => {
+			await service.setPasswordPolicy();
+			expect(kcAdminClient.realms.update).toBeCalledWith(
+				{ realm: settings.realmName },
+				{ passwordPolicy: 'hashIterations(310000)' }
+			);
 		});
 	});
 });

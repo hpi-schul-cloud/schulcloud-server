@@ -60,6 +60,7 @@ export class KeycloakManagementUc {
 		let userCount = 0;
 		const users = await this.loadUsers();
 		const accounts = await this.loadAccounts();
+		await this.kcAdmin.setPasswordPolicy();
 		// eslint-disable-next-line no-restricted-syntax
 		for (const user of users) {
 			const account = accounts.find((a) => a.userId.$oid === user._id.$oid);
@@ -85,6 +86,10 @@ export class KeycloakManagementUc {
 			}
 		}
 		return userCount;
+	}
+
+	async setPasswordPolicy() {
+		await this.kcAdmin.setPasswordPolicy();
 	}
 
 	async configureIdentityProviders(options: IConfigureOptions): Promise<number> {
@@ -251,6 +256,12 @@ export class KeycloakManagementUc {
 			) as IdentityProviderConfig[];
 		}
 		throw new Error('EnvType not recognized');
+	}
+
+	async migrateToKeycloak() {
+		// TODO move accounts from DB to keycloak
+
+		await this.kcAdmin.setPasswordPolicy();
 	}
 
 	private async loadAccounts(): Promise<IJsonAccount[]> {
