@@ -26,7 +26,7 @@ import {
 	BBBMeetingInfoResponse,
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { ICalendarEvent } from '@shared/infra/calendar/calendar-event.interface';
+import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
@@ -42,6 +42,7 @@ import {
 	VideoConferenceInfoDTO,
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 
 export interface IScopeInfo {
 	scopeId: EntityId;
@@ -192,6 +193,7 @@ export class VideoConferenceUc {
 				break;
 			}
 			default:
+				/* istanbul ignore next */
 				throw new BadRequestException('Unknown scope name');
 		}
 
@@ -317,11 +319,11 @@ export class VideoConferenceUc {
 				};
 			}
 			case VideoConferenceScope.EVENT: {
-				const event: ICalendarEvent = await this.calendarService.findEvent(userId, refId);
+				const event: CalendarEventDto = await this.calendarService.findEvent(userId, refId);
 				return {
-					scopeId: event['x-sc-teamId'],
+					scopeId: event.teamId,
 					scopeName: 'teams',
-					logoutUrl: `${this.hostURL}/teams/${event['x-sc-teamId']}?activeTab=events`,
+					logoutUrl: `${this.hostURL}/teams/${event.teamId}?activeTab=events`,
 					title: event.title,
 				};
 			}

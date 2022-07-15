@@ -5,7 +5,9 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { URL, URLSearchParams } from 'url';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ICalendarEvent } from './calendar-event.interface';
+import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { ICalendarEvent } from '../interface/calendar-event.interface';
 
 @Injectable()
 export class CalendarService {
@@ -13,12 +15,12 @@ export class CalendarService {
 
 	private readonly timeoutMs: number;
 
-	constructor(private readonly httpService: HttpService) {
+	constructor(private readonly httpService: HttpService, private readonly calendarMapper: CalendarMapper) {
 		this.baseURL = Configuration.get('CALENDAR_URI') as string;
 		this.timeoutMs = Configuration.get('REQUEST_OPTION__TIMEOUT_MS') as number;
 	}
 
-	async findEvent(userId: EntityId, eventId: EntityId): Promise<ICalendarEvent> {
+	async findEvent(userId: EntityId, eventId: EntityId): Promise<CalendarEventDto> {
 		const params = new URLSearchParams();
 		params.append('event-id', eventId);
 
@@ -31,7 +33,9 @@ export class CalendarService {
 				timeout: this.timeoutMs,
 			})
 		)
-			.then((resp: AxiosResponse<ICalendarEvent>) => resp.data)
+			.then((resp: AxiosResponse<ICalendarEvent>) => {
+				return this.calendarMapper.mapToDto(resp.data);
+			})
 			.catch((error) => {
 				throw new InternalServerErrorException(error);
 			});

@@ -1,18 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CalendarService } from '@shared/infra/calendar';
+import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { HttpService } from '@nestjs/axios';
 import { of, throwError } from 'rxjs';
-import { ICalendarEvent } from '@shared/infra/calendar/calendar-event.interface';
+import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { AxiosResponse } from 'axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
 
-describe('VideoConferenceUc', () => {
+describe('CalendarServiceSpec', () => {
 	let module: TestingModule;
 	let service: CalendarService;
 
 	let httpService: DeepMocked<HttpService>;
+	let calendarMapper: DeepMocked<CalendarMapper>;
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
@@ -31,10 +33,15 @@ describe('VideoConferenceUc', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
+				{
+					provide: CalendarMapper,
+					useValue: createMock<CalendarMapper>(),
+				},
 			],
 		}).compile();
 		service = module.get(CalendarService);
 		httpService = module.get(HttpService);
+		calendarMapper = module.get(CalendarMapper);
 	});
 
 	afterAll(async () => {
@@ -45,9 +52,18 @@ describe('VideoConferenceUc', () => {
 	describe('findEvent', () => {
 		it('should successfully find an event', async () => {
 			// Arrange
+			const title = 'eventTitle';
+			const teamId = 'teamId';
+
 			const event: ICalendarEvent = {
-				title: 'eventTitle',
-				'x-sc-teamId': 'teamId',
+				data: [
+					{
+						attributes: {
+							'x-sc-teamId': teamId,
+							summary: title,
+						},
+					},
+				],
 			};
 			const axiosResponse: AxiosResponse<ICalendarEvent> = {
 				data: event,
@@ -57,13 +73,15 @@ describe('VideoConferenceUc', () => {
 				config: {},
 			};
 			httpService.get.mockReturnValue(of(axiosResponse));
+			calendarMapper.mapToDto.mockReturnValue({ title, teamId });
 
 			// Act
-			const result: ICalendarEvent = await service.findEvent('userId', 'eventId');
+			const result: CalendarEventDto = await service.findEvent('userId', 'eventId');
 
 			// Assert
-			expect(result.title).toEqual(event.title);
-			expect(result['x-sc-teamId']).toEqual(event['x-sc-teamId']);
+			expect(calendarMapper.mapToDto).toHaveBeenCalledWith(event);
+			expect(result.title).toEqual(title);
+			expect(result.teamId).toEqual(teamId);
 		});
 
 		it('should throw if event cannot be found, because of invalid parameters', async () => {

@@ -1,3 +1,3 @@
 export * from './calendar.module';
-export * from './calendar.service';
-export * from './calendar-event.interface';
+export * from './service/calendar.service';
+export * from './dto/calendar-event.dto';

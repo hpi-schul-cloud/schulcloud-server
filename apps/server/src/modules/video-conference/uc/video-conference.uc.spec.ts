@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IScopeInfo, VideoConferenceUc } from '@src/modules/video-conference/uc/video-conference.uc';
 import { AuthorizationService } from '@src/modules';
 import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/repo';
-import { CalendarService, ICalendarEvent } from '@shared/infra/calendar';
+import { CalendarService } from '@shared/infra/calendar';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
@@ -38,6 +38,8 @@ import { roleFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
 import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
+import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
+import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 
 class VideoConferenceUcSpec extends VideoConferenceUc {
 	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<IScopeInfo> {
@@ -74,10 +76,10 @@ describe('VideoConferenceUc', () => {
 	const hostUrl = 'http://localhost:4000';
 	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
 	const eventId = 'eventId';
-	const event: ICalendarEvent = {
+	const event: CalendarEventDto = new CalendarEventDto({
 		title: 'eventTitle',
-		'x-sc-teamId': 'teamId',
-	};
+		teamId: 'teamId',
+	});
 	let featureEnabled = false;
 	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
@@ -165,7 +167,8 @@ describe('VideoConferenceUc', () => {
 			everyAttendeeJoinsMuted: false,
 			moderatorMustApproveJoinRequests: false,
 		};
-		userPermissions.clear();
+		userPermissions.set(Permission.JOIN_MEETING, true);
+		userPermissions.set(Permission.START_MEETING, true);
 
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
@@ -190,9 +193,9 @@ describe('VideoConferenceUc', () => {
 			const scopeInfo: IScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
 
 			// Assert
-			expect(scopeInfo.scopeId).toEqual(event['x-sc-teamId']);
+			expect(scopeInfo.scopeId).toEqual(event.teamId);
 			expect(scopeInfo.title).toEqual(event.title);
-			expect(scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event['x-sc-teamId']}?activeTab=events`);
+			expect(scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event.teamId}?activeTab=events`);
 			expect(scopeInfo.scopeName).toEqual('teams');
 		});
 
@@ -344,6 +347,33 @@ describe('VideoConferenceUc', () => {
 			expect(result.permission).toEqual(Permission.START_MEETING);
 			expect(result.bbbResponse).toEqual(bbbResponse);
 		});
+
+		it('should successfully execute with options set', async () => {
+			// Arrange
+			videoConferenceRepo.findByScopeId.mockResolvedValue(savedVcDO);
+			bbbService.create.mockResolvedValue(bbbResponse);
+			builder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
+			builder.withMuteOnStart(true);
+			defaultOptions.moderatorMustApproveJoinRequests = true;
+			defaultOptions.everyAttendeeJoinsMuted = true;
+
+			// Act
+			const result: VideoConferenceDTO<BBBCreateResponse> = await useCase.create(
+				defaultCurrentUser,
+				VideoConferenceScope.COURSE,
+				course.id,
+				defaultOptions
+			);
+
+			// Assert
+			expect(videoConferenceRepo.findByScopeId).toHaveBeenCalled();
+			expect(videoConferenceRepo.save).toHaveBeenCalled();
+			expect(bbbService.create).toHaveBeenCalledWith(builder.build());
+
+			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
+			expect(result.permission).toEqual(Permission.START_MEETING);
+			expect(result.bbbResponse).toEqual(bbbResponse);
+		});
 	});
 
 	describe('join', () => {
@@ -367,7 +397,8 @@ describe('VideoConferenceUc', () => {
 		};
 
 		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, true);
+			userPermissions.set(Permission.START_MEETING, false);
+
 			team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
 			user = team.userIds[0].userId;
 			user.firstName = 'firstName';
@@ -436,7 +467,7 @@ describe('VideoConferenceUc', () => {
 			expect(videoConferenceRepo.findByScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
 			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
 			expect(userRepo.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamsRepo.findById).toHaveBeenCalledWith(event['x-sc-teamId']);
+			expect(teamsRepo.findById).toHaveBeenCalledWith(event.teamId);
 
 			expect(result.state).toEqual(VideoConferenceState.RUNNING);
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);
@@ -486,7 +517,7 @@ describe('VideoConferenceUc', () => {
 			expect(videoConferenceRepo.findByScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
 			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
 			expect(userRepo.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamsRepo.findById).toHaveBeenCalledWith(event['x-sc-teamId']);
+			expect(teamsRepo.findById).toHaveBeenCalledWith(event.teamId);
 
 			expect(result.state).toEqual(VideoConferenceState.RUNNING);
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);
@@ -550,6 +581,7 @@ describe('VideoConferenceUc', () => {
 		};
 
 		beforeEach(() => {
+			userPermissions.set(Permission.JOIN_MEETING, true);
 			userPermissions.set(Permission.START_MEETING, true);
 		});
 
@@ -598,6 +630,7 @@ describe('VideoConferenceUc', () => {
 
 		beforeEach(() => {
 			userPermissions.set(Permission.JOIN_MEETING, true);
+			userPermissions.set(Permission.START_MEETING, false);
 		});
 
 		it('should successfully get MeetingInfo', async () => {
