@@ -1,11 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { EntityId, ICurrentUser } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { firstValueFrom, Observable } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { URL, URLSearchParams } from 'url';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
 import { ICalendarEvent } from './calendar-event.interface';
 
 @Injectable()
@@ -44,7 +43,7 @@ export class CalendarService {
 		config: AxiosRequestConfig = {}
 	): Observable<AxiosResponse<ICalendarEvent>> {
 		const url: URL = new URL(this.baseURL);
-		url.pathname = `/calendar${path}`;
+		url.pathname = path;
 		url.search = queryParams.toString();
 		return this.httpService.get(url.toString(), config);
 	}
