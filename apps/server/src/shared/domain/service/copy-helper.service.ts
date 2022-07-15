@@ -22,20 +22,16 @@ export class CopyHelperService {
 	}
 
 	deriveCopyName(name: string, existingNames?: string[]): string {
-		let number = 1;
-		let composedName = this.composeCopyName(name, number);
-		while (existingNames?.includes(composedName)) {
-			number += 1;
-			composedName = this.composeCopyName(name, number);
-		}
-		return composedName;
-	}
-
-	private composeCopyName(name: string, num: number): string {
+		let num = 1;
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
 			name = matches.groups.name;
+			num = Number(matches.groups.number) + 1;
 		}
-		return `${name} (${num})`;
+		const composedName = `${name} (${num})`;
+		if (existingNames?.includes(composedName)) {
+			return this.deriveCopyName(composedName, existingNames);
+		}
+		return composedName;
 	}
 }
