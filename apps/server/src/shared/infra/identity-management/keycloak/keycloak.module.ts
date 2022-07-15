@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConsoleWriterModule } from '@shared/infra/console';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { LoggerModule } from '@src/core/logger';
 import { SystemRepo } from '@shared/repo';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { KeycloakConsole } from './console/keycloak-management.console';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakSettings } from './interface/keycloak-settings.interface';

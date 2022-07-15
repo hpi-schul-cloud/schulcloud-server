@@ -32,13 +32,15 @@ describe('KeycloakManagementController', () => {
 	beforeEach(() => {
 		uc.check.mockResolvedValue(true);
 		uc.seed.mockResolvedValue(1);
-		uc.configure.mockResolvedValue(1);
+		uc.configureIdentityProviders.mockResolvedValue(1);
+		uc.configureAuthenticationFlows.mockResolvedValue(1);
 	});
 
 	afterEach(() => {
 		uc.check.mockRestore();
 		uc.seed.mockRestore();
-		uc.configure.mockRestore();
+		uc.configureIdentityProviders.mockRestore();
+		uc.configureAuthenticationFlows.mockRestore();
 	});
 
 	it('should be defined', () => {
@@ -69,23 +71,60 @@ describe('KeycloakManagementController', () => {
 		});
 	});
 
-	describe('applyConfiguration', () => {
+	// describe('applyConfiguration', () => {
+	// 	it('should accept calls on configure route', async () => {
+	// 		const result = await controller.applyConfiguration();
+	// 		expect(result).toBe(1);
+	// 	});
+	// 	it('should return -1 if connection is ok but configure fails', async () => {
+	// 		uc.configureIdentityProviders.mockRejectedValue('configure failed');
+	//
+	// 		const result = await controller.applyConfiguration('unknown' as EnvType);
+	// 		expect(result).toBe(-1);
+	//
+	// 		uc.configureIdentityProviders.mockRestore();
+	// 	});
+	// 	it('should throw if connection fails', async () => {
+	// 		uc.check.mockResolvedValue(false);
+	//
+	// 		await expect(controller.applyConfiguration()).rejects.toThrow(ServiceUnavailableException);
+	//
+	// 		uc.check.mockRestore();
+	// 	});
+	// });
+
+	describe('configure', () => {
 		it('should accept calls on configure route', async () => {
-			const result = await controller.applyConfiguration();
-			expect(result).toBe(1);
+			await expect(controller.configure()).resolves.not.toThrow();
+		});
+		it('should not seed users', async () => {
+			const result = await controller.configure();
+			expect(result).toBeGreaterThan(0);
+			expect(uc.check).toBeCalled();
+			expect(uc.seed).not.toBeCalled();
+			expect(uc.configureIdentityProviders).toBeCalled();
+			expect(uc.configureAuthenticationFlows).toBeCalled();
+		});
+		it('should seed users', async () => {
+			const result = await controller.configure(EnvType.DEV);
+			expect(result).toBeGreaterThan(0);
+			expect(uc.check).toBeCalled();
+			expect(uc.seed).toBeCalled();
+			expect(uc.configureIdentityProviders).toBeCalled();
+			expect(uc.configureAuthenticationFlows).toBeCalled();
 		});
 		it('should return -1 if connection is ok but configure fails', async () => {
-			uc.configure.mockRejectedValue('configure failed');
+			uc.configureIdentityProviders.mockRejectedValue('configure failed');
 
-			const result = await controller.applyConfiguration('unknown' as EnvType);
+			const result = await controller.configure();
 			expect(result).toBe(-1);
 
-			uc.configure.mockRestore();
+			uc.configureIdentityProviders.mockRestore();
 		});
-		it('should throw if connection fails', async () => {
+		it('should throw if Keycloak is not available', async () => {
 			uc.check.mockResolvedValue(false);
 
-			await expect(controller.applyConfiguration()).rejects.toThrow(ServiceUnavailableException);
+			await expect(controller.configure()).rejects.toThrow(ServiceUnavailableException);
 
 			uc.check.mockRestore();
 		});

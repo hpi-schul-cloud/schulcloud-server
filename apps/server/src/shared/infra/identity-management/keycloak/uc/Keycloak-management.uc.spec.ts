@@ -12,6 +12,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
+import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import { randomUUID } from 'crypto';
 import {
 	IConfigureOptions,
 	IJsonAccount,
@@ -32,6 +35,7 @@ describe('KeycloakManagementUc', () => {
 	let settings: IKeycloakSettings;
 
 	const clientIdentityProviders = createMock<IdentityProviders>();
+	const clientAuthenticationManagement = createMock<AuthenticationManagement>();
 	const adminUsername = 'admin';
 	const accountsFile = 'accounts.json';
 	const usersFile = 'users.json';
@@ -113,6 +117,7 @@ describe('KeycloakManagementUc', () => {
 							find: async (): Promise<UserRepresentation[]> => Promise.resolve([adminUser, ...users]),
 						},
 						identityProviders: clientIdentityProviders,
+						authenticationManagement: clientAuthenticationManagement,
 					}),
 				},
 				{
@@ -212,9 +217,9 @@ describe('KeycloakManagementUc', () => {
 		});
 	});
 
-	describe('configure', () => {
-		const devConfig: IConfigureOptions = { envType: EnvType.DEV, sysType: SysType.OIDC };
-		const prodConfig: IConfigureOptions = { envType: EnvType.PROD, sysType: SysType.OIDC };
+	describe('configureIdentityProviders', () => {
+		const devConfig: IConfigureOptions = { envType: EnvType.DEV };
+		const prodConfig: IConfigureOptions = { envType: EnvType.PROD };
 		const idps: IdentityProviderRepresentation[] = [
 			{
 				providerId: 'oidc',
@@ -273,29 +278,28 @@ describe('KeycloakManagementUc', () => {
 		});
 
 		it('should read configs from file system in development', async () => {
-			const result = await uc.configure(devConfig);
+			const result = await uc.configureIdentityProviders(devConfig);
 			expect(result).toBeGreaterThan(0);
 			expect(repo.findAll).not.toBeCalled();
 			expect(fsReadFile).toBeCalled();
 		});
 		it('should read configs from database in production', async () => {
-			const result = await uc.configure(prodConfig);
+			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBeGreaterThan(0);
 			expect(repo.findAll).toBeCalled();
 			expect(fsReadFile).not.toBeCalled();
 		});
 		it('should throw if environment is unknown', async () => {
 			await expect(
-				uc.configure({
+				uc.configureIdentityProviders({
 					envType: 'unknown' as EnvType,
-					sysType: SysType.OIDC,
 				})
 			).rejects.toThrow();
 		});
 		it('should create a configuration in Keycloak', async () => {
 			clientIdentityProviders.find.mockResolvedValue([]);
 
-			const result = await uc.configure(prodConfig);
+			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBe(1);
 			expect(clientIdentityProviders.create).toBeCalledTimes(1);
 			expect(configurationGet).toBeCalled();
@@ -303,18 +307,74 @@ describe('KeycloakManagementUc', () => {
 			clientIdentityProviders.find.mockRestore();
 		});
 		it('should update a configuration in Keycloak', async () => {
-			const result = await uc.configure(prodConfig);
+			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBe(1);
 			expect(clientIdentityProviders.update).toBeCalledTimes(1);
 		});
 		it('should delete a new configuration in Keycloak', async () => {
 			repo.findAll.mockResolvedValue([]);
 
-			const result = await uc.configure(prodConfig);
+			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBe(1);
 			expect(clientIdentityProviders.del).toBeCalledTimes(1);
 
 			repo.findAll.mockRestore();
+		});
+	});
+
+	describe('configureAuthenticationFlows', () => {
+		const directAuthFlow: AuthenticationFlowRepresentation = {
+			id: randomUUID().toString(),
+			alias: 'Direct Broker Flow',
+			description: 'First broker login which automatically creates or maps accounts.',
+			providerId: 'basic-flow',
+			topLevel: true,
+			builtIn: false,
+			authenticationExecutions: [
+				{
+					authenticator: 'idp-create-user-if-unique',
+					autheticatorFlow: false,
+					requirement: 'ALTERNATIVE',
+					priority: 0,
+					userSetupAllowed: false,
+				},
+				{
+					authenticator: 'idp-auto-link',
+					autheticatorFlow: false,
+					requirement: 'ALTERNATIVE',
+					priority: 1,
+					userSetupAllowed: false,
+				},
+			],
+		};
+
+		beforeEach(() => {
+			clientAuthenticationManagement.createFlow.mockResolvedValue({});
+			clientAuthenticationManagement.getFlows.mockResolvedValue([]);
+			clientAuthenticationManagement.deleteFlow.mockResolvedValue({});
+		});
+
+		afterEach(() => {
+			clientAuthenticationManagement.createFlow.mockRestore();
+			clientAuthenticationManagement.getFlows.mockRestore();
+			clientAuthenticationManagement.deleteFlow.mockRestore();
+		});
+
+		it('should create new authentication flow', async () => {
+			const result = await uc.configureAuthenticationFlows();
+			expect(result).toBe(1);
+			expect(clientAuthenticationManagement.createFlow).toBeCalled();
+			expect(clientAuthenticationManagement.deleteFlow).not.toBeCalled();
+		});
+		it('should delete and create authentication flow', async () => {
+			clientAuthenticationManagement.getFlows.mockResolvedValue([directAuthFlow]);
+
+			const result = await uc.configureAuthenticationFlows();
+			expect(result).toBe(2);
+			expect(clientAuthenticationManagement.createFlow).toBeCalled();
+			expect(clientAuthenticationManagement.deleteFlow).toBeCalled();
+
+			clientAuthenticationManagement.getFlows.mockRestore();
 		});
 	});
 });

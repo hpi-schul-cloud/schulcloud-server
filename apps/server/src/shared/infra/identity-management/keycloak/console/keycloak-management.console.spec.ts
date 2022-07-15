@@ -72,34 +72,59 @@ describe('KeycloakConsole', () => {
 		});
 	});
 
-	describe('configure', () => {
+	describe('configureIdentityProviders', () => {
 		it('should resolve successfully', async () => {
-			uc.configure.mockResolvedValue(1);
+			uc.configureIdentityProviders.mockResolvedValue(1);
 
 			await expect(
-				console.configure({
+				console.configureIdentityProviders({
 					envType: EnvType.PROD,
-					sysType: SysType.OIDC,
 					retryCount: 1,
 					retryDelay: 10,
 				})
 			).resolves.not.toThrow();
 
-			uc.configure.mockRestore();
+			uc.configureIdentityProviders.mockRestore();
 		});
 		it('should throw on error', async () => {
-			uc.configure.mockRejectedValue('configure failed');
+			uc.configureIdentityProviders.mockRejectedValue('configure failed');
 
 			await expect(
-				console.configure({
+				console.configureIdentityProviders({
 					envType: EnvType.PROD,
-					sysType: SysType.OIDC,
 					retryCount: 1,
 					retryDelay: 10,
 				})
 			).rejects.toThrow();
 
-			uc.configure.mockRestore();
+			uc.configureIdentityProviders.mockRestore();
+		});
+	});
+
+	describe('configureAuthenticationFlows', () => {
+		it('should resolve successfully', async () => {
+			uc.configureAuthenticationFlows.mockResolvedValue(1);
+
+			await expect(
+				console.configureAuthenticationFlows({
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).resolves.not.toThrow();
+
+			uc.configureIdentityProviders.mockRestore();
+		});
+		it('should throw on error', async () => {
+			uc.configureAuthenticationFlows.mockRejectedValue('configure failed');
+
+			await expect(
+				console.configureAuthenticationFlows({
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).rejects.toThrow();
+
+			uc.configureIdentityProviders.mockRestore();
 		});
 	});
 });

@@ -81,7 +81,7 @@ export class KeycloakConsole {
 
 	@Command({
 		command: 'configure',
-		description: 'Configures Keycloak after data seeding.',
+		description: 'Configures Keycloak identity providers.',
 		options: [
 			{
 				flags: '-et, --env-type <value>',
@@ -91,19 +91,36 @@ export class KeycloakConsole {
 			},
 			{
 				flags: '-st, --sys-type <value>',
-				description: 'The system type to be configured',
+				description: 'The system type to be configured.',
 				required: false,
 				defaultValue: SysType.OIDC,
 			},
 			...KeycloakConsole.retryFlags,
 		],
 	})
-	async configure(options: IConfigureOptions & IRetryOptions): Promise<void> {
+	async configureIdentityProviders(options: IConfigureOptions & IRetryOptions): Promise<void> {
 		await this.repeatCommand(
-			'configure',
+			'configure:idp',
 			async () => {
-				const count = await this.keycloakManagementUc.configure(options);
-				this.console.info(`Configured ${count} system(s) for IDM.`);
+				const count = await this.keycloakManagementUc.configureIdentityProviders(options);
+				this.console.info(`Configured ${count} identity provider(s).`);
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
+	@Command({
+		command: 'configure:auth',
+		description: 'Configures Keycloak authentication flows.',
+		options: KeycloakConsole.retryFlags,
+	})
+	async configureAuthenticationFlows(options: IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'configure:auth',
+			async () => {
+				const count = await this.keycloakManagementUc.configureAuthenticationFlows();
+				this.console.info(`Configured ${count} authentication flow(s).`);
 			},
 			options.retryCount,
 			options.retryDelay

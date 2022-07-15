@@ -1,8 +1,7 @@
-import { Controller, Param, Post, ServiceUnavailableException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { EnvType } from '../../env.type';
-import { SysType } from '../../sys.type';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import {Controller, Param, Post, ServiceUnavailableException} from '@nestjs/common';
+import {Logger} from '@src/core/logger';
+import {EnvType} from '../../env.type';
+import {KeycloakManagementUc} from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
@@ -35,13 +34,33 @@ export class KeycloakManagementController {
 	 * @param envType The environment type, can be 'dev' or 'prod'. Default 'prod'.
 	 * @param sysType The system type to configure.
 	 */
+	// @Post('configure')
+	// async applyConfiguration(@Param() envType?: EnvType, @Param() sysType?: SysType): Promise<number> {
+	// 	envType ??= EnvType.PROD;
+	// 	sysType ??= SysType.OIDC;
+	// 	if (await this.keycloakManagementUc.check()) {
+	// 		try {
+	// 			return await this.keycloakManagementUc.configureIdentityProviders({ envType });
+	// 		} catch (err) {
+	// 			this.logger.error(err);
+	// 			return -1;
+	// 		}
+	// 	}
+	// 	throw new ServiceUnavailableException();
+	// }
+
 	@Post('configure')
-	async applyConfiguration(@Param() envType?: EnvType, @Param() sysType?: SysType): Promise<number> {
+	async configure(@Param() envType?: EnvType): Promise<number> {
 		envType ??= EnvType.PROD;
-		sysType ??= SysType.OIDC;
 		if (await this.keycloakManagementUc.check()) {
 			try {
-				return await this.keycloakManagementUc.configure({ envType, sysType });
+				let count = 0;
+				if (envType === EnvType.DEV) {
+					count += await this.keycloakManagementUc.seed();
+				}
+				count += await this.keycloakManagementUc.configureIdentityProviders({ envType });
+				count += await this.keycloakManagementUc.configureAuthenticationFlows();
+				return count;
 			} catch (err) {
 				this.logger.error(err);
 				return -1;
