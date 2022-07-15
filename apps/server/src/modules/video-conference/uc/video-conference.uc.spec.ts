@@ -52,6 +52,7 @@ describe('VideoConferenceUc', () => {
 	let featureEnabled = false;
 	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
+	const userPermissions: Map<Permission, boolean> = new Map<Permission, boolean>();
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
@@ -108,6 +109,8 @@ describe('VideoConferenceUc', () => {
 		courseRepo = module.get(CourseRepo);
 		calendarService = module.get(CalendarService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
+		userRepo = module.get(UserRepo);
+		teamsRepo = module.get(TeamsRepo);
 	});
 
 	afterAll(async () => {
@@ -129,10 +132,12 @@ describe('VideoConferenceUc', () => {
 			everyAttendeeJoinsMuted: false,
 			moderatorMustApproveJoinRequests: false,
 		};
+		userPermissions.clear();
+
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
-		authorizationService.hasPermissionsByReferences.mockResolvedValue(); // TODO mock this
+		authorizationService.hasPermissionsByReferences.mockResolvedValue(userPermissions); // TODO mock this
 	});
 
 	afterEach(() => {
@@ -173,10 +178,8 @@ describe('VideoConferenceUc', () => {
 	describe('checkPermission', () => {
 		it('should return bbb moderator role', async () => {
 			// Arrange
-			const permissionMap = new Map<Permission, boolean>();
-			permissionMap.set(Permission.JOIN_MEETING, true);
-			permissionMap.set(Permission.START_MEETING, true);
-			authorizationService.hasPermissionsByReferences.mockResolvedValue(permissionMap);
+			userPermissions.set(Permission.JOIN_MEETING, true);
+			userPermissions.set(Permission.START_MEETING, true);
 
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', 'entityId');
@@ -187,10 +190,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should return bbb viewer role', async () => {
 			// Arrange
-			const permissionMap = new Map<Permission, boolean>();
-			permissionMap.set(Permission.JOIN_MEETING, true);
-			permissionMap.set(Permission.START_MEETING, false);
-			authorizationService.hasPermissionsByReferences.mockResolvedValue(permissionMap);
+			userPermissions.set(Permission.JOIN_MEETING, true);
+			userPermissions.set(Permission.START_MEETING, false);
 
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', 'entityId');
@@ -201,10 +202,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on missing permission', async () => {
 			// Arrange
-			const permissionMap = new Map<Permission, boolean>();
-			permissionMap.set(Permission.JOIN_MEETING, false);
-			permissionMap.set(Permission.START_MEETING, false);
-			authorizationService.hasPermissionsByReferences.mockResolvedValue(permissionMap);
+			userPermissions.set(Permission.JOIN_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, false);
 
 			// Act & Assert
 			await expect(useCase.checkPermissionSpec('userId', 'entityId')).rejects.toThrow(ForbiddenException);
@@ -236,12 +235,13 @@ describe('VideoConferenceUc', () => {
 
 	describe('create', () => {
 		beforeEach(() => {
-			defaultCurrentUser.roles = [Permission.START_MEETING];
+			userPermissions.set(Permission.JOIN_MEETING, true);
+			userPermissions.set(Permission.START_MEETING, true);
 		});
 
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
-			defaultCurrentUser.roles = [Permission.JOIN_MEETING];
+			userPermissions.set(Permission.START_MEETING, false);
 
 			// Act & Assert
 			await expect(
@@ -263,6 +263,7 @@ describe('VideoConferenceUc', () => {
 
 			const config: BBBCreateConfig = {
 				name: 'videoConferenceTitle',
+				meetingID: 'meetingId',
 			};
 
 			videoConferenceRepo.findByScopeId.mockImplementation(() => Promise.reject());
