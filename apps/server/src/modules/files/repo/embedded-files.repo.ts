@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Lesson, FileRecordParentType, File } from '@shared/domain';
 import { SyncFileItemMapper } from '../mapper';
-import { LessonMapper } from '../mapper/extended-lesson-mapper';
+import { LessonMapper } from '../mapper/lesson-mapper';
 import { SyncFileItem } from '../types';
 
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';

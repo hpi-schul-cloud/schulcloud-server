@@ -75,10 +75,10 @@ export class SyncEmbeddedFilesUc {
 		const lessonContents = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
 		this.logger.log(`Found ${lessonContents.length} lesson contents with embedded files.`);
 
-		const promises = lessonContents.map(async (content) => {
-			const fileIds = this.extractFileIds(content);
+		const promises = lessonContents.map(async (lesson) => {
+			const fileIds = this.extractFileIds(lesson);
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, content._id);
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id);
 			return this.syncFiles(files);
 		});
 

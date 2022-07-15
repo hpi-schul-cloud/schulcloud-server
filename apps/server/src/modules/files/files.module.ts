@@ -8,7 +8,7 @@ import { DeleteFilesConsole } from './job/delete-files.console';
 import { DeleteOrphanedFilesConsole } from './job/delete-orphaned-files.console';
 import { SyncEmbeddedFilesConsole } from './job/sync-embedded-files';
 import { SyncFilesConsole } from './job/sync-files.console';
-import { EmbeddedFilesRepo } from './repo/embedded-files.repo';
+import { EmbeddedFilesRepo } from './repo/files.repo';
 import { OrphanedFilesRepo } from './repo/orphaned-files.repo';
 import { SyncFilesRepo } from './repo/sync-files.repo';
 import { DeleteFilesUc, DeleteOrphanedFilesUc, SyncFilesUc } from './uc';
