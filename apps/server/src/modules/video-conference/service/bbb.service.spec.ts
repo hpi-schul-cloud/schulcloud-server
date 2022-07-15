@@ -152,6 +152,8 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(result).toBeDefined();
+			expect(httpService.get).toHaveBeenCalledTimes(1);
+			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {
@@ -187,6 +189,8 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(result).toBeDefined();
+			expect(httpService.get).toBeCalled();
+			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbBaseResponse.data);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {
@@ -224,6 +228,8 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(result).toBeDefined();
+			expect(httpService.get).toBeCalled();
+			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {
@@ -261,6 +267,8 @@ describe('BBB Service', () => {
 
 			// Assert
 			expect(url).toBeDefined();
+			expect(httpService.get).toBeCalled();
+			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
 		});
 
 		it('should throw an error if there is a different return code then success', async () => {

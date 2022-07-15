@@ -52,6 +52,11 @@ const PermissionMapping = {
 	[BBBRole.VIEWER]: Permission.JOIN_MEETING,
 };
 
+const PermissionScopeMapping = {
+	[VideoConferenceScope.COURSE]: AllowedAuthorizationEntityType.Course,
+	[VideoConferenceScope.EVENT]: AllowedAuthorizationEntityType.Team,
+};
+
 @Injectable()
 export class VideoConferenceUc {
 	private readonly hostURL: string;
@@ -88,7 +93,7 @@ export class VideoConferenceUc {
 		await this.throwOnFeaturesDisabled(schoolId);
 		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException();
@@ -149,7 +154,7 @@ export class VideoConferenceUc {
 
 		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
 		const resolvedUser: User = await this.userRepo.findById(userId);
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
@@ -187,7 +192,6 @@ export class VideoConferenceUc {
 				throw new BadRequestException('Unknown scope name');
 		}
 
-		configBuilder.withRole(bbbRole);
 		configBuilder.withUserId(currentUser.userId);
 
 		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
@@ -223,7 +227,7 @@ export class VideoConferenceUc {
 
 		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, scopeInfo.scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
 		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
 			meetingID: refId,
@@ -267,7 +271,7 @@ export class VideoConferenceUc {
 
 		const { scopeId } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, scopeId);
+		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeId);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException();
@@ -325,14 +329,19 @@ export class VideoConferenceUc {
 	/**
 	 * Checks if the user has the required permissions and returns their associated role in BBB.
 	 * @param {EntityId} userId
+	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} entityId
 	 * @throws {ForbiddenException}
 	 * @returns {Promise<BBBRole>}
 	 */
-	protected async checkPermission(userId: EntityId, entityId: EntityId): Promise<BBBRole> {
+	protected async checkPermission(
+		userId: EntityId,
+		conferenceScope: VideoConferenceScope,
+		entityId: EntityId
+	): Promise<BBBRole> {
 		const permissionMap: Map<Permission, boolean> = await this.authorizationService.hasPermissionsByReferences(
 			userId,
-			AllowedAuthorizationEntityType.Course,
+			PermissionScopeMapping[conferenceScope],
 			entityId,
 			[Permission.START_MEETING, Permission.JOIN_MEETING]
 		);
