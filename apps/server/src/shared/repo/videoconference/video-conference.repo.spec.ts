@@ -21,6 +21,7 @@ describe('Video Conference Repo', () => {
 		repo = module.get(VideoConferenceRepo);
 		em = module.get(EntityManager);
 	});
+
 	afterAll(async () => {
 		await module.close();
 	});
@@ -66,7 +67,6 @@ describe('Video Conference Repo', () => {
 	describe('findByScopeId', () => {
 		it('should find a vc by ScopeId', async () => {
 			const vcA = videoConferenceFactory.build();
-			console.log(vcA);
 			const result = await repo.findByScopeId(vcA.target, VideoConferenceScope.COURSE);
 			expect(result.id).toEqual(vcA.id);
 		});
