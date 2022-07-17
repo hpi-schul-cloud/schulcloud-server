@@ -430,6 +430,22 @@ describe('lesson copy service', () => {
 			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
 			expect(lessonContents[0].hidden).toEqual(true);
 		});
+
+		it('content status should have correct status value', () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.PARTIAL);
+			}
+		});
 	});
 
 	describe('when no tasks are linked to the original lesson', () => {
