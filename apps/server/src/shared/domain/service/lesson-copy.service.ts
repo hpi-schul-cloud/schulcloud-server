@@ -27,17 +27,12 @@ export class LessonCopyService {
 			contents: copiedContent,
 		});
 
-		const copiedTasksStatus: CopyStatus[] = [];
-		const linkedTasks = params.originalLesson.getLessonTasks();
-		linkedTasks.forEach((element) => {
-			const taskStatus = this.copyTasks({
-				originalTask: element,
-				destinationCourse: params.destinationCourse,
-				destinationLesson: copy,
-				user: params.user,
-			});
-			copiedTasksStatus.push(taskStatus);
-		});
+		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(
+			params.originalLesson,
+			params.destinationCourse,
+			copy,
+			params.user
+		);
 
 		const elements = [...this.lessonStatusMetadata(), ...contentStatus, ...copiedTasksStatus];
 
@@ -87,7 +82,30 @@ export class LessonCopyService {
 		return copy;
 	}
 
-	private copyTasks(params: TaskCopyParams): CopyStatus {
+	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
+		const linkedTasks = originalLesson.getLessonTasks();
+		const copiedTasksStatus: CopyStatus[] = [];
+		if (linkedTasks.length > 0) {
+			linkedTasks.forEach((element) => {
+				const taskStatus = this.useTaskCopyService({
+					originalTask: element,
+					destinationCourse,
+					destinationLesson,
+					user,
+				});
+				copiedTasksStatus.push(taskStatus);
+			});
+			const taskGroupStatus = {
+				type: CopyElementType.TASK_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
+				elements: copiedTasksStatus,
+			};
+			return [taskGroupStatus];
+		}
+		return [];
+	}
+
+	private useTaskCopyService(params: TaskCopyParams): CopyStatus {
 		const taskStatus = this.taskCopyService.copyTaskMetadata(params);
 		return taskStatus;
 	}
