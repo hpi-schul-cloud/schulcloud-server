@@ -470,7 +470,7 @@ describe('lesson copy service', () => {
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
-		it('should not call if feature flag is false', async () => {
+		it('should not call etherpad service, if feature flag is false', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
 
