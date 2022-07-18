@@ -344,17 +344,17 @@ export class VideoConferenceUc {
 		conferenceScope: VideoConferenceScope,
 		entityId: EntityId
 	): Promise<BBBRole> {
-		const permissionMap: Map<Permission, boolean> = await this.authorizationService.hasPermissionsByReferences(
+		const permissionMap: Map<Permission, Promise<boolean>> = this.authorizationService.hasPermissionsByReferences(
 			userId,
 			PermissionScopeMapping[conferenceScope],
 			entityId,
 			[Permission.START_MEETING, Permission.JOIN_MEETING]
 		);
 
-		if (permissionMap.get(Permission.START_MEETING)) {
+		if (await permissionMap.get(Permission.START_MEETING)) {
 			return BBBRole.MODERATOR;
 		}
-		if (permissionMap.get(Permission.JOIN_MEETING)) {
+		if (await permissionMap.get(Permission.JOIN_MEETING)) {
 			return BBBRole.VIEWER;
 		}
 		throw new ForbiddenException();

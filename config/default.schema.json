@@ -36,7 +36,7 @@
 		},
 		"CALENDAR_URI": {
 			"type": "string",
-			"default": "example",
+			"format": "uri",
 			"description": "The URI to the Calendar Service"
 		},
 		"CONSENT_AGE_FIRST": {

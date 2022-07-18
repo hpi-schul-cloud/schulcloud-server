@@ -1,6 +1,6 @@
-import { User } from '../entity/user.entity';
+import { User } from '@shared/domain/entity';
+import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { IPermission, IPermissionContext, PermissionTypes } from '../interface';
-import { AuthorisationUtils } from './authorisation.utils';
 
 export abstract class BasePermission<T = PermissionTypes> implements IPermission<T> {
 	public utils = new AuthorisationUtils();

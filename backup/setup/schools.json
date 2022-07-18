@@ -107,7 +107,8 @@
 		"features": [
 			"rocketChat",
 			"messenger",
-			"ldapUniventionMigrationSchool"
+			"ldapUniventionMigrationSchool",
+			"videoconference"
 		],
 		"enableStudentTeamCreation": false,
 		"permissions": {

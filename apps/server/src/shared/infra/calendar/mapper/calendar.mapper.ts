@@ -7,7 +7,7 @@ export class CalendarMapper {
 	mapToDto(event: ICalendarEvent): CalendarEventDto {
 		const { attributes } = event.data[0];
 		return new CalendarEventDto({
-			teamId: attributes['x-sc-teamId'],
+			teamId: attributes['x-sc-teamid'],
 			title: attributes.summary,
 		});
 	}
