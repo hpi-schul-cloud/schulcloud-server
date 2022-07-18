@@ -4,6 +4,7 @@ import {
 	CopyStatus,
 	Course,
 	EntityId,
+	Lesson,
 	PermissionContextBuilder,
 	Task,
 	TaskCopyService,
@@ -49,13 +50,13 @@ export class TaskCopyUC {
 		}
 
 		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
-    
-    let destinationLesson: Lesson | undefined;
+
+		let destinationLesson: Lesson | undefined;
 
 		if (parentParams.lessonId) {
-			destinationLesson = await this.getDestinationCourse(parentParams.lessonId, user);
+			destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
 		}
-    
+
 		const status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
@@ -80,14 +81,11 @@ export class TaskCopyUC {
 		return destinationCourse;
 	}
 
-	private async getDestinationLesson(lessonId: string | undefined, user: User) {
-		if (lessonId) {
-			const destinationLesson = await this.lessonRepo.findById(lessonId);
-			if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
-				throw new ForbiddenException('you dont have permission to add to this lesson');
-			}
-			return destinationLesson;
+	private async getDestinationLesson(lessonId: string, user: User) {
+		const destinationLesson = await this.lessonRepo.findById(lessonId);
+		if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
+			throw new ForbiddenException('you dont have permission to add to this lesson');
 		}
-		return undefined;
+		return destinationLesson;
 	}
 }

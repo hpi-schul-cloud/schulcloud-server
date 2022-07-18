@@ -16,7 +16,7 @@ describe('task copy uc', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
-  let lessonRepo: DeepMocked<LessonRepo>;
+	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorisation: DeepMocked<AuthorizationService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
@@ -82,7 +82,7 @@ describe('task copy uc', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
-      const lesson = lessonFactory.buildWithId({ course });
+			const lesson = lessonFactory.buildWithId({ course });
 			const allTasks = taskFactory.buildList(3, { course });
 			const task = allTasks[0];
 			authorisation.getUserWithPermissions.mockResolvedValue(user);
@@ -104,7 +104,7 @@ describe('task copy uc', () => {
 			return {
 				user,
 				course,
-        lesson,
+				lesson,
 				task,
 				copyName,
 				copy,
@@ -127,7 +127,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { courseId: course.id });
 				expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 			});
-      
+
 			it('should fetch correct task', async () => {
 				const { course, user, task } = setup();
 				await uc.copyTask(user.id, task.id, { courseId: course.id });
@@ -145,18 +145,18 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, {});
 				expect(courseRepo.findById).not.toHaveBeenCalled();
 			});
-      
-      it('should fetch destination lesson', async () => {
-        const { lesson, user, task } = setup();
-        await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
-        expect(lessonRepo.findById).toBeCalledWith(lesson.id);
-      });
 
-      it('should pass without destination lesson', async () => {
-        const { user, task } = setup();
-        await uc.copyTask(user.id, task.id, {});
-        expect(lessonRepo.findById).not.toHaveBeenCalled();
-      });
+			it('should fetch destination lesson', async () => {
+				const { lesson, user, task } = setup();
+				await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+				expect(lessonRepo.findById).toBeCalledWith(lesson.id);
+			});
+
+			it('should pass without destination lesson', async () => {
+				const { user, task } = setup();
+				await uc.copyTask(user.id, task.id, {});
+				expect(lessonRepo.findById).not.toHaveBeenCalled();
+			});
 
 			it('should persist copy', async () => {
 				const { course, lesson, user, task, copy } = setup();
@@ -192,30 +192,30 @@ describe('task copy uc', () => {
 					requiredPermissions: [],
 				});
 			});
-      
-      it('should check authorisation for destination lesson', async () => {
-        const { lesson, user, task, authSpy } = setup();
-        await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
-        expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
-          action: Actions.write,
-          requiredPermissions: [],
-        });
-      });
 
-      it('should pass authorisation check without destination lesson', async () => {
-        const { lesson, user, task, authSpy } = setup();
-        await uc.copyTask(user.id, task.id, {});
-        expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
-          action: Actions.write,
-          requiredPermissions: [],
-        });
-      });
+			it('should check authorisation for destination lesson', async () => {
+				const { lesson, user, task } = setup();
+				await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
+			});
+
+			it('should pass authorisation check without destination lesson', async () => {
+				const { lesson, user, task } = setup();
+				await uc.copyTask(user.id, task.id, {});
+				expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
+			});
 
 			describe('when access to task is forbidden', () => {
 				const setupWithTaskForbidden = () => {
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId();
-          const lesson = lessonFactory.buildWithId({ course });
+					const lesson = lessonFactory.buildWithId({ course });
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
@@ -281,7 +281,7 @@ describe('task copy uc', () => {
 				expect(taskCopyService.copyTaskMetadata).toBeCalledWith({
 					originalTask: task,
 					destinationCourse: course,
-          destinationLesson: lesson,
+					destinationLesson: lesson,
 					user,
 					copyName,
 				});
