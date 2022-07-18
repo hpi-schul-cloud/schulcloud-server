@@ -63,14 +63,11 @@ export class TaskCopyUC {
 		return status;
 	}
 
-	private async getDestinationCourse(courseId: string | undefined, user: User) {
-		if (courseId) {
-			const destinationCourse = await this.courseRepo.findById(courseId);
-			if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
-				throw new ForbiddenException('you dont have permission to add to this course');
-			}
-			return destinationCourse;
+	private async getDestinationCourse(courseId: string, user: User) {
+		const destinationCourse = await this.courseRepo.findById(courseId);
+		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
+			throw new ForbiddenException('you dont have permission to add to this course');
 		}
-		return undefined;
+		return destinationCourse;
 	}
 }
