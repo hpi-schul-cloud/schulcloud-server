@@ -23,9 +23,6 @@ const lessonsQuery = [
 			},
 		},
 	},
-	{
-		$unwind: '$contents',
-	},
 ];
 
 const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
@@ -75,6 +72,11 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 			filerecord: { $arrayElemAt: ['$filerecord', 0] },
 		},
 	},
+	// {
+	// 	$match: {
+	// 		'filerecord.parent': lessonId,
+	// 	},
+	// },
 	{
 		$lookup: {
 			from: 'users',

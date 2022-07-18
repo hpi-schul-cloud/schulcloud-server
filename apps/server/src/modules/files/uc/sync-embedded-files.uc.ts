@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { IComponentProperties, Lesson } from '@shared/domain';
+import _ from 'lodash';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
 import { SyncFileItem } from '../types';
 import { SyncFilesMetadataService } from './sync-files-metadata.service';
@@ -19,20 +20,22 @@ export class SyncEmbeddedFilesUc {
 	) {}
 
 	extractFileIds(lesson: Lesson): ObjectId[] {
-		const { content } = lesson.contents[0];
+		const lessonFileIds: string[] = [];
 
-		if (!('text' in content)) {
-			return [];
-		}
+		lesson.contents.forEach((item: IComponentProperties) => {
+			if (item.content === undefined || !('text' in item.content)) {
+				return;
+			}
 
-		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
-		const fileIds = content.text.match(regEx);
+			const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
+			const contentFileIds = item.content.text.match(regEx);
 
-		if (fileIds === null) {
-			return [];
-		}
+			if (contentFileIds !== null) {
+				lessonFileIds.push(...contentFileIds);
+			}
+		});
 
-		return fileIds.map((id) => new ObjectId(id));
+		return _.uniq(lessonFileIds).map((id) => new ObjectId(id));
 	}
 
 	async updateLessonsLinks(file: SyncFileItem) {
@@ -72,10 +75,10 @@ export class SyncEmbeddedFilesUc {
 	}
 
 	async syncEmbeddedFilesForLesson() {
-		const lessonContents = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
-		this.logger.log(`Found ${lessonContents.length} lesson contents with embedded files.`);
+		const lessons = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
+		this.logger.log(`Found ${lessons.length} lesson contents with embedded files.`);
 
-		const promises = lessonContents.map(async (lesson) => {
+		const promises = lessons.map(async (lesson) => {
 			const fileIds = this.extractFileIds(lesson);
 
 			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id);

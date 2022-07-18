@@ -7,7 +7,7 @@ export class LessonMapper {
 			hidden: aggregationResult.hidden,
 			course: aggregationResult.course,
 			position: aggregationResult.position,
-			contents: [aggregationResult.contents],
+			contents: [...aggregationResult.contents],
 		});
 
 		lesson._id = aggregationResult._id;
