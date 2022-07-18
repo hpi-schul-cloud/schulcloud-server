@@ -12,6 +12,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import { randomUUID } from 'crypto';
@@ -34,12 +35,14 @@ describe('KeycloakManagementUc', () => {
 	let repo: DeepMocked<SystemRepo>;
 	let settings: IKeycloakSettings;
 
-	const clientIdentityProviders = createMock<IdentityProviders>();
-	const clientAuthenticationManagement = createMock<AuthenticationManagement>();
+	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
+	const kcApiUsersMock = createMock<Users>();
+	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const adminUsername = 'admin';
 	const accountsFile = 'accounts.json';
 	const usersFile = 'users.json';
 
+	let validAccountsNoDuplicates: IJsonAccount[];
 	let validAccounts: IJsonAccount[];
 	let jsonAccounts: IJsonAccount[];
 	let jsonUsers: IJsonUser[];
@@ -71,12 +74,28 @@ describe('KeycloakManagementUc', () => {
 			firstName: 'John',
 			lastName: 'Doe',
 			email: 'john.doe@email.tld',
+			username: 'john.doe',
 		},
 		{
 			id: v1(),
 			firstName: 'Jane',
 			lastName: 'Doe',
 			email: 'jane.doe@email.tld',
+			username: 'jane.doe',
+		},
+		{
+			id: v1(),
+			firstName: 'First',
+			lastName: 'Duplicate',
+			email: 'first.duplicate@email.tld',
+			username: 'notUnique',
+		},
+		{
+			id: v1(),
+			firstName: 'Second',
+			lastName: 'Duplicate',
+			email: 'second.duplicate@email.tld',
+			username: 'notUnique',
 		},
 	];
 	const inputFiles: IKeycloakManagementInputFiles = {
@@ -111,13 +130,9 @@ describe('KeycloakManagementUc', () => {
 							return Promise.resolve();
 						},
 						setConfig: () => {},
-						users: {
-							create: async (): Promise<void> => Promise.resolve(),
-							del: async (): Promise<void> => Promise.resolve(),
-							find: async (): Promise<UserRepresentation[]> => Promise.resolve([adminUser, ...users]),
-						},
-						identityProviders: clientIdentityProviders,
-						authenticationManagement: clientAuthenticationManagement,
+						users: kcApiUsersMock,
+						identityProviders: kcApiClientIdentityProvidersMock,
+						authenticationManagement: kcApiAuthenticationManagementMock,
 					}),
 				},
 				{
@@ -135,6 +150,24 @@ describe('KeycloakManagementUc', () => {
 		service = module.get(KeycloakAdministrationService);
 		settings = module.get(KeycloakSettings);
 		repo = module.get(SystemRepo);
+	});
+
+	beforeEach(() => {
+		kcApiUsersMock.create.mockResolvedValue({ id: '' });
+		kcApiUsersMock.del.mockImplementation(async (): Promise<void> => Promise.resolve());
+		kcApiUsersMock.find.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
+			if (arg?.username) {
+				return Promise.resolve([]);
+			}
+			const userArray = [adminUser, ...users];
+			return Promise.resolve(userArray);
+		});
+	});
+
+	afterEach(() => {
+		kcApiUsersMock.create.mockRestore();
+		kcApiUsersMock.del.mockRestore();
+		kcApiUsersMock.find.mockRestore();
 	});
 
 	describe('check', () => {
@@ -168,20 +201,29 @@ describe('KeycloakManagementUc', () => {
 	describe('seed', () => {
 		let fsReadMock: jest.SpyInstance;
 		beforeAll(() => {
+			const missingUsername = 'missingUsername';
+			const missingFirstName = 'missingFirstName';
+
+			validAccountsNoDuplicates = [
+				{ _id: { $oid: '1' }, username: users[0].username ?? missingUsername, password: '', userId: { $oid: '1' } },
+				{ _id: { $oid: '2' }, username: users[1].username ?? missingUsername, password: '', userId: { $oid: '2' } },
+			];
+
 			validAccounts = [
-				{ _id: { $oid: '1' }, username: 'First', password: '', userId: { $oid: '1' } },
-				{ _id: { $oid: '2' }, username: 'Second', password: '', userId: { $oid: '2' } },
+				...validAccountsNoDuplicates,
+				{ _id: { $oid: '3' }, username: users[2].username ?? missingUsername, password: '', userId: { $oid: '3' } },
 			];
 
 			jsonAccounts = [
 				...validAccounts,
-				{ _id: { $oid: '3' }, username: 'NoUser', password: '', userId: { $oid: '99' } },
+				{ _id: { $oid: '4' }, username: 'NoUser', password: '', userId: { $oid: '99' } },
 			];
 
 			jsonUsers = [
-				{ _id: { $oid: '1' }, firstName: 'First', lastName: '', email: '' },
-				{ _id: { $oid: '2' }, firstName: 'Second', lastName: '', email: '' },
-				{ _id: { $oid: '3' }, firstName: 'NoAccount', lastName: '', email: '' },
+				{ _id: { $oid: '1' }, firstName: users[0].firstName ?? missingFirstName, lastName: '', email: '' },
+				{ _id: { $oid: '2' }, firstName: users[1].firstName ?? missingFirstName, lastName: '', email: '' },
+				{ _id: { $oid: '3' }, firstName: users[2].firstName ?? missingFirstName, lastName: '', email: '' },
+				{ _id: { $oid: '4' }, firstName: 'NoAccount', lastName: '', email: '' },
 			];
 
 			fsReadMock = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
@@ -214,6 +256,39 @@ describe('KeycloakManagementUc', () => {
 				);
 			});
 			expect(result).toBe(validAccounts.length);
+		});
+		it('should update existing users after initial seeding', async () => {
+			const createSpy = jest.spyOn(client.users, 'create');
+			const updateSpy = jest.spyOn(client.users, 'update');
+
+			const findSpy = jest.spyOn(client.users, 'find');
+
+			// eslint-disable-next-line no-empty-pattern
+			findSpy.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				const userArray = [adminUser, ...users];
+				if (arg?.username) {
+					const foundUsers = userArray.filter((user) => user.username === arg.username);
+					if (foundUsers.length > 0) {
+						return Promise.resolve(foundUsers);
+					}
+					return Promise.resolve([]);
+				}
+				return Promise.resolve(userArray);
+			});
+
+			const result = await uc.seed();
+			expect(result).toBe(validAccountsNoDuplicates.length);
+
+			validAccountsNoDuplicates.forEach((account) => {
+				expect(updateSpy).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						username: account.username,
+					})
+				);
+			});
+			expect(createSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -256,10 +331,10 @@ describe('KeycloakManagementUc', () => {
 
 		beforeEach(() => {
 			repo.findAll.mockResolvedValue(systems);
-			clientIdentityProviders.find.mockResolvedValue(idps);
-			clientIdentityProviders.create.mockResolvedValue({ id: '' });
-			clientIdentityProviders.update.mockResolvedValue();
-			clientIdentityProviders.del.mockResolvedValue();
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
+			kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
+			kcApiClientIdentityProvidersMock.update.mockResolvedValue();
+			kcApiClientIdentityProvidersMock.del.mockResolvedValue();
 			configurationGet = jest.spyOn(Configuration, 'get').mockImplementation((key) => key);
 			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
 				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
@@ -269,10 +344,10 @@ describe('KeycloakManagementUc', () => {
 
 		afterEach(() => {
 			repo.findAll.mockRestore();
-			clientIdentityProviders.find.mockRestore();
-			clientIdentityProviders.create.mockRestore();
-			clientIdentityProviders.update.mockRestore();
-			clientIdentityProviders.del.mockRestore();
+			kcApiClientIdentityProvidersMock.find.mockRestore();
+			kcApiClientIdentityProvidersMock.create.mockRestore();
+			kcApiClientIdentityProvidersMock.update.mockRestore();
+			kcApiClientIdentityProvidersMock.del.mockRestore();
 			configurationGet.mockRestore();
 			fsReadFile.mockRestore();
 		});
@@ -297,26 +372,26 @@ describe('KeycloakManagementUc', () => {
 			).rejects.toThrow();
 		});
 		it('should create a configuration in Keycloak', async () => {
-			clientIdentityProviders.find.mockResolvedValue([]);
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
 			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBe(1);
-			expect(clientIdentityProviders.create).toBeCalledTimes(1);
+			expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
 			expect(configurationGet).toBeCalled();
 
-			clientIdentityProviders.find.mockRestore();
+			kcApiClientIdentityProvidersMock.find.mockRestore();
 		});
 		it('should update a configuration in Keycloak', async () => {
 			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBe(1);
-			expect(clientIdentityProviders.update).toBeCalledTimes(1);
+			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
 		});
 		it('should delete a new configuration in Keycloak', async () => {
 			repo.findAll.mockResolvedValue([]);
 
 			const result = await uc.configureIdentityProviders(prodConfig);
 			expect(result).toBe(1);
-			expect(clientIdentityProviders.del).toBeCalledTimes(1);
+			expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 
 			repo.findAll.mockRestore();
 		});
@@ -349,32 +424,32 @@ describe('KeycloakManagementUc', () => {
 		};
 
 		beforeEach(() => {
-			clientAuthenticationManagement.createFlow.mockResolvedValue({});
-			clientAuthenticationManagement.getFlows.mockResolvedValue([]);
-			clientAuthenticationManagement.deleteFlow.mockResolvedValue({});
+			kcApiAuthenticationManagementMock.createFlow.mockResolvedValue({});
+			kcApiAuthenticationManagementMock.getFlows.mockResolvedValue([]);
+			kcApiAuthenticationManagementMock.deleteFlow.mockResolvedValue({});
 		});
 
 		afterEach(() => {
-			clientAuthenticationManagement.createFlow.mockRestore();
-			clientAuthenticationManagement.getFlows.mockRestore();
-			clientAuthenticationManagement.deleteFlow.mockRestore();
+			kcApiAuthenticationManagementMock.createFlow.mockRestore();
+			kcApiAuthenticationManagementMock.getFlows.mockRestore();
+			kcApiAuthenticationManagementMock.deleteFlow.mockRestore();
 		});
 
 		it('should create new authentication flow', async () => {
 			const result = await uc.configureAuthenticationFlows();
 			expect(result).toBe(1);
-			expect(clientAuthenticationManagement.createFlow).toBeCalled();
-			expect(clientAuthenticationManagement.deleteFlow).not.toBeCalled();
+			expect(kcApiAuthenticationManagementMock.createFlow).toBeCalled();
+			expect(kcApiAuthenticationManagementMock.deleteFlow).not.toBeCalled();
 		});
 		it('should delete and create authentication flow', async () => {
-			clientAuthenticationManagement.getFlows.mockResolvedValue([directAuthFlow]);
+			kcApiAuthenticationManagementMock.getFlows.mockResolvedValue([directAuthFlow]);
 
 			const result = await uc.configureAuthenticationFlows();
 			expect(result).toBe(2);
-			expect(clientAuthenticationManagement.createFlow).toBeCalled();
-			expect(clientAuthenticationManagement.deleteFlow).toBeCalled();
+			expect(kcApiAuthenticationManagementMock.createFlow).toBeCalled();
+			expect(kcApiAuthenticationManagementMock.deleteFlow).toBeCalled();
 
-			clientAuthenticationManagement.getFlows.mockRestore();
+			kcApiAuthenticationManagementMock.getFlows.mockRestore();
 		});
 	});
 });

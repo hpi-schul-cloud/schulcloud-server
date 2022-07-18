@@ -65,23 +65,7 @@ export class KeycloakManagementUc {
 			const account = accounts.find((a) => a.userId.$oid === user._id.$oid);
 			if (account) {
 				// eslint-disable-next-line no-await-in-loop
-				const kc = await this.kcAdmin.callKcAdminClient();
-				// eslint-disable-next-line no-await-in-loop
-				await kc.users.create({
-					username: account.username,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					email: user.email,
-					enabled: true,
-					credentials: [
-						{
-							type: 'password',
-							secretData: `{"value": "${account.password}", "salt": "", "additionalParameters": {}}`,
-							credentialData: '{ "hashIterations": 10, "algorithm": "bcrypt", "additionalParameters": {}}',
-						},
-					],
-				});
-				userCount += 1;
+				userCount += (await this.createOrUpdateIdmAccount(account, user)) ? 1 : 0;
 			}
 		}
 		return userCount;
@@ -193,6 +177,35 @@ export class KeycloakManagementUc {
 			}
 		});
 		return result;
+	}
+
+	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser) {
+		const idmUserRepresentation = {
+			username: account.username,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+			enabled: true,
+			credentials: [
+				{
+					type: 'password',
+					secretData: `{"value": "${account.password}", "salt": "", "additionalParameters": {}}`,
+					credentialData: '{ "hashIterations": 10, "algorithm": "bcrypt", "additionalParameters": {}}',
+				},
+			],
+		};
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const existingAccounts = await kc.users.find({ username: account.username, exact: true });
+		if (existingAccounts.length === 1 && existingAccounts[0].id) {
+			await kc.users.update({ id: existingAccounts[0].id }, idmUserRepresentation);
+			return true;
+		}
+		if (existingAccounts.length === 0) {
+			await kc.users.create(idmUserRepresentation);
+			return true;
+		}
+		// else, unreachable, multiple accounts for same username (unique)
+		return false;
 	}
 
 	private async createIdentityProvider(system: IdentityProviderConfig): Promise<void> {
