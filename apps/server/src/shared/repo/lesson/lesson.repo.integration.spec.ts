@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Lesson } from '@shared/domain';
-import { courseFactory, lessonFactory, taskFactory, cleanupCollections } from '@shared/testing';
+import { cleanupCollections, courseFactory, lessonFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
@@ -55,6 +55,18 @@ describe('LessonRepo', () => {
 
 			const resultLesson = await repo.findById(lesson.id);
 			expect(resultLesson.course.name).toEqual(course.name);
+		});
+
+		it('should populate tasks', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
+			await em.persistAndFlush([course, lesson, ...tasks]);
+			em.clear();
+
+			const resultLesson = await repo.findById(lesson.id);
+			expect(resultLesson.tasks.isInitialized()).toEqual(true);
+			expect(resultLesson.tasks.length).toEqual(2);
 		});
 	});
 	describe('findAllByCourseIds', () => {

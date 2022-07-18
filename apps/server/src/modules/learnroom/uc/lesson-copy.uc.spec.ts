@@ -88,7 +88,7 @@ describe('lesson copy uc', () => {
 			const copy = lessonFactory.buildWithId({ course });
 			const status = {
 				title: 'lessonCopy',
-				type: CopyElementType.TASK,
+				type: CopyElementType.LESSON,
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: copy,
 			};

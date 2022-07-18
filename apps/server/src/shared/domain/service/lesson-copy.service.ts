@@ -13,6 +13,7 @@ import {
 } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
+import { TaskCopyService } from './task-copy.service';
 
 export type LessonCopyParams = {
 	originalLesson: Lesson;
@@ -25,6 +26,7 @@ export type LessonCopyParams = {
 export class LessonCopyService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
+		private readonly taskCopyService: TaskCopyService,
 		private readonly etherpadService: EtherpadService
 	) {}
 
@@ -38,7 +40,14 @@ export class LessonCopyService {
 			contents: copiedContent,
 		});
 
-		const elements = [...LessonCopyService.lessonStatusMetadata(), ...contentStatus];
+		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(
+			params.originalLesson,
+			params.destinationCourse,
+			copy,
+			params.user
+		);
+
+		const elements = [...LessonCopyService.lessonStatusMetadata(), ...contentStatus, ...copiedTasksStatus];
 
 		const status: CopyStatus = {
 			title: copy.name,
@@ -104,6 +113,29 @@ export class LessonCopyService {
 		const copy = { ...originalElement, hidden: true } as IComponentProperties;
 		copy.content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
 		return copy;
+	}
+
+	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
+		const linkedTasks = originalLesson.getLessonLinkedTasks();
+		const copiedTasksStatus: CopyStatus[] = [];
+		if (linkedTasks.length > 0) {
+			linkedTasks.forEach((element) => {
+				const taskStatus = this.taskCopyService.copyTaskMetadata({
+					originalTask: element,
+					destinationCourse,
+					destinationLesson,
+					user,
+				});
+				copiedTasksStatus.push(taskStatus);
+			});
+			const taskGroupStatus = {
+				type: CopyElementType.TASK_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
+				elements: copiedTasksStatus,
+			};
+			return [taskGroupStatus];
+		}
+		return [];
 	}
 
 	private async copyEtherpad(
