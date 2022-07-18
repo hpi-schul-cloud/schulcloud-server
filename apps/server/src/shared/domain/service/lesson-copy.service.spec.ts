@@ -573,17 +573,6 @@ describe('lesson copy service', () => {
 				user,
 			});
 		});
-
-		it('should call copyHelperService', () => {
-			const { originalLesson, destinationCourse, user } = setup();
-
-			copyService.copyLesson({
-				originalLesson,
-				destinationCourse,
-				user,
-			});
-			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
-		});
 	});
 
 	describe('when mupltiple tasks are linked to the original lesson', () => {
