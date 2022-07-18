@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { EnvType, SysType } from '@shared/infra/identity-management';
+import { EnvType } from '@shared/infra/identity-management';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { KeycloakConsole } from './keycloak-management.console';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';

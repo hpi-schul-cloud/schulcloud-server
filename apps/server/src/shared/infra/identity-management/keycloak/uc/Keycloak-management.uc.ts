@@ -4,7 +4,6 @@ import { SystemRepo } from '@shared/repo';
 import { System } from '@shared/domain';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import { IdentityProviderConfig } from '../interface/identity-provider-config.type';
 import { SysType } from '../../sys.type';
 import { EnvType } from '../../env.type';

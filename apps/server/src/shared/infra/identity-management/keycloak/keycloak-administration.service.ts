@@ -27,7 +27,6 @@ export class KeycloakAdministrationService {
 		try {
 			await this.kcAdminClient.auth(this.kcSettings.credentials);
 		} catch (err) {
-			console.error(err);
 			return false;
 		}
 		return true;

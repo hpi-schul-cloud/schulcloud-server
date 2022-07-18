@@ -14,8 +14,6 @@ import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
-import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
-import { randomUUID } from 'crypto';
 import {
 	IConfigureOptions,
 	IJsonAccount,
