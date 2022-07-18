@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, CopyHelperService, LessonCopyService, PermissionTypes, User } from '@shared/domain';
+import { Actions, CopyHelperService, LessonCopyService, PermissionTypes, User, EtherpadService } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
@@ -56,6 +56,10 @@ describe('lesson copy uc', () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: EtherpadService,
+					useValue: createMock<EtherpadService>(),
+				},
 			],
 		}).compile();
 
@@ -88,7 +92,7 @@ describe('lesson copy uc', () => {
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: copy,
 			};
-			lessonCopyService.copyLesson.mockReturnValue(status);
+			lessonCopyService.copyLesson.mockResolvedValue(status);
 			const lessonPersistSpy = jest.spyOn(lessonRepo, 'save');
 			lessonRepo.save.mockResolvedValue(undefined);
 			const lessonCopyName = 'Copy';
