@@ -116,6 +116,7 @@ describe('Nexboard services', () => {
 		expect(body.description.length).to.be.greaterThan(0);
 	});
 
+	/*
 	it('should show the details of one project', async () => {
 		const {
 			requestParams: {
@@ -160,12 +161,14 @@ describe('Nexboard services', () => {
 		expect(projects.length).to.be.greaterThan(0);
 	});
 
+
 	it('should create a board with a project id', async () => {
+		const user = await testHelpers.setupUser({ roles: ['teacher'] });
 		const {
 			requestParams: {
 				authentication: { accessToken },
 			},
-		} = await testHelpers.setupUser({ roles: ['teacher'] });
+		} = user;
 
 		const data = {
 			title: '1',
@@ -183,7 +186,7 @@ describe('Nexboard services', () => {
 
 		expect(board.title).to.equal(data.title);
 		expect(board.description).to.equal(data.description);
-		expect(board.projectId).to.equal(data.projectId);
+		expect(board.projectId).to.equal(user._id);
 	});
 
 	it('should list multiple boards depending on a project', async () => {
@@ -227,8 +230,9 @@ describe('Nexboard services', () => {
 		expect(board).to.be.an('object');
 		expect(board.id).to.equal(id);
 	});
+	*/
 
-	it('Find should need TOOL_VIEW permission.', async () => {
+	it('Find should be blocked.', async () => {
 		const name = `${Date.now()}testRole`;
 		await testHelpers.createTestRole({ name, permissions: [] });
 
@@ -252,10 +256,10 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(403);
+		expect(body.code).to.equal(405);
 	});
 
-	it('Get should need TOOL_VIEW permission.', async () => {
+	it('Get should be blocked.', async () => {
 		const name = `${Date.now()}testRole`;
 		await testHelpers.createTestRole({ name, permissions: [] });
 
@@ -279,7 +283,7 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(403);
+		expect(body.code).to.equal(405);
 	});
 
 	it('Create should need TOOL_CREATE permission.', async () => {
