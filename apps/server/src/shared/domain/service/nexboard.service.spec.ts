@@ -32,12 +32,17 @@ describe('Nexboard service', () => {
 
 	describe('create Nexboard', () => {
 		it('it should call feathers service', async () => {
-			feathersServiceProvider.getService('/nexboard/boards').create.mockResolvedValue({ publiclink: 'boardId' });
+			feathersServiceProvider
+				.getService('/nexboard/boards')
+				.create.mockResolvedValue({ id: '123', publiclink: 'boardId' });
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const nexboardUrl = await nexboardService.createNexboard(userId, 'title', 'description');
-			expect(nexboardUrl).toEqual('boardId');
+			const response = await nexboardService.createNexboard(userId, 'title', 'description');
+			if (response) {
+				expect(response.board).toEqual('123');
+				expect(response.url).toEqual('boardId');
+			}
 		});
 
 		it('should return false if nexboard call fails', async () => {
@@ -45,8 +50,8 @@ describe('Nexboard service', () => {
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const nexboardId = await nexboardService.createNexboard(userId, 'title', 'description');
-			expect(nexboardId).toEqual(false);
+			const nexboard = await nexboardService.createNexboard(userId, 'title', 'description');
+			expect(nexboard).toEqual(false);
 		});
 	});
 });
