@@ -86,7 +86,7 @@ describe('VideoConferenceUc', () => {
 	let featureEnabled = false;
 	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
-	const userPermissions: Map<Permission, boolean> = new Map<Permission, boolean>();
+	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
@@ -170,13 +170,13 @@ describe('VideoConferenceUc', () => {
 			everyAttendeeJoinsMuted: false,
 			moderatorMustApproveJoinRequests: false,
 		};
-		userPermissions.set(Permission.JOIN_MEETING, true);
-		userPermissions.set(Permission.START_MEETING, true);
+		userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
-		authorizationService.hasPermissionsByReferences.mockResolvedValue(userPermissions);
+		authorizationService.hasPermissionsByReferences.mockReturnValue(userPermissions);
 	});
 
 	describe('getScopeInfo', () => {
@@ -213,8 +213,8 @@ describe('VideoConferenceUc', () => {
 	describe('checkPermission', () => {
 		it('should return bbb moderator role', async () => {
 			// Arrange
-			userPermissions.set(Permission.JOIN_MEETING, true);
-			userPermissions.set(Permission.START_MEETING, true);
+			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
@@ -225,8 +225,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should return bbb viewer role', async () => {
 			// Arrange
-			userPermissions.set(Permission.JOIN_MEETING, true);
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
@@ -237,8 +237,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on missing permission', async () => {
 			// Arrange
-			userPermissions.set(Permission.JOIN_MEETING, false);
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(false));
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 
 			// Act & Assert
 			await expect(useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId')).rejects.toThrow(
@@ -277,8 +277,8 @@ describe('VideoConferenceUc', () => {
 		let bbbResponse: BBBResponse<BBBCreateResponse>;
 
 		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, true);
-			userPermissions.set(Permission.START_MEETING, true);
+			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
 			vcDO = new VideoConferenceDO({
 				target: course.id,
@@ -296,7 +296,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 
 			// Act & Assert
 			await expect(
@@ -400,7 +400,7 @@ describe('VideoConferenceUc', () => {
 		};
 
 		beforeEach(() => {
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 
 			team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
 			user = team.userIds[0].userId;
@@ -584,13 +584,13 @@ describe('VideoConferenceUc', () => {
 		};
 
 		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, true);
-			userPermissions.set(Permission.START_MEETING, true);
+			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 		});
 
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 
 			// Act & Assert
 			await expect(useCase.end(defaultCurrentUser, VideoConferenceScope.COURSE, course.id)).rejects.toThrow(
@@ -634,8 +634,8 @@ describe('VideoConferenceUc', () => {
 		let vcDO: VideoConferenceDO;
 
 		beforeEach(() => {
-			userPermissions.set(Permission.JOIN_MEETING, true);
-			userPermissions.set(Permission.START_MEETING, true);
+			userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
 			vcDO = new VideoConferenceDO({
 				target: course.id,
@@ -661,7 +661,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to viewer without options', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 
 			// Act
@@ -688,7 +688,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to viewer without options and "not started"', async () => {
 			// Arrange
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
 			// Act

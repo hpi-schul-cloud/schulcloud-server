@@ -10,7 +10,7 @@ describe('CalendarMapper', () => {
 		data: [
 			{
 				attributes: {
-					'x-sc-teamId': 'teamId',
+					'x-sc-teamid': 'teamId',
 					summary: 'eventTitle',
 				},
 			},

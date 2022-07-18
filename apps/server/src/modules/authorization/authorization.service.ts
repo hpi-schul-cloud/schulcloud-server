@@ -4,12 +4,12 @@ import {
 	CourseRule,
 	EntityId,
 	LessonRule,
+	Permission,
+	PermissionContextBuilder,
 	SchoolRule,
 	TaskRule,
 	User,
 	UserRule,
-	Permission,
-	PermissionContextBuilder,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
@@ -52,10 +52,10 @@ export class AuthorizationService extends BasePermissionManager {
 	): Promise<boolean> {
 		try {
 			const [user, entity] = await Promise.all([
-				this.loader.getUserWithPermissions(userId),
+				this.loader.loadEntity(AllowedAuthorizationEntityType.User, userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const permission = this.hasPermission(user, entity, context);
+			const permission = this.hasPermission(user as User, entity, context);
 
 			return permission;
 		} catch (err) {
@@ -93,9 +93,12 @@ export class AuthorizationService extends BasePermissionManager {
 		}
 	}
 
-	async getUserWithPermissions(userId: EntityId) {
+	async getUserWithPermissions(userId: EntityId): Promise<User> {
 		try {
-			const userWithPermissions = await this.loader.getUserWithPermissions(userId);
+			const userWithPermissions: User = (await this.loader.loadEntity(
+				AllowedAuthorizationEntityType.User,
+				userId
+			)) as User;
 
 			return userWithPermissions;
 		} catch (err) {

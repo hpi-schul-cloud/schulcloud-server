@@ -148,20 +148,6 @@ describe('authorization.service', () => {
 	describe('hasPermissionByReferences', () => {
 		const context = PermissionContextBuilder.read([]);
 
-		it('should call ReferenceLoader.getUserWithPermissions', async () => {
-			const userId = new ObjectId().toHexString();
-			const entityName = AllowedAuthorizationEntityType.Course;
-			const entityId = new ObjectId().toHexString();
-			const spy = jest.spyOn(service, 'hasPermission');
-			spy.mockReturnValue(true);
-
-			await service.hasPermissionByReferences(userId, entityName, entityId, context);
-
-			expect(loader.getUserWithPermissions).lastCalledWith(userId);
-
-			spy.mockRestore();
-		});
-
 		it('should call ReferenceLoader.loadEntity', async () => {
 			const userId = new ObjectId().toHexString();
 			const entityName = AllowedAuthorizationEntityType.Course;
@@ -171,7 +157,8 @@ describe('authorization.service', () => {
 
 			await service.hasPermissionByReferences(userId, entityName, entityId, context);
 
-			expect(loader.loadEntity).lastCalledWith(entityName, entityId);
+			expect(loader.loadEntity).nthCalledWith(1, AllowedAuthorizationEntityType.User, userId);
+			expect(loader.loadEntity).nthCalledWith(2, entityName, entityId);
 
 			spy.mockRestore();
 		});
@@ -224,13 +211,13 @@ describe('authorization.service', () => {
 				return context.requiredPermissions[0] === permissionTrue;
 			});
 
-			const retMap = await service.hasPermissionsByReferences(userId, entityName, entityId, [
+			const retMap = service.hasPermissionsByReferences(userId, entityName, entityId, [
 				permissionTrue,
 				permissionFalse,
 			]);
 
-			expect(retMap.get(permissionTrue)).toBe(true);
-			expect(retMap.get(permissionFalse)).toBe(false);
+			expect(await retMap.get(permissionTrue)).toBe(true);
+			expect(await retMap.get(permissionFalse)).toBe(false);
 
 			spy.mockRestore();
 		});
@@ -241,11 +228,11 @@ describe('authorization.service', () => {
 			const userId = new ObjectId().toHexString();
 
 			await service.getUserWithPermissions(userId);
-			expect(loader.getUserWithPermissions).lastCalledWith(userId);
+			expect(loader.loadEntity).lastCalledWith(AllowedAuthorizationEntityType.User, userId);
 		});
 
 		it('Should throw ForbiddenException if user by id can not be found.', async () => {
-			loader.getUserWithPermissions.mockRejectedValueOnce(new NotFound());
+			loader.loadEntity.mockRejectedValueOnce(new NotFound());
 
 			const userId = new ObjectId().toHexString();
 

@@ -16,11 +16,14 @@ import {
 	VideoConferenceJoinResponse,
 } from '@src/modules/video-conference/controller/dto/video-conference.response';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 describe('VideoConference Controller', () => {
 	let module: TestingModule;
 	let service: VideoConferenceController;
 	let videoConferenceUc: DeepMocked<VideoConferenceUc>;
+
+	const currentUser: ICurrentUser = { userId: new ObjectId().toHexString() } as ICurrentUser;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,12 +40,19 @@ describe('VideoConference Controller', () => {
 		videoConferenceUc = module.get(VideoConferenceUc);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('createAndJoin', () => {
 		it('should return a join Response', async () => {
+			// Arrange
 			videoConferenceUc.create.mockReturnValue(Promise.resolve({} as VideoConferenceDTO<BBBCreateResponse>));
 			videoConferenceUc.join.mockReturnValue(Promise.resolve({ url: 'mockUrl' } as VideoConferenceJoinDTO));
+
+			// Act
 			const ret: VideoConferenceJoinResponse = await service.createAndJoin(
-				{ userId: 'mockId' } as ICurrentUser,
+				currentUser,
 				VideoConferenceScope.COURSE,
 				'scopeId',
 				{
@@ -51,6 +61,8 @@ describe('VideoConference Controller', () => {
 					moderatorMustApproveJoinRequests: true,
 				}
 			);
+
+			// Assert
 			expect(ret.url).toEqual('mockUrl');
 		});
 	});
@@ -58,7 +70,6 @@ describe('VideoConference Controller', () => {
 	describe('createAndJoin', () => {
 		it('should return a join Response, call without options', async () => {
 			// Arrange
-			const currentUser: ICurrentUser = { userId: 'mockId' } as ICurrentUser;
 			const scopeId = 'courseId';
 
 			videoConferenceUc.create.mockReturnValue(Promise.resolve({} as VideoConferenceDTO<BBBCreateResponse>));
@@ -90,11 +101,7 @@ describe('VideoConference Controller', () => {
 			);
 
 			// Act
-			const ret: VideoConferenceInfoResponse = await service.info(
-				{ userId: 'mockId' } as ICurrentUser,
-				VideoConferenceScope.COURSE,
-				'scopeId'
-			);
+			const ret: VideoConferenceInfoResponse = await service.info(currentUser, VideoConferenceScope.COURSE, 'scopeId');
 
 			// Assert
 			expect(ret.state).toEqual(VideoConferenceState.RUNNING);
@@ -109,11 +116,7 @@ describe('VideoConference Controller', () => {
 			);
 
 			// Act
-			const ret: VideoConferenceInfoResponse = await service.end(
-				{ userId: 'mockId' } as ICurrentUser,
-				VideoConferenceScope.COURSE,
-				'scopeId'
-			);
+			const ret: VideoConferenceInfoResponse = await service.end(currentUser, VideoConferenceScope.COURSE, 'scopeId');
 
 			// Assert
 			expect(ret.state).toEqual(VideoConferenceState.FINISHED);

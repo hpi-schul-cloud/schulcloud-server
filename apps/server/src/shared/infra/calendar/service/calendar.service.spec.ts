@@ -59,7 +59,7 @@ describe('CalendarServiceSpec', () => {
 				data: [
 					{
 						attributes: {
-							'x-sc-teamId': teamId,
+							'x-sc-teamid': teamId,
 							summary: title,
 						},
 					},

@@ -4,7 +4,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { CourseRepo, FileRecordRepo, LessonRepo, SchoolRepo, TaskRepo, TeamsRepo, UserRepo } from '@shared/repo';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -76,55 +77,53 @@ describe('reference.loader', () => {
 	describe('loadEntity', () => {
 		it('should call taskRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Task, entityId);
+
 			expect(taskRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call courseRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Course, entityId);
+
 			expect(courseRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call schoolRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.School, entityId);
+
 			expect(schoolRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call userRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
-			expect(userRepo.findById).toBeCalledWith(entityId);
+
+			expect(userRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should call lessonRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Lesson, entityId);
+
 			expect(lessonRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call teamsRepo.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.Team, entityId);
-			expect(teamsRepo.findById).toBeCalledWith(entityId);
+
+			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should return entity', async () => {
 			const user = userFactory.build();
 			userRepo.findById.mockResolvedValue(user);
+
 			const result = await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
+
 			expect(result).toBe(user);
 		});
 
-		it('should call ReferenceLoader.getUserWithPermissions', () => {
+		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
-				service.loadEntity('NotAllowedEntityType' as AllowedAuthorizationEntityType.User, entityId)
-			).rejects.toThrow();
-		});
-	});
-
-	describe('getUserWithPermissions', () => {
-		it('should return user entity', async () => {
-			const roles = [roleFactory.build()];
-			const user = userFactory.buildWithId({ roles });
-			userRepo.findById.mockResolvedValue(user);
-			const result = await service.getUserWithPermissions(entityId);
-			expect(result).toBe(user);
+				service.loadEntity('NotAllowedEntityType' as AllowedAuthorizationEntityType, entityId)
+			).rejects.toThrow(NotImplementedException);
 		});
 	});
 });
