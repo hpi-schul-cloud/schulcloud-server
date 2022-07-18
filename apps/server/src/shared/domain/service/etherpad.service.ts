@@ -24,8 +24,8 @@ export class EtherpadService {
 			const service = this.feathersServiceProvider.getService('/etherpad/pads');
 			const pad = (await service.create(data, { account: { userId } })) as PadResponse;
 			return pad.data.padID;
-		} catch (err) {
-			this.logger.error('Could not create new Etherpad', err);
+		} catch (error) {
+			this.logger.error('Could not create new Etherpad', error);
 			return false;
 		}
 	}

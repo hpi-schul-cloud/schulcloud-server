@@ -6,6 +6,7 @@ import {
 	ComponentType,
 	CopyElementType,
 	CopyStatusEnum,
+	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentProperties,
 	Lesson,
@@ -432,8 +433,6 @@ describe('lesson copy service', () => {
 			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
 			expect(lessonContents[0].hidden).toEqual(true);
 		});
-
-		it.todo('should set status partial');
 	});
 
 	describe('when lesson contains Etherpad content element', () => {
@@ -462,6 +461,9 @@ describe('lesson copy service', () => {
 				if (config === 'FEATURE_ETHERPAD_ENABLED') {
 					return true;
 				}
+				if (config === 'ETHERPAD__PAD_URI') {
+					return 'http://pad.uri';
+				}
 				return null;
 			});
 
@@ -486,7 +488,7 @@ describe('lesson copy service', () => {
 			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
 		});
 
-		it('should call etherpad service to create', async () => {
+		it('should call etherpad service to create new etherpad', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
 			await copyService.copyLesson({
@@ -510,13 +512,26 @@ describe('lesson copy service', () => {
 			});
 
 			let contentStatus = CopyStatusEnum.SUCCESS;
-			if (status && status.elements) {
-				const group = status.elements.filter((element) => element.type === CopyElementType.LESSON_CONTENT_GROUP)[0];
-				if (group && group.elements) {
-					contentStatus = group.elements[0].status;
-				}
+			const group = status.elements?.filter((element) => element.type === CopyElementType.LESSON_CONTENT_GROUP)[0];
+			if (group && group.elements) {
+				contentStatus = group.elements[0].status;
 			}
 			expect(contentStatus).toEqual(CopyStatusEnum.FAIL);
+		});
+
+		it('should copy etherpad correctly', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			etherpadService.createEtherpad.mockResolvedValue('abc');
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const copiedEtherpad = copiedLessonContents[0].content as IComponentEtherpadProperties;
+			expect(copiedEtherpad.url).toEqual('http://pad.uri/abc');
 		});
 	});
 });

@@ -19,8 +19,6 @@ describe('lesson copy uc', () => {
 	let authorisation: DeepMocked<AuthorizationService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let etherpadService: DeepMocked<EtherpadService>;
-
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -72,7 +70,6 @@ describe('lesson copy uc', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		etherpadService = module.get(EtherpadService);
 	});
 
 	describe('copy lesson', () => {
