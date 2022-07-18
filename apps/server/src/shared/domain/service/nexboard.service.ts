@@ -3,7 +3,7 @@ import { Logger } from '@src/core/logger';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
-export type NexboardResponse = { id: string; publiclink: string };
+export type NexboardResponse = { id: string; publicLink: string };
 
 @Injectable()
 export class NexboardService {
@@ -21,7 +21,7 @@ export class NexboardService {
 		try {
 			const service = this.feathersServiceProvider.getService('/nexboard/boards');
 			const nexBoard = (await service.create(data, { account: { userId } })) as NexboardResponse;
-			return { board: nexBoard.id, url: nexBoard.publiclink };
+			return { board: nexBoard.id, url: nexBoard.publicLink };
 		} catch (error) {
 			this.logger.error('Could not create new Nexboard', error);
 			return false;

@@ -34,7 +34,7 @@ describe('Nexboard service', () => {
 		it('it should call feathers service', async () => {
 			feathersServiceProvider
 				.getService('/nexboard/boards')
-				.create.mockResolvedValue({ id: '123', publiclink: 'boardId' });
+				.create.mockResolvedValue({ id: '123', publicLink: 'boardId' });
 
 			const userId: EntityId = new ObjectId().toHexString();
 
