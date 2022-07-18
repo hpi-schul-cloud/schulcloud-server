@@ -46,8 +46,8 @@ describe('lesson copy service', () => {
 				{
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
-        },
-        {
+				},
+				{
 					provide: EtherpadService,
 					useValue: createMock<EtherpadService>(),
 				},
@@ -441,10 +441,10 @@ describe('lesson copy service', () => {
 			expect(lessonContents[0].hidden).toEqual(true);
 		});
 
-		it('content status should have correct status value', () => {
+		it('content status should have correct status value', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 
-			const status = copyService.copyLesson({
+			const status = await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
@@ -476,10 +476,10 @@ describe('lesson copy service', () => {
 			};
 		};
 
-		it('should not set task status', () => {
+		it('should not set task status', async () => {
 			const { originalLesson, destinationCourse, user } = setup();
 
-			const copyStatus = copyService.copyLesson({
+			const copyStatus = await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
@@ -488,10 +488,10 @@ describe('lesson copy service', () => {
 			expect(tasksStatus).not.toBeDefined();
 		});
 
-		it('should not call task copy service', () => {
+		it('should not call task copy service', async () => {
 			const { originalLesson, destinationCourse, user, taskSpy } = setup();
 
-			copyService.copyLesson({
+			await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
@@ -537,10 +537,10 @@ describe('lesson copy service', () => {
 			};
 		};
 
-		it('should put copy status tasks leaf', () => {
+		it('should put copy status tasks leaf', async () => {
 			const { originalLesson, destinationCourse, user, mockedTaskGroupStatus } = setup();
 
-			const copyStatus = copyService.copyLesson({
+			const copyStatus = await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
@@ -550,10 +550,10 @@ describe('lesson copy service', () => {
 			expect(tasksGroupStatus).toEqual(mockedTaskGroupStatus);
 		});
 
-		it('should put copy status for the copied task', () => {
+		it('should put copy status for the copied task', async () => {
 			const { originalLesson, originalTask, destinationCourse, user, mockedTaskStatus } = setup();
 
-			const copyStatus = copyService.copyLesson({
+			const copyStatus = await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
@@ -567,10 +567,10 @@ describe('lesson copy service', () => {
 			expect(tasksStatus).toEqual(mockedTaskStatus);
 		});
 
-		it('should call taskCopyService for the linked task', () => {
+		it('should call taskCopyService for the linked task', async () => {
 			const { originalLesson, destinationCourse, user, originalTask, taskSpy } = setup();
 
-			const copyStatus = copyService.copyLesson({
+			const copyStatus = await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
@@ -630,10 +630,10 @@ describe('lesson copy service', () => {
 			};
 		};
 
-		it('should put copy status for each copied task under tasks', () => {
+		it('should put copy status for each copied task under tasks', async () => {
 			const { originalLesson, destinationCourse, user, mockedTaskStatusOne, mockedTaskStatusTwo } = setup();
 
-			const copyStatus = copyService.copyLesson({
+			const copyStatus = await copyService.copyLesson({
 				originalLesson,
 				destinationCourse,
 				user,
