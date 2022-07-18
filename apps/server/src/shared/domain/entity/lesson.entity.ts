@@ -112,7 +112,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		return this.contents;
 	}
 
-	getLessonTasks(): Task[] {
+	getLessonLinkedTasks(): Task[] {
 		const tasks = this.getTasksItems();
 		return tasks;
 	}

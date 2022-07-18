@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ComponentType, Course, IComponentGeogebraProperties, IComponentProperties, Lesson, User } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
-import { TaskCopyParams, TaskCopyService } from './task-copy.service';
+import { TaskCopyService } from './task-copy.service';
 
 export type LessonCopyParams = {
 	originalLesson: Lesson;
@@ -84,11 +84,11 @@ export class LessonCopyService {
 	}
 
 	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
-		const linkedTasks = originalLesson.getLessonTasks();
+		const linkedTasks = originalLesson.getLessonLinkedTasks();
 		const copiedTasksStatus: CopyStatus[] = [];
 		if (linkedTasks.length > 0) {
 			linkedTasks.forEach((element) => {
-				const taskStatus = this.useTaskCopyService({
+				const taskStatus = this.taskCopyService.copyTaskMetadata({
 					originalTask: element,
 					destinationCourse,
 					destinationLesson,
@@ -104,11 +104,6 @@ export class LessonCopyService {
 			return [taskGroupStatus];
 		}
 		return [];
-	}
-
-	private useTaskCopyService(params: TaskCopyParams): CopyStatus {
-		const taskStatus = this.taskCopyService.copyTaskMetadata(params);
-		return taskStatus;
 	}
 
 	private lessonStatusMetadata(): CopyStatus[] {

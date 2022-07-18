@@ -162,13 +162,13 @@ describe('Lesson Entity', () => {
 		});
 	});
 
-	describe('getLessonTasks', () => {
+	describe('getLessonLinkedTasks', () => {
 		it('should return the linked tasks to that lesson', () => {
 			const course = courseFactory.build();
 			const lesson = lessonFactory.build();
 			const originalTask = taskFactory.build({ course, lesson });
 
-			const result = lesson.getLessonTasks();
+			const result = lesson.getLessonLinkedTasks();
 			expect(result.length).toEqual(1);
 			expect(result[0]).toEqual(originalTask);
 		});
