@@ -1,42 +1,36 @@
 const { expect } = require('chai');
-const mockery = require('mockery');
-const commons = require('@hpi-schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('../rabbitmqMock');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-const { Configuration } = commons;
-
-describe('service', () => {
+describe('schoolSyncService', () => {
 	let configBefore;
 	let server;
 	let app;
+	let nestServices;
 	let testObjects;
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
-		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
-		// eslint-disable-next-line global-require
-		app = await require('../../../../src/app')();
+		const appPromise = rabbitmqMock.setupMock();
+		app = await appPromise();
+		nestServices = await setupNestServices(app);
 		server = await app.listen(0);
 		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(app);
+		testObjects = require('../../helpers/testObjects')(appPromise());
+
 		rabbitmqMock.reset();
 	});
 
 	after(async () => {
 		Configuration.reset(configBefore);
-		mockery.deregisterAll();
-		mockery.disable();
+		rabbitmqMock.closeMock();
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('admin can trigger a schoolSync', async () => {
@@ -46,6 +40,7 @@ describe('service', () => {
 			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
 			testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
 		]);
+
 		const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
 		expect(testingQueue).to.not.be.undefined;
 		expect(testingQueue.length, '3 user creation events + 1 school creation event').to.equal(4);

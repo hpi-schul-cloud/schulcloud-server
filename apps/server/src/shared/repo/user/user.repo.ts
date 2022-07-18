@@ -16,7 +16,7 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -145,8 +145,10 @@ export class UserRepo extends BaseRepo<User> {
 
 	async findByEmail(email: string): Promise<User[]> {
 		// find mail case-insensitive by regex
-		const user = await this._em.find(User, { email: new RegExp(`^${email.replace(/[^A-Za-z0-9_]/g, '\\$&')}$`, 'i') });
-		return user;
+		const promise: Promise<User[]> = this._em.find(User, {
+			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
+		});
+		return promise;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

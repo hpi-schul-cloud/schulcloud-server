@@ -4,22 +4,28 @@ const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
-const { getOrCreateTombstoneUserId, replaceUserWithTombstone, deleteUser } = require('./users.uc');
+const { initialize, getOrCreateTombstoneUserId, replaceUserWithTombstone, deleteUser } = require('./users.uc');
 const userRepo = require('../repo/user.repo');
 const registrationPinRepo = require('../repo/registrationPin.repo');
+
+const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
 describe('user use case', () => {
 	let app;
 	let server;
+	let nestServices;
 
 	before(async () => {
-		delete require.cache[require.resolve('../../../../src/app')];
 		app = await appPromise();
 		server = await app.listen(0);
+
+		nestServices = await setupNestServices(app);
+		initialize(app);
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('getOrCreateTombstoneUserId', () => {

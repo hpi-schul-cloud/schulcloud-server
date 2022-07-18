@@ -32,6 +32,13 @@ describe('copy helper service', () => {
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.SUCCESS);
 			});
+
+			it('should set status to success, if there are both successful and not doing children', () => {
+				const elements = createStates([CopyStatusEnum.SUCCESS, CopyStatusEnum.NOT_DOING]);
+				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
+
+				expect(derivedStatus).toEqual(CopyStatusEnum.SUCCESS);
+			});
 		});
 
 		describe('failure cases', () => {
@@ -63,7 +70,14 @@ describe('copy helper service', () => {
 			});
 
 			it('should set status to fail, when all elements are a mixture of failing states', () => {
-				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_IMPLEMENTED, CopyStatusEnum.NOT_DOING]);
+				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_IMPLEMENTED]);
+				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
+
+				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
+			});
+
+			it('should set status to fail, when it has Failing and Not donig statuses', () => {
+				const elements = createStates([CopyStatusEnum.FAIL, CopyStatusEnum.NOT_DOING]);
 				const derivedStatus = copyHelperService.deriveStatusFromElements(elements);
 
 				expect(derivedStatus).toEqual(CopyStatusEnum.FAIL);
@@ -137,6 +151,48 @@ describe('copy helper service', () => {
 			const nameCopy = copyHelperService.deriveCopyName(originalName);
 
 			expect(nameCopy).toEqual(`${basename} (13)`);
+		});
+
+		describe('avoid name collisions with existing names', () => {
+			it('should not return an existing name', () => {
+				const originalName = 'Test';
+				const existingName = 'Test (1)';
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, [existingName]);
+				expect(nameCopy).not.toEqual(existingName);
+			});
+
+			it('should return the right name regardless of existing names order', () => {
+				const originalName = 'Test';
+				const existingNames = ['Test (2)', 'Test (3)', 'Test (1)'];
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (4)');
+			});
+
+			it('should use the first available gap in the list', () => {
+				const originalName = 'Test';
+				const existingNames = ['Test (1)', 'Test (3)'];
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (2)');
+			});
+
+			it('should work when original has a number and a successor', () => {
+				const originalName = 'Test (1)';
+				const existingNames = ['Test', 'Test (1)', 'Test (2)'];
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (3)');
+			});
+
+			it('should work with long lists of existing names', () => {
+				const originalName = 'Test';
+				const existingNames = Array.from(Array(2000).keys()).map((n) => `Test (${n})`);
+
+				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
+				expect(nameCopy).toEqual('Test (2000)');
+			});
 		});
 	});
 });

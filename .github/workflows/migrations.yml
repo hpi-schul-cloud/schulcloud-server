@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: check all migrations are up in database seed
       run: test $(grep "\"down\"" ./backup/setup/migrations.json -c) -eq 0
     - name: mongodb setup

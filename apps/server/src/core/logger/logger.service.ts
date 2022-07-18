@@ -1,6 +1,6 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConsoleLogger, Injectable, LogLevel, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import util from 'util';
 import { ILoggerConfig, RequestLoggingBody } from './interfaces';
 import { AvailableLogLevel, ILogger } from './interfaces/logger.interface';
 
@@ -32,10 +32,11 @@ export class Logger extends ConsoleLogger implements ILogger {
 	}
 
 	error(message: unknown, trace?: unknown): void {
-		const messages =
-			Configuration.get('NODE_ENV') === 'production'
-				? [JSON.stringify({ message, trace: trace || null })]
-				: [message, trace];
-		super.error(messages);
+		const result = {
+			message,
+			trace,
+		};
+		const stringifiedMessage = util.inspect(result).replace(/\n/g, '').replace(/\\n/g, '');
+		super.error(stringifiedMessage);
 	}
 }

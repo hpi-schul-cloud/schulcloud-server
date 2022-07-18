@@ -89,6 +89,9 @@ describe('OAuthService', () => {
 					provide: HttpService,
 					useValue: {
 						post: () => {
+							if (defaultOauthConfig.grantType === 'grantMock') {
+								return {};
+							}
 							return of(defaultAxiosResponse);
 						},
 					},
@@ -127,7 +130,7 @@ describe('OAuthService', () => {
 	});
 
 	beforeEach(() => {
-		defaultSystem = systemFactory.build();
+		defaultSystem = systemFactory.withOauthConfig().build();
 		defaultOauthConfig = defaultSystem.oauthConfig as OauthConfig;
 
 		defaultAuthCode = '43534543jnj543342jn2';
@@ -194,7 +197,6 @@ describe('OAuthService', () => {
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
-				tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 				scope: 'openid uuid',
 				responseType: 'code',
 				authEndpoint: 'mock_authEndpoint',
@@ -202,7 +204,7 @@ describe('OAuthService', () => {
 				logoutEndpoint: 'logoutEndpointMock',
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
-				codeRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
+				redirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
 			},
 			_id: new ObjectId(),
 			id: '',
@@ -231,7 +233,7 @@ describe('OAuthService', () => {
 			if (id === defaultIservSystemId) {
 				return Promise.resolve(defaultIservSystem);
 			}
-			return Promise.resolve(systemFactory.build());
+			return Promise.resolve(systemFactory.withOauthConfig().build());
 		});
 		userRepo.findById.mockImplementation((sub: string): Promise<User> => {
 			if (sub === '') {
@@ -277,6 +279,12 @@ describe('OAuthService', () => {
 		it('should get token from the external server', async () => {
 			const responseToken = await service.requestToken(defaultAuthCode, defaultOauthConfig);
 			expect(responseToken).toStrictEqual(defaultTokenResponse);
+		});
+		it('should throw error if no token got returned', async () => {
+			defaultOauthConfig.grantType = 'grantMock';
+			await expect(service.requestToken(defaultAuthCode, defaultOauthConfig)).rejects.toEqual(
+				new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
+			);
 		});
 	});
 
@@ -340,7 +348,7 @@ describe('OAuthService', () => {
 
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
-			const jwtResult = await service.getJWTForUser(defaultUser);
+			const jwtResult = await service.getJwtForUser(defaultUser);
 			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(defaultJWT);
 		});
@@ -364,7 +372,7 @@ describe('OAuthService', () => {
 			expect(errorResponse).toEqual(defaultErrorResponse);
 		});
 		it('should throw error if oauthconfig is missing', async () => {
-			const system: System = systemFactory.buildWithId({ oauthConfig: undefined });
+			const system: System = systemFactory.buildWithId();
 			systemRepo.findById.mockResolvedValueOnce(system);
 			const response = await service.processOAuth(defaultQuery, system.id);
 			expect(response).toEqual({

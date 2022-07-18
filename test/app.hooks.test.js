@@ -1,16 +1,13 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../src/app');
+const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('../src/utils');
-const {
-	cleanup,
-	createTestUser,
-	generateRequestParamsFromUser,
-	createTestSchool,
-} = require('./services/helpers/testObjects')(appPromise());
+const { cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool } =
+	require('./services/helpers/testObjects')(appPromise());
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -411,16 +408,19 @@ describe('removeObjectIdInData hook', () => {
 	let server;
 	let user;
 	let app;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		user = await createTestUser();
 	});
 
 	after(async () => {
 		await cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('Should work for create', async () => {

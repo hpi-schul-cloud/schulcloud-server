@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyHelperService, TaskCopyService } from '@shared/domain';
@@ -9,7 +9,6 @@ import { Task } from '../entity';
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
-	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -33,7 +32,6 @@ describe('task copy service', () => {
 		}).compile();
 
 		copyService = module.get(TaskCopyService);
-		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyTask', () => {
@@ -47,7 +45,8 @@ describe('task copy service', () => {
 					school,
 					description: 'description of what you need to do',
 				});
-				return { user, destinationCourse, originalTask, school };
+				const copyName = 'Copy(250)';
+				return { user, destinationCourse, originalTask, school, copyName };
 			};
 
 			it('should assign user as creator', () => {
@@ -90,7 +89,21 @@ describe('task copy service', () => {
 				expect(task.availableDate).not.toBeDefined();
 			});
 
-			it('should set name of copy', () => {
+			it('should set name of copy to provided name', () => {
+				const { user, destinationCourse, originalTask, copyName } = setup();
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse,
+					user,
+					copyName,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.name).toEqual(copyName);
+			});
+
+			it('should set name of copy original when no name is provided', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
@@ -163,9 +176,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const metadataStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'metadata'
-				);
+				const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
 				expect(metadataStatus).toBeDefined();
 				expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
@@ -179,9 +190,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const descriptionStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'description'
-				);
+				const descriptionStatus = status.elements?.find((el) => el.type === CopyElementType.CONTENT);
 				expect(descriptionStatus).toBeDefined();
 				expect(descriptionStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
@@ -195,22 +204,9 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const submissionsStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.LEAF && el.title === 'submissions'
-				);
+				const submissionsStatus = status.elements?.find((el) => el.type === CopyElementType.SUBMISSION_GROUP);
 				expect(submissionsStatus).toBeDefined();
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should call copyHelperService', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 			});
 		});
 

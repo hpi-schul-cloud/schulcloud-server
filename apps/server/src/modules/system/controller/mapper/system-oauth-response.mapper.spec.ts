@@ -8,7 +8,6 @@ import { OauthConfigResponse } from '../dto/oauth-config.response';
 function assertOauthConfig(expected: OauthConfigDto | undefined, actual: OauthConfigResponse | undefined): boolean {
 	if (expected != null && actual != null) {
 		expect(actual.clientId).toBe(expected.clientId);
-		expect(actual.tokenRedirectUri).toBe(expected.tokenRedirectUri);
 		expect(actual.grantType).toBe(expected.grantType);
 		expect(actual.tokenEndpoint).toBe(expected.tokenEndpoint);
 		expect(actual.authEndpoint).toBe(expected.authEndpoint);
@@ -18,7 +17,7 @@ function assertOauthConfig(expected: OauthConfigDto | undefined, actual: OauthCo
 		expect(actual.logoutEndpoint).toBe(expected.logoutEndpoint);
 		expect(actual.issuer).toBe(expected.issuer);
 		expect(actual.jwksEndpoint).toBe(expected.jwksEndpoint);
-		expect(actual.codeRedirectUri).toBe(expected.codeRedirectUri);
+		expect(actual.redirectUri).toBe(expected.redirectUri);
 		return true;
 	}
 	return false;
@@ -31,7 +30,6 @@ describe('oauth-response mapper', () => {
 		clientSecret: 'mocksecret',
 		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 		grantType: 'authorization_code',
-		tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 		scope: 'openid uuid',
 		responseType: 'code',
 		authEndpoint: 'mock_authEndpoint',
@@ -39,7 +37,7 @@ describe('oauth-response mapper', () => {
 		logoutEndpoint: 'mock_logoutEndpoint',
 		issuer: 'mock_issuer',
 		jwksEndpoint: 'mock_jwksEndpoint',
-		codeRedirectUri: 'mock_codeRedirectUri',
+		redirectUri: 'mock_codeRedirectUri',
 	});
 	const systemDtoOauth = new SystemDto({
 		type: 'oauth',

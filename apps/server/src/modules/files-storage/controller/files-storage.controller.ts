@@ -74,10 +74,14 @@ export class FilesStorageController {
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Req() req: Request
 	): Promise<StreamableFile> {
 		const res = await this.filesStorageUC.download(currentUser.userId, params);
-		// TODO set headers ?
+		req.on('close', () => {
+			res.data.destroy();
+		});
+
 		return new StreamableFile(res.data, {
 			type: res.contentType,
 			disposition: `inline; filename="${encodeURI(params.fileName)}"`,

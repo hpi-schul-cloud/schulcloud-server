@@ -18,4 +18,14 @@ export class AccountEntityToDtoMapper {
 			token: account.token,
 		});
 	}
+
+	static mapSearchResult(accountEntities: [Account[], number]) {
+		const foundAccounts = accountEntities[0];
+		const accountDtos: AccountDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
+		return { accounts: accountDtos, total: accountEntities[1] };
+	}
+
+	static mapAccountsToDto(accounts: Account[]): AccountDto[] {
+		return accounts.map((accountEntity) => AccountEntityToDtoMapper.mapToDto(accountEntity));
+	}
 }

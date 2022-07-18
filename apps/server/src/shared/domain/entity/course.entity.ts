@@ -1,8 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
-
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { LearnroomMetadata, LearnroomTypes } from '../types';
-
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { School } from './school.entity';
 import type { User } from './user.entity';
@@ -72,9 +70,9 @@ export class Course extends BaseEntityWithTimestamps implements ILearnroom, IEnt
 		if (props.name) this.name = props.name;
 		if (props.description) this.description = props.description;
 		this.school = props.school;
-		if (props.students) this.students.set(props.students);
-		if (props.teachers) this.teachers.set(props.teachers);
-		if (props.substitutionTeachers) this.substitutionTeachers.set(props.substitutionTeachers);
+		this.students.set(props.students || []);
+		this.teachers.set(props.teachers || []);
+		this.substitutionTeachers.set(props.substitutionTeachers || []);
 		if (props.color) this.color = props.color;
 		if (props.untilDate) this.untilDate = props.untilDate;
 		if (props.startDate) this.startDate = props.startDate;

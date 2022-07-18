@@ -6,6 +6,7 @@ import { CopyHelperService } from './copy-helper.service';
 export type CourseCopyParams = {
 	originalCourse: Course;
 	user: User;
+	copyName?: string;
 };
 
 @Injectable()
@@ -15,54 +16,36 @@ export class CourseCopyService {
 	copyCourse(params: CourseCopyParams): CopyStatus {
 		const copy = new Course({
 			school: params.user.school,
-			name: this.copyHelperService.deriveCopyName(params.originalCourse.name),
+			name: params.copyName ?? params.originalCourse.name,
 			color: params.originalCourse.color,
 			teachers: [params.user],
+			startDate: params.user.school.schoolYear?.startDate,
+			untilDate: params.user.school.schoolYear?.endDate,
 		});
+
 		const elements = [
 			{
-				title: 'metadata',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'teachers',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.USER_GROUP, // teachers, substitutionTeachers, students,...
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				title: 'substitutionTeachers',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.LTITOOL_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				title: 'students',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.TIME_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				title: 'classes',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				title: 'ltiTools',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
-				title: 'times',
-				type: CopyElementType.LEAF,
-				status: CopyStatusEnum.NOT_IMPLEMENTED,
-			},
-			{
-				title: 'files',
 				type: CopyElementType.FILE_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
 			{
-				title: 'coursegroups',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.COURSEGROUP_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			},
 		];

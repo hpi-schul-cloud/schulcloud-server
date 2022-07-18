@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../../src/app');
-
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
@@ -14,6 +14,7 @@ describe('user service', () => {
 	let classesService;
 	let coursesService;
 	let app;
+	let nestServices;
 	let server;
 
 	before(async () => {
@@ -22,10 +23,12 @@ describe('user service', () => {
 		classesService = app.service('classes');
 		coursesService = app.service('courses');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the users service', () => {

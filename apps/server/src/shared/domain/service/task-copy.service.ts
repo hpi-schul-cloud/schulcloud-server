@@ -8,6 +8,7 @@ export type TaskCopyParams = {
 	destinationCourse?: Course;
 	// destinationLesson?: Lesson;
 	user: User;
+	copyName?: string;
 };
 
 @Injectable()
@@ -16,7 +17,7 @@ export class TaskCopyService {
 
 	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
-			name: params.originalTask.name,
+			name: params.copyName || params.originalTask.name,
 			description: params.originalTask.description,
 			school: params.user.school,
 			creator: params.user,
@@ -39,18 +40,15 @@ export class TaskCopyService {
 	private defaultTaskStatusElements(): CopyStatus[] {
 		return [
 			{
-				title: 'metadata',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.METADATA,
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'description',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.CONTENT,
 				status: CopyStatusEnum.SUCCESS,
 			},
 			{
-				title: 'submissions',
-				type: CopyElementType.LEAF,
+				type: CopyElementType.SUBMISSION_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
 		];

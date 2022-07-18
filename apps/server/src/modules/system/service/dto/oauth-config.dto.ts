@@ -2,7 +2,7 @@ export class OauthConfigDto {
 	constructor(oauthConfigDto: OauthConfigDto) {
 		this.clientId = oauthConfigDto.clientId;
 		this.clientSecret = oauthConfigDto.clientSecret;
-		this.tokenRedirectUri = oauthConfigDto.tokenRedirectUri;
+		this.redirectUri = oauthConfigDto.redirectUri;
 		this.grantType = oauthConfigDto.grantType;
 		this.tokenEndpoint = oauthConfigDto.tokenEndpoint;
 		this.authEndpoint = oauthConfigDto.authEndpoint;
@@ -12,14 +12,13 @@ export class OauthConfigDto {
 		this.logoutEndpoint = oauthConfigDto.logoutEndpoint;
 		this.issuer = oauthConfigDto.issuer;
 		this.jwksEndpoint = oauthConfigDto.jwksEndpoint;
-		this.codeRedirectUri = oauthConfigDto.codeRedirectUri;
 	}
 
 	clientId: string;
 
 	clientSecret: string;
 
-	tokenRedirectUri: string;
+	redirectUri: string;
 
 	grantType: string;
 
@@ -38,6 +37,4 @@ export class OauthConfigDto {
 	issuer: string;
 
 	jwksEndpoint: string;
-
-	codeRedirectUri: string;
 }

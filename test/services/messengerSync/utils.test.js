@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testObjects = require('../helpers/testObjects')(appPromise());
 const {
 	buildAddUserMessage,
@@ -14,10 +15,12 @@ describe('messenger synchronizer utils', () => {
 	let app;
 	let server;
 	let configBefore;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 		configBefore = Configuration.toObject({ plainSecrets: true });
 
 		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
@@ -28,6 +31,7 @@ describe('messenger synchronizer utils', () => {
 		await testObjects.cleanup();
 		Configuration.reset(configBefore);
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	/*

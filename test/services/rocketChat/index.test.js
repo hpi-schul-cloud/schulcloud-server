@@ -7,7 +7,8 @@ const mockery = require('mockery');
 const { ObjectId } = require('mongoose').Types;
 
 const appPromise = require('../../../src/app');
-const testObjects = require('../helpers/testObjects');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+const testObjects = require('../helpers/testObjects')(appPromise());
 
 const { expect } = chai;
 
@@ -16,8 +17,8 @@ describe('rocket.chat user service', () => {
 
 	let app;
 	let server;
+	let nestServices;
 	let rocketChatUserService;
-	let testHelper;
 
 	before(async () => {
 		app = await appPromise();
@@ -43,12 +44,13 @@ describe('rocket.chat user service', () => {
 		rocketChatUserService = app.service('/rocketChat/user');
 
 		server = app.listen(0);
-		testHelper = testObjects(app);
+		nestServices = await setupNestServices(app);
 		return server;
 	});
 
 	after(async () => {
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the RC user service', () => {
@@ -56,7 +58,7 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('creates a rc user for a sc user', async () => {
-		const user = await testHelper.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const rcUser = await rocketChatUserService.get(user._id);
 		expect(rcUser.rcId).to.exist;
 		expect(rcUser.username).to.exist;
@@ -64,7 +66,7 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('retrieves existing rc users instead of creating new', async () => {
-		const user = await testHelper.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const firstResult = await rocketChatUserService.get(user._id);
 		const secondResult = await rocketChatUserService.get(user._id);
 		expect(firstResult.username).to.equal(secondResult.username);
@@ -73,7 +75,7 @@ describe('rocket.chat user service', () => {
 
 	it('recovers if email is already used in rc', async () => {
 		const rcModels = require('../../../src/services/rocketChat/model');
-		const user = await testHelper.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const rcUser = await rocketChatUserService.get(user._id);
 		await rcModels.userModel.remove(rcUser._id); // break something
 		const newUser = await rocketChatUserService.get(user._id);
@@ -146,25 +148,26 @@ describe('rocket.chat login service', async () => {
 	let app;
 	let rocketChatLoginService;
 	let server;
-	let testHelper;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = app.listen(0);
-		testHelper = testObjects(app);
+		nestServices = await setupNestServices(app);
 
 		rocketChatLoginService = app.service('/rocketChat/login');
 	});
 
 	after(async () => {
-		await testHelper.cleanup();
+		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	const setupServices = async (RCNestMock, RCUserMock) => {
 		app.use('/nest-rocket-chat', RCNestMock || new NestRocketChatServiceMock());
 		app.use('/rocketChat/user', RCUserMock || new RocketChatUserServiceMock());
-		const setupData = await testHelper.setupUser();
+		const setupData = await testObjects.setupUser();
 		return setupData;
 	};
 
@@ -215,26 +218,27 @@ describe('rocket.chat logout service', async () => {
 	let app;
 	let rocketChatLogoutService;
 	let server;
-	let testHelper;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		server = app.listen(0);
-		testHelper = testObjects(app);
+		nestServices = await setupNestServices(app);
 
 		rocketChatLogoutService = app.service('rocketChat/logout');
 	});
 
 	after(async () => {
-		await testHelper.cleanup();
+		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	const setupServices = async (RCNestMock, RCUserMock) => {
 		app.use('/nest-rocket-chat', RCNestMock || new NestRocketChatServiceMock());
 		app.use('/rocketChat/user', RCUserMock || new RocketChatUserServiceMock());
 
-		const setupData = await testHelper.setupUser();
+		const setupData = await testObjects.setupUser();
 
 		return setupData;
 	};

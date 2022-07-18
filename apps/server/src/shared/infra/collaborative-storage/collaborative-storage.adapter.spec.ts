@@ -3,6 +3,8 @@ import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage
 import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 import { RoleName } from '@shared/domain';
+import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
 
 class TestStrategy implements ICollaborativeStorageStrategy {
 	baseURL: string;
@@ -12,11 +14,14 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 	}
 
 	updateTeamPermissionsForRole(): void {}
+
+	deleteGroupfolderAndRemoveGroup(teamId: string): void {}
 }
 
 describe('CollaborativeStorage Adapter', () => {
 	let module: TestingModule;
 	let adapter: CollaborativeStorageAdapter;
+	let strat: ICollaborativeStorageStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,12 +29,17 @@ describe('CollaborativeStorage Adapter', () => {
 				CollaborativeStorageAdapter,
 				CollaborativeStorageAdapterMapper,
 				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
 					provide: 'ICollaborativeStorageStrategy',
-					useValue: TestStrategy,
+					useValue: createMock<ICollaborativeStorageStrategy>(),
 				},
 			],
 		}).compile();
 		adapter = module.get(CollaborativeStorageAdapter);
+		strat = adapter.strategy;
 	});
 
 	describe('Set Strategy', () => {
@@ -37,6 +47,9 @@ describe('CollaborativeStorage Adapter', () => {
 			const testStrat = new TestStrategy();
 			adapter.setStrategy(testStrat);
 			expect(adapter.strategy).toEqual(testStrat);
+		});
+		afterAll(() => {
+			adapter.setStrategy(strat);
 		});
 	});
 
@@ -57,6 +70,15 @@ describe('CollaborativeStorage Adapter', () => {
 					share: false,
 				}
 			);
+			expect(strat.updateTeamPermissionsForRole).toHaveBeenCalled();
+		});
+	});
+
+	describe('Delete Team from Nextcloud', () => {
+		it('should call the strategy', () => {
+			const teamIdMock = 'teamIdMock';
+			adapter.deleteTeam(teamIdMock);
+			expect(strat.deleteGroupfolderAndRemoveGroup).toHaveBeenCalled();
 		});
 	});
 });

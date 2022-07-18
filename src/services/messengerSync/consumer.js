@@ -1,5 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { getChannel } = require('../../utils/rabbitmq');
+const rabbitMq = require('../../utils/rabbitmq');
 const { ACTIONS, requestSyncForEachSchoolUser, requestRemovalOfRemovedRooms } = require('./producer');
 const {
 	buildAddUserMessage,
@@ -199,11 +199,11 @@ const handleMessage = (incomingMessage) =>
 		});
 
 const setup = () => {
-	channelSendExternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), {
+	channelSendExternal = rabbitMq.getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), {
 		durable: false,
 		arguments: { 'x-max-priority': 2 },
 	});
-	channelReadInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
+	channelReadInternal = rabbitMq.getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 	channelReadInternal.consumeQueue(handleMessage, { noAck: false });
 };
 

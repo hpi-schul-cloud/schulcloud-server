@@ -8,24 +8,30 @@ export class CopyHelperService {
 	deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
 		const elementsStatuses = elements.map((el) => el.status);
 
-		if (elementsStatuses.every((status) => !isAtLeastPartialSuccessfull(status))) {
+		const filtered = elementsStatuses.filter((status) => status !== CopyStatusEnum.NOT_DOING);
+
+		if (filtered.every((status) => !isAtLeastPartialSuccessfull(status))) {
 			return CopyStatusEnum.FAIL;
 		}
 
-		if (elementsStatuses.some((status) => status !== CopyStatusEnum.SUCCESS)) {
+		if (filtered.some((status) => status !== CopyStatusEnum.SUCCESS)) {
 			return CopyStatusEnum.PARTIAL;
 		}
 
 		return CopyStatusEnum.SUCCESS;
 	}
 
-	deriveCopyName(name: string): string {
-		let number = 1;
+	deriveCopyName(name: string, existingNames?: string[]): string {
+		let num = 1;
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
 			name = matches.groups.name;
-			number = Number(matches.groups.number) + 1;
+			num = Number(matches.groups.number) + 1;
 		}
-		return `${name} (${number})`;
+		const composedName = `${name} (${num})`;
+		if (existingNames?.includes(composedName)) {
+			return this.deriveCopyName(composedName, existingNames);
+		}
+		return composedName;
 	}
 }

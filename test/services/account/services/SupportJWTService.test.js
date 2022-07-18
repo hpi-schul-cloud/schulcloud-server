@@ -6,6 +6,7 @@ const { expect } = chai;
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('supportJWTService', () => {
 	let app;
@@ -14,17 +15,20 @@ describe('supportJWTService', () => {
 	const testedPermission = 'CREATE_SUPPORT_JWT';
 
 	let server;
+	let nestServices;
 
 	before(async () => {
 		app = await appPromise();
 		supportJWTService = app.service('accounts/supportJWT');
 		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the supportJWT service', () => {
@@ -41,10 +45,8 @@ describe('supportJWTService', () => {
 	});
 
 	it(`create with ${testedPermission} permission should work.`, async () => {
-		const [superhero, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'superhero' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const superhero = await testObjects.setupUser({ roles: 'superhero' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const { roles } = await app.service('users').get(superhero.userId, { query: { $populate: 'roles' } });
 
@@ -64,10 +66,8 @@ describe('supportJWTService', () => {
 	});
 
 	it(`create without ${testedPermission} permission should not work.`, async () => {
-		const [teacher, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'teacher' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const teacher = await testObjects.setupUser({ roles: 'teacher' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const { roles } = await app.service('users').get(teacher.user._id, { query: { $populate: 'roles' } });
 
@@ -80,26 +80,22 @@ describe('supportJWTService', () => {
 	});
 
 	it('accountId, userId, roles, and schoolId values should be present in jwtData', async () => {
-		const [superhero, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'superhero' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const superhero = await testObjects.setupUser({ roles: 'superhero' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const jwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
 
 		const { accountId, userId, roles, schoolId } = decode(jwt);
 
-		expect(accountId).to.be.equal(student.account._id.toString());
+		expect(accountId).to.be.equal(student.account.id.toString());
 		expect(userId).to.be.equal(student.user._id.toString());
 		expect(roles[0]).to.be.equal(student.user.roles[0].toString());
 		expect(schoolId).to.be.equal(student.user.schoolId.toString());
 	});
 
 	it('superhero data should be the same as the requested user data when using the support jwt', async () => {
-		const [superhero, student] = await Promise.all([
-			testObjects.setupUser({ roles: 'superhero' }),
-			testObjects.setupUser({ roles: 'student' }),
-		]);
+		const superhero = await testObjects.setupUser({ roles: 'superhero' });
+		const student = await testObjects.setupUser({ roles: 'student' });
 
 		const requestedUserJwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
 

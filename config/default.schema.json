@@ -594,7 +594,7 @@
 		},
 		"NEXTCLOUD_BASE_URL": {
 			"type": "string",
-			"default": "http://localhost:8080/",
+			"default": "http://nextcloud.localhost:9090",
 			"description": "API URI for Nextcloud"
 		},
 		"NEXTCLOUD_ADMIN_USER": {
@@ -882,6 +882,13 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for copy/duplicate a lesson feature."
+		},
+		"GHOST_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://blog.dbildungscloud.de",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of ghost blog (should end without a slash)"
 		}
 	},
 	"required": [

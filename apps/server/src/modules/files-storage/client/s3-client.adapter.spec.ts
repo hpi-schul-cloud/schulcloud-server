@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3Client } from '@aws-sdk/client-s3';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
-import { InternalServerErrorException } from '@nestjs/common';
-import { S3ClientAdapter } from './s3-client.adapter';
+import { ICopyFiles } from '../interface';
 import { S3Config } from '../interface/config';
 import { IFile } from '../interface/file';
-import { ICopyFiles } from '../interface';
+import { S3ClientAdapter } from './s3-client.adapter';
 
 const config = {
 	endpoint: '',
@@ -45,6 +45,14 @@ describe('S3ClientAdapter', () => {
 		service = module.get(S3ClientAdapter);
 		client = module.get('S3_Client');
 		client.config.endpoint = jest.fn().mockResolvedValue({ protocol: '' });
+		const resultObj = {
+			Body: { on: () => true },
+			ContentType: 'data.ContentType',
+			ContentLength: 'data.ContentLength',
+			ETag: 'data.ETag',
+		};
+
+		client.send = jest.fn().mockResolvedValue(resultObj);
 	});
 
 	afterEach(async () => {
@@ -85,29 +93,28 @@ describe('S3ClientAdapter', () => {
 		});
 
 		it('should return file', async () => {
-			const resultObj = {
-				Body: 'data.Body as Readable',
-				ContentType: 'data.ContentType',
-				ContentLength: 'data.ContentLength',
-				ETag: 'data.ETag',
-			};
-
-			client.send = jest.fn().mockResolvedValue(resultObj);
 			const result = await service.get(pathToFile);
+			expect(result).toStrictEqual(
+				expect.objectContaining({
+					contentLength: 'data.ContentLength',
+					contentType: 'data.ContentType',
+					etag: 'data.ETag',
+				})
+			);
+		});
 
-			expect(result).toStrictEqual({
-				contentLength: 'data.ContentLength',
-				contentType: 'data.ContentType',
-				data: 'data.Body as Readable',
-				etag: 'data.ETag',
-			});
+		it('should throw error from s3 client if NoSuchKey', async () => {
+			const e = new Error('NoSuchKey');
+			client.send = jest.fn().mockRejectedValue(e);
+
+			await expect(service.get(pathToFile)).rejects.toThrowError(new NotFoundException('NoSuchKey'));
 		});
 
 		it('should throw error from client', async () => {
 			const e = new Error('Bad Request');
 			client.send = jest.fn().mockRejectedValue(e);
 
-			await expect(service.get(pathToFile)).rejects.toThrow();
+			await expect(service.get(pathToFile)).rejects.toThrowError();
 		});
 	});
 
@@ -185,6 +192,14 @@ describe('S3ClientAdapter', () => {
 					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 				})
 			);
+		});
+
+		it('should throw an InternalServerErrorException by error', async () => {
+			// @ts-expect-error should run into error
+			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
+			const res = await service.delete([pathToFile]);
+			expect(res).toEqual([]);
+			client.send.mockRestore();
 		});
 
 		it('should throw an InternalServerErrorException by error', async () => {
