@@ -100,31 +100,4 @@ describe('KeycloakConsole', () => {
 			uc.configureIdentityProviders.mockRestore();
 		});
 	});
-
-	describe('configureAuthenticationFlows', () => {
-		it('should resolve successfully', async () => {
-			uc.configureAuthenticationFlows.mockResolvedValue(1);
-
-			await expect(
-				console.configureAuthenticationFlows({
-					retryCount: 1,
-					retryDelay: 10,
-				})
-			).resolves.not.toThrow();
-
-			uc.configureIdentityProviders.mockRestore();
-		});
-		it('should throw on error', async () => {
-			uc.configureAuthenticationFlows.mockRejectedValue('configure failed');
-
-			await expect(
-				console.configureAuthenticationFlows({
-					retryCount: 1,
-					retryDelay: 10,
-				})
-			).rejects.toThrow();
-
-			uc.configureIdentityProviders.mockRestore();
-		});
-	});
 });

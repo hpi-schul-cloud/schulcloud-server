@@ -98,60 +98,6 @@ export class KeycloakManagementUc {
 		return count;
 	}
 
-	async configureAuthenticationFlows(): Promise<number> {
-		let count = 0;
-		const kc = await this.kcAdmin.callKcAdminClient();
-		const newFlow: AuthenticationFlowRepresentation = {
-			alias: 'Direct Broker Flow',
-			description: 'First broker login which automatically creates or maps accounts.',
-			providerId: 'basic-flow',
-			topLevel: true,
-			builtIn: false,
-			authenticationExecutions: [
-				{
-					authenticator: 'idp-create-user-if-unique',
-					autheticatorFlow: false,
-					requirement: 'ALTERNATIVE',
-					priority: 0,
-					userSetupAllowed: false,
-				},
-				{
-					authenticator: 'idp-auto-link',
-					autheticatorFlow: false,
-					requirement: 'ALTERNATIVE',
-					priority: 1,
-					userSetupAllowed: false,
-				},
-			],
-		};
-
-		try {
-			const oldFlow = (await kc.authenticationManagement.getFlows()).find((flow) => flow.alias === newFlow.alias);
-			if (oldFlow && oldFlow.id) {
-				await kc.authenticationManagement.updateFlow({ flowId: oldFlow.id }, newFlow);
-				count += 1;
-			} else {
-				await kc.authenticationManagement.createFlow(newFlow);
-
-				// eslint-disable-next-line no-restricted-syntax
-				for (const step of newFlow.authenticationExecutions!) {
-					// eslint-disable-next-line no-await-in-loop
-					await kc.authenticationManagement.addExecution(
-						{
-							flow: newFlow.alias!,
-						},
-						step
-					);
-				}
-
-				count += 1;
-			}
-			return count;
-		} catch (err) {
-			throw err;
-		}
-	}
-
 	private selectConfigureAction(newConfigs: System[], oldConfigs: IdentityProviderRepresentation[]) {
 		const result = [] as (
 			| { action: ConfigureAction.CREATE; config: IdentityProviderConfig }

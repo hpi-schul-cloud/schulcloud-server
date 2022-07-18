@@ -28,27 +28,6 @@ export class KeycloakManagementController {
 		throw new ServiceUnavailableException();
 	}
 
-	/**
-	 * Configures the IDM with systems from the database.
-	 *
-	 * @param envType The environment type, can be 'dev' or 'prod'. Default 'prod'.
-	 * @param sysType The system type to configure.
-	 */
-	// @Post('configure')
-	// async applyConfiguration(@Param() envType?: EnvType, @Param() sysType?: SysType): Promise<number> {
-	// 	envType ??= EnvType.PROD;
-	// 	sysType ??= SysType.OIDC;
-	// 	if (await this.keycloakManagementUc.check()) {
-	// 		try {
-	// 			return await this.keycloakManagementUc.configureIdentityProviders({ envType });
-	// 		} catch (err) {
-	// 			this.logger.error(err);
-	// 			return -1;
-	// 		}
-	// 	}
-	// 	throw new ServiceUnavailableException();
-	// }
-
 	@Post('configure')
 	async configure(@Param() envType?: EnvType): Promise<number> {
 		envType ??= EnvType.PROD;
@@ -59,7 +38,6 @@ export class KeycloakManagementController {
 					count += await this.keycloakManagementUc.seed();
 				}
 				count += await this.keycloakManagementUc.configureIdentityProviders({ envType });
-				count += await this.keycloakManagementUc.configureAuthenticationFlows();
 				return count;
 			} catch (err) {
 				this.logger.error(err);

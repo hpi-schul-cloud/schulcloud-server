@@ -1,7 +1,6 @@
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { EnvType } from '../../env.type';
-import { SysType } from '../../sys.type';
 import { IConfigureOptions } from '../interface/configure-options.interface';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
@@ -89,12 +88,6 @@ export class KeycloakConsole {
 				required: false,
 				defaultValue: EnvType.PROD,
 			},
-			{
-				flags: '-st, --sys-type <value>',
-				description: 'The system type to be configured.',
-				required: false,
-				defaultValue: SysType.OIDC,
-			},
 			...KeycloakConsole.retryFlags,
 		],
 	})
@@ -104,23 +97,6 @@ export class KeycloakConsole {
 			async () => {
 				const count = await this.keycloakManagementUc.configureIdentityProviders(options);
 				this.console.info(`Configured ${count} identity provider(s).`);
-			},
-			options.retryCount,
-			options.retryDelay
-		);
-	}
-
-	@Command({
-		command: 'configure:auth',
-		description: 'Configures Keycloak authentication flows.',
-		options: KeycloakConsole.retryFlags,
-	})
-	async configureAuthenticationFlows(options: IRetryOptions): Promise<void> {
-		await this.repeatCommand(
-			'configure:auth',
-			async () => {
-				const count = await this.keycloakManagementUc.configureAuthenticationFlows();
-				this.console.info(`Configured ${count} authentication flow(s).`);
 			},
 			options.retryCount,
 			options.retryDelay
