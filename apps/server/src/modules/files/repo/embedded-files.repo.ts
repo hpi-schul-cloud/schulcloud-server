@@ -62,8 +62,25 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 	{
 		$lookup: {
 			from: 'filerecords',
-			localField: 'file_filerecords.filerecordId',
-			foreignField: '_id',
+			let: {
+				fileRecordId: '$file_filerecords.filerecordId',
+			},
+			pipeline: [
+				{
+					$match: {
+						$expr: {
+							$and: [
+								{
+									$eq: ['$_id', '$$fileRecordId'],
+								},
+								{
+									$eq: ['$parent', lessonId],
+								},
+							],
+						},
+					},
+				},
+			],
 			as: 'filerecord',
 		},
 	},
@@ -72,11 +89,6 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 			filerecord: { $arrayElemAt: ['$filerecord', 0] },
 		},
 	},
-	// {
-	// 	$match: {
-	// 		'filerecord.parent': lessonId,
-	// 	},
-	// },
 	{
 		$lookup: {
 			from: 'users',
