@@ -8,6 +8,7 @@ export type LessonCopyParams = {
 	originalLesson: Lesson;
 	destinationCourse: Course;
 	user: User;
+	copyName?: string;
 };
 
 @Injectable()
@@ -22,7 +23,7 @@ export class LessonCopyService {
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
-			name: this.copyHelperService.deriveCopyName(params.originalLesson.name),
+			name: params.copyName ?? params.originalLesson.name,
 			position: params.originalLesson.position,
 			contents: copiedContent,
 		});

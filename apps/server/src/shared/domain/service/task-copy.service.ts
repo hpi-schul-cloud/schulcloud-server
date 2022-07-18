@@ -8,6 +8,7 @@ export type TaskCopyParams = {
 	destinationCourse?: Course;
 	destinationLesson?: Lesson;
 	user: User;
+	copyName?: string;
 };
 
 @Injectable()
@@ -16,7 +17,7 @@ export class TaskCopyService {
 
 	copyTaskMetadata(params: TaskCopyParams): CopyStatus {
 		const copy = new Task({
-			name: this.copyHelperService.deriveCopyName(params.originalTask.name),
+			name: params.copyName || params.originalTask.name,
 			description: params.originalTask.description,
 			school: params.user.school,
 			creator: params.user,

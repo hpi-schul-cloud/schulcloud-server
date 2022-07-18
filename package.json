@@ -1,7 +1,6 @@
 {
 	"name": "schulcloud-server",
 	"description": "dBildungscloud server",
-	"version": "28.6.0",
 	"homepage": "https://dBildungscloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -93,7 +92,7 @@
 		"@feathersjs/socketio": "^4.5.11",
 		"@golevelup/nestjs-rabbitmq": "^2.3.0",
 		"@hpi-schul-cloud/commons": "^1.3.4",
-		"@keycloak/keycloak-admin-client": "^17.0.0",
+		"@keycloak/keycloak-admin-client": "^18.0.0",
 		"@mikro-orm/core": "^5.2.3",
 		"@mikro-orm/mongodb": "^5.2.3",
 		"@mikro-orm/nestjs": "^5.0.2",

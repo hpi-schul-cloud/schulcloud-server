@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyHelperService, TaskCopyService } from '@shared/domain';
@@ -17,7 +17,6 @@ import { Task } from '../entity';
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
-	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -41,7 +40,6 @@ describe('task copy service', () => {
 		}).compile();
 
 		copyService = module.get(TaskCopyService);
-		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyTask', () => {
@@ -57,9 +55,8 @@ describe('task copy service', () => {
 					school,
 					description: 'description of what you need to do',
 				});
-				const taskCopyName = 'Copy(250)';
-				copyHelperService.deriveCopyName.mockReturnValue(taskCopyName);
-				return { user, destinationCourse, destinationLesson, originalTask, school, taskCopyName };
+				const copyName = 'Copy(250)';
+				return { user, destinationCourse, destinationLesson, originalTask, school, copyName };
 			};
 
 			it('should assign user as creator', () => {
@@ -105,18 +102,32 @@ describe('task copy service', () => {
 				expect(task.availableDate).not.toBeDefined();
 			});
 
-			it('should set name of copy', () => {
-				const { user, destinationCourse, destinationLesson, originalTask, taskCopyName } = setup();
+			it('should set name of copy to provided name', () => {
+				const { user, destinationCourse, destinationLesson, originalTask, copyName } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
 					destinationLesson,
 					user,
+					copyName,
 				});
 
 				const task = status.copyEntity as Task;
-				expect(task.name).toEqual(taskCopyName);
+				expect(task.name).toEqual(copyName);
+			});
+
+			it('should set name of copy original when no name is provided', () => {
+				const { user, destinationCourse, originalTask } = setup();
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse,
+					user,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.name).toEqual(originalTask.name);
 			});
 
 			it('should set course of the copy', () => {
@@ -231,19 +242,6 @@ describe('task copy service', () => {
 				const submissionsStatus = status.elements?.find((el) => el.type === CopyElementType.SUBMISSION_GROUP);
 				expect(submissionsStatus).toBeDefined();
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should call copyHelperService', () => {
-				const { user, destinationCourse, destinationLesson, originalTask } = setup();
-
-				copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					destinationLesson,
-					user,
-				});
-				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalled();
 			});
 		});
 
