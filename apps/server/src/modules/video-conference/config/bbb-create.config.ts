@@ -7,6 +7,7 @@ export enum GuestPolicy {
 }
 
 export class BBBCreateConfig extends BBBBaseMeetingConfig {
+	/* istanbul ignore next */
 	constructor(config: BBBCreateConfig) {
 		super(config);
 		this.name = config.name;

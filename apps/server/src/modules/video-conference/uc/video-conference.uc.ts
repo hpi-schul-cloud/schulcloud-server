@@ -191,8 +191,8 @@ export class VideoConferenceUc {
 				}
 				break;
 			}
+			/* istanbul ignore next */
 			default:
-				/* istanbul ignore next */
 				throw new BadRequestException('Unknown scope name');
 		}
 

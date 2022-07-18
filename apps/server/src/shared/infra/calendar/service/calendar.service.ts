@@ -43,8 +43,8 @@ export class CalendarService {
 
 	private get(
 		path: string,
-		queryParams: URLSearchParams = new URLSearchParams(),
-		config: AxiosRequestConfig = {}
+		queryParams: URLSearchParams,
+		config: AxiosRequestConfig
 	): Observable<AxiosResponse<ICalendarEvent>> {
 		const url: URL = new URL(this.baseURL);
 		url.pathname = path;

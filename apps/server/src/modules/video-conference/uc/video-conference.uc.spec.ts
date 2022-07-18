@@ -22,7 +22,10 @@ import {
 } from '@shared/domain';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
-import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
+import {
+	defaultVideoConferenceOptions,
+	VideoConferenceOptions,
+} from '@src/modules/video-conference/interface/vc-options.interface';
 import { VideoConferenceDTO, VideoConferenceJoinDTO } from '@src/modules/video-conference/dto/video-conference.dto';
 import {
 	BBBBaseResponse,
@@ -173,7 +176,7 @@ describe('VideoConferenceUc', () => {
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
-		authorizationService.hasPermissionsByReferences.mockResolvedValue(userPermissions); // TODO mock this
+		authorizationService.hasPermissionsByReferences.mockResolvedValue(userPermissions);
 	});
 
 	describe('getScopeInfo', () => {
@@ -628,12 +631,22 @@ describe('VideoConferenceUc', () => {
 			} as unknown as BBBMeetingInfoResponse,
 		};
 
+		let vcDO: VideoConferenceDO;
+
 		beforeEach(() => {
 			userPermissions.set(Permission.JOIN_MEETING, true);
-			userPermissions.set(Permission.START_MEETING, false);
+			userPermissions.set(Permission.START_MEETING, true);
+
+			vcDO = new VideoConferenceDO({
+				target: course.id,
+				targetModel: VideoConferenceScope.COURSE,
+				options: defaultOptions,
+			});
+
+			videoConferenceRepo.findByScopeId.mockResolvedValue(vcDO);
 		});
 
-		it('should successfully get MeetingInfo', async () => {
+		it('should successfully give MeetingInfo to moderator with options', async () => {
 			// Arrange
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 
@@ -643,9 +656,24 @@ describe('VideoConferenceUc', () => {
 			// Assert
 			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
 			expect(result.bbbResponse).toEqual(bbbResponse);
+			expect(result.options).toEqual(defaultOptions);
 		});
 
-		it('should throw an error when the meeting is not found', async () => {
+		it('should successfully give MeetingInfo to viewer without options', async () => {
+			// Arrange
+			userPermissions.set(Permission.START_MEETING, false);
+			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
+
+			// Act
+			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
+
+			// Assert
+			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(result.bbbResponse).toEqual(bbbResponse);
+			expect(result.options).toEqual({});
+		});
+
+		it('should successfully give MeetingInfo to moderator with default options and "not started"', async () => {
 			// Arrange
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
@@ -655,6 +683,21 @@ describe('VideoConferenceUc', () => {
 			// Assert
 			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
+			expect(result.options).toEqual(defaultVideoConferenceOptions);
+		});
+
+		it('should successfully give MeetingInfo to viewer without options and "not started"', async () => {
+			// Arrange
+			userPermissions.set(Permission.START_MEETING, false);
+			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
+
+			// Act
+			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
+
+			// Assert
+			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
+			expect(result.options).toEqual({});
 		});
 	});
 });

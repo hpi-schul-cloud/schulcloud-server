@@ -6,6 +6,7 @@ export enum BBBRole {
 }
 
 export class BBBJoinConfig extends BBBBaseMeetingConfig {
+	/* istanbul ignore next */
 	constructor(config: BBBJoinConfig) {
 		super(config);
 		this.fullName = config.fullName;
