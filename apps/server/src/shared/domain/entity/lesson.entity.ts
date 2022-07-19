@@ -13,9 +13,10 @@ export interface ILessonProperties {
 }
 
 export enum ComponentType {
-	TEXT = 'text',
-	LERNSTORE = 'resources',
+	ETHERPAD = 'Etherpad',
 	GEOGEBRA = 'geoGebra',
+	LERNSTORE = 'resources',
+	TEXT = 'text',
 }
 
 export interface IComponentTextProperties {
@@ -29,20 +30,30 @@ export interface IComponentGeogebraProperties {
 export interface IComponentLernstoreProperties {
 	resources: [
 		{
-			url: string;
-			title: string;
-			description: string;
 			client: string;
+			description: string;
 			merlinReference?: string;
+			title: string;
+			url: string;
 		}
 	];
+}
+
+export interface IComponentEtherpadProperties {
+	description: string;
+	title: string;
+	url: string;
 }
 
 export interface IComponentProperties {
 	title: string;
 	hidden: boolean;
 	component: ComponentType;
-	content: IComponentTextProperties | IComponentGeogebraProperties | IComponentLernstoreProperties;
+	content:
+		| IComponentTextProperties
+		| IComponentGeogebraProperties
+		| IComponentLernstoreProperties
+		| IComponentEtherpadProperties;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -110,6 +121,11 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	getLessonComponents(): IComponentProperties[] | [] {
 		return this.contents;
+	}
+
+	getLessonLinkedTasks(): Task[] {
+		const tasks = this.getTasksItems();
+		return tasks;
 	}
 
 	publish() {
