@@ -1,5 +1,6 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EntityId, Task } from '@shared/domain';
+import { Task } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { Scope } from '../scope';
 
 export class TaskScope extends Scope<Task> {

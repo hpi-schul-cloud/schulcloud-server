@@ -15,6 +15,7 @@ export interface ILessonProperties {
 export enum ComponentType {
 	ETHERPAD = 'Etherpad',
 	GEOGEBRA = 'geoGebra',
+	INTERNAL = 'internal',
 	LERNSTORE = 'resources',
 	TEXT = 'text',
 }
@@ -45,6 +46,10 @@ export interface IComponentEtherpadProperties {
 	url: string;
 }
 
+export interface IComponentInternalProperties {
+	url: string;
+}
+
 export interface IComponentProperties {
 	title: string;
 	hidden: boolean;
@@ -53,7 +58,8 @@ export interface IComponentProperties {
 		| IComponentTextProperties
 		| IComponentGeogebraProperties
 		| IComponentLernstoreProperties
-		| IComponentEtherpadProperties;
+		| IComponentEtherpadProperties
+		| IComponentInternalProperties;
 }
 
 @Entity({ tableName: 'lessons' })
