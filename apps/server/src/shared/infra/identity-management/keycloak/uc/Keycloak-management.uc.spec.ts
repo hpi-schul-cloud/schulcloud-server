@@ -331,7 +331,7 @@ describe('KeycloakManagementUc', () => {
 			kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 			kcApiClientIdentityProvidersMock.update.mockResolvedValue();
 			kcApiClientIdentityProvidersMock.del.mockResolvedValue();
-			configService.get.mockImplementation((key) => key);
+			configService.get.mockReturnValue(NodeEnvType.TEST);
 			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
 				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
 				throw new Error('File not found');
@@ -365,7 +365,13 @@ describe('KeycloakManagementUc', () => {
 			expect(fsReadFile).not.toBeCalled();
 		});
 		it('should not return any configs if environment is unknown', async () => {
+			configService.get.mockReturnValue(NodeEnvType.MIGRATION);
+			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
+
 			await expect(uc.configureIdentityProviders()).resolves.toBe(0);
+
+			configService.get.mockRestore();
+			kcApiClientIdentityProvidersMock.find.mockRestore();
 		});
 		it('should create a configuration in Keycloak', async () => {
 			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
@@ -384,12 +390,14 @@ describe('KeycloakManagementUc', () => {
 		});
 		it('should delete a new configuration in Keycloak', async () => {
 			repo.findAll.mockResolvedValue([]);
+			configService.get.mockReturnValue(NodeEnvType.PRODUCTION);
 
 			const result = await uc.configureIdentityProviders();
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 
 			repo.findAll.mockRestore();
+			configService.get.mockRestore();
 		});
 	});
 });

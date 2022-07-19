@@ -1,10 +1,16 @@
 import { Controller, Post, ServiceUnavailableException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
+import { ConfigService } from '@nestjs/config';
+import { IServerConfig, NodeEnvType } from '@src/server.config';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
-	constructor(private keycloakManagementUc: KeycloakManagementUc, private logger: Logger) {
+	constructor(
+		private readonly keycloakManagementUc: KeycloakManagementUc,
+		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(KeycloakManagementController.name);
 	}
 
@@ -32,7 +38,7 @@ export class KeycloakManagementController {
 		if (await this.keycloakManagementUc.check()) {
 			try {
 				let count = 0;
-				if (false) {
+				if (this.configService.get<NodeEnvType>('NODE_ENV') === NodeEnvType.DEVELOPMENT) {
 					count += await this.keycloakManagementUc.seed();
 				}
 				count += await this.keycloakManagementUc.configureIdentityProviders();

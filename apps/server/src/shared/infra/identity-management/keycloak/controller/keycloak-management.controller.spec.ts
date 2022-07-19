@@ -2,12 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
+import { NodeEnvType } from '@src/server.config';
 import { KeycloakManagementController } from './keycloak-management.controller';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 describe('KeycloakManagementController', () => {
 	let uc: DeepMocked<KeycloakManagementUc>;
 	let controller: KeycloakManagementController;
+	let configServiceMock: DeepMocked<ConfigService>;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -21,23 +24,30 @@ describe('KeycloakManagementController', () => {
 					provide: KeycloakManagementUc,
 					useValue: createMock<KeycloakManagementUc>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(KeycloakManagementUc);
 		controller = module.get(KeycloakManagementController);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
 		uc.check.mockResolvedValue(true);
 		uc.seed.mockResolvedValue(1);
 		uc.configureIdentityProviders.mockResolvedValue(1);
+		configServiceMock.get.mockReturnValue(NodeEnvType.TEST);
 	});
 
 	afterEach(() => {
 		uc.check.mockRestore();
 		uc.seed.mockRestore();
 		uc.configureIdentityProviders.mockRestore();
+		configServiceMock.get.mockRestore();
 	});
 
 	it('should be defined', () => {
@@ -80,6 +90,8 @@ describe('KeycloakManagementController', () => {
 			expect(uc.configureIdentityProviders).toBeCalled();
 		});
 		it('should seed users', async () => {
+			configServiceMock.get.mockReturnValueOnce(NodeEnvType.DEVELOPMENT);
+
 			const result = await controller.configure();
 			expect(result).toBeGreaterThan(0);
 			expect(uc.check).toBeCalled();
