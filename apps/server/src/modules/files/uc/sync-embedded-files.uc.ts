@@ -19,7 +19,21 @@ export class SyncEmbeddedFilesUc {
 		private syncFilesStorageService: SyncFilesStorageService
 	) {}
 
-	extractFileIds(lesson: Lesson): ObjectId[] {
+	async syncEmbeddedFilesForLesson() {
+		const lessons = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
+		this.logger.log(`Found ${lessons.length} lesson contents with embedded files.`);
+
+		const promises = lessons.map(async (lesson) => {
+			const fileIds = this.extractFileIds(lesson);
+
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id);
+			return this.syncFiles(files);
+		});
+
+		await Promise.all(promises);
+	}
+
+	private extractFileIds(lesson: Lesson): ObjectId[] {
 		const lessonFileIds: string[] = [];
 
 		lesson.contents.forEach((item: IComponentProperties) => {
@@ -38,25 +52,7 @@ export class SyncEmbeddedFilesUc {
 		return _.uniq(lessonFileIds).map((id) => new ObjectId(id));
 	}
 
-	async updateLessonsLinks(file: SyncFileItem) {
-		const lesson = await this.embeddedFilesRepo.findLesson(new ObjectId(file.parentId));
-
-		if (lesson) {
-			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
-				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
-				const newUrl = `/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}`;
-
-				if ('text' in item.content) {
-					item.content.text = item.content.text.replace(regex, newUrl);
-				}
-
-				return item;
-			});
-			await this.embeddedFilesRepo.updateLesson(lesson);
-		}
-	}
-
-	async syncFiles(files: SyncFileItem[]) {
+	private async syncFiles(files: SyncFileItem[]) {
 		let promises;
 
 		try {
@@ -74,17 +70,21 @@ export class SyncEmbeddedFilesUc {
 		}
 	}
 
-	async syncEmbeddedFilesForLesson() {
-		const lessons = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
-		this.logger.log(`Found ${lessons.length} lesson contents with embedded files.`);
+	private async updateLessonsLinks(file: SyncFileItem) {
+		const lesson = await this.embeddedFilesRepo.findLesson(new ObjectId(file.parentId));
 
-		const promises = lessons.map(async (lesson) => {
-			const fileIds = this.extractFileIds(lesson);
+		if (lesson) {
+			lesson.contents = lesson.contents.map((item: IComponentProperties) => {
+				const regex = new RegExp(`${fileUrlRegex}${file.source.id}.+?"`, 'g');
+				const newUrl = `/api/v3/file/download/${file.fileRecord.id}/${file.fileRecord.name}`;
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id);
-			return this.syncFiles(files);
-		});
+				if ('text' in item.content) {
+					item.content.text = item.content.text.replace(regex, newUrl);
+				}
 
-		await Promise.all(promises);
+				return item;
+			});
+			await this.embeddedFilesRepo.updateLesson(lesson);
+		}
 	}
 }
