@@ -1,15 +1,22 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CopyHelperService, TaskCopyService } from '@shared/domain';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
-import { courseFactory, fileFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '../../testing';
+import {
+	courseFactory,
+	fileFactory,
+	lessonFactory,
+	schoolFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '../../testing';
 import { Task } from '../entity';
 
 describe('task copy service', () => {
 	let module: TestingModule;
 	let copyService: TaskCopyService;
-	let copyHelperService: DeepMocked<CopyHelperService>;
 
 	let orm: MikroORM;
 
@@ -33,7 +40,6 @@ describe('task copy service', () => {
 		}).compile();
 
 		copyService = module.get(TaskCopyService);
-		copyHelperService = module.get(CopyHelperService);
 	});
 
 	describe('handleCopyTask', () => {
@@ -42,22 +48,24 @@ describe('task copy service', () => {
 				const school = schoolFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const destinationCourse = courseFactory.buildWithId({ school, teachers: [user] });
+				const destinationLesson = lessonFactory.buildWithId({ course: destinationCourse });
 				const originalTask = taskFactory.buildWithId({
 					course: destinationCourse,
+					lesson: destinationLesson,
 					school,
 					description: 'description of what you need to do',
 				});
-				const taskCopyName = 'Copy(250)';
-				copyHelperService.deriveCopyName.mockReturnValue(taskCopyName);
-				return { user, destinationCourse, originalTask, school, taskCopyName };
+				const copyName = 'Copy(250)';
+				return { user, destinationCourse, destinationLesson, originalTask, school, copyName };
 			};
 
 			it('should assign user as creator', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -66,11 +74,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set school of user', () => {
-				const { user, destinationCourse, originalTask, school } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask, school } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -79,11 +88,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set copy as draft', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -92,8 +102,23 @@ describe('task copy service', () => {
 				expect(task.availableDate).not.toBeDefined();
 			});
 
-			it('should set name of copy', () => {
-				const { user, destinationCourse, originalTask, taskCopyName } = setup();
+			it('should set name of copy to provided name', () => {
+				const { user, destinationCourse, destinationLesson, originalTask, copyName } = setup();
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse,
+					destinationLesson,
+					user,
+					copyName,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.name).toEqual(copyName);
+			});
+
+			it('should set name of copy original when no name is provided', () => {
+				const { user, destinationCourse, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
@@ -102,15 +127,16 @@ describe('task copy service', () => {
 				});
 
 				const task = status.copyEntity as Task;
-				expect(task.name).toEqual(taskCopyName);
+				expect(task.name).toEqual(originalTask.name);
 			});
 
 			it('should set course of the copy', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -118,12 +144,27 @@ describe('task copy service', () => {
 				expect(task.course).toEqual(destinationCourse);
 			});
 
-			it('should set description of copy', () => {
-				const { user, destinationCourse, originalTask } = setup();
+			it('should set lesson of the copy', () => {
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
+					user,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.lesson).toEqual(destinationLesson);
+			});
+
+			it('should set description of copy', () => {
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -132,11 +173,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set status title to title of the copy', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -145,11 +187,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set status type to task', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -157,11 +200,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set status of metadata', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -171,11 +215,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set status of description', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -185,29 +230,18 @@ describe('task copy service', () => {
 			});
 
 			it('should set status of submissions', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
 				const submissionsStatus = status.elements?.find((el) => el.type === CopyElementType.SUBMISSION_GROUP);
 				expect(submissionsStatus).toBeDefined();
 				expect(submissionsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
-			});
-
-			it('should call copyHelperService', () => {
-				const { user, destinationCourse, originalTask } = setup();
-
-				copyService.copyTaskMetadata({
-					originalTask,
-					destinationCourse,
-					user,
-				});
-				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalled();
 			});
 		});
 
@@ -216,13 +250,20 @@ describe('task copy service', () => {
 				const originalSchool = schoolFactory.buildWithId();
 				const destinationSchool = schoolFactory.buildWithId();
 				const originalCourse = courseFactory.build({ school: originalSchool });
+				const originalLesson = lessonFactory.build({ course: originalCourse });
 				const destinationCourse = courseFactory.build({ school: destinationSchool });
+				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({ school: destinationSchool });
-				const originalTask = taskFactory.build({ course: originalCourse, school: originalSchool });
+				const originalTask = taskFactory.build({
+					course: originalCourse,
+					lesson: originalLesson,
+					school: originalSchool,
+				});
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -232,20 +273,58 @@ describe('task copy service', () => {
 		});
 
 		describe('when copying into a different course', () => {
-			it('should set destination course as course of the copy', () => {
+			const setup = () => {
 				const originalCourse = courseFactory.build({});
+				const originalLesson = lessonFactory.build({ course: originalCourse });
 				const destinationCourse = courseFactory.build({});
+				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({});
-				const originalTask = taskFactory.build({ course: originalCourse });
+				const originalTask = taskFactory.build({ course: originalCourse, lesson: originalLesson });
+				return { user, destinationCourse, destinationLesson, originalTask };
+			};
+			it('should set destination course as course of the copy', () => {
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
 				const task = status.copyEntity as Task;
 				expect(task.course).toEqual(destinationCourse);
+			});
+
+			it('should set destination lesson as lesson of the copy', () => {
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					destinationCourse,
+					destinationLesson,
+					user,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task.lesson).toEqual(destinationLesson);
+			});
+		});
+
+		describe('when copying without course', () => {
+			it('should copy the task without course and lesson', () => {
+				const user = userFactory.build({});
+				const originalTask = taskFactory.build({ creator: user });
+
+				const status = copyService.copyTaskMetadata({
+					originalTask,
+					user,
+				});
+
+				const task = status.copyEntity as Task;
+				expect(task).toBeDefined();
+				expect(task.course).toBeUndefined();
+				expect(task.lesson).toBeUndefined();
 			});
 		});
 
@@ -254,20 +333,23 @@ describe('task copy service', () => {
 				const school = schoolFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const destinationCourse = courseFactory.buildWithId({ school, teachers: [user] });
+				const destinationLesson = lessonFactory.buildWithId({ course: destinationCourse });
 				const originalTask = taskFactory.buildWithId({
 					course: destinationCourse,
+					lesson: destinationLesson,
 					school,
 					description: 'description of what you need to do',
 				});
-				return { user, destinationCourse, originalTask, school };
+				return { user, destinationCourse, destinationLesson, originalTask, school };
 			};
 
 			it('should not set files leaf in absence of attached files', () => {
-				const { user, destinationCourse, originalTask } = setup();
+				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -280,17 +362,23 @@ describe('task copy service', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const destinationCourse = courseFactory.buildWithId();
+				const destinationLesson = lessonFactory.buildWithId({ course: destinationCourse });
 				const file = fileFactory.buildWithId();
-				const originalTask = taskFactory.buildWithId({ course: destinationCourse, files: [file] });
-				return { user, destinationCourse, file, originalTask };
+				const originalTask = taskFactory.buildWithId({
+					course: destinationCourse,
+					lesson: destinationLesson,
+					files: [file],
+				});
+				return { user, destinationCourse, destinationLesson, file, originalTask };
 			};
 
 			it('should add file leaf with status "not implemented"', () => {
-				const { user, file, destinationCourse, originalTask } = setup();
+				const { user, file, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -308,17 +396,19 @@ describe('task copy service', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const destinationCourse = courseFactory.buildWithId();
+				const destinationLesson = lessonFactory.buildWithId({ course: destinationCourse });
 				const files = [fileFactory.buildWithId(), fileFactory.buildWithId()];
-				const originalTask = taskFactory.buildWithId({ course: destinationCourse, files });
-				return { user, destinationCourse, files, originalTask };
+				const originalTask = taskFactory.buildWithId({ course: destinationCourse, lesson: destinationLesson, files });
+				return { user, destinationCourse, destinationLesson, files, originalTask };
 			};
 
 			it('should add a status for files leaf', () => {
-				const { originalTask, destinationCourse, user } = setup();
+				const { originalTask, destinationCourse, destinationLesson, user } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -328,11 +418,12 @@ describe('task copy service', () => {
 			});
 
 			it('should add a status for each file under files', () => {
-				const { originalTask, destinationCourse, user, files } = setup();
+				const { originalTask, destinationCourse, destinationLesson, user, files } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 
@@ -344,11 +435,12 @@ describe('task copy service', () => {
 			});
 
 			it('should set "not implemented" as the status of every file', () => {
-				const { originalTask, destinationCourse, user } = setup();
+				const { originalTask, destinationCourse, destinationLesson, user } = setup();
 
 				const status = copyService.copyTaskMetadata({
 					originalTask,
 					destinationCourse,
+					destinationLesson,
 					user,
 				});
 

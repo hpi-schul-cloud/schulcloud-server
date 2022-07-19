@@ -19,11 +19,14 @@ export class BoardCopyService {
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
-	copyBoard(params: BoardCopyParams): CopyStatus {
+	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
 		const elements: CopyStatus[] = [];
 		const references: BoardElement[] = [];
 
-		params.originalBoard.getElements().forEach((element) => {
+		const boardElements = params.originalBoard.getElements();
+		for (let i = 0; i < boardElements.length; i += 1) {
+			const element = boardElements[i];
+
 			if (element.boardElementType === BoardElementType.Task) {
 				const originalTask = element.target as Task;
 				const status = this.taskCopyService.copyTaskMetadata({
@@ -34,10 +37,10 @@ export class BoardCopyService {
 				elements.push(status);
 				const taskBoardElement = BoardElement.FromTask(status.copyEntity as Task);
 				references.push(taskBoardElement);
-			}
-			if (element.boardElementType === BoardElementType.Lesson) {
+			} else if (element.boardElementType === BoardElementType.Lesson) {
 				const originalLesson = element.target as Lesson;
-				const status = this.lessonCopyService.copyLesson({
+				// eslint-disable-next-line no-await-in-loop
+				const status = await this.lessonCopyService.copyLesson({
 					originalLesson,
 					user: params.user,
 					destinationCourse: params.destinationCourse,
@@ -46,7 +49,7 @@ export class BoardCopyService {
 				const lessonBardElement = BoardElement.FromLesson(status.copyEntity as Lesson);
 				references.push(lessonBardElement);
 			}
-		});
+		}
 
 		const copy = new Board({ references, course: params.destinationCourse });
 		const status = {
