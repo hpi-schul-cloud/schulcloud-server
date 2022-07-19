@@ -10,8 +10,9 @@ import {
 	IComponentGeogebraProperties,
 	IComponentProperties,
 	Lesson,
+	TaskCopyService,
 } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -19,6 +20,7 @@ import { LessonCopyService } from './lesson-copy.service';
 describe('lesson copy service', () => {
 	let module: TestingModule;
 	let copyService: LessonCopyService;
+	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
 	let configurationSpy: jest.SpyInstance;
@@ -42,6 +44,10 @@ describe('lesson copy service', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
+					provide: TaskCopyService,
+					useValue: createMock<TaskCopyService>(),
+				},
+				{
 					provide: EtherpadService,
 					useValue: createMock<EtherpadService>(),
 				},
@@ -49,6 +55,7 @@ describe('lesson copy service', () => {
 		}).compile();
 
 		copyService = module.get(LessonCopyService);
+		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
 		etherpadService = module.get(EtherpadService);
 	});
@@ -432,6 +439,208 @@ describe('lesson copy service', () => {
 
 			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
 			expect(lessonContents[0].hidden).toEqual(true);
+		});
+
+		it('content status should have correct status value', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.PARTIAL);
+			}
+		});
+	});
+
+	describe('when no tasks are linked to the original lesson', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+			});
+			const taskSpy = jest.spyOn(taskCopyService, 'copyTaskMetadata');
+
+			return {
+				user,
+				destinationCourse,
+				originalLesson,
+				taskSpy,
+			};
+		};
+
+		it('should not set task status', async () => {
+			const { originalLesson, destinationCourse, user } = setup();
+
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const tasksStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
+			expect(tasksStatus).not.toBeDefined();
+		});
+
+		it('should not call task copy service', async () => {
+			const { originalLesson, destinationCourse, user, taskSpy } = setup();
+
+			await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			expect(taskSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when a single task is linked to the original lesson', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+			});
+			const originalTask = taskFactory.build({
+				course: originalCourse,
+				lesson: originalLesson,
+			});
+			const taskCopy = taskFactory.build({ name: originalTask.name });
+			const mockedTaskStatus = {
+				title: taskCopy.name,
+				type: CopyElementType.TASK,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: taskCopy,
+			};
+			const mockedTaskGroupStatus = {
+				type: CopyElementType.TASK_GROUP,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [mockedTaskStatus],
+			};
+			const taskSpy = jest.spyOn(taskCopyService, 'copyTaskMetadata').mockImplementation(() => mockedTaskStatus);
+
+			return {
+				user,
+				destinationCourse,
+				originalLesson,
+				originalTask,
+				mockedTaskStatus,
+				taskSpy,
+				mockedTaskGroupStatus,
+			};
+		};
+
+		it('should put copy status tasks leaf', async () => {
+			const { originalLesson, destinationCourse, user, mockedTaskGroupStatus } = setup();
+
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
+			expect(tasksGroupStatus).toBeDefined();
+			expect(tasksGroupStatus).toEqual(mockedTaskGroupStatus);
+		});
+
+		it('should put copy status for the copied task', async () => {
+			const { originalLesson, originalTask, destinationCourse, user, mockedTaskStatus } = setup();
+
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
+			expect(tasksGroupStatus).toBeDefined();
+			const tasksStatus = tasksGroupStatus?.elements?.find(
+				(el) => el.type === CopyElementType.TASK && el.title === originalTask.name
+			);
+			expect(tasksStatus).toBeDefined();
+			expect(tasksStatus).toEqual(mockedTaskStatus);
+		});
+
+		it('should call taskCopyService for the linked task', async () => {
+			const { originalLesson, destinationCourse, user, originalTask, taskSpy } = setup();
+
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			expect(taskSpy).toHaveBeenCalledWith({
+				originalTask,
+				destinationCourse,
+				destinationLesson: copyStatus.copyEntity,
+				user,
+			});
+		});
+	});
+
+	describe('when mupltiple tasks are linked to the original lesson', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+			});
+			const originalTasks = taskFactory.buildList(2, {
+				course: originalCourse,
+				lesson: originalLesson,
+			});
+			const taskCopyOne = taskFactory.build({ name: originalTasks[0].name });
+			const taskCopyTwo = taskFactory.build({ name: originalTasks[1].name });
+			const mockedTaskStatusOne = {
+				title: taskCopyOne.name,
+				type: CopyElementType.TASK,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: taskCopyOne,
+			};
+			const mockedTaskStatusTwo = {
+				title: taskCopyTwo.name,
+				type: CopyElementType.TASK,
+				status: CopyStatusEnum.SUCCESS,
+				copyEntity: taskCopyTwo,
+			};
+			const mockedTaskGroupStatus = {
+				type: CopyElementType.TASK_GROUP,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [mockedTaskStatusOne, mockedTaskStatusTwo],
+			};
+			jest
+				.spyOn(taskCopyService, 'copyTaskMetadata')
+				.mockReturnValueOnce(mockedTaskStatusOne)
+				.mockReturnValueOnce(mockedTaskStatusTwo);
+
+			return {
+				user,
+				destinationCourse,
+				originalLesson,
+				mockedTaskStatusOne,
+				mockedTaskStatusTwo,
+				mockedTaskGroupStatus,
+			};
+		};
+
+		it('should put copy status for each copied task under tasks', async () => {
+			const { originalLesson, destinationCourse, user, mockedTaskStatusOne, mockedTaskStatusTwo } = setup();
+
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
+			expect(tasksGroupStatus).toBeDefined();
+			expect(tasksGroupStatus?.elements).toEqual([mockedTaskStatusOne, mockedTaskStatusTwo]);
 		});
 	});
 
