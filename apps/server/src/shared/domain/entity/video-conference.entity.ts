@@ -1,4 +1,5 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
+import { IBaseEntity } from '@shared/domain/domainobject';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum TargetModels {
@@ -20,7 +21,7 @@ export class VideoConferenceOptions {
 	}
 }
 
-export type IVideoConferenceProperties = Readonly<Omit<VideoConference, keyof BaseEntityWithTimestamps>>;
+export type IVideoConferenceProperties = Readonly<Omit<VideoConference, keyof BaseEntityWithTimestamps>> & IBaseEntity;
 
 // Preset options for opening a video conference
 @Entity({ tableName: 'videoconferences' })

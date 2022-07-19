@@ -9,3 +9,7 @@ export abstract class BaseWithTimestampsDO extends BaseDO {
 
 	updatedAt?: Date;
 }
+
+export interface IBaseEntity {
+	id?: string;
+}
