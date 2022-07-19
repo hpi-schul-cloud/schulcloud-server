@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Course, Task, User } from '@shared/domain/entity';
+import { Course, Lesson, Task, User } from '@shared/domain/entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@shared/domain/types';
 import { CopyHelperService } from './copy-helper.service';
 
 export type TaskCopyParams = {
 	originalTask: Task;
 	destinationCourse?: Course;
-	// destinationLesson?: Lesson;
+	destinationLesson?: Lesson;
 	user: User;
 	copyName?: string;
 };
@@ -22,6 +22,7 @@ export class TaskCopyService {
 			school: params.user.school,
 			creator: params.user,
 			course: params.destinationCourse,
+			lesson: params.destinationLesson,
 		});
 
 		const elements = [...this.defaultTaskStatusElements(), ...this.copyTaskFiles(params.originalTask)];
