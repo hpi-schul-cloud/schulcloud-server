@@ -1,4 +1,4 @@
-import { ITeamProperties, Role, Team, TeamUser } from '@shared/domain';
+import { ITeamProperties, Role, Team } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { schoolFactory } from '@shared/testing/factory/school.factory';
@@ -7,13 +7,6 @@ import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { roleFactory } from '@shared/testing/factory/role.factory';
 
 class TeamFactory extends BaseFactory<Team, ITeamProperties> {
-	withTeamUsers(teamUsers: TeamUser[]): this {
-		const params: DeepPartial<ITeamProperties> = {
-			userIds: teamUsers,
-		};
-		return this.params(params);
-	}
-
 	withRoleAndUserId(role: Role, userId: string): this {
 		const params: DeepPartial<ITeamProperties> = {
 			userIds: [teamUserFactory.withRoleAndUserId(role, userId).buildWithId()],

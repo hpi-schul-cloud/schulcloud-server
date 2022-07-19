@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Role, Team } from '@shared/domain';
+import { EntityId, Role, Team, TeamUser } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
@@ -14,27 +14,25 @@ export class TeamsRepo extends BaseRepo<Team> {
 		const team = await this._em.findOneOrFail(Team, { id }, { cache: this.cacheExpiration });
 
 		if (populate) {
-			for (let i = 0; i < team.userIds.length; i += 1) {
-				const teamUser = team.userIds[i];
-				// eslint-disable-next-line no-await-in-loop
-				await this._em.populate(teamUser, ['role']);
-				// eslint-disable-next-line no-await-in-loop
-				await this.populateRoles([teamUser.role]);
-			}
+			await Promise.all<void>(
+				team.userIds.map(async (teamUser: TeamUser): Promise<void> => {
+					await this._em.populate(teamUser, ['role']);
+					await this.populateRoles([teamUser.role]);
+				})
+			);
 		}
 
 		return team;
 	}
 
-	private async populateRoles(roles: Role[]): Promise<void> {
-		for (let i = 0; i < roles.length; i += 1) {
-			const role = roles[i];
-			if (!role.roles.isInitialized(true)) {
-				// eslint-disable-next-line no-await-in-loop
-				await this._em.populate(role, ['roles']);
-				// eslint-disable-next-line no-await-in-loop
-				await this.populateRoles(role.roles.getItems());
-			}
-		}
+	private async populateRoles(roles: Role[]): Promise<void[]> {
+		return Promise.all<void>(
+			roles.map(async (role: Role): Promise<void> => {
+				if (!role.roles.isInitialized(true)) {
+					await this._em.populate(role, ['roles']);
+					await this.populateRoles(role.roles.getItems());
+				}
+			})
+		);
 	}
 }
