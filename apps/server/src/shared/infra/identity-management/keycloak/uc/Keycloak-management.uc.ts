@@ -3,12 +3,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SystemRepo } from '@shared/repo';
 import { System } from '@shared/domain';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConfigService } from '@nestjs/config';
+import { NodeEnvType } from '@src/server.config';
 import { IdentityProviderConfig } from '../interface/identity-provider-config.type';
 import { SysType } from '../../sys.type';
-import { EnvType } from '../../env.type';
 import {
-	IConfigureOptions,
 	IJsonAccount,
 	IJsonUser,
 	IKeycloakManagementInputFiles,
@@ -29,6 +28,7 @@ export class KeycloakManagementUc {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly systemRepo: SystemRepo,
+		private readonly configService: ConfigService<unknown, true>,
 		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings,
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
@@ -70,11 +70,12 @@ export class KeycloakManagementUc {
 		return userCount;
 	}
 
-	async configureIdentityProviders(options: IConfigureOptions): Promise<number> {
+	async configureIdentityProviders(): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
+		const envType = this.configService.get<NodeEnvType>('NODE_ENV');
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.loadConfigs(options.envType, [SysType.OIDC]);
+		const newConfigs = await this.loadConfigs(envType, [SysType.OIDC]);
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -103,16 +104,12 @@ export class KeycloakManagementUc {
 			| { action: ConfigureAction.UPDATE; config: IdentityProviderConfig }
 			| { action: ConfigureAction.DELETE; alias: string }
 		)[];
-		// creating configs
-		newConfigs.forEach((newConfig) => {
-			if (!oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.alias)) {
-				result.push({ action: ConfigureAction.CREATE, config: newConfig as IdentityProviderConfig });
-			}
-		});
-		// updating configs
+		// updating or creating configs
 		newConfigs.forEach((newConfig) => {
 			if (oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.alias)) {
 				result.push({ action: ConfigureAction.UPDATE, config: newConfig as IdentityProviderConfig });
+			} else {
+				result.push({ action: ConfigureAction.CREATE, config: newConfig as IdentityProviderConfig });
 			}
 		});
 		// deleting configs
@@ -161,8 +158,8 @@ export class KeycloakManagementUc {
 				alias: system.alias,
 				enabled: true,
 				config: {
-					clientId: Configuration.get(system.config.clientId) as string,
-					clientSecret: Configuration.get(system.config.clientSecret) as string,
+					clientId: this.configService.get<string>(system.config.clientId),
+					clientSecret: this.configService.get<string>(system.config.clientSecret),
 					authorizationUrl: system.config.authorizationUrl,
 					tokenUrl: system.config.tokenUrl,
 					logoutUrl: system.config.logoutUrl,
@@ -181,8 +178,8 @@ export class KeycloakManagementUc {
 					alias: system.alias,
 					enabled: true,
 					config: {
-						clientId: Configuration.get(system.config.clientId) as string,
-						clientSecret: Configuration.get(system.config.clientSecret) as string,
+						clientId: this.configService.get<string>(system.config.clientId),
+						clientSecret: this.configService.get<string>(system.config.clientSecret),
 						authorizationUrl: system.config.authorizationUrl,
 						tokenUrl: system.config.tokenUrl,
 						logoutUrl: system.config.logoutUrl,
@@ -197,18 +194,18 @@ export class KeycloakManagementUc {
 		await kc.identityProviders.del({ alias });
 	}
 
-	private async loadConfigs(envType: EnvType, sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
-		if (envType === EnvType.DEV) {
+	private async loadConfigs(envType: NodeEnvType, sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
+		if (envType === NodeEnvType.TEST || envType === NodeEnvType.DEVELOPMENT) {
 			const data = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
 			const systems = JSON.parse(data) as IdentityProviderConfig[];
 			return systems.filter((system) => sysTypes.includes(system.type as SysType));
 		}
-		if (envType === EnvType.PROD) {
+		if (envType === NodeEnvType.PRODUCTION) {
 			return (await this.systemRepo.findAll()).filter((system) =>
 				sysTypes.includes(system.type as SysType)
 			) as IdentityProviderConfig[];
 		}
-		throw new Error('EnvType not recognized');
+		return [];
 	}
 
 	private async loadAccounts(): Promise<IJsonAccount[]> {

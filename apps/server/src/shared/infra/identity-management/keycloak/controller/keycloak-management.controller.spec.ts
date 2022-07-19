@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { EnvType } from '@shared/infra/identity-management';
 import { KeycloakManagementController } from './keycloak-management.controller';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
@@ -81,7 +80,7 @@ describe('KeycloakManagementController', () => {
 			expect(uc.configureIdentityProviders).toBeCalled();
 		});
 		it('should seed users', async () => {
-			const result = await controller.configure(EnvType.DEV);
+			const result = await controller.configure();
 			expect(result).toBeGreaterThan(0);
 			expect(uc.check).toBeCalled();
 			expect(uc.seed).toBeCalled();

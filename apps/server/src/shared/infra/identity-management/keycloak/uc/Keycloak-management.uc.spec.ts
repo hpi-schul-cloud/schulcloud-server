@@ -4,23 +4,18 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { v1 } from 'uuid';
 import fs from 'node:fs/promises';
-import { EnvType, SysType } from '@shared/infra/identity-management';
+import { SysType } from '@shared/infra/identity-management';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SystemRepo } from '@shared/repo';
 import { System } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
-import {
-	IConfigureOptions,
-	IJsonAccount,
-	IJsonUser,
-	IKeycloakManagementInputFiles,
-	KeycloakManagementInputFiles,
-} from '../interface';
+import { ConfigService } from '@nestjs/config';
+import { NodeEnvType } from '@src/server.config';
+import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from '../keycloak-administration.service';
 import { KeycloakManagementUc } from './Keycloak-management.uc';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
@@ -30,6 +25,7 @@ describe('KeycloakManagementUc', () => {
 	let uc: KeycloakManagementUc;
 	let client: DeepMocked<KeycloakAdminClient>;
 	let service: DeepMocked<KeycloakAdministrationService>;
+	let configService: DeepMocked<ConfigService>;
 	let repo: DeepMocked<SystemRepo>;
 	let settings: IKeycloakSettings;
 
@@ -141,11 +137,16 @@ describe('KeycloakManagementUc', () => {
 					provide: KeycloakSettings,
 					useFactory: getSettings,
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 		uc = module.get(KeycloakManagementUc);
 		client = module.get(KeycloakAdminClient);
 		service = module.get(KeycloakAdministrationService);
+		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
 		repo = module.get(SystemRepo);
 	});
@@ -291,8 +292,6 @@ describe('KeycloakManagementUc', () => {
 	});
 
 	describe('configureIdentityProviders', () => {
-		const devConfig: IConfigureOptions = { envType: EnvType.DEV };
-		const prodConfig: IConfigureOptions = { envType: EnvType.PROD };
 		const idps: IdentityProviderRepresentation[] = [
 			{
 				providerId: 'oidc',
@@ -324,7 +323,6 @@ describe('KeycloakManagementUc', () => {
 				updatedAt: new Date(),
 			},
 		];
-		let configurationGet: jest.SpyInstance;
 		let fsReadFile: jest.SpyInstance;
 
 		beforeEach(() => {
@@ -333,7 +331,7 @@ describe('KeycloakManagementUc', () => {
 			kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 			kcApiClientIdentityProvidersMock.update.mockResolvedValue();
 			kcApiClientIdentityProvidersMock.del.mockResolvedValue();
-			configurationGet = jest.spyOn(Configuration, 'get').mockImplementation((key) => key);
+			configService.get.mockImplementation((key) => key);
 			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
 				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
 				throw new Error('File not found');
@@ -346,48 +344,48 @@ describe('KeycloakManagementUc', () => {
 			kcApiClientIdentityProvidersMock.create.mockRestore();
 			kcApiClientIdentityProvidersMock.update.mockRestore();
 			kcApiClientIdentityProvidersMock.del.mockRestore();
-			configurationGet.mockRestore();
+			configService.get.mockRestore();
 			fsReadFile.mockRestore();
 		});
 
 		it('should read configs from file system in development', async () => {
-			const result = await uc.configureIdentityProviders(devConfig);
+			configService.get.mockReturnValueOnce(NodeEnvType.DEVELOPMENT);
+
+			const result = await uc.configureIdentityProviders();
 			expect(result).toBeGreaterThan(0);
 			expect(repo.findAll).not.toBeCalled();
 			expect(fsReadFile).toBeCalled();
 		});
 		it('should read configs from database in production', async () => {
-			const result = await uc.configureIdentityProviders(prodConfig);
+			configService.get.mockReturnValueOnce(NodeEnvType.PRODUCTION);
+
+			const result = await uc.configureIdentityProviders();
 			expect(result).toBeGreaterThan(0);
 			expect(repo.findAll).toBeCalled();
 			expect(fsReadFile).not.toBeCalled();
 		});
-		it('should throw if environment is unknown', async () => {
-			await expect(
-				uc.configureIdentityProviders({
-					envType: 'unknown' as EnvType,
-				})
-			).rejects.toThrow();
+		it('should not return any configs if environment is unknown', async () => {
+			await expect(uc.configureIdentityProviders()).resolves.toBe(0);
 		});
 		it('should create a configuration in Keycloak', async () => {
 			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
-			const result = await uc.configureIdentityProviders(prodConfig);
+			const result = await uc.configureIdentityProviders();
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
-			expect(configurationGet).toBeCalled();
+			expect(configService.get).toBeCalled();
 
 			kcApiClientIdentityProvidersMock.find.mockRestore();
 		});
 		it('should update a configuration in Keycloak', async () => {
-			const result = await uc.configureIdentityProviders(prodConfig);
+			const result = await uc.configureIdentityProviders();
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
 		});
 		it('should delete a new configuration in Keycloak', async () => {
 			repo.findAll.mockResolvedValue([]);
 
-			const result = await uc.configureIdentityProviders(prodConfig);
+			const result = await uc.configureIdentityProviders();
 			expect(result).toBe(1);
 			expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 

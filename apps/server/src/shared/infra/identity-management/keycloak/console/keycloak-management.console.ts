@@ -1,7 +1,5 @@
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { EnvType } from '../../env.type';
-import { IConfigureOptions } from '../interface/configure-options.interface';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
@@ -81,21 +79,13 @@ export class KeycloakConsole {
 	@Command({
 		command: 'configure',
 		description: 'Configures Keycloak identity providers.',
-		options: [
-			{
-				flags: '-et, --env-type <value>',
-				description: 'Determines the environment and how the configuration will be loaded.',
-				required: false,
-				defaultValue: EnvType.PROD,
-			},
-			...KeycloakConsole.retryFlags,
-		],
+		options: KeycloakConsole.retryFlags,
 	})
-	async configureIdentityProviders(options: IConfigureOptions & IRetryOptions): Promise<void> {
+	async configureIdentityProviders(options: IRetryOptions): Promise<void> {
 		await this.repeatCommand(
 			'configure:idp',
 			async () => {
-				const count = await this.keycloakManagementUc.configureIdentityProviders(options);
+				const count = await this.keycloakManagementUc.configureIdentityProviders();
 				this.console.info(`Configured ${count} identity provider(s).`);
 			},
 			options.retryCount,
