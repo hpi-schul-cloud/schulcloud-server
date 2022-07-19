@@ -44,11 +44,18 @@ describe('VideoConference Controller', () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('createAndJoin', () => {
-		it('should return a join Response', async () => {
+		it('should create and return a join Response', async () => {
 			// Arrange
-			videoConferenceUc.create.mockReturnValue(Promise.resolve({} as VideoConferenceDTO<BBBCreateResponse>));
-			videoConferenceUc.join.mockReturnValue(Promise.resolve({ url: 'mockUrl' } as VideoConferenceJoinDTO));
+			videoConferenceUc.getMeetingInfo.mockResolvedValue({
+				state: VideoConferenceState.NOT_STARTED,
+			} as VideoConferenceInfoDTO);
+			videoConferenceUc.create.mockResolvedValue({} as VideoConferenceDTO<BBBCreateResponse>);
+			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoinDTO);
 
 			// Act
 			const ret: VideoConferenceJoinResponse = await service.createAndJoin(
@@ -63,17 +70,44 @@ describe('VideoConference Controller', () => {
 			);
 
 			// Assert
+			expect(videoConferenceUc.create).toHaveBeenCalled();
 			expect(ret.url).toEqual('mockUrl');
 		});
-	});
 
-	describe('createAndJoin', () => {
+		it('should return a join Response without create', async () => {
+			// Arrange
+			videoConferenceUc.getMeetingInfo.mockResolvedValue({
+				state: VideoConferenceState.RUNNING,
+			} as VideoConferenceInfoDTO);
+			videoConferenceUc.create.mockImplementation(() => Promise.reject());
+			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoinDTO);
+
+			// Act
+			const ret: VideoConferenceJoinResponse = await service.createAndJoin(
+				currentUser,
+				VideoConferenceScope.COURSE,
+				'scopeId',
+				{
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: false,
+					moderatorMustApproveJoinRequests: true,
+				}
+			);
+
+			// Assert
+			expect(videoConferenceUc.create).not.toHaveBeenCalled();
+			expect(ret.url).toEqual('mockUrl');
+		});
+
 		it('should return a join Response, call without options', async () => {
 			// Arrange
 			const scopeId = 'courseId';
 
-			videoConferenceUc.create.mockReturnValue(Promise.resolve({} as VideoConferenceDTO<BBBCreateResponse>));
-			videoConferenceUc.join.mockReturnValue(Promise.resolve({ url: 'mockUrl' } as VideoConferenceJoinDTO));
+			videoConferenceUc.getMeetingInfo.mockResolvedValue({
+				state: VideoConferenceState.NOT_STARTED,
+			} as VideoConferenceInfoDTO);
+			videoConferenceUc.create.mockResolvedValue({} as VideoConferenceDTO<BBBCreateResponse>);
+			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoinDTO);
 
 			// Act
 			const ret: VideoConferenceJoinResponse = await service.createAndJoin(
@@ -96,9 +130,9 @@ describe('VideoConference Controller', () => {
 	describe('info', () => {
 		it('should return an info Response', async () => {
 			// Arrange
-			videoConferenceUc.getMeetingInfo.mockReturnValue(
-				Promise.resolve({ state: VideoConferenceState.RUNNING } as VideoConferenceInfoDTO)
-			);
+			videoConferenceUc.getMeetingInfo.mockResolvedValue({
+				state: VideoConferenceState.RUNNING,
+			} as VideoConferenceInfoDTO);
 
 			// Act
 			const ret: VideoConferenceInfoResponse = await service.info(currentUser, VideoConferenceScope.COURSE, 'scopeId');
@@ -111,9 +145,9 @@ describe('VideoConference Controller', () => {
 	describe('end', () => {
 		it('should return a base Response', async () => {
 			// Arrange
-			videoConferenceUc.end.mockReturnValue(
-				Promise.resolve({ state: VideoConferenceState.FINISHED } as VideoConferenceDTO<BBBBaseResponse>)
-			);
+			videoConferenceUc.end.mockResolvedValue({
+				state: VideoConferenceState.FINISHED,
+			} as VideoConferenceDTO<BBBBaseResponse>);
 
 			// Act
 			const ret: VideoConferenceInfoResponse = await service.end(currentUser, VideoConferenceScope.COURSE, 'scopeId');

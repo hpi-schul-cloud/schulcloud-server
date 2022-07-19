@@ -21,6 +21,7 @@ import {
 	VideoConferenceInfoDTO,
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
+import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
 
@@ -50,11 +51,15 @@ export class VideoConferenceController {
 		@Param('scopeId') scopeId: string,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<VideoConferenceBaseResponse> {
-		await this.videoConferenceUc.create(currentUser, scope, scopeId, {
-			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
-			everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
-			moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
-		});
+		const infoDto: VideoConferenceInfoDTO = await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
+
+		if (infoDto.state !== VideoConferenceState.RUNNING) {
+			await this.videoConferenceUc.create(currentUser, scope, scopeId, {
+				everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
+				everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
+				moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
+			});
+		}
 
 		const dto: VideoConferenceJoinDTO = await this.videoConferenceUc.join(currentUser, scope, scopeId);
 

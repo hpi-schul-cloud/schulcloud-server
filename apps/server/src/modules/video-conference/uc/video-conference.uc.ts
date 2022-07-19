@@ -12,6 +12,7 @@ import {
 	TeamUser,
 	User,
 	VideoConferenceDO,
+	VideoConferenceOptionsDO,
 } from '@shared/domain';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
@@ -99,7 +100,7 @@ export class VideoConferenceUc {
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
-			throw new ForbiddenException();
+			throw new ForbiddenException('you are not allowed to start the videoconference. ask a moderator.');
 		}
 
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
@@ -238,23 +239,27 @@ export class VideoConferenceUc {
 		});
 
 		let bbbResponse: BBBResponse<BBBMeetingInfoResponse>;
+
+		const options: VideoConferenceOptionsDO = await this.videoConferenceRepo
+			.findByScopeId(refId, conferenceScope)
+			.then((vcDO: VideoConferenceDO) => vcDO.options)
+			.catch(() => defaultVideoConferenceOptions);
+
 		try {
 			bbbResponse = await this.bbbService.getMeetingInfo(config);
 		} catch (error) {
 			return {
 				state: VideoConferenceState.NOT_STARTED,
 				permission: PermissionMapping[bbbRole],
-				options: bbbRole === BBBRole.MODERATOR ? defaultVideoConferenceOptions : ({} as VideoConferenceOptions),
+				options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
 			};
 		}
-
-		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
 
 		return {
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
 			bbbResponse,
-			options: bbbRole === BBBRole.MODERATOR ? vcDO.options : ({} as VideoConferenceOptions),
+			options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
 		};
 	}
 

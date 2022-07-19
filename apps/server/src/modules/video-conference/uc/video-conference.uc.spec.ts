@@ -675,6 +675,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to moderator with default options and "not started"', async () => {
 			// Arrange
+			videoConferenceRepo.findByScopeId.mockImplementation(() => Promise.reject());
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
 			// Act
