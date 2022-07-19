@@ -176,7 +176,7 @@ const run = async (oldPadDomain) => {
 								padName,
 							});
 							let newPadId = createResult.data.padID;
-							content.content.url = Configuration.get('ETHERPAD_NEW_PAD_URI') + `/${newPadId}`;
+							content.content.url = Configuration.get('ETHERPAD__PAD_URI') + `/${newPadId}`;
 							await log(
 								`Successfully migrated Etherpad lesson ${lesson._id} content ${content._id} from /p/${oldPadId} to ${newPadId}`
 							);

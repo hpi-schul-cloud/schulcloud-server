@@ -110,7 +110,7 @@ describe('course copy uc', () => {
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: boardCopy,
 			};
-			boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
+			boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
 
 			const status = {
 				title: 'courseCopy',
