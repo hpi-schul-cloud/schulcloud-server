@@ -20,6 +20,8 @@ export class SyncEmbeddedFilesUc {
 	) {}
 
 	async syncEmbeddedFilesForLesson() {
+		await this.embeddedFilesRepo.createLessonBackUpCollection();
+
 		const lessons = await this.embeddedFilesRepo.findEmbeddedFilesForLessons();
 		this.logger.log(`Found ${lessons.length} lesson contents with embedded files.`);
 

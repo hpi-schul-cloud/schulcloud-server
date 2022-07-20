@@ -135,4 +135,10 @@ export class EmbeddedFilesRepo {
 	async updateLesson(lesson: Lesson) {
 		await this._em.persistAndFlush(lesson);
 	}
+
+	async createLessonBackUpCollection() {
+		const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+		await this._em.aggregate(Lesson, [{ $match: {} }, { $out: `lessons_backup_${date}` }]);
+	}
 }
