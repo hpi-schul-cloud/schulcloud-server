@@ -222,7 +222,9 @@ describe('OAuthService', () => {
 			logoutEndpoint: 'logoutEndpointMock',
 			provider: 'iserv',
 		};
-		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error as string}`;
+		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${
+			defaultErrorQuery.error as string
+		}&provider=${defaultOauthConfig.provider}`;
 		defaultErrorResponse = new OAuthResponse();
 		defaultErrorResponse.errorcode = defaultErrorQuery.error as string;
 		defaultErrorResponse.redirect = defaultErrorRedirect;
@@ -377,7 +379,7 @@ describe('OAuthService', () => {
 			const response = await service.processOAuth(defaultQuery, system.id);
 			expect(response).toEqual({
 				errorcode: 'sso_internal_error',
-				redirect: 'https://mock.de/login?error=sso_internal_error',
+				redirect: 'https://mock.de/login?error=sso_internal_error&provider=mock_type',
 			});
 		});
 	});
@@ -397,14 +399,16 @@ describe('OAuthService', () => {
 	describe('getOAuthError', () => {
 		it('should return a login url string within an error', () => {
 			const generalError = new Error('foo');
-			const response = service.getOAuthError(generalError);
+			const response = service.getOAuthError(generalError, defaultOauthConfig.provider);
 			expect(response.redirect).toStrictEqual(defaultErrorRedirect);
 		});
 		it('should return a login url string within an error', () => {
 			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'bar');
-			const response = service.getOAuthError(specialError);
+			const response = service.getOAuthError(specialError, defaultOauthConfig.provider);
 			expect(response.redirect).toStrictEqual(
-				`${Configuration.get('HOST') as string}/login?error=${specialError.errorcode}`
+				`${Configuration.get('HOST') as string}/login?error=${specialError.errorcode}&provider=${
+					defaultOauthConfig.provider
+				}`
 			);
 		});
 	});
