@@ -83,7 +83,7 @@ export class KeycloakConsole {
 	})
 	async configureIdentityProviders(options: IRetryOptions): Promise<void> {
 		await this.repeatCommand(
-			'configure:idp',
+			'configure',
 			async () => {
 				const count = await this.keycloakManagementUc.configureIdentityProviders();
 				this.console.info(`Configured ${count} identity provider(s).`);
