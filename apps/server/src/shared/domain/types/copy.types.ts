@@ -7,6 +7,7 @@ export type CopyStatus = {
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
 	copyEntity?: BaseEntity;
+	originalEntity?: BaseEntity;
 };
 
 export enum CopyElementType {

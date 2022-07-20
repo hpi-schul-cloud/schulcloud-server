@@ -164,6 +164,18 @@ describe('lesson copy service', () => {
 					expect(status.type).toEqual(CopyElementType.LESSON);
 				});
 
+				it('should set status originalEntity to original lesson', async () => {
+					const { user, destinationCourse, originalLesson } = setup();
+
+					const status = await copyService.copyLesson({
+						originalLesson,
+						destinationCourse,
+						user,
+					});
+
+					expect(status.originalEntity).toEqual(originalLesson);
+				});
+
 				it('should set lesson status', async () => {
 					const { user, destinationCourse, originalLesson } = setup();
 
