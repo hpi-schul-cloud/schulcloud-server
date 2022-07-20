@@ -5,7 +5,7 @@ import { KeycloakIdentityManagementService } from './keycloak/service/keycloak-i
 
 @Module({
 	imports: [KeycloakModule],
-	providers: [{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService }],
+	providers: [{ provide: IdentityManagementService, useExisting: KeycloakIdentityManagementService }],
 	exports: [IdentityManagementService],
 })
 export class IdentityManagementModule {}

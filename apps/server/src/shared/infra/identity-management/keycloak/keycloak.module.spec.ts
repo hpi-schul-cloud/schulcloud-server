@@ -2,8 +2,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { KeycloakModule } from './keycloak.module';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
-import { KeycloakConsole } from './console/keycloak-management.console';
+import { KeycloakAdministrationService } from './service/keycloak-administration.service';
+import { KeycloakConsole } from './controller/console/keycloak-management.console';
 
 describe('KeycloakModule', () => {
 	let module: TestingModule;

@@ -1,6 +1,6 @@
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
