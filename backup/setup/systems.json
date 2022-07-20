@@ -68,6 +68,10 @@
 		"_id": {
 			"$oid": "62c7f233f35a554ba3ed42f1"
 		},
+		"__v": 0,
+		"updatedAt": {
+			"$date": "2022-07-12T14:01:58.588Z"
+		},
 		"type": "oidc",
 		"alias": "iserv",
 		"config": {
