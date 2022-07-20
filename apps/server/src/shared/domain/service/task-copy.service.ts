@@ -32,6 +32,7 @@ export class TaskCopyService {
 			type: CopyElementType.TASK,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			originalEntity: params.originalTask,
 			elements,
 		};
 

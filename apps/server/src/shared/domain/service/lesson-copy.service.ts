@@ -1,7 +1,6 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { EtherpadService } from './etherpad.service';
 import {
 	ComponentType,
 	Course,
@@ -13,6 +12,7 @@ import {
 } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
+import { EtherpadService } from './etherpad.service';
 import { TaskCopyService } from './task-copy.service';
 
 export type LessonCopyParams = {
@@ -54,6 +54,7 @@ export class LessonCopyService {
 			type: CopyElementType.LESSON,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			originalEntity: params.originalLesson,
 			elements,
 		};
 
