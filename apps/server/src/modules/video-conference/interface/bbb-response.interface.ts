@@ -1,11 +1,14 @@
-import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
+export enum BBBStatus {
+	SUCCESS = 'SUCCESS',
+	ERROR = 'ERROR',
+}
 
 export interface BBBResponse<T extends BBBBaseResponse> {
 	response: T;
 }
 
 export interface BBBBaseResponse {
-	returncode: VideoConferenceStatus;
+	returncode: BBBStatus;
 	messageKey: string;
 	message: string;
 }

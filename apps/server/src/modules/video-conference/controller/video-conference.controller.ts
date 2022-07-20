@@ -24,6 +24,7 @@ import {
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
+import { defaultVideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -36,7 +37,7 @@ export class VideoConferenceController {
 
 	@Post(':scope/:scopeId')
 	@ApiOperation({
-		summary: 'Creates a new video conference for a given scope.',
+		summary: 'Creates a join link for a video conference and creates the video conference, if it has not started yet.',
 	})
 	@ApiResponse({ status: 400, type: BadRequestException, description: 'Invalid parameters.' })
 	@ApiResponse({
@@ -55,9 +56,12 @@ export class VideoConferenceController {
 
 		if (infoDto.state !== VideoConferenceState.RUNNING) {
 			await this.videoConferenceUc.create(currentUser, scope, scopeId, {
-				everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
-				everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
-				moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
+				everyAttendeeJoinsMuted:
+					params.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
+				everybodyJoinsAsModerator:
+					params.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
+				moderatorMustApproveJoinRequests:
+					params.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
 			});
 		}
 

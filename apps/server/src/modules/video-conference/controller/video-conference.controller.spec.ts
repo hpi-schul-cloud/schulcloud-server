@@ -17,6 +17,7 @@ import {
 } from '@src/modules/video-conference/controller/dto/video-conference.response';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { defaultVideoConferenceOptions } from '../interface/vc-options.interface';
 
 describe('VideoConference Controller', () => {
 	let module: TestingModule;
@@ -119,9 +120,9 @@ describe('VideoConference Controller', () => {
 
 			// Assert
 			expect(videoConferenceUc.create).toHaveBeenCalledWith(currentUser, VideoConferenceScope.COURSE, scopeId, {
-				everyAttendeeJoinsMuted: false,
-				everybodyJoinsAsModerator: false,
-				moderatorMustApproveJoinRequests: false,
+				everyAttendeeJoinsMuted: defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
+				everybodyJoinsAsModerator: defaultVideoConferenceOptions.everybodyJoinsAsModerator,
+				moderatorMustApproveJoinRequests: defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
 			});
 			expect(ret.url).toEqual('mockUrl');
 		});

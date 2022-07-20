@@ -12,8 +12,8 @@ import {
 	BBBCreateResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
+	BBBStatus,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BBBJoinConfig, BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { URLSearchParams } from 'url';
@@ -22,7 +22,7 @@ import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-b
 
 const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => ({
 	response: {
-		returncode: VideoConferenceStatus.SUCCESS,
+		returncode: BBBStatus.SUCCESS,
 		messageKey: 'messageKey',
 		message: 'message',
 		meetingID: 'meetingId',
@@ -40,7 +40,7 @@ const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => ({
 
 const createBBBBaseResponse = (): BBBResponse<BBBBaseResponse> => ({
 	response: {
-		returncode: VideoConferenceStatus.SUCCESS,
+		returncode: BBBStatus.SUCCESS,
 		messageKey: 'messageKey',
 		message: 'message',
 	},
@@ -49,7 +49,7 @@ const createBBBBaseResponse = (): BBBResponse<BBBBaseResponse> => ({
 const createBBBMeetingInfoResponse = (): BBBResponse<BBBMeetingInfoResponse> =>
 	({
 		response: {
-			returncode: VideoConferenceStatus.SUCCESS,
+			returncode: BBBStatus.SUCCESS,
 			parentMeetingID: 'parentMeetingID',
 			meetingName: 'meetingName',
 			meetingID: 'meetingID',
@@ -158,7 +158,7 @@ describe('BBB Service', () => {
 
 		it('should throw an error if there is a different return code then success', async () => {
 			// Arrange
-			bbbCreateResponse.data.response.returncode = VideoConferenceStatus.ERROR;
+			bbbCreateResponse.data.response.returncode = BBBStatus.ERROR;
 			httpService.get.mockReturnValue(of(bbbCreateResponse));
 			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
 			const expectedError = new InternalServerErrorException(
@@ -195,7 +195,7 @@ describe('BBB Service', () => {
 
 		it('should throw an error if there is a different return code then success', async () => {
 			// Arrange
-			bbbBaseResponse.data.response.returncode = VideoConferenceStatus.ERROR;
+			bbbBaseResponse.data.response.returncode = BBBStatus.ERROR;
 			httpService.get.mockReturnValue(of(bbbBaseResponse));
 			converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
 			const expectedError = new InternalServerErrorException(
@@ -234,7 +234,7 @@ describe('BBB Service', () => {
 
 		it('should throw an error if there is a different return code then success', async () => {
 			// Arrange
-			bbbMeetingInfoResponse.data.response.returncode = VideoConferenceStatus.ERROR;
+			bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
 			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
 			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
 			const expectedError = new InternalServerErrorException(
@@ -273,7 +273,7 @@ describe('BBB Service', () => {
 
 		it('should throw an error if there is a different return code then success', async () => {
 			// Arrange
-			bbbMeetingInfoResponse.data.response.returncode = VideoConferenceStatus.ERROR;
+			bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
 			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
 			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
 			const expectedError = new InternalServerErrorException(

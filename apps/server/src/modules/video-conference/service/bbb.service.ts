@@ -13,8 +13,8 @@ import {
 	BBBCreateResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
+	BBBStatus,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
-import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 import { ConverterUtil } from '@shared/common/utils';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class BBBService {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>>(
 					resp.data
 				);
-				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
 				return bbbResp as BBBResponse<BBBCreateResponse>;
@@ -78,7 +78,7 @@ export class BBBService {
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBBaseResponse>>(resp.data);
-				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
 				return bbbResp;
@@ -103,7 +103,7 @@ export class BBBService {
 				const bbbResp = this.converterUtil.xml2object<
 					BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>
 				>(resp.data);
-				if (bbbResp.response.returncode !== VideoConferenceStatus.SUCCESS) {
+				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
 					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
 				}
 				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;

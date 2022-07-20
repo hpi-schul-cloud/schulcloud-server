@@ -32,6 +32,7 @@ import {
 	BBBCreateResponse,
 	BBBMeetingInfoResponse,
 	BBBResponse,
+	BBBStatus,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
@@ -40,7 +41,6 @@ import { teamFactory } from '@shared/testing/factory/team.factory';
 import { roleFactory, setupEntities } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
-import { VideoConferenceStatus } from '@src/modules/video-conference/interface/vc-status.enum';
 import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 
@@ -581,7 +581,7 @@ describe('VideoConferenceUc', () => {
 
 		const bbbResponse: BBBResponse<BBBBaseResponse> = {
 			response: {
-				returncode: VideoConferenceStatus.SUCCESS,
+				returncode: BBBStatus.SUCCESS,
 				messageKey: 'test message key',
 				message: 'test message',
 			},
@@ -629,7 +629,7 @@ describe('VideoConferenceUc', () => {
 
 		const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = {
 			response: {
-				returncode: VideoConferenceStatus.SUCCESS,
+				returncode: BBBStatus.SUCCESS,
 				messageKey: 'test message key',
 				message: 'test message',
 			} as unknown as BBBMeetingInfoResponse,
