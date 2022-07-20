@@ -19,6 +19,7 @@ export enum ComponentType {
 	GEOGEBRA = 'geoGebra',
 	LERNSTORE = 'resources',
 	TEXT = 'text',
+	NEXBOARD = 'neXboard',
 }
 
 export interface IComponentTextProperties {
@@ -47,6 +48,13 @@ export interface IComponentEtherpadProperties {
 	url: string;
 }
 
+export interface IComponentNexboardProperties {
+	board: string;
+	description: string;
+	title: string;
+	url: string;
+}
+
 export interface IComponentProperties {
 	title: string;
 	hidden: boolean;
@@ -55,7 +63,8 @@ export interface IComponentProperties {
 		| IComponentTextProperties
 		| IComponentGeogebraProperties
 		| IComponentLernstoreProperties
-		| IComponentEtherpadProperties;
+		| IComponentEtherpadProperties
+		| IComponentNexboardProperties;
 }
 
 @Entity({ tableName: 'lessons' })
