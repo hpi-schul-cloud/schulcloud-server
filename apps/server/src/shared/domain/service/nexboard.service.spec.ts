@@ -4,17 +4,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EtherpadService } from './etherpad.service';
+import { NexboardService } from './nexboard.service';
 
-describe('Etherpad service', () => {
+describe('Nexboard service', () => {
 	let module: TestingModule;
-	let etherpadService: EtherpadService;
+	let nexboardService: NexboardService;
 	let feathersServiceProvider: DeepMocked<FeathersServiceProvider>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				EtherpadService,
+				NexboardService,
 				{
 					provide: FeathersServiceProvider,
 					useValue: createMock<FeathersServiceProvider>(),
@@ -26,27 +26,32 @@ describe('Etherpad service', () => {
 			],
 		}).compile();
 
-		etherpadService = module.get(EtherpadService);
+		nexboardService = module.get(NexboardService);
 		feathersServiceProvider = module.get(FeathersServiceProvider);
 	});
 
-	describe('createEtherpad', () => {
+	describe('create Nexboard', () => {
 		it('it should call feathers service', async () => {
-			feathersServiceProvider.getService('/etherpad/pads').create.mockResolvedValue({ data: { padID: 'padId' } });
+			feathersServiceProvider
+				.getService('/nexboard/boards')
+				.create.mockResolvedValue({ id: '123', publicLink: 'boardId' });
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const etherpadId = await etherpadService.createEtherpad(userId, 'courseId', 'title');
-			expect(etherpadId).toEqual('padId');
+			const response = await nexboardService.createNexboard(userId, 'title', 'description');
+			if (response) {
+				expect(response.board).toEqual('123');
+				expect(response.url).toEqual('boardId');
+			}
 		});
 
-		it('should return false if etherpad call fails', async () => {
-			feathersServiceProvider.getService('/etherpad/pads').create.mockRejectedValue({});
+		it('should return false if nexboard call fails', async () => {
+			feathersServiceProvider.getService('/nexboard/boards').create.mockRejectedValue({});
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const etherpadId = await etherpadService.createEtherpad(userId, 'courseId', 'title');
-			expect(etherpadId).toEqual(false);
+			const response = await nexboardService.createNexboard(userId, 'title', 'description');
+			expect(response).toEqual(false);
 		});
 	});
 });

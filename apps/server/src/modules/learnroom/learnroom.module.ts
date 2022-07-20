@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import {
 	BoardCopyService,
 	CopyHelperService,
-	EtherpadService,
 	CourseCopyService,
+	EtherpadService,
 	LessonCopyService,
+	NexboardService,
 	TaskCopyService,
 } from '@shared/domain';
 import {
@@ -61,6 +62,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyUC,
 		RoomsService,
 		EtherpadService,
+		NexboardService,
 		FeathersServiceProvider,
 		Logger,
 	],

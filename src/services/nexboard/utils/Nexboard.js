@@ -95,7 +95,7 @@ class Nexboard {
 		});
 	}
 
-	createBoard(title, description, project, email = 'schulcloud') {
+	createBoard(title, description, projectId, email = 'schulcloud') {
 		return rp(
 			this.createSettings({
 				method: 'POST',
@@ -107,7 +107,7 @@ class Nexboard {
 					title,
 					description,
 					email,
-					projectId: project,
+					projectId,
 				},
 			})
 		).catch((err) => {
