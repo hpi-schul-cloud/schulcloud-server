@@ -22,9 +22,9 @@ import {
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
+import { defaultVideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
-import { defaultVideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
