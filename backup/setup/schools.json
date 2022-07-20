@@ -32,7 +32,8 @@
 			"teacher": {
 				"STUDENT_LIST": true
 			}
-		}
+		},
+                "features" : []
 	},
 	{
 		"_id": {
@@ -63,7 +64,8 @@
 			"teacher": {
 				"STUDENT_LIST": true
 			}
-		}
+		},
+                "features" : []
 	},
 	{
 		"_id": {
@@ -142,7 +144,8 @@
 		"currentYear": {
 			"$oid": "5ebd6dc14a431f75ec9a3e77"
 		},
-		"purpose": "expert"
+		"purpose": "expert",
+                "features" : []
 	},
 	{
 		"_id": {

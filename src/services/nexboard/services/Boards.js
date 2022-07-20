@@ -1,4 +1,5 @@
 const nexboardClient = require('../utils/Nexboard');
+const { Forbidden } = require('../../../errors');
 
 class Board {
 	constructor(options) {
@@ -10,7 +11,12 @@ class Board {
 		return nexboardClient.getBoard(id);
 	}
 
-	create({ projectId, title = 'Neues Nexboard Board', description = 'Ein digitales Whiteboard' }, params) {
+	create({ title = 'Neues Nexboard Board', description = 'Ein digitales Whiteboard' }, params) {
+		const projectId = params.user.preferences.nexBoardProjectID;
+		if (!projectId) {
+			throw new Forbidden('nexBoard for user not found');
+		}
+
 		return nexboardClient.createBoard(title, description, projectId);
 	}
 

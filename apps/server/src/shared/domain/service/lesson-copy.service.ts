@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EtherpadService } from './etherpad.service';
+import { NexboardService } from './nexboard.service';
 import {
 	ComponentType,
 	Course,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
+	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
 	User,
@@ -27,7 +29,8 @@ export class LessonCopyService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly etherpadService: EtherpadService
+		private readonly etherpadService: EtherpadService,
+		private readonly nexboardService: NexboardService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
@@ -68,6 +71,7 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
+		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
 		const copiedContent: IComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
@@ -103,6 +107,21 @@ export class LessonCopyService {
 					etherpadStatus.status = CopyStatusEnum.FAIL;
 				}
 				copiedContentStatus.push(etherpadStatus);
+			}
+			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
+				// eslint-disable-next-line no-await-in-loop
+				const nexboardContent = await this.copyNexboard(element, params);
+				const nexboardStatus = {
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.PARTIAL,
+				};
+				if (nexboardContent) {
+					copiedContent.push(nexboardContent);
+				} else {
+					nexboardStatus.status = CopyStatusEnum.FAIL;
+				}
+				copiedContentStatus.push(nexboardStatus);
 			}
 		}
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
@@ -149,12 +168,28 @@ export class LessonCopyService {
 		const etherpadPadId = await this.etherpadService.createEtherpad(
 			params.user.id,
 			params.destinationCourse.id,
-			content.title,
-			''
+			content.title
 		);
 		if (etherpadPadId) {
 			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
 			content.url = `${etherpadUri}/${etherpadPadId}`;
+			copy.content = content;
+			return copy;
+		}
+		return false;
+	}
+
+	private async copyNexboard(
+		originalElement: IComponentProperties,
+		params: LessonCopyParams
+	): Promise<IComponentProperties | false> {
+		const copy = { ...originalElement } as IComponentProperties;
+		const content = { ...copy.content, url: '', board: '' } as IComponentNexboardProperties;
+
+		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
+		if (nexboard) {
+			content.url = nexboard.url;
+			content.board = nexboard.board;
 			copy.content = content;
 			return copy;
 		}

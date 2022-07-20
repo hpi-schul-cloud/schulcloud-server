@@ -9,16 +9,10 @@ export type PadResponse = { data: { padID: string } };
 export class EtherpadService {
 	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: Logger) {}
 
-	async createEtherpad(
-		userId: EntityId,
-		courseId: string,
-		title: string,
-		description: string
-	): Promise<string | false> {
+	async createEtherpad(userId: EntityId, courseId: string, title: string): Promise<string | false> {
 		const data = {
 			courseId,
 			padName: title,
-			text: description,
 		};
 		try {
 			const service = this.feathersServiceProvider.getService('/etherpad/pads');

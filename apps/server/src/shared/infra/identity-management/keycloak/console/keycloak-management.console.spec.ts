@@ -1,30 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { KeycloakConsole } from './keycloak-management.console';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
 	let console: KeycloakConsole;
-	let writer: ConsoleWriterService;
-	let uc: KeycloakManagementUc;
+	let writer: DeepMocked<ConsoleWriterService>;
+	let uc: DeepMocked<KeycloakManagementUc>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
 					provide: ConsoleWriterService,
-					useValue: {
-						info: jest.fn(),
-					},
+					useValue: createMock<ConsoleWriterService>(),
 				},
 				{
 					provide: KeycloakManagementUc,
-					useValue: {
-						check: jest.fn(),
-						clean: jest.fn(),
-						seed: jest.fn(),
-					},
+					useValue: createMock<KeycloakManagementUc>(),
 				},
 			],
 		}).compile();
@@ -73,6 +68,33 @@ describe('KeycloakConsole', () => {
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'seed').mockRejectedValue('');
 			await expect(console.seed({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
+		});
+	});
+
+	describe('configureIdentityProviders', () => {
+		it('should resolve successfully', async () => {
+			uc.configureIdentityProviders.mockResolvedValue(1);
+
+			await expect(
+				console.configureIdentityProviders({
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).resolves.not.toThrow();
+
+			uc.configureIdentityProviders.mockRestore();
+		});
+		it('should throw on error', async () => {
+			uc.configureIdentityProviders.mockRejectedValue('configure failed');
+
+			await expect(
+				console.configureIdentityProviders({
+					retryCount: 1,
+					retryDelay: 10,
+				})
+			).rejects.toThrow();
+
+			uc.configureIdentityProviders.mockRestore();
 		});
 	});
 });

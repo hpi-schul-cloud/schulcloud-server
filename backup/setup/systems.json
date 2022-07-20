@@ -63,5 +63,23 @@
 		"updatedAt": {
 			"$date": "2022-07-12T14:01:58.588Z"
 		}
+	},
+	{
+		"_id": {
+			"$oid": "62c7f233f35a554ba3ed42f1"
+		},
+		"__v": 0,
+		"updatedAt": {
+			"$date": "2022-07-12T14:01:58.588Z"
+		},
+		"type": "oidc",
+		"alias": "iserv",
+		"config": {
+			"clientId": "IDENTITY_MANAGEMENT__DBC_IS_CLIENTID",
+			"clientSecret": "IDENTITY_MANAGEMENT__DBC_IS_CLIENTSECRET",
+			"authorizationUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+			"tokenUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
+			"logoutUrl": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout"
+		}
 	}
 ]
