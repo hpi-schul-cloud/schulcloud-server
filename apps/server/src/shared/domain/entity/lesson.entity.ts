@@ -1,7 +1,8 @@
-import { Collection, Entity, Index, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { ILearnroomElement } from '@shared/domain/interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
+import { Material } from './materials.entity';
 import { Task } from './task.entity';
 
 export interface ILessonProperties {
@@ -10,6 +11,7 @@ export interface ILessonProperties {
 	course: Course;
 	position?: number;
 	contents: IComponentProperties[] | [];
+	materials?: Material[];
 }
 
 export enum ComponentType {
@@ -75,6 +77,9 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	@Property()
 	contents: IComponentProperties[] | [];
 
+	@ManyToMany('Material', undefined, { fieldName: 'materialIds' })
+	materials = new Collection<Material>(this);
+
 	@OneToMany('Task', 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
@@ -85,6 +90,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.course = props.course;
 		this.position = props.position || 0;
 		this.contents = props.contents;
+		if (props.materials) this.materials.set(props.materials);
 	}
 
 	private getTasksItems(): Task[] {

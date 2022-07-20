@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Lesson } from '@shared/domain';
-import { cleanupCollections, courseFactory, lessonFactory, taskFactory } from '@shared/testing';
+import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
@@ -67,6 +67,16 @@ describe('LessonRepo', () => {
 			const resultLesson = await repo.findById(lesson.id);
 			expect(resultLesson.tasks.isInitialized()).toEqual(true);
 			expect(resultLesson.tasks.length).toEqual(2);
+		});
+
+		it('should populate materials', async () => {
+			const material = materialFactory.build();
+			const lesson = lessonFactory.build({ materials: [material] });
+			await em.persistAndFlush([lesson, material]);
+			em.clear();
+
+			const resultLesson = await repo.findById(lesson.id);
+			expect(resultLesson.materials[0]).toEqual(material);
 		});
 	});
 	describe('findAllByCourseIds', () => {
@@ -146,6 +156,17 @@ describe('LessonRepo', () => {
 			const [[resultLesson]] = await repo.findAllByCourseIds([course.id]);
 			expect(resultLesson.tasks.isInitialized()).toEqual(true);
 			expect(resultLesson.tasks.length).toEqual(2);
+		});
+
+		it('should populate materials', async () => {
+			const course = courseFactory.build();
+			const material = materialFactory.build();
+			const lesson = lessonFactory.build({ course, materials: [material] });
+			await em.persistAndFlush([lesson, material]);
+			em.clear();
+
+			const [[resultLesson]] = await repo.findAllByCourseIds([course.id]);
+			expect(resultLesson.materials[0]).toEqual(material);
 		});
 	});
 });
