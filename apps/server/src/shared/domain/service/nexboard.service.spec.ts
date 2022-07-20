@@ -50,8 +50,8 @@ describe('Nexboard service', () => {
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const nexboard = await nexboardService.createNexboard(userId, 'title', 'description');
-			expect(nexboard).toEqual(false);
+			const response = await nexboardService.createNexboard(userId, 'title', 'description');
+			expect(response).toEqual(false);
 		});
 	});
 });

@@ -168,8 +168,7 @@ export class LessonCopyService {
 		const etherpadPadId = await this.etherpadService.createEtherpad(
 			params.user.id,
 			params.destinationCourse.id,
-			content.title,
-			''
+			content.title
 		);
 		if (etherpadPadId) {
 			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
