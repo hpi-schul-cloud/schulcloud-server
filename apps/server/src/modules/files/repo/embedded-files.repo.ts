@@ -35,11 +35,6 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 			deletedAt: null,
 		},
 	},
-	// {
-	// 	$unwind: {
-	// 		path: '$files',
-	// 	},
-	// },
 	{
 		$lookup: {
 			from: 'files_filerecords',
@@ -49,39 +44,33 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 		},
 	},
 	{
-		$unwind: {
-			path: '$file_filerecords',
-			preserveNullAndEmptyArrays: true,
-		},
-	},
-	{
-		$match: {
-			'file_filerecords.error': null,
+		$set: {
+			file_filerecords: {
+				$filter: {
+					input: '$file_filerecords',
+					as: 'file_filerecords',
+					cond: { $eq: ['$$file_filerecords.error', null] },
+				},
+			},
 		},
 	},
 	{
 		$lookup: {
 			from: 'filerecords',
-			let: {
-				fileRecordId: '$file_filerecords.filerecordId',
-			},
-			pipeline: [
-				{
-					$match: {
-						$expr: {
-							$and: [
-								{
-									$eq: ['$_id', '$$fileRecordId'],
-								},
-								{
-									$eq: ['$parent', lessonId],
-								},
-							],
-						},
-					},
+			localField: 'file_filerecords.filerecordId',
+			foreignField: '_id',
+			as: 'filerecords_match',
+		},
+	},
+	{
+		$set: {
+			filerecord: {
+				$filter: {
+					input: '$filerecords_match',
+					as: 'filerecords_match',
+					cond: { $eq: ['$$filerecords_match.parent', lessonId] },
 				},
-			],
-			as: 'filerecord',
+			},
 		},
 	},
 	{
