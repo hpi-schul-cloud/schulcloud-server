@@ -10,6 +10,7 @@ import {
 	VideoConference,
 	VideoConferenceDO,
 	VideoConferenceOptions,
+	VideoConferenceOptionsDO,
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { NotFoundError } from '@mikro-orm/core';
@@ -125,11 +126,11 @@ describe('Video Conference Repo', () => {
 				createdAt: new Date('2022-07-20'),
 				target: new ObjectId().toHexString(),
 				targetModel: VideoConferenceScope.COURSE,
-				options: {
+				options: new VideoConferenceOptionsDO({
 					everybodyJoinsAsModerator: true,
 					everyAttendeeJoinsMuted: true,
 					moderatorMustApproveJoinRequests: false,
-				},
+				}),
 			});
 
 			// Act
