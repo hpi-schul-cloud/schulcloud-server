@@ -143,7 +143,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		return tasks;
 	}
 
-	getMaterials(): Material[] {
+	getLessonMaterials(): Material[] {
 		if (!this.materials.isInitialized(true)) {
 			throw new Error('Lessons trying to access their materials that are not loaded.');
 		}

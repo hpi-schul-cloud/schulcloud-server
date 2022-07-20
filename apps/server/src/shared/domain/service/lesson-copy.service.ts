@@ -9,6 +9,7 @@ import {
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
+	Material,
 	User,
 } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
@@ -34,13 +35,15 @@ export class LessonCopyService {
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
-		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents || [], params);
+		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
+		const { copiedMaterials, materialStatus } = this.copyLinkedMaterials(params.originalLesson);
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? params.originalLesson.name,
 			position: params.originalLesson.position,
 			contents: copiedContent,
+			materials: copiedMaterials,
 		});
 
 		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(
@@ -50,7 +53,12 @@ export class LessonCopyService {
 			params.user
 		);
 
-		const elements = [...LessonCopyService.lessonStatusMetadata(), ...contentStatus, ...copiedTasksStatus];
+		const elements = [
+			...LessonCopyService.lessonStatusMetadata(),
+			...contentStatus,
+			...materialStatus,
+			...copiedTasksStatus,
+		];
 
 		const status: CopyStatus = {
 			title: copy.name,
@@ -155,8 +163,8 @@ export class LessonCopyService {
 		}
 		return false;
 	}
-  
-  private async copyNexboard(
+
+	private async copyNexboard(
 		originalElement: IComponentProperties,
 		params: LessonCopyParams
 	): Promise<IComponentProperties | false> {
@@ -171,6 +179,7 @@ export class LessonCopyService {
 			return copy;
 		}
 		return false;
+	}
 
 	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
 		const linkedTasks = originalLesson.getLessonLinkedTasks();
@@ -193,6 +202,36 @@ export class LessonCopyService {
 			return [taskGroupStatus];
 		}
 		return [];
+	}
+
+	private copyLinkedMaterials(originalLesson: Lesson): {
+		copiedMaterials: Material[];
+		materialStatus: CopyStatus[];
+	} {
+		const linkedMaterials = originalLesson.getLessonMaterials();
+		const copiedMaterials: Material[] = [];
+		const materialStatus: CopyStatus[] = [];
+		if (linkedMaterials.length > 0) {
+			const materialStatusCache: CopyStatus[] = [];
+			linkedMaterials.forEach((element) => {
+				const material = new Material(element);
+				copiedMaterials.push(material);
+				const status: CopyStatus = {
+					title: element.title,
+					type: CopyElementType.LEARN_MATERIAL,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: material,
+				};
+				materialStatusCache.push(status);
+			});
+			const materialGroupStatus: CopyStatus = {
+				type: CopyElementType.LEARN_MATERIAL_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(materialStatus),
+				elements: materialStatusCache,
+			};
+			materialStatus.push(materialGroupStatus);
+		}
+		return { copiedMaterials, materialStatus };
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {

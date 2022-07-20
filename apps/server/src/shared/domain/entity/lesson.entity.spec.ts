@@ -175,13 +175,13 @@ describe('Lesson Entity', () => {
 		});
 	});
 
-	describe('getMaterials', () => {
+	describe('getLessonMaterials', () => {
 		describe('when materials are not populated', () => {
 			it('should throw', () => {
 				const lesson = lessonFactory.build();
 				lesson.materials.set([orm.em.getReference(Material, new ObjectId().toHexString())]);
 
-				expect(() => lesson.getMaterials()).toThrow();
+				expect(() => lesson.getLessonMaterials()).toThrow();
 			});
 		});
 
@@ -190,7 +190,7 @@ describe('Lesson Entity', () => {
 				const materials = materialFactory.buildList(2);
 				const lesson = lessonFactory.build({ materials });
 
-				const result = lesson.getMaterials();
+				const result = lesson.getLessonMaterials();
 				expect(result.length).toEqual(2);
 				expect(result[0]).toEqual(materials[0]);
 			});
