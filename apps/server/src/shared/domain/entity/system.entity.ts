@@ -73,13 +73,13 @@ export class System extends BaseEntityWithTimestamps {
 		this.provisioningStrategy = props.provisioningStrategy;
 	}
 
-	@Property({})
+	@Property({ nullable: false })
 	type: string; // see legacy enum for valid values
 
 	@Property({ nullable: true })
 	url?: string;
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, unique: true })
 	alias?: string;
 
 	@Property({ nullable: true })
@@ -88,4 +88,7 @@ export class System extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	@Enum()
 	provisioningStrategy?: SystemProvisioningStrategy;
+
+	@Property({ nullable: true })
+	config?: Record<string, unknown>;
 }
