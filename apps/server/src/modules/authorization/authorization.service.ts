@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
+	Actions,
 	BasePermissionManager,
 	CourseRule,
 	EntityId,
@@ -67,7 +68,8 @@ export class AuthorizationService extends BasePermissionManager {
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
-		permissions: Permission[]
+		permissions: Permission[],
+		action?: Actions
 	): Map<Permission, Promise<boolean>> {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
 		permissions.forEach((perm) => {
@@ -75,7 +77,7 @@ export class AuthorizationService extends BasePermissionManager {
 				userId,
 				entityName,
 				entityId,
-				PermissionContextBuilder.permissionOnly([perm])
+				PermissionContextBuilder.build([perm], action)
 			);
 			returnMap.set(perm, ret);
 		});

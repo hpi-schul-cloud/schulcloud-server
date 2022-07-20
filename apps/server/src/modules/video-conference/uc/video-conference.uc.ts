@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { BBBRole } from '@src/modules/video-conference/config/bbb-join.config';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
 import {
+	Actions,
 	Course,
 	EntityId,
 	ICurrentUser,
@@ -353,7 +354,8 @@ export class VideoConferenceUc {
 			userId,
 			PermissionScopeMapping[conferenceScope],
 			entityId,
-			[Permission.START_MEETING, Permission.JOIN_MEETING]
+			[Permission.START_MEETING, Permission.JOIN_MEETING],
+			Actions.read
 		);
 
 		if (await permissionMap.get(Permission.START_MEETING)) {
@@ -362,13 +364,13 @@ export class VideoConferenceUc {
 		if (await permissionMap.get(Permission.JOIN_MEETING)) {
 			return BBBRole.VIEWER;
 		}
-		throw new ForbiddenException();
+		throw new ForbiddenException('insufficient permission');
 	}
 
 	/**
 	 * Throws an error if the feature is disabled for the school or for the entire instance.
-	 * @param schoolId
-	 * @throws ForbiddenException
+	 * @param {EntityId} schoolId
+	 * @throws {ForbiddenException}
 	 */
 	protected async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
 		// throw, if the feature has not been enabled

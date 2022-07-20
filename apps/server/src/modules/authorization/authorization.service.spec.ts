@@ -5,6 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	Actions,
 	ALL_RULES,
 	BaseEntity,
 	IPermissionContext,
@@ -211,10 +212,13 @@ describe('authorization.service', () => {
 				return context.requiredPermissions[0] === permissionTrue;
 			});
 
-			const retMap = service.hasPermissionsByReferences(userId, entityName, entityId, [
-				permissionTrue,
-				permissionFalse,
-			]);
+			const retMap = service.hasPermissionsByReferences(
+				userId,
+				entityName,
+				entityId,
+				[permissionTrue, permissionFalse],
+				Actions.read
+			);
 
 			expect(await retMap.get(permissionTrue)).toBe(true);
 			expect(await retMap.get(permissionFalse)).toBe(false);
