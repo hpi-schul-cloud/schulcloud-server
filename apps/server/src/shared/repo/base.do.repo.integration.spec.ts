@@ -1,31 +1,44 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Entity, EntityName, Property } from '@mikro-orm/core';
-import { BaseDO, BaseEntity } from '@shared/domain';
+import { BaseDO, BaseEntityWithTimestamps, IBaseEntityProps } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
+import { Logger } from '@src/core/logger';
+import { createMock } from '@golevelup/ts-jest';
 
 describe('BaseDORepo', () => {
 	@Entity()
-	class TestEntity extends BaseEntity {
+	class TestEntity extends BaseEntityWithTimestamps {
 		@Property()
-		name = 'test';
+		name: string;
+
+		constructor(props: ITestEntityProperties = { name: 'test' }) {
+			super();
+			this.name = props.name;
+		}
 	}
 
 	class TestDO extends BaseDO {
-		name = 'test';
+		name: string;
 
-		constructor(entityDO: TestDO) {
+		constructor(entityDO: TestDO = { name: 'test' }) {
 			super();
 			this.id = entityDO.id;
 			this.name = entityDO.name;
 		}
 	}
 
+	type ITestEntityProperties = Readonly<Omit<TestEntity, keyof BaseEntityWithTimestamps>>;
+
 	@Injectable()
-	class TestRepo extends BaseDORepo<TestDO, TestEntity> {
+	class TestRepo extends BaseDORepo<TestDO, TestEntity, ITestEntityProperties> {
 		get entityName(): EntityName<TestEntity> {
+			return TestEntity;
+		}
+
+		getConstructor(): { new (I): TestEntity } {
 			return TestEntity;
 		}
 
@@ -33,11 +46,11 @@ describe('BaseDORepo', () => {
 			return new TestDO({ id: entity.id, name: entity.name });
 		}
 
-		mapDOToEntity(entityDO: TestDO): TestEntity {
-			const testEntity: TestEntity = new TestEntity();
-			testEntity.id = entityDO.id as string;
-			testEntity.name = entityDO.name;
-			return testEntity;
+		mapDOToEntity(entityDO: TestDO): ITestEntityProperties & IBaseEntityProps {
+			return {
+				id: entityDO.id as string,
+				name: entityDO.name,
+			};
 		}
 	}
 
@@ -52,7 +65,13 @@ describe('BaseDORepo', () => {
 					entities: [TestEntity],
 				}),
 			],
-			providers: [TestRepo],
+			providers: [
+				TestRepo,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
 
 		repo = module.get(TestRepo);
@@ -82,18 +101,9 @@ describe('BaseDORepo', () => {
 		});
 	});
 
-	describe('create', () => {
-		it('should create a single entity', () => {
-			const testDO = new TestDO({ id: '', name: 'test' });
-
-			const resDO = repo.create(testDO);
-			expect(resDO.name).toEqual(testDO.name);
-		});
-	});
-
 	describe('save', () => {
-		it('should persist and flush a single entity', async () => {
-			const testDO = new TestDO({ id: '', name: 'test' });
+		it('should persist and flush a single new entity', async () => {
+			const testDO = new TestDO({ name: 'test' });
 
 			await repo.save(testDO);
 			em.clear();
@@ -102,15 +112,33 @@ describe('BaseDORepo', () => {
 			expect(result).toHaveLength(1);
 		});
 
-		it('should persist and flush an entity array', async () => {
-			const testDO1 = new TestDO({ id: '', name: 'test' });
-			const testDO2 = new TestDO({ id: '', name: 'test' });
+		it('should persist and flush a new entity array', async () => {
+			const testDO1 = new TestDO({ name: 'test1' });
+			const testDO2 = new TestDO({ name: 'test2' });
 
 			await repo.save([testDO1, testDO2]);
 			em.clear();
 
 			const result = await em.find(TestEntity, {});
 			expect(result).toHaveLength(2);
+			expect(result[0].name).toEqual('test1');
+			expect(result[1].name).toEqual('test2');
+		});
+
+		it('should persist and flush a single updated entity', async () => {
+			const testEntity = em.create(TestEntity, new TestEntity());
+			await em.persistAndFlush(testEntity);
+
+			const testDO = new TestDO({ id: testEntity.id, name: 'test123' });
+
+			await repo.save(testDO);
+			em.clear();
+
+			const result: TestEntity[] = await em.find(TestEntity, {});
+			expect(result).toHaveLength(1);
+			expect(result[0].createdAt).toEqual(testEntity.createdAt);
+			expect(result[0].updatedAt.getTime()).toBeGreaterThanOrEqual(testEntity.updatedAt.getTime());
+			expect(result[0].name).toEqual(testDO.name);
 		});
 	});
 

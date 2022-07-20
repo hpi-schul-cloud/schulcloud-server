@@ -8,8 +8,15 @@ export abstract class BaseWithTimestampsDO extends BaseDO {
 	createdAt?: Date;
 
 	updatedAt?: Date;
+
+	protected constructor(props: BaseWithTimestampsDO) {
+		super();
+		this.id = props.id;
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
+	}
 }
 
-export interface IBaseEntity {
+export interface IBaseEntityProps {
 	id?: string;
 }

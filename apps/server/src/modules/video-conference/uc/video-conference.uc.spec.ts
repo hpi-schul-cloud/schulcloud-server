@@ -307,7 +307,6 @@ describe('VideoConferenceUc', () => {
 		it('should successfully execute and create a new preset in the database', async () => {
 			// Arrange
 			videoConferenceRepo.findByScopeId.mockImplementation(() => Promise.reject());
-			videoConferenceRepo.create.mockReturnValue(savedVcDO);
 			bbbService.create.mockResolvedValue(bbbResponse);
 
 			// Act
@@ -319,8 +318,13 @@ describe('VideoConferenceUc', () => {
 			);
 
 			// Assert
-			expect(videoConferenceRepo.create).toHaveBeenCalledWith(vcDO);
-			expect(videoConferenceRepo.save).toHaveBeenCalled();
+			expect(videoConferenceRepo.save).toHaveBeenCalledWith(
+				new VideoConferenceDO({
+					target: course.id,
+					targetModel: VideoConferenceScope.COURSE,
+					options: defaultOptions,
+				})
+			);
 			expect(bbbService.create).toHaveBeenCalledWith(builder.build());
 
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);

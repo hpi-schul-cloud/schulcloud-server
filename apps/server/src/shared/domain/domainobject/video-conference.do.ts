@@ -23,10 +23,7 @@ export class VideoConferenceDO extends BaseWithTimestampsDO {
 	options: VideoConferenceOptionsDO;
 
 	constructor(domainObject: VideoConferenceDO) {
-		super();
-		this.id = domainObject.id;
-		this.createdAt = domainObject.createdAt;
-		this.updatedAt = domainObject.updatedAt;
+		super(domainObject);
 		this.target = domainObject.target;
 		this.targetModel = domainObject.targetModel;
 		this.options = domainObject.options;

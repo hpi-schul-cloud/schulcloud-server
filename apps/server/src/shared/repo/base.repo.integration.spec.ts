@@ -6,6 +6,9 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from './base.repo';
 
+/**
+ * @deprecated
+ */
 describe('BaseRepo', () => {
 	@Entity()
 	class TestEntity extends BaseEntity {

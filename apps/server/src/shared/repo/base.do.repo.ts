@@ -1,91 +1,79 @@
-import { EntityName, FilterQuery } from '@mikro-orm/core';
+import { EntityDTO, EntityName, FilterQuery, wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseDO, BaseEntity, EntityId, IBaseEntity } from '@shared/domain';
+import { BaseDO, BaseEntity, baseEntityProperties, EntityId, IBaseEntityProps } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 
-/**
- * This repo is deprecated do not use it for new repos.
- */
+type EntityProperties<P> = P & IBaseEntityProps;
+
 @Injectable()
-export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, I extends IBaseEntity> {
-	constructor(protected readonly _em: EntityManager) {}
+export abstract class BaseDORepo<T extends BaseDO, E extends BaseEntity, P> {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {}
 
 	abstract get entityName(): EntityName<E>;
 
-	create(entityDO: T): T {
-		const entity: E = this.mapDOToEntityWithId(entityDO);
-		return this.mapEntityToDO(this._em.create(this.entityName, entity));
+	abstract getConstructor(): new (I) => E;
+
+	protected abstract mapDOToEntity(T): EntityProperties<P>;
+	protected abstract mapEntityToDO(E): T;
+
+	protected mapDOToEntityWithId(edo: T): EntityProperties<P> {
+		const entity: EntityProperties<P> = this.mapDOToEntity(edo);
+		entity.id = edo.id;
+		return entity;
 	}
 
-	create2(type: new (props: IBaseEntity) => E, props: IBaseEntity): E {
-		// eslint-disable-next-line new-cap
-		return new type(props);
+	protected entityFactory(Type: new (I) => E, props: P): E {
+		return new Type(props);
 	}
 
-	async save(entityDos: T | T[]): Promise<void> {
-		const dos: T[] = Array.isArray(entityDos) ? entityDos : [entityDos];
+	async save(entityDos: T | T[]): Promise<T | T[]> {
+		const isArray = Array.isArray(entityDos);
+		const dos: T[] = isArray ? entityDos : [entityDos];
 
-		await Promise.all(
+		const entities: E[] = await Promise.all(
 			dos.map(async (d) => {
-				const entityInterface: I = this.mapDOToEntityWithId(d);
+				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(d);
+				const newEntity: E = this.entityFactory(this.getConstructor(), entityProps);
 
-				let entity: E = await this._em.findOneOrFail(this.entityName, d.id as FilterQuery<E>).catch(() => {
-					return this._em.create(this.entityName, this.create2(typeof E, entityInterface));
-				});
+				const entity: E = await this._em
+					.findOneOrFail(this.entityName, d.id as FilterQuery<E>)
+					.then((fetchedEntity: E) => {
+						// Ignore base entity properties when updating entity
+						const wrapped: EntityDTO<E> = wrap(newEntity).toObject(baseEntityProperties);
 
-				entity = Object.assign(entity, entityInterface);
+						this.logger.debug(`Update entity with id ${fetchedEntity.id}`);
+						return Object.assign(fetchedEntity, wrapped) as E;
+					})
+					.catch(() => {
+						this.logger.debug(`Created new entity`);
+						return this._em.create(this.entityName, newEntity);
+					});
 
-				this._em.persist(entity);
+				return entity;
 			})
 		);
-		await this._em.flush();
-
-		let entity: E | null;
-		if (entityInterface.id) {
-		} else {
-			entity = null;
-		}
-
-		c;
 
 		await this._em.persistAndFlush(entities);
 
-		const ents: (E | null)[] = Array.isArray(entityDos)
-			? await Promise.all(entityDos.map((d) => this._em.findOne(this.entityName, d.id as FilterQuery<E>)))
-			: [await this._em.findOne(this.entityName, entityDos.id as FilterQuery<E>)];
-
-		const entIds: Map<string, E> = new Map<string, E>();
-
-		ents.forEach((e) => {
-			if (e !== null) {
-				entIds.set(e.id, e);
-			}
-		});
-
-		const entities: E | E[] = Array.isArray(entityDos)
-			? entityDos.map((d) => this.mapDOToEntityWithId(d))
-			: this.mapDOToEntityWithId(entityDos);
-		await this._em.persistAndFlush(entities);
+		return isArray ? entities.map((entity) => this.mapEntityToDO(entity)) : this.mapEntityToDO(entities[0]);
 	}
 
 	async delete(entityDos: T | T[]): Promise<void> {
-		const entities: E | E[] = Array.isArray(entityDos)
-			? entityDos.map((d) => this.mapDOToEntityWithId(d))
-			: this.mapDOToEntityWithId(entityDos);
+		const dos: T[] = Array.isArray(entityDos) ? entityDos : [entityDos];
+
+		const entities: E[] = await Promise.all(
+			dos.map(async (d) => {
+				const entityProps: EntityProperties<P> = this.mapDOToEntityWithId(d);
+				return this._em.findOneOrFail(this.entityName, entityProps.id as FilterQuery<E>);
+			})
+		);
+
 		await this._em.removeAndFlush(entities);
 	}
 
 	async findById(id: EntityId): Promise<T> {
 		const entity: E = await this._em.findOneOrFail(this.entityName, id as FilterQuery<E>);
 		return this.mapEntityToDO(entity);
-	}
-
-	protected abstract mapDOToEntity(T): I;
-	protected abstract mapEntityToDO(E): T;
-
-	protected mapDOToEntityWithId(edo: T): I {
-		const entity: I = this.mapDOToEntity(edo);
-		entity.id = edo.id;
-		return entity;
 	}
 }

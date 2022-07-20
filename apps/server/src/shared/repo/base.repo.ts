@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseEntity, EntityId } from '@shared/domain';
 
 /**
- * This repo is deprecated do not use it for new repos.
+ * @deprecated This repo is do not use it for new repos. Please use {@link BaseDORepo}
  */
 @Injectable()
 export abstract class BaseRepo<T extends BaseEntity> {

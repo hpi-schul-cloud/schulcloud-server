@@ -3,22 +3,47 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { VideoConference, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain';
+import {
+	IBaseEntityProps,
+	IVideoConferenceProperties,
+	TargetModels,
+	VideoConference,
+	VideoConferenceDO,
+	VideoConferenceOptions,
+} from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { NotFoundError } from '@mikro-orm/core';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
+import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
+
+class VideoConferenceRepoSpec extends VideoConferenceRepo {
+	mapEntityToDOSpec(entity: VideoConference): VideoConferenceDO {
+		return super.mapEntityToDO(entity);
+	}
+
+	mapDOToEntitySpec(entityDO: VideoConferenceDO): IVideoConferenceProperties & IBaseEntityProps {
+		return super.mapDOToEntity(entityDO);
+	}
+}
 
 describe('Video Conference Repo', () => {
 	let module: TestingModule;
-	let repo: VideoConferenceRepo;
+	let repo: VideoConferenceRepoSpec;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [VideoConferenceRepo],
+			providers: [
+				VideoConferenceRepoSpec,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
 		}).compile();
-		repo = module.get(VideoConferenceRepo);
+		repo = module.get(VideoConferenceRepoSpec);
 		em = module.get(EntityManager);
 	});
 
@@ -39,46 +64,8 @@ describe('Video Conference Repo', () => {
 		expect(repo.entityName).toBe(VideoConference);
 	});
 
-	describe('create', () => {
-		it('should create a single entity', () => {
-			const testDO = new VideoConferenceDO({
-				target: '123',
-				targetModel: VideoConferenceScope.COURSE,
-				options: new VideoConferenceOptionsDO({
-					everyAttendeeJoinsMuted: true,
-					moderatorMustApproveJoinRequests: true,
-					everybodyJoinsAsModerator: true,
-				}),
-			});
-
-			const resDO = repo.create(testDO);
-			expect(resDO.target).toEqual(testDO.target);
-		});
-	});
-
-	describe('findById', () => {
-		it('should return right keys', async () => {
-			const vc = videoConferenceFactory.build();
-
-			await em.persistAndFlush([vc]);
-			const result = await repo.findById(vc.id);
-			expect(result.target).toEqual(vc.target);
-		});
-
-		it('should return one videoconference that matched by id', async () => {
-			const vcA = videoConferenceFactory.build();
-			const vcB = videoConferenceFactory.build();
-
-			await em.persistAndFlush([vcA, vcB]);
-			const result = await repo.findById(vcA.id);
-			expect(result.id).toEqual(vcA.id);
-		});
-
-		it('should throw an error if vc by id doesnt exist', async () => {
-			const idA = new ObjectId().toHexString();
-
-			await expect(repo.findById(idA)).rejects.toThrow(NotFoundError);
-		});
+	it('should implement getConstructor', () => {
+		expect(repo.getConstructor()).toBe(VideoConference);
 	});
 
 	describe('findByScopeId', () => {
@@ -92,6 +79,69 @@ describe('Video Conference Repo', () => {
 		it('should throw an Error if the scope mismatches the idtype', async () => {
 			const vcA = videoConferenceFactory.build();
 			await expect(repo.findByScopeId(vcA.target, VideoConferenceScope.EVENT)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('mapEntityToDO', () => {
+		it('should return a domain object', () => {
+			// Arrange
+			const id = new ObjectId();
+			const testEntity: VideoConference = {
+				id: id.toHexString(),
+				_id: id,
+				updatedAt: new Date('2022-07-20'),
+				createdAt: new Date('2022-07-20'),
+				options: new VideoConferenceOptions({
+					everybodyJoinsAsModerator: true,
+					everyAttendeJoinsMuted: true,
+					moderatorMustApproveJoinRequests: false,
+				}),
+				targetModel: TargetModels.COURSES,
+				target: new ObjectId().toHexString(),
+			};
+
+			// Act
+			const videoConferenceDO: VideoConferenceDO = repo.mapEntityToDOSpec(testEntity);
+
+			// Assert
+			expect(videoConferenceDO.id).toEqual(testEntity.id);
+			expect(videoConferenceDO.target).toEqual(testEntity.target);
+			expect(videoConferenceDO.createdAt).toEqual(testEntity.createdAt);
+			expect(videoConferenceDO.updatedAt).toEqual(testEntity.updatedAt);
+			expect(videoConferenceDO.targetModel).toEqual(VideoConferenceScope.COURSE);
+			const { options } = videoConferenceDO;
+			expect(options.everybodyJoinsAsModerator).toEqual(testEntity.options.everybodyJoinsAsModerator);
+			expect(options.everyAttendeeJoinsMuted).toEqual(testEntity.options.everyAttendeJoinsMuted);
+			expect(options.moderatorMustApproveJoinRequests).toEqual(testEntity.options.moderatorMustApproveJoinRequests);
+		});
+	});
+
+	describe('mapDOToEntity', () => {
+		it('should map DO to Entity', () => {
+			// Arrange
+			const testDO: VideoConferenceDO = new VideoConferenceDO({
+				id: 'testId',
+				updatedAt: new Date('2022-07-20'),
+				createdAt: new Date('2022-07-20'),
+				target: new ObjectId().toHexString(),
+				targetModel: VideoConferenceScope.COURSE,
+				options: {
+					everybodyJoinsAsModerator: true,
+					everyAttendeeJoinsMuted: true,
+					moderatorMustApproveJoinRequests: false,
+				},
+			});
+
+			// Act
+			const result: IVideoConferenceProperties & IBaseEntityProps = repo.mapDOToEntitySpec(testDO);
+
+			// Assert
+			expect(result.id).toEqual(testDO.id);
+			expect(result.target).toEqual(testDO.target);
+			expect(result.targetModel).toEqual(TargetModels.COURSES);
+			expect(result.options.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);
+			expect(result.options.everybodyJoinsAsModerator).toEqual(testDO.options.everybodyJoinsAsModerator);
+			expect(result.options.moderatorMustApproveJoinRequests).toEqual(testDO.options.moderatorMustApproveJoinRequests);
 		});
 	});
 });

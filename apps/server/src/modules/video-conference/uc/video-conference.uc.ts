@@ -123,7 +123,7 @@ export class VideoConferenceUc {
 			vcDo.options = options;
 		} catch (error) {
 			// Create new preset
-			vcDo = this.videoConferenceRepo.create({
+			vcDo = new VideoConferenceDO({
 				target: refId,
 				targetModel: conferenceScope,
 				options,

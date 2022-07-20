@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { VideoConferenceDO } from '@shared/domain';
+import { IBaseEntityProps, IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { VideoConferenceScope } from '@shared/domain/interface/vc-scope.enum';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
+import { EntityName } from '@mikro-orm/core';
 
 const TargetModelsMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
@@ -15,8 +16,12 @@ const VideoConferencingScopeMapping = {
 };
 
 @Injectable()
-export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConference> {
-	get entityName() {
+export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConference, IVideoConferenceProperties> {
+	get entityName(): EntityName<VideoConference> {
+		return VideoConference;
+	}
+
+	getConstructor(): { new (I): VideoConference } {
 		return VideoConference;
 	}
 
@@ -35,6 +40,8 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 	protected mapEntityToDO(entity: VideoConference): VideoConferenceDO {
 		return new VideoConferenceDO({
 			id: entity.id,
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
 			target: entity.target,
 			targetModel: VideoConferencingScopeMapping[entity.targetModel],
 			options: {
@@ -45,8 +52,9 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	protected mapDOToEntity(entityDO: VideoConferenceDO): VideoConference {
-		return new VideoConference({
+	protected mapDOToEntity(entityDO: VideoConferenceDO): IVideoConferenceProperties & IBaseEntityProps {
+		return {
+			id: entityDO.id,
 			target: entityDO.target,
 			targetModel: TargetModelsMapping[entityDO.targetModel],
 			options: {
@@ -54,6 +62,6 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 				everyAttendeJoinsMuted: entityDO.options.everyAttendeeJoinsMuted,
 				moderatorMustApproveJoinRequests: entityDO.options.moderatorMustApproveJoinRequests,
 			},
-		});
+		};
 	}
 }
