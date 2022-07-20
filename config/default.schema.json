@@ -400,6 +400,11 @@
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
 		},
+		"FEATURE_NEXBOARD_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable nexboard"
+		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
 			"default": true,

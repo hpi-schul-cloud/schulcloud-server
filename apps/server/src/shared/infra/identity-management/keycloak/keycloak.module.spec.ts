@@ -1,19 +1,23 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeycloakConsole } from './console/keycloak-management.console';
-import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { KeycloakModule } from './keycloak.module';
+import { KeycloakAdministrationService } from './keycloak-administration.service';
+import { KeycloakConsole } from './console/keycloak-management.console';
 
-describe('IdentityManagementModule', () => {
+describe('KeycloakModule', () => {
 	let module: TestingModule;
 	let service: KeycloakAdministrationService;
 	let console: KeycloakConsole;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }), KeycloakModule],
+			imports: [
+				KeycloakModule,
+				MongoMemoryDatabaseModule.forRoot(),
+				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			],
 		}).compile();
-
 		service = module.get(KeycloakAdministrationService);
 		console = module.get(KeycloakConsole);
 	});
@@ -28,9 +32,5 @@ describe('IdentityManagementModule', () => {
 
 	it('should have defined keycloak console.', () => {
 		expect(console).toBeDefined();
-		// {
-		// 	provide: ConfigService,
-		// 	useValue: createMock<ConfigService>(),
-		// }
 	});
 });
