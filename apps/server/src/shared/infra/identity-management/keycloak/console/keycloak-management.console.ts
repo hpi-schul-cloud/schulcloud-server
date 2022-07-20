@@ -76,6 +76,23 @@ export class KeycloakConsole {
 		);
 	}
 
+	@Command({
+		command: 'configure',
+		description: 'Configures Keycloak identity providers.',
+		options: KeycloakConsole.retryFlags,
+	})
+	async configureIdentityProviders(options: IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'configure',
+			async () => {
+				const count = await this.keycloakManagementUc.configureIdentityProviders();
+				this.console.info(`Configured ${count} identity provider(s).`);
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
 	private async repeatCommand<T>(
 		commandName: string,
 		command: () => Promise<T>,
