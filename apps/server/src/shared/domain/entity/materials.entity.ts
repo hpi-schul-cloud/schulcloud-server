@@ -1,5 +1,4 @@
-import { Entity } from '@mikro-orm/core/decorators/Entity';
-import { Property } from '@mikro-orm/core/decorators/Property';
+import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface ITargetGroupProperties {
