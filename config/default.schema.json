@@ -553,6 +553,11 @@
 			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_ETHERPAD_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Etherpad feature enabled"
+		},
 		"ETHERPAD_API_KEY": {
 			"type": "string",
 			"description": "The etherpad api key for sending requests."
@@ -572,10 +577,21 @@
 			"default": "https://etherpad.dbildungscloud.de/p",
 			"description": "The etherpad api version uri."
 		},
-		"ETHERPAD_NEW_PAD_URI": {
-			"type": "string",
-			"default": "https://dbildungscloud.de/etherpad/p",
-			"description": "The etherpad api version uri."
+		"ETHERPAD": {
+			"type": "object",
+			"description": "Etherpad settings",
+			"required": [
+				"PAD_URI"
+			],
+			"properties": {
+				"PAD_URI": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://dbildungscloud.de/etherpad/p",
+					"pattern": ".*(?<!/)$",
+					"description": "The etherpad pad uri"
+				}
+			}
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",

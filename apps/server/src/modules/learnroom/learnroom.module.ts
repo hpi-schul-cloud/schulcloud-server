@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import {
 	BoardCopyService,
 	CopyHelperService,
+	EtherpadService,
 	CourseCopyService,
 	LessonCopyService,
 	TaskCopyService,
@@ -15,6 +16,8 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
+import { FeathersServiceProvider } from '@shared/infra/feathers';
+import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
@@ -57,6 +60,9 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyService,
 		CourseCopyUC,
 		RoomsService,
+		EtherpadService,
+		FeathersServiceProvider,
+		Logger,
 	],
 })
 export class LearnroomModule {}
