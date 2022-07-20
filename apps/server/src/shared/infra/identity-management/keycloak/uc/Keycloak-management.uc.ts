@@ -1,5 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { IKeycloakSettings, KeycloakSettings } from '../interface';
+import { Injectable } from '@nestjs/common';
 import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
@@ -9,8 +8,7 @@ export class KeycloakManagementUc {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly keycloakConfigService: KeycloakConfigurationService,
-		private readonly keycloakSeedService: KeycloakSeedService,
-		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
+		private readonly keycloakSeedService: KeycloakSeedService
 	) {}
 
 	public async check(): Promise<boolean> {
@@ -18,14 +16,12 @@ export class KeycloakManagementUc {
 	}
 
 	public async clean(): Promise<number> {
-		let kc = await this.kcAdmin.callKcAdminClient();
+		const kc = await this.kcAdmin.callKcAdminClient();
 		const adminUser = this.kcAdmin.getAdminUser();
 		const users = (await kc.users.find()).filter((user) => user.username !== adminUser);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const user of users) {
-			// eslint-disable-next-line no-await-in-loop
-			kc = await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
 			await kc.users.del({
 				// can not be undefined, see filter above

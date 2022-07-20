@@ -1,14 +1,12 @@
 import fs from 'node:fs/promises';
 import { Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly configService: ConfigService<unknown, true>,
-		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
+		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles // @Inject(KeycloakManagementInputFiles) private readonly fs: IKeycloakManagementInputFiles
 	) {}
 
 	public async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser) {

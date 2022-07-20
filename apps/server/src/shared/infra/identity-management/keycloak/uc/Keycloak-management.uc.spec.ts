@@ -3,35 +3,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { v1 } from 'uuid';
-import fs from 'node:fs/promises';
-import { SysType } from '@shared/infra/identity-management';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SystemRepo } from '@shared/repo';
-import { System } from '@shared/domain';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
-import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
-import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
-import { ConfigService } from '@nestjs/config';
-import { NodeEnvType } from '@src/server.config';
-import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
-import { KeycloakAdministrationService } from '../keycloak-administration.service';
+import { IJsonAccount, IJsonUser } from '../interface';
+import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
 import { KeycloakManagementUc } from './Keycloak-management.uc';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
+import { KeycloakSeedService } from '../service/keycloak-seed.service';
 
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
 	let uc: KeycloakManagementUc;
-	let client: DeepMocked<KeycloakAdminClient>;
-	let service: DeepMocked<KeycloakAdministrationService>;
-	let configService: DeepMocked<ConfigService>;
-	let repo: DeepMocked<SystemRepo>;
-	let settings: IKeycloakSettings;
+	const kcAdminClient = createMock<KeycloakAdminClient>();
+	let keycloakAdministrationService: DeepMocked<KeycloakAdministrationService>;
+	let keycloakConfigurationService: DeepMocked<KeycloakConfigurationService>;
+	let keycloakSeedService: DeepMocked<KeycloakSeedService>;
 
-	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
 	const kcApiUsersMock = createMock<Users>();
-	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const adminUsername = 'admin';
 	const accountsFile = 'accounts.json';
 	const usersFile = 'users.json';
@@ -49,19 +37,6 @@ describe('KeycloakManagementUc', () => {
 		username: adminUsername,
 	};
 
-	const getSettings = (): IKeycloakSettings => {
-		return {
-			baseUrl: 'http://localhost:8080',
-			realmName: 'master',
-			clientId: 'dBildungscloud',
-			credentials: {
-				username: adminUsername,
-				password: 'password',
-				grantType: 'password',
-				clientId: 'client-id',
-			},
-		};
-	};
 	const users: UserRepresentation[] = [
 		{
 			id: v1(),
@@ -92,63 +67,49 @@ describe('KeycloakManagementUc', () => {
 			username: 'notUnique',
 		},
 	];
-	const inputFiles: IKeycloakManagementInputFiles = {
-		accountsFile: 'accounts.json',
-		usersFile: 'users.json',
-		systemsFile: 'systems.json',
-	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				{
-					provide: KeycloakManagementInputFiles,
-					useValue: inputFiles,
-				},
 				KeycloakManagementUc,
 				{
 					provide: KeycloakAdministrationService,
 					useValue: {
 						callKcAdminClient: jest.fn().mockImplementation(async (): Promise<KeycloakAdminClient> => {
-							return Promise.resolve(client);
+							return Promise.resolve(kcAdminClient);
 						}),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
 					},
 				},
 				{
-					provide: KeycloakAdminClient,
-					useValue: createMock<KeycloakAdminClient>({
-						auth: (): Promise<void> => {
-							if (settings.credentials.username !== adminUser.username) throw new Error();
-							return Promise.resolve();
-						},
-						setConfig: () => {},
-						users: kcApiUsersMock,
-						identityProviders: kcApiClientIdentityProvidersMock,
-						authenticationManagement: kcApiAuthenticationManagementMock,
-					}),
+					provide: KeycloakConfigurationService,
+					useValue: {
+						configureIdentityProviders: jest.fn().mockImplementation(async (): Promise<number> => {
+							return Promise.resolve(3);
+						}),
+					},
 				},
 				{
-					provide: SystemRepo,
-					useValue: createMock<SystemRepo>(),
-				},
-				{
-					provide: KeycloakSettings,
-					useFactory: getSettings,
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: KeycloakSeedService,
+					useValue: {
+						createOrUpdateIdmAccount: jest.fn().mockImplementation(async (): Promise<number> => {
+							return Promise.resolve(3);
+						}),
+						loadAccounts: jest.fn().mockImplementation(async (): Promise<number> => {
+							return Promise.resolve(3);
+						}),
+						loadUsers: jest.fn().mockImplementation(async (): Promise<number> => {
+							return Promise.resolve(3);
+						}),
+					},
 				},
 			],
 		}).compile();
 		uc = module.get(KeycloakManagementUc);
-		client = module.get(KeycloakAdminClient);
-		service = module.get(KeycloakAdministrationService);
-		configService = module.get(ConfigService);
-		settings = module.get(KeycloakSettings);
-		repo = module.get(SystemRepo);
+		keycloakAdministrationService = module.get(KeycloakAdministrationService);
+		keycloakConfigurationService = module.get(KeycloakConfigurationService);
+		keycloakSeedService = module.get(KeycloakSeedService);
 	});
 
 	beforeEach(() => {
@@ -172,22 +133,27 @@ describe('KeycloakManagementUc', () => {
 	describe('check', () => {
 		it('should return connection status', async () => {
 			let expected = true;
-			jest.spyOn(service, 'testKcConnection').mockResolvedValue(expected);
+			jest.spyOn(keycloakAdministrationService, 'testKcConnection').mockResolvedValue(expected);
 			await expect(uc.check()).resolves.toBe(expected);
 
 			expected = false;
-			jest.spyOn(service, 'testKcConnection').mockResolvedValue(expected);
+			jest.spyOn(keycloakAdministrationService, 'testKcConnection').mockResolvedValue(expected);
 			await expect(uc.check()).resolves.toBe(expected);
 		});
 	});
 
 	describe('clean', () => {
 		it('should clean successfully', async () => {
+			kcAdminClient.users.find = jest.fn().mockResolvedValue([...users, adminUser]);
+			kcAdminClient.users.del = jest.fn();
 			const result = await uc.clean();
 			expect(result).toBeGreaterThan(0);
+			expect(kcAdminClient.users.del).toBeCalledTimes(users.length);
 		});
 		it('should clean all users, but the admin', async () => {
-			const deleteSpy = jest.spyOn(client.users, 'del');
+			kcAdminClient.users.find = jest.fn().mockResolvedValue([...users, adminUser]);
+			kcAdminClient.users.del = jest.fn();
+			const deleteSpy = jest.spyOn(kcAdminClient.users, 'del');
 			await uc.clean();
 
 			users.forEach((user) => {
@@ -198,7 +164,6 @@ describe('KeycloakManagementUc', () => {
 	});
 
 	describe('seed', () => {
-		let fsReadMock: jest.SpyInstance;
 		beforeAll(() => {
 			const missingUsername = 'missingUsername';
 			const missingFirstName = 'missingFirstName';
@@ -225,27 +190,18 @@ describe('KeycloakManagementUc', () => {
 				{ _id: { $oid: '4' }, firstName: 'NoAccount', lastName: '', email: '' },
 			];
 
-			fsReadMock = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
-				if (path.toString() === accountsFile) {
-					return Promise.resolve(JSON.stringify(jsonAccounts));
-				}
-				if (path.toString() === usersFile) {
-					return Promise.resolve(JSON.stringify(jsonUsers));
-				}
-				throw new Error();
-			});
+			keycloakSeedService.loadUsers.mockResolvedValue(jsonUsers);
+			keycloakSeedService.loadAccounts.mockResolvedValue(jsonAccounts);
 		});
 
-		afterAll(() => {
-			fsReadMock.mockRestore();
-		});
+		afterAll(() => {});
 
 		it('should seed successfully', async () => {
 			const result = await uc.seed();
 			expect(result).toBeGreaterThan(0);
 		});
 		it('should seed all users from a backup JSON with corresponding account', async () => {
-			const createSpy = jest.spyOn(client.users, 'create');
+			const createSpy = jest.spyOn(kcAdminClient.users, 'create');
 			const result = await uc.seed();
 			validAccounts.forEach((account) => {
 				expect(createSpy).toHaveBeenCalledWith(
@@ -257,10 +213,10 @@ describe('KeycloakManagementUc', () => {
 			expect(result).toBe(validAccounts.length);
 		});
 		it('should update existing users after initial seeding', async () => {
-			const createSpy = jest.spyOn(client.users, 'create');
-			const updateSpy = jest.spyOn(client.users, 'update');
+			const createSpy = jest.spyOn(kcAdminClient.users, 'create');
+			const updateSpy = jest.spyOn(kcAdminClient.users, 'update');
 
-			const findSpy = jest.spyOn(client.users, 'find');
+			const findSpy = jest.spyOn(kcAdminClient.users, 'find');
 
 			// eslint-disable-next-line no-empty-pattern
 			findSpy.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
@@ -292,112 +248,9 @@ describe('KeycloakManagementUc', () => {
 	});
 
 	describe('configureIdentityProviders', () => {
-		const idps: IdentityProviderRepresentation[] = [
-			{
-				providerId: 'oidc',
-				alias: 'alias',
-				enabled: true,
-				config: {
-					clientId: 'clientId',
-					clientSecret: 'clientSecret',
-					authorizationUrl: 'authorizationUrl',
-					tokenUrl: 'tokenUrl',
-					logoutUrl: 'logoutUrl',
-				},
-			},
-		];
-		const systems: System[] = [
-			{
-				_id: new ObjectId(0),
-				id: new ObjectId(0).toString(),
-				type: SysType.OIDC.toString(),
-				alias: 'alias',
-				config: {
-					clientId: 'clientId',
-					clientSecret: 'clientSecret',
-					authorizationUrl: 'authorizationUrl',
-					tokenUrl: 'tokenUrl',
-					logoutUrl: 'logoutUrl',
-				},
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			},
-		];
-		let fsReadFile: jest.SpyInstance;
-
-		beforeEach(() => {
-			repo.findAll.mockResolvedValue(systems);
-			kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
-			kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
-			kcApiClientIdentityProvidersMock.update.mockResolvedValue();
-			kcApiClientIdentityProvidersMock.del.mockResolvedValue();
-			configService.get.mockReturnValue(NodeEnvType.TEST);
-			fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
-				if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
-				throw new Error('File not found');
-			});
-		});
-
-		afterEach(() => {
-			repo.findAll.mockRestore();
-			kcApiClientIdentityProvidersMock.find.mockRestore();
-			kcApiClientIdentityProvidersMock.create.mockRestore();
-			kcApiClientIdentityProvidersMock.update.mockRestore();
-			kcApiClientIdentityProvidersMock.del.mockRestore();
-			configService.get.mockRestore();
-			fsReadFile.mockRestore();
-		});
-
-		it('should read configs from file system in development', async () => {
-			configService.get.mockReturnValueOnce(NodeEnvType.DEVELOPMENT);
-
-			const result = await uc.configureIdentityProviders();
-			expect(result).toBeGreaterThan(0);
-			expect(repo.findAll).not.toBeCalled();
-			expect(fsReadFile).toBeCalled();
-		});
-		it('should read configs from database in production', async () => {
-			configService.get.mockReturnValueOnce(NodeEnvType.PRODUCTION);
-
-			const result = await uc.configureIdentityProviders();
-			expect(result).toBeGreaterThan(0);
-			expect(repo.findAll).toBeCalled();
-			expect(fsReadFile).not.toBeCalled();
-		});
-		it('should not return any configs if environment is unknown', async () => {
-			configService.get.mockReturnValue(NodeEnvType.MIGRATION);
-			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
-
-			await expect(uc.configureIdentityProviders()).resolves.toBe(0);
-
-			configService.get.mockRestore();
-			kcApiClientIdentityProvidersMock.find.mockRestore();
-		});
-		it('should create a configuration in Keycloak', async () => {
-			kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
-
-			const result = await uc.configureIdentityProviders();
-			expect(result).toBe(1);
-			expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
-			expect(configService.get).toBeCalled();
-
-			kcApiClientIdentityProvidersMock.find.mockRestore();
-		});
-		it('should update a configuration in Keycloak', async () => {
-			const result = await uc.configureIdentityProviders();
-			expect(result).toBe(1);
-			expect(kcApiClientIdentityProvidersMock.update).toBeCalledTimes(1);
-		});
-		it('should delete a new configuration in Keycloak', async () => {
-			repo.findAll.mockResolvedValue([]);
-			configService.get.mockReturnValue(NodeEnvType.PRODUCTION);
-
-			const result = await uc.configureIdentityProviders();
-			expect(result).toBe(1);
-			expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
-
-			repo.findAll.mockRestore();
-			configService.get.mockRestore();
+		it('should call service', async () => {
+			await uc.configureIdentityProviders();
+			expect(keycloakConfigurationService.configureIdentityProviders).toBeCalledTimes(1);
 		});
 	});
 });

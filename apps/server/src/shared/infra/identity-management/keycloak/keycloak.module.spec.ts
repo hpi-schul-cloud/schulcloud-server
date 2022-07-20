@@ -3,12 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { KeycloakModule } from './keycloak.module';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
-import { KeycloakConsole } from './controller/console/keycloak-management.console';
 
 describe('KeycloakModule', () => {
 	let module: TestingModule;
 	let service: KeycloakAdministrationService;
-	let console: KeycloakConsole;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -19,7 +17,6 @@ describe('KeycloakModule', () => {
 			],
 		}).compile();
 		service = module.get(KeycloakAdministrationService);
-		console = module.get(KeycloakConsole);
 	});
 
 	afterAll(async () => {
@@ -28,9 +25,5 @@ describe('KeycloakModule', () => {
 
 	it('should have defined keycloak service.', () => {
 		expect(service).toBeDefined();
-	});
-
-	it('should have defined keycloak console.', () => {
-		expect(console).toBeDefined();
 	});
 });
