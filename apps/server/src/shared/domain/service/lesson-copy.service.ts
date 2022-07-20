@@ -1,7 +1,6 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { EtherpadService } from './etherpad.service';
 import {
 	ComponentType,
 	Course,
@@ -13,6 +12,7 @@ import {
 } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
+import { EtherpadService } from './etherpad.service';
 import { TaskCopyService } from './task-copy.service';
 
 export type LessonCopyParams = {
@@ -115,29 +115,6 @@ export class LessonCopyService {
 		return copy;
 	}
 
-	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
-		const linkedTasks = originalLesson.getLessonLinkedTasks();
-		const copiedTasksStatus: CopyStatus[] = [];
-		if (linkedTasks.length > 0) {
-			linkedTasks.forEach((element) => {
-				const taskStatus = this.taskCopyService.copyTaskMetadata({
-					originalTask: element,
-					destinationCourse,
-					destinationLesson,
-					user,
-				});
-				copiedTasksStatus.push(taskStatus);
-			});
-			const taskGroupStatus = {
-				type: CopyElementType.TASK_GROUP,
-				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
-				elements: copiedTasksStatus,
-			};
-			return [taskGroupStatus];
-		}
-		return [];
-	}
-
 	private async copyEtherpad(
 		originalElement: IComponentProperties,
 		params: LessonCopyParams
@@ -159,6 +136,29 @@ export class LessonCopyService {
 			return copy;
 		}
 		return false;
+	}
+
+	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
+		const linkedTasks = originalLesson.getLessonLinkedTasks();
+		const copiedTasksStatus: CopyStatus[] = [];
+		if (linkedTasks.length > 0) {
+			linkedTasks.forEach((element) => {
+				const taskStatus = this.taskCopyService.copyTaskMetadata({
+					originalTask: element,
+					destinationCourse,
+					destinationLesson,
+					user,
+				});
+				copiedTasksStatus.push(taskStatus);
+			});
+			const taskGroupStatus = {
+				type: CopyElementType.TASK_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
+				elements: copiedTasksStatus,
+			};
+			return [taskGroupStatus];
+		}
+		return [];
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
