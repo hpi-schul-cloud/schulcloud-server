@@ -36,7 +36,7 @@ describe('Etherpad service', () => {
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const etherpadId = await etherpadService.createEtherpad(userId, 'courseId', 'title', 'description');
+			const etherpadId = await etherpadService.createEtherpad(userId, 'courseId', 'title');
 			expect(etherpadId).toEqual('padId');
 		});
 
@@ -45,7 +45,7 @@ describe('Etherpad service', () => {
 
 			const userId: EntityId = new ObjectId().toHexString();
 
-			const etherpadId = await etherpadService.createEtherpad(userId, 'courseId', 'title', 'description');
+			const etherpadId = await etherpadService.createEtherpad(userId, 'courseId', 'title');
 			expect(etherpadId).toEqual(false);
 		});
 	});
