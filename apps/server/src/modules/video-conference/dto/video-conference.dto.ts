@@ -7,22 +7,39 @@ import { VideoConferenceState } from '@src/modules/video-conference/controller/d
 import { Permission } from '@shared/domain';
 import { VideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
 
-export interface VideoConferenceDTO<T extends BBBBaseResponse> {
+export class VideoConferenceDTO<T extends BBBBaseResponse> {
 	state: VideoConferenceState;
 
 	permission: Permission;
 
 	bbbResponse?: BBBResponse<T>;
+
+	constructor(dto: VideoConferenceDTO<T>) {
+		this.state = dto.state;
+		this.bbbResponse = dto.bbbResponse;
+		this.permission = dto.permission;
+	}
 }
 
-export interface VideoConferenceJoinDTO {
+export class VideoConferenceJoinDTO {
 	state: VideoConferenceState;
 
 	permission: Permission;
 
 	url: string;
+
+	constructor(dto: VideoConferenceJoinDTO) {
+		this.state = dto.state;
+		this.permission = dto.permission;
+		this.url = dto.url;
+	}
 }
 
-export interface VideoConferenceInfoDTO extends VideoConferenceDTO<BBBMeetingInfoResponse> {
+export class VideoConferenceInfoDTO extends VideoConferenceDTO<BBBMeetingInfoResponse> {
+	constructor(dto: VideoConferenceInfoDTO) {
+		super(dto);
+		this.options = dto.options;
+	}
+
 	options: VideoConferenceOptions;
 }
