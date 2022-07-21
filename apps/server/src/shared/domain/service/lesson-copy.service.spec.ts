@@ -855,7 +855,7 @@ describe('lesson copy service', () => {
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
-					(el) => el.type === CopyElementType.LEARN_MATERIAL_GROUP
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
 				expect(materialsGroupStatus).not.toBeDefined();
 			});
@@ -874,12 +874,12 @@ describe('lesson copy service', () => {
 				const materialCopy = materialFactory.build({ title: originalMaterial.title });
 				const mockedMaterialStatus = {
 					title: materialCopy.title,
-					type: CopyElementType.LEARN_MATERIAL,
+					type: CopyElementType.LERNSTORE_MATERIAL,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: materialCopy,
 				};
 				const mockedMaterialGroupStatus = {
-					type: CopyElementType.LEARN_MATERIAL_GROUP,
+					type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
 					status: CopyStatusEnum.SUCCESS,
 					elements: [mockedMaterialStatus],
 				};
@@ -917,7 +917,7 @@ describe('lesson copy service', () => {
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
-					(el) => el.type === CopyElementType.LEARN_MATERIAL_GROUP
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
 				expect(materialsGroupStatus).toBeDefined();
 				expect(materialsGroupStatus).toEqual(mockedMaterialGroupStatus);
@@ -932,11 +932,11 @@ describe('lesson copy service', () => {
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
-					(el) => el.type === CopyElementType.LEARN_MATERIAL_GROUP
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
 				expect(materialsGroupStatus).toBeDefined();
 				const materialStatus = materialsGroupStatus?.elements?.find(
-					(el) => el.type === CopyElementType.LEARN_MATERIAL && el.title === originalMaterial.title
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL && el.title === originalMaterial.title
 				);
 				expect(materialStatus).toBeDefined();
 				expect(materialStatus).toEqual(mockedMaterialStatus);
@@ -957,13 +957,13 @@ describe('lesson copy service', () => {
 				const materialCopyTwo = materialFactory.build({ title: originalMaterial[1].title });
 				const mockedMaterialStatusOne = {
 					title: materialCopyOne.title,
-					type: CopyElementType.LEARN_MATERIAL,
+					type: CopyElementType.LERNSTORE_MATERIAL,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: materialCopyOne,
 				};
 				const mockedMaterialStatusTwo = {
 					title: materialCopyTwo.title,
-					type: CopyElementType.LEARN_MATERIAL,
+					type: CopyElementType.LERNSTORE_MATERIAL,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: materialCopyTwo,
 				};
@@ -986,7 +986,7 @@ describe('lesson copy service', () => {
 					user,
 				});
 				const materialsGroupStatus = copyStatus.elements?.find(
-					(el) => el.type === CopyElementType.LEARN_MATERIAL_GROUP
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
 				expect(materialsGroupStatus).toBeDefined();
 				expect(materialsGroupStatus?.elements).toEqual([mockedMaterialStatusOne, mockedMaterialStatusTwo]);
