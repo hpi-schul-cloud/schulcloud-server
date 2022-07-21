@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules';
+import { FileDto, FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules';
 import { Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
-// import { CopyHelperService } from './copy-helper.service';
+import { CopyHelperService } from './copy-helper.service';
 
 @Injectable()
 export class FileCopyAppendService {
 	constructor(
-		// private readonly copyHelperService: CopyHelperService,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly fileCopyAdapterService: FilesStorageClientAdapterService
 	) {}
 
@@ -17,43 +17,68 @@ export class FileCopyAppendService {
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(copyStatus.elements.map((el) => this.appendFiles(el, jwt)));
-			// copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
+			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
 		}
-		// TODO: take care for children (= .elements)
 		return Promise.resolve(copyStatus);
 	}
 
 	async appendFilesToTask(taskStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
-		const copy = taskStatus.copyEntity as Task;
-		const original = taskStatus.originalEntity as Task;
-		const source = FileParamBuilder.buildForTask(jwt, original.school.id, original.id);
-		const target = FileParamBuilder.buildForTask(jwt, copy.school.id, copy.id);
-		let fileGroupStatus: CopyStatus;
 		try {
+			const original = taskStatus.originalEntity as Task;
+			const copy = taskStatus.copyEntity as Task;
+			const source = FileParamBuilder.buildForTask(jwt, original.school.id, original.id);
+			const target = FileParamBuilder.buildForTask(jwt, copy.school.id, copy.id);
 			const files = await this.fileCopyAdapterService.copyFilesOfParent(source, target);
-			fileGroupStatus = {
-				type: CopyElementType.FILE_GROUP,
-				status: CopyStatusEnum.SUCCESS,
-				elements: files.map((file) => ({
-					type: CopyElementType.FILE,
-					name: file.name,
-					status: CopyStatusEnum.SUCCESS,
-				})),
-			};
-			taskStatus.status = CopyStatusEnum.SUCCESS;
+			return this.createSuccessCopyStatus(taskStatus, files);
 		} catch (err) {
-			fileGroupStatus = taskStatus?.elements?.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
-			fileGroupStatus.status = CopyStatusEnum.FAIL;
-			fileGroupStatus.elements = fileGroupStatus.elements?.map((el) => {
-				el.status = CopyStatusEnum.FAIL;
-				return el;
-			});
-			// TODO: find out how to give more information on fails / successes
+			return this.createFailedCopyStatus(taskStatus);
 		}
-		taskStatus.elements = taskStatus.elements?.map((el) =>
-			el.type === CopyElementType.FILE_GROUP ? fileGroupStatus : el
-		);
-		taskStatus.status = CopyStatusEnum.PARTIAL;
-		return taskStatus;
+	}
+
+	private createSuccessCopyStatus(taskStatus: CopyStatus, files: FileDto[]): CopyStatus {
+		const fileGroupStatus = {
+			type: CopyElementType.FILE_GROUP,
+			status: CopyStatusEnum.SUCCESS,
+			elements: this.createFileStatuses(files),
+		};
+		return {
+			...taskStatus,
+			status: this.copyHelperService.deriveStatusFromElements(taskStatus.elements as CopyStatus[]),
+			elements: this.replaceFileGroup(taskStatus.elements, fileGroupStatus),
+		};
+	}
+
+	private createFailedCopyStatus(taskStatus: CopyStatus) {
+		const fileGroupStatus = this.getFileGroupStatus(taskStatus?.elements);
+		const updatedFileGroupStatus = {
+			...fileGroupStatus,
+			status: CopyStatusEnum.FAIL,
+			elements:
+				fileGroupStatus.elements?.map((el) => {
+					el.status = CopyStatusEnum.FAIL;
+					return el;
+				}) ?? [],
+		};
+		return {
+			...taskStatus,
+			status: this.copyHelperService.deriveStatusFromElements(taskStatus.elements as CopyStatus[]),
+			elements: this.replaceFileGroup(taskStatus.elements, updatedFileGroupStatus),
+		};
+	}
+
+	private getFileGroupStatus(elements: CopyStatus[] = []): CopyStatus {
+		return elements?.find((el) => el.type === CopyElementType.FILE_GROUP) as CopyStatus;
+	}
+
+	private replaceFileGroup(elements: CopyStatus[] = [], fileGroupStatus: CopyStatus): CopyStatus[] {
+		return elements.map((el) => (el.type === CopyElementType.FILE_GROUP ? fileGroupStatus : el));
+	}
+
+	private createFileStatuses(files: FileDto[]): CopyStatus[] {
+		return files.map((file) => ({
+			type: CopyElementType.FILE,
+			name: file.name,
+			status: CopyStatusEnum.SUCCESS,
+		}));
 	}
 }
