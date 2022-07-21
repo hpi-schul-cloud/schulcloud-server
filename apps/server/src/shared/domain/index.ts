@@ -1,3 +1,4 @@
+export * from './domainobject';
 export * from './entity';
 export * from './interface';
 export * from './rules';

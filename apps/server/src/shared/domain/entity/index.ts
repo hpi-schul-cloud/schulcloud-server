@@ -20,5 +20,6 @@ export * from './user.entity';
 export * from './import-user.entity';
 export * from './system.entity';
 export * from './filerecord.entity';
+export * from './video-conference.entity';
 
 export * from './all-entities';

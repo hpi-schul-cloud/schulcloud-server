@@ -14,7 +14,9 @@ export class SystemRepo extends BaseRepo<System> {
 		if (type) {
 			scope.byType(type);
 		}
-		scope.withOauthConfigOnly(onlyOauth);
+		if (onlyOauth) {
+			scope.withOauthConfigOnly();
+		}
 		return this._em.find(System, scope.query);
 	}
 

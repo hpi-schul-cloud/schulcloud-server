@@ -27,6 +27,7 @@ import {
 	TaskModule,
 } from '@src/modules';
 
+import { VideoConferenceModule } from '@src/modules/video-conference';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 import serverConfig from './server.config';
 import { ServerController } from './server.controller';
@@ -62,6 +63,7 @@ const serverModules = [
 	SchoolModule,
 	ProvisioningModule,
 	RoleModule,
+	VideoConferenceModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

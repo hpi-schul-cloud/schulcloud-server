@@ -5,6 +5,7 @@
  */
 
 export * from './base.repo';
+export * from './base.do.repo';
 export * from './scope';
 
 export * from './mongo.patterns';
@@ -27,3 +28,4 @@ export * from './system';
 export * from './task';
 export * from './teams';
 export * from './user';
+export * from './videoconference';

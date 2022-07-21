@@ -1,3 +1,4 @@
+import { VideoConference } from './video-conference.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
@@ -50,4 +51,5 @@ export const ALL_ENTITIES = [
 	ImportUser,
 	FileRecord,
 	FileSecurityCheck,
+	VideoConference,
 ];
