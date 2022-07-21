@@ -13,11 +13,18 @@ import {
 	Lesson,
 	TaskCopyService,
 } from '@shared/domain';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	materialFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { CopyHelperService } from './copy-helper.service';
 import { EtherpadService } from './etherpad.service';
-import { NexboardService } from './nexboard.service';
 import { LessonCopyService } from './lesson-copy.service';
+import { NexboardService } from './nexboard.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
@@ -475,13 +482,11 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
-				const taskSpy = jest.spyOn(taskCopyService, 'copyTaskMetadata');
 
 				return {
 					user,
 					destinationCourse,
 					originalLesson,
-					taskSpy,
 				};
 			};
 
@@ -493,19 +498,8 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-				const tasksStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
-				expect(tasksStatus).not.toBeDefined();
-			});
-
-			it('should not call task copy service', async () => {
-				const { originalLesson, destinationCourse, user, taskSpy } = setup();
-
-				await copyService.copyLesson({
-					originalLesson,
-					destinationCourse,
-					user,
-				});
-				expect(taskSpy).not.toHaveBeenCalled();
+				const tasksGroupStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.TASK_GROUP);
+				expect(tasksGroupStatus).not.toBeDefined();
 			});
 		});
 
@@ -533,7 +527,7 @@ describe('lesson copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					elements: [mockedTaskStatus],
 				};
-				const taskSpy = jest.spyOn(taskCopyService, 'copyTaskMetadata').mockImplementation(() => mockedTaskStatus);
+				taskCopyService.copyTaskMetadata.mockReturnValue(mockedTaskStatus);
 
 				return {
 					user,
@@ -541,7 +535,6 @@ describe('lesson copy service', () => {
 					originalLesson,
 					originalTask,
 					mockedTaskStatus,
-					taskSpy,
 					mockedTaskGroupStatus,
 				};
 			};
@@ -575,22 +568,6 @@ describe('lesson copy service', () => {
 				expect(tasksStatus).toBeDefined();
 				expect(tasksStatus).toEqual(mockedTaskStatus);
 			});
-
-			it('should call taskCopyService for the linked task', async () => {
-				const { originalLesson, destinationCourse, user, originalTask, taskSpy } = setup();
-
-				const copyStatus = await copyService.copyLesson({
-					originalLesson,
-					destinationCourse,
-					user,
-				});
-				expect(taskSpy).toHaveBeenCalledWith({
-					originalTask,
-					destinationCourse,
-					destinationLesson: copyStatus.copyEntity,
-					user,
-				});
-			});
 		});
 
 		describe('when mupltiple tasks are linked to the original lesson', () => {
@@ -619,13 +596,7 @@ describe('lesson copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: taskCopyTwo,
 				};
-				const mockedTaskGroupStatus = {
-					type: CopyElementType.TASK_GROUP,
-					status: CopyStatusEnum.SUCCESS,
-					elements: [mockedTaskStatusOne, mockedTaskStatusTwo],
-				};
-				jest
-					.spyOn(taskCopyService, 'copyTaskMetadata')
+				taskCopyService.copyTaskMetadata
 					.mockReturnValueOnce(mockedTaskStatusOne)
 					.mockReturnValueOnce(mockedTaskStatusTwo);
 
@@ -635,7 +606,6 @@ describe('lesson copy service', () => {
 					originalLesson,
 					mockedTaskStatusOne,
 					mockedTaskStatusTwo,
-					mockedTaskGroupStatus,
 				};
 			};
 
@@ -856,6 +826,171 @@ describe('lesson copy service', () => {
 			const copiedNexboard = copiedLessonContents[0].content as IComponentNexboardProperties;
 			expect(copiedNexboard.url).toEqual('abc');
 			expect(copiedNexboard.board).toEqual('123');
+		});
+	});
+
+	describe('when lesson contains linked materials', () => {
+		describe('when no materials are linked to the original lesson', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+				});
+
+				return {
+					user,
+					destinationCourse,
+					originalLesson,
+				};
+			};
+
+			it('should not set materials status', async () => {
+				const { originalLesson, destinationCourse, user } = setup();
+
+				const copyStatus = await copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const materialsGroupStatus = copyStatus.elements?.find(
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
+				);
+				expect(materialsGroupStatus).not.toBeDefined();
+			});
+		});
+
+		describe('when a single material is linked to the original lesson', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalMaterial = materialFactory.build();
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+					materials: [originalMaterial],
+				});
+				const materialCopy = materialFactory.build({ title: originalMaterial.title });
+				const mockedMaterialStatus = {
+					title: materialCopy.title,
+					type: CopyElementType.LERNSTORE_MATERIAL,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: materialCopy,
+				};
+				const mockedMaterialGroupStatus = {
+					type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [mockedMaterialStatus],
+				};
+
+				return {
+					user,
+					destinationCourse,
+					originalLesson,
+					originalMaterial,
+					mockedMaterialStatus,
+					mockedMaterialGroupStatus,
+				};
+			};
+
+			it('should copy the material correctly', async () => {
+				const { originalLesson, destinationCourse, user, originalMaterial } = setup();
+
+				const copyStatus = await copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const copiedLesson = copyStatus.copyEntity as Lesson;
+				const copiedMaterial = copiedLesson.materials[0];
+				expect(copiedLesson.materials.length).toEqual(1);
+				expect(copiedMaterial).toEqual(originalMaterial);
+			});
+
+			it('should put copy status materials leaf', async () => {
+				const { originalLesson, destinationCourse, user, mockedMaterialGroupStatus } = setup();
+
+				const copyStatus = await copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const materialsGroupStatus = copyStatus.elements?.find(
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
+				);
+				expect(materialsGroupStatus).toBeDefined();
+				expect(materialsGroupStatus).toEqual(mockedMaterialGroupStatus);
+			});
+
+			it('should put copy status for the copied material', async () => {
+				const { originalLesson, originalMaterial, destinationCourse, user, mockedMaterialStatus } = setup();
+
+				const copyStatus = await copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const materialsGroupStatus = copyStatus.elements?.find(
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
+				);
+				expect(materialsGroupStatus).toBeDefined();
+				const materialStatus = materialsGroupStatus?.elements?.find(
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL && el.title === originalMaterial.title
+				);
+				expect(materialStatus).toBeDefined();
+				expect(materialStatus).toEqual(mockedMaterialStatus);
+			});
+		});
+
+		describe('when mupltiple materials are linked to the original lesson', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalMaterial = materialFactory.buildList(2);
+				const originalLesson = lessonFactory.build({
+					course: originalCourse,
+					materials: originalMaterial,
+				});
+				const materialCopyOne = materialFactory.build({ title: originalMaterial[0].title });
+				const materialCopyTwo = materialFactory.build({ title: originalMaterial[1].title });
+				const mockedMaterialStatusOne = {
+					title: materialCopyOne.title,
+					type: CopyElementType.LERNSTORE_MATERIAL,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: materialCopyOne,
+				};
+				const mockedMaterialStatusTwo = {
+					title: materialCopyTwo.title,
+					type: CopyElementType.LERNSTORE_MATERIAL,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: materialCopyTwo,
+				};
+
+				return {
+					user,
+					destinationCourse,
+					originalLesson,
+					mockedMaterialStatusOne,
+					mockedMaterialStatusTwo,
+				};
+			};
+
+			it('should put copy status for each copied material under materials', async () => {
+				const { originalLesson, destinationCourse, user, mockedMaterialStatusOne, mockedMaterialStatusTwo } = setup();
+
+				const copyStatus = await copyService.copyLesson({
+					originalLesson,
+					destinationCourse,
+					user,
+				});
+				const materialsGroupStatus = copyStatus.elements?.find(
+					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
+				);
+				expect(materialsGroupStatus).toBeDefined();
+				expect(materialsGroupStatus?.elements).toEqual([mockedMaterialStatusOne, mockedMaterialStatusTwo]);
+			});
 		});
 	});
 });

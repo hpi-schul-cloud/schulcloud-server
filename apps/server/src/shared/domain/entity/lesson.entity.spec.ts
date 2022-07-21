@@ -1,7 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from 'bson';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '../../testing';
+import { courseFactory, lessonFactory, materialFactory, setupEntities, taskFactory } from '../../testing';
 import { ComponentType } from './lesson.entity';
+import { Material } from './materials.entity';
 import { Task } from './task.entity';
 
 describe('Lesson Entity', () => {
@@ -171,6 +172,28 @@ describe('Lesson Entity', () => {
 			const result = lesson.getLessonLinkedTasks();
 			expect(result.length).toEqual(1);
 			expect(result[0]).toEqual(originalTask);
+		});
+	});
+
+	describe('getLessonMaterials', () => {
+		describe('when materials are not populated', () => {
+			it('should throw', () => {
+				const lesson = lessonFactory.build();
+				lesson.materials.set([orm.em.getReference(Material, new ObjectId().toHexString())]);
+
+				expect(() => lesson.getLessonMaterials()).toThrow();
+			});
+		});
+
+		describe('when materials are populated', () => {
+			it('it should return linked materials to that lesson', () => {
+				const materials = materialFactory.buildList(2);
+				const lesson = lessonFactory.build({ materials });
+
+				const result = lesson.getLessonMaterials();
+				expect(result.length).toEqual(2);
+				expect(result[0]).toEqual(materials[0]);
+			});
 		});
 	});
 
