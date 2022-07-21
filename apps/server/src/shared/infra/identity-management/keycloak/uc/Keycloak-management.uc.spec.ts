@@ -21,8 +21,6 @@ describe('KeycloakManagementUc', () => {
 
 	const kcApiUsersMock = createMock<Users>();
 	const adminUsername = 'admin';
-	const accountsFile = 'accounts.json';
-	const usersFile = 'users.json';
 
 	let validAccountsNoDuplicates: IJsonAccount[];
 	let validAccounts: IJsonAccount[];
@@ -93,8 +91,8 @@ describe('KeycloakManagementUc', () => {
 				{
 					provide: KeycloakSeedService,
 					useValue: {
-						createOrUpdateIdmAccount: jest.fn().mockImplementation(async (): Promise<number> => {
-							return Promise.resolve(3);
+						createOrUpdateIdmAccount: jest.fn().mockImplementation(async (account, user): Promise<boolean> => {
+							return Promise.resolve(true);
 						}),
 						loadAccounts: jest.fn().mockImplementation(async (): Promise<number> => {
 							return Promise.resolve(3);
@@ -200,50 +198,13 @@ describe('KeycloakManagementUc', () => {
 			const result = await uc.seed();
 			expect(result).toBeGreaterThan(0);
 		});
-		it('should seed all users from a backup JSON with corresponding account', async () => {
-			const createSpy = jest.spyOn(kcAdminClient.users, 'create');
+
+		it('should seed all users from a backup JSON with corresponding account, user/account with id dont match and are not created', async () => {
 			const result = await uc.seed();
-			validAccounts.forEach((account) => {
-				expect(createSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						username: account.username,
-					})
-				);
-			});
+			for (let i = 0; i < validAccounts.length; i += 1) {
+				expect(keycloakSeedService.createOrUpdateIdmAccount).toHaveBeenCalledWith(jsonAccounts[i], jsonUsers[i]);
+			}
 			expect(result).toBe(validAccounts.length);
-		});
-		it('should update existing users after initial seeding', async () => {
-			const createSpy = jest.spyOn(kcAdminClient.users, 'create');
-			const updateSpy = jest.spyOn(kcAdminClient.users, 'update');
-
-			const findSpy = jest.spyOn(kcAdminClient.users, 'find');
-
-			// eslint-disable-next-line no-empty-pattern
-			findSpy.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				const userArray = [adminUser, ...users];
-				if (arg?.username) {
-					const foundUsers = userArray.filter((user) => user.username === arg.username);
-					if (foundUsers.length > 0) {
-						return Promise.resolve(foundUsers);
-					}
-					return Promise.resolve([]);
-				}
-				return Promise.resolve(userArray);
-			});
-
-			const result = await uc.seed();
-			expect(result).toBe(validAccountsNoDuplicates.length);
-
-			validAccountsNoDuplicates.forEach((account) => {
-				expect(updateSpy).toHaveBeenCalledWith(
-					expect.anything(),
-					expect.objectContaining({
-						username: account.username,
-					})
-				);
-			});
-			expect(createSpy).not.toHaveBeenCalled();
 		});
 	});
 

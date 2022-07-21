@@ -9,7 +9,7 @@ export class KeycloakSeedService {
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles // @Inject(KeycloakManagementInputFiles) private readonly fs: IKeycloakManagementInputFiles
 	) {}
 
-	public async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser) {
+	public async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {
 		const idmUserRepresentation = {
 			username: account.username,
 			firstName: user.firstName,
