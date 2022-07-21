@@ -226,7 +226,7 @@ export class LessonCopyService {
 			});
 			const materialGroupStatus: CopyStatus = {
 				type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
-				status: this.copyHelperService.deriveStatusFromElements(materialStatus),
+				status: this.copyHelperService.deriveStatusFromElements(materialStatusCache),
 				elements: materialStatusCache,
 			};
 			materialStatus.push(materialGroupStatus);
