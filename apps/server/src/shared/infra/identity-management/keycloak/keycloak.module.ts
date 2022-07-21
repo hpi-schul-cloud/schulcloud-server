@@ -29,6 +29,6 @@ import { KeycloakSeedService } from './service/keycloak-seed.service';
 		KeycloakConfigurationService,
 		KeycloakSeedService,
 	],
-	exports: [KeycloakAdministrationService],
+	exports: [KeycloakAdministrationService, KeycloakManagementUc],
 })
 export class KeycloakModule {}
