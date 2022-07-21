@@ -25,14 +25,11 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return VideoConference;
 	}
 
-	cacheExpiration = 60000;
-
 	async findByScopeId(target: string, videoConferenceScope: VideoConferenceScope): Promise<VideoConferenceDO> {
-		const entity = await this._em.findOneOrFail(
-			VideoConference,
-			{ target, targetModel: TargetModelsMapping[videoConferenceScope] },
-			{ cache: this.cacheExpiration }
-		);
+		const entity = await this._em.findOneOrFail(VideoConference, {
+			target,
+			targetModel: TargetModelsMapping[videoConferenceScope],
+		});
 
 		return this.mapEntityToDO(entity);
 	}
