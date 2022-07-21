@@ -11,9 +11,12 @@ export class FileCopyAppendService {
 		private readonly fileCopyAdapterService: FilesStorageClientAdapterService
 	) {}
 
+
+	// TODO create interfaces for params
+	// TODO move spread copy to beginning of appendFilesToTask()
 	async appendFiles(copyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
 		if (copyStatus.type === CopyElementType.TASK) {
-			return this.appendFilesToTask(copyStatus, jwt);
+			return this.appendFilesToTask(copyStatus as CopyStatus, jwt);
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(copyStatus.elements.map((el) => this.appendFiles(el, jwt)));
@@ -22,16 +25,19 @@ export class FileCopyAppendService {
 		return Promise.resolve(copyStatus);
 	}
 
-	async appendFilesToTask(taskStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
+	async appendFilesToTask(taskCopyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
+		if (taskCopyStatus.copyEntity === undefined || taskCopyStatus.originalEntity === undefined) {
+			return taskCopyStatus;
+		}
 		try {
-			const original = taskStatus.originalEntity as Task;
-			const copy = taskStatus.copyEntity as Task;
+			const original: Task = taskCopyStatus.originalEntity as Task;
+			const copy: Task = taskCopyStatus.copyEntity as Task;
 			const source = FileParamBuilder.buildForTask(jwt, original.school.id, original.id);
 			const target = FileParamBuilder.buildForTask(jwt, copy.school.id, copy.id);
 			const files = await this.fileCopyAdapterService.copyFilesOfParent(source, target);
-			return this.createSuccessCopyStatus(taskStatus, files);
+			return this.createSuccessCopyStatus(taskCopyStatus, files);
 		} catch (err) {
-			return this.createFailedCopyStatus(taskStatus);
+			return this.createFailedCopyStatus(taskCopyStatus);
 		}
 	}
 

@@ -74,6 +74,38 @@ describe('file copy append service', () => {
 		});
 	});
 
+	describe('when taskstatus is failed before appending files', () => {
+		const setup = () => {
+			const school = schoolFactory.buildWithId();
+			const originalTask = taskFactory.buildWithId({ school });
+			const taskCopy = taskFactory.buildWithId({ school });
+			const copyStatus: CopyStatus = {
+				type: CopyElementType.LESSON,
+				title: 'Tolle Lesson',
+				status: CopyStatusEnum.FAIL,
+				elements: [
+					{
+						type: CopyElementType.TASK,
+						title: taskCopy.name,
+						status: CopyStatusEnum.FAIL,
+						originalEntity: originalTask,
+					},
+				],
+			};
+			const copyStatusMockResult = CopyStatusEnum.NOT_IMPLEMENTED;
+			copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
+			const jwt = 'veryveryverylongstringthatissignedandstuff';
+			return { copyStatus, originalTask, taskCopy, jwt, copyStatusMockResult };
+		};
+
+		it('it should not try to copy on failed taskstatus', async () => {
+			const { copyStatus, jwt } = setup();
+			const updatedCopyStatus = await copyService.appendFiles(copyStatus, jwt);
+			// const taskStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.TASK);
+			expect(updatedCopyStatus).toEqual(copyStatus);
+		});
+	});
+
 	describe('when status contains task with files', () => {
 		const setup = () => {
 			const school = schoolFactory.buildWithId();
@@ -95,7 +127,7 @@ describe('file copy append service', () => {
 						elements: [
 							{
 								type: CopyElementType.FILE_GROUP,
-								title: 'Tolle Fielgroup',
+								title: 'Tolle Filegroup',
 								status: CopyStatusEnum.PARTIAL,
 								elements: [
 									{
@@ -132,7 +164,7 @@ describe('file copy append service', () => {
 			];
 			fileServiceAdapter.copyFilesOfParent.mockResolvedValue(fileDtos);
 			const copyStatusMockResult = CopyStatusEnum.NOT_IMPLEMENTED;
-			copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
+			// copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
 			const jwt = 'veryveryverylongstringthatissignedandstuff';
 			return { copyStatus, originalTask, taskCopy, jwt, copyStatusMockResult };
 		};
@@ -229,7 +261,7 @@ describe('file copy append service', () => {
 				};
 				fileServiceAdapter.copyFilesOfParent.mockRejectedValue(new Error());
 				const copyStatusMockResult = CopyStatusEnum.PARTIAL;
-				copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
+				// copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
 				const jwt = 'veryveryverylongstringthatissignedandstuff';
 				return { copyStatus, originalTask, taskCopy, jwt, copyStatusMockResult };
 			};
