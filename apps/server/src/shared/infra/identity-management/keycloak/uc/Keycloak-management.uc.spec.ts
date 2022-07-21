@@ -5,11 +5,18 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 import { v1 } from 'uuid';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
-import { IJsonAccount, IJsonUser } from '../interface';
 import { KeycloakAdministrationService } from '../service/keycloak-administration.service';
 import { KeycloakManagementUc } from './Keycloak-management.uc';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
+import fs from 'node:fs/promises';
+import { SysType } from '@shared/infra/identity-management';
+import { System } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
+import { ConfigService } from '@nestjs/config';
+import { NodeEnvType } from '@src/server.config';
+import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles } from '../interface';
 
 describe('KeycloakManagementUc', () => {
 	let module: TestingModule;
@@ -65,6 +72,11 @@ describe('KeycloakManagementUc', () => {
 			username: 'notUnique',
 		},
 	];
+	const inputFiles: IKeycloakManagementInputFiles = {
+		accountsFile: 'accounts.json',
+		usersFile: 'users.json',
+		systemsFile: 'systems.json',
+	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -101,6 +113,10 @@ describe('KeycloakManagementUc', () => {
 							return Promise.resolve(3);
 						}),
 					},
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
 				},
 			],
 		}).compile();

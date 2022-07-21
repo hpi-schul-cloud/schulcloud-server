@@ -3,7 +3,7 @@ const path = require('path');
 
 const { Project, Board } = require('./services');
 
-const hooks = require('./hooks');
+const { boardsHooks, projectsHooks } = require('./hooks');
 
 module.exports = (app) => {
 	const projectRoute = '/nexboard/projects';
@@ -14,8 +14,8 @@ module.exports = (app) => {
 	app.use(boardRoute, new Board());
 
 	const projects = app.service(projectRoute);
-	projects.hooks(hooks);
+	projects.hooks(projectsHooks);
 
 	const boards = app.service(boardRoute);
-	boards.hooks(hooks);
+	boards.hooks(boardsHooks);
 };
