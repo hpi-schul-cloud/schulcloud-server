@@ -9,6 +9,7 @@ import { File } from './file.entity';
 import { FileRecord, FileSecurityCheck } from './filerecord.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
+import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
@@ -33,6 +34,7 @@ export const ALL_ENTITIES = [
 	File,
 	StorageProvider,
 	Lesson,
+	Material,
 	Role,
 	School,
 	SchoolRoles,
