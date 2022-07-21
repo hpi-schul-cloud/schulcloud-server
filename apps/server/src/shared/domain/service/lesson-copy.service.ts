@@ -36,7 +36,7 @@ export class LessonCopyService {
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
 		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
-		const { copiedMaterials, materialStatus } = this.copyLinkedMaterials(params.originalLesson);
+		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(params.originalLesson);
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
@@ -56,7 +56,7 @@ export class LessonCopyService {
 		const elements = [
 			...LessonCopyService.lessonStatusMetadata(),
 			...contentStatus,
-			...materialStatus,
+			...materialsStatus,
 			...copiedTasksStatus,
 		];
 
@@ -206,14 +206,14 @@ export class LessonCopyService {
 
 	private copyLinkedMaterials(originalLesson: Lesson): {
 		copiedMaterials: Material[];
-		materialStatus: CopyStatus[];
+		materialsStatus: CopyStatus[];
 	} {
-		const linkedMaterials = originalLesson.getLessonMaterials();
+		const linkedItems = originalLesson.getLessonMaterials();
 		const copiedMaterials: Material[] = [];
-		const materialStatus: CopyStatus[] = [];
-		if (linkedMaterials.length > 0) {
-			const materialStatusCache: CopyStatus[] = [];
-			linkedMaterials.forEach((element) => {
+		const materialsStatus: CopyStatus[] = [];
+		if (linkedItems.length > 0) {
+			const elementsStatus: CopyStatus[] = [];
+			linkedItems.forEach((element) => {
 				const material = new Material(element);
 				copiedMaterials.push(material);
 				const status: CopyStatus = {
@@ -222,16 +222,16 @@ export class LessonCopyService {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: material,
 				};
-				materialStatusCache.push(status);
+				elementsStatus.push(status);
 			});
 			const materialGroupStatus: CopyStatus = {
 				type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
-				status: this.copyHelperService.deriveStatusFromElements(materialStatusCache),
-				elements: materialStatusCache,
+				status: this.copyHelperService.deriveStatusFromElements(elementsStatus),
+				elements: elementsStatus,
 			};
-			materialStatus.push(materialGroupStatus);
+			materialsStatus.push(materialGroupStatus);
 		}
-		return { copiedMaterials, materialStatus };
+		return { copiedMaterials, materialsStatus };
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
