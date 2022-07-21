@@ -1,4 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -104,7 +105,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	private getTasksItems(): Task[] {
 		if (!this.tasks.isInitialized(true)) {
-			throw new Error('Lessons trying to access their tasks that are not loaded.');
+			throw new InternalServerErrorException('Lessons trying to access their tasks that are not loaded.');
 		}
 		const tasks = this.tasks.getItems();
 		return tasks;
@@ -145,7 +146,7 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 
 	getLessonMaterials(): Material[] {
 		if (!this.materials.isInitialized(true)) {
-			throw new Error('Lessons trying to access their materials that are not loaded.');
+			throw new InternalServerErrorException('Lessons trying to access their materials that are not loaded.');
 		}
 		const materials = this.materials.getItems();
 		return materials;
