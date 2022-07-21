@@ -7,10 +7,8 @@ export class SystemScope extends Scope<System> {
 		return this;
 	}
 
-	withOauthConfigOnly(only = false): SystemScope {
-		if (only) {
-			this.addQuery({ oauthConfig: { $ne: null } });
-		}
+	withOauthConfigOnly(): SystemScope {
+		this.addQuery({ oauthConfig: { $ne: null } });
 		return this;
 	}
 }

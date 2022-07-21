@@ -82,6 +82,7 @@ describe('system repo', () => {
 
 	describe('findByFilter', () => {
 		let systems: System[] = [];
+
 		beforeEach(async () => {
 			systems = [systemFactory.withOauthConfig().build(), systemFactory.build()];
 			await em.persistAndFlush(systems);
@@ -89,6 +90,15 @@ describe('system repo', () => {
 
 		afterEach(async () => {
 			await em.nativeDelete(System, {});
+		});
+
+		it('should return no systems', async () => {
+			// Act
+			const result = await repo.findByFilter();
+
+			// Assert
+			expect(result.length).toEqual(0);
+			expect(result).toEqual([]);
 		});
 
 		it('should return all systems with type iserv', async () => {

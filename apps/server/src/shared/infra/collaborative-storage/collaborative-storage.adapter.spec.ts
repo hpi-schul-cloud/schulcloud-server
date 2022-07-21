@@ -15,6 +15,7 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 
 	updateTeamPermissionsForRole(): void {}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	deleteGroupfolderAndRemoveGroup(teamId: string): void {}
 }
 

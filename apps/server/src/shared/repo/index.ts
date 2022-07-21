@@ -6,6 +6,7 @@
 
 export * from './account';
 export * from './base.repo';
+export * from './base.do.repo';
 export * from './board';
 export * from './course';
 export * from './coursegroup';
@@ -26,3 +27,4 @@ export * from './system';
 export * from './task';
 export * from './teams';
 export * from './user';
+export * from './videoconference';
