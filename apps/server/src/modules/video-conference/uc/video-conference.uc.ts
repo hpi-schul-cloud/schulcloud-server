@@ -44,6 +44,7 @@ import {
 	VideoConferenceJoinDTO,
 } from '@src/modules/video-conference/dto/video-conference.dto';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
 
 export interface IScopeInfo {
 	scopeId: EntityId;
@@ -101,7 +102,10 @@ export class VideoConferenceUc {
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
-			throw new ForbiddenException('you are not allowed to start the videoconference. ask a moderator.');
+			throw new ForbiddenException(
+				ErrorStatus.INSUFFICIENT_PERMISSION,
+				'you are not allowed to start the videoconference. ask a moderator.'
+			);
 		}
 
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
@@ -134,11 +138,11 @@ export class VideoConferenceUc {
 
 		const bbbResponse: BBBResponse<BBBCreateResponse> = await this.bbbService.create(configBuilder.build());
 
-		return {
+		return new VideoConferenceDTO<BBBCreateResponse>({
 			state: VideoConferenceState.NOT_STARTED,
 			permission: PermissionMapping[bbbRole],
 			bbbResponse,
-		};
+		});
 	}
 
 	/**
@@ -168,51 +172,33 @@ export class VideoConferenceUc {
 			role: bbbRole,
 		});
 
-		// Let experts join as guests
-		switch (conferenceScope) {
-			case VideoConferenceScope.COURSE: {
-				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
-
-				if (roles.includes(RoleName.EXPERT)) {
-					configBuilder.asGuest(true);
-				}
-				break;
-			}
-			case VideoConferenceScope.EVENT: {
-				const team: Team = await this.teamsRepo.findById(scopeInfo.scopeId);
-				const teamUser: TeamUser | undefined = team.userIds.find(
-					(userInTeam) => userInTeam.userId.id === currentUser.userId
-				);
-
-				if (teamUser === undefined) {
-					throw new ForbiddenException('cannot find user in team');
-				}
-
-				if (teamUser.role.name === RoleName.TEAMEXPERT) {
-					configBuilder.asGuest(true);
-				}
-				break;
-			}
-			/* istanbul ignore next */
-			default:
-				throw new BadRequestException('Unknown scope name');
-		}
+		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
 
 		configBuilder.withUserId(currentUser.userId);
 
-		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
+		if (isGuest) {
+			configBuilder.asGuest(true);
+		}
 
-		if (vcDO.options.everybodyJoinsAsModerator) {
+		if (vcDO.options.everybodyJoinsAsModerator && !isGuest) {
 			configBuilder.withRole(BBBRole.MODERATOR);
+		}
+
+		if (!vcDO.options.moderatorMustApproveJoinRequests && isGuest) {
+			throw new ForbiddenException(
+				ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE,
+				'Guests cannot join this conference, since the waiting room is not enabled.'
+			);
 		}
 
 		const url: string = await this.bbbService.join(configBuilder.build());
 
-		return {
+		return new VideoConferenceJoinDTO({
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
 			url,
-		};
+		});
 	}
 
 	/**
@@ -239,29 +225,55 @@ export class VideoConferenceUc {
 			meetingID: refId,
 		});
 
-		let bbbResponse: BBBResponse<BBBMeetingInfoResponse>;
-
 		const options: VideoConferenceOptionsDO = await this.videoConferenceRepo
 			.findByScopeId(refId, conferenceScope)
 			.then((vcDO: VideoConferenceDO) => vcDO.options)
 			.catch(() => defaultVideoConferenceOptions);
 
-		try {
-			bbbResponse = await this.bbbService.getMeetingInfo(config);
-		} catch (error) {
-			return {
-				state: VideoConferenceState.NOT_STARTED,
-				permission: PermissionMapping[bbbRole],
-				options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-			};
+		const response: VideoConferenceInfoDTO = await this.bbbService
+			.getMeetingInfo(config)
+			.then((bbbResponse: BBBResponse<BBBMeetingInfoResponse>) => {
+				return new VideoConferenceInfoDTO({
+					state: VideoConferenceState.RUNNING,
+					permission: PermissionMapping[bbbRole],
+					bbbResponse,
+					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+				});
+			})
+			.catch(() => {
+				return new VideoConferenceInfoDTO({
+					state: VideoConferenceState.NOT_STARTED,
+					permission: PermissionMapping[bbbRole],
+					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
+				});
+			});
+
+		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+
+		if (!this.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
+			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
 		}
 
-		return {
-			state: VideoConferenceState.RUNNING,
-			permission: PermissionMapping[bbbRole],
-			bbbResponse,
-			options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-		};
+		return response;
+	}
+
+	/**
+	 * Checks whether a guest can join a conference.
+	 * They only can join a conference:
+	 * <ul>
+	 *     <li>when the user has the role as a guest</li>
+	 *     <li>when a meeting is running</li>
+	 *     <li>when a waiting room is set</li>
+	 * </ul>
+	 * @param {boolean} isGuest
+	 * @param {VideoConferenceState} state, information about the video conference
+	 * @param {boolean} waitingRoomEnabled, is a waiting room opened up
+	 */
+	protected canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
+		if ((isGuest && state === VideoConferenceState.NOT_STARTED) || (isGuest && !waitingRoomEnabled)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -285,7 +297,7 @@ export class VideoConferenceUc {
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeId);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 		}
 
 		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
@@ -294,11 +306,40 @@ export class VideoConferenceUc {
 
 		const bbbResponse: BBBResponse<BBBBaseResponse> = await this.bbbService.end(config);
 
-		return {
+		return new VideoConferenceDTO<BBBBaseResponse>({
 			state: VideoConferenceState.FINISHED,
 			permission: PermissionMapping[bbbRole],
 			bbbResponse,
-		};
+		});
+	}
+
+	protected async isExpert(
+		currentUser: ICurrentUser,
+		conferenceScope: VideoConferenceScope,
+		scopeId: string
+	): Promise<boolean> {
+		switch (conferenceScope) {
+			case VideoConferenceScope.COURSE: {
+				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
+
+				return roles.includes(RoleName.EXPERT);
+			}
+			case VideoConferenceScope.EVENT: {
+				const team: Team = await this.teamsRepo.findById(scopeId);
+				const teamUser: TeamUser | undefined = team.userIds.find(
+					(userInTeam) => userInTeam.userId.id === currentUser.userId
+				);
+
+				if (teamUser === undefined) {
+					throw new ForbiddenException(ErrorStatus.UNKNOWN_USER, 'Cannot find user in team.');
+				}
+
+				return teamUser.role.name === RoleName.TEAMEXPERT;
+			}
+			/* istanbul ignore next */
+			default:
+				throw new BadRequestException('Unknown scope name.');
+		}
 	}
 
 	/**
@@ -364,7 +405,7 @@ export class VideoConferenceUc {
 		if (await permissionMap.get(Permission.JOIN_MEETING)) {
 			return BBBRole.VIEWER;
 		}
-		throw new ForbiddenException('insufficient permission');
+		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
 	/**
@@ -375,12 +416,15 @@ export class VideoConferenceUc {
 	protected async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
 		// throw, if the feature has not been enabled
 		if (!Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED')) {
-			throw new ForbiddenException('feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled');
+			throw new ForbiddenException(
+				ErrorStatus.SCHOOL_FEATURE_DISABLED,
+				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'
+			);
 		}
 		// throw, if the current users school does not have the feature enabled
 		const schoolFeatureEnabled = await this.schoolUc.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
 		if (!schoolFeatureEnabled) {
-			throw new ForbiddenException('school feature VIDEOCONFERENCE is disabled');
+			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
 		}
 	}
 
