@@ -27,5 +27,6 @@ export const lessonFactory = LessonFactory.define<Lesson, ILessonProperties>(Les
 		course,
 		contents,
 		hidden,
+		materials: [],
 	};
 });
