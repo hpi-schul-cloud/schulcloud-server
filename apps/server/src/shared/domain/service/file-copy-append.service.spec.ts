@@ -164,7 +164,7 @@ describe('file copy append service', () => {
 			];
 			fileServiceAdapter.copyFilesOfParent.mockResolvedValue(fileDtos);
 			const copyStatusMockResult = CopyStatusEnum.NOT_IMPLEMENTED;
-			// copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
+			copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
 			const jwt = 'veryveryverylongstringthatissignedandstuff';
 			return { copyStatus, originalTask, taskCopy, jwt, copyStatusMockResult };
 		};
@@ -261,7 +261,7 @@ describe('file copy append service', () => {
 				};
 				fileServiceAdapter.copyFilesOfParent.mockRejectedValue(new Error());
 				const copyStatusMockResult = CopyStatusEnum.PARTIAL;
-				// copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
+				copyHelperService.deriveStatusFromElements.mockReturnValue(copyStatusMockResult);
 				const jwt = 'veryveryverylongstringthatissignedandstuff';
 				return { copyStatus, originalTask, taskCopy, jwt, copyStatusMockResult };
 			};
