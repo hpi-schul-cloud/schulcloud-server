@@ -258,7 +258,7 @@ export class VideoConferenceUc {
 	}
 
 	/**
-	 * Checks weather a guest can join a conference.
+	 * Checks whether a guest can join a conference.
 	 * They only can join a conference:
 	 * <ul>
 	 *     <li>when the user has the role as a guest</li>
