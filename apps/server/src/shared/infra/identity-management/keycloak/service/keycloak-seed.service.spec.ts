@@ -161,9 +161,6 @@ describe('KeycloakSeedService', () => {
 			{ _id: { $oid: '3' }, firstName: users[2].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '4' }, firstName: 'NoAccount', lastName: '', email: '' },
 		];
-	});
-
-	beforeEach(() => {
 		kcApiUsersMock.create.mockResolvedValue({ id: '' });
 		kcApiUsersMock.del.mockImplementation(async (): Promise<void> => Promise.resolve());
 		kcApiUsersMock.find.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
@@ -175,7 +172,13 @@ describe('KeycloakSeedService', () => {
 		});
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
+		kcApiUsersMock.create.mockClear();
+		kcApiUsersMock.del.mockClear();
+		kcApiUsersMock.find.mockClear();
+	});
+
+	afterAll(() => {
 		kcApiUsersMock.create.mockRestore();
 		kcApiUsersMock.del.mockRestore();
 		kcApiUsersMock.find.mockRestore();
