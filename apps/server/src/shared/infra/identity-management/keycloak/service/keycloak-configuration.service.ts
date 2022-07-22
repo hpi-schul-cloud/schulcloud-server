@@ -4,7 +4,6 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { NodeEnvType } from '@src/server.config';
 import { IdentityProviderConfig, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { SysType } from '../../sys.type';
@@ -23,12 +22,11 @@ export class KeycloakConfigurationService {
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
 
-	public async configureIdentityProviders() {
+	public async configureIdentityProviders(loadFromJson = false) {
 		let count = 0;
-		const envType = this.configService.get<NodeEnvType>('NODE_ENV');
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
-		const newConfigs = await this.loadConfigs(envType, [SysType.OIDC]);
+		const newConfigs = await this.loadConfigs([SysType.OIDC], loadFromJson);
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
@@ -120,18 +118,15 @@ export class KeycloakConfigurationService {
 		}
 	}
 
-	private async loadConfigs(envType: NodeEnvType, sysTypes: SysType[]): Promise<IdentityProviderConfig[]> {
-		if (envType === NodeEnvType.TEST || envType === NodeEnvType.DEVELOPMENT) {
+	private async loadConfigs(sysTypes: SysType[], loadFromJson = false): Promise<IdentityProviderConfig[]> {
+		if (loadFromJson) {
 			const data: string = await fs.readFile(this.inputFiles.systemsFile, { encoding: 'utf-8' });
 			const systems = JSON.parse(data) as IdentityProviderConfig[];
 			return systems.filter((system) => sysTypes.includes(system.type as SysType));
 		}
-		if (envType === NodeEnvType.PRODUCTION) {
-			return (await this.systemRepo.findAll()).filter((system) =>
-				sysTypes.includes(system.type as SysType)
-			) as IdentityProviderConfig[];
-		}
-		return [];
+		return (await this.systemRepo.findAll()).filter((system) =>
+			sysTypes.includes(system.type as SysType)
+		) as IdentityProviderConfig[];
 	}
 
 	private async deleteIdentityProvider(alias: string): Promise<void> {

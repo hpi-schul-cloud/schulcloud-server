@@ -215,7 +215,7 @@ describe('KeycloakManagementUc', () => {
 
 	describe('configureIdentityProviders', () => {
 		it('should call service', async () => {
-			await uc.configureIdentityProviders();
+			await uc.configure();
 			expect(keycloakConfigurationService.configureIdentityProviders).toBeCalledTimes(1);
 		});
 	});
