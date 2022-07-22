@@ -265,16 +265,12 @@ export class VideoConferenceUc {
 	 *     <li>when a meeting is running</li>
 	 *     <li>when a waiting room is set</li>
 	 * </ul>
-	 * @param state, information about the video conference
-	 * @param isGuest
-	 * @param moderatorMustApproveJoinRequests, is a waiting room opened up
+	 * @param {boolean} isGuest
+	 * @param {VideoConferenceState} state, information about the video conference
+	 * @param {boolean} waitingRoomEnabled, is a waiting room opened up
 	 */
-	protected canGuestJoin(
-		isGuest: boolean,
-		state: VideoConferenceState,
-		moderatorMustApproveJoinRequests: boolean
-	): boolean {
-		if ((state === VideoConferenceState.NOT_STARTED && isGuest) || (!moderatorMustApproveJoinRequests && isGuest)) {
+	protected canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
+		if ((isGuest && state === VideoConferenceState.NOT_STARTED) || (isGuest && !waitingRoomEnabled)) {
 			return false;
 		}
 		return true;
