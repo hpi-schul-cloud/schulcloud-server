@@ -230,13 +230,7 @@ export class VideoConferenceUc {
 			.then((vcDO: VideoConferenceDO) => vcDO.options)
 			.catch(() => defaultVideoConferenceOptions);
 
-		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
-
-		if (!options.moderatorMustApproveJoinRequests && isGuest) {
-			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
-		}
-
-		return this.bbbService
+		const response: VideoConferenceInfoDTO = await this.bbbService
 			.getMeetingInfo(config)
 			.then((bbbResponse: BBBResponse<BBBMeetingInfoResponse>) => {
 				return new VideoConferenceInfoDTO({
@@ -253,6 +247,37 @@ export class VideoConferenceUc {
 					options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
 				});
 			});
+
+		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+
+		if (!this.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
+			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
+		}
+
+		return response;
+	}
+
+	/**
+	 * Checks weather a guest can join a conference.
+	 * They only can join a conference:
+	 * <ul>
+	 *     <li>when the user has the role as a guest</li>
+	 *     <li>when a meeting is running</li>
+	 *     <li>when a waiting room is set</li>
+	 * </ul>
+	 * @param state, information about the video conference
+	 * @param isGuest
+	 * @param moderatorMustApproveJoinRequests, is a waiting room opened up
+	 */
+	protected canGuestJoin(
+		isGuest: boolean,
+		state: VideoConferenceState,
+		moderatorMustApproveJoinRequests: boolean
+	): boolean {
+		if ((state === VideoConferenceState.NOT_STARTED && isGuest) || (!moderatorMustApproveJoinRequests && isGuest)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
