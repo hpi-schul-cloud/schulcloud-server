@@ -11,9 +11,7 @@ export class FileCopyAppendService {
 		private readonly fileCopyAdapterService: FilesStorageClientAdapterService
 	) {}
 
-
 	// TODO create interfaces for params
-	// TODO move spread copy to beginning of appendFilesToTask()
 	async appendFiles(copyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
 		if (copyStatus.type === CopyElementType.TASK) {
 			return this.appendFilesToTask(copyStatus as CopyStatus, jwt);
@@ -26,36 +24,35 @@ export class FileCopyAppendService {
 	}
 
 	async appendFilesToTask(taskCopyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
-		if (taskCopyStatus.copyEntity === undefined || taskCopyStatus.originalEntity === undefined) {
-			return taskCopyStatus;
+		const taskCopyStatusCopy = { ...taskCopyStatus };
+		if (taskCopyStatusCopy.copyEntity === undefined || taskCopyStatusCopy.originalEntity === undefined) {
+			return taskCopyStatusCopy;
 		}
 		try {
-			const original: Task = taskCopyStatus.originalEntity as Task;
-			const copy: Task = taskCopyStatus.copyEntity as Task;
+			const original: Task = taskCopyStatusCopy.originalEntity as Task;
+			const copy: Task = taskCopyStatusCopy.copyEntity as Task;
 			const source = FileParamBuilder.buildForTask(jwt, original.school.id, original.id);
 			const target = FileParamBuilder.buildForTask(jwt, copy.school.id, copy.id);
 			const files = await this.fileCopyAdapterService.copyFilesOfParent(source, target);
-			return this.createSuccessCopyStatus(taskCopyStatus, files);
+			return this.createSuccessCopyStatus(taskCopyStatusCopy, files);
 		} catch (err) {
-			return this.createFailedCopyStatus(taskCopyStatus);
+			return this.createFailedCopyStatus(taskCopyStatusCopy);
 		}
 	}
 
-	private createSuccessCopyStatus(taskStatus: CopyStatus, files: FileDto[]): CopyStatus {
+	private createSuccessCopyStatus(taskCopyStatus: CopyStatus, files: FileDto[]): CopyStatus {
 		const fileGroupStatus = {
 			type: CopyElementType.FILE_GROUP,
 			status: CopyStatusEnum.SUCCESS,
 			elements: this.createFileStatuses(files),
 		};
-		return {
-			...taskStatus,
-			status: this.copyHelperService.deriveStatusFromElements(taskStatus.elements as CopyStatus[]),
-			elements: this.replaceFileGroup(taskStatus.elements, fileGroupStatus),
-		};
+		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
+		taskCopyStatus.elements = this.replaceFileGroup(taskCopyStatus.elements, fileGroupStatus);
+		return taskCopyStatus;
 	}
 
-	private createFailedCopyStatus(taskStatus: CopyStatus) {
-		const fileGroupStatus = this.getFileGroupStatus(taskStatus?.elements);
+	private createFailedCopyStatus(taskCopyStatus: CopyStatus) {
+		const fileGroupStatus = this.getFileGroupStatus(taskCopyStatus?.elements);
 		const updatedFileGroupStatus = {
 			...fileGroupStatus,
 			status: CopyStatusEnum.FAIL,
@@ -65,11 +62,9 @@ export class FileCopyAppendService {
 					return el;
 				}) ?? [],
 		};
-		return {
-			...taskStatus,
-			status: this.copyHelperService.deriveStatusFromElements(taskStatus.elements as CopyStatus[]),
-			elements: this.replaceFileGroup(taskStatus.elements, updatedFileGroupStatus),
-		};
+		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
+		taskCopyStatus.elements = this.replaceFileGroup(taskCopyStatus.elements, updatedFileGroupStatus);
+		return taskCopyStatus;
 	}
 
 	private getFileGroupStatus(elements: CopyStatus[] = []): CopyStatus {
