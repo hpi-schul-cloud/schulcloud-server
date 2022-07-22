@@ -3,9 +3,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { v1 } from 'uuid';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
-import { IJsonAccount, IJsonUser, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
+import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
+import {
+	IJsonAccount,
+	IJsonUser,
+	IKeycloakManagementInputFiles,
+	IKeycloakSettings,
+	KeycloakManagementInputFiles,
+	KeycloakSettings,
+} from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
@@ -28,9 +36,11 @@ jest.mock('node:fs/promises', () => ({
 describe('KeycloakSeedService', () => {
 	let module: TestingModule;
 	let serviceUnderTest: KeycloakSeedService;
+	let settings: IKeycloakSettings;
 
-	const kcAdminClient = createMock<KeycloakAdminClient>();
+	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
 	const kcApiUsersMock = createMock<Users>();
+	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
 	const adminUsername = 'admin';
 
 	let validAccountsNoDuplicates: IJsonAccount[];
@@ -98,9 +108,37 @@ describe('KeycloakSeedService', () => {
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
 					},
 				},
+				{
+					provide: KeycloakAdminClient,
+					useValue: createMock<KeycloakAdminClient>({
+						auth: (): Promise<void> => {
+							if (settings.credentials.username !== adminUser.username) throw new Error();
+							return Promise.resolve();
+						},
+						setConfig: () => {},
+						users: kcApiUsersMock,
+						authenticationManagement: kcApiAuthenticationManagementMock,
+					}),
+				},
+				{
+					provide: KeycloakSettings,
+					useValue: {
+						baseUrl: 'http://localhost:8080',
+						realmName: 'master',
+						clientId: 'dBildungscloud',
+						credentials: {
+							username: adminUsername,
+							password: 'password',
+							grantType: 'password',
+							clientId: 'client-id',
+						},
+					},
+				},
 			],
 		}).compile();
 		serviceUnderTest = module.get(KeycloakSeedService);
+		kcAdminClient = module.get(KeycloakAdminClient);
+		settings = module.get(KeycloakSettings);
 
 		const missingUsername = 'missingUsername';
 		const missingFirstName = 'missingFirstName';
@@ -141,80 +179,73 @@ describe('KeycloakSeedService', () => {
 		kcApiUsersMock.create.mockRestore();
 		kcApiUsersMock.del.mockRestore();
 		kcApiUsersMock.find.mockRestore();
-		// fsReadMock.mockRestore();
 	});
 
-	describe('createOrUpdateIdmAccount', () => {
-		it('should create successfully', async () => {
-			const idmUser = {
-				username: jsonAccounts[0].username,
-				firstName: jsonUsers[0].firstName,
-				lastName: jsonUsers[0].lastName,
-				email: jsonUsers[0].email,
-				enabled: true,
-				credentials: [
-					{
-						type: 'password',
-						secretData: `{"value": "${jsonAccounts[0].password}", "salt": "", "additionalParameters": {}}`,
-						credentialData: '{ "hashIterations": 10, "algorithm": "bcrypt", "additionalParameters": {}}',
-					},
-				],
-			};
-			kcAdminClient.users.find = jest.fn().mockResolvedValue([]);
-			kcAdminClient.users.update = jest.fn().mockResolvedValue(null);
-			kcAdminClient.users.create = jest.fn().mockResolvedValue(null);
-			const result = await serviceUnderTest.createOrUpdateIdmAccount(jsonAccounts[0], jsonUsers[0]);
-			expect(result).toBe(true);
-			expect(kcAdminClient.users.create).toBeCalledTimes(1);
-			expect(kcAdminClient.users.create).toBeCalledWith(idmUser);
-			expect(kcAdminClient.users.update).toBeCalledTimes(0);
+	describe('clean', () => {
+		it('should clean successfully', async () => {
+			const result = await serviceUnderTest.clean();
+			expect(result).toBeGreaterThan(0);
 		});
-		it('should update successfully', async () => {
-			const idmUser = {
-				username: jsonAccounts[0].username,
-				firstName: jsonUsers[0].firstName,
-				lastName: jsonUsers[0].lastName,
-				email: jsonUsers[0].email,
-				enabled: true,
-				credentials: [
-					{
-						type: 'password',
-						secretData: `{"value": "${jsonAccounts[0].password}", "salt": "", "additionalParameters": {}}`,
-						credentialData: '{ "hashIterations": 10, "algorithm": "bcrypt", "additionalParameters": {}}',
-					},
-				],
-			};
-			kcAdminClient.users.find = jest.fn().mockResolvedValue([users[0]]);
-			kcAdminClient.users.update = jest.fn().mockResolvedValue(null);
-			kcAdminClient.users.create = jest.fn().mockResolvedValue(null);
-			const result = await serviceUnderTest.createOrUpdateIdmAccount(jsonAccounts[0], jsonUsers[0]);
-			expect(result).toBe(true);
-			expect(kcAdminClient.users.create).toBeCalledTimes(0);
-			expect(kcAdminClient.users.update).toBeCalledWith({ id: users[0].id }, idmUser);
-			expect(kcAdminClient.users.update).toBeCalledTimes(1);
-		});
+		it('should clean all users, but the admin', async () => {
+			const deleteSpy = jest.spyOn(kcApiUsersMock, 'del');
+			await serviceUnderTest.clean();
 
-		it('should not create/update if data is invalid', async () => {
-			kcAdminClient.users.find = jest.fn().mockResolvedValue([users[0], users[0]]);
-			kcAdminClient.users.update = jest.fn().mockResolvedValue(null);
-			kcAdminClient.users.create = jest.fn().mockResolvedValue(null);
-			const result = await serviceUnderTest.createOrUpdateIdmAccount(jsonAccounts[0], jsonUsers[0]);
-			expect(result).toBe(false);
-			expect(kcAdminClient.users.create).toBeCalledTimes(0);
-			expect(kcAdminClient.users.update).toBeCalledTimes(0);
+			users.forEach((user) => {
+				expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ id: user.id }));
+			});
+			expect(deleteSpy).not.toHaveBeenCalledWith(expect.objectContaining({ id: adminUser.id }));
 		});
 	});
 
-	describe('loadAccounts', () => {
-		it('should load successfully', async () => {
-			const result = await serviceUnderTest.loadAccounts();
-			expect(result.length).toBeGreaterThan(0);
+	describe('seed', () => {
+		it('should seed successfully', async () => {
+			const result = await serviceUnderTest.seed();
+			expect(result).toBeGreaterThan(0);
 		});
-	});
-	describe('loadUsers', () => {
-		it('should load successfully', async () => {
-			const result = await serviceUnderTest.loadUsers();
-			expect(result.length).toBeGreaterThan(0);
+		it('should seed all users from a backup JSON with corresponding account', async () => {
+			const createSpy = jest.spyOn(kcAdminClient.users, 'create');
+			const result = await serviceUnderTest.seed();
+			validAccounts.forEach((account) => {
+				expect(createSpy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						username: account.username,
+					})
+				);
+			});
+			expect(result).toBe(validAccounts.length);
+		});
+		it('should update existing users after initial seeding', async () => {
+			const createSpy = jest.spyOn(kcAdminClient.users, 'create');
+			const updateSpy = jest.spyOn(kcAdminClient.users, 'update');
+
+			const findSpy = jest.spyOn(kcAdminClient.users, 'find');
+
+			// eslint-disable-next-line no-empty-pattern
+			findSpy.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				const userArray = [adminUser, ...users];
+				if (arg?.username) {
+					const foundUsers = userArray.filter((user) => user.username === arg.username);
+					if (foundUsers.length > 0) {
+						return Promise.resolve(foundUsers);
+					}
+					return Promise.resolve([]);
+				}
+				return Promise.resolve(userArray);
+			});
+
+			const result = await serviceUnderTest.seed();
+			expect(result).toBe(validAccountsNoDuplicates.length);
+
+			validAccountsNoDuplicates.forEach((account) => {
+				expect(updateSpy).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						username: account.username,
+					})
+				);
+			});
+			expect(createSpy).not.toHaveBeenCalled();
 		});
 	});
 });
