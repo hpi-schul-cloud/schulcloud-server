@@ -79,6 +79,7 @@ describe('KeycloakConsole', () => {
 				console.configureIdentityProviders({
 					retryCount: 1,
 					retryDelay: 10,
+					fromJson: false,
 				})
 			).resolves.not.toThrow();
 
@@ -91,6 +92,7 @@ describe('KeycloakConsole', () => {
 				console.configureIdentityProviders({
 					retryCount: 1,
 					retryDelay: 10,
+					fromJson: false,
 				})
 			).rejects.toThrow();
 
