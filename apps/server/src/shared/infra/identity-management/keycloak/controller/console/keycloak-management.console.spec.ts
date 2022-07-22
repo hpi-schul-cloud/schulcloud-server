@@ -108,4 +108,15 @@ describe('KeycloakConsole', () => {
 			await expect(console.setPasswordPolicy({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
 		});
 	});
+
+	describe('setPasswordPolicy', () => {
+		it('should resolve successfully', async () => {
+			jest.spyOn(uc, 'setPasswordPolicy');
+			await expect(console.setPasswordPolicy({ retryCount: 1, retryDelay: 10 })).resolves.not.toThrow();
+		});
+		it('should throw on error', async () => {
+			jest.spyOn(uc, 'setPasswordPolicy').mockRejectedValue('');
+			await expect(console.setPasswordPolicy({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
+		});
+	});
 });

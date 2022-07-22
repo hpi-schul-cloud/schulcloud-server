@@ -227,4 +227,11 @@ describe('KeycloakManagementUc', () => {
 			expect(service.setPasswordPolicy).toBeCalled();
 		});
 	});
+
+	describe('setPasswordPolicy', () => {
+		it('should call service', async () => {
+			await uc.setPasswordPolicy();
+			expect(service.setPasswordPolicy).toBeCalled();
+		});
+	});
 });

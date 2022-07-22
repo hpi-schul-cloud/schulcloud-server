@@ -126,7 +126,6 @@ export class KeycloakConsole {
 				required: false,
 				defaultValue: false,
 			},
-
 			...KeycloakConsole.retryFlags,
 		],
 	})
