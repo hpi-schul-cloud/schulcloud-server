@@ -13,12 +13,13 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 
 // todo: it look like it is required not optional
 export type TaskCopyParentParams = {
 	courseId?: EntityId;
 	lessonId?: EntityId;
-	jwt?: string;
+	jwt: string;
 };
 
 @Injectable()
@@ -30,9 +31,10 @@ export class TaskCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly filesStorageClient: FilesStorageClientAdapterService
+		private readonly filesStorageClient: FilesStorageClientAdapterService,
+		private readonly fileCopyAppendService: FileCopyAppendService
 	) {}
-
+ // WIP refactor params to cluster userinfo (id, jwt) in one obj, move taskId to parentParams
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
@@ -68,6 +70,7 @@ export class TaskCopyUC {
 		if (status.copyEntity) {
 			const taskCopy = status.copyEntity as Task;
 			await this.taskRepo.save(taskCopy);
+			await this.fileCopyAppendService.appendFiles(status, parentParams.jwt)
 		}
 
 		return status;
