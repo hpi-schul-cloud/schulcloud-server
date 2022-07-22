@@ -43,6 +43,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
 import { GuestPolicy } from '@src/modules/video-conference/config/bbb-create.config';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
 
 class VideoConferenceUcSpec extends VideoConferenceUc {
 	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<IScopeInfo> {
@@ -87,6 +88,19 @@ describe('VideoConferenceUc', () => {
 	let defaultCurrentUser: ICurrentUser;
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
+
+	let team: Team;
+	let user: User;
+
+	let defaultRole: Role;
+	let expertRoleCourse: Role;
+	let expertRoleTeam: Role;
+
+	const setTeamRole = (role: Role) => {
+		team.userIds[0].role = role;
+		user.roles.set([role]);
+		defaultCurrentUser.roles = [role.name];
+	};
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
@@ -170,9 +184,19 @@ describe('VideoConferenceUc', () => {
 			everyAttendeeJoinsMuted: false,
 			moderatorMustApproveJoinRequests: false,
 		};
+		defaultRole = roleFactory.build({ permissions: [Permission.JOIN_MEETING] });
+		expertRoleCourse = roleFactory.build({ name: RoleName.EXPERT, permissions: [Permission.JOIN_MEETING] });
+		expertRoleTeam = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
+
+		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
+		user = team.userIds[0].userId;
+		user.firstName = 'firstName';
+		user.lastName = 'lastName';
+
 		userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
 		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
+		teamsRepo.findById.mockResolvedValue(team);
 		schoolUc.hasFeature.mockResolvedValue(true);
 		courseRepo.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
@@ -242,7 +266,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId')).rejects.toThrow(
-				ForbiddenException
+				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
 			);
 		});
 	});
@@ -258,7 +282,9 @@ describe('VideoConferenceUc', () => {
 			schoolUc.hasFeature.mockResolvedValue(false);
 
 			// Act & Assert
-			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(ForbiddenException);
+			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(
+				new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED)
+			);
 		});
 
 		it('should throw on global environment variable is not set', async () => {
@@ -266,7 +292,9 @@ describe('VideoConferenceUc', () => {
 			featureEnabled = false;
 
 			// Act & Assert
-			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(ForbiddenException);
+			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(
+				new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED)
+			);
 		});
 	});
 
@@ -301,7 +329,7 @@ describe('VideoConferenceUc', () => {
 			// Act & Assert
 			await expect(
 				useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions)
-			).rejects.toThrow(ForbiddenException);
+			).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
 		});
 
 		it('should successfully execute and create a new preset in the database', async () => {
@@ -390,26 +418,9 @@ describe('VideoConferenceUc', () => {
 		let builderEvent: BBBJoinConfigBuilder;
 		let courseVcDO: VideoConferenceDO;
 		let eventVcDO: VideoConferenceDO;
-		let team: Team;
-		let user: User;
-
-		const defaultRole = roleFactory.build({ permissions: [Permission.JOIN_MEETING] });
-		const expertRoleCourse = roleFactory.build({ name: RoleName.EXPERT, permissions: [Permission.JOIN_MEETING] });
-		const expertRoleTeam = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
-
-		const setTeamRole = (role: Role) => {
-			team.userIds[0].role = role;
-			user.roles.set([role]);
-			defaultCurrentUser.roles = [role.name];
-		};
 
 		beforeEach(() => {
 			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-
-			team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
-			user = team.userIds[0].userId;
-			user.firstName = 'firstName';
-			user.lastName = 'lastName';
 
 			builderCourse = new BBBJoinConfigBuilder({
 				fullName: `${user.firstName} ${user.lastName}`,
@@ -461,7 +472,6 @@ describe('VideoConferenceUc', () => {
 			// Arrange
 			videoConferenceRepo.findByScopeId.mockResolvedValue(eventVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
-			teamsRepo.findById.mockResolvedValue(team);
 
 			// Act
 			const result: VideoConferenceJoinDTO = await useCase.join(
@@ -481,8 +491,10 @@ describe('VideoConferenceUc', () => {
 			expect(result.url).toEqual(joinUrl);
 		});
 
-		it('should successfully join as guest in courses', async () => {
+		it('should successfully join as guest in courses, without moderator rights', async () => {
 			// Arrange
+			courseVcDO.options.everybodyJoinsAsModerator = true;
+			courseVcDO.options.moderatorMustApproveJoinRequests = true;
 			setTeamRole(expertRoleCourse);
 			videoConferenceRepo.findByScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
@@ -505,12 +517,13 @@ describe('VideoConferenceUc', () => {
 			expect(result.url).toEqual(joinUrl);
 		});
 
-		it('should successfully join as guest in teams', async () => {
+		it('should successfully join as guest in teams, without moderator rights', async () => {
 			// Arrange
+			courseVcDO.options.everybodyJoinsAsModerator = true;
+			courseVcDO.options.moderatorMustApproveJoinRequests = true;
 			setTeamRole(expertRoleTeam);
 			videoConferenceRepo.findByScopeId.mockResolvedValue(eventVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
-			teamsRepo.findById.mockResolvedValue(team);
 			builderEvent.asGuest(true);
 
 			// Act
@@ -531,6 +544,19 @@ describe('VideoConferenceUc', () => {
 			expect(result.url).toEqual(joinUrl);
 		});
 
+		it('should throw when joining as guest without waiting room', async () => {
+			// Arrange
+			courseVcDO.options.moderatorMustApproveJoinRequests = false;
+			setTeamRole(expertRoleTeam);
+			videoConferenceRepo.findByScopeId.mockResolvedValue(eventVcDO);
+			bbbService.join.mockResolvedValue(joinUrl);
+
+			// Act & Assert
+			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(
+				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
+			);
+		});
+
 		it('should throw on unknown scope', async () => {
 			// Act & Assert
 			await expect(
@@ -540,12 +566,11 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on unknown team user', async () => {
 			// Arrange
-			teamsRepo.findById.mockResolvedValue(team);
 			team.userIds = [];
 
 			// Act & Assert
 			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(
-				ForbiddenException
+				new ForbiddenException(ErrorStatus.UNKNOWN_USER)
 			);
 		});
 
@@ -598,7 +623,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.end(defaultCurrentUser, VideoConferenceScope.COURSE, course.id)).rejects.toThrow(
-				ForbiddenException
+				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
 			);
 		});
 
@@ -703,6 +728,32 @@ describe('VideoConferenceUc', () => {
 			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 			expect(result.options).toEqual({});
+		});
+
+		it('should throw forbidden, when called as guest without waiting room', async () => {
+			// Arrange
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			setTeamRole(expertRoleTeam);
+			vcDO.options.moderatorMustApproveJoinRequests = false;
+			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
+			videoConferenceRepo.findByScopeId.mockResolvedValue(vcDO);
+
+			// Act & Assert
+			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(
+				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
+			);
+		});
+
+		it('should throw forbidden, when called as guest and meeting is not started yet', async () => {
+			// Arrange
+			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
+			setTeamRole(expertRoleTeam);
+			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject());
+
+			// Act & Assert
+			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(
+				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
+			);
 		});
 	});
 });
