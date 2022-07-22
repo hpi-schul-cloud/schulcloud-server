@@ -10,7 +10,6 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
-import { NodeEnvType } from '@src/server.config';
 import { v1 } from 'uuid';
 import { SysType } from '../../sys.type';
 import {
@@ -62,6 +61,39 @@ describe('configureIdentityProviders', () => {
 		systemsFile: 'systems.json',
 	};
 
+	const idps: IdentityProviderRepresentation[] = [
+		{
+			providerId: 'oidc',
+			alias: 'alias',
+			enabled: true,
+			config: {
+				clientId: 'clientId',
+				clientSecret: 'clientSecret',
+				authorizationUrl: 'authorizationUrl',
+				tokenUrl: 'tokenUrl',
+				logoutUrl: 'logoutUrl',
+			},
+		},
+	];
+	const systems: System[] = [
+		{
+			_id: new ObjectId(0),
+			id: new ObjectId(0).toString(),
+			type: SysType.OIDC.toString(),
+			alias: 'alias',
+			config: {
+				clientId: 'clientId',
+				clientSecret: 'clientSecret',
+				authorizationUrl: 'authorizationUrl',
+				tokenUrl: 'tokenUrl',
+				logoutUrl: 'logoutUrl',
+			},
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		},
+	];
+	let fsReadFile: jest.SpyInstance;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -111,59 +143,29 @@ describe('configureIdentityProviders', () => {
 		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
 		repo = module.get(SystemRepo);
-	});
 
-	beforeEach(() => {});
-
-	afterEach(() => {});
-
-	const idps: IdentityProviderRepresentation[] = [
-		{
-			providerId: 'oidc',
-			alias: 'alias',
-			enabled: true,
-			config: {
-				clientId: 'clientId',
-				clientSecret: 'clientSecret',
-				authorizationUrl: 'authorizationUrl',
-				tokenUrl: 'tokenUrl',
-				logoutUrl: 'logoutUrl',
-			},
-		},
-	];
-	const systems: System[] = [
-		{
-			_id: new ObjectId(0),
-			id: new ObjectId(0).toString(),
-			type: SysType.OIDC.toString(),
-			alias: 'alias',
-			config: {
-				clientId: 'clientId',
-				clientSecret: 'clientSecret',
-				authorizationUrl: 'authorizationUrl',
-				tokenUrl: 'tokenUrl',
-				logoutUrl: 'logoutUrl',
-			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		},
-	];
-	let fsReadFile: jest.SpyInstance;
-
-	beforeEach(() => {
 		repo.findAll.mockResolvedValue(systems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 		kcApiClientIdentityProvidersMock.create.mockResolvedValue({ id: '' });
 		kcApiClientIdentityProvidersMock.update.mockResolvedValue();
 		kcApiClientIdentityProvidersMock.del.mockResolvedValue();
-		configService.get.mockReturnValue(NodeEnvType.TEST);
 		fsReadFile = jest.spyOn(fs, 'readFile').mockImplementation((path) => {
 			if (path === inputFiles.systemsFile) return Promise.resolve(JSON.stringify(systems));
 			throw new Error('File not found');
 		});
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
+		repo.findAll.mockClear();
+		kcApiClientIdentityProvidersMock.find.mockClear();
+		kcApiClientIdentityProvidersMock.create.mockClear();
+		kcApiClientIdentityProvidersMock.update.mockClear();
+		kcApiClientIdentityProvidersMock.del.mockClear();
+		configService.get.mockClear();
+		fsReadFile.mockClear();
+	});
+
+	afterAll(() => {
 		repo.findAll.mockRestore();
 		kcApiClientIdentityProvidersMock.find.mockRestore();
 		kcApiClientIdentityProvidersMock.create.mockRestore();
@@ -174,30 +176,24 @@ describe('configureIdentityProviders', () => {
 	});
 
 	it('should read configs from file system in development', async () => {
-		configService.get.mockReturnValueOnce(NodeEnvType.DEVELOPMENT);
-
-		const result = await service.configureIdentityProviders();
+		const result = await service.configureIdentityProviders(true);
 		expect(result).toBeGreaterThan(0);
 		expect(repo.findAll).not.toBeCalled();
 		expect(fsReadFile).toBeCalled();
 	});
 	it('should read configs from database in production', async () => {
-		configService.get.mockReturnValueOnce(NodeEnvType.PRODUCTION);
-
+		const result = await service.configureIdentityProviders(false);
+		expect(result).toBeGreaterThan(0);
+		expect(repo.findAll).toBeCalled();
+		expect(fsReadFile).not.toBeCalled();
+	});
+	it('should read configs from database per default', async () => {
 		const result = await service.configureIdentityProviders();
 		expect(result).toBeGreaterThan(0);
 		expect(repo.findAll).toBeCalled();
 		expect(fsReadFile).not.toBeCalled();
 	});
-	it('should not return any configs if environment is unknown', async () => {
-		configService.get.mockReturnValue(NodeEnvType.MIGRATION);
-		kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
-		await expect(service.configureIdentityProviders()).resolves.toBe(0);
-
-		configService.get.mockRestore();
-		kcApiClientIdentityProvidersMock.find.mockRestore();
-	});
 	it('should create a configuration in Keycloak', async () => {
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue([]);
 
@@ -206,7 +202,7 @@ describe('configureIdentityProviders', () => {
 		expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
 		expect(configService.get).toBeCalled();
 
-		kcApiClientIdentityProvidersMock.find.mockRestore();
+		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 	});
 	it('should update a configuration in Keycloak', async () => {
 		const result = await service.configureIdentityProviders();
@@ -215,7 +211,6 @@ describe('configureIdentityProviders', () => {
 	});
 	it('should delete a new configuration in Keycloak', async () => {
 		repo.findAll.mockResolvedValue([]);
-		configService.get.mockReturnValue(NodeEnvType.PRODUCTION);
 
 		const result = await service.configureIdentityProviders();
 		expect(result).toBe(1);
