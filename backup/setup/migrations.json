@@ -31,5 +31,16 @@
 			"$date": "2022-07-11T13:57:06.225Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "62da74248a724b0a60157dd3"
+		},
+		"state": "up",
+		"name": "allow_experts_join_meeting",
+		"createdAt": {
+			"$date": "2022-07-22T09:48:38.838Z"
+		},
+		"__v": 0
 	}
 ]

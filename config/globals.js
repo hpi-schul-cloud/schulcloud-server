@@ -106,6 +106,9 @@ const globals = {
 	NEXTCLOUD_BASE_URL: process.env.NEXTCLOUD_BASE_URL,
 	NEXTCLOUD_ADMIN_USER: process.env.NEXTCLOUD_ADMIN_USER,
 	NEXTCLOUD_ADMIN_PASS: process.env.NEXTCLOUD_ADMIN_PASS,
+
+	// calendar
+	CALENDAR_URI: process.env.CALENDAR_URI,
 };
 
 // validation /////////////////////////////////////////////////
