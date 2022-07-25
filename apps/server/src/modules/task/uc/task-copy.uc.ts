@@ -57,7 +57,7 @@ export class TaskCopyUC {
 			destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
 		}
 
-		const status = this.taskCopyService.copyTaskMetadata({
+		let status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
 			destinationLesson,
@@ -68,7 +68,7 @@ export class TaskCopyUC {
 		if (status.copyEntity) {
 			const taskCopy = status.copyEntity as Task;
 			await this.taskRepo.save(taskCopy);
-			await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
+			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
 		}
 
 		return status;
