@@ -29,6 +29,7 @@ describe('KeycloakManagementUc', () => {
 						}),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUsername),
+						setPasswordPolicy: jest.fn().mockResolvedValue(undefined),
 					},
 				},
 				{
@@ -85,10 +86,11 @@ describe('KeycloakManagementUc', () => {
 			expect(numberOfSeeds).toBe(5);
 		});
 	});
-	describe('configureIdentityProviders', () => {
-		it('should call service', async () => {
+	describe('configure', () => {
+		it('should call services', async () => {
 			await uc.configure();
 			expect(keycloakConfigurationService.configureIdentityProviders).toBeCalledTimes(1);
+			expect(keycloakAdministrationService.setPasswordPolicy).toBeCalledTimes(1);
 		});
 	});
 });
