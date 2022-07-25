@@ -39,14 +39,14 @@ describe('KeycloakManagementController', () => {
 	beforeEach(() => {
 		uc.check.mockResolvedValue(true);
 		uc.seed.mockResolvedValue(1);
-		uc.configureIdentityProviders.mockResolvedValue(1);
+		uc.configure.mockResolvedValue(1);
 		configServiceMock.get.mockReturnValue(NodeEnvType.TEST);
 	});
 
 	afterEach(() => {
 		uc.check.mockRestore();
 		uc.seed.mockRestore();
-		uc.configureIdentityProviders.mockRestore();
+		uc.configure.mockRestore();
 		configServiceMock.get.mockRestore();
 	});
 
@@ -58,6 +58,11 @@ describe('KeycloakManagementController', () => {
 		it('should accept calls on seed route', async () => {
 			const received = await controller.importSeedData();
 			expect(received).toBe(1);
+		});
+		it('should call configure with param true', async () => {
+			const received = await controller.importSeedData();
+			expect(received).toBe(1);
+			expect(uc.configure).toBeCalledWith(true);
 		});
 		it('should return -1 if connection ok but seed fails', async () => {
 			uc.seed.mockRejectedValue('seeding error');
@@ -75,43 +80,6 @@ describe('KeycloakManagementController', () => {
 
 			uc.check.mockRestore();
 			uc.seed.mockRestore();
-		});
-	});
-
-	describe('configure', () => {
-		it('should accept calls on configure route', async () => {
-			await expect(controller.configure()).resolves.not.toThrow();
-		});
-		it('should not seed users', async () => {
-			const result = await controller.configure();
-			expect(result).toBeGreaterThan(0);
-			expect(uc.check).toBeCalled();
-			expect(uc.seed).not.toBeCalled();
-			expect(uc.configureIdentityProviders).toBeCalled();
-		});
-		it('should seed users', async () => {
-			configServiceMock.get.mockReturnValueOnce(NodeEnvType.DEVELOPMENT);
-
-			const result = await controller.configure();
-			expect(result).toBeGreaterThan(0);
-			expect(uc.check).toBeCalled();
-			expect(uc.seed).toBeCalled();
-			expect(uc.configureIdentityProviders).toBeCalled();
-		});
-		it('should return -1 if connection is ok but configure fails', async () => {
-			uc.configureIdentityProviders.mockRejectedValue('configure failed');
-
-			const result = await controller.configure();
-			expect(result).toBe(-1);
-
-			uc.configureIdentityProviders.mockRestore();
-		});
-		it('should throw if Keycloak is not available', async () => {
-			uc.check.mockResolvedValue(false);
-
-			await expect(controller.configure()).rejects.toThrow(ServiceUnavailableException);
-
-			uc.check.mockRestore();
 		});
 	});
 });

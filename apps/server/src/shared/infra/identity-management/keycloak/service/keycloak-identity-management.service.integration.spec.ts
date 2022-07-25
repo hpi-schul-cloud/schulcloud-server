@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
-import { IdentityManagementService } from '../identity-management.service';
-import { KeycloakSettings } from './interface/keycloak-settings.interface';
+import { IdentityManagementService } from '../../identity-management.service';
+import { KeycloakSettings } from '../interface/keycloak-settings.interface';
 
 /**
  * This test does not run on CI!

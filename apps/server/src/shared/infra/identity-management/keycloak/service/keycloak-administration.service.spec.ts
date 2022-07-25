@@ -1,6 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { TestingModule, Test } from '@nestjs/testing';
-import { IKeycloakSettings, KeycloakSettings } from './interface/keycloak-settings.interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 describe('KeycloakAdministrationService', () => {
