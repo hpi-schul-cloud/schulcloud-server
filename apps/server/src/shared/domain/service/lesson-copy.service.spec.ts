@@ -14,6 +14,7 @@ import {
 	TaskCopyService,
 } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { IComponentInternalProperties } from '../entity';
 import { CopyHelperService } from './copy-helper.service';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -854,13 +855,20 @@ describe('lesson copy service', () => {
 					],
 				};
 
-				return { copyStatus };
+				return { copyStatus, copiedTask };
 			};
 
 			it('should add copy of embedded task url, with new taskId', () => {
-				const { copyStatus } = setup();
+				const { copyStatus, copiedTask } = setup();
 
-				const result = copyService.appendEmbeddedTasks(copyStatus);
+				const appendCopyStatus = copyService.appendEmbeddedTasks(copyStatus);
+				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
+				const lesson = lessonStatus?.copyEntity as Lesson;
+				if (lesson === undefined || lesson.contents === undefined) {
+					throw new Error('lesson should be part of the copy');
+				}
+				const content = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
+				expect((content?.content as IComponentInternalProperties).url).toEqual(`someurl/homeworks/${copiedTask.id}`);
 			});
 		});
 	});
