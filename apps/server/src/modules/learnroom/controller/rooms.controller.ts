@@ -67,12 +67,13 @@ export class RoomsController {
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('lessonid', ParseObjectIdPipe) lessonId: string,
-		@Body() params: LessonCopyApiParams
+		@Body() params: LessonCopyApiParams,
+		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.lessonCopyUc.copyLesson(
 			currentUser.userId,
 			lessonId,
-			CopyMapper.mapLessonCopyToDomain(params)
+			CopyMapper.mapLessonCopyToDomain(params, jwt)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
