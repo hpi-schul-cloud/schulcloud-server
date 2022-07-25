@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { KeycloakConsole } from './keycloak-management.console';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 
 describe('KeycloakConsole', () => {
 	let module: TestingModule;
@@ -73,28 +73,30 @@ describe('KeycloakConsole', () => {
 
 	describe('configureIdentityProviders', () => {
 		it('should resolve successfully', async () => {
-			uc.configureIdentityProviders.mockResolvedValue(1);
+			uc.configure.mockResolvedValue(1);
 
 			await expect(
 				console.configureIdentityProviders({
 					retryCount: 1,
 					retryDelay: 10,
+					fromJson: false,
 				})
 			).resolves.not.toThrow();
 
-			uc.configureIdentityProviders.mockRestore();
+			uc.configure.mockRestore();
 		});
 		it('should throw on error', async () => {
-			uc.configureIdentityProviders.mockRejectedValue('configure failed');
+			uc.configure.mockRejectedValue('configure failed');
 
 			await expect(
 				console.configureIdentityProviders({
 					retryCount: 1,
 					retryDelay: 10,
+					fromJson: false,
 				})
 			).rejects.toThrow();
 
-			uc.configureIdentityProviders.mockRestore();
+			uc.configure.mockRestore();
 		});
 	});
 });
