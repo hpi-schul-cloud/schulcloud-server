@@ -8,8 +8,7 @@ export class KeycloakManagementUc {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly keycloakConfigService: KeycloakConfigurationService,
-		private readonly keycloakSeedService: KeycloakSeedService,
-		private readonly keycloakAdministrationService: KeycloakAdministrationService
+		private readonly keycloakSeedService: KeycloakSeedService
 	) {}
 
 	public async check(): Promise<boolean> {
@@ -25,7 +24,7 @@ export class KeycloakManagementUc {
 	}
 
 	async configure(loadFromJson = false): Promise<number> {
-		await this.keycloakAdministrationService.setPasswordPolicy();
+		await this.kcAdmin.setPasswordPolicy();
 		return this.keycloakConfigService.configureIdentityProviders(loadFromJson);
 	}
 }
