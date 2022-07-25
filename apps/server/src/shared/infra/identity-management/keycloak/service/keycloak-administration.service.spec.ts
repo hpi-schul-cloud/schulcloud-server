@@ -112,5 +112,9 @@ describe('KeycloakAdministrationService', () => {
 				{ passwordPolicy: 'hashIterations(310000)' }
 			);
 		});
+		it('should authorize before configuration keycloak', async () => {
+			await service.setPasswordPolicy();
+			expect(kcAdminClient.auth).toHaveBeenCalledTimes(1);
+		});
 	});
 });

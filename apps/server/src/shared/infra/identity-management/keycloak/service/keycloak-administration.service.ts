@@ -37,10 +37,8 @@ export class KeycloakAdministrationService {
 	}
 
 	public async setPasswordPolicy() {
-		await this.kcAdminClient.realms.update(
-			{ realm: this.kcSettings.realmName },
-			{ passwordPolicy: 'hashIterations(310000)' }
-		);
+		const kc = await this.callKcAdminClient();
+		await kc.realms.update({ realm: this.kcSettings.realmName }, { passwordPolicy: 'hashIterations(310000)' });
 	}
 
 	private async authorizeAccess() {
