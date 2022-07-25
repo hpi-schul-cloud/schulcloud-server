@@ -3,13 +3,13 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyHelperService, PermissionTypes, TaskCopyService, User } from '@shared/domain';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyUC } from './task-copy.uc';
-import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 
 /**
  * TODO
@@ -114,6 +114,8 @@ describe('task copy uc', () => {
 			};
 			taskCopyService.copyTaskMetadata.mockReturnValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
+			fileCopyAppendService.appendFiles.mockResolvedValue(status);
+			const jwt = 'some-jwt-string';
 			return {
 				user,
 				course,
@@ -123,6 +125,7 @@ describe('task copy uc', () => {
 				copy,
 				allTasks,
 				status,
+				jwt,
 			};
 		};
 
@@ -179,6 +182,12 @@ describe('task copy uc', () => {
 				const { course, lesson, user, task, copy } = setup();
 				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt: 'some-jwt-string' });
 				expect(taskRepo.save).toBeCalledWith(copy);
+			});
+
+			it('should try to append file copies from original task to task copy', async () => {
+				const { course, lesson, user, task, jwt } = setup();
+				const copyStatus = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt });
+				expect(fileCopyAppendService.appendFiles).toBeCalledWith(copyStatus, jwt);
 			});
 		});
 

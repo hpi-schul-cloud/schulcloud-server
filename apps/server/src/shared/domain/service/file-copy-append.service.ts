@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FileDto, FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules';
+import { FileDto, FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
@@ -14,7 +14,7 @@ export class FileCopyAppendService {
 	// TODO create interfaces for params
 	async appendFiles(copyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
 		if (copyStatus.type === CopyElementType.TASK) {
-			return this.appendFilesToTask(copyStatus as CopyStatus, jwt);
+			return this.appendFilesToTask(copyStatus, jwt);
 		}
 		if (copyStatus.elements && copyStatus.elements.length > 0) {
 			copyStatus.elements = await Promise.all(copyStatus.elements.map((el) => this.appendFiles(el, jwt)));
@@ -23,7 +23,7 @@ export class FileCopyAppendService {
 		return Promise.resolve(copyStatus);
 	}
 
-	async appendFilesToTask(taskCopyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
+	private async appendFilesToTask(taskCopyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
 		const taskCopyStatusCopy = { ...taskCopyStatus };
 		if (taskCopyStatusCopy.copyEntity === undefined || taskCopyStatusCopy.originalEntity === undefined) {
 			return taskCopyStatusCopy;

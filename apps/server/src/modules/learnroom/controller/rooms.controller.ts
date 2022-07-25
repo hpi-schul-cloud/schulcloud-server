@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller';
 import { ICurrentUser } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { LessonCopyUC } from '@src/modules/learnroom/uc/lesson-copy.uc';
 import { CopyMapper } from '../mapper/copy.mapper';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
@@ -55,9 +55,10 @@ export class RoomsController {
 	@Post(':roomid/copy')
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('roomid', ParseObjectIdPipe) courseId: string
+		@Param('roomid', ParseObjectIdPipe) courseId: string,
+		@JWT() jwt: string
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, courseId);
+		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, courseId, jwt);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;
 	}
