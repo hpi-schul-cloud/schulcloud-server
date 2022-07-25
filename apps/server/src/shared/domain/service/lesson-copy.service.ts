@@ -2,15 +2,17 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import {
+	BaseEntity,
 	ComponentType,
 	Course,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
+	IComponentInternalProperties,
 	IComponentProperties,
 	Lesson,
 	User,
 } from '../entity';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 import { EtherpadService } from './etherpad.service';
 import { TaskCopyService } from './task-copy.service';
@@ -57,8 +59,45 @@ export class LessonCopyService {
 	}
 
 	appendEmbeddedTasks(status: CopyStatus): CopyStatus {
+		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
+		return this.appendEmbeddedTasksRecursive(status, copyDict);
+	}
+
+	private appendEmbeddedTasksRecursive(status: CopyStatus, copyDict: Map<EntityId, BaseEntity>) {
+		if (status.type === CopyElementType.LESSON) {
+			this.appendEmbeddedTasksToLesson(status, copyDict);
+		}
+		if (status.elements) {
+			status.elements.forEach((element) => {
+				this.appendEmbeddedTasksRecursive(element, copyDict);
+			});
+		}
 		return status;
 	}
+
+	private appendEmbeddedTasksToLesson(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>) {
+		const copiedLesson = lessonStatus.copyEntity as Lesson;
+
+		const newContents = copiedLesson.contents.map((value: IComponentProperties) =>
+			this.appendEmbeddedTasksMapContent(value, copyDict)
+		);
+		copiedLesson.contents = newContents;
+	}
+
+	private appendEmbeddedTasksMapContent = (value: IComponentProperties, copyDict: Map<EntityId, BaseEntity>) => {
+		if (value.component !== ComponentType.INTERNAL) {
+			return value;
+		}
+		const content = value.content as IComponentInternalProperties;
+		const url = new URL(content.url);
+		const originalTaskId = url.pathname.split('/')[2];
+		const finalTask = copyDict.get(originalTaskId);
+		if (!finalTask) {
+			return value;
+		}
+		const newEmbedded = { ...value, content: { url: content.url.replace(originalTaskId, finalTask.id) } };
+		return newEmbedded;
+	};
 
 	private async copyLessonContent(
 		content: IComponentProperties[],
@@ -105,11 +144,13 @@ export class LessonCopyService {
 				copiedContentStatus.push(etherpadStatus);
 			}
 			if (element.component === ComponentType.INTERNAL) {
+				const linkContent = this.copyEmbeddedTaskLink(element);
 				const embeddedTaskStatus = {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT,
-					status: CopyStatusEnum.NOT_IMPLEMENTED,
+					status: CopyStatusEnum.SUCCESS,
 				};
+				copiedContent.push(linkContent);
 				copiedContentStatus.push(embeddedTaskStatus);
 			}
 		}
@@ -169,25 +210,10 @@ export class LessonCopyService {
 		return false;
 	}
 
-	/* private async copyEmbeddedTask(
-		originalElement: IComponentProperties,
-		destinationLesson: Lesson,
-		params: LessonCopyParams
-	) {
-		const copy = { ...originalElement } as IComponentProperties;
-		const content = { ...copy.content } as IComponentInternalProperties;
-		const urlSplit = content.url.split('/');
-		if (urlSplit.includes('homework')) {
-			const taskId = urlSplit.at(-1) || '';
-			const originalTask = await this.taskRepo.findById(taskId);
-			const taskStatus = this.taskCopyService.copyTaskMetadata({
-				originalTask,
-				destinationCourse: params.destinationCourse,
-				destinationLesson,
-				user: params.user,
-			});
-		}
-	} */
+	private copyEmbeddedTaskLink(originalElement: IComponentProperties) {
+		const copy = JSON.parse(JSON.stringify(originalElement)) as IComponentProperties;
+		return copy;
+	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
 		return [
