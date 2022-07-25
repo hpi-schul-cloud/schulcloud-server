@@ -1,7 +1,6 @@
 import { Collection } from '@mikro-orm/core';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import type { Role } from '../entity/role.entity';
-import { User } from '../entity/user.entity';
+import { TeamUser, User, Role } from '@shared/domain/entity';
 import { IEntity, IEntityWithSchool, IUserRoleName } from '../interface';
 
 @Injectable()
@@ -16,6 +15,12 @@ export class AuthorisationUtils {
 			throw new Error('Roles items are not loaded.');
 		}
 		const rolesAndPermissions = this.resolvePermissionsByRoles(user.roles.getItems());
+
+		return rolesAndPermissions;
+	}
+
+	resolveTeamPermissions(teamUser: TeamUser): string[] {
+		const rolesAndPermissions = this.resolvePermissionsByRoles([teamUser.role]);
 
 		return rolesAndPermissions;
 	}

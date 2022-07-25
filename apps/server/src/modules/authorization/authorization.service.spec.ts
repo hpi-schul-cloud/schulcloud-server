@@ -4,7 +4,16 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
+import {
+	Actions,
+	ALL_RULES,
+	BaseEntity,
+	IPermissionContext,
+	Permission,
+	PermissionContextBuilder,
+	PermissionTypes,
+	User,
+} from '@shared/domain';
 import {
 	courseFactory,
 	lessonFactory,
@@ -140,20 +149,6 @@ describe('authorization.service', () => {
 	describe('hasPermissionByReferences', () => {
 		const context = PermissionContextBuilder.read([]);
 
-		it('should call ReferenceLoader.getUserWithPermissions', async () => {
-			const userId = new ObjectId().toHexString();
-			const entityName = AllowedAuthorizationEntityType.Course;
-			const entityId = new ObjectId().toHexString();
-			const spy = jest.spyOn(service, 'hasPermission');
-			spy.mockReturnValue(true);
-
-			await service.hasPermissionByReferences(userId, entityName, entityId, context);
-
-			expect(loader.getUserWithPermissions).lastCalledWith(userId);
-
-			spy.mockRestore();
-		});
-
 		it('should call ReferenceLoader.loadEntity', async () => {
 			const userId = new ObjectId().toHexString();
 			const entityName = AllowedAuthorizationEntityType.Course;
@@ -163,7 +158,8 @@ describe('authorization.service', () => {
 
 			await service.hasPermissionByReferences(userId, entityName, entityId, context);
 
-			expect(loader.loadEntity).lastCalledWith(entityName, entityId);
+			expect(loader.loadEntity).nthCalledWith(1, AllowedAuthorizationEntityType.User, userId);
+			expect(loader.loadEntity).nthCalledWith(2, entityName, entityId);
 
 			spy.mockRestore();
 		});
@@ -203,16 +199,44 @@ describe('authorization.service', () => {
 		});
 	});
 
+	describe('checkPermissionsByReferences', () => {
+		const permissionTrue = 'true' as Permission;
+		const permissionFalse = 'false' as Permission;
+
+		it('should call ReferenceLoader.getUserWithPermissions', async () => {
+			const userId = new ObjectId().toHexString();
+			const entityName = AllowedAuthorizationEntityType.Course;
+			const entityId = new ObjectId().toHexString();
+			const spy = jest.spyOn(service, 'hasPermission');
+			spy.mockImplementation((user: User, entity: PermissionTypes, context: IPermissionContext) => {
+				return context.requiredPermissions[0] === permissionTrue;
+			});
+
+			const retMap = service.hasPermissionsByReferences(
+				userId,
+				entityName,
+				entityId,
+				[permissionTrue, permissionFalse],
+				Actions.read
+			);
+
+			expect(await retMap.get(permissionTrue)).toBe(true);
+			expect(await retMap.get(permissionFalse)).toBe(false);
+
+			spy.mockRestore();
+		});
+	});
+
 	describe('getUserWithPermissions', () => {
 		it('Should call ReferenceLoader.getUserWithPermissions.', async () => {
 			const userId = new ObjectId().toHexString();
 
 			await service.getUserWithPermissions(userId);
-			expect(loader.getUserWithPermissions).lastCalledWith(userId);
+			expect(loader.loadEntity).lastCalledWith(AllowedAuthorizationEntityType.User, userId);
 		});
 
 		it('Should throw ForbiddenException if user by id can not be found.', async () => {
-			loader.getUserWithPermissions.mockRejectedValueOnce(new NotFound());
+			loader.loadEntity.mockRejectedValueOnce(new NotFound());
 
 			const userId = new ObjectId().toHexString();
 

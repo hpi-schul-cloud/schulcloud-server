@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { teamFactory } from '@shared/testing/factory/team.factory';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Role, Team, User } from '../entity';
 import { Permission } from '../interface';
 
@@ -35,13 +36,30 @@ describe('TeamRule', () => {
 		entity = teamFactory.withRoleAndUserId(role, user.id).build();
 	});
 
-	it('should return "true" if user in scope', () => {
-		const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionA] });
-		expect(res).toBe(true);
+	describe('isApplicable', () => {
+		it('should return truthy', () => {
+			expect(() =>
+				service.isApplicable(entity.userIds[0].userId, entity, { requiredPermissions: [permissionA] })
+			).toBeTruthy();
+		});
 	});
 
-	it('should return "false" if user has not permission', () => {
-		const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionC] });
-		expect(res).toBe(false);
+	describe('hasPermission', () => {
+		it('should return "true" if user in scope', () => {
+			const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionA] });
+			expect(res).toBe(true);
+		});
+
+		it('should return "false" if user has not permission', () => {
+			const res = service.hasPermission(entity.userIds[0].userId, entity, { requiredPermissions: [permissionC] });
+			expect(res).toBe(false);
+		});
+
+		it('should throw error if entity was not found', () => {
+			const notFoundUser = userFactory.build({ roles: [role] });
+			expect(() => service.hasPermission(notFoundUser, entity, { requiredPermissions: [permissionA] })).toThrow(
+				new InternalServerErrorException('Cannot find user in team')
+			);
+		});
 	});
 });

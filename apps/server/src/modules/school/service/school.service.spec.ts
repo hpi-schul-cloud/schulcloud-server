@@ -1,4 +1,4 @@
-import { School } from '@shared/domain';
+import { School, SchoolFeatures } from '@shared/domain';
 import { schoolFactory, setupEntities } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolRepo } from '@shared/repo';
@@ -78,6 +78,30 @@ describe('SchoolService', () => {
 			);
 			expect(schoolRepo.create).not.toHaveBeenCalled();
 			expect(schoolRepo.save).toHaveBeenCalled();
+		});
+	});
+
+	describe('hasFeature', () => {
+		it('should return true', async () => {
+			// Arrange
+			schoolRepo.findById.mockResolvedValue(schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] }));
+
+			// Act
+			const result = await schoolService.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
+
+			// Assert
+			expect(result).toBe(true);
+		});
+
+		it('should return false', async () => {
+			// Arrange
+			schoolRepo.findById.mockResolvedValue(schoolFactory.buildWithId());
+
+			// Act
+			const result = await schoolService.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
+
+			// Assert
+			expect(result).toBe(false);
 		});
 	});
 });

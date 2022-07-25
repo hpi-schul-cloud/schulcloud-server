@@ -9,6 +9,7 @@ import {
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
+	Material,
 	User,
 } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
@@ -34,13 +35,15 @@ export class LessonCopyService {
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
-		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents || [], params);
+		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
+		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(params.originalLesson);
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? params.originalLesson.name,
 			position: params.originalLesson.position,
 			contents: copiedContent,
+			materials: copiedMaterials,
 		});
 
 		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(
@@ -50,7 +53,12 @@ export class LessonCopyService {
 			params.user
 		);
 
-		const elements = [...LessonCopyService.lessonStatusMetadata(), ...contentStatus, ...copiedTasksStatus];
+		const elements = [
+			...LessonCopyService.lessonStatusMetadata(),
+			...contentStatus,
+			...materialsStatus,
+			...copiedTasksStatus,
+		];
 
 		const status: CopyStatus = {
 			title: copy.name,
@@ -135,29 +143,6 @@ export class LessonCopyService {
 		return copy;
 	}
 
-	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
-		const linkedTasks = originalLesson.getLessonLinkedTasks();
-		const copiedTasksStatus: CopyStatus[] = [];
-		if (linkedTasks.length > 0) {
-			linkedTasks.forEach((element) => {
-				const taskStatus = this.taskCopyService.copyTaskMetadata({
-					originalTask: element,
-					destinationCourse,
-					destinationLesson,
-					user,
-				});
-				copiedTasksStatus.push(taskStatus);
-			});
-			const taskGroupStatus = {
-				type: CopyElementType.TASK_GROUP,
-				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
-				elements: copiedTasksStatus,
-			};
-			return [taskGroupStatus];
-		}
-		return [];
-	}
-
 	private async copyEtherpad(
 		originalElement: IComponentProperties,
 		params: LessonCopyParams
@@ -195,6 +180,59 @@ export class LessonCopyService {
 			return copy;
 		}
 		return false;
+	}
+
+	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
+		const linkedTasks = originalLesson.getLessonLinkedTasks();
+		const copiedTasksStatus: CopyStatus[] = [];
+		if (linkedTasks.length > 0) {
+			linkedTasks.forEach((element) => {
+				const taskStatus = this.taskCopyService.copyTaskMetadata({
+					originalTask: element,
+					destinationCourse,
+					destinationLesson,
+					user,
+				});
+				copiedTasksStatus.push(taskStatus);
+			});
+			const taskGroupStatus = {
+				type: CopyElementType.TASK_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(copiedTasksStatus),
+				elements: copiedTasksStatus,
+			};
+			return [taskGroupStatus];
+		}
+		return [];
+	}
+
+	private copyLinkedMaterials(originalLesson: Lesson): {
+		copiedMaterials: Material[];
+		materialsStatus: CopyStatus[];
+	} {
+		const linkedItems = originalLesson.getLessonMaterials();
+		const copiedMaterials: Material[] = [];
+		const materialsStatus: CopyStatus[] = [];
+		if (linkedItems.length > 0) {
+			const elementsStatus: CopyStatus[] = [];
+			linkedItems.forEach((element) => {
+				const material = new Material(element);
+				copiedMaterials.push(material);
+				const status: CopyStatus = {
+					title: element.title,
+					type: CopyElementType.LERNSTORE_MATERIAL,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: material,
+				};
+				elementsStatus.push(status);
+			});
+			const materialGroupStatus: CopyStatus = {
+				type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(elementsStatus),
+				elements: elementsStatus,
+			};
+			materialsStatus.push(materialGroupStatus);
+		}
+		return { copiedMaterials, materialsStatus };
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
