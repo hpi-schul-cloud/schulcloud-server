@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ComponentType,
 	CopyElementType,
+	CopyStatus,
 	CopyStatusEnum,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
@@ -656,6 +657,49 @@ describe('lesson copy service', () => {
 		});
 	});
 
+	describe('when lesson contains embedded task element', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const embeddedTaskContent: IComponentProperties = {
+				title: 'title',
+				hidden: false,
+				component: ComponentType.INTERNAL,
+				content: {
+					url: 'urlPrefix/homeworks/someid',
+				},
+			};
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [embeddedTaskContent],
+			});
+
+			return {
+				user,
+				destinationCourse,
+				originalLesson,
+			};
+		};
+
+		it('should add status for embedded task as notimplemented', async () => {
+			const { originalLesson, destinationCourse, user } = setup();
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const contentsStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			if (!contentsStatus || !contentsStatus.elements || contentsStatus.elements.length < 1) {
+				throw new Error('element not found');
+			}
+			const embeddedTaskStatus = contentsStatus.elements[0];
+
+			expect(embeddedTaskStatus.status).toEqual(CopyStatusEnum.NOT_IMPLEMENTED);
+		});
+	});
+
 	describe('when lesson contains Etherpad content element', () => {
 		const setup = () => {
 			const etherpadContent: IComponentProperties = {
@@ -753,6 +797,71 @@ describe('lesson copy service', () => {
 			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
 			const copiedEtherpad = copiedLessonContents[0].content as IComponentEtherpadProperties;
 			expect(copiedEtherpad.url).toEqual('http://pad.uri/abc');
+		});
+	});
+
+	describe('appendEmbeddedTasks', () => {
+		it('should leave non-lesson status as is', () => {
+			const status = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [
+					{
+						type: CopyElementType.TASK,
+						status: CopyStatusEnum.SUCCESS,
+					},
+				],
+			};
+
+			const result = copyService.appendEmbeddedTasks(status);
+			expect(result).toEqual(status);
+		});
+
+		describe('when status contains lesson with embedded tasks', () => {
+			const setup = () => {
+				const originalLesson = lessonFactory.buildWithId();
+				const copiedLesson = lessonFactory.buildWithId();
+				const originalTask = taskFactory.buildWithId({ lesson: originalLesson });
+				const copiedTask = taskFactory.buildWithId({ lesson: copiedLesson });
+				const embeddedTaskContent: IComponentProperties = {
+					title: 'title',
+					hidden: false,
+					component: ComponentType.INTERNAL,
+					content: {
+						url: `someurl/homeworks/${originalTask.id}`,
+					},
+				};
+				originalLesson.contents = [embeddedTaskContent];
+
+				const copyStatus: CopyStatus = {
+					type: CopyElementType.COURSE,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [
+						{
+							type: CopyElementType.LESSON,
+							status: CopyStatusEnum.SUCCESS,
+							originalEntity: originalLesson,
+							copyEntity: copiedLesson,
+							elements: [
+								{
+									type: CopyElementType.TASK,
+									status: CopyStatusEnum.SUCCESS,
+									originalEntity: originalTask,
+									copyEntity: copiedTask,
+								},
+							],
+						},
+					],
+				};
+
+				return { copyStatus };
+			};
+
+			it('should add copy of embedded task url, with new taskId', () => {
+				const { copyStatus } = setup();
+
+				const result = copyService.appendEmbeddedTasks(copyStatus);
+			});
 		});
 	});
 });

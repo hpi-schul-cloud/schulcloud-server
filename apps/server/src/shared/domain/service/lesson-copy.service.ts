@@ -1,13 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
-import { TaskRepo } from '@shared/repo/task/task.repo';
 import { randomBytes } from 'crypto';
 import {
 	ComponentType,
 	Course,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
-	IComponentInternalProperties,
 	IComponentProperties,
 	Lesson,
 	User,
@@ -29,8 +27,7 @@ export class LessonCopyService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly etherpadService: EtherpadService,
-		private readonly taskRepo: TaskRepo
+		private readonly etherpadService: EtherpadService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
@@ -56,6 +53,10 @@ export class LessonCopyService {
 			elements,
 		};
 
+		return status;
+	}
+
+	appendEmbeddedTasks(status: CopyStatus): CopyStatus {
 		return status;
 	}
 
@@ -104,8 +105,12 @@ export class LessonCopyService {
 				copiedContentStatus.push(etherpadStatus);
 			}
 			if (element.component === ComponentType.INTERNAL) {
-				// eslint-disable-next-line no-await-in-loop
-				const internalContent = await this.copyEmbeddedTask(element, params);
+				const embeddedTaskStatus = {
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.NOT_IMPLEMENTED,
+				};
+				copiedContentStatus.push(embeddedTaskStatus);
 			}
 		}
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
@@ -164,7 +169,7 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyEmbeddedTask(
+	/* private async copyEmbeddedTask(
 		originalElement: IComponentProperties,
 		destinationLesson: Lesson,
 		params: LessonCopyParams
@@ -182,7 +187,7 @@ export class LessonCopyService {
 				user: params.user,
 			});
 		}
-	}
+	} */
 
 	private static lessonStatusMetadata(): CopyStatus[] {
 		return [
