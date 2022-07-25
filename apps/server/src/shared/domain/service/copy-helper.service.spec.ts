@@ -1,4 +1,6 @@
+import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory, setupEntities } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 
@@ -15,6 +17,15 @@ function createStates(elementStates: CopyStatusEnum[]): CopyStatus[] {
 describe('copy helper service', () => {
 	let module: TestingModule;
 	let copyHelperService: CopyHelperService;
+	let orm: MikroORM;
+
+	beforeAll(async () => {
+		orm = await setupEntities();
+	});
+
+	afterAll(async () => {
+		await orm.close();
+	});
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -193,6 +204,40 @@ describe('copy helper service', () => {
 				const nameCopy = copyHelperService.deriveCopyName(originalName, existingNames);
 				expect(nameCopy).toEqual('Test (2000)');
 			});
+		});
+	});
+
+	describe('buildCopyEntityDict', () => {
+		it('should map original to copy', () => {
+			const originalEntity = courseFactory.buildWithId();
+			const copyEntity = courseFactory.buildWithId();
+			const status = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				originalEntity,
+				copyEntity,
+			};
+			const copyMap = copyHelperService.buildCopyEntityDict(status);
+			expect(copyMap.get(originalEntity.id)).toEqual(copyEntity);
+		});
+
+		it('should map entities deeper in structure', () => {
+			const originalEntity = courseFactory.buildWithId();
+			const copyEntity = courseFactory.buildWithId();
+			const status: CopyStatus = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [
+					{
+						type: CopyElementType.COURSE,
+						status: CopyStatusEnum.SUCCESS,
+						originalEntity,
+						copyEntity,
+					},
+				],
+			};
+			const copyMap = copyHelperService.buildCopyEntityDict(status);
+			expect(copyMap.get(originalEntity.id)).toEqual(copyEntity);
 		});
 	});
 });
