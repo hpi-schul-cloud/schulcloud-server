@@ -150,13 +150,13 @@ describe('rooms controller', () => {
 			};
 			it('should call uc', async () => {
 				const { currentUser, ucSpy } = setup();
-				await controller.copyCourse(currentUser, 'courseId');
-				expect(ucSpy).toHaveBeenCalledWith('userId', 'courseId');
+				await controller.copyCourse(currentUser, 'courseId', 'some-jwt-token');
+				expect(ucSpy).toHaveBeenCalledWith('userId', 'courseId', 'some-jwt-token');
 			});
 
 			it('should return result of correct type', async () => {
 				const { currentUser } = setup();
-				const result = await controller.copyCourse(currentUser, 'courseId');
+				const result = await controller.copyCourse(currentUser, 'courseId', 'some-jwt-token');
 				expect(result).toBeInstanceOf(CopyApiResponse);
 			});
 		});
