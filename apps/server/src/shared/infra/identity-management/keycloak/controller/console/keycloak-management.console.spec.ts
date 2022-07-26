@@ -71,12 +71,12 @@ describe('KeycloakConsole', () => {
 		});
 	});
 
-	describe('configureIdentityProviders', () => {
+	describe('configure', () => {
 		it('should resolve successfully', async () => {
 			uc.configure.mockResolvedValue(1);
 
 			await expect(
-				console.configureIdentityProviders({
+				console.configure({
 					retryCount: 1,
 					retryDelay: 10,
 					fromJson: false,
@@ -89,7 +89,7 @@ describe('KeycloakConsole', () => {
 			uc.configure.mockRejectedValue('configure failed');
 
 			await expect(
-				console.configureIdentityProviders({
+				console.configure({
 					retryCount: 1,
 					retryDelay: 10,
 					fromJson: false,

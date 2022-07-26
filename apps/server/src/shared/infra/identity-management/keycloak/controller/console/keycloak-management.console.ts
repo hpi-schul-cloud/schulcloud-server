@@ -108,11 +108,10 @@ export class KeycloakConsole {
 				required: false,
 				defaultValue: false,
 			},
-
 			...KeycloakConsole.retryFlags,
 		],
 	})
-	async configureIdentityProviders(options: IConfigureOptions & IRetryOptions): Promise<void> {
+	async configure(options: IConfigureOptions & IRetryOptions): Promise<void> {
 		await this.repeatCommand(
 			'configure',
 			async () => {
