@@ -53,7 +53,7 @@ export class CourseCopyUC {
 		if (statusBoard && statusBoard.copyEntity) {
 			const boardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(boardCopy);
-			statusBoard = this.lessonCopyService.appendEmbeddedTasks(statusBoard);
+			statusBoard = this.lessonCopyService.updateCopiedEmbeddedTasks(statusBoard);
 			const updatedBoardCopy = statusBoard.copyEntity as Board;
 			await this.boardRepo.save(updatedBoardCopy);
 		}

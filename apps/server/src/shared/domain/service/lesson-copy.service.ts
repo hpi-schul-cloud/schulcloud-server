@@ -69,33 +69,33 @@ export class LessonCopyService {
 		return status;
 	}
 
-	appendEmbeddedTasks(status: CopyStatus): CopyStatus {
+	updateCopiedEmbeddedTasks(status: CopyStatus): CopyStatus {
 		const copyDict = this.copyHelperService.buildCopyEntityDict(status);
-		return this.appendEmbeddedTasksRecursive(status, copyDict);
+		return this.updateCopiedEmbeddedTasksRecursive(status, copyDict);
 	}
 
-	private appendEmbeddedTasksRecursive(status: CopyStatus, copyDict: Map<EntityId, BaseEntity>) {
+	private updateCopiedEmbeddedTasksRecursive(status: CopyStatus, copyDict: Map<EntityId, BaseEntity>) {
 		if (status.type === CopyElementType.LESSON) {
-			this.appendEmbeddedTasksToLesson(status, copyDict);
+			this.updateCopiedEmbeddedTasksOfLesson(status, copyDict);
 		}
 		if (status.elements) {
 			status.elements.forEach((element) => {
-				this.appendEmbeddedTasksRecursive(element, copyDict);
+				this.updateCopiedEmbeddedTasksRecursive(element, copyDict);
 			});
 		}
 		return status;
 	}
 
-	private appendEmbeddedTasksToLesson(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>) {
+	private updateCopiedEmbeddedTasksOfLesson(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>) {
 		const copiedLesson = lessonStatus.copyEntity as Lesson;
 
 		const newContents = copiedLesson.contents.map((value: IComponentProperties) =>
-			this.appendEmbeddedTasksMapContent(value, copyDict)
+			this.updateCopiedEmbeddedTasksMapContent(value, copyDict)
 		);
 		copiedLesson.contents = newContents;
 	}
 
-	private appendEmbeddedTasksMapContent = (value: IComponentProperties, copyDict: Map<EntityId, BaseEntity>) => {
+	private updateCopiedEmbeddedTasksMapContent = (value: IComponentProperties, copyDict: Map<EntityId, BaseEntity>) => {
 		if (value.component !== ComponentType.INTERNAL) {
 			return value;
 		}

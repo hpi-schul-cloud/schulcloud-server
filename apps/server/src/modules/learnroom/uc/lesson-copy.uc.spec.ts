@@ -93,7 +93,7 @@ describe('lesson copy uc', () => {
 				copyEntity: copy,
 			};
 			lessonCopyService.copyLesson.mockResolvedValue(status);
-			lessonCopyService.appendEmbeddedTasks.mockReturnValue(status);
+			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(status);
 			const lessonPersistSpy = jest.spyOn(lessonRepo, 'save');
 			lessonRepo.save.mockResolvedValue(undefined);
 			const lessonCopyName = 'Copy';
@@ -194,7 +194,7 @@ describe('lesson copy uc', () => {
 		it('should use lessonCopyService ', async () => {
 			const { course, user, lesson } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
-			expect(lessonCopyService.appendEmbeddedTasks).toHaveBeenCalled();
+			expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByCourseIds to determine existing lesson names', async () => {

@@ -54,7 +54,7 @@ export class LessonCopyUC {
 		if (status.copyEntity) {
 			const lessonCopy = status.copyEntity as Lesson;
 			await this.lessonRepo.save(lessonCopy);
-			status = this.lessonCopyService.appendEmbeddedTasks(status);
+			status = this.lessonCopyService.updateCopiedEmbeddedTasks(status);
 			const updatedLesson = status.copyEntity as Lesson;
 			await this.lessonRepo.save(updatedLesson);
 		}

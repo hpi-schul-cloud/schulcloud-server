@@ -200,10 +200,10 @@ describe('course copy uc', () => {
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name, allCourseNames);
 		});
 
-		it('should use lessonCopyService.appendEmbeddedTasks', async () => {
+		it('should use lessonCopyService.updateCopiedEmbeddedTasks', async () => {
 			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(lessonCopyService.appendEmbeddedTasks).toHaveBeenCalled();
+			expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByUserId to determine existing course names', async () => {

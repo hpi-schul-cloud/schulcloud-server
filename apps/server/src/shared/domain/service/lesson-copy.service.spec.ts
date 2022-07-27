@@ -1066,7 +1066,7 @@ describe('lesson copy service', () => {
 		});
 	});
 
-	describe('appendEmbeddedTasks', () => {
+	describe('updateCopiedEmbeddedTasks', () => {
 		it('should leave non-lesson status as is', () => {
 			const status = {
 				type: CopyElementType.COURSE,
@@ -1079,7 +1079,7 @@ describe('lesson copy service', () => {
 				],
 			};
 
-			const result = copyService.appendEmbeddedTasks(status);
+			const result = copyService.updateCopiedEmbeddedTasks(status);
 			expect(result).toEqual(status);
 		});
 
@@ -1157,7 +1157,7 @@ describe('lesson copy service', () => {
 			it('should add copy of embedded task url, with new taskId', () => {
 				const { copyStatus, copiedTask } = setup();
 
-				const appendCopyStatus = copyService.appendEmbeddedTasks(copyStatus);
+				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
 				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
 				const lesson = lessonStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
@@ -1172,7 +1172,7 @@ describe('lesson copy service', () => {
 			it('should maintain order of content elements', () => {
 				const { copyStatus } = setup();
 
-				const appendCopyStatus = copyService.appendEmbeddedTasks(copyStatus);
+				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
 				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
 				const lesson = lessonStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
@@ -1185,7 +1185,7 @@ describe('lesson copy service', () => {
 				const { copyStatus, originalTask } = setup();
 				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, BaseEntity>());
 
-				const appendCopyStatus = copyService.appendEmbeddedTasks(copyStatus);
+				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
 				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
 				const lesson = lessonStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
@@ -1199,7 +1199,7 @@ describe('lesson copy service', () => {
 
 			it('should use copyHelperService to build a dictionary', () => {
 				const { copyStatus } = setup();
-				copyService.appendEmbeddedTasks(copyStatus);
+				copyService.updateCopiedEmbeddedTasks(copyStatus);
 				expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalled();
 			});
 		});
