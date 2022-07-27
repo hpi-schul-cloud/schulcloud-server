@@ -13,6 +13,7 @@ import {
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
+	Material,
 	TaskCopyService,
 } from '@shared/domain';
 import {
@@ -1011,7 +1012,10 @@ describe('lesson copy service', () => {
 					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL && el.title === originalMaterial.title
 				);
 				expect(materialStatus).toBeDefined();
-				expect(materialStatus).toEqual(mockedMaterialStatus);
+				expect(materialStatus?.title).toEqual(mockedMaterialStatus.title);
+				expect(materialStatus?.status).toEqual(mockedMaterialStatus.status);
+				const material = materialStatus?.copyEntity as Material;
+				expect(material?.description).toEqual(mockedMaterialStatus?.copyEntity?.description);
 			});
 		});
 
@@ -1061,7 +1065,10 @@ describe('lesson copy service', () => {
 					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
 				expect(materialsGroupStatus).toBeDefined();
-				expect(materialsGroupStatus?.elements).toEqual([mockedMaterialStatusOne, mockedMaterialStatusTwo]);
+				expect(materialsGroupStatus?.elements?.map((el) => el.title)).toEqual([
+					mockedMaterialStatusOne.title,
+					mockedMaterialStatusTwo.title,
+				]);
 			});
 		});
 	});
