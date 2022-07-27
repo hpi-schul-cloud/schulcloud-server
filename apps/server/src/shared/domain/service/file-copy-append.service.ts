@@ -25,12 +25,7 @@ export class FileCopyAppendService {
 
 	private async appendFilesToTask(taskCopyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
 		const taskCopyStatusCopy = { ...taskCopyStatus };
-		const fileGroupStatus = this.getFileGroupStatus(taskCopyStatus?.elements);
-		if (
-			taskCopyStatusCopy.copyEntity === undefined ||
-			taskCopyStatusCopy.originalEntity === undefined ||
-			fileGroupStatus === undefined
-		) {
+		if (taskCopyStatusCopy.copyEntity === undefined || taskCopyStatusCopy.originalEntity === undefined) {
 			return taskCopyStatusCopy;
 		}
 		try {
@@ -57,15 +52,24 @@ export class FileCopyAppendService {
 	}
 
 	private createFailedCopyStatus(taskCopyStatus: CopyStatus) {
-		const fileGroupStatus = this.getFileGroupStatus(taskCopyStatus?.elements);
+		let fileGroupStatus = this.getFileGroupStatus(taskCopyStatus?.elements);
+		if (fileGroupStatus === undefined) {
+			fileGroupStatus = {
+				type: CopyElementType.FILE_GROUP,
+				status: CopyStatusEnum.FAIL,
+			};
+		}
+		const elements =
+			fileGroupStatus?.elements && fileGroupStatus.elements.length > 0
+				? fileGroupStatus?.elements?.map((el) => {
+						el.status = CopyStatusEnum.FAIL;
+						return el;
+				  })
+				: undefined;
 		const updatedFileGroupStatus = {
 			...fileGroupStatus,
 			status: CopyStatusEnum.FAIL,
-			elements:
-				fileGroupStatus.elements?.map((el) => {
-					el.status = CopyStatusEnum.FAIL;
-					return el;
-				}) ?? [],
+			elements,
 		};
 		taskCopyStatus.status = this.copyHelperService.deriveStatusFromElements(taskCopyStatus.elements as CopyStatus[]);
 		taskCopyStatus.elements = this.replaceFileGroup(taskCopyStatus.elements, updatedFileGroupStatus);
