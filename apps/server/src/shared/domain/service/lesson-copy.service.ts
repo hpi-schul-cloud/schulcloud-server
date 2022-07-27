@@ -230,8 +230,8 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
-		const linkedTasks = originalLesson.getLessonLinkedTasks();
+	private copyLinkedTasks(destinationLesson: Lesson, params: LessonCopyParams) {
+		const linkedTasks = params.originalLesson.getLessonLinkedTasks();
 		const copiedTasksStatus: CopyStatus[] = [];
 		if (linkedTasks.length > 0) {
 			linkedTasks.forEach((element) => {
