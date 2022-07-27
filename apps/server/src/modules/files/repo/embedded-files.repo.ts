@@ -25,7 +25,7 @@ const lessonsQuery = [
 	},
 ];
 
-const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
+const filesQuery = (fileIds: ObjectId[], parentId: ObjectId) => [
 	{
 		$match: {
 			_id: { $in: fileIds },
@@ -68,7 +68,7 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 				$filter: {
 					input: '$filerecords_match',
 					as: 'filerecords_match',
-					cond: { $eq: ['$$filerecords_match.parent', lessonId] },
+					cond: { $eq: ['$$filerecords_match.parent', parentId] },
 				},
 			},
 		},
@@ -92,7 +92,7 @@ const filesQuery = (fileIds: ObjectId[], lessonId: ObjectId) => [
 			schoolId: '$creator1.schoolId',
 			file: '$$ROOT',
 			filerecord: '$filerecord',
-			_id: lessonId,
+			_id: parentId,
 		},
 	},
 	{
@@ -116,12 +116,12 @@ export class EmbeddedFilesRepo {
 		return lessons;
 	}
 
-	async findFiles(fileIds: ObjectId[], lessonId: ObjectId): Promise<SyncFileItem[]> {
-		const query = filesQuery(fileIds, lessonId);
+	async findFiles(fileIds: ObjectId[], parentId: ObjectId, parentType: FileRecordParentType): Promise<SyncFileItem[]> {
+		const query = filesQuery(fileIds, parentId);
 		const result = await this._em.aggregate(File, query);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const items = SyncFileItemMapper.mapResults(result, FileRecordParentType.Lesson);
+		const items = SyncFileItemMapper.mapResults(result, parentType);
 
 		return items;
 	}

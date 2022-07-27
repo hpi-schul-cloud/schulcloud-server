@@ -3,7 +3,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { IComponentProperties, Lesson } from '@shared/domain';
+import { FileRecordParentType, IComponentProperties, Lesson } from '@shared/domain';
 import _ from 'lodash';
 import { EmbeddedFilesRepo, fileUrlRegex } from '../repo/embedded-files.repo';
 import { SyncFileItem } from '../types';
@@ -28,7 +28,7 @@ export class SyncEmbeddedFilesUc {
 		const promises = lessons.map(async (lesson) => {
 			const fileIds = this.extractFileIds(lesson);
 
-			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id);
+			const files = await this.embeddedFilesRepo.findFiles(fileIds, lesson._id, FileRecordParentType.Lesson);
 			return this.syncFiles(files);
 		});
 
