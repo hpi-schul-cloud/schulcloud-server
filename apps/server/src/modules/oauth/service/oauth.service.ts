@@ -159,7 +159,8 @@ export class OAuthService {
 			return oauthResponse;
 		} catch (error) {
 			this.logger.log(error);
-			return this.getOAuthError(error as string);
+			const system: System = await this.systemRepo.findById(systemId);
+			return this.getOAuthError(error as string, system.oauthConfig?.provider as string);
 		}
 	}
 
@@ -179,7 +180,7 @@ export class OAuthService {
 		return oauthResponse;
 	}
 
-	getOAuthError(error: unknown): OAuthResponse {
+	getOAuthError(error: unknown, provider: string): OAuthResponse {
 		this.logger.error(error);
 		const oauthResponse = new OAuthResponse();
 		if (error instanceof OAuthSSOError) {
@@ -187,7 +188,9 @@ export class OAuthService {
 		} else {
 			oauthResponse.errorcode = 'oauth_login_failed';
 		}
-		oauthResponse.redirect = `${Configuration.get('HOST') as string}/login?error=${oauthResponse.errorcode}`;
+		oauthResponse.redirect = `${Configuration.get('HOST') as string}/login?error=${
+			oauthResponse.errorcode
+		}&provider=${provider}`;
 		return oauthResponse;
 	}
 }
