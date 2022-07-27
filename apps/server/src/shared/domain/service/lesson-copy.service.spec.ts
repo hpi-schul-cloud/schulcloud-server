@@ -1157,8 +1157,8 @@ describe('lesson copy service', () => {
 			it('should add copy of embedded task url, with new taskId', () => {
 				const { copyStatus, copiedTask } = setup();
 
-				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
-				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
+				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
+				const lessonStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
 				const lesson = lessonStatus?.copyEntity as Lesson;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
