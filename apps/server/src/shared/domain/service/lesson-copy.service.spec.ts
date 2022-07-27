@@ -968,7 +968,6 @@ describe('lesson copy service', () => {
 
 			it('should copy the material correctly', async () => {
 				const { originalLesson, destinationCourse, user, originalMaterial } = setup();
-
 				const copyStatus = await copyService.copyLesson({
 					originalLesson,
 					destinationCourse,
@@ -977,7 +976,8 @@ describe('lesson copy service', () => {
 				const copiedLesson = copyStatus.copyEntity as Lesson;
 				const copiedMaterial = copiedLesson.materials[0];
 				expect(copiedLesson.materials.length).toEqual(1);
-				expect(copiedMaterial).toEqual(originalMaterial);
+				expect(copiedMaterial.title).toEqual(originalMaterial.title);
+				expect(copiedMaterial.url).toEqual(originalMaterial.url);
 			});
 
 			it('should put copy status materials leaf', async () => {
@@ -1195,6 +1195,12 @@ describe('lesson copy service', () => {
 				expect((content?.content as IComponentInternalProperties).url).toEqual(
 					`http://somebasedomain.de/homeworks/${originalTask.id}`
 				);
+			});
+
+			it('should use copyHelperService to build a dictionary', () => {
+				const { copyStatus } = setup();
+				copyService.appendEmbeddedTasks(copyStatus);
+				expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalled();
 			});
 		});
 	});

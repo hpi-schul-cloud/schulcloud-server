@@ -44,7 +44,7 @@ export class LessonCopyUC {
 		const existingNames = existingLessons.map((l) => l.name);
 		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
 
-		const status = await this.lessonCopyService.copyLesson({
+		let status = await this.lessonCopyService.copyLesson({
 			originalLesson,
 			destinationCourse,
 			user,
@@ -54,6 +54,9 @@ export class LessonCopyUC {
 		if (status.copyEntity) {
 			const lessonCopy = status.copyEntity as Lesson;
 			await this.lessonRepo.save(lessonCopy);
+			status = this.lessonCopyService.appendEmbeddedTasks(status);
+			const updatedLesson = status.copyEntity as Lesson;
+			await this.lessonRepo.save(updatedLesson);
 		}
 
 		return status;
