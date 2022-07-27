@@ -7,6 +7,7 @@ import {
 	CopyStatus,
 	Course,
 	EntityId,
+	LessonCopyService,
 	Permission,
 } from '@shared/domain';
 import { CourseCopyService } from '@shared/domain/service/course-copy.service';
@@ -23,7 +24,8 @@ export class CourseCopyUC {
 		private readonly courseCopyService: CourseCopyService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly roomsService: RoomsService,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		private readonly lessonCopyService: LessonCopyService
 	) {}
 
 	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
@@ -46,9 +48,15 @@ export class CourseCopyUC {
 		const courseCopy = statusCourse.copyEntity as Course;
 		await this.courseRepo.save(courseCopy);
 
-		const statusBoard = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
-		const boardCopy = statusBoard.copyEntity as Board;
-		await this.boardRepo.save(boardCopy);
+		let statusBoard = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+
+		if (statusBoard && statusBoard.copyEntity) {
+			const boardCopy = statusBoard.copyEntity as Board;
+			await this.boardRepo.save(boardCopy);
+			statusBoard = this.lessonCopyService.appendEmbeddedTasks(statusBoard);
+			const updatedBoardCopy = statusBoard.copyEntity as Board;
+			await this.boardRepo.save(updatedBoardCopy);
+		}
 
 		statusCourse.elements ||= [];
 		statusCourse.elements.push(statusBoard);

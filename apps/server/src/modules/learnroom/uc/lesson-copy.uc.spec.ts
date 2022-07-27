@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Actions, CopyHelperService, LessonCopyService, PermissionTypes, User, EtherpadService } from '@shared/domain';
+import { Actions, CopyHelperService, EtherpadService, LessonCopyService, PermissionTypes, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
@@ -93,6 +93,7 @@ describe('lesson copy uc', () => {
 				copyEntity: copy,
 			};
 			lessonCopyService.copyLesson.mockResolvedValue(status);
+			lessonCopyService.appendEmbeddedTasks.mockReturnValue(status);
 			const lessonPersistSpy = jest.spyOn(lessonRepo, 'save');
 			lessonRepo.save.mockResolvedValue(undefined);
 			const lessonCopyName = 'Copy';
@@ -188,6 +189,12 @@ describe('lesson copy uc', () => {
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
 			const existingNames = allLessons.map((l) => l.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(lesson.name, existingNames);
+		});
+
+		it('should use lessonCopyService ', async () => {
+			const { course, user, lesson } = setup();
+			await uc.copyLesson(user.id, lesson.id, { courseId: course.id });
+			expect(lessonCopyService.appendEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByCourseIds to determine existing lesson names', async () => {
