@@ -1,6 +1,6 @@
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
+import { KeycloakManagementUc } from '../../uc/Keycloak-management.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
@@ -8,7 +8,9 @@ interface IRetryOptions {
 	retryCount: number;
 	retryDelay: number;
 }
-
+interface IConfigureOptions {
+	fromJson: boolean;
+}
 @Console({ command: 'idm', description: 'Prefixes all Identity Management (IDM) related console commands.' })
 export class KeycloakConsole {
 	constructor(
@@ -31,6 +33,9 @@ export class KeycloakConsole {
 		},
 	];
 
+	/**
+	 * For local development. Checks if connection to IDM is working.
+	 */
 	@Command({ command: 'check', description: 'Test the connection to the IDM.' })
 	async check(): Promise<void> {
 		if (await this.keycloakManagementUc.check()) {
@@ -40,6 +45,11 @@ export class KeycloakConsole {
 		}
 	}
 
+	/**
+	 * For local development. Cleans user from IDM
+	 *
+	 * @param options
+	 */
 	@Command({
 		command: 'clean',
 		description: 'Remove all users from the IDM.',
@@ -58,6 +68,10 @@ export class KeycloakConsole {
 		);
 	}
 
+	/**
+	 * For local development. Seeds user into IDM
+	 * @param options
+	 */
 	@Command({
 		command: 'seed',
 		description: 'Add all seed users to the IDM.',
@@ -70,6 +84,39 @@ export class KeycloakConsole {
 				const count = await this.keycloakManagementUc.seed();
 				this.console.info(`Seeded ${count} users into IDM`);
 				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
+	/**
+	 * Used in production and for local development to transfer configuration to keycloak.
+	 *
+	 * Per default the configuration is loaded from the DB.
+	 * Locally the "fromJson" option should be set to true.
+	 *
+	 * @param options
+	 */
+	@Command({
+		command: 'configure',
+		description: 'Configures Keycloak identity providers.',
+		options: [
+			{
+				flags: '-fj, --from-json <value>',
+				description: 'Determines if the identiy providers should be loaded from json instead of DB',
+				required: false,
+				defaultValue: false,
+			},
+			...KeycloakConsole.retryFlags,
+		],
+	})
+	async configure(options: IConfigureOptions & IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'configure',
+			async () => {
+				const count = await this.keycloakManagementUc.configure(options.fromJson);
+				this.console.info(`Configured ${count} identity provider(s).`);
 			},
 			options.retryCount,
 			options.retryDelay

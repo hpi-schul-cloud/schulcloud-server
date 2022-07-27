@@ -32,7 +32,8 @@
 			"teacher": {
 				"STUDENT_LIST": true
 			}
-		}
+		},
+                "features" : []
 	},
 	{
 		"_id": {
@@ -63,7 +64,8 @@
 			"teacher": {
 				"STUDENT_LIST": true
 			}
-		}
+		},
+                "features" : []
 	},
 	{
 		"_id": {
@@ -83,9 +85,6 @@
 			"name": "Brandenburg an der Havel"
 		},
 		"systems": [
-			{
-				"$oid": "0000d186816abba584714c91"
-			},
 			{
 				"$oid": "0000d186816abba584714c92"
 			},
@@ -107,7 +106,8 @@
 		"features": [
 			"rocketChat",
 			"messenger",
-			"ldapUniventionMigrationSchool"
+			"ldapUniventionMigrationSchool",
+			"videoconference"
 		],
 		"enableStudentTeamCreation": false,
 		"permissions": {
@@ -144,7 +144,8 @@
 		"currentYear": {
 			"$oid": "5ebd6dc14a431f75ec9a3e77"
 		},
-		"purpose": "expert"
+		"purpose": "expert",
+                "features" : []
 	},
 	{
 		"_id": {
