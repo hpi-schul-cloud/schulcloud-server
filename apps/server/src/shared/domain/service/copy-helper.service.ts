@@ -37,15 +37,13 @@ export class CopyHelperService {
 	}
 
 	buildCopyEntityDict(status: CopyStatus): Map<EntityId, BaseEntity> {
-		const elementMaps =
-			status.elements?.map((elementStatus) => {
-				return this.buildCopyEntityDict(elementStatus);
-			}) || [];
-		const map = new Map<EntityId, BaseEntity>(...elementMaps);
+		const map = new Map<EntityId, BaseEntity>();
+		status.elements?.forEach((elementStatus: CopyStatus) => {
+			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
+		});
 		if (status.originalEntity && status.copyEntity) {
 			map.set(status.originalEntity.id, status.copyEntity);
 		}
-
 		return map;
 	}
 }
