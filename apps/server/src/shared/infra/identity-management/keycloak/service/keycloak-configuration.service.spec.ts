@@ -11,6 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { v1 } from 'uuid';
+import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SysType } from '../../sys.type';
 import {
 	IKeycloakSettings,
@@ -31,6 +32,7 @@ describe('configureIdentityProviders', () => {
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
 	const kcApiAuthenticationManagementMock = createMock<AuthenticationManagement>();
+	const kcApiRealmsMock = createMock<Realms>();
 	const adminUsername = 'admin';
 
 	const adminUser: UserRepresentation = {
@@ -122,6 +124,7 @@ describe('configureIdentityProviders', () => {
 						setConfig: () => {},
 						identityProviders: kcApiClientIdentityProvidersMock,
 						authenticationManagement: kcApiAuthenticationManagementMock,
+						realms: kcApiRealmsMock,
 					}),
 				},
 				{
@@ -218,5 +221,19 @@ describe('configureIdentityProviders', () => {
 
 		repo.findAll.mockRestore();
 		configService.get.mockRestore();
+	});
+
+	describe('configureBrokerFlows', () => {
+		beforeAll(() => {
+			kcApiRealmsMock.makeRequest.mockImplementation(() => async () => Promise.resolve());
+		});
+
+		beforeEach(() => {
+			kcApiRealmsMock.makeRequest.mockClear();
+		});
+
+		it('should create flow', async () => {});
+		it('should delete and create flow', async () => {});
+		it('should add execution steps to flow', async () => {});
 	});
 });

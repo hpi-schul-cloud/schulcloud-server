@@ -4,6 +4,8 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
+import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
+import AuthenticationExecutionInfoRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionInfoRepresentation';
 import { IdentityProviderConfig, IKeycloakManagementInputFiles, KeycloakManagementInputFiles } from '../interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 import { SysType } from '../../sys.type';
@@ -22,7 +24,74 @@ export class KeycloakConfigurationService {
 		@Inject(KeycloakManagementInputFiles) private readonly inputFiles: IKeycloakManagementInputFiles
 	) {}
 
-	public async configureIdentityProviders(loadFromJson = false) {
+	public async configureBrokerFlows(): Promise<void> {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const flowAlias = 'Direct Broker Flow';
+		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
+		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation, void>({
+			method: 'POST',
+			path: `/${kc.realmName}/authentication/flows`,
+		});
+		const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
+			method: 'GET',
+			path: '/{realmName}/authentication/flows',
+			urlParamKeys: ['realmName'],
+		});
+		const getFlowExecutionsRequest = kc.realms.makeRequest<
+			{ realmName: string; flowAlias: string },
+			AuthenticationExecutionInfoRepresentation[]
+		>({
+			method: 'GET',
+			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
+			urlParamKeys: ['realmName', 'flowAlias'],
+		});
+		const deleteFlowRequest = kc.realms.makeRequest<{ id: string }, void>({
+			method: 'DELETE',
+			path: `/${kc.realmName}/authentication/flows/{id}`,
+			urlParamKeys: ['id'],
+		});
+		const addExecutionRequest = kc.realms.makeRequest<{ provider: string }, void>({
+			method: 'POST',
+			path: `/${kc.realmName}/authentication/flows/${flowAlias}/executions/execution`,
+		});
+		const updateExecutionRequest = kc.realms.makeRequest<AuthenticationExecutionInfoRepresentation, void>({
+			method: 'PUT',
+			path: `/${kc.realmName}/authentication/flows/${flowAlias}/executions`,
+		});
+
+		const flow = (await getFlowsRequest({ realmName: kc.realmName })).find((tempFlow) => tempFlow.alias === flowAlias);
+		if (flow && flow.id) {
+			await deleteFlowRequest({ id: flow.id });
+		}
+		await createFlowRequest({
+			alias: flowAlias,
+			description: 'First broker login which automatically creates or maps accounts.',
+			providerId: 'basic-flow',
+			topLevel: true,
+			builtIn: false,
+		});
+		// eslint-disable-next-line no-restricted-syntax
+		for (const executionProvider of executionProviders) {
+			// eslint-disable-next-line no-await-in-loop
+			await addExecutionRequest({
+				provider: executionProvider,
+			});
+		}
+		const executions = await getFlowExecutionsRequest({
+			realmName: kc.realmName,
+			flowAlias,
+		});
+		// eslint-disable-next-line no-restricted-syntax
+		for (const execution of executions) {
+			// eslint-disable-next-line no-await-in-loop
+			await updateExecutionRequest({
+				id: execution.id,
+				requirement: 'ALTERNATIVE',
+			});
+		}
+	}
+
+	public async configureIdentityProviders(loadFromJson = false): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const oldConfigs = await kc.identityProviders.find();
