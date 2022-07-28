@@ -1,7 +1,9 @@
-import { Collection, Entity, Index, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ILearnroomElement } from '@shared/domain/interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
+import { Material } from './materials.entity';
 import { Task } from './task.entity';
 
 export interface ILessonProperties {
@@ -10,6 +12,7 @@ export interface ILessonProperties {
 	course: Course;
 	position?: number;
 	contents: IComponentProperties[] | [];
+	materials?: Material[];
 }
 
 export enum ComponentType {
@@ -17,6 +20,7 @@ export enum ComponentType {
 	GEOGEBRA = 'geoGebra',
 	LERNSTORE = 'resources',
 	TEXT = 'text',
+	NEXBOARD = 'neXboard',
 }
 
 export interface IComponentTextProperties {
@@ -45,6 +49,13 @@ export interface IComponentEtherpadProperties {
 	url: string;
 }
 
+export interface IComponentNexboardProperties {
+	board: string;
+	description: string;
+	title: string;
+	url: string;
+}
+
 export interface IComponentProperties {
 	title: string;
 	hidden: boolean;
@@ -53,7 +64,8 @@ export interface IComponentProperties {
 		| IComponentTextProperties
 		| IComponentGeogebraProperties
 		| IComponentLernstoreProperties
-		| IComponentEtherpadProperties;
+		| IComponentEtherpadProperties
+		| IComponentNexboardProperties;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -75,6 +87,9 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	@Property()
 	contents: IComponentProperties[] | [];
 
+	@ManyToMany('Material', undefined, { fieldName: 'materialIds' })
+	materials = new Collection<Material>(this);
+
 	@OneToMany('Task', 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
@@ -85,11 +100,12 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 		this.course = props.course;
 		this.position = props.position || 0;
 		this.contents = props.contents;
+		if (props.materials) this.materials.set(props.materials);
 	}
 
 	private getTasksItems(): Task[] {
 		if (!this.tasks.isInitialized(true)) {
-			throw new Error('Lessons trying to access their tasks that are not loaded.');
+			throw new InternalServerErrorException('Lessons trying to access their tasks that are not loaded.');
 		}
 		const tasks = this.tasks.getItems();
 		return tasks;
@@ -126,6 +142,14 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	getLessonLinkedTasks(): Task[] {
 		const tasks = this.getTasksItems();
 		return tasks;
+	}
+
+	getLessonMaterials(): Material[] {
+		if (!this.materials.isInitialized(true)) {
+			throw new InternalServerErrorException('Lessons trying to access their materials that are not loaded.');
+		}
+		const materials = this.materials.getItems();
+		return materials;
 	}
 
 	publish() {

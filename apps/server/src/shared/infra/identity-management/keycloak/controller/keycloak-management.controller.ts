@@ -1,21 +1,16 @@
 import { Controller, Post, ServiceUnavailableException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { ConfigService } from '@nestjs/config';
-import { IServerConfig, NodeEnvType } from '@src/server.config';
 import { KeycloakManagementUc } from '../uc/Keycloak-management.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
-	constructor(
-		private readonly keycloakManagementUc: KeycloakManagementUc,
-		private readonly configService: ConfigService<IServerConfig, true>,
-		private readonly logger: Logger
-	) {
+	constructor(private readonly keycloakManagementUc: KeycloakManagementUc, private readonly logger: Logger) {
 		this.logger.setContext(KeycloakManagementController.name);
 	}
 
 	/**
-	 * This connects to IDM and seeds the test users.
+	 * This connects to IDM, seeds the test users and seeds the identity providers.
+	 * Used by Autodeployment for develop environment (job_init_idm.yml.j2) via cURL
 	 *
 	 * @returns The number of seeded users
 	 * @throws ServiceUnavailableException if IDM is not ready.
@@ -24,25 +19,8 @@ export class KeycloakManagementController {
 	async importSeedData(): Promise<number> {
 		if (await this.keycloakManagementUc.check()) {
 			try {
+				await this.keycloakManagementUc.configure(true);
 				return await this.keycloakManagementUc.seed();
-			} catch (err) {
-				this.logger.error(err);
-				return -1;
-			}
-		}
-		throw new ServiceUnavailableException();
-	}
-
-	@Post('configure')
-	async configure(): Promise<number> {
-		if (await this.keycloakManagementUc.check()) {
-			try {
-				let count = 0;
-				if (this.configService.get<NodeEnvType>('NODE_ENV') === NodeEnvType.DEVELOPMENT) {
-					count += await this.keycloakManagementUc.seed();
-				}
-				count += await this.keycloakManagementUc.configureIdentityProviders();
-				return count;
 			} catch (err) {
 				this.logger.error(err);
 				return -1;

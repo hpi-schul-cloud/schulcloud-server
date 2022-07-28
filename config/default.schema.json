@@ -34,6 +34,12 @@
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
 		},
+		"CALENDAR_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "http://localhost:3000",
+			"description": "The URI to the Calendar Service"
+		},
 		"CONSENT_AGE_FIRST": {
 			"tpye": "integer",
 			"default": 14,
@@ -399,6 +405,11 @@
 		"NEXBOARD_USER_ID": {
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"FEATURE_NEXBOARD_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable nexboard"
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",

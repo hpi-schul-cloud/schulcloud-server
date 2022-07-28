@@ -17,7 +17,7 @@ export class TeamUser {
 		this.schoolId = teamUser.schoolId;
 	}
 
-	@ManyToOne({ entity: () => Role })
+	@ManyToOne({ entity: () => User })
 	userId: User;
 
 	@ManyToOne({ entity: () => Role })

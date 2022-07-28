@@ -1,6 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { TestingModule, Test } from '@nestjs/testing';
-import { IKeycloakSettings, KeycloakSettings } from './interface/keycloak-settings.interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 describe('KeycloakAdministrationService', () => {
@@ -38,6 +38,9 @@ describe('KeycloakAdministrationService', () => {
 							return Promise.resolve();
 						}),
 						setConfig: jest.fn(),
+						realms: {
+							update: jest.fn(),
+						},
 					},
 				},
 				{
@@ -98,6 +101,20 @@ describe('KeycloakAdministrationService', () => {
 	describe('getAdminUser', () => {
 		it('should return the admin username', () => {
 			expect(service.getAdminUser()).toBe(settings.credentials.username);
+		});
+	});
+
+	describe('setPasswordPolicy', () => {
+		it('should call the keycloak admin client with the correct params', async () => {
+			await service.setPasswordPolicy();
+			expect(kcAdminClient.realms.update).toBeCalledWith(
+				{ realm: settings.realmName },
+				{ passwordPolicy: 'hashIterations(310000)' }
+			);
+		});
+		it('should authorize before configuration keycloak', async () => {
+			await service.setPasswordPolicy();
+			expect(kcAdminClient.auth).toHaveBeenCalledTimes(1);
 		});
 	});
 });

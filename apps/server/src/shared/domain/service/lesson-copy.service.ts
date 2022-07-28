@@ -1,18 +1,21 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { EtherpadService } from './etherpad.service';
 import {
 	ComponentType,
 	Course,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
+	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
+	Material,
 	User,
 } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
+import { EtherpadService } from './etherpad.service';
+import { NexboardService } from './nexboard.service';
 import { TaskCopyService } from './task-copy.service';
 
 export type LessonCopyParams = {
@@ -27,17 +30,20 @@ export class LessonCopyService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
 		private readonly taskCopyService: TaskCopyService,
-		private readonly etherpadService: EtherpadService
+		private readonly etherpadService: EtherpadService,
+		private readonly nexboardService: NexboardService
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
-		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents || [], params);
+		const { copiedContent, contentStatus } = await this.copyLessonContent(params.originalLesson.contents, params);
+		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(params.originalLesson);
 		const copy = new Lesson({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? params.originalLesson.name,
 			position: params.originalLesson.position,
 			contents: copiedContent,
+			materials: copiedMaterials,
 		});
 
 		const copiedTasksStatus: CopyStatus[] = this.copyLinkedTasks(
@@ -47,7 +53,12 @@ export class LessonCopyService {
 			params.user
 		);
 
-		const elements = [...LessonCopyService.lessonStatusMetadata(), ...contentStatus, ...copiedTasksStatus];
+		const elements = [
+			...LessonCopyService.lessonStatusMetadata(),
+			...contentStatus,
+			...materialsStatus,
+			...copiedTasksStatus,
+		];
 
 		const status: CopyStatus = {
 			title: copy.name,
@@ -68,6 +79,7 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
+		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
 		const copiedContent: IComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
@@ -104,6 +116,21 @@ export class LessonCopyService {
 				}
 				copiedContentStatus.push(etherpadStatus);
 			}
+			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
+				// eslint-disable-next-line no-await-in-loop
+				const nexboardContent = await this.copyNexboard(element, params);
+				const nexboardStatus = {
+					title: element.title,
+					type: CopyElementType.LESSON_CONTENT,
+					status: CopyStatusEnum.PARTIAL,
+				};
+				if (nexboardContent) {
+					copiedContent.push(nexboardContent);
+				} else {
+					nexboardStatus.status = CopyStatusEnum.FAIL;
+				}
+				copiedContentStatus.push(nexboardStatus);
+			}
 		}
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
 		return { copiedContent, contentStatus };
@@ -113,6 +140,45 @@ export class LessonCopyService {
 		const copy = { ...originalElement, hidden: true } as IComponentProperties;
 		copy.content = { ...copy.content, materialId: '' } as IComponentGeogebraProperties;
 		return copy;
+	}
+
+	private async copyEtherpad(
+		originalElement: IComponentProperties,
+		params: LessonCopyParams
+	): Promise<IComponentProperties | false> {
+		const copy = { ...originalElement } as IComponentProperties;
+		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
+		content.title = randomBytes(12).toString('hex');
+
+		const etherpadPadId = await this.etherpadService.createEtherpad(
+			params.user.id,
+			params.destinationCourse.id,
+			content.title
+		);
+		if (etherpadPadId) {
+			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
+			content.url = `${etherpadUri}/${etherpadPadId}`;
+			copy.content = content;
+			return copy;
+		}
+		return false;
+	}
+
+	private async copyNexboard(
+		originalElement: IComponentProperties,
+		params: LessonCopyParams
+	): Promise<IComponentProperties | false> {
+		const copy = { ...originalElement } as IComponentProperties;
+		const content = { ...copy.content, url: '', board: '' } as IComponentNexboardProperties;
+
+		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
+		if (nexboard) {
+			content.url = nexboard.url;
+			content.board = nexboard.board;
+			copy.content = content;
+			return copy;
+		}
+		return false;
 	}
 
 	private copyLinkedTasks(originalLesson: Lesson, destinationCourse: Course, destinationLesson: Lesson, user: User) {
@@ -138,27 +204,34 @@ export class LessonCopyService {
 		return [];
 	}
 
-	private async copyEtherpad(
-		originalElement: IComponentProperties,
-		params: LessonCopyParams
-	): Promise<IComponentProperties | false> {
-		const copy = { ...originalElement } as IComponentProperties;
-		const content = { ...copy.content, url: '' } as IComponentEtherpadProperties;
-		content.title = randomBytes(12).toString('hex');
-
-		const etherpadPadId = await this.etherpadService.createEtherpad(
-			params.user.id,
-			params.destinationCourse.id,
-			content.title,
-			''
-		);
-		if (etherpadPadId) {
-			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
-			content.url = `${etherpadUri}/${etherpadPadId}`;
-			copy.content = content;
-			return copy;
+	private copyLinkedMaterials(originalLesson: Lesson): {
+		copiedMaterials: Material[];
+		materialsStatus: CopyStatus[];
+	} {
+		const linkedItems = originalLesson.getLessonMaterials();
+		const copiedMaterials: Material[] = [];
+		const materialsStatus: CopyStatus[] = [];
+		if (linkedItems.length > 0) {
+			const elementsStatus: CopyStatus[] = [];
+			linkedItems.forEach((element) => {
+				const material = new Material(element);
+				copiedMaterials.push(material);
+				const status: CopyStatus = {
+					title: element.title,
+					type: CopyElementType.LERNSTORE_MATERIAL,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: material,
+				};
+				elementsStatus.push(status);
+			});
+			const materialGroupStatus: CopyStatus = {
+				type: CopyElementType.LERNSTORE_MATERIAL_GROUP,
+				status: this.copyHelperService.deriveStatusFromElements(elementsStatus),
+				elements: elementsStatus,
+			};
+			materialsStatus.push(materialGroupStatus);
 		}
-		return false;
+		return { copiedMaterials, materialsStatus };
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {

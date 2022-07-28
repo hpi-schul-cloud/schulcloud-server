@@ -1,6 +1,6 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { Injectable, Inject } from '@nestjs/common';
-import { IKeycloakSettings, KeycloakSettings } from './interface/keycloak-settings.interface';
+import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 
 @Injectable()
 export class KeycloakAdministrationService {
@@ -34,6 +34,11 @@ export class KeycloakAdministrationService {
 
 	public getAdminUser() {
 		return this.kcSettings.credentials.username;
+	}
+
+	public async setPasswordPolicy() {
+		const kc = await this.callKcAdminClient();
+		await kc.realms.update({ realm: this.kcSettings.realmName }, { passwordPolicy: 'hashIterations(310000)' });
 	}
 
 	private async authorizeAccess() {
