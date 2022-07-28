@@ -239,5 +239,33 @@ describe('copy helper service', () => {
 			const copyMap = copyHelperService.buildCopyEntityDict(status);
 			expect(copyMap.get(originalEntity.id)).toEqual(copyEntity);
 		});
+
+		it('should work with sub maps', () => {
+			const originalEntity = courseFactory.buildWithId();
+			const copyEntity = courseFactory.buildWithId();
+			const originalChildEntity = courseFactory.buildWithId();
+			const copyChildEntity = courseFactory.buildWithId();
+			const status = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				originalEntity,
+				copyEntity,
+				elements: [
+					{
+						type: CopyElementType.FILE_GROUP,
+						status: CopyStatusEnum.SUCCESS,
+					},
+					{
+						type: CopyElementType.COURSE,
+						status: CopyStatusEnum.SUCCESS,
+						originalEntity: originalChildEntity,
+						copyEntity: copyChildEntity,
+					},
+				],
+			};
+			const copyMap = copyHelperService.buildCopyEntityDict(status);
+			expect(copyMap.get(originalEntity.id)).toEqual(copyEntity);
+			expect(copyMap.get(originalChildEntity.id)).toEqual(copyChildEntity);
+		});
 	});
 });
