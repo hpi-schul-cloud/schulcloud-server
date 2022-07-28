@@ -8,6 +8,8 @@ import {
 	NexboardService,
 	TaskCopyService,
 } from '@shared/domain';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
+import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
 	BoardRepo,
 	CourseRepo,
@@ -17,9 +19,9 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
+import { FilesStorageClientModule } from '../files-storage-client';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -34,7 +36,7 @@ import { RoomsService } from './uc/rooms.service';
 import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
-	imports: [AuthorizationModule],
+	imports: [AuthorizationModule, FilesStorageClientModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -65,6 +67,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		NexboardService,
 		FeathersServiceProvider,
 		Logger,
+		FileCopyAppendService,
 	],
 })
 export class LearnroomModule {}
