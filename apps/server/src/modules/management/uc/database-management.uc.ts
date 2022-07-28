@@ -4,6 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { orderBy } from 'lodash';
 import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
+import { ConfigService } from '@nestjs/config';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { System } from '@shared/domain';
+import { SysType } from '@shared/infra/identity-management';
 import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {
@@ -21,7 +25,9 @@ export class DatabaseManagementUc {
 	constructor(
 		private fileSystemAdapter: FileSystemAdapter,
 		private databaseManagementService: DatabaseManagementService,
-		private bsonConverter: BsonConverter
+		private bsonConverter: BsonConverter,
+		private readonly configService: ConfigService,
+		private readonly encryptionService: SymetricKeyEncryptionService
 	) {}
 
 	/**
@@ -161,6 +167,10 @@ export class DatabaseManagementUc {
 					await this.databaseManagementService.createCollection(collectionName);
 				}
 
+				if (collectionName === 'systems') {
+					this.injectSecretsToSystems(jsonDocuments as System[]);
+				}
+
 				// import backuop data into database collection
 				const importedDocumentsAmount = await this.databaseManagementService.importCollection(
 					collectionName,
@@ -216,5 +226,31 @@ export class DatabaseManagementUc {
 	 */
 	async syncIndexes(): Promise<void> {
 		return this.databaseManagementService.syncIndexes();
+	}
+
+	private injectSecretsToSystems(systems: System[]) {
+		if (!this.configService.get<string>('AES_KEY')) {
+			return systems;
+		}
+		// this.configService.get<string>();
+		systems.forEach((system) => {
+			if (system.oauthConfig) {
+				system.oauthConfig.clientSecret = this.getEncryptedSecret(system.oauthConfig.clientSecret);
+				system.oauthConfig.clientId = this.getEncryptedSecret(system.oauthConfig.clientId);
+			}
+			if (system.type === SysType.OIDC && system.config) {
+				system.config.clientSecret = this.getEncryptedSecret(system.config.clientSecret as string);
+				system.config.clientId = this.getEncryptedSecret(system.config.clientId as string);
+			}
+		});
+		return systems;
+	}
+
+	private getEncryptedSecret(secretVarName: string) {
+		const secret = this.configService.get<string>(secretVarName);
+		if (secret) {
+			return this.encryptionService.encrypt(secret);
+		}
+		return secretVarName;
 	}
 }

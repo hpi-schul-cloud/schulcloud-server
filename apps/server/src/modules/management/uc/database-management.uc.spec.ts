@@ -1,6 +1,9 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileSystemAdapter } from '@shared/infra/file-system';
 import { DatabaseManagementService } from '@shared/infra/database';
+import { ConfigService } from '@nestjs/config';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { ObjectId } from 'mongodb';
 import { DatabaseManagementUc } from './database-management.uc';
 import { BsonConverter } from '../converter/bson.converter';
@@ -17,6 +20,8 @@ describe('DatabaseManagementService', () => {
 			providers: [
 				DatabaseManagementUc,
 				BsonConverter,
+				{ provide: ConfigService, useValue: createMock<ConfigService>() },
+				{ provide: SymetricKeyEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: {

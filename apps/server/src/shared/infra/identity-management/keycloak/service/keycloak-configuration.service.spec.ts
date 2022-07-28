@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { System } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
+import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { v1 } from 'uuid';
 import { SysType } from '../../sys.type';
 import {
@@ -27,6 +28,7 @@ describe('configureIdentityProviders', () => {
 	let service: KeycloakConfigurationService;
 	let configService: DeepMocked<ConfigService>;
 	let repo: DeepMocked<SystemRepo>;
+	let symetricKeyEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
@@ -136,6 +138,10 @@ describe('configureIdentityProviders', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: SymetricKeyEncryptionService,
+					useValue: createMock<SymetricKeyEncryptionService>(),
+				},
 			],
 		}).compile();
 		client = module.get(KeycloakAdminClient);
@@ -143,6 +149,9 @@ describe('configureIdentityProviders', () => {
 		configService = module.get(ConfigService);
 		settings = module.get(KeycloakSettings);
 		repo = module.get(SystemRepo);
+		symetricKeyEncryptionService = module.get(SymetricKeyEncryptionService);
+		symetricKeyEncryptionService.encrypt.mockImplementation((data) => data);
+		symetricKeyEncryptionService.decrypt.mockImplementation((data) => data);
 
 		repo.findAll.mockResolvedValue(systems);
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
@@ -200,7 +209,6 @@ describe('configureIdentityProviders', () => {
 		const result = await service.configureIdentityProviders();
 		expect(result).toBe(1);
 		expect(kcApiClientIdentityProvidersMock.create).toBeCalledTimes(1);
-		expect(configService.get).toBeCalled();
 
 		kcApiClientIdentityProvidersMock.find.mockResolvedValue(idps);
 	});
@@ -217,6 +225,5 @@ describe('configureIdentityProviders', () => {
 		expect(kcApiClientIdentityProvidersMock.del).toBeCalledTimes(1);
 
 		repo.findAll.mockRestore();
-		configService.get.mockRestore();
 	});
 });
