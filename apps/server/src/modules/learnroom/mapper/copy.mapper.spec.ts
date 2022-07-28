@@ -102,9 +102,11 @@ describe('copy mapper', () => {
 				const params: LessonCopyApiParams = {
 					courseId,
 				};
-				const result = CopyMapper.mapLessonCopyToDomain(params);
+				const jwt = 'some-jwt-fake';
+				const result = CopyMapper.mapLessonCopyToDomain(params, jwt);
 				const expected: LessonCopyParentParams = {
 					courseId,
+					jwt,
 				};
 
 				expect(result).toStrictEqual(expected);

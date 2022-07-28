@@ -9,12 +9,13 @@ import {
 	User,
 } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 
 export type LessonCopyParentParams = {
 	courseId?: EntityId;
-	// courseGroupId?: EntityId;
+	jwt: string;
 };
 
 @Injectable()
@@ -24,7 +25,8 @@ export class LessonCopyUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonRepo: LessonRepo,
 		private readonly courseRepo: CourseRepo,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
+		private readonly fileCopyAppendService: FileCopyAppendService
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
@@ -44,7 +46,7 @@ export class LessonCopyUC {
 		const existingNames = existingLessons.map((l) => l.name);
 		const copyName = this.copyHelperService.deriveCopyName(originalLesson.name, existingNames);
 
-		const status = await this.lessonCopyService.copyLesson({
+		let status = await this.lessonCopyService.copyLesson({
 			originalLesson,
 			destinationCourse,
 			user,
@@ -54,6 +56,7 @@ export class LessonCopyUC {
 		if (status.copyEntity) {
 			const lessonCopy = status.copyEntity as Lesson;
 			await this.lessonRepo.save(lessonCopy);
+			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
 		}
 
 		return status;

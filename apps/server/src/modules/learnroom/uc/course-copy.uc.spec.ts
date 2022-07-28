@@ -11,6 +11,7 @@ import {
 	CourseCopyService,
 	Permission,
 } from '@shared/domain';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -27,6 +28,7 @@ describe('course copy uc', () => {
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let roomsService: DeepMocked<RoomsService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let fileCopyAppendService: DeepMocked<FileCopyAppendService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -72,6 +74,10 @@ describe('course copy uc', () => {
 					provide: CopyHelperService,
 					useValue: createMock<CopyHelperService>(),
 				},
+				{
+					provide: FileCopyAppendService,
+					useValue: createMock<FileCopyAppendService>(),
+				},
 			],
 		}).compile();
 
@@ -83,6 +89,7 @@ describe('course copy uc', () => {
 		boardCopyService = module.get(BoardCopyService);
 		roomsService = module.get(RoomsService);
 		copyHelperService = module.get(CopyHelperService);
+		fileCopyAppendService = module.get(FileCopyAppendService);
 	});
 
 	describe('copy course', () => {
@@ -118,32 +125,47 @@ describe('course copy uc', () => {
 				status: CopyStatusEnum.SUCCESS,
 				copyEntity: courseCopy,
 			};
+
+			const jwt = 'some-great-jwt';
 			courseCopyService.copyCourse.mockReturnValue(status);
 
-			return { user, course, originalBoard, courseCopy, boardCopy, status, courseCopyName, allCourses };
+			fileCopyAppendService.appendFiles.mockResolvedValue(status);
+
+			return {
+				user,
+				course,
+				originalBoard,
+				courseCopy,
+				boardCopy,
+				status,
+				courseCopyName,
+				allCourses,
+				boardCopyStatus,
+				jwt,
+			};
 		};
 
 		it('should fetch correct user', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 		});
 
 		it('should fetch original course', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(courseRepo.findById).toBeCalledWith(course.id);
 		});
 
 		it('should fetch original board', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(boardRepo.findByCourseId).toBeCalledWith(course.id);
 		});
 
 		it('should check authorisation for course', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(authorisation.checkPermission).toBeCalledWith(user, course, {
 				action: Actions.write,
 				requiredPermissions: [Permission.COURSE_CREATE],
@@ -151,51 +173,57 @@ describe('course copy uc', () => {
 		});
 
 		it('should call course copy service', async () => {
-			const { course, user, courseCopyName } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, courseCopyName, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(courseCopyService.copyCourse).toBeCalledWith({ originalCourse: course, user, copyName: courseCopyName });
 		});
 
 		it('should persist course copy', async () => {
-			const { course, user, courseCopy } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, courseCopy, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(courseRepo.save).toBeCalledWith(courseCopy);
 		});
 
+		it('should try to append file copies from original task to task copy', async () => {
+			const { course, user, boardCopyStatus, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
+			expect(fileCopyAppendService.appendFiles).toBeCalledWith(boardCopyStatus, jwt);
+		});
+
 		it('should call board copy service', async () => {
-			const { course, courseCopy, originalBoard, user } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, courseCopy, originalBoard, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(boardCopyService.copyBoard).toBeCalledWith({ originalBoard, destinationCourse: courseCopy, user });
 		});
 
 		it('should persist board copy', async () => {
-			const { course, user, boardCopy } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, boardCopy, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(boardRepo.save).toBeCalledWith(boardCopy);
 		});
 
 		it('should return status', async () => {
-			const { course, user, status } = setup();
-			const result = await uc.copyCourse(user.id, course.id);
+			const { course, user, status, jwt } = setup();
+			const result = await uc.copyCourse(user.id, course.id, jwt);
 			expect(result).toEqual(status);
 		});
 
 		it('should ensure course has uptodate board', async () => {
-			const { course, user, originalBoard } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, originalBoard, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(roomsService.updateBoard).toHaveBeenCalledWith(originalBoard, course.id, user.id);
 		});
 
 		it('should use copyHelperService', async () => {
-			const { course, user, allCourses } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, allCourses, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			const allCourseNames = allCourses.map((c) => c.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name, allCourseNames);
 		});
 
 		it('should use findAllByUserId to determine existing course names', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
+			const { course, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
 			expect(courseRepo.findAllByUserId).toHaveBeenCalledWith(user.id);
 		});
 
@@ -207,14 +235,15 @@ describe('course copy uc', () => {
 				authorisation.checkPermission.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
-				return { user, course };
+				const jwt = 'some-jwt-token';
+				return { user, course, jwt };
 			};
 
 			it('should throw ForbiddenException', async () => {
-				const { course, user } = setupWithCourseForbidden();
+				const { course, user, jwt } = setupWithCourseForbidden();
 
 				try {
-					await uc.copyCourse(user.id, course.id);
+					await uc.copyCourse(user.id, course.id, jwt);
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);

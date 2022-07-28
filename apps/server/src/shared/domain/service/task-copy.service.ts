@@ -32,6 +32,7 @@ export class TaskCopyService {
 			type: CopyElementType.TASK,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			originalEntity: params.originalTask,
 			elements,
 		};
 
@@ -64,7 +65,6 @@ export class TaskCopyService {
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			}));
 			const fileStatus = {
-				title: 'files',
 				type: CopyElementType.FILE_GROUP,
 				status: CopyStatusEnum.NOT_IMPLEMENTED,
 				elements,
