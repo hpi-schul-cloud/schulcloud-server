@@ -8,7 +8,7 @@ describe('EncryptionModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [EncryptionModule, ConfigModule.forRoot()],
+			imports: [EncryptionModule, ConfigModule.forRoot({ isGlobal: true })],
 		}).compile();
 		service = module.get(SymetricKeyEncryptionService);
 	});
