@@ -42,5 +42,16 @@
 			"$date": "2022-07-22T09:48:38.838Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "62e25ac2b11660acd431c703"
+		},
+		"state": "up",
+		"name": "conferencePermissionForTeacherAndStudent",
+		"createdAt": {
+			"$date": "2022-07-28T09:23:48.792Z"
+		},
+		"__v": 0
 	}
 ]
