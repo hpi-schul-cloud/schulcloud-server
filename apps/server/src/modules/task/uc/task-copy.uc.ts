@@ -10,15 +10,15 @@ import {
 	TaskCopyService,
 	User,
 } from '@shared/domain';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
 // todo: it look like it is required not optional
 export type TaskCopyParentParams = {
 	courseId?: EntityId;
 	lessonId?: EntityId;
-	jwt?: string;
+	jwt: string;
 };
 
 @Injectable()
@@ -30,7 +30,7 @@ export class TaskCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly filesStorageClient: FilesStorageClientAdapterService
+		private readonly fileCopyAppendService: FileCopyAppendService
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
@@ -57,7 +57,7 @@ export class TaskCopyUC {
 			destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
 		}
 
-		const status = this.taskCopyService.copyTaskMetadata({
+		let status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
 			destinationLesson,
@@ -68,6 +68,7 @@ export class TaskCopyUC {
 		if (status.copyEntity) {
 			const taskCopy = status.copyEntity as Task;
 			await this.taskRepo.save(taskCopy);
+			status = await this.fileCopyAppendService.appendFiles(status, parentParams.jwt);
 		}
 
 		return status;

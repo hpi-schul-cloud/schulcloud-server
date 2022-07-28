@@ -3,12 +3,19 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Actions, CopyHelperService, PermissionTypes, TaskCopyService, User } from '@shared/domain';
+import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
 import { CopyElementType, CopyStatusEnum } from '@shared/domain/types';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyUC } from './task-copy.uc';
+
+/**
+ * TODO
+ * add tests for required jwt value
+ * test if appendFileService is used correctly
+ */
 
 describe('task copy uc', () => {
 	let orm: MikroORM;
@@ -20,6 +27,7 @@ describe('task copy uc', () => {
 	let authorisation: DeepMocked<AuthorizationService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let fileCopyAppendService: DeepMocked<FileCopyAppendService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -62,6 +70,10 @@ describe('task copy uc', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
+					provide: FileCopyAppendService,
+					useValue: createMock<FileCopyAppendService>(),
+				},
+				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
@@ -75,6 +87,7 @@ describe('task copy uc', () => {
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		taskCopyService = module.get(TaskCopyService);
+		fileCopyAppendService = module.get(FileCopyAppendService);
 		copyHelperService = module.get(CopyHelperService);
 	});
 
@@ -101,6 +114,8 @@ describe('task copy uc', () => {
 			};
 			taskCopyService.copyTaskMetadata.mockReturnValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
+			fileCopyAppendService.appendFiles.mockResolvedValue(status);
+			const jwt = 'some-jwt-string';
 			return {
 				user,
 				course,
@@ -110,13 +125,18 @@ describe('task copy uc', () => {
 				copy,
 				allTasks,
 				status,
+				jwt,
 			};
 		};
 
 		describe('status', () => {
 			it('should return status', async () => {
 				const { course, lesson, user, task, status } = setup();
-				const result = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
+				const result = await uc.copyTask(user.id, task.id, {
+					courseId: course.id,
+					lessonId: lesson.id,
+					jwt: 'some-jwt-string',
+				});
 				expect(result).toEqual(status);
 			});
 		});
@@ -124,51 +144,57 @@ describe('task copy uc', () => {
 		describe('repos', () => {
 			it('should fetch correct user', async () => {
 				const { course, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 				expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 			});
 
 			it('should fetch correct task', async () => {
 				const { course, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 				expect(taskRepo.findById).toBeCalledWith(task.id);
 			});
 
 			it('should fetch destination course', async () => {
 				const { course, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 				expect(courseRepo.findById).toBeCalledWith(course.id);
 			});
 
 			it('should pass without destination course', async () => {
 				const { user, task } = setup();
-				await uc.copyTask(user.id, task.id, {});
+				await uc.copyTask(user.id, task.id, { jwt: 'some-jwt-string' });
 				expect(courseRepo.findById).not.toHaveBeenCalled();
 			});
 
 			it('should fetch destination lesson', async () => {
 				const { lesson, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, jwt: 'some-jwt-string' });
 				expect(lessonRepo.findById).toBeCalledWith(lesson.id);
 			});
 
 			it('should pass without destination lesson', async () => {
 				const { user, task } = setup();
-				await uc.copyTask(user.id, task.id, {});
+				await uc.copyTask(user.id, task.id, { jwt: 'some-jwt-string' });
 				expect(lessonRepo.findById).not.toHaveBeenCalled();
 			});
 
 			it('should persist copy', async () => {
 				const { course, lesson, user, task, copy } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt: 'some-jwt-string' });
 				expect(taskRepo.save).toBeCalledWith(copy);
+			});
+
+			it('should try to append file copies from original task to task copy', async () => {
+				const { course, lesson, user, task, jwt } = setup();
+				const copyStatus = await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt });
+				expect(fileCopyAppendService.appendFiles).toBeCalledWith(copyStatus, jwt);
 			});
 		});
 
 		describe('permissions', () => {
 			it('should check authorisation for task', async () => {
 				const { course, lesson, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt: 'some-jwt-string' });
 				expect(authorisation.hasPermission).toBeCalledWith(user, task, {
 					action: Actions.read,
 					requiredPermissions: [],
@@ -177,7 +203,7 @@ describe('task copy uc', () => {
 
 			it('should check authorisation for destination course', async () => {
 				const { course, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 				expect(authorisation.hasPermission).toBeCalledWith(user, course, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -186,7 +212,7 @@ describe('task copy uc', () => {
 
 			it('should pass authorisation check without destination course', async () => {
 				const { course, user, task } = setup();
-				await uc.copyTask(user.id, task.id, {});
+				await uc.copyTask(user.id, task.id, { jwt: 'some-jwt-string' });
 				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -195,7 +221,7 @@ describe('task copy uc', () => {
 
 			it('should check authorisation for destination lesson', async () => {
 				const { lesson, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, jwt: 'some-jwt-string' });
 				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -204,7 +230,7 @@ describe('task copy uc', () => {
 
 			it('should pass authorisation check without destination lesson', async () => {
 				const { lesson, user, task } = setup();
-				await uc.copyTask(user.id, task.id, {});
+				await uc.copyTask(user.id, task.id, { jwt: 'some-jwt-string' });
 				expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -227,7 +253,7 @@ describe('task copy uc', () => {
 					const { course, lesson, user, task } = setupWithTaskForbidden();
 
 					try {
-						await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
+						await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt: 'some-jwt-string' });
 						throw new Error('should have failed');
 					} catch (err) {
 						expect(err).toBeInstanceOf(NotFoundException);
@@ -251,7 +277,7 @@ describe('task copy uc', () => {
 					const { course, user, task } = setupWithCourseForbidden();
 
 					try {
-						await uc.copyTask(user.id, task.id, { courseId: course.id });
+						await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 						throw new Error('should have failed');
 					} catch (err) {
 						expect(err).toBeInstanceOf(ForbiddenException);
@@ -263,7 +289,7 @@ describe('task copy uc', () => {
 		describe('derive copy name', () => {
 			it('should derive name for copy', async () => {
 				const { course, user, task, allTasks } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 				const existingNames = allTasks.map((t) => t.name);
 				expect(existingNames.length).toEqual(3);
 				expect(copyHelperService.deriveCopyName).toBeCalledWith(task.name, existingNames);
@@ -271,13 +297,13 @@ describe('task copy uc', () => {
 
 			it('should use findAllByParentIds to determine existing task names', async () => {
 				const { course, user, task } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, jwt: 'some-jwt-string' });
 				expect(taskRepo.findBySingleParent).toHaveBeenCalledWith('', course.id);
 			});
 
 			it('should call copy service', async () => {
 				const { course, lesson, user, task, copyName } = setup();
-				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id });
+				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, jwt: 'some-jwt-string' });
 				expect(taskCopyService.copyTaskMetadata).toBeCalledWith({
 					originalTask: task,
 					destinationCourse: course,
@@ -309,7 +335,7 @@ describe('task copy uc', () => {
 				const { lesson, user, task } = setupWithLessonForbidden();
 
 				try {
-					await uc.copyTask(user.id, task.id, { lessonId: lesson.id });
+					await uc.copyTask(user.id, task.id, { lessonId: lesson.id, jwt: 'some-jwt-string' });
 					throw new Error('should have failed');
 				} catch (err) {
 					expect(err).toBeInstanceOf(ForbiddenException);
