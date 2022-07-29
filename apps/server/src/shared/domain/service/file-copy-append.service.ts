@@ -6,13 +6,6 @@ import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '../types'
 import { CopyHelperService } from './copy-helper.service';
 import { FileLegacyService } from './file-legacy.service';
 
-export type FileCopyAppendParams = {
-	copyStatus: CopyStatus;
-	courseId: EntityId;
-	schoolId: EntityId;
-	userId: EntityId;
-	jwt: string;
-};
 export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 
 @Injectable()

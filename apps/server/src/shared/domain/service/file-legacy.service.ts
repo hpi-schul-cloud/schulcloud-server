@@ -1,0 +1,35 @@
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
+import { Logger } from '@src/core/logger';
+
+type FileLegacyParams = {
+	fileId: EntityId;
+	targetCourseId: EntityId;
+	userId: EntityId;
+};
+
+type FileLegacyResponse = {
+	oldFileId: EntityId;
+	fileId?: EntityId;
+	filename?: string;
+};
+
+// <optional> permissionHandler(userId, file, parent)
+@Injectable()
+export class FileLegacyService {
+	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: Logger) {}
+
+	// TODO: permissions? noch etwas zu beachten? copy <-> file
+	// TODO: targetCourseId <-> sourceCourseId
+	async copyFile(data: FileLegacyParams): Promise<FileLegacyResponse> {
+		try {
+			const service = this.feathersServiceProvider.getService('/fileStorage/copy');
+			const result = await service.create(data, { userId: data.userId });
+			return result as FileLegacyResponse;
+		} catch (error) {
+			this.logger.error('Could not copy file', error);
+			return { oldFileId: data.fileId };
+		}
+	}
+}
