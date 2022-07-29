@@ -11,12 +11,6 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyUC } from './task-copy.uc';
 
-/**
- * TODO
- * add tests for required jwt value
- * test if appendFileService is used correctly
- */
-
 describe('task copy uc', () => {
 	let orm: MikroORM;
 	let uc: TaskCopyUC;

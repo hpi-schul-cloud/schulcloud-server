@@ -18,6 +18,7 @@ export interface ILessonProperties {
 export enum ComponentType {
 	ETHERPAD = 'Etherpad',
 	GEOGEBRA = 'geoGebra',
+	INTERNAL = 'internal',
 	LERNSTORE = 'resources',
 	TEXT = 'text',
 	NEXBOARD = 'neXboard',
@@ -56,6 +57,10 @@ export interface IComponentNexboardProperties {
 	url: string;
 }
 
+export interface IComponentInternalProperties {
+	url: string;
+}
+
 export interface IComponentProperties {
 	title: string;
 	hidden: boolean;
@@ -65,6 +70,7 @@ export interface IComponentProperties {
 		| IComponentGeogebraProperties
 		| IComponentLernstoreProperties
 		| IComponentEtherpadProperties
+		| IComponentInternalProperties
 		| IComponentNexboardProperties;
 }
 
