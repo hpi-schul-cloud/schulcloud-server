@@ -1,17 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { FileDto, FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { Task } from '../entity';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
+import { uniq } from 'lodash';
+import { IComponentProperties, Lesson, Task } from '../entity';
+import { CopyElementType, CopyStatus, CopyStatusEnum, EntityId } from '../types';
 import { CopyHelperService } from './copy-helper.service';
+import { FileLegacyService } from './file-legacy.service';
+
+export type FileCopyAppendParams = {
+	copyStatus: CopyStatus;
+	courseId: EntityId;
+	schoolId: EntityId;
+	userId: EntityId;
+	jwt: string;
+};
+export const fileUrlRegex = '"(https?://[^"]*)?/files/file\\?file=';
 
 @Injectable()
 export class FileCopyAppendService {
 	constructor(
 		private readonly copyHelperService: CopyHelperService,
-		private readonly fileCopyAdapterService: FilesStorageClientAdapterService
+		private readonly fileCopyAdapterService: FilesStorageClientAdapterService,
+		private readonly fileLegacyService: FileLegacyService
 	) {}
 
-	// TODO create interfaces for params
 	async appendFiles(copyStatus: CopyStatus, jwt: string): Promise<CopyStatus> {
 		if (copyStatus.type === CopyElementType.TASK) {
 			return this.appendFilesToTask(copyStatus, jwt);
@@ -90,5 +101,131 @@ export class FileCopyAppendService {
 			name: file.name,
 			status: CopyStatusEnum.SUCCESS,
 		}));
+	}
+
+	async copyFiles(copyStatus: CopyStatus, courseId: EntityId, userId: EntityId, jwt: string): Promise<CopyStatus> {
+		if (copyStatus.type === CopyElementType.LESSON) {
+			return this.copyEmbeddedFilesOfLessons(copyStatus, courseId, userId);
+		}
+		if (copyStatus.type === CopyElementType.TASK) {
+			const updatedStatus = await this.appendFilesToTask(copyStatus, jwt);
+			return this.copyEmbeddedFilesOfTasks(updatedStatus, courseId, userId);
+		}
+		if (copyStatus.elements && copyStatus.elements.length > 0) {
+			copyStatus.elements = await Promise.all(
+				copyStatus.elements.map((el) => this.copyFiles(el, courseId, userId, jwt))
+			);
+			copyStatus.status = this.copyHelperService.deriveStatusFromElements(copyStatus.elements);
+		}
+		return Promise.resolve(copyStatus);
+	}
+
+	async copyEmbeddedFilesOfLessons(
+		lessonCopyStatus: CopyStatus,
+		courseId: EntityId,
+		userId: EntityId
+	): Promise<CopyStatus> {
+		if (lessonCopyStatus.type !== CopyElementType.LESSON) {
+			return lessonCopyStatus;
+		}
+		const lesson = lessonCopyStatus.copyEntity as Lesson;
+		const legacyFileIds: string[] = [];
+
+		lesson.contents.forEach((item: IComponentProperties) => {
+			if (item.content === undefined || !('text' in item.content)) {
+				return;
+			}
+
+			const contentFileIds = this.extractOldFileIds(item.content.text);
+
+			legacyFileIds.push(...contentFileIds);
+		});
+
+		if (legacyFileIds.length > 0) {
+			const legacyFileResponses = await Promise.all(
+				legacyFileIds.map((fileId) => this.fileLegacyService.copyFile({ fileId, targetCourseId: courseId, userId }))
+			);
+
+			legacyFileResponses.forEach(({ oldFileId, fileId, filename }) => {
+				lesson.contents = lesson.contents.map((item: IComponentProperties) => {
+					if ('text' in item.content && fileId && filename) {
+						const text = this.replaceOldFileUrls(item.content.text, oldFileId, fileId, filename);
+
+						return { ...item, text };
+					}
+
+					return item;
+				});
+			});
+		}
+
+		lessonCopyStatus.copyEntity = lesson;
+
+		return lessonCopyStatus;
+	}
+
+	async copyEmbeddedFilesOfTasks(
+		taskCopyStatus: CopyStatus,
+		courseId: EntityId,
+		userId: EntityId
+	): Promise<CopyStatus> {
+		if (taskCopyStatus.type !== CopyElementType.TASK) {
+			return taskCopyStatus;
+		}
+
+		const task = taskCopyStatus.copyEntity as Task;
+
+		const legacyFileIds = this.extractOldFileIds(task.description);
+
+		if (legacyFileIds.length > 0) {
+			const legacyFileResponses = await Promise.all(
+				legacyFileIds.map((fileId) => this.fileLegacyService.copyFile({ fileId, targetCourseId: courseId, userId }))
+			);
+
+			legacyFileResponses.forEach(({ oldFileId, fileId, filename }) => {
+				if (fileId && filename) {
+					task.description = this.replaceOldFileUrls(task.description, oldFileId, fileId, filename);
+				}
+			});
+
+			taskCopyStatus.copyEntity = task;
+		}
+
+		return taskCopyStatus;
+	}
+
+	// [x] move code => course-copy.uc.ts and file-copy-append-service
+	// [x] after persisting new course
+	// [x] search recursive in copystatus for lesson
+	// [ ] search recursive in copystatus for task
+	// [ ] detect fileids
+	// [ ] copy fileids
+	// [ ] execute file-url-replacements
+	//
+	// implement new copyFile-service
+
+	extractOldFileIds(text: string): string[] {
+		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
+		const fileIds = text.match(regEx);
+		return fileIds ? uniq(fileIds) : [];
+	}
+
+	extractNewFileIds(text: string): string[] {
+		// TODO: also detect fileIds from new file-service !!!NEEDED BECAUSE OF TASK.description EMBEDDED FILES are already migrated !!!
+		return [];
+	}
+
+	replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
+		const regEx = new RegExp(`${fileUrlRegex}${oldFileId}.+?"`, 'g');
+		const newUrl = `/files/file?file=${fileId}&amp;name=${filename}`;
+
+		return text.replace(regEx, newUrl);
+	}
+
+	async copyFileById(fileIds: string[], targetCourseId: EntityId, userId: EntityId) {
+		const promises = fileIds.map((fileId) => this.fileLegacyService.copyFile({ fileId, targetCourseId, userId }));
+		const result = await Promise.all(promises);
+		// WIP
+		return result;
 	}
 }

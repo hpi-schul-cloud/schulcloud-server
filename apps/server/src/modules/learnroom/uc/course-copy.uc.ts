@@ -48,10 +48,14 @@ export class CourseCopyUC {
 		const courseCopy = statusCourse.copyEntity as Course;
 		await this.courseRepo.save(courseCopy);
 
-		let statusBoard = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
+		let statusBoard = await this.boardCopyService.copyBoard({
+			originalBoard,
+			destinationCourse: courseCopy,
+			user,
+		});
 		const boardCopy = statusBoard.copyEntity as Board;
 		await this.boardRepo.save(boardCopy);
-		statusBoard = await this.fileCopyAppendService.appendFiles(statusBoard, jwt);
+		statusBoard = await this.fileCopyAppendService.copyFiles(statusBoard, courseCopy.id, userId, jwt);
 
 		statusCourse.elements ||= [];
 		statusCourse.elements.push(statusBoard);
