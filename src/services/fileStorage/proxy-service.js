@@ -1,6 +1,7 @@
 const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
 
@@ -1087,6 +1088,8 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
 	app.use('/fileStorage', fileStorageService);
+
+	app.service('/fileStorage/coursefilecopy').hooks({ before: [iff(isProvider('external'), disallow())] });
 
 	[
 		'/fileStorage',
