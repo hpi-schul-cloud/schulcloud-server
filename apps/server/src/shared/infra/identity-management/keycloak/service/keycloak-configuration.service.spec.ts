@@ -225,15 +225,22 @@ describe('configureIdentityProviders', () => {
 
 	describe('configureBrokerFlows', () => {
 		beforeAll(() => {
-			kcApiRealmsMock.makeRequest.mockImplementation(() => async () => Promise.resolve());
+			kcApiRealmsMock.makeRequest.mockImplementation(() => async () => Promise.resolve([]));
 		});
 
 		beforeEach(() => {
 			kcApiRealmsMock.makeRequest.mockClear();
 		});
 
-		it('should create flow', async () => {});
-		it('should delete and create flow', async () => {});
-		it('should add execution steps to flow', async () => {});
+		it('should create flow', async () => {
+			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
+		});
+		it('should delete and create flow', async () => {
+			kcApiRealmsMock.makeRequest.mockImplementation(
+				() => async () => Promise.resolve([{ alias: 'Direct Broker Flow', id: 'id' }])
+			);
+
+			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
+		});
 	});
 });

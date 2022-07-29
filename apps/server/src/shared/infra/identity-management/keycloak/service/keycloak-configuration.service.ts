@@ -28,9 +28,10 @@ export class KeycloakConfigurationService {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const flowAlias = 'Direct Broker Flow';
 		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
-		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation, void>({
+		const createFlowRequest = kc.realms.makeRequest<AuthenticationFlowRepresentation & { realmName: string }, void>({
 			method: 'POST',
-			path: `/${kc.realmName}/authentication/flows`,
+			path: '/{realmName}/authentication/flows',
+			urlParamKeys: ['realmName'],
 		});
 		const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
 			method: 'GET',
@@ -59,11 +60,13 @@ export class KeycloakConfigurationService {
 			path: `/${kc.realmName}/authentication/flows/${flowAlias}/executions`,
 		});
 
-		const flow = (await getFlowsRequest({ realmName: kc.realmName })).find((tempFlow) => tempFlow.alias === flowAlias);
+		const flows = await getFlowsRequest({ realmName: kc.realmName });
+		const flow = flows.find((tempFlow) => tempFlow.alias === flowAlias);
 		if (flow && flow.id) {
 			await deleteFlowRequest({ id: flow.id });
 		}
 		await createFlowRequest({
+			realmName: kc.realmName,
 			alias: flowAlias,
 			description: 'First broker login which automatically creates or maps accounts.',
 			providerId: 'basic-flow',
