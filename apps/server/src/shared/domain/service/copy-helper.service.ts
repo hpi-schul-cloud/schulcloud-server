@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CopyStatus, CopyStatusEnum } from '../types';
+import { BaseEntity } from '../entity';
+import { CopyStatus, CopyStatusEnum, EntityId } from '../types';
 
 const isAtLeastPartialSuccessfull = (status) => status === CopyStatusEnum.PARTIAL || status === CopyStatusEnum.SUCCESS;
 
@@ -33,5 +34,16 @@ export class CopyHelperService {
 			return this.deriveCopyName(composedName, existingNames);
 		}
 		return composedName;
+	}
+
+	buildCopyEntityDict(status: CopyStatus): Map<EntityId, BaseEntity> {
+		const map = new Map<EntityId, BaseEntity>();
+		status.elements?.forEach((elementStatus: CopyStatus) => {
+			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
+		});
+		if (status.originalEntity && status.copyEntity) {
+			map.set(status.originalEntity.id, status.copyEntity);
+		}
+		return map;
 	}
 }

@@ -5,12 +5,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ComponentType,
 	CopyElementType,
+	CopyStatus,
 	CopyStatusEnum,
+	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
 	Lesson,
+	Material,
 	TaskCopyService,
 } from '@shared/domain';
 import {
@@ -21,6 +24,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { BaseEntity, IComponentInternalProperties } from '../entity';
 import { CopyHelperService } from './copy-helper.service';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -739,6 +743,63 @@ describe('lesson copy service', () => {
 		});
 	});
 
+	describe('when lesson contains embedded task element', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const embeddedTaskContent: IComponentProperties = {
+				title: 'title',
+				hidden: false,
+				component: ComponentType.INTERNAL,
+				content: {
+					url: 'urlPrefix/homeworks/someid',
+				},
+			};
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [embeddedTaskContent],
+			});
+
+			return {
+				user,
+				destinationCourse,
+				originalLesson,
+				embeddedTaskContent,
+			};
+		};
+
+		it('should add status for embedded task as notimplemented', async () => {
+			const { originalLesson, destinationCourse, user } = setup();
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+
+			const contentsStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			if (!contentsStatus || !contentsStatus.elements || contentsStatus.elements.length < 1) {
+				throw new Error('element not found');
+			}
+			const embeddedTaskStatus = contentsStatus.elements[0];
+
+			expect(embeddedTaskStatus.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should add embedded task to copy', async () => {
+			const { originalLesson, destinationCourse, user, embeddedTaskContent } = setup();
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const lesson = copyStatus.copyEntity as Lesson;
+			const embeddedTaskLink = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
+
+			expect(embeddedTaskLink).toEqual(embeddedTaskContent);
+		});
+	});
+
 	describe('when lesson contains nexBoard content element', () => {
 		const setup = () => {
 			const nexboardContent: IComponentProperties = {
@@ -908,7 +969,6 @@ describe('lesson copy service', () => {
 
 			it('should copy the material correctly', async () => {
 				const { originalLesson, destinationCourse, user, originalMaterial } = setup();
-
 				const copyStatus = await copyService.copyLesson({
 					originalLesson,
 					destinationCourse,
@@ -917,7 +977,8 @@ describe('lesson copy service', () => {
 				const copiedLesson = copyStatus.copyEntity as Lesson;
 				const copiedMaterial = copiedLesson.materials[0];
 				expect(copiedLesson.materials.length).toEqual(1);
-				expect(copiedMaterial).toEqual(originalMaterial);
+				expect(copiedMaterial.title).toEqual(originalMaterial.title);
+				expect(copiedMaterial.url).toEqual(originalMaterial.url);
 			});
 
 			it('should put copy status materials leaf', async () => {
@@ -951,7 +1012,10 @@ describe('lesson copy service', () => {
 					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL && el.title === originalMaterial.title
 				);
 				expect(materialStatus).toBeDefined();
-				expect(materialStatus).toEqual(mockedMaterialStatus);
+				expect(materialStatus?.title).toEqual(mockedMaterialStatus.title);
+				expect(materialStatus?.status).toEqual(mockedMaterialStatus.status);
+				const material = materialStatus?.copyEntity as Material;
+				expect(material?.description).toEqual(mockedMaterialStatus?.copyEntity?.description);
 			});
 		});
 
@@ -1001,7 +1065,149 @@ describe('lesson copy service', () => {
 					(el) => el.type === CopyElementType.LERNSTORE_MATERIAL_GROUP
 				);
 				expect(materialsGroupStatus).toBeDefined();
-				expect(materialsGroupStatus?.elements).toEqual([mockedMaterialStatusOne, mockedMaterialStatusTwo]);
+				expect(materialsGroupStatus?.elements?.map((el) => el.title)).toEqual([
+					mockedMaterialStatusOne.title,
+					mockedMaterialStatusTwo.title,
+				]);
+			});
+		});
+	});
+
+	describe('updateCopiedEmbeddedTasks', () => {
+		it('should leave non-lesson status as is', () => {
+			const status = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				elements: [
+					{
+						type: CopyElementType.TASK,
+						status: CopyStatusEnum.SUCCESS,
+					},
+				],
+			};
+
+			const result = copyService.updateCopiedEmbeddedTasks(status);
+			expect(result).toEqual(status);
+		});
+
+		describe('when status contains lesson with embedded tasks', () => {
+			const setup = () => {
+				const originalLesson = lessonFactory.buildWithId();
+				const copiedLesson = lessonFactory.buildWithId();
+				const originalTask = taskFactory.buildWithId({ lesson: originalLesson });
+				const copiedTask = taskFactory.buildWithId({ lesson: copiedLesson });
+				const embeddedTaskContent: IComponentProperties = {
+					title: 'title',
+					hidden: false,
+					component: ComponentType.INTERNAL,
+					content: {
+						url: `http://somebasedomain.de/homeworks/${originalTask.id}`,
+					},
+				};
+				const textContent: IComponentProperties = {
+					title: 'title component',
+					hidden: false,
+					component: ComponentType.TEXT,
+					content: {
+						text: 'this is a text content',
+					},
+				};
+				copiedLesson.contents = [{ ...textContent }, embeddedTaskContent, { ...textContent }];
+
+				const copyStatus: CopyStatus = {
+					type: CopyElementType.COURSE,
+					status: CopyStatusEnum.SUCCESS,
+					elements: [
+						{
+							type: CopyElementType.LESSON,
+							status: CopyStatusEnum.SUCCESS,
+							originalEntity: originalLesson,
+							copyEntity: copiedLesson,
+							elements: [
+								{
+									type: CopyElementType.TASK,
+									status: CopyStatusEnum.SUCCESS,
+									originalEntity: originalTask,
+									copyEntity: copiedTask,
+								},
+								{
+									type: CopyElementType.LESSON_CONTENT_GROUP,
+									status: CopyStatusEnum.PARTIAL,
+									elements: [
+										{
+											type: CopyElementType.LESSON_CONTENT,
+											status: CopyStatusEnum.SUCCESS,
+										},
+										{
+											type: CopyElementType.LESSON_CONTENT,
+											status: CopyStatusEnum.SUCCESS,
+										},
+										{
+											type: CopyElementType.LESSON_CONTENT,
+											status: CopyStatusEnum.SUCCESS,
+										},
+									],
+								},
+							],
+						},
+					],
+				};
+
+				const copyDict = new Map<EntityId, BaseEntity>();
+				copyDict.set(originalTask.id, copiedTask);
+
+				copyHelperService.buildCopyEntityDict.mockReturnValue(copyDict);
+
+				return { copyStatus, copiedTask, originalTask };
+			};
+
+			it('should add copy of embedded task url, with new taskId', () => {
+				const { copyStatus, copiedTask } = setup();
+
+				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
+				const lessonStatus = updatedCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
+				const lesson = lessonStatus?.copyEntity as Lesson;
+				if (lesson === undefined || lesson.contents === undefined) {
+					throw new Error('lesson should be part of the copy');
+				}
+				const content = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
+				expect((content?.content as IComponentInternalProperties).url).toEqual(
+					`http://somebasedomain.de/homeworks/${copiedTask.id}`
+				);
+			});
+
+			it('should maintain order of content elements', () => {
+				const { copyStatus } = setup();
+
+				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
+				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
+				const lesson = lessonStatus?.copyEntity as Lesson;
+				if (lesson === undefined || lesson.contents === undefined) {
+					throw new Error('lesson should be part of the copy');
+				}
+				expect(lesson.contents[1].component).toEqual(ComponentType.INTERNAL);
+			});
+
+			it('should keep original url when task is not in dictionary (has not been copied)', () => {
+				const { copyStatus, originalTask } = setup();
+				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, BaseEntity>());
+
+				const appendCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus);
+				const lessonStatus = appendCopyStatus.elements?.find((el) => el.type === CopyElementType.LESSON);
+				const lesson = lessonStatus?.copyEntity as Lesson;
+				if (lesson === undefined || lesson.contents === undefined) {
+					throw new Error('lesson should be part of the copy');
+				}
+				const content = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
+				expect((content?.content as IComponentInternalProperties).url).toEqual(
+					`http://somebasedomain.de/homeworks/${originalTask.id}`
+				);
+			});
+
+			it('should use copyHelperService to build a dictionary', () => {
+				const { copyStatus } = setup();
+				copyService.updateCopiedEmbeddedTasks(copyStatus);
+				expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalled();
 			});
 		});
 	});
