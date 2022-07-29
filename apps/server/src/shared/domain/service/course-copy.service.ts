@@ -55,6 +55,7 @@ export class CourseCopyService {
 			type: CopyElementType.COURSE,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			originalEntity: params.originalCourse,
 			elements,
 		};
 
