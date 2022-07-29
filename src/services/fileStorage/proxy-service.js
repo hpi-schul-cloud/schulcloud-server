@@ -739,9 +739,14 @@ class CourseFileCopyService {
 		const userId = (params.payload || {}).userId || params.account.userId;
 		const strategy = createCorrectStrategy('awsS3');
 		const results = await Promise.all(
-			data.fileIds.map((fileId) =>
-				copyCourseFile({ fileId, targetCourseId: data.targetCourseId, userId, strategy }, this.app)
-			)
+			data.fileIds.map((fileId) => {
+				try {
+					return copyCourseFile({ fileId, targetCourseId: data.targetCourseId, userId, strategy }, this.app);
+				} catch (err) {
+					logger.error(`could not copy file ${fileId}`, err);
+					return { orginalId: fileId };
+				}
+			})
 		);
 		return results;
 	}
