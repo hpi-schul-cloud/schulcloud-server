@@ -1,6 +1,16 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CopyStatus, EntityId, PermissionContextBuilder, Task, TaskCopyService, User } from '@shared/domain';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import {
+	CopyHelperService,
+	CopyStatus,
+	Course,
+	EntityId,
+	Lesson,
+	PermissionContextBuilder,
+	Task,
+	TaskCopyService,
+	User,
+} from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
@@ -16,8 +26,10 @@ export class TaskCopyUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly courseRepo: CourseRepo,
+		private readonly lessonRepo: LessonRepo,
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly filesStorageClient: FilesStorageClientAdapterService
 	) {}
 
@@ -27,28 +39,53 @@ export class TaskCopyUC {
 		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
-		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+
+		let existingNames: string[] = [];
+		let destinationCourse: Course | undefined;
+
+		if (parentParams.courseId) {
+			destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentParams.courseId);
+			existingNames = (existingTasks || []).map((t) => t.name);
+		}
+
+		const copyName = this.copyHelperService.deriveCopyName(originalTask.name, existingNames);
+
+		let destinationLesson: Lesson | undefined;
+
+		if (parentParams.lessonId) {
+			destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
+		}
+
 		const status = this.taskCopyService.copyTaskMetadata({
 			originalTask,
 			destinationCourse,
+			destinationLesson,
 			user,
+			copyName,
 		});
 
 		if (status.copyEntity) {
 			const taskCopy = status.copyEntity as Task;
 			await this.taskRepo.save(taskCopy);
 		}
+
 		return status;
 	}
 
-	private async getDestinationCourse(courseId: string | undefined, user: User) {
-		if (courseId) {
-			const destinationCourse = await this.courseRepo.findById(courseId);
-			if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
-				throw new ForbiddenException('you dont have permission to add to this course');
-			}
-			return destinationCourse;
+	private async getDestinationCourse(courseId: string, user: User) {
+		const destinationCourse = await this.courseRepo.findById(courseId);
+		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
+			throw new ForbiddenException('you dont have permission to add to this course');
 		}
-		return undefined;
+		return destinationCourse;
+	}
+
+	private async getDestinationLesson(lessonId: string, user: User) {
+		const destinationLesson = await this.lessonRepo.findById(lessonId);
+		if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
+			throw new ForbiddenException('you dont have permission to add to this lesson');
+		}
+		return destinationLesson;
 	}
 }

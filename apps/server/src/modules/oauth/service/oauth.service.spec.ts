@@ -89,6 +89,9 @@ describe('OAuthService', () => {
 					provide: HttpService,
 					useValue: {
 						post: () => {
+							if (defaultOauthConfig.grantType === 'grantMock') {
+								return {};
+							}
 							return of(defaultAxiosResponse);
 						},
 					},
@@ -194,7 +197,6 @@ describe('OAuthService', () => {
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
-				tokenRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId/token',
 				scope: 'openid uuid',
 				responseType: 'code',
 				authEndpoint: 'mock_authEndpoint',
@@ -202,7 +204,7 @@ describe('OAuthService', () => {
 				logoutEndpoint: 'logoutEndpointMock',
 				issuer: 'mock_issuer',
 				jwksEndpoint: 'mock_jwksEndpoint',
-				codeRedirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
+				redirectUri: 'http://mockhost:3030/api/v3/oauth/testsystemId',
 			},
 			_id: new ObjectId(),
 			id: '',
@@ -220,7 +222,9 @@ describe('OAuthService', () => {
 			logoutEndpoint: 'logoutEndpointMock',
 			provider: 'iserv',
 		};
-		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${defaultErrorQuery.error as string}`;
+		defaultErrorRedirect = `${Configuration.get('HOST') as string}/login?error=${
+			defaultErrorQuery.error as string
+		}&provider=${defaultOauthConfig.provider}`;
 		defaultErrorResponse = new OAuthResponse();
 		defaultErrorResponse.errorcode = defaultErrorQuery.error as string;
 		defaultErrorResponse.redirect = defaultErrorRedirect;
@@ -277,6 +281,12 @@ describe('OAuthService', () => {
 		it('should get token from the external server', async () => {
 			const responseToken = await service.requestToken(defaultAuthCode, defaultOauthConfig);
 			expect(responseToken).toStrictEqual(defaultTokenResponse);
+		});
+		it('should throw error if no token got returned', async () => {
+			defaultOauthConfig.grantType = 'grantMock';
+			await expect(service.requestToken(defaultAuthCode, defaultOauthConfig)).rejects.toEqual(
+				new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step')
+			);
 		});
 	});
 
@@ -340,7 +350,7 @@ describe('OAuthService', () => {
 
 	describe('getJwtForUser', () => {
 		it('should return a JWT for a user', async () => {
-			const jwtResult = await service.getJWTForUser(defaultUser);
+			const jwtResult = await service.getJwtForUser(defaultUser);
 			expect(feathersJwtProvider.generateJwt).toHaveBeenCalled();
 			expect(jwtResult).toStrictEqual(defaultJWT);
 		});
@@ -369,7 +379,7 @@ describe('OAuthService', () => {
 			const response = await service.processOAuth(defaultQuery, system.id);
 			expect(response).toEqual({
 				errorcode: 'sso_internal_error',
-				redirect: 'https://mock.de/login?error=sso_internal_error',
+				redirect: 'https://mock.de/login?error=sso_internal_error&provider=mock_type',
 			});
 		});
 	});
@@ -389,14 +399,16 @@ describe('OAuthService', () => {
 	describe('getOAuthError', () => {
 		it('should return a login url string within an error', () => {
 			const generalError = new Error('foo');
-			const response = service.getOAuthError(generalError);
+			const response = service.getOAuthError(generalError, defaultOauthConfig.provider);
 			expect(response.redirect).toStrictEqual(defaultErrorRedirect);
 		});
 		it('should return a login url string within an error', () => {
 			const specialError: OAuthSSOError = new OAuthSSOError('foo', 'bar');
-			const response = service.getOAuthError(specialError);
+			const response = service.getOAuthError(specialError, defaultOauthConfig.provider);
 			expect(response.redirect).toStrictEqual(
-				`${Configuration.get('HOST') as string}/login?error=${specialError.errorcode}`
+				`${Configuration.get('HOST') as string}/login?error=${specialError.errorcode}&provider=${
+					defaultOauthConfig.provider
+				}`
 			);
 		});
 	});

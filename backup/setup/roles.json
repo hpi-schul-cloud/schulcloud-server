@@ -350,7 +350,8 @@
 			"CREATE_TOPICS_AND_TASKS",
 			"EDIT_ALL_FILES",
 			"NEWS_CREATE",
-			"START_MEETING"
+			"START_MEETING",
+			"JOIN_MEETING"
 		],
 		"__v": 0
 	},

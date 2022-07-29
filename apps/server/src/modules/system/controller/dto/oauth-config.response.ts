@@ -1,9 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OauthConfigResponse {
-	constructor(oauthConfigResponse: OauthConfigResponse) {
+	constructor(oauthConfigResponse: {
+		redirectUri: string;
+		tokenEndpoint: string;
+		responseType: string;
+		clientId: string;
+		provider: string;
+		jwksEndpoint: string;
+		authEndpoint: string;
+		scope: string;
+		logoutEndpoint: string;
+		grantType: string;
+		issuer: string;
+	}) {
 		this.clientId = oauthConfigResponse.clientId;
-		this.tokenRedirectUri = oauthConfigResponse.tokenRedirectUri;
+		this.redirectUri = oauthConfigResponse.redirectUri;
 		this.grantType = oauthConfigResponse.grantType;
 		this.tokenEndpoint = oauthConfigResponse.tokenEndpoint;
 		this.authEndpoint = oauthConfigResponse.authEndpoint;
@@ -13,7 +25,6 @@ export class OauthConfigResponse {
 		this.logoutEndpoint = oauthConfigResponse.logoutEndpoint;
 		this.issuer = oauthConfigResponse.issuer;
 		this.jwksEndpoint = oauthConfigResponse.jwksEndpoint;
-		this.codeRedirectUri = oauthConfigResponse.codeRedirectUri;
 	}
 
 	@ApiProperty({
@@ -24,11 +35,11 @@ export class OauthConfigResponse {
 	clientId: string;
 
 	@ApiProperty({
-		description: 'Token redirect uri',
+		description: 'Redirect uri',
 		required: true,
 		nullable: false,
 	})
-	tokenRedirectUri: string;
+	redirectUri: string;
 
 	@ApiProperty({
 		description: 'Grant type',
@@ -92,11 +103,4 @@ export class OauthConfigResponse {
 		nullable: false,
 	})
 	jwksEndpoint: string;
-
-	@ApiProperty({
-		description: 'Code redirect uri',
-		required: true,
-		nullable: false,
-	})
-	codeRedirectUri: string;
 }

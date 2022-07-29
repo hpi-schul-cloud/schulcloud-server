@@ -55,20 +55,20 @@ describe('course copy service', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: boardCopy,
 				};
-				const courseCopyName = 'Copy';
-				boardCopyService.copyBoard.mockReturnValue(boardCopyStatus);
-				copyHelperService.deriveCopyName.mockReturnValue(courseCopyName);
+				const copyName = 'Copy';
+				boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
 				copyHelperService.deriveStatusFromElements.mockReturnValue(CopyStatusEnum.PARTIAL);
 
-				return { user, originalCourse, boardCopyStatus, courseCopyName };
+				return { user, originalCourse, boardCopyStatus, copyName };
 			};
 
 			it('should assign user as teacher', () => {
-				const { originalCourse, user } = setup();
+				const { originalCourse, user, copyName } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
 					user,
+					copyName,
 				});
 
 				expect((status.copyEntity as Course).teachers.contains(user)).toEqual(true);
@@ -89,27 +89,28 @@ describe('course copy service', () => {
 				expect(course.school).toEqual(destinationSchool);
 			});
 
-			it('should use copyHelperService', () => {
+			it('should use provided copyName', () => {
 				const { originalCourse, user } = setup();
+				const copyName = 'Name of the Copy';
 
-				copyService.copyCourse({
+				const status = copyService.copyCourse({
 					originalCourse,
 					user,
+					copyName,
 				});
 
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalCourse.name);
+				expect((status.copyEntity as Course).name).toEqual(copyName);
 			});
 
-			it('should set name of copy', () => {
-				const { originalCourse, user, courseCopyName } = setup();
+			it('should use original courseName if no copyName is provided', () => {
+				const { originalCourse, user } = setup();
 
 				const status = copyService.copyCourse({
 					originalCourse,
 					user,
 				});
 
-				const course = status.copyEntity as Course;
-				expect(course.name).toEqual(courseCopyName);
+				expect((status.copyEntity as Course).name).toEqual(originalCourse.name);
 			});
 
 			it('should set start date of course', () => {
@@ -125,6 +126,19 @@ describe('course copy service', () => {
 				expect(course.startDate).toEqual(user.school.schoolYear?.startDate);
 			});
 
+			it('should set start date of course to undefined when school year is undefined', () => {
+				const { originalCourse, user } = setup();
+				user.school.schoolYear = undefined;
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status.copyEntity as Course;
+				expect(course.startDate).toEqual(undefined);
+			});
+
 			it('should set end date of course', () => {
 				const { originalCourse, user } = setup();
 
@@ -136,6 +150,19 @@ describe('course copy service', () => {
 				const course = status.copyEntity as Course;
 				expect(user.school.schoolYear).toBeDefined();
 				expect(course.untilDate).toEqual(user.school.schoolYear?.endDate);
+			});
+
+			it('should set end date of course- to undefined when school year is undefined', () => {
+				const { originalCourse, user } = setup();
+				user.school.schoolYear = undefined;
+
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				const course = status.copyEntity as Course;
+				expect(course.untilDate).toEqual(undefined);
 			});
 
 			it('should set color of course', () => {

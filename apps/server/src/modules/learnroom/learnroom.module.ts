@@ -3,7 +3,9 @@ import {
 	BoardCopyService,
 	CopyHelperService,
 	CourseCopyService,
+	EtherpadService,
 	LessonCopyService,
+	NexboardService,
 	TaskCopyService,
 } from '@shared/domain';
 import {
@@ -15,6 +17,8 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
+import { FeathersServiceProvider } from '@shared/infra/feathers';
+import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '../authorization';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
@@ -57,6 +61,10 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyService,
 		CourseCopyUC,
 		RoomsService,
+		EtherpadService,
+		NexboardService,
+		FeathersServiceProvider,
+		Logger,
 	],
 })
 export class LearnroomModule {}

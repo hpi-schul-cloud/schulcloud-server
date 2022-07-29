@@ -11,7 +11,7 @@ export class LessonRepo extends BaseRepo<Lesson> {
 
 	async findById(id: EntityId): Promise<Lesson> {
 		const lesson = await super.findById(id);
-		await this._em.populate(lesson, ['course']);
+		await this._em.populate(lesson, ['course', 'tasks', 'materials']);
 		return lesson;
 	}
 
@@ -28,7 +28,7 @@ export class LessonRepo extends BaseRepo<Lesson> {
 
 		const [lessons, count] = await this._em.findAndCount(Lesson, scope.query, { orderBy: order });
 
-		await this._em.populate(lessons, ['course', 'tasks']);
+		await this._em.populate(lessons, ['course', 'tasks', 'materials']);
 
 		return [lessons, count];
 	}

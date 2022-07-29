@@ -4,6 +4,7 @@ import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import { ProvisioningSchoolOutputDto } from '@src/modules/provisioning/dto/provisioning-school-output.dto';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchoolFeatures } from '@shared/domain';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
@@ -37,7 +38,7 @@ describe('SchoolUc', () => {
 		});
 	});
 
-	describe('saveSchool', () => {
+	describe('createOrUpdate', () => {
 		it('should call schoolService', async () => {
 			// Act
 			await schoolUc.createOrUpdate(schoolDto);
@@ -50,6 +51,10 @@ describe('SchoolUc', () => {
 	});
 
 	describe('saveProvisioningSchoolOutputDto', () => {
+		afterEach(() => {
+			schoolUc = module.get(SchoolUc);
+		});
+
 		it('should call save', async () => {
 			// Arrange
 			const dto: ProvisioningSchoolOutputDto = new ProvisioningSchoolOutputDto({ name: schoolDto.name });
@@ -60,9 +65,16 @@ describe('SchoolUc', () => {
 
 			// Assert
 			expect(schoolUc.createOrUpdate).toHaveBeenCalledWith(expect.objectContaining({ name: schoolDto.name }));
+		});
+	});
 
-			// Restore
-			schoolUc = module.get(SchoolUc);
+	describe('hasFeature', () => {
+		it('should call hasFeature', async () => {
+			// Act
+			await schoolUc.hasFeature('schoolId', SchoolFeatures.VIDEOCONFERENCE);
+
+			// Assert
+			expect(schoolService.hasFeature).toHaveBeenCalledWith('schoolId', SchoolFeatures.VIDEOCONFERENCE);
 		});
 	});
 });

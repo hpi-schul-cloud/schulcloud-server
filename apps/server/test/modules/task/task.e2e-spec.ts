@@ -46,6 +46,21 @@ class API {
 			status: response.status,
 		};
 	}
+
+	async copyTask(taskId: string, courseId: string) {
+		const params = { courseId };
+		const response = await request(this.app.getHttpServer())
+			.post(`/tasks/${taskId}/copy`)
+			.set('Authorization', 'jwt')
+			.send(params);
+
+		const copyStatus = response.body as { id: string; title: string };
+
+		return {
+			status: response.status,
+			copyStatus,
+		};
+	}
 }
 
 describe('Task Controller (e2e)', () => {
@@ -573,6 +588,67 @@ describe('Task Controller (e2e)', () => {
 					.set('Authorization', 'jwt');
 
 				expect(response.status).toEqual(201);
+			});
+
+			it('should duplicate a task avoiding name collisions', async () => {
+				const teacher = setup();
+				const course = courseFactory.build({
+					teachers: [teacher],
+				});
+				const originalTask = taskFactory.build({ creator: teacher, course, name: 'Addition' });
+				const task2 = taskFactory.build({ creator: teacher, course, name: 'Addition (1)' });
+				const task3 = taskFactory.build({ creator: teacher, course, name: 'Addition (3)' });
+
+				await em.persistAndFlush([teacher, originalTask, task2, task3]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const result = await api.copyTask(originalTask.id, course.id);
+				expect(result.status).toEqual(201);
+				expect(result.copyStatus?.title).toEqual('Addition (2)');
+			});
+
+			it('should avoid name collisions when copying the same task twice', async () => {
+				const teacher = setup();
+				const course = courseFactory.build({
+					teachers: [teacher],
+				});
+				const originalTask = taskFactory.build({ creator: teacher, course, name: 'Addition' });
+
+				await em.persistAndFlush([teacher, course, originalTask]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const result1 = await api.copyTask(originalTask.id, course.id);
+				expect(result1.status).toEqual(201);
+				expect(result1.copyStatus?.title).toEqual('Addition (1)');
+
+				const result2 = await api.copyTask(originalTask.id, course.id);
+				expect(result2.status).toEqual(201);
+				expect(result2.copyStatus?.title).toEqual('Addition (2)');
+			});
+
+			it('should avoid name collisions when copying the copy of a task', async () => {
+				const teacher = setup();
+				const course = courseFactory.build({
+					teachers: [teacher],
+				});
+				const originalTask = taskFactory.build({ creator: teacher, course, name: 'Addition' });
+
+				await em.persistAndFlush([teacher, course, originalTask]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const result1 = await api.copyTask(originalTask.id, course.id);
+				expect(result1.status).toEqual(201);
+				expect(result1.copyStatus?.title).toEqual('Addition (1)');
+
+				const result2 = await api.copyTask(result1.copyStatus.id, course.id);
+				expect(result2.status).toEqual(201);
+				expect(result2.copyStatus?.title).toEqual('Addition (2)');
 			});
 		});
 	});

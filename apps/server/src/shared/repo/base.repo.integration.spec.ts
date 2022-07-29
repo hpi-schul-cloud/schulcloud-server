@@ -6,6 +6,9 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from './base.repo';
 
+/**
+ * @deprecated
+ */
 describe('BaseRepo', () => {
 	@Entity()
 	class TestEntity extends BaseEntity {
@@ -58,6 +61,15 @@ describe('BaseRepo', () => {
 
 		it('should implement entityName getter', () => {
 			expect(repo.entityName).toBe(TestEntity);
+		});
+	});
+
+	describe('create', () => {
+		it('should create a single entity', () => {
+			const testEntity = new TestEntity();
+
+			const resEntity = repo.create(testEntity);
+			expect(resEntity.name).toEqual(testEntity.name);
 		});
 	});
 
