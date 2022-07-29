@@ -20,6 +20,7 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
+	copyCourseFile,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const { schoolModel } = require('../school/model');
@@ -729,6 +730,23 @@ const bucketService = {
 	},
 };
 
+class CourseFileCopyService {
+	constructor(app) {
+		this.app = app;
+	}
+
+	async create(data, params) {
+		const userId = (params.payload || {}).userId || params.account.userId;
+		const strategy = createCorrectStrategy('awsS3');
+		const results = await Promise.all(
+			data.fileIds.map((fileId) =>
+				copyCourseFile({ fileId, targetCourseId: data.targetCourseId, userId, strategy }, this.app)
+			)
+		);
+		return results;
+	}
+}
+
 const copyService = {
 	docs: swaggerDocs.copyService,
 
@@ -1059,6 +1077,7 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
 	app.use('/fileStorage/copy', copyService);
+	app.use('/fileStorage/coursefilecopy', new CourseFileCopyService());
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);
