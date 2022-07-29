@@ -1,3 +1,4 @@
+import { NotImplemented } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -396,13 +397,9 @@ describe('file copy append service', () => {
 					});
 				});
 
-				// it('should copy embedded files ', () => {
-				// 	// copyFiles(copyStatus: CopyStatus, course: Course, userId: EntityId, jwt: string)
-				// 	const text = 'here should be a text with a embedded file';
-				// 	const { user, copyStatus, originalCourse, jwt } = setup(text);
-				// });
-				it('should embed files in copy', () => {});
-				it('should set copyStatus ?', () => {});
+				it('should set copyStatus to partial if files were not copied', () => {
+					throw new NotImplemented();
+				});
 				// do we need to add copyEmbeddedFilesOfLessons have been called?
 			});
 		});
@@ -416,9 +413,12 @@ describe('file copy append service', () => {
 					description,
 				});
 			};
+			it('should copy an embedded image', () => {
+				throw new NotImplemented();
+			});
 		});
 
-		describe('extractFileIds of old fileservice', () => {
+		describe('extractOldFileIds', () => {
 			it('should return empty array when no file-urls were found', () => {
 				const text = '<p><img src="http://example.com/random/file/12345.jpg"></p>';
 				const fileIds = copyService.extractOldFileIds(text);
@@ -456,6 +456,23 @@ describe('file copy append service', () => {
 					<p>Image:</p>${getVideoHtml(fileId3)}`;
 				const extractedFileIds = copyService.extractOldFileIds(text);
 				expect(extractedFileIds.join('|')).toEqual(`${fileId1}|${fileId2}|${fileId3}`);
+			});
+		});
+		describe('replaceOldFileUrls', () => {
+			it('should replace old file urls', () => {
+				const oldFileId = 'old123';
+				const fileId = 'new123';
+				const filename = 'copied.jpg';
+				const mockedCopyFileResult = {
+					oldFileId,
+					fileId,
+					filename,
+				};
+				fileLegacyService.copyFile.mockResolvedValue(mockedCopyFileResult);
+				const text = getImageHtml(oldFileId);
+				const result = copyService.replaceOldFileUrls(text, oldFileId, fileId, filename);
+				const expected = `<figure class="image"><img src="/files/file?file=${fileId}&amp;name=${filename}" alt /></figure>`;
+				expect(result).toEqual(expected);
 			});
 		});
 	});

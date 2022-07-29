@@ -24,7 +24,7 @@ export class FileLegacyService {
 	// TODO: targetCourseId <-> sourceCourseId
 	async copyFile(data: FileLegacyParams): Promise<FileLegacyResponse> {
 		try {
-			const service = this.feathersServiceProvider.getService('/fileStorage/copy');
+			const service = this.feathersServiceProvider.getService('/fileStorage/coursefilecopy');
 			const result = await service.create(data, { userId: data.userId });
 			return result as FileLegacyResponse;
 		} catch (error) {

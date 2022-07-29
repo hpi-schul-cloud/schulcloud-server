@@ -210,7 +210,7 @@ export class FileCopyAppendService {
 
 	replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
 		const regEx = new RegExp(`${fileUrlRegex}${oldFileId}.+?"`, 'g');
-		const newUrl = `/files/file?file=${fileId}&amp;name=${filename}`;
+		const newUrl = `"/files/file?file=${fileId}&amp;name=${filename}"`;
 
 		return text.replace(regEx, newUrl);
 	}
