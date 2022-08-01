@@ -15,6 +15,8 @@ export interface ICollectionFilePath {
 	collectionName: string;
 }
 
+const systemsCollectionName = 'systems';
+
 @Injectable()
 export class DatabaseManagementUc {
 	/**
@@ -167,7 +169,7 @@ export class DatabaseManagementUc {
 					await this.databaseManagementService.createCollection(collectionName);
 				}
 
-				if (collectionName === 'systems') {
+				if (collectionName === systemsCollectionName) {
 					this.injectSecretsToSystems(jsonDocuments as System[]);
 				}
 
@@ -205,6 +207,9 @@ export class DatabaseManagementUc {
 			collectionsToExport.map(async ({ filePath, collectionName }) => {
 				// load json documents from collection
 				const jsonDocuments = await this.databaseManagementService.findDocumentsOfCollection(collectionName);
+				if (collectionName === systemsCollectionName) {
+					this.removeSecretsFromSystems(jsonDocuments as System[]);
+				}
 				// serialize to bson (format of mongoexport)
 				const bsonDocuments = this.bsonConverter.serialize(jsonDocuments);
 				// sort results to have 'new' data added at documents end
@@ -241,6 +246,20 @@ export class DatabaseManagementUc {
 			if (system.type === SysType.OIDC && system.config) {
 				system.config.clientSecret = this.getEncryptedSecret(system.config.clientSecret as string);
 				system.config.clientId = this.getEncryptedSecret(system.config.clientId as string);
+			}
+		});
+		return systems;
+	}
+
+	private removeSecretsFromSystems(systems: System[]) {
+		systems.forEach((system) => {
+			if (system.oauthConfig) {
+				system.oauthConfig.clientSecret = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTSECRET`;
+				system.oauthConfig.clientId = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTID`;
+			}
+			if (system.type === SysType.OIDC && system.config) {
+				system.config.clientSecret = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTSECRET`;
+				system.config.clientId = `${system.alias?.toLocaleUpperCase() || ''}_CLIENTID`;
 			}
 		});
 		return systems;
