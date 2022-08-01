@@ -118,9 +118,6 @@ export class FileCopyAppendService {
 		courseId: EntityId,
 		userId: EntityId
 	): Promise<CopyStatus> {
-		if (lessonCopyStatus.type !== CopyElementType.LESSON) {
-			return lessonCopyStatus;
-		}
 		const lesson = lessonCopyStatus.copyEntity as Lesson;
 		const legacyFileIds: string[] = [];
 
@@ -161,12 +158,7 @@ export class FileCopyAppendService {
 		courseId: EntityId,
 		userId: EntityId
 	): Promise<CopyStatus> {
-		if (taskCopyStatus.type !== CopyElementType.TASK) {
-			return taskCopyStatus;
-		}
-
 		const task = taskCopyStatus.copyEntity as Task;
-
 		const legacyFileIds = this.extractOldFileIds(task.description);
 
 		if (legacyFileIds.length > 0) {

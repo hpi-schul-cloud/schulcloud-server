@@ -364,8 +364,19 @@ describe('file copy append service', () => {
 						component: ComponentType.TEXT,
 						content: { text },
 					};
-					const originalLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
-					const copyLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
+					const geoGebraContent: IComponentProperties = {
+						title: 'geoGebra component 1',
+						hidden: false,
+						component: ComponentType.GEOGEBRA,
+						content: {
+							materialId: 'foo',
+						},
+					};
+					const originalLesson = lessonFactory.build({
+						course: originalCourse,
+						contents: [geoGebraContent, textContent],
+					});
+					const copyLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
 						title: 'Tolle Lesson',
