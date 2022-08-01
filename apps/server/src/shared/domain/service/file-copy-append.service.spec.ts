@@ -407,7 +407,7 @@ describe('file copy append service', () => {
 					});
 
 					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
-					const textComponent = (updatedStatus.copyEntity as Lesson).contents[0]
+					const textComponent = (updatedStatus.copyEntity as Lesson).contents[1]
 						.content as unknown as IComponentTextProperties;
 
 					expect(textComponent?.text).toEqual(
@@ -425,7 +425,7 @@ describe('file copy append service', () => {
 					const { originalCourse, copyStatus, user, jwt } = setup(oldFileId, getImageHtml(oldFileId));
 					fileLegacyService.copyFile.mockResolvedValue({ oldFileId });
 					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
-					const textComponent = (updatedStatus.copyEntity as Lesson).contents[0]
+					const textComponent = (updatedStatus.copyEntity as Lesson).contents[1]
 						.content as unknown as IComponentTextProperties;
 					expect(textComponent?.text).toEqual(expect.stringContaining(oldFileId));
 				});
