@@ -187,7 +187,16 @@ describe('course copy service', () => {
 
 				expect(status.type).toEqual(CopyElementType.COURSE);
 			});
+			it('should set original entity in status', () => {
+				const { originalCourse, user } = setup();
 
+				const status = copyService.copyCourse({
+					originalCourse,
+					user,
+				});
+
+				expect(status.originalEntity).toEqual(originalCourse);
+			});
 			it('should set status to partial', () => {
 				const { originalCourse, user } = setup();
 
