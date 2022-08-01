@@ -79,6 +79,6 @@ describe('copy course files', () => {
 			{ fileId: file._id, targetCourseId: course.id, userId: teacher._id, strategy },
 			app
 		);
-		expect(result.copy.id.toString()).to.equal(copy.id.toString());
+		expect(result.fileId).to.equal(copy.id.toString());
 	});
 });
