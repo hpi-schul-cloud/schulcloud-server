@@ -80,6 +80,13 @@ describe('board copy service', () => {
 				expect(status.title).toEqual('board');
 			});
 
+			it('should set original entity in status', async () => {
+				const { destinationCourse, originalBoard, user } = setup();
+
+				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+				expect(status.originalEntity).toEqual(originalBoard);
+			});
+
 			it('should create a copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 

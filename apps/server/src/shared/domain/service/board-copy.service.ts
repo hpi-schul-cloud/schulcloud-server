@@ -57,6 +57,7 @@ export class BoardCopyService {
 			type: CopyElementType.BOARD,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: copy,
+			originalEntity: params.originalBoard,
 			elements,
 		};
 
