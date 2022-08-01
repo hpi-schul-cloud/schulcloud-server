@@ -191,10 +191,10 @@ describe('course copy uc', () => {
 			expect(courseRepo.save).toBeCalledWith(courseCopy);
 		});
 
-		it('should try to append file copies from original task to task copy', async () => {
-			const { course, user, boardCopyStatus, jwt } = setup();
+		it('should try to copy files copies from original task to task copy', async () => {
+			const { course, user, jwt } = setup();
 			await uc.copyCourse(user.id, course.id, jwt);
-			expect(fileCopyAppendService.appendFiles).toBeCalledWith(boardCopyStatus, jwt);
+			expect(fileCopyAppendService.copyFiles).toBeCalled();
 		});
 
 		it('should call board copy service', async () => {
