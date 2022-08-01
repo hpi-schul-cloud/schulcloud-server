@@ -234,6 +234,7 @@ describe('configureIdentityProviders', () => {
 
 		it('should create flow', async () => {
 			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
+			expect(kcApiRealmsMock.makeRequest).toBeCalledTimes(5);
 		});
 		it('should delete and create flow', async () => {
 			kcApiRealmsMock.makeRequest.mockImplementation(
@@ -241,6 +242,7 @@ describe('configureIdentityProviders', () => {
 			);
 
 			await expect(service.configureBrokerFlows()).resolves.not.toThrow();
+			expect(kcApiRealmsMock.makeRequest).toBeCalledTimes(6);
 		});
 	});
 });

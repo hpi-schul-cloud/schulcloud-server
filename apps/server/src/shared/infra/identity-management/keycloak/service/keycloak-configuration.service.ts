@@ -46,11 +46,6 @@ export class KeycloakConfigurationService {
 			path: '/{realmName}/authentication/flows/{flowAlias}/executions',
 			urlParamKeys: ['realmName', 'flowAlias'],
 		});
-		const deleteFlowRequest = kc.realms.makeRequest<{ id: string }, void>({
-			method: 'DELETE',
-			path: `/${kc.realmName}/authentication/flows/{id}`,
-			urlParamKeys: ['id'],
-		});
 		const addExecutionRequest = kc.realms.makeRequest<{ provider: string }, void>({
 			method: 'POST',
 			path: `/${kc.realmName}/authentication/flows/${flowAlias}/executions/execution`,
@@ -63,6 +58,11 @@ export class KeycloakConfigurationService {
 		const flows = await getFlowsRequest({ realmName: kc.realmName });
 		const flow = flows.find((tempFlow) => tempFlow.alias === flowAlias);
 		if (flow && flow.id) {
+			const deleteFlowRequest = kc.realms.makeRequest<{ id: string }, void>({
+				method: 'DELETE',
+				path: `/${kc.realmName}/authentication/flows/{id}`,
+				urlParamKeys: ['id'],
+			});
 			await deleteFlowRequest({ id: flow.id });
 		}
 		await createFlowRequest({
