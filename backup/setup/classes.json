@@ -90,5 +90,35 @@
 			"$date": "2021-11-05T11:28:29.382Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "62e2bca9c3925761736da440"
+		},
+		"userIds": [
+			{
+				"$oid": "5fa2cccab229544f2c696917"
+			}
+		],
+		"teacherIds": [
+			{
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			}
+		],
+		"schoolId": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"name": "a",
+		"gradeLevel": 10,
+		"year": {
+			"$oid": "5ebd6dc14a431f75ec9a3e78"
+		},
+		"createdAt": {
+			"$date": "2022-11-05T10:32:26.985Z"
+		},
+		"updatedAt": {
+			"$date": "2022-11-05T11:28:29.382Z"
+		},
+		"__v": 0
 	}
 ]

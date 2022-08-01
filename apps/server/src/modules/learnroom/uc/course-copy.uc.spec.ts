@@ -9,6 +9,7 @@ import {
 	CopyHelperService,
 	CopyStatusEnum,
 	CourseCopyService,
+	LessonCopyService,
 	Permission,
 } from '@shared/domain';
 import { FileCopyAppendService } from '@shared/domain/service/file-copy-append.service';
@@ -28,6 +29,7 @@ describe('course copy uc', () => {
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let roomsService: DeepMocked<RoomsService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
+	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let fileCopyAppendService: DeepMocked<FileCopyAppendService>;
 
 	beforeAll(async () => {
@@ -75,6 +77,10 @@ describe('course copy uc', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
+					provide: LessonCopyService,
+					useValue: createMock<LessonCopyService>(),
+				},
+				{
 					provide: FileCopyAppendService,
 					useValue: createMock<FileCopyAppendService>(),
 				},
@@ -89,6 +95,7 @@ describe('course copy uc', () => {
 		boardCopyService = module.get(BoardCopyService);
 		roomsService = module.get(RoomsService);
 		copyHelperService = module.get(CopyHelperService);
+		lessonCopyService = module.get(LessonCopyService);
 		fileCopyAppendService = module.get(FileCopyAppendService);
 	});
 
@@ -219,6 +226,12 @@ describe('course copy uc', () => {
 			await uc.copyCourse(user.id, course.id, jwt);
 			const allCourseNames = allCourses.map((c) => c.name);
 			expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(course.name, allCourseNames);
+		});
+
+		it('should use lessonCopyService.updateCopiedEmbeddedTasks', async () => {
+			const { course, user, jwt } = setup();
+			await uc.copyCourse(user.id, course.id, jwt);
+			expect(lessonCopyService.updateCopiedEmbeddedTasks).toHaveBeenCalled();
 		});
 
 		it('should use findAllByUserId to determine existing course names', async () => {
