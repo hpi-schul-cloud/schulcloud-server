@@ -58,7 +58,8 @@ exports.copyCourseFile = async ({ fileId, targetCourseId, userId, strategy }, ap
 	const file = await FileModel.create(safeOverrideAndClear(fileObject, newFileObject));
 
 	return {
-		orginalId: fileId,
-		copy: file,
+		oldFileId: fileId,
+		fileId: file._id,
+		filename: file.name,
 	};
 };

@@ -737,19 +737,16 @@ class CourseFileCopyService {
 	}
 
 	async create(data, params) {
-		const userId = (params.payload || {}).userId || params.account.userId;
 		const strategy = createCorrectStrategy('awsS3');
-		const results = await Promise.all(
-			data.fileIds.map((fileId) => {
-				try {
-					return copyCourseFile({ fileId, targetCourseId: data.targetCourseId, userId, strategy }, this.app);
-				} catch (err) {
-					logger.error(`could not copy file ${fileId}`, err);
-					return { orginalId: fileId };
-				}
-			})
-		);
-		return results;
+		try {
+			return await copyCourseFile(
+				{ fileId: data.fileId, targetCourseId: data.targetCourseId, userId: data.userId, strategy },
+				this.app
+			);
+		} catch (err) {
+			logger.error(`could not copy file ${data.fileId}`, err);
+			return { orginalId: data.fileId };
+		}
 	}
 }
 
@@ -1083,7 +1080,7 @@ module.exports = function proxyService() {
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
 	app.use('/fileStorage/copy', copyService);
-	app.use('/fileStorage/coursefilecopy', new CourseFileCopyService());
+	app.use('/fileStorage/coursefilecopy', new CourseFileCopyService(app));
 	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage/shared', shareTokenService);

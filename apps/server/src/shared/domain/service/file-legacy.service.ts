@@ -15,13 +15,10 @@ type FileLegacyResponse = {
 	filename?: string;
 };
 
-// <optional> permissionHandler(userId, file, parent)
 @Injectable()
 export class FileLegacyService {
 	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: Logger) {}
 
-	// TODO: permissions? noch etwas zu beachten? copy <-> file
-	// TODO: targetCourseId <-> sourceCourseId
 	async copyFile(data: FileLegacyParams): Promise<FileLegacyResponse> {
 		try {
 			const service = this.feathersServiceProvider.getService('/fileStorage/coursefilecopy');

@@ -143,8 +143,7 @@ export class FileCopyAppendService {
 				lesson.contents = lesson.contents.map((item: IComponentProperties) => {
 					if ('text' in item.content && fileId && filename) {
 						const text = this.replaceOldFileUrls(item.content.text, oldFileId, fileId, filename);
-
-						return { ...item, text };
+						return { ...item, content: { ...item.content, text } };
 					}
 
 					return item;
@@ -187,25 +186,10 @@ export class FileCopyAppendService {
 		return taskCopyStatus;
 	}
 
-	// [x] move code => course-copy.uc.ts and file-copy-append-service
-	// [x] after persisting new course
-	// [x] search recursive in copystatus for lesson
-	// [ ] search recursive in copystatus for task
-	// [ ] detect fileids
-	// [ ] copy fileids
-	// [ ] execute file-url-replacements
-	//
-	// implement new copyFile-service
-
 	extractOldFileIds(text: string): string[] {
 		const regEx = new RegExp(`(?<=src=${fileUrlRegex}).+?(?=&amp;)`, 'g');
 		const fileIds = text.match(regEx);
 		return fileIds ? uniq(fileIds) : [];
-	}
-
-	extractNewFileIds(text: string): string[] {
-		// TODO: also detect fileIds from new file-service !!!NEEDED BECAUSE OF TASK.description EMBEDDED FILES are already migrated !!!
-		return [];
 	}
 
 	replaceOldFileUrls(text: string, oldFileId: EntityId, fileId: EntityId, filename: string): string {
@@ -213,12 +197,5 @@ export class FileCopyAppendService {
 		const newUrl = `"/files/file?file=${fileId}&amp;name=${filename}"`;
 
 		return text.replace(regEx, newUrl);
-	}
-
-	async copyFileById(fileIds: string[], targetCourseId: EntityId, userId: EntityId) {
-		const promises = fileIds.map((fileId) => this.fileLegacyService.copyFile({ fileId, targetCourseId, userId }));
-		const result = await Promise.all(promises);
-		// WIP
-		return result;
 	}
 }
