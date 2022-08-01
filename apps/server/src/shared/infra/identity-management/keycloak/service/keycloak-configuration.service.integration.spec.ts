@@ -41,7 +41,7 @@ describe('KeycloakConfigurationService Integration', () => {
 	});
 
 	// Execute this test for a test run against a running Keycloak instance
-	describe('configureBrokerFlows', () => {
+	describe.skip('configureBrokerFlows', () => {
 		it('should configure broker flows', async () => {
 			const kc = await keycloakAdministrationService.callKcAdminClient();
 			const getFlowsRequest = kc.realms.makeRequest<{ realmName: string }, AuthenticationFlowRepresentation[]>({
