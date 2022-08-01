@@ -380,6 +380,44 @@ describe('lesson copy service', () => {
 		});
 	});
 
+	describe('when lesson contains text content element', () => {
+		const setup = () => {
+			const textContent: IComponentProperties = {
+				title: 'text component 1',
+				hidden: false,
+				component: ComponentType.TEXT,
+				content: {
+					text: 'this is a text content',
+				},
+			};
+			const user = userFactory.build();
+			const originalCourse = courseFactory.build({ school: user.school });
+			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalLesson = lessonFactory.build({
+				course: originalCourse,
+				contents: [textContent],
+			});
+
+			return { user, originalCourse, destinationCourse, originalLesson, textContent };
+		};
+
+		it('should set content type to LESSON_CONTENT_TEXT', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_TEXT);
+				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
+			}
+		});
+	});
+
 	describe('when lesson contains LernStore content element', () => {
 		const setup = () => {
 			const lernStoreContent: IComponentProperties = {
@@ -420,6 +458,22 @@ describe('lesson copy service', () => {
 
 			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
 			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
+		});
+
+		it('should set content type to LESSON_CONTENT_LERNSTORE', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_LERNSTORE);
+				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.SUCCESS);
+			}
 		});
 	});
 
@@ -485,6 +539,21 @@ describe('lesson copy service', () => {
 			expect(contentsStatus).toBeDefined();
 			if (contentsStatus?.elements) {
 				expect(contentsStatus.elements[0].status).toEqual(CopyStatusEnum.PARTIAL);
+			}
+		});
+
+		it('should set content type to LESSON_CONTENT_GEOGEBRA', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_GEOGEBRA);
 			}
 		});
 	});
@@ -741,6 +810,23 @@ describe('lesson copy service', () => {
 			const copiedEtherpad = copiedLessonContents[0].content as IComponentEtherpadProperties;
 			expect(copiedEtherpad.url).toEqual('http://pad.uri/abc');
 		});
+
+		it('should set content type to LESSON_CONTENT_ETHERPAD', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			etherpadService.createEtherpad.mockResolvedValue('abc');
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_ETHERPAD);
+			}
+		});
 	});
 
 	describe('when lesson contains embedded task element', () => {
@@ -769,7 +855,7 @@ describe('lesson copy service', () => {
 			};
 		};
 
-		it('should add status for embedded task as notimplemented', async () => {
+		it('should add status for embedded task as SUCCESS', async () => {
 			const { originalLesson, destinationCourse, user } = setup();
 			const copyStatus = await copyService.copyLesson({
 				originalLesson,
@@ -797,6 +883,20 @@ describe('lesson copy service', () => {
 			const embeddedTaskLink = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
 
 			expect(embeddedTaskLink).toEqual(embeddedTaskContent);
+		});
+
+		it('should set content type to LESSON_CONTENT_TASK', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+			const copyStatus = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = copyStatus.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_TASK);
+			}
 		});
 	});
 
@@ -899,6 +999,23 @@ describe('lesson copy service', () => {
 			const copiedNexboard = copiedLessonContents[0].content as IComponentNexboardProperties;
 			expect(copiedNexboard.url).toEqual('abc');
 			expect(copiedNexboard.board).toEqual('123');
+		});
+
+		it('should set content type to LESSON_CONTENT_NEXBOARD', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+
+			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
+
+			const status = await copyService.copyLesson({
+				originalLesson,
+				destinationCourse,
+				user,
+			});
+			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
+			expect(contentsStatus).toBeDefined();
+			if (contentsStatus?.elements) {
+				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_NEXBOARD);
+			}
 		});
 	});
 
@@ -1135,15 +1252,15 @@ describe('lesson copy service', () => {
 									status: CopyStatusEnum.PARTIAL,
 									elements: [
 										{
-											type: CopyElementType.LESSON_CONTENT,
+											type: CopyElementType.LESSON_CONTENT_TEXT,
 											status: CopyStatusEnum.SUCCESS,
 										},
 										{
-											type: CopyElementType.LESSON_CONTENT,
+											type: CopyElementType.LESSON_CONTENT_TASK,
 											status: CopyStatusEnum.SUCCESS,
 										},
 										{
-											type: CopyElementType.LESSON_CONTENT,
+											type: CopyElementType.LESSON_CONTENT_TEXT,
 											status: CopyStatusEnum.SUCCESS,
 										},
 									],
