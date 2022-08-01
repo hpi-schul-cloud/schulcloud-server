@@ -79,6 +79,8 @@ describe('copy course files', () => {
 			{ fileId: file._id, targetCourseId: course.id, userId: teacher._id, strategy },
 			app
 		);
-		expect(result.fileId).to.equal(copy._id);
+		expect(result.oldFileId).to.equal(file._id);
+		expect(result.filename).to.equal(file.name);
+		expect(result.fileId).to.not.be.undefined;
 	});
 });
