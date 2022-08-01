@@ -1,4 +1,3 @@
-import { NotImplemented } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,6 +5,7 @@ import { ComponentType, IComponentProperties } from '@shared/domain';
 import { courseFactory, lessonFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@src/modules';
 import { FileRecordParamsParentTypeEnum } from '@src/modules/files-storage-client/filesStorageApi/v3';
+import { IComponentTextProperties, Lesson, Task } from '../entity';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 import { FileCopyAppendService } from './file-copy-append.service';
@@ -326,8 +326,15 @@ describe('file copy append service', () => {
 				const setup = () => {
 					const user = userFactory.build();
 					const originalCourse = courseFactory.build({ school: user.school });
-					const originalLesson = lessonFactory.build({ course: originalCourse });
-					const copyLesson = lessonFactory.build({ course: originalCourse });
+					const textWithoutFile = 'I am a lesson without a file';
+					const textContent: IComponentProperties = {
+						title: 'LessonTitle',
+						hidden: false,
+						component: ComponentType.TEXT,
+						content: { text: textWithoutFile },
+					};
+					const originalLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
+					const copyLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
 						title: 'Tolle Lesson',
@@ -359,12 +366,6 @@ describe('file copy append service', () => {
 					};
 					const originalLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
 					const copyLesson = lessonFactory.build({ course: originalCourse, contents: [textContent] });
-					const mockedCopyFileResult = {
-						oldFileId,
-						fileId: 'fnew123',
-						filename: 'file.jpg',
-					};
-					fileLegacyService.copyFile.mockResolvedValue(mockedCopyFileResult);
 					const copyStatus: CopyStatus = {
 						type: CopyElementType.LESSON,
 						title: 'Tolle Lesson',
@@ -380,7 +381,6 @@ describe('file copy append service', () => {
 						originalCourse,
 						destinationCourse,
 						originalLesson,
-						mockedCopyFileResult,
 						jwt,
 					};
 				};
@@ -389,7 +389,19 @@ describe('file copy append service', () => {
 					const oldFileId = 'fold123';
 					const { originalCourse, copyStatus, user, jwt } = setup(oldFileId, getImageHtml(oldFileId));
 
-					await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					fileLegacyService.copyFile.mockResolvedValue({
+						oldFileId,
+						fileId: 'fnew123',
+						filename: 'file.jpg',
+					});
+
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const textComponent = (updatedStatus.copyEntity as Lesson).contents[0]
+						.content as unknown as IComponentTextProperties;
+
+					expect(textComponent?.text).toEqual(
+						'<figure class="image"><img src="/files/file?file=fnew123&amp;name=file.jpg" alt /></figure>'
+					);
 					expect(fileLegacyService.copyFile).toHaveBeenCalledWith({
 						fileId: oldFileId,
 						targetCourseId: originalCourse.id,
@@ -397,24 +409,67 @@ describe('file copy append service', () => {
 					});
 				});
 
-				it('should set copyStatus to partial if files were not copied', () => {
-					throw new NotImplemented();
+				it('should leave embedded file urls untouched, if files were not copied', async () => {
+					const oldFileId = 'old123';
+					const { originalCourse, copyStatus, user, jwt } = setup(oldFileId, getImageHtml(oldFileId));
+					fileLegacyService.copyFile.mockResolvedValue({ oldFileId });
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const textComponent = (updatedStatus.copyEntity as Lesson).contents[0]
+						.content as unknown as IComponentTextProperties;
+					expect(textComponent?.text).toEqual(expect.stringContaining(oldFileId));
 				});
+
+				// should set copyStatus to success if files were copied?
+				// should set copyStatus to fail if files were not copied?
 				// do we need to add copyEmbeddedFilesOfLessons have been called?
 			});
 		});
 
-		describe.skip('copying files in tasks', () => {
-			const setup = (description: string) => {
-				const user = userFactory.build(); // oder reicht school factory?
-				const originalCourse = courseFactory.build({ school: user.school });
-				const originalTask = taskFactory.buildWithId({
-					school: user.school,
-					description,
+		describe('copying files in tasks', () => {
+			describe('when files are present', () => {
+				const setup = (oldFileId: string, description: string) => {
+					const user = userFactory.build(); // oder reicht school factory?
+					const originalCourse = courseFactory.build({ school: user.school });
+					const originalTask = taskFactory.buildWithId({
+						school: user.school,
+						description,
+					});
+					const copiedTask = taskFactory.buildWithId({
+						school: user.school,
+						course: originalCourse,
+						description,
+					});
+					const copyStatus: CopyStatus = {
+						type: CopyElementType.TASK,
+						title: 'Toller Task',
+						status: CopyStatusEnum.SUCCESS,
+						originalEntity: originalTask,
+						copyEntity: copiedTask,
+					};
+					const jwt = 'veryveryverylongstringthatissignedandstuff';
+					return { originalTask, originalCourse, copyStatus, user, jwt };
+				};
+
+				it('should copy and update embeddedFiles', async () => {
+					const oldFileId = 'old123';
+					const { originalCourse, copyStatus, user, jwt } = setup(oldFileId, getImageHtml(oldFileId));
+
+					fileLegacyService.copyFile.mockResolvedValue({
+						oldFileId,
+						fileId: 'new123',
+						filename: 'file.jpg',
+					});
+
+					const updatedStatus = await copyService.copyFiles(copyStatus, originalCourse.id, user.id, jwt);
+					const { description } = updatedStatus.copyEntity as Task;
+					const expected = '<figure class="image"><img src="/files/file?file=new123&amp;name=file.jpg" alt /></figure>';
+					expect(description).toEqual(expected);
+					expect(fileLegacyService.copyFile).toHaveBeenCalledWith({
+						fileId: oldFileId,
+						targetCourseId: originalCourse.id,
+						userId: user.id,
+					});
 				});
-			};
-			it('should copy an embedded image', () => {
-				throw new NotImplemented();
 			});
 		});
 
@@ -458,6 +513,7 @@ describe('file copy append service', () => {
 				expect(extractedFileIds.join('|')).toEqual(`${fileId1}|${fileId2}|${fileId3}`);
 			});
 		});
+
 		describe('replaceOldFileUrls', () => {
 			it('should replace old file urls', () => {
 				const oldFileId = 'old123';
@@ -472,6 +528,20 @@ describe('file copy append service', () => {
 				const text = getImageHtml(oldFileId);
 				const result = copyService.replaceOldFileUrls(text, oldFileId, fileId, filename);
 				const expected = `<figure class="image"><img src="/files/file?file=${fileId}&amp;name=${filename}" alt /></figure>`;
+				expect(result).toEqual(expected);
+			});
+			it('should replace multiple old file urls', () => {
+				const oldFileId = 'old123';
+				const fileId = 'new123';
+				const filename = 'copied.jpg';
+				fileLegacyService.copyFile.mockResolvedValueOnce({
+					oldFileId,
+					fileId,
+					filename,
+				});
+				const text = getImageHtml('otherFile') + getImageHtml(oldFileId) + getImageHtml('otherFile2');
+				const result = copyService.replaceOldFileUrls(text, oldFileId, fileId, filename);
+				const expected = `<figure class="image"><img src="/files/file?file=otherFile&amp;name=david-marcu-78A265wPiO4-unsplash (1).jpg" alt /></figure><figure class="image"><img src="/files/file?file=${fileId}&amp;name=${filename}" alt /></figure><figure class="image"><img src="/files/file?file=otherFile2&amp;name=david-marcu-78A265wPiO4-unsplash (1).jpg" alt /></figure>`;
 				expect(result).toEqual(expected);
 			});
 		});
