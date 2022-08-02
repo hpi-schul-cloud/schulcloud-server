@@ -9,15 +9,27 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import {System} from "@shared/domain";
 
 export abstract class ProvisioningStrategy<T> {
+
+	protected config: AxiosRequestConfig;
+	protected provisioningUrl: string;
+
 	constructor(
 		private readonly responseMapper: IProviderResponseMapper<T>,
 		private readonly schoolUc: SchoolUc,
 		private readonly userUc: UserUc
-	) {}
+	) {
+		this.config = {};
+		this.provisioningUrl = '';
+	}
 
 	abstract getProvisioningData(): Promise<T>;
 
 	abstract getType(): SystemProvisioningStrategy;
+
+	init(provisioningUrl: string, config: AxiosRequestConfig){
+		this.provisioningUrl = provisioningUrl;
+		this.config = config;
+	}
 
 	async apply(system: System): Promise<ProvisioningDto> {
 		const provisioningData: T = await this.getProvisioningData();
