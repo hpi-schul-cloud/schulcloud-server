@@ -759,9 +759,45 @@ const keys = {
 		'schoolId',
 	],
 };
+
+/**
+ * @beforeHook
+ */
 const deleteNextcloudTeam = (hook) => {
 	const service = hook.app.service('/nest-collaborative-storage-uc');
 	service.deleteTeam(hook.id);
+};
+
+/**
+ * @afterHook
+ */
+const createNextcloudTeam = (hook) => {
+	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
+	const teamName = hook.data.name;
+	const userIds = hook.result.userIds || hook.data.userIds;
+
+	const service = hook.app.service('/nest-collaborative-storage-uc');
+	service.createTeam({
+		id: teamId,
+		name: teamName,
+		teamUsers: userIds.map((user) => ({ userId: user.userId })),
+	});
+};
+
+/**
+ * @afterHook
+ */
+const updateNextcloudTeam = (hook) => {
+	const teamId = hook.id || (hook.result || {})._id.toHexString() || hook.teamId;
+	const teamName = hook.data.name;
+	const userIds = hook.result.userIds || hook.data.userIds;
+
+	const service = hook.app.service('/nest-collaborative-storage-uc');
+	service.updateTeam({
+		id: teamId,
+		name: teamName,
+		teamUsers: userIds.map((user) => ({ userId: user.userId.toHexString() })),
+	});
 };
 
 exports.before = {
@@ -798,9 +834,9 @@ exports.after = {
 	all: [],
 	find: [filterToRelated(keys.resFind, 'result.data')], // filterFindResult
 	get: [addCurrentUser], // see before (?)
-	create: [filterToRelated(keys.resId, 'result')],
-	update: [], // test schoolId remove
-	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent], // test schoolId remove
+	create: [filterToRelated(keys.resId, 'result'), createNextcloudTeam],
+	update: [updateNextcloudTeam], // test schoolId remove
+	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateNextcloudTeam], // test schoolId remove
 	remove: [filterToRelated(keys.resId, 'result')],
 };
 

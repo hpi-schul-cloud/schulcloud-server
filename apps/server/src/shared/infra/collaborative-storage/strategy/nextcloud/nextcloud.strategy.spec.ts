@@ -6,12 +6,13 @@ import {
 	NextcloudStrategy,
 	OcsResponse,
 	SuccessfulRes,
-} from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
-import { HttpModule } from '@nestjs/axios';
+} from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
+import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
-import { Logger, NotFoundException } from '@nestjs/common';
-import { createMock } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
 
 const createAxiosResponse = (
 	data: OcsResponse<NextcloudGroups | GroupfoldersFolder[] | SuccessfulRes | []> | Record<string, unknown>
@@ -34,14 +35,19 @@ describe('NextCloud Adapter Strategy', () => {
 	let module: TestingModule;
 	let strategy: NextcloudStrategy;
 
+	let httpService: DeepMocked<HttpService>;
+
 	const groupfoldersFolders: GroupfoldersFolder[] = [{ folder_id: 'testFolderId' }];
 	const nextcloudGroups: NextcloudGroups = { groups: ['testGroupId'] };
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [HttpModule],
 			providers: [
 				NextcloudStrategy,
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -49,11 +55,12 @@ describe('NextCloud Adapter Strategy', () => {
 			],
 		}).compile();
 		strategy = module.get(NextcloudStrategy);
+		httpService = module.get(HttpService);
 	});
 
 	describe('Update TeamPermissions For Role', () => {
-		beforeAll(() => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+		beforeEach(() => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('folders/group/testGroupId')) {
 					resp.data = createOcsResponse(groupfoldersFolders);
@@ -63,7 +70,7 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			jest.spyOn(strategy.httpService, 'post').mockImplementation((): Observable<AxiosResponse> => {
+			httpService.post.mockImplementation((): Observable<AxiosResponse> => {
 				return of(createAxiosResponse(createOcsResponse({ groups: [] })));
 			});
 		});
@@ -79,12 +86,12 @@ describe('NextCloud Adapter Strategy', () => {
 				teamId: 'TeamId',
 				teamName: 'TeamName',
 			});
-			expect(strategy.httpService.get).toBeCalledTimes(2);
-			expect(strategy.httpService.post).toBeCalledTimes(1);
+			expect(httpService.get).toBeCalledTimes(2);
+			expect(httpService.post).toBeCalledTimes(1);
 		});
 
 		it('should not find the group and throw a NotFoundException', async () => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((): Observable<AxiosResponse> => {
 				return of(createAxiosResponse({}));
 			});
 			await expect(
@@ -98,7 +105,7 @@ describe('NextCloud Adapter Strategy', () => {
 		});
 
 		it('should not find the folder and throw a NotFoundException', async () => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('groupfolders/folders')) {
 					resp.data = [];
@@ -122,7 +129,7 @@ describe('NextCloud Adapter Strategy', () => {
 	const teamIdMock = 'teamIdMock';
 	describe('Delete Team from Nextcloud', () => {
 		beforeEach(() => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('cloud/groups?search=teamIdMock')) {
 					resp.data = createOcsResponse(nextcloudGroups);
@@ -135,7 +142,7 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			jest.spyOn(strategy.httpService, 'delete').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.delete.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('/groups/testGroupId')) {
 					resp.data = createOcsResponse([], { statuscode: 100 });
@@ -153,13 +160,13 @@ describe('NextCloud Adapter Strategy', () => {
 		});
 
 		it('should remove the groups and delete the groupfolder ', async () => {
-			await strategy.deleteGroupfolderAndRemoveGroup(teamIdMock);
-			expect(strategy.httpService.get).toBeCalledTimes(2);
-			expect(strategy.httpService.delete).toBeCalledTimes(2);
+			await strategy.deleteTeam(teamIdMock);
+			expect(httpService.get).toBeCalledTimes(2);
+			expect(httpService.delete).toBeCalledTimes(2);
 		});
 
 		it('should throw a NotFoundException when folderId is not found', async () => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('groupfolders/folders')) {
 					resp.data = {};
@@ -169,24 +176,24 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			await expect(strategy.deleteGroupfolderAndRemoveGroup(teamIdMock)).rejects.toThrow(NotFoundException);
+			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrow(NotFoundException);
 		});
 
 		it('should throw a NotFoundException when groupId is not found', async () => {
 			jest.resetAllMocks();
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('cloud/groups?search=teamIdNoGroups')) {
 					resp.data = createOcsResponse({ groups: [] });
 				}
 				return of(resp);
 			});
-			await expect(strategy.deleteGroupfolderAndRemoveGroup('teamIdNoGroups')).rejects.toThrowError();
-			await expect(strategy.deleteGroupfolderAndRemoveGroup('teamIdNoGroups')).rejects.toThrow(NotFoundException);
+			await expect(strategy.deleteTeam('teamIdNoGroups')).rejects.toThrowError();
+			await expect(strategy.deleteTeam('teamIdNoGroups')).rejects.toThrow(NotFoundException);
 		});
 
 		it('should throw a NotFoundException when group could not be removed', async () => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('cloud/groups?search=teamIdMock')) {
 					resp.data = createOcsResponse(nextcloudGroups);
@@ -196,7 +203,7 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			jest.spyOn(strategy.httpService, 'delete').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.delete.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('/groups/testGroupId')) {
 					resp.data = createOcsResponse([], { statuscode: 101 });
@@ -206,12 +213,12 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			await expect(strategy.deleteGroupfolderAndRemoveGroup(teamIdMock)).rejects.toThrowError();
-			await expect(strategy.deleteGroupfolderAndRemoveGroup(teamIdMock)).rejects.toThrow(NotFoundException);
+			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrowError();
+			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrow(NotFoundException);
 		});
 
 		it.skip('should throw a NotFoundException when folder could not be deleted', async () => {
-			jest.spyOn(strategy.httpService, 'get').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.get.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('cloud/groups?search=teamIdMock')) {
 					resp.data = createOcsResponse(nextcloudGroups);
@@ -221,7 +228,7 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			jest.spyOn(strategy.httpService, 'delete').mockImplementation((url: string): Observable<AxiosResponse> => {
+			httpService.delete.mockImplementation((url: string): Observable<AxiosResponse> => {
 				const resp: AxiosResponse = createAxiosResponse({});
 				if (url.endsWith('/groups/testGroupId')) {
 					resp.data = createOcsResponse([], { statuscode: 100 });
@@ -231,7 +238,7 @@ describe('NextCloud Adapter Strategy', () => {
 				}
 				return of(resp);
 			});
-			await expect(strategy.deleteGroupfolderAndRemoveGroup(teamIdMock)).rejects.toThrow(NotFoundException);
+			await expect(strategy.deleteTeam(teamIdMock)).rejects.toThrow(NotFoundException);
 		});
 	});
 });

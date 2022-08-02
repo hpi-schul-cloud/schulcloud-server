@@ -16,7 +16,7 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 	updateTeamPermissionsForRole(): void {}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	deleteGroupfolderAndRemoveGroup(teamId: string): void {}
+	deleteTeam(teamId: string): void {}
 }
 
 describe('CollaborativeStorage Adapter', () => {
@@ -60,7 +60,7 @@ describe('CollaborativeStorage Adapter', () => {
 				{
 					id: 'teamId',
 					name: 'teamName',
-					userIds: [{ userId: 'testUser', role: 'testRole', schoolId: 'testschool' }],
+					teamUsers: [{ userId: 'testUser', roleId: 'testRole', schoolId: 'testschool' }],
 				},
 				{ id: 'testRole', name: RoleName.DEMO },
 				{
@@ -79,7 +79,7 @@ describe('CollaborativeStorage Adapter', () => {
 		it('should call the strategy', () => {
 			const teamIdMock = 'teamIdMock';
 			adapter.deleteTeam(teamIdMock);
-			expect(strat.deleteGroupfolderAndRemoveGroup).toHaveBeenCalled();
+			expect(strat.deleteTeam).toHaveBeenCalled();
 		});
 	});
 });

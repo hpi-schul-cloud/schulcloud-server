@@ -27,7 +27,7 @@ describe('TeamMapper', () => {
 			const teamEntity = teamFactory.build();
 			const ret = mapper.mapEntityToDto(teamEntity);
 			expect(ret.id).toEqual(teamEntity.id);
-			expect(ret.userIds.length).toEqual(1);
+			expect(ret.teamUsers.length).toEqual(1);
 		});
 	});
 });

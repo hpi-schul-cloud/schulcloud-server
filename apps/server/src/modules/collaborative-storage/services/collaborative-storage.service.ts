@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission, PermissionContextBuilder } from '@shared/domain';
-import { RoleRepo, TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
-import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud.strategy';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
-import { RoleMapper } from '../mapper/role.mapper';
+import { RoleService } from '@src/modules/role/service/role.service';
 import { TeamMapper } from '../mapper/team.mapper';
-import { RoleDto } from './dto/role.dto';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
 import { TeamDto } from './dto/team.dto';
 
@@ -15,15 +13,13 @@ import { TeamDto } from './dto/team.dto';
 export class CollaborativeStorageService {
 	constructor(
 		private adapter: CollaborativeStorageAdapter,
-		private roleRepo: RoleRepo,
+		private roleService: RoleService,
 		private teamsMapper: TeamMapper,
-		private roleMapper: RoleMapper,
 		private teamsRepo: TeamsRepo,
 		private authService: AuthorizationService,
 		private logger: Logger
 	) {
 		this.logger.setContext(CollaborativeStorageService.name);
-		this.adapter.setStrategy(new NextcloudStrategy());
 	}
 
 	/**
@@ -34,15 +30,6 @@ export class CollaborativeStorageService {
 	 */
 	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
 		return this.teamsMapper.mapEntityToDto(await this.teamsRepo.findById(teamId, populate));
-	}
-
-	/**
-	 * Find a Team by its Id and return the DTO
-	 * @param roleId The RoleId
-	 * @return The mapped DTO
-	 */
-	async findRoleById(roleId: EntityId): Promise<RoleDto> {
-		return this.roleMapper.mapEntityToDto(await this.roleRepo.findById(roleId));
 	}
 
 	/**
@@ -65,12 +52,20 @@ export class CollaborativeStorageService {
 		);
 		this.adapter.updateTeamPermissionsForRole(
 			await this.findTeamById(teamId, true),
-			await this.findRoleById(roleId),
+			await this.roleService.findById(roleId),
 			teamPermissions
 		);
 	}
 
-	deleteTeam(teamId: string) {
-		this.adapter.deleteTeam(teamId);
+	deleteTeam(teamId: string): Promise<void> {
+		return this.adapter.deleteTeam(teamId);
+	}
+
+	createTeam(team: TeamDto): Promise<void> {
+		return this.adapter.createTeam(team);
+	}
+
+	updateTeam(team: TeamDto): Promise<void> {
+		return this.adapter.updateTeam(team);
 	}
 }

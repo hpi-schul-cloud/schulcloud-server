@@ -13,6 +13,7 @@ export * from './import-user.entity';
 export * from './lesson.entity';
 export * from './materials.entity';
 export * from './news.entity';
+export * from './pseudonym.entity';
 export * from './role.entity';
 export * from './school.entity';
 export * from './schoolyear.entity';
