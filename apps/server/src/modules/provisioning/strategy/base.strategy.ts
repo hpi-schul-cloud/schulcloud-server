@@ -6,7 +6,8 @@ import { ProvisioningUserOutputDto } from '@src/modules/provisioning/dto/provisi
 import { UserUc } from '@src/modules/user/uc';
 import { SchoolDto } from '@src/modules/school/uc/dto/school.dto';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {System} from "@shared/domain";
+import {ProvisioningSystemInputDto} from "@src/modules/provisioning/dto/provisioning-system-input.dto";
+import {AxiosRequestConfig} from "axios";
 
 export abstract class ProvisioningStrategy<T> {
 
@@ -31,7 +32,7 @@ export abstract class ProvisioningStrategy<T> {
 		this.config = config;
 	}
 
-	async apply(system: System): Promise<ProvisioningDto> {
+	async apply(system: ProvisioningSystemInputDto): Promise<ProvisioningDto>{
 		const provisioningData: T = await this.getProvisioningData();
 
 		const schoolDto: ProvisioningSchoolOutputDto | undefined = this.responseMapper.mapToSchoolDto(provisioningData);
