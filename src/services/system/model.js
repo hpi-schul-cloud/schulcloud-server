@@ -42,6 +42,7 @@ const systemSchema = new Schema(
 				logoutEndpoint: { type: String, required: false },
 				issuer: { type: String, required: true },
 				jwksEndpoint: { type: String, required: true },
+				provisioningUrl: { type: String, required: true },
 			},
 			required: false,
 		},
