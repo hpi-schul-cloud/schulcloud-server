@@ -72,7 +72,7 @@ describe('copy course files', () => {
 		});
 
 		const strategy = {
-			copyFile: (userId, originalStorageFileName, newStorageFileName, sourceSchoolId) => copy,
+			copyFile: (_) => copy,
 		};
 
 		const result = await copyCourseFile(
