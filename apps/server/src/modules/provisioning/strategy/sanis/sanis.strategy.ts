@@ -19,8 +19,10 @@ export class SanisProvisioningStrategy extends ProvisioningStrategy<SanisRespons
 	}
 
 	override getProvisioningData(): Promise<SanisResponse> {
-		// TODO this.httpService.post()
-		throw new NotImplementedException();
+		return firstValueFrom(this.httpService.get(`${this.provisioningUrl}`, this.config))
+			.then((r: AxiosResponse<SanisResponse>) => {
+			return r.data;
+		});
 	}
 
 	getType(): SystemProvisioningStrategy {

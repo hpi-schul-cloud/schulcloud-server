@@ -1,10 +1,8 @@
 export class SanisResponse {
 	constructor(placeholderResponse: SanisResponse) {
-		this.email = placeholderResponse.email;
-		this.firstName = placeholderResponse.firstName;
-		this.lastName = placeholderResponse.lastName;
-		this.schoolName = placeholderResponse.schoolName;
-		this.userRoles = placeholderResponse.userRoles;
+		this.pid = placeholderResponse.pid;
+		this.person = placeholderResponse.person;
+		this.personenkontexte = placeholderResponse.personenkontexte;
 	}
 
 	email: string;
